@@ -1,0 +1,184 @@
+# Define custom scalars for Date and ID
+scalar Date
+scalar ID
+
+# Define the User type
+"""
+A user type representing a user in the system
+"""
+type User {
+    """
+    The unique ID of the user
+    """
+    id: ID!
+
+    """
+    The name of the user
+    """
+    name: String!
+
+    """
+    The email of the user
+    """
+    email: String!
+
+    """
+    The list of todos created by the user
+    """
+    todos: [Todo!]!
+}
+
+# Define the Todo type
+"""
+A todo type representing a task to be done
+"""
+type Todo {
+    """
+    The unique ID of the todo
+    """
+    id: ID!
+
+    """
+    The title of the todo
+    """
+    title: String!
+
+    """
+    The description of the todo
+    """
+    description: String
+
+    """
+    The status of the todo (completed or not)
+    """
+    completed: Boolean!
+
+    """
+    The due date of the todo
+    """
+    dueDate: Date
+}
+
+# Define input types for creating and updating todos
+"""
+Input type for creating a new todo
+"""
+input CreateTodoInput {
+    title: String!
+    description: String
+    dueDate: Date
+    userId: ID!
+}
+
+"""
+Input type for updating an existing todo
+"""
+input UpdateTodoInput {
+    id: ID!
+    title: String
+    description: String
+    completed: Boolean
+    dueDate: Date
+}
+
+# Define the Query type
+"""
+---
+title: Query
+group: [Root Types]
+---
+
+The root query type
+"""
+type Query {
+    """
+    ---
+    title: Users
+    group: [GraphQL, Users]
+    ---
+
+    Get a list of all users
+    """
+    users: [User!]!
+
+    """
+    ---
+    title: User
+    group: [GraphQL, Users]
+    ---
+
+    Get a user by ID
+    """
+    user(id: ID!): User
+
+    """
+    ---
+    title: Todos
+    group: [GraphQL, Todos]
+    ---
+
+    Get a list of all todos
+    """
+    todos: [Todo!]!
+
+    """
+    ---
+    title: Todo
+    group: [GraphQL, Todos]
+    ---
+
+    Get a todo by ID
+    """
+    todo(id: ID!): Todo
+}
+
+# Define the Mutation type
+"""
+---
+title: Mutation
+group: [Root Types]
+---
+
+The root mutation type
+"""
+type Mutation {
+    """
+    ---
+    title: Create User
+    group: [GraphQL, Users]
+    ---
+
+    Create a new user
+    """
+    createUser(name: String!, email: String!): User!
+
+    """
+    ---
+    title: Create Todo
+    group: [GraphQL, Todos]
+    ---
+
+    Create a new todo
+    """
+    createTodo(input: CreateTodoInput!): Todo!
+
+    """
+    ---
+    title: Update Todo
+    group: [GraphQL, Todos]
+    ---
+
+    Update an existing todo
+    """
+    updateTodo(input: UpdateTodoInput!): Todo!
+
+    """
+    ---
+    title: Delete Todo
+    group: [GraphQL, Todos]
+    ---
+
+    Delete a todo by ID
+    """
+    deleteTodo(id: ID!): Boolean!
+}

@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "name": "@xyd/core",
+  "version": "0.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {
+    "clean": "rimraf build",
+    "prebuild": "pnpm clean",
+    "build": "tsup",
+    "watch": "tsup --watch"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0"
+  }
+}

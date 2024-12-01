@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2020"],
+    "module": "ESNext",
+    "target": "ES2022",
+    "moduleResolution": "node",
+    "typeRoots": ["node_modules"],
+    "types": ["vitest/globals"]
+  },
+  "ts-node": {
+    "files": true
+  }
+}

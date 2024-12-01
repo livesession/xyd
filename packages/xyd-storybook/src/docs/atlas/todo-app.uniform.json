@@ -1,0 +1,625 @@
+[
+  {
+    "title": "users",
+    "canonical": "users",
+    "description": "---\ntitle: Users\ngroup: [GraphQL, Users]\n---\n\nGet a list of all users",
+    "category": "graphql",
+    "type": "graphql_query",
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "graphql",
+                    "language": "graphql",
+                    "code": "query users {\n    users {\n        id\n        name\n        email\n        todos {\n            id\n            title\n            description\n            completed\n            dueDate\n        }\n    }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": []
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "The unique ID of the user",
+            "properties": []
+          },
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "The name of the user",
+            "properties": []
+          },
+          {
+            "name": "email",
+            "type": "String!",
+            "description": "The email of the user",
+            "properties": []
+          },
+          {
+            "name": "todos",
+            "type": "[Todo!]!",
+            "description": "The list of todos created by the user",
+            "properties": [
+              {
+                "name": "id",
+                "type": "ID!",
+                "description": "The unique ID of the todo",
+                "properties": []
+              },
+              {
+                "name": "title",
+                "type": "String!",
+                "description": "The title of the todo",
+                "properties": []
+              },
+              {
+                "name": "description",
+                "type": "String",
+                "description": "The description of the todo"
+              },
+              {
+                "name": "completed",
+                "type": "Boolean!",
+                "description": "The status of the todo (completed or not)",
+                "properties": []
+              },
+              {
+                "name": "dueDate",
+                "type": "Date",
+                "description": "The due date of the todo"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "user",
+    "canonical": "user",
+    "description": "---\ntitle: User\ngroup: [GraphQL, Users]\n---\n\nGet a user by ID",
+    "category": "graphql",
+    "type": "graphql_query",
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "graphql",
+                    "language": "graphql",
+                    "code": "query user {\n    user {\n        id\n        name\n        email\n        todos {\n            id\n            title\n            description\n            completed\n            dueDate\n        }\n    }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "properties": []
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "The unique ID of the user",
+            "properties": []
+          },
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "The name of the user",
+            "properties": []
+          },
+          {
+            "name": "email",
+            "type": "String!",
+            "description": "The email of the user",
+            "properties": []
+          },
+          {
+            "name": "todos",
+            "type": "[Todo!]!",
+            "description": "The list of todos created by the user",
+            "properties": [
+              {
+                "name": "id",
+                "type": "ID!",
+                "description": "The unique ID of the todo",
+                "properties": []
+              },
+              {
+                "name": "title",
+                "type": "String!",
+                "description": "The title of the todo",
+                "properties": []
+              },
+              {
+                "name": "description",
+                "type": "String",
+                "description": "The description of the todo"
+              },
+              {
+                "name": "completed",
+                "type": "Boolean!",
+                "description": "The status of the todo (completed or not)",
+                "properties": []
+              },
+              {
+                "name": "dueDate",
+                "type": "Date",
+                "description": "The due date of the todo"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "todos",
+    "canonical": "todos",
+    "description": "---\ntitle: Todos\ngroup: [GraphQL, Todos]\n---\n\nGet a list of all todos",
+    "category": "graphql",
+    "type": "graphql_query",
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "graphql",
+                    "language": "graphql",
+                    "code": "query todos {\n    todos {\n        id\n        title\n        description\n        completed\n        dueDate\n    }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": []
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "The unique ID of the todo",
+            "properties": []
+          },
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "The title of the todo",
+            "properties": []
+          },
+          {
+            "name": "description",
+            "type": "String",
+            "description": "The description of the todo"
+          },
+          {
+            "name": "completed",
+            "type": "Boolean!",
+            "description": "The status of the todo (completed or not)",
+            "properties": []
+          },
+          {
+            "name": "dueDate",
+            "type": "Date",
+            "description": "The due date of the todo"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "todo",
+    "canonical": "todo",
+    "description": "---\ntitle: Todo\ngroup: [GraphQL, Todos]\n---\n\nGet a todo by ID",
+    "category": "graphql",
+    "type": "graphql_query",
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "graphql",
+                    "language": "graphql",
+                    "code": "query todo {\n    todo {\n        id\n        title\n        description\n        completed\n        dueDate\n    }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "properties": []
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "The unique ID of the todo",
+            "properties": []
+          },
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "The title of the todo",
+            "properties": []
+          },
+          {
+            "name": "description",
+            "type": "String",
+            "description": "The description of the todo"
+          },
+          {
+            "name": "completed",
+            "type": "Boolean!",
+            "description": "The status of the todo (completed or not)",
+            "properties": []
+          },
+          {
+            "name": "dueDate",
+            "type": "Date",
+            "description": "The due date of the todo"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "createUser",
+    "canonical": "createUser",
+    "description": "---\ntitle: Create User\ngroup: [GraphQL, Users]\n---\n\nCreate a new user",
+    "category": "graphql",
+    "type": "graphql_mutation",
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "graphql",
+                    "language": "graphql",
+                    "code": "mutation createUser ($name: String!, $email: String!) {\n    createUser (name: $name, email: $email) {\n        id\n        name\n        email\n        todos {\n            id\n            title\n            description\n            completed\n            dueDate\n        }\n    }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "email",
+            "type": "String!",
+            "description": "",
+            "properties": []
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "The unique ID of the user",
+            "properties": []
+          },
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "The name of the user",
+            "properties": []
+          },
+          {
+            "name": "email",
+            "type": "String!",
+            "description": "The email of the user",
+            "properties": []
+          },
+          {
+            "name": "todos",
+            "type": "[Todo!]!",
+            "description": "The list of todos created by the user",
+            "properties": [
+              {
+                "name": "id",
+                "type": "ID!",
+                "description": "The unique ID of the todo",
+                "properties": []
+              },
+              {
+                "name": "title",
+                "type": "String!",
+                "description": "The title of the todo",
+                "properties": []
+              },
+              {
+                "name": "description",
+                "type": "String",
+                "description": "The description of the todo"
+              },
+              {
+                "name": "completed",
+                "type": "Boolean!",
+                "description": "The status of the todo (completed or not)",
+                "properties": []
+              },
+              {
+                "name": "dueDate",
+                "type": "Date",
+                "description": "The due date of the todo"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "createTodo",
+    "canonical": "createTodo",
+    "description": "---\ntitle: Create Todo\ngroup: [GraphQL, Todos]\n---\n\nCreate a new todo",
+    "category": "graphql",
+    "type": "graphql_mutation",
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "graphql",
+                    "language": "graphql",
+                    "code": "mutation createTodo ($input: CreateTodoInput!) {\n    createTodo (input: $input) {\n        id\n        title\n        description\n        completed\n        dueDate\n    }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "input",
+            "type": "CreateTodoInput!",
+            "description": "",
+            "properties": []
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "The unique ID of the todo",
+            "properties": []
+          },
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "The title of the todo",
+            "properties": []
+          },
+          {
+            "name": "description",
+            "type": "String",
+            "description": "The description of the todo"
+          },
+          {
+            "name": "completed",
+            "type": "Boolean!",
+            "description": "The status of the todo (completed or not)",
+            "properties": []
+          },
+          {
+            "name": "dueDate",
+            "type": "Date",
+            "description": "The due date of the todo"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "updateTodo",
+    "canonical": "updateTodo",
+    "description": "---\ntitle: Update Todo\ngroup: [GraphQL, Todos]\n---\n\nUpdate an existing todo",
+    "category": "graphql",
+    "type": "graphql_mutation",
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "graphql",
+                    "language": "graphql",
+                    "code": "mutation updateTodo ($input: UpdateTodoInput!) {\n    updateTodo (input: $input) {\n        id\n        title\n        description\n        completed\n        dueDate\n    }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "input",
+            "type": "UpdateTodoInput!",
+            "description": "",
+            "properties": []
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "The unique ID of the todo",
+            "properties": []
+          },
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "The title of the todo",
+            "properties": []
+          },
+          {
+            "name": "description",
+            "type": "String",
+            "description": "The description of the todo"
+          },
+          {
+            "name": "completed",
+            "type": "Boolean!",
+            "description": "The status of the todo (completed or not)",
+            "properties": []
+          },
+          {
+            "name": "dueDate",
+            "type": "Date",
+            "description": "The due date of the todo"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "deleteTodo",
+    "canonical": "deleteTodo",
+    "description": "---\ntitle: Delete Todo\ngroup: [GraphQL, Todos]\n---\n\nDelete a todo by ID",
+    "category": "graphql",
+    "type": "graphql_mutation",
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "graphql",
+                    "language": "graphql",
+                    "code": "mutation deleteTodo ($id: ID!) {\n    deleteTodo (id: $id)\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "properties": []
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": []
+      }
+    ]
+  }
+]
+

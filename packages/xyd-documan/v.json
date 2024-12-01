@@ -1,0 +1,112 @@
+[
+  {
+    "group": "Getting Started",
+    "pages": [
+      "docs/get-started/overview",
+      "docs/get-started/quickstart",
+      "docs/get-started/concepts",
+      "docs/get-started/changelog",
+      "docs/get-started/terms-and-policies"
+    ]
+  },
+  {
+    "group": "Analytics",
+    "pages": [
+      "docs/analytics/overview",
+      "docs/analytics/learn-tour",
+      "docs/analytics/session-replay"
+    ]
+  },
+  {
+    "group": "Data Import",
+    "pages": [
+      "docs/data-import/integrations"
+    ]
+  },
+  {
+    "group": "Data Export",
+    "pages": [
+      "docs/data-export/export-methods",
+      "docs/data-export/data-flow"
+    ]
+  },
+  {
+    "group": "API Reference",
+    "pages": [
+      "api-reference/introduction",
+      "api-reference/authentication",
+      "api-reference/making-requests"
+    ]
+  },
+  {
+    "group": "Endpoints",
+    "pages": [
+      {
+        "group": "Websites",
+        "pages": [
+          "api-reference/websites",
+          "api-reference/websiteCreate",
+          "api-reference/websiteDelete",
+          "api-reference/websiteUpdate",
+          "api-reference/websiteUpdateTrustedDomains",
+          "api-reference/websiteUpdateNetworkAllowList",
+          "api-reference/websiteUpdateRecordingElements",
+          "api-reference/websiteUpdateRecordingRules"
+        ]
+      },
+      {
+        "group": "Alerts",
+        "pages": [
+          "api-reference/alerts",
+          "api-reference/alertCreate",
+          "api-reference/alertUpdate",
+          "api-reference/alertToggle",
+          "api-reference/alertDelete"
+        ]
+      },
+      {
+        "group": "Webhooks",
+        "pages": [
+          "api-reference/webhooks",
+          "api-reference/webhookSecret",
+          "api-reference/webhookCreate",
+          "api-reference/webhookUpdate",
+          "api-reference/webhookToggle",
+          "api-reference/webhookDelete"
+        ]
+      },
+      {
+        "group": "Funnels",
+        "pages": [
+          "api-reference/funnels",
+          "api-reference/funnelCreate",
+          "api-reference/funnelDelete",
+          "api-reference/funnelUpdate",
+          "api-reference/funnelSetFavourite",
+          "api-reference/funnelCompute"
+        ]
+      },
+      {
+        "group": "Metrics",
+        "pages": [
+          "api-reference/metrics",
+          "api-reference/metricCreate",
+          "api-reference/metricCompute",
+          "api-reference/metricUpdate",
+          "api-reference/metricDelete",
+          "api-reference/metricSetFavourite"
+        ]
+      },
+      {
+        "group": "Dashboards",
+        "pages": [
+          "api-reference/dashboards",
+          "api-reference/dashboardCreate",
+          "api-reference/dashboardUpdate",
+          "api-reference/dashboardDelete",
+          "api-reference/dashboardSetFavourite"
+        ]
+      }
+    ]
+  }
+]

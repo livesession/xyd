@@ -1,0 +1,124 @@
+openapi: 3.0.0
+info:
+  title: TODO API
+  version: 1.0.0
+  description: A simple API to manage TODO items.
+
+paths:
+  /todos:
+    get:
+      summary: Get all TODO items
+      description: "Returns a list of all TODO items."
+      responses:
+        '200':
+          description: A list of TODO items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+    post:
+      summary: Create a new TODO item
+      description: "Creates a new TODO item."
+      requestBody:
+        description: TODO item to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoItem'
+      responses:
+        '201':
+          description: TODO item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+
+  /todos/{id}:
+    get:
+      summary: Get a TODO item by ID
+      description: "Returns a single TODO item."
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: TODO item found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+        '404':
+          description: TODO item not found
+
+    put:
+      summary: Update a TODO item by ID
+      description: "Updates a single TODO item."
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updated TODO item
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoItem'
+      responses:
+        '200':
+          description: TODO item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+        '404':
+          description: TODO item not found
+
+    delete:
+      summary: Delete a TODO item by ID
+      description: "Deletes a single TODO item."
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: TODO item deleted
+        '404':
+          description: TODO item not found
+
+components:
+  schemas:
+    TodoList:
+      type: array
+      items:
+        $ref: '#/components/schemas/TodoItem'
+
+    TodoItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the TODO item
+        title:
+          type: string
+          description: The title of the task
+        completed:
+          type: boolean
+          description: Whether the task is completed
+        dueDate:
+          type: string
+          format: date-time
+          description: When the task is due
+      required:
+        - id
+        - title
+        - completed

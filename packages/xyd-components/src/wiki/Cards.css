@@ -1,0 +1,32 @@
+.xyd-cards {
+    grid-template-columns: repeat(
+    auto-fill,
+    minmax(max(250px, calc((100% - 1rem * 2) / var(--rows))), 1fr)
+  );
+}
+
+.xyd-card img {
+    user-select: none;
+}
+
+.xyd-card:hover svg {
+    color: currentColor;
+}
+
+.xyd-card svg {
+    width: 1.5rem;
+    color: #00000033;
+    transition: color 0.3s ease;
+}
+
+.xyd-card p {
+    margin-top: 0.5rem;
+}
+
+.dark .xyd-card svg {
+    color: #ffffff66;
+}
+
+.dark .xyd-card:hover svg {
+    color: currentColor;
+}

@@ -1,0 +1,33 @@
+{
+  "private": true,
+  "name": "@xyd/monorepo",
+  "engines": {
+    "pnpm": ">=9",
+    "node": ">=20.17.0"
+  },
+  "packageManager": "pnpm@9.10.0",
+  "scripts": {
+    "build": "pnpm run --filter=\"./packages/**/*\" build",
+    "watch": "pnpm build && pnpm run --filter=\"./packages/**/*\" --parallel build --watch",
+    "build_old": "pnpm -r run build",
+    "build:gql": "pnpm run --filter=\"./packages/xyd-gql\" build",
+    "build:uniform": "pnpm run --filter=\"./packages/xyd-uniform\" build",
+    "build:atlas-storybook": "pnpm run --filter=\"./packages/xyd-atlas\" build-storybook",
+    "watch_old": "pnpm -r watch",
+    "clean": "./clear.sh",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.3",
+    "@types/node": "20.9.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "rimraf": "^3.0.2",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  },
+  "pre-commit": "lint-staged",
+  "lint-staged": {
+    "*.{js,ts,cjs,mjs,md,json,jsonc}": "biome ci --no-errors-on-unmatched"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "private": true,
+  "name": "@xyd/components",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    "./index.css": "./dist/index.css",
+    "./wiki.css": "./dist/wiki.css",
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./wiki": {
+      "require": "./dist/wiki.js",
+      "import": "./dist/wiki.mjs"
+    },
+    "./content": {
+      "require": "./dist/content.js",
+      "import": "./dist/content.mjs"
+    }
+  },
+  "scripts": {
+    "clean": "rimraf build",
+    "prebuild": "pnpm clean",
+    "build": "tsup",
+    "watch": "tsup --watch"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.0",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-menu": "^2.1.2",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.447.0",
+    "react": "^18.3.1",
+    "react-syntax-highlighter": "^15.5.0",
+    "tailwind-merge": "^2.5.3",
+    "tailwind-variants": "^0.2.1",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.11",
+    "tsup": "^8.3.0"
+  }
+}

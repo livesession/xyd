@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "name": "@xyd/gql",
+  "version": "0.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf build",
+    "prebuild": "pnpm clean",
+    "build": "tsup",
+    "build:examples": "tsup --config tsup.examples-config.ts"
+  },
+  "dependencies": {
+    "@xyd/uniform": "workspace:*",
+    "@xyd/core": "workspace:*",
+    "@graphql-markdown/core": "^1.12.0",
+    "@graphql-markdown/graphql": "^1.1.4",
+    "@graphql-markdown/types": "^1.4.0",
+    "graphql-config": "^5.1.2",
+    "gray-matter": "^4.0.3",
+    "json-to-graphql-query": "^2.3.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0"
+  }
+}
