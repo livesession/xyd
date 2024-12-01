@@ -66,7 +66,7 @@ function $Navbar({label, subtitle}: { label: string, subtitle: string }) {
             <span className={$navbar.container}>
                 <span className={$navbar.label}>
                    {label.toUpperCase()}
-                </span>&nbsp;
+                </span>
                 <span>
                     {subtitle}
                 </span>

@@ -180,7 +180,7 @@ const LazyAtlasMDX = (id: string) => lazy(async () => {
                 const Content = getMDXComponent(code)
                 const content = Content ? parse(Content) : null
 
-                references.push(...content.references as [])
+                references.push(...(content?.references || []) as [])
             } catch (e) {
                 console.error(e)
             }

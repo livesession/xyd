@@ -34,7 +34,13 @@ Get a todo by ID
 ####### !!tabs
 
 ```json !code json
-{"id":"string","title":"string","description":"string","completed":true,"dueDate":"2019-08-24"}
+{
+  "id": "string",
+  "title": "string",
+  "description": "string",
+  "completed": true,
+  "dueDate": "2019-08-24"
+}
 ```
 
 ### !!definitions

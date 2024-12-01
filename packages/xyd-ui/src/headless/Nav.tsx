@@ -45,7 +45,7 @@ styled.item = tv({
     },
     variants: {
         active: {
-            true: "subpixel-antialiased font-bold",
+            true: "subpixel-antialiased font-bold", // TODO: some issues with hydration?
         },
     },
 })
@@ -87,7 +87,8 @@ export function HNavItem(props: HNavItemProps) {
         className={base({
             active: props.active && !props.newWindow
         })}
-        newWindow={props.newWindow} aria-current={!props.newWindow && props.active}
+        newWindow={props.newWindow}
+        aria-current={!props.newWindow && props.active}
     >
         <span className={title1()}>{props.children}</span>
         <span className={title2()}>{props.children}</span>

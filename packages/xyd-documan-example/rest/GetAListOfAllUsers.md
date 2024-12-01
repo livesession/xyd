@@ -34,7 +34,22 @@ Get a list of all users
 ####### !!tabs
 
 ```json !code json
-[{"id":"string","name":"string","email":"string","todos":[{"id":"string","title":"string","description":"string","completed":true,"dueDate":"2019-08-24"}]}]
+[
+  {
+    "id": "string",
+    "name": "string",
+    "email": "string",
+    "todos": [
+      {
+        "id": "string",
+        "title": "string",
+        "description": "string",
+        "completed": true,
+        "dueDate": "2019-08-24"
+      }
+    ]
+  }
+]
 ```
 
 ### !!definitions

@@ -24,6 +24,8 @@ export const $navbar = {
     `,
     label: css`
         color: #6e6e80;
+        
+        margin-right: 4px;
     `,
 }
 

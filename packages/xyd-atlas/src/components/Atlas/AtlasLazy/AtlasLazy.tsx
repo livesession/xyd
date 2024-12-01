@@ -21,6 +21,8 @@ export function AtlasLazy(props: AtlasLazyProps) {
     const targetRef = useRef(null);
     const targetRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+    const startupLocation = useRef(window.location.pathname);
+
     const [, setPosition] = useScrollRestoration();
 
     // Scroll to the 30th component on mount
@@ -47,7 +49,9 @@ export function AtlasLazy(props: AtlasLazyProps) {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const refSlug = entry.target.getAttribute("data-slug");
-                        window.history.pushState(null, "", `${refSlug}`);
+                        if (startupLocation?.current && window.location.pathname.startsWith(startupLocation?.current)) {
+                            window.history.pushState(null, "", `${refSlug}`);
+                        }
                     }
                 });
             },
@@ -61,7 +65,7 @@ export function AtlasLazy(props: AtlasLazyProps) {
         return () => {
             observer.disconnect();
         };
-    }, [props.slug]);
+    }, []);
 
     useEffect(() => {
         setPosition()

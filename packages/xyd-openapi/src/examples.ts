@@ -73,7 +73,7 @@ export function oapExamples(
                     tabs: [{
                         title: "json",
                         language: "json",
-                        code: JSON.stringify(fakeData) || "",
+                        code: JSON.stringify(fakeData, null, 2) || "",
                     }]
                 }
             })

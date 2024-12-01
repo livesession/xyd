@@ -296,9 +296,8 @@ export function HFolder(props: HFolderProps) {
     const {container, rightIcon, rightIconPath, collapse} = styled.folder()
     const {link} = styled.file()
 
-    // TODO: <li> is not implemented yet
     return (
-        <li>
+        <ul>
             <ButtonOrAnchor
                 href={props.href}
                 className={container({
@@ -315,7 +314,7 @@ export function HFolder(props: HFolderProps) {
                     {props.children}
                 </div>
             </HCollapse>
-        </li>
+        </ul>
     )
 }
 
