@@ -3,7 +3,7 @@ import Oas from "oas";
 // @ts-ignore
 import {Operation} from 'oas/operation'; // TODO: fix ts
 import oasToSnippet from "@readme/oas-to-snippet";
-import OpenAPISampler from "openapi-sampler";
+import * as OpenAPISampler from "openapi-sampler";
 import type {JSONSchema7} from "json-schema";
 
 import {ExampleGroup, Example} from "@xyd/uniform";
@@ -40,7 +40,7 @@ export function oapExamples(
             codeblock: {
                 tabs: [{
                     title: "curl",
-                    language: "curl",
+                    language: "bash",
                     code: code || "",
                 }]
             }

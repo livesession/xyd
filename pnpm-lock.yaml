@@ -139,6 +139,21 @@ importers:
         specifier: ^8.4.5
         version: 8.4.6(prettier@2.8.8)
 
+  packages/xyd-cli:
+    dependencies:
+      '@xyd/documan':
+        specifier: workspace:*
+        version: link:../xyd-documan
+      arg:
+        specifier: ^5.0.2
+        version: 5.0.2
+      colors:
+        specifier: ^1.4.0
+        version: 1.4.0
+      semver:
+        specifier: ^7.6.3
+        version: 7.6.3
+
   packages/xyd-components:
     dependencies:
       '@headlessui/react':
@@ -272,33 +287,9 @@ importers:
       '@xyd/atlas':
         specifier: workspace:*
         version: link:../xyd-atlas
-      '@xyd/content':
-        specifier: workspace:*
-        version: link:../xyd-content
-      '@xyd/core':
-        specifier: workspace:*
-        version: link:../xyd-core
-      '@xyd/framework':
-        specifier: workspace:*
-        version: link:../xyd-framework
       '@xyd/gql':
         specifier: workspace:*
         version: link:../xyd-gql
-      '@xyd/openapi':
-        specifier: workspace:*
-        version: link:../xyd-openapi
-      '@xyd/plugin-zero':
-        specifier: workspace:*
-        version: link:../xyd-plugin-zero
-      '@xyd/theme-gusto':
-        specifier: workspace:*
-        version: link:../xyd-theme-gusto
-      '@xyd/ui':
-        specifier: workspace:*
-        version: link:../xyd-ui
-      '@xyd/uniform':
-        specifier: workspace:*
-        version: link:../xyd-uniform
       codehike:
         specifier: ^1.0.3
         version: 1.0.4
@@ -351,6 +342,30 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.3.2
         version: 4.3.4(vite@5.4.11(@types/node@22.10.1)(lightningcss@1.28.2)(terser@5.36.0))
+      '@xyd/content':
+        specifier: workspace:*
+        version: link:../xyd-content
+      '@xyd/core':
+        specifier: workspace:*
+        version: link:../xyd-core
+      '@xyd/framework':
+        specifier: workspace:*
+        version: link:../xyd-framework
+      '@xyd/openapi':
+        specifier: workspace:*
+        version: link:../xyd-openapi
+      '@xyd/plugin-zero':
+        specifier: workspace:*
+        version: link:../xyd-plugin-zero
+      '@xyd/theme-gusto':
+        specifier: workspace:*
+        version: link:../xyd-theme-gusto
+      '@xyd/ui':
+        specifier: workspace:*
+        version: link:../xyd-ui
+      '@xyd/uniform':
+        specifier: workspace:*
+        version: link:../xyd-uniform
       '@xydjs/react-router-dev':
         specifier: 7.0.0-xyd.1
         version: 7.0.0-xyd.1(@react-router/serve@7.0.0-pre.5(react-router@7.0.0-pre.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.7.2))(@types/node@22.10.1)(babel-plugin-macros@3.1.0)(lightningcss@1.28.2)(react-router@7.0.0-pre.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.36.0)(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.1)(lightningcss@1.28.2)(terser@5.36.0))
@@ -513,15 +528,24 @@ importers:
 
   packages/xyd-plugin-zero:
     dependencies:
+      '@react-router/dev':
+        specifier: 7.0.0-pre.5
+        version: 7.0.0-pre.5(@react-router/serve@7.0.0-pre.5(react-router@7.0.0-pre.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.7.2))(@types/node@22.10.1)(babel-plugin-macros@3.1.0)(lightningcss@1.28.2)(react-router@7.0.0-pre.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.36.0)(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.1)(lightningcss@1.28.2)(terser@5.36.0))
       '@react-router/node':
         specifier: 7.0.0-pre.5
         version: 7.0.0-pre.5(react-router@7.0.0-pre.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.7.2)
       '@react-router/serve':
         specifier: 7.0.0-pre.5
         version: 7.0.0-pre.5(react-router@7.0.0-pre.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.7.2)
+      '@types/react':
+        specifier: ^18.3.9
+        version: 18.3.12
       '@types/react-dom':
-        specifier: ^18.3.1
+        specifier: ^18.3.0
         version: 18.3.1
+      '@vitejs/plugin-react':
+        specifier: ^4.3.2
+        version: 4.3.4(vite@5.4.11(@types/node@22.10.1)(lightningcss@1.28.2)(terser@5.36.0))
       '@xyd/atlas':
         specifier: workspace:*
         version: link:../xyd-atlas
@@ -564,16 +588,6 @@ importers:
       react-router:
         specifier: 7.0.0-pre.5
         version: 7.0.0-pre.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-    devDependencies:
-      '@react-router/dev':
-        specifier: 7.0.0-pre.5
-        version: 7.0.0-pre.5(@react-router/serve@7.0.0-pre.5(react-router@7.0.0-pre.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.7.2))(@types/node@22.10.1)(babel-plugin-macros@3.1.0)(lightningcss@1.28.2)(react-router@7.0.0-pre.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.36.0)(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.1)(lightningcss@1.28.2)(terser@5.36.0))
-      '@types/react':
-        specifier: ^18.3.9
-        version: 18.3.12
-      '@vitejs/plugin-react':
-        specifier: ^4.3.2
-        version: 4.3.4(vite@5.4.11(@types/node@22.10.1)(lightningcss@1.28.2)(terser@5.36.0))
       tsup:
         specifier: ^8.3.0
         version: 8.3.5(jiti@2.4.1)(postcss@8.4.49)(typescript@5.7.2)(yaml@2.6.1)
@@ -3569,6 +3583,10 @@ packages:
 
   colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
+
+  colors@1.4.0:
+    resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
+    engines: {node: '>=0.1.90'}
 
   comma-separated-tokens@1.0.8:
     resolution: {integrity: sha512-GHuDRO12Sypu2cV70d1dkA2EUmXHgntrzbpvOB+Qy+49ypNfGgFQIC2fhhXbnyrJRynDCAARsT7Ou0M6hirpfw==}
@@ -9866,6 +9884,8 @@ snapshots:
   color-name@1.1.4: {}
 
   colorette@2.0.20: {}
+
+  colors@1.4.0: {}
 
   comma-separated-tokens@1.0.8: {}
 

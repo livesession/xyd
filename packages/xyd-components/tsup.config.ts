@@ -6,7 +6,7 @@ export default defineConfig({
         wiki: 'src/wiki.ts',
         content: 'src/content.ts'
     },
-    format: ['esm', 'cjs'], // Output both ESM and CJS formats
+    format: ['esm'], // Output both ESM and CJS formats
     target: 'node16', // Ensure compatibility with Node.js 16
     dts: {
         entry: {
