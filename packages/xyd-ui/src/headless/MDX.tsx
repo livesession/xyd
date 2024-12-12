@@ -2,7 +2,8 @@ import React, {Children, cloneElement, useEffect, useRef, useState} from 'react'
 import type {ComponentProps, ReactElement, ReactNode} from 'react'
 import cn from 'clsx'
 
-import {Code, Pre, Table, Td, Th, Tr} from '@xyd/components/content'
+import {Pre} from '@xyd/components/coder'
+import {Code, Table} from '@xyd/components/writer'
 
 import {
     HAnchor,
@@ -239,9 +240,9 @@ export const getComponents = () => {
             />
         ),
         p: props => <p className="mt-6 leading-7 first:mt-0" {...props} />,
-        tr: Tr,
-        th: Th,
-        td: Td,
+        tr: Table.Tr,
+        th: Table.Th,
+        td: Table.Td,
         details: Details,
         summary: Summary,
         pre: Pre,

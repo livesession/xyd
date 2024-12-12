@@ -27,8 +27,8 @@ function Tree({children}: { children: ReactNode }): ReactElement {
     return (
         <div
             className={cn(
-                'xyd-filetree mt-6 select-none text-sm text-gray-800 dark:text-gray-300',
-                'not-prose' // for xyd-theme-blog
+                'filetree mt-6 select-none text-sm text-gray-800 dark:text-gray-300',
+                'not-prose' // for theme-blog
             )}
         >
             <div className="inline-block rounded-lg border px-4 py-2 dark:border-neutral-800">
