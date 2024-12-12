@@ -5,6 +5,7 @@
     "target": "es6",
     "outDir": "./dist",
     "rootDir": "./src",
+    "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

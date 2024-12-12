@@ -1,2 +1,2 @@
-export * from "./src"
+import './src/index.css'
 

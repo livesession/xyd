@@ -6,11 +6,11 @@ import './Cards.css' // TODO: move somewhere else
 
 const classes = {
     cards: cn(
-        'xyd-cards mt-4 gap-4 grid',
-        'not-prose' // for xyd-theme-docs
+        'cards mt-4 gap-4 grid',
+        'not-prose' // for theme-docs
     ),
     card: cn(
-        'xyd-card group flex flex-col justify-start overflow-hidden rounded-lg border border-gray-200',
+        'card group flex flex-col justify-start overflow-hidden rounded-lg border border-gray-200',
         'text-current no-underline dark:shadow-none',
         'hover:shadow-gray-100 dark:hover:shadow-none shadow-gray-100',
         'active:shadow-sm active:shadow-gray-200',
