@@ -3,10 +3,10 @@ import type {Meta} from '@storybook/react';
 
 import {
     Pre
-} from "@xyd/components/coder"
+} from "@xyd/components/writer"
 
 export default {
-    title: 'Components/Coder/Pre',
+    title: 'Components/Writer/Pre',
 } as Meta;
 
 export const Default = () => {

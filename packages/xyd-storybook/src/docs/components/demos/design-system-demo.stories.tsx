@@ -2,12 +2,13 @@ import React, {useState} from 'react';
 import type {Meta} from '@storybook/react';
 
 import {
+    Callout,
+    Hr,
+    Steps,
+    Pre,
     Table,
-    Tabs,
+    UnderlineNav,
 } from '@xyd/components/writer';
-import {
-    Pre
-} from "@xyd/components/coder"
 import {getComponents} from "@xyd/ui/headless";
 
 const {
@@ -19,14 +20,10 @@ const {
     h6: H6,
 
     p: Text,
-    // pre: Pre,
 
     ul: Ul,
     ol: Ol,
     li: Li,
-
-    hr: Hr,
-
 
     details: Details,
     summary: Summary,
@@ -34,10 +31,10 @@ const {
 } = getComponents()
 
 export default {
-    title: 'Components/Writer/Demo',
+    title: 'Components/Demos/Design System',
 } as Meta;
 
-export const DesignSystem = () => {
+export const Default = () => {
     return <div style={{
         padding: "100px",
         paddingTop: "0px",
@@ -59,25 +56,25 @@ function $Hero() {
             </H4>
         </>
 
-        <$TabSwitcher/>
+        <$Nav/>
     </>
 }
 
 
-function $TabSwitcher() {
+function $Nav() {
     const [activeTab, setActiveTab] = useState("overview")
 
-    return <Tabs value={activeTab} onChange={setActiveTab}>
-        <Tabs.Item value="overview" href="#">
+    return <UnderlineNav value={activeTab} onChange={setActiveTab}>
+        <UnderlineNav.Item value="overview" href="#">
             Overview
-        </Tabs.Item>
-        <Tabs.Item value="react" href="#">
+        </UnderlineNav.Item>
+        <UnderlineNav.Item value="react" href="#">
             React
-        </Tabs.Item>
-        <Tabs.Item value="figma" href="#">
+        </UnderlineNav.Item>
+        <UnderlineNav.Item value="figma" href="#">
             Figma
-        </Tabs.Item>
-    </Tabs>
+        </UnderlineNav.Item>
+    </UnderlineNav>
 }
 
 
@@ -85,10 +82,12 @@ function $OverviewTabView() {
     return <>
         <>
             <H3>Anatomy</H3>
+            <Hr/>
         </>
 
         <>
             <H3>Usage</H3>
+            <Hr/>
 
             <Text>
                 Use the section intro to introduce a new section element in the page. The section intro uses the
@@ -110,10 +109,12 @@ function $OverviewTabView() {
 
         <>
             <H3>Options</H3>
+            <Hr/>
         </>
 
         <>
             <H3>Related components</H3>
+            <Hr/>
         </>
     </>
 }
@@ -164,6 +165,56 @@ function $ReactTabView() {
                     </Table.Td>
                 </Table.Tr>
             </Table>
+        </>
+
+        <>
+            <H3>Details</H3>
+            <Details>
+                Details content
+            </Details>
+        </>
+
+        <>
+            <H3>Summary</H3>
+            <Summary>
+                Summary content
+            </Summary>
+        </>
+
+        <>
+            <H3>List</H3>
+            <Ul>
+                <Li>Item 1</Li>
+                <Li>Item 1</Li>
+                <Li>Item 1</Li>
+            </Ul>
+            <Ol>
+                <Li>Item 1.1</Li>
+                <Li>Item 1.1</Li>
+                <Li>Item 1.1</Li>
+            </Ol>
+        </>
+
+        <>
+            <H3>Steps</H3>
+            <Steps>
+                <Steps.Item>
+                    First, you need to install the package.
+                </Steps.Item>
+                <Steps.Item>
+                    Then you need to import the component.
+                </Steps.Item>
+            </Steps>
+        </>
+
+        <>
+            <H3>Callout</H3>
+            <div style={{width: 700}}>
+                <Callout>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis id sollicitudin diam. <br/>
+                    Aliquam tincidunt quam quis ultrices gravida.In elit nisl, varius nec ligula nec.
+                </Callout>
+            </div>
         </>
     </div>
 }

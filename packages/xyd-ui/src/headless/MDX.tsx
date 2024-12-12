@@ -2,8 +2,7 @@ import React, {Children, cloneElement, useEffect, useRef, useState} from 'react'
 import type {ComponentProps, ReactElement, ReactNode} from 'react'
 import cn from 'clsx'
 
-import {Pre} from '@xyd/components/coder'
-import {Code, Table} from '@xyd/components/writer'
+import {Table, Pre} from '@xyd/components/writer'
 
 import {
     HAnchor,
@@ -246,6 +245,6 @@ export const getComponents = () => {
         details: Details,
         summary: Summary,
         pre: Pre,
-        code: Code,
+        code: <code>TODO</code>,
     }
 }

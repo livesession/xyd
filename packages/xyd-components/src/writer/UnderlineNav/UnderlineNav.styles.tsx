@@ -1,6 +1,6 @@
 import {css} from "@linaria/core"
 
-export const $tabs = {
+export const $nav = {
     host: css`
         align-items: center;
         display: flex;

@@ -2,7 +2,7 @@ import React from "react";
 import type {Meta, StoryObj} from '@storybook/react';
 import {MemoryRouter} from "react-router";
 
-import {Full} from './demo.tsx';
+import {Full} from './theme.tsx';
 
 const meta = {
     title: 'Themes/Default',
