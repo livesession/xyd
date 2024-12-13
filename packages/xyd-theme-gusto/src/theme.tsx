@@ -15,6 +15,7 @@ import type {
     FwSidebarGroupProps
 } from "@xyd/framework"
 import {LyDefault} from "@xyd/ui/layouts"
+import {Layout as ComponentLayout} from "@xyd/components/layouts"
 import {
     HNav,
 
@@ -65,30 +66,33 @@ export default function ThemeGusto(props: ThemeProps) {
     )
 
     return <App>
-        <Layout
-            navbar={<Navbar/>}
-            sidebar={<Sidebar themeSettings={props.themeSettings}/>}
-            toc={props.toc ? <FwToc/> : undefined}
-            breadcrumbs={props.breadcrumbs ? <FwBreadcrumbs/> : undefined}
-            navigation={props.navlinks ? <FwNavLinks/> : undefined}
-
-            bigArticle={props.themeSettings?.bigArticle}
-        >
-            {props.children}
-        </Layout>
+        <ComponentLayout
+            header={<Navbar/>}
+            aside={<Sidebar themeSettings={props.themeSettings}/>}
+            content={<>
+                {props.breadcrumbs ? <FwBreadcrumbs/> : undefined}
+                {/* TODO: FIX THAT */}
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "24px"
+                }}>
+                    {props.children}
+                </div>
+                {props.navlinks ? <FwNavLinks/> : undefined}
+            </>
+            }
+            contentNav={props.toc ? <FwToc/> : undefined}
+        />
     </App>
 }
 
 // TODO: finish search - and move to framework?
 function Navbar() {
     return <HNav>
-        <div className="w-full">
-            <FwNavLogo/>
-        </div>
+        <FwNavLogo/>
 
-        <div className="w-full flex justify-end">
-            <FwTopbarLinks/>
-        </div>
+        <FwTopbarLinks/>
     </HNav>
 }
 

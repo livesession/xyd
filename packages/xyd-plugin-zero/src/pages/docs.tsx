@@ -14,6 +14,12 @@ import settings from 'virtual:xyd-settings';
 // @ts-ignore  // TODO: types
 // import Theme from "virtual:xyd-theme" // TODO: for some reasons this cannot be hydrated by react-router
 import Theme from "@xyd/theme-gusto"
+import {
+    Callout,
+    Details,
+    Steps,
+    Tabs
+} from "@xyd/components/writer";
 
 interface loaderData {
     sidebarGroups: FwSidebarGroupProps[]
@@ -81,9 +87,18 @@ export function MemoMDXComponent(codeComponent: any) {
     )
 }
 
+const components = {
+    ...getComponents(),
+    Callout,
+    Details,
+    Steps,
+    Tabs,
+}
+
 export default function Slug({loaderData, ...rest}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
     const Component = MemoMDXComponent(content.component)
+
 
     return <Theme
         settings={settings}
@@ -92,6 +107,6 @@ export default function Slug({loaderData, ...rest}: { loaderData: loaderData }) 
         breadcrumbs={loaderData.breadcrumbs}
         navlinks={loaderData.navlinks}
     >
-        {Component ? <Component components={getComponents()}/> : <></>}
+        {Component ? <Component components={components}/> : <></>}
     </Theme>
 }
