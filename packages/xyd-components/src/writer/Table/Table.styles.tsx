@@ -11,11 +11,8 @@ export const $table = {
 
         border-collapse: collapse;
         border-radius: 3px;
-    `
-}
-
-export const $th = {
-    host: css`
+    `,
+    th: css`
         padding: 0.5rem 1rem;
         margin: 0;
 
@@ -23,21 +20,14 @@ export const $th = {
         border-width: 1px;
         border-color: ${colors.primary};
         background: rgba(234, 238, 242, 0.5);
-    `
-}
-
-export const $tr = {
-    host: css`
+    `,
+    tr: css`
         padding: 0;
         margin: 0;
         border-top-width: 1px;
         border-color: ${colors.primary};
-    `
-}
-
-
-export const $td = {
-    host: css`
+    `,
+    td: css`
         padding: 0.5rem 1rem;
         margin: 0;
 
@@ -45,4 +35,5 @@ export const $td = {
         border-color: ${colors.primary};
     `
 }
+
 

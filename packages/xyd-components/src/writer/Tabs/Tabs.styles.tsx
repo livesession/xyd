@@ -1,46 +1,77 @@
-import {css} from "@linaria/core"
+import {css} from "@linaria/core";
 
-export const $tabs = {
+export const $sample = {
     host: css`
+        position: relative;
+        max-width: 100%;
+    `,
+    buttons: css`
+        display: flex;
         align-items: center;
-        display: flex;
-
-        height: 42px;
-
-        background-color: #fff;
-        border-bottom: 1px solid hsl(212, 15%, calc(96% - 12% * 1));
-
-        z-index: 99;
     `,
-    ul: css`
-        display: flex;
-        gap: 10px;
+    content: css`
+        margin-top: 16px;
+    `
+}
 
-        height: 100%;
-        color: hsl(212, 15%, calc(96% - 12% * 4));
+export const $arrow = {
+    host: css`
+        padding: 8px;
+        background-color: #ffffff;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    `,
+    icon: css`
+        width: 16px;
+        height: 16px;
+    `
+}
 
-        list-style: none;
-        padding: 0;
+export const $scroller = {
+    host: css`
+        overflow-x: auto;
+        flex-grow: 1;
+    `,
+    container: css`
+        display: inline-flex;
+        gap: 4px;
+
+        border-radius: 8px;
+        background-color: #F3F4F6;
+        
+        padding: 4px;
+        margin-left: 4px;
+    `
+}
+
+export const $button = {
+    host: css`
+        padding: 0.5rem 1rem;
+
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        font-weight: 500;
         white-space: nowrap;
-    `,
-    item: css`
-        height: 100%;
 
-        &[data-state="active"] { // TODO: in the future it should not be possible
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 300ms;
 
-            a {
-                border-bottom-color: rgb(112, 81, 212);
-            }
+        color: #6B7280;
+
+        &:hover {
+            color: #111827;
+        }
+
+        &[data-state="active"] {
+            color: #111827;
+            background-color: #ffffff;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
     `,
-    itemLink: css`
-        display: inline-flex;
-        border-bottom: 3px solid transparent;
-        text-decoration: none;
-
-        height: 100%;
-        padding: 10px;
-    `,
-    itemLink$$active: css`
+    $$active: css`
+        color: #111827;
+        background-color: #ffffff;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     `
 }

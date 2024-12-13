@@ -25,6 +25,7 @@ export default [
         input: {
             index: 'index.ts',
             coder: 'coder.ts',
+            layouts: 'layouts.ts',
             writer: 'writer.ts'
         },
         output: [
@@ -49,7 +50,6 @@ export default [
                 extract: true,
                 plugins: [
                     require('postcss-import'),
-                    require('tailwindcss'),
                     require('autoprefixer')
                 ]
             }),
@@ -83,6 +83,15 @@ export default [
         input: 'coder.ts',
         output: {
             file: 'dist/coder.d.ts',
+            format: 'es',
+        },
+        plugins: [dts()],
+        external
+    },
+    {
+        input: 'layouts.ts',
+        output: {
+            file: 'dist/layouts.d.ts',
             format: 'es',
         },
         plugins: [dts()],

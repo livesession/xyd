@@ -2,12 +2,16 @@ import React, {useState} from 'react';
 import type {Meta} from '@storybook/react';
 
 import {
+    Callout,
+    Code,
+    Details,
+    Hr,
+    Pre,
+    Steps,
     Table,
     Tabs,
+    UnderlineNav,
 } from '@xyd/components/writer';
-import {
-    Pre
-} from "@xyd/components/coder"
 import {getComponents} from "@xyd/ui/headless";
 
 const {
@@ -19,22 +23,14 @@ const {
     h6: H6,
 
     p: Text,
-    // pre: Pre,
 
     ul: Ul,
     ol: Ol,
     li: Li,
-
-    hr: Hr,
-
-
-    details: Details,
-    summary: Summary,
-    code: Code2,
 } = getComponents()
 
 export default {
-    title: 'Components/Writer/Demo',
+    title: 'Themes',
 } as Meta;
 
 export const DesignSystem = () => {
@@ -59,25 +55,25 @@ function $Hero() {
             </H4>
         </>
 
-        <$TabSwitcher/>
+        <$Nav/>
     </>
 }
 
 
-function $TabSwitcher() {
+function $Nav() {
     const [activeTab, setActiveTab] = useState("overview")
 
-    return <Tabs value={activeTab} onChange={setActiveTab}>
-        <Tabs.Item value="overview" href="#">
+    return <UnderlineNav value={activeTab} onChange={setActiveTab}>
+        <UnderlineNav.Item value="overview" href="#">
             Overview
-        </Tabs.Item>
-        <Tabs.Item value="react" href="#">
+        </UnderlineNav.Item>
+        <UnderlineNav.Item value="react" href="#">
             React
-        </Tabs.Item>
-        <Tabs.Item value="figma" href="#">
+        </UnderlineNav.Item>
+        <UnderlineNav.Item value="figma" href="#">
             Figma
-        </Tabs.Item>
-    </Tabs>
+        </UnderlineNav.Item>
+    </UnderlineNav>
 }
 
 
@@ -85,10 +81,12 @@ function $OverviewTabView() {
     return <>
         <>
             <H3>Anatomy</H3>
+            <Hr/>
         </>
 
         <>
             <H3>Usage</H3>
+            <Hr/>
 
             <Text>
                 Use the section intro to introduce a new section element in the page. The section intro uses the
@@ -110,24 +108,26 @@ function $OverviewTabView() {
 
         <>
             <H3>Options</H3>
+            <Hr/>
         </>
 
         <>
             <H3>Related components</H3>
+            <Hr/>
         </>
     </>
 }
 
 function $ReactTabView() {
-    return <div style={{marginTop: 10}}>
-        <>
+    return <div style={{marginTop: 10, display: "flex", flexDirection: "column", gap: "25px"}}>
+        <div>
             <H3>Import</H3>
             <Pre>
-                {`import {Pre} from '@xyd/components/coder'`}
+                {`import {Pre} from '@xyd/components/writer'`}
             </Pre>
-        </>
+        </div>
 
-        <>
+        <div>
             <H3>Props</H3>
             <Table>
                 <Table.Th>
@@ -164,6 +164,6 @@ function $ReactTabView() {
                     </Table.Td>
                 </Table.Tr>
             </Table>
-        </>
+        </div>
     </div>
 }

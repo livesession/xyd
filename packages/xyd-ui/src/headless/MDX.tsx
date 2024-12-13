@@ -2,8 +2,14 @@ import React, {Children, cloneElement, useEffect, useRef, useState} from 'react'
 import type {ComponentProps, ReactElement, ReactNode} from 'react'
 import cn from 'clsx'
 
-import {Pre} from '@xyd/components/coder'
-import {Code, Table} from '@xyd/components/writer'
+import {
+    Blockquote,
+    Code,
+    Details,
+    Hr,
+    Table,
+} from '@xyd/components/writer'
+import {CodeSample} from "@xyd/components/coder";
 
 import {
     HAnchor,
@@ -60,11 +66,11 @@ function HeadingLink({
                     : cn(
                         'font-normal tracking-tight text-[#1c1e1e] dark:text-slate-100',
                         {
-                            h2: 'mt-4 pb-3 text-3xl',
-                            h3: 'mt-4 pb-3 text-2xl',
-                            h4: 'mt-4 pb-3 text-xl',
-                            h5: 'mt-4 pb-3 text-lg',
-                            h6: 'mt-4 pb-3 text-base'
+                            h2: 'mt-4-x pb-3-x text-3xl',
+                            h3: 'mt-4-x pb-3-x text-2xl',
+                            h4: 'mt-4-x pb-3-x text-xl',
+                            h5: 'mt-4-x pb-3-x text-lg',
+                            h6: 'mt-4-x pb-3-x text-base'
                         }[Tag]
                     )
             }
@@ -81,93 +87,6 @@ function HeadingLink({
                 />
             )}
         </Tag>
-    )
-}
-
-const findSummary = (children: ReactNode) => {
-    let summary: ReactNode = null
-    const restChildren: ReactNode[] = []
-
-    Children.forEach(children, (child, index) => {
-        if (child && (child as ReactElement).type === Summary) {
-            summary ||= child
-            return
-        }
-
-        let c = child
-        if (
-            !summary &&
-            child &&
-            typeof child === 'object' &&
-            (child as ReactElement).type !== Details &&
-            'props' in child &&
-            child.props
-        ) {
-            const result = findSummary(child.props.children)
-            summary = result[0]
-            c = cloneElement(child, {
-                ...child.props,
-                children: result[1]?.length ? result[1] : undefined,
-                key: index
-            })
-        }
-        restChildren.push(c)
-    })
-
-    return [summary, restChildren]
-}
-
-const Details = ({
-                     children,
-                     open,
-                     ...props
-                 }: ComponentProps<'details'>): ReactElement => {
-    const [openState, setOpen] = useState(!!open)
-    const [summary, restChildren] = findSummary(children)
-
-    // To animate the close animation we have to delay the DOM node state here.
-    const [delayedOpenState, setDelayedOpenState] = useState(openState)
-    useEffect(() => {
-        if (openState) {
-            setDelayedOpenState(true)
-        } else {
-            const timeout = setTimeout(() => setDelayedOpenState(openState), 500)
-            return () => clearTimeout(timeout)
-        }
-    }, [openState])
-
-    return (
-        <details
-            className="my-4 rounded border border-gray-200 bg-white p-2 shadow-sm first:mt-0 dark:border-neutral-800 dark:bg-neutral-900"
-            {...props}
-            open={delayedOpenState}
-            {...(openState && {'data-expanded': true})}
-        >
-            {/*<DetailsProvider value={setOpen}>{summary}</DetailsProvider>*/}
-            {summary}
-            <HCollapse isOpen={openState}>{restChildren}</HCollapse>
-        </details>
-    )
-}
-
-const Summary = (props: ComponentProps<'summary'>): ReactElement => {
-    // const setOpen = useDetails()
-    return (
-        <summary
-            className={cn(
-                'flex items-center cursor-pointer list-none p-1 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800',
-                "before:mr-1 before:inline-block before:transition-transform before:content-[''] dark:before:invert before:shrink-0",
-                'rtl:before:rotate-180 [[data-expanded]>&]:before:rotate-90'
-            )}
-            {...props}
-            // onClick={e => {
-            //     e.preventDefault()
-            //     setOpen(v => !v)
-            // }}
-            onClick={() => {
-                alert("Summary")
-            }}
-        />
     )
 }
 
@@ -195,7 +114,7 @@ export const getComponents = () => {
     return {
         h1: props => (
             <h1
-                className="mt-2 text-4xl font-bold tracking-tight text-[#1c1e1e] dark:text-slate-100"
+                className="mt-2-x text-4xl font-bold tracking-tight text-[#1c1e1e] dark:text-slate-100"
                 {...props}
             />
         ),
@@ -204,48 +123,48 @@ export const getComponents = () => {
         h4: props => <HeadingLink tag="h4" context={context} {...props} />,
         h5: props => <HeadingLink tag="h5" context={context} {...props} />,
         h6: props => <HeadingLink tag="h6" context={context} {...props} />,
+        p: props => <p className="mt-6-x leading-7 first:mt-0" {...props} />,
+
         ul: props => (
             <ul
-                className="mt-6 list-disc first:mt-0 ltr:ml-6 rtl:mr-6"
+                className="mt-6-x list-disc first:mt-0 ltr:ml-6 rtl:mr-6"
                 {...props}
             />
         ),
         ol: props => (
             <ol
-                className="mt-6 list-decimal first:mt-0 ltr:ml-6 rtl:mr-6"
+                className="mt-6-x list-decimal first:mt-0 ltr:ml-6 rtl:mr-6"
                 {...props}
             />
         ),
         li: props => <li className="my-2" {...props} />,
-        blockquote: props => (
-            <blockquote
-                className={cn(
-                    'mt-6 border-gray-300 italic text-gray-700 dark:border-gray-700 dark:text-gray-400',
-                    'first:mt-0 ltr:border-l-2 ltr:pl-6 rtl:border-r-2 rtl:pr-6'
-                )}
-                {...props}
-            />
-        ),
-        hr: props => (
-            <hr
-                className="my-8 border-neutral-200/70 contrast-more:border-neutral-400 dark:border-primary-100/10 contrast-more:dark:border-neutral-400"
-                {...props}
-            />
-        ),
-        a: Link,
-        table: props => (
-            <Table
-                className="xyd-scrollbar mt-6 p-0 first:mt-0"
-                {...props}
-            />
-        ),
-        p: props => <p className="mt-6 leading-7 first:mt-0" {...props} />,
+
+        table: Table,
         tr: Table.Tr,
         th: Table.Th,
         td: Table.Td,
-        details: Details,
-        summary: Summary,
-        pre: Pre,
+
+
         code: Code,
+        pre: props => {
+            const lang = (props?.children?.props?.className || "").replace("language-", "") // TODO: better solution
+
+            return <CodeSample
+                name={lang}
+                description={props?.children?.props?.meta}
+                codeblocks={[
+                    {
+                        value: props?.children?.props?.children,
+                        lang: lang,
+                        meta: lang,
+                    }
+                ]}
+            />
+        },
+        details: Details,
+        blockquote: Blockquote,
+
+        hr: Hr,
+        a: Link,
     }
 }

@@ -19,8 +19,10 @@ styled.aside = tv({
             'print:hidden',
         ),
         scrollbar: cn(
+            'h-[calc(100vh-54px))]',
             'overflow-y-auto overflow-x-hidden',
-            'p-4 grow md:h-[calc(100vh-var(--xyd-navbar-height)-var(--xyd-menu-height))]',
+            // 'p-4 grow md:h-[calc(100vh-var(--xyd-navbar-height)-var(--xyd-menu-height))]',
+            'p-4 grow md:h-[calc(100vh-54px)]',
             'bg-[#f9f9f9] rounded-lg'
         )
     },
@@ -196,6 +198,14 @@ export function HAside(props: HAsideProps) {
     //         }
     //     }
     // }, [menu])
+
+    // TODO: it's temporary
+    return <div
+        className={scrollbar()}
+        ref={sidebarRef}
+    >
+        {props.children}
+    </div>
 
     return <aside className={aside({
         class: props.className,
