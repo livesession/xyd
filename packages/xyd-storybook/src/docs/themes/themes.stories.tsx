@@ -1,65 +1,45 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from 'react';
+import type {Meta} from '@storybook/react';
+import {MemoryRouter} from "react-router";
 
 import {
-    HNav,
-    HNavItem,
-    HNavLogo,
-
-    HToc,
-    HTocItem,
-    HTocMeta,
-
-    HSeparator,
+    Layout,
+} from '@xyd/components/layouts';
+import {
+    getComponents,
     HAside,
-    HMenu,
+    HBreadcrumb,
     HFile,
     HFolder,
-
+    HMenu,
+    HNav,
+    HNavItem,
     HNavLinks,
-    HBreadcrumb,
-
-    getComponents,
+    HNavLogo,
+    HSeparator,
+    HToc,
+    HTocItem,
 } from "@xyd/ui/headless";
-import {
-    LyDefault
-} from "@xyd/ui/layouts";
 
+import {LiveSessionPlatformLogo} from "./logo.tsx";
 import Content from "../../content/hello-world.mdx";
-import {LiveSessionPlatformLogo} from "./logo";
 
-const Layout = LyDefault((props) => <>{props.children}</>)
+export default {
+    title: 'Themes/Default',
+    decorators: [
+        (Story) => <MemoryRouter>
+            <Story/>
+        </MemoryRouter>
+    ]
+} as Meta;
 
-export function Full() {
+export const Default = () => {
     return <Layout
-        navbar={<DemoNavbar/>}
-        sidebar={<DemoSidebar/>}
-        navigation={<HNavLinks
-            prev={{
-                title: "Prev",
-                href: "/prev"
-            }}
-            next={{
-                title: "Next",
-                href: "/next"
-            }}
-        />}
-        toc={<DemoTOC/>}
-        breadcrumbs={<HBreadcrumb
-            items={[
-                {
-                    title: "APIs",
-                    href: "/apis"
-                },
-                {
-                    title: "GraphQL API",
-                    href: "/apis/graphql"
-                }
-            ]}
-        />}
-    >
-        {/* @ts-ignore */}
-        <Content components={getComponents()}/>
-    </Layout>
+        header={<DemoNavbar/>}
+        aside={<DemoSidebar/>}
+        content={<DemoContent/>}
+        contentNav={<DemoTOC/>}
+    />
 }
 
 function DemoNavbar() {
@@ -118,10 +98,45 @@ function DemoSidebar() {
     </HAside>
 }
 
+function DemoContent() {
+    return <>
+        <HBreadcrumb
+            items={[
+                {
+                    title: "APIs",
+                    href: "/apis"
+                },
+                {
+                    title: "GraphQL API",
+                    href: "/apis/graphql"
+                }
+            ]}
+        />
+
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px"
+        }}>
+            <Content components={getComponents()}/>
+        </div>
+
+        <HNavLinks
+            prev={{
+                title: "Prev",
+                href: "/prev"
+            }}
+            next={{
+                title: "Next",
+                href: "/next"
+            }}
+        />
+    </>
+}
+
 function DemoTOC() {
     return <HToc
         title="GitHub Flavored Markdown"
-        meta={<HTocMeta>Supa meta</HTocMeta>}
     >
         <>
             <HTocItem depth={3} href={"#abc"}>
@@ -142,5 +157,4 @@ function DemoTOC() {
         </>
     </HToc>
 }
-
 

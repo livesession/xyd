@@ -15,6 +15,9 @@
     "./coder": {
       "import": "./dist/coder.js"
     },
+    "./layouts": {
+      "import": "./dist/layouts.js"
+    },
     "./writer": {
       "import": "./dist/writer.js"
     }

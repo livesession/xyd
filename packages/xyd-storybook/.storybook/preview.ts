@@ -10,9 +10,10 @@ const preview: Preview = {
             storySort: {
                 order: [
                     'Atlas',
-                    'Components', ['Writer', 'Coder', 'Demos'],
+                    'Components', ['Writer', 'Coder'],
                     'UI',
-                    'Themes'
+                    'Layouts',
+                    'Themes', ['Default', 'Design System'],
                 ], // TODO: nested sorting
             },
         },

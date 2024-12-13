@@ -31,6 +31,8 @@ export const $icon = {
         align-self: flex-start;
 
         color: #6e6e80;
+        font-size: 20px;
+        margin-top: 2px;
     `
 }
 

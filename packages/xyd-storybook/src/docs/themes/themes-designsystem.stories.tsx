@@ -3,10 +3,13 @@ import type {Meta} from '@storybook/react';
 
 import {
     Callout,
+    Code,
+    Details,
     Hr,
-    Steps,
     Pre,
+    Steps,
     Table,
+    Tabs,
     UnderlineNav,
 } from '@xyd/components/writer';
 import {getComponents} from "@xyd/ui/headless";
@@ -24,17 +27,13 @@ const {
     ul: Ul,
     ol: Ol,
     li: Li,
-
-    details: Details,
-    summary: Summary,
-    code: Code2,
 } = getComponents()
 
 export default {
-    title: 'Components/Demos/Design System',
+    title: 'Themes',
 } as Meta;
 
-export const Default = () => {
+export const DesignSystem = () => {
     return <div style={{
         padding: "100px",
         paddingTop: "0px",
@@ -120,15 +119,15 @@ function $OverviewTabView() {
 }
 
 function $ReactTabView() {
-    return <div style={{marginTop: 10}}>
-        <>
+    return <div style={{marginTop: 10, display: "flex", flexDirection: "column", gap: "25px"}}>
+        <div>
             <H3>Import</H3>
             <Pre>
-                {`import {Pre} from '@xyd/components/coder'`}
+                {`import {Pre} from '@xyd/components/writer'`}
             </Pre>
-        </>
+        </div>
 
-        <>
+        <div>
             <H3>Props</H3>
             <Table>
                 <Table.Th>
@@ -165,56 +164,6 @@ function $ReactTabView() {
                     </Table.Td>
                 </Table.Tr>
             </Table>
-        </>
-
-        <>
-            <H3>Details</H3>
-            <Details>
-                Details content
-            </Details>
-        </>
-
-        <>
-            <H3>Summary</H3>
-            <Summary>
-                Summary content
-            </Summary>
-        </>
-
-        <>
-            <H3>List</H3>
-            <Ul>
-                <Li>Item 1</Li>
-                <Li>Item 1</Li>
-                <Li>Item 1</Li>
-            </Ul>
-            <Ol>
-                <Li>Item 1.1</Li>
-                <Li>Item 1.1</Li>
-                <Li>Item 1.1</Li>
-            </Ol>
-        </>
-
-        <>
-            <H3>Steps</H3>
-            <Steps>
-                <Steps.Item>
-                    First, you need to install the package.
-                </Steps.Item>
-                <Steps.Item>
-                    Then you need to import the component.
-                </Steps.Item>
-            </Steps>
-        </>
-
-        <>
-            <H3>Callout</H3>
-            <div style={{width: 700}}>
-                <Callout>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis id sollicitudin diam. <br/>
-                    Aliquam tincidunt quam quis ultrices gravida.In elit nisl, varius nec ligula nec.
-                </Callout>
-            </div>
-        </>
+        </div>
     </div>
 }

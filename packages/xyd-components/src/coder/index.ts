@@ -1,1 +1,3 @@
-export const todo = "todo"
+export {CodeSample} from "./CodeSample";
+
+export type {CodeSampleProps} from "./CodeSample";
