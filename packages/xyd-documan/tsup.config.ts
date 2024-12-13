@@ -68,7 +68,7 @@ const deps = [
     "@xyd/openapi",
     "@xyd/uniform",
     "@xyd/theme-gusto",
-    "@xyd/plugin-zero", // TODO: because plugin-zero has react-router dependency
+    // "@xyd/plugin-zero", // TODO: because plugin-zero has react-router dependency
 ].indexOf(dep) === -1)
 
 console.log(deps)
