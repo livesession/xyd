@@ -112,6 +112,6 @@ export const $article = {
         margin-top: 0;
         margin-left: 50px;
         padding-left: 16px;
-        flex: none
+        flex: none;
     `
 }

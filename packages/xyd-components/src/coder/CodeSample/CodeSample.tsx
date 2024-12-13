@@ -64,9 +64,6 @@ export function CodeSample(props: CodeSampleProps) {
         return <div>Loading</div>;
     }
 
-
-    console.log(props, 333)
-
     return (
         <TabsPrimitive.Root
             className={$sample.host}

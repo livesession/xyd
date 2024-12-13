@@ -26,7 +26,7 @@ export function Layout(props: LayoutProps) {
                                 <section className={$article.content}>
                                     {props.content}
                                 </section>
-                                <nav lang={$article.nav}>
+                                <nav className={$article.nav}>
                                     {props.contentNav}
                                 </nav>
                             </article>

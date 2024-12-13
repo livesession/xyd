@@ -6,6 +6,7 @@ import {
 } from "react-router";
 
 import "@xyd/ui/index.css";
+import "@xyd/components/index.css"
 
 import "./tailwind.css";
 
