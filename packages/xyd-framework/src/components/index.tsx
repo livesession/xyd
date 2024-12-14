@@ -1,17 +1,18 @@
 import React, {isValidElement, useContext} from "react";
 import {
-    HNavItem,
-    HNavLogo,
+    UINavItem,
+    UINavLogo,
 
-    HToc,
-    HTocItem,
-    HTocMeta,
+    UIToc,
+    UITocItem,
+    UITocMeta,
 
-    HBreadcrumb,
+    UIBreadcrumb,
 
-    HNavLinks
-} from "@xyd/ui/headless";
-import {ITOC} from "@xyd/ui";
+    UINavLinks
+} from "@xyd/ui";
+import {Toc} from "@xyd/ui2"
+import type {ITOC} from "@xyd/ui";
 
 import {useBreadcrumbs, useNavLinks, useSettings, useSidebarGroups, useToC} from "../contexts";
 import {FwSidebarGroup, FwSidebarGroupContext} from "./sidebar";
@@ -41,9 +42,9 @@ function FwNavLogo() {
 
     const logo = isValidElement(settings?.styling?.logo) ? settings?.styling?.logo : manualHydration(settings?.styling?.logo)
 
-    return <HNavLogo>
+    return <UINavLogo>
         {logo}
-    </HNavLogo>
+    </UINavLogo>
 }
 
 function isActive(l: string) {
@@ -62,13 +63,13 @@ function FwTopbarLinks() {
     const uiContext = useContext(UIContext)
 
     return settings?.structure?.topbarLinks?.map((item, index) => {
-        return <HNavItem
+        return <UINavItem
             key={index + (item.url || "") + item.name}
             href={item?.url || ""}
             active={isActive(item.url || "")}
         >
             {item.name}
-        </HNavItem>
+        </UINavItem>
     })
 }
 
@@ -99,7 +100,7 @@ type FlatTOC = {
 }
 
 // TODO: finish
-function FwToc() {
+function FwTocOld() {
     const toc = useToC()
 
     if (!toc) {
@@ -126,30 +127,69 @@ function FwToc() {
     flatten(toc)
 
     // TODO: title + meta
-    return <HToc
+    return <UIToc
         title=""
         meta={<></>}
     >
         <>
             {
-                flatToc.map((item, index) => <HTocItem
+                flatToc.map((item, index) => <UITocItem
                     key={index + item.value + item.depth}
                     // @ts-ignore !!! TODO !!!
                     depth={item.depth}
                     href=""
                 >
                     {item.value}
-                </HTocItem>)
+                </UITocItem>)
             }
         </>
-    </HToc>
+    </UIToc>
+}
+
+function FwToc() {
+    const toc = useToC()
+
+    if (!toc) {
+        return null
+    }
+
+    const flatToc: FlatTOC[] = []
+
+    const flatten = (toc?: ITOC[]) => {
+        if (!toc) {
+            return
+        }
+
+        toc.forEach(item => {
+            flatToc.push({
+                depth: item.depth,
+                value: item.value
+            })
+
+            flatten(item.children)
+        })
+    }
+
+    flatten(toc)
+
+    return null
+    return <Toc>
+        {
+            flatToc.map((item, index) => <Toc.Item
+                key={index + item.value + item.depth}
+                value={item.value}
+            >
+                {item.value}
+            </Toc.Item>)
+        }
+    </Toc>
 }
 
 // TODO: finish
 function FwBreadcrumbs() {
     const breadcrumbs = useBreadcrumbs()
 
-    return <HBreadcrumb
+    return <UIBreadcrumb
         items={breadcrumbs || []}
     />
 }
@@ -159,7 +199,7 @@ function FwNavLinks() {
     const navlinks = useNavLinks()
 
     if (navlinks?.prev || navlinks?.next) {
-        return <HNavLinks
+        return <UINavLinks
             prev={navlinks.prev}
             next={navlinks.next}
         />

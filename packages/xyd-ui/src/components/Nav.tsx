@@ -2,12 +2,13 @@ import React from "react"
 import cn from "clsx";
 import {tv} from 'tailwind-variants';
 
-import {HAnchor} from "./Anchor";
+import {UIAnchor} from "./Anchor";
 
 // TODO: NavbarMenu
 
 // TODO: its concept only?, HOW TO MODYFIKY EXPORT STYLED + WHAT IF MANY EXPORTS STYLED
-function styled() {}
+function styled() {
+}
 
 styled.nav = tv({
     slots: {
@@ -55,12 +56,12 @@ styled.logo = tv({
     base: "flex items-center mr-auto ltr:mr-auto rtl:ml-auto",
 })
 
-export interface HNavProps {
+export interface UINavProps {
     className?: string;
     children?: React.ReactNode;
 }
 
-export function HNav(props: HNavProps) {
+export function UINav(props: UINavProps) {
     const {container, shadow, base} = styled.nav()
 
     return <div className={container()}>
@@ -79,10 +80,10 @@ export interface HNavItemProps {
     active?: boolean
 }
 
-export function HNavItem(props: HNavItemProps) {
+export function UINavItem(props: HNavItemProps) {
     const {base, title1, title2} = styled.item()
 
-    return <HAnchor
+    return <UIAnchor
         href={props.href}
         className={base({
             active: props.active && !props.newWindow
@@ -92,16 +93,16 @@ export function HNavItem(props: HNavItemProps) {
     >
         <span className={title1()}>{props.children}</span>
         <span className={title2()}>{props.children}</span>
-    </HAnchor>
+    </UIAnchor>
 }
 
-export interface HNavLogoProps {
+export interface UINavLogoProps {
     children: React.ReactNode;
 
     className?: string;
 }
 
-export function HNavLogo(props: HNavLogoProps) {
+export function UINavLogo(props: UINavLogoProps) {
     return <div className={styled.logo({class: props.className})}>
         {props.children}
     </div>

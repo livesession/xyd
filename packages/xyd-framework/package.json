@@ -27,6 +27,7 @@
   "author": "",
   "dependencies": {
     "@xyd/ui": "workspace:*",
+    "@xyd/ui2": "workspace:*",
     "@xyd/core": "workspace:*",
     "@xyd/content": "workspace:*",
     "isbot": "^4.4.0",

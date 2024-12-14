@@ -12,7 +12,7 @@ import {
     Tabs,
     UnderlineNav,
 } from '@xyd/components/writer';
-import {getComponents} from "@xyd/ui/headless";
+import {getComponents} from "@xyd/ui";
 
 const {
     h1: H1,

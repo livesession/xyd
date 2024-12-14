@@ -2,8 +2,9 @@ import React, {useRef, useContext} from "react"
 import cn from "clsx";
 import {tv} from "tailwind-variants";
 
-import {HAnchor} from "./Anchor";
-import {HCollapse} from "./Collapse";
+import {UIAnchor} from "./Anchor";
+import {UICollapse} from "./Collapse";
+import {UIInternalError} from "./500";
 
 function styled() {
 }
@@ -173,7 +174,7 @@ export interface HAsideProps {
     className?: string
 }
 
-export function HAside(props: HAsideProps) {
+export function UIAside(props: HAsideProps) {
     const {aside, scrollbar} = styled.aside({})
 
     const sidebarRef = useRef<HTMLDivElement>(null)
@@ -226,7 +227,7 @@ export interface HSeparatorProps {
     children?: string | JSX.Element
 }
 
-export function HSeparator(props: HSeparatorProps) {
+export function UISeparator(props: HSeparatorProps) {
     const {container, hr} = styled.separator()
 
     return (
@@ -257,12 +258,12 @@ export interface HFileProps {
 
 }
 
-export function HFile(props: HFileProps) {
+export function UIFile(props: HFileProps) {
     const {list, link} = styled.file()
 
     return (
         <li className={list({active: props.active})}>
-            <HAnchor
+            <UIAnchor
                 href={props.href}
                 newWindow={props.newWindow}
                 className={link({
@@ -274,7 +275,7 @@ export function HFile(props: HFileProps) {
                 onBlur={props.onBlur}
             >
                 {props.title}
-            </HAnchor>
+            </UIAnchor>
             {props.children}
         </li>
     )
@@ -300,8 +301,8 @@ export interface HFolderProps {
     onClick?: (v: any) => void
 }
 
-export function HFolder(props: HFolderProps) {
-    const ButtonOrAnchor = props.asButton ? 'button' : HAnchor
+export function UIFolder(props: HFolderProps) {
+    const ButtonOrAnchor = props.asButton ? 'button' : UIAnchor
 
     const {container, rightIcon, rightIconPath, collapse} = styled.folder()
     const {link} = styled.file()
@@ -319,11 +320,11 @@ export function HFolder(props: HFolderProps) {
             >
                 {props.title}
             </ButtonOrAnchor>
-            <HCollapse className={collapse()} isOpen={props.isOpen || false}>
+            <UICollapse className={collapse()} isOpen={props.isOpen || false}>
                 <div className={styled.menu({collapsed: true})}>
                     {props.children}
                 </div>
-            </HCollapse>
+            </UICollapse>
         </ul>
     )
 }
@@ -335,7 +336,7 @@ export interface HMenuProps {
     collapsed?: boolean
 }
 
-export function HMenu(props: HMenuProps) {
+export function UIMenu(props: HMenuProps) {
     return <ul className={styled.menu({
         mobile: props.mobile,
         collapsed: props.collapsed

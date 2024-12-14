@@ -1,13 +1,14 @@
 import React from "react";
+import {UIInternalError} from "./500";
 
-export interface HRootProps {
+export interface UIRootProps {
     children: JSX.Element | JSX.Element[]
 
     direction: "rtl" | "ltr"
 }
 
 // TODO: move to headless?
-export function HRoot(props: HRootProps) {
+export function UIRoot(props: UIRootProps) {
     const direction = props.direction || "ltr"
 
     // TODO: html tag?
