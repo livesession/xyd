@@ -78,7 +78,7 @@ styled.meta = tv({
     }
 })
 
-export interface HTocProps {
+export interface UITocProps {
     title: string | JSX.Element
 
     activeSlug?: string
@@ -88,7 +88,7 @@ export interface HTocProps {
     meta?: JSX.Element
 }
 
-export function HToc(props: HTocProps): ReactElement {
+export function UIToc(props: UITocProps): ReactElement {
     const tocRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -131,7 +131,7 @@ export function HToc(props: HTocProps): ReactElement {
     )
 }
 
-export interface HTocItemProps {
+export interface UITocItemProps {
     children: string | JSX.Element
 
     href: string
@@ -141,7 +141,7 @@ export interface HTocItemProps {
     active?: boolean
 }
 
-export function HTocItem(props: HTocItemProps) {
+export function UITocItem(props: UITocItemProps) {
     const {container, link} = styled.item()
 
     return <li className={container()}>
@@ -155,13 +155,13 @@ export function HTocItem(props: HTocItemProps) {
     </li>
 }
 
-export interface HTocMetaProps {
+export interface UITocMetaProps {
     children: JSX.Element
 
     headings?: boolean
 }
 
-export function HTocMeta(props) {
+export function UITocMeta(props) {
     return <div className={styled.meta()}
     >
         {props.children}

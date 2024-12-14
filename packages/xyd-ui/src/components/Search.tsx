@@ -8,8 +8,9 @@ import {tv} from "tailwind-variants";
 
 // import {useConfig, useMenu} from '../contexts' TODO:
 import {renderComponent, renderString} from '../utils'
-import {HAnchor} from './Anchor'
-import {HInput} from './Input'
+import {UIAnchor} from './Anchor'
+import {UIInput} from './Input'
+import {UIInternalError} from "./500";
 // import {useMounted} from "../hooks";
 
 // TODO: !!! FINISH !!!
@@ -233,7 +234,7 @@ export function HSearch({
                 />
             )}
 
-            <HInput
+            <UIInput
                 ref={input}
                 value={value}
                 onChange={e => {
@@ -306,7 +307,7 @@ export function HSearch({
                                             : 'text-gray-800 contrast-more:border-transparent dark:text-gray-300'
                                     )}
                                 >
-                                    <HAnchor
+                                    <UIAnchor
                                         className="block scroll-m-12 px-2.5 py-2"
                                         href={route}
                                         data-index={i}
@@ -316,7 +317,7 @@ export function HSearch({
                                         onKeyDown={handleKeyDown}
                                     >
                                         {children}
-                                    </HAnchor>
+                                    </UIAnchor>
                                 </li>
                             </Fragment>
                         ))

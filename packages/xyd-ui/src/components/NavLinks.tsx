@@ -4,7 +4,7 @@ import cn from 'clsx'
 import {ArrowLeftIcon, ArrowRightIcon} from '@radix-ui/react-icons'
 import {tv} from "tailwind-variants";
 
-import {HAnchor} from './Anchor'
+import {UIAnchor} from './Anchor'
 
 function styled() {
 }
@@ -38,7 +38,7 @@ styled.navLinks = tv({
     }
 })
 
-export interface HNavLinksProps {
+export interface UINavLinksProps {
     prev?: {
         title: string
         href: string
@@ -49,7 +49,7 @@ export interface HNavLinksProps {
     }
 }
 
-export const HNavLinks = (props: HNavLinksProps): ReactElement | null => {
+export const UINavLinks = (props: UINavLinksProps): ReactElement | null => {
     const {
         container,
         link,
@@ -59,24 +59,24 @@ export const HNavLinks = (props: HNavLinksProps): ReactElement | null => {
     return (
         <div className={container()}>
             {props.prev ? (
-                <HAnchor
+                <UIAnchor
                     href={props.prev.href}
                     title={props.prev.title}
                     className={link({prev: true})}
                 >
                     <ArrowLeftIcon className={icon({prev: true})}/>
                     {props.prev.title}
-                </HAnchor>
+                </UIAnchor>
             ) : <div/>}
             {props.next && (
-                <HAnchor
+                <UIAnchor
                     href={props.next.href}
                     title={props.next.title}
                     className={link({next: true})}
                 >
                     {props.next.title}
                     <ArrowRightIcon className={icon({next: true})}/>
-                </HAnchor>
+                </UIAnchor>
             )}
         </div>
     )

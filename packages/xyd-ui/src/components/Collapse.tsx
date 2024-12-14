@@ -25,7 +25,7 @@ styled.collapse = tv({
     }
 })
 
-export function HCollapse({
+export function UICollapse({
                              children,
                              className,
                              isOpen,

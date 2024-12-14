@@ -2,6 +2,7 @@ import React, {forwardRef} from 'react'
 import type {ComponentProps, ReactNode} from 'react'
 import cn from 'clsx'
 import {tv} from "tailwind-variants";
+import {UIInternalError} from "./500";
 
 type InputProps = ComponentProps<'input'> & { suffix?: ReactNode }
 
@@ -19,7 +20,7 @@ const styled = tv({
     }
 })
 
-export const HInput = forwardRef<HTMLInputElement, InputProps>(
+export const UIInput = forwardRef<HTMLInputElement, InputProps>(
     ({className, suffix, ...props}, forwardedRef) => {
 
         const {container, input} = styled()
@@ -37,4 +38,4 @@ export const HInput = forwardRef<HTMLInputElement, InputProps>(
     }
 )
 
-HInput.displayName = 'Input'
+UIInput.displayName = 'UIInput'

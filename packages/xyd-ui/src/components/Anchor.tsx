@@ -2,6 +2,7 @@ import React, {forwardRef} from 'react'
 import {Link} from "react-router";
 import type {ComponentProps, ReactElement} from 'react'
 import {tv} from "tailwind-variants";
+import {UIInternalError} from "./500";
 
 function styled() {
 }
@@ -12,11 +13,11 @@ styled.anchor = tv({
     }
 })
 
-export type HAnchorProps = Omit<ComponentProps<'a'>, 'ref'> & {
+export type UIAnchorProps = Omit<ComponentProps<'a'>, 'ref'> & {
     newWindow?: boolean
 }
 
-export const HAnchor = forwardRef<HTMLAnchorElement, HAnchorProps>(function (
+export const UIAnchor = forwardRef<HTMLAnchorElement, UIAnchorProps>(function (
     {href = '', children, newWindow, ...props},
     // ref is used in <NavbarMenu />
     forwardedRef
@@ -53,4 +54,4 @@ export const HAnchor = forwardRef<HTMLAnchorElement, HAnchorProps>(function (
     )
 })
 
-HAnchor.displayName = 'HAnchor'
+UIAnchor.displayName = 'UIAnchor'

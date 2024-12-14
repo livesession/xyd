@@ -12,8 +12,8 @@ import {
 import {CodeSample} from "@xyd/components/coder";
 
 import {
-    HAnchor,
-    HCollapse
+    UIAnchor,
+    UICollapse
 } from './index'
 
 // import type {AnchorProps} from './components'
@@ -64,7 +64,7 @@ function HeadingLink({
                 className === 'sr-only'
                     ? 'sr-only'
                     : cn(
-                        'font-normal tracking-tight text-[#1c1e1e] dark:text-slate-100',
+                        'font-light tracking-wide text-[#202123] dark:text-slate-100',
                         {
                             h2: 'mt-4-x pb-3-x text-3xl',
                             h3: 'mt-4-x pb-3-x text-2xl',
@@ -93,11 +93,11 @@ function HeadingLink({
 const EXTERNAL_HREF_REGEX = /https?:\/\//
 
 const Link = ({href = '', className, ...props}) => (
-    <HAnchor
+    <UIAnchor
         href={href}
         newWindow={EXTERNAL_HREF_REGEX.test(href)}
         className={cn(
-            'text-primary-600 underline decoration-from-font [text-underline-position:from-font]',
+            'text-[#7051d4] no-underline',
             className
         )}
         {...props}
@@ -105,7 +105,7 @@ const Link = ({href = '', className, ...props}) => (
 )
 
 const A = ({href = '', ...props}) => (
-    <HAnchor href={href} newWindow={EXTERNAL_HREF_REGEX.test(href)} {...props} />
+    <UIAnchor href={href} newWindow={EXTERNAL_HREF_REGEX.test(href)} {...props} />
 )
 
 // TODO: MOVE SOMWHERE ELSE
@@ -114,7 +114,7 @@ export const getComponents = () => {
     return {
         h1: props => (
             <h1
-                className="mt-2-x text-4xl font-bold tracking-tight text-[#1c1e1e] dark:text-slate-100"
+                className="mt-2-x text-4xl font-light text-[#202123] dark:text-slate-100"
                 {...props}
             />
         ),
@@ -123,7 +123,7 @@ export const getComponents = () => {
         h4: props => <HeadingLink tag="h4" context={context} {...props} />,
         h5: props => <HeadingLink tag="h5" context={context} {...props} />,
         h6: props => <HeadingLink tag="h6" context={context} {...props} />,
-        p: props => <p className="mt-6-x leading-7 first:mt-0" {...props} />,
+        p: props => <p className="mt-6-x first:mt-0" {...props} />,
 
         ul: props => (
             <ul

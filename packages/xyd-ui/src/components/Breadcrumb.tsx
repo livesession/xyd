@@ -3,7 +3,7 @@ import type {ReactElement} from 'react'
 import cn from 'clsx'
 import {ArrowRightIcon} from '@radix-ui/react-icons'
 
-import {HAnchor} from './Anchor'
+import {UIAnchor} from './Anchor'
 import {tv} from "tailwind-variants";
 
 function styled() {
@@ -41,14 +41,14 @@ styled.breadcrumbs = tv({
     }
 })
 
-export interface HBreadcrumbProps {
+export interface UIBreadcrumbProps {
     items: {
         title: string
         href?: string
     }[]
 }
 
-export function HBreadcrumb(props: HBreadcrumbProps): ReactElement {
+export function UIBreadcrumb(props: UIBreadcrumbProps): ReactElement {
     const {container, icon, item: itemClass} = styled.breadcrumbs()
 
     return (
@@ -63,7 +63,7 @@ export function HBreadcrumb(props: HBreadcrumbProps): ReactElement {
                              title={item.title}
                         >
                             {item.href && !lastActive ? (
-                                <HAnchor href={item.href}>{item.title}</HAnchor>
+                                <UIAnchor href={item.href}>{item.title}</UIAnchor>
                             ) : (
                                 item.title
                             )}

@@ -1,34 +1,34 @@
 import React from "react";
 import {tv} from "tailwind-variants";
 
-import {HAnchor} from "./Anchor";
+import {UIAnchor} from "./Anchor";
 
 function styled() {
 }
 
-styled.internalErro = tv({
+styled.internalError = tv({
     slots: {
         container: "text-center",
         anchor: "text-primary-600 underline decoration-from-font [text-underline-position:from-font]"
     }
 })
 
-export interface HInternalErrorProps {
+export interface UIInternalErrorProps {
     href: string;
 
     children: React.ReactNode;
 }
 
-export function HInternalError({href, children}: HInternalErrorProps) {
-    const {container, anchor} = styled.internalErro()
+export function UIInternalError({href, children}: UIInternalErrorProps) {
+    const {container, anchor} = styled.internalError()
 
     return <p className={container()}>
-        <HAnchor
+        <UIAnchor
             href={href}
             newWindow
             className={anchor()}
         >
             {children}
-        </HAnchor>
+        </UIAnchor>
     </p>
 }

@@ -1,6 +1,6 @@
 import React, {useContext, useState} from "react"
 
-import {HFile, HFolder, HSeparator} from "@xyd/ui/headless";
+import {UIFile, UIFolder, UISeparator} from "@xyd/ui";
 
 import {useGroup} from "./sidebar-group";
 import {UIContext} from "../../contexts/ui";
@@ -15,9 +15,9 @@ export interface FwSidebarGroupProps {
 
 export function FwSidebarGroup(props: FwSidebarGroupProps) {
     return <>
-        <HSeparator>
+        <UISeparator>
             {props.group}
-        </HSeparator>
+        </UISeparator>
 
         {props.items.map((item, index) => <FwSidebarItem
             key={index + item.href}
@@ -51,7 +51,7 @@ function FwSidebarItem(props: FwSidebarItemProps) {
     const uiContext = useContext(UIContext)
 
     if (props.items?.length) {
-        return <HFolder
+        return <UIFolder
             title={props.title}
             asButton
             active={props.active}
@@ -70,12 +70,12 @@ function FwSidebarItem(props: FwSidebarItemProps) {
                     />)
                 }
             </>
-        </HFolder>
+        </UIFolder>
     }
 
     const activeLink = props.active || uiContext?.href === props.href
 
-    return <HFile
+    return <UIFile
         title={props.title}
         href={props.href}
         active={activeLink}

@@ -2,17 +2,13 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
     entry: {
-        index: 'index.ts',
-        headless: 'headless.ts',
-        layouts: 'layouts.ts',
+        index: 'index.ts'
     },
     format: ['esm', 'cjs'], // Output both ESM and CJS formats
     target: 'node16', // Ensure compatibility with Node.js 16
     dts: {
         entry: {
-            index: 'index.ts',
-            headless: 'headless.ts',
-            layouts: 'layouts.ts',
+            index: 'index.ts'
         },
         resolve: true, // Resolve external types
     },
