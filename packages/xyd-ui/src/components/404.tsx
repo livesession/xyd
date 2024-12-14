@@ -1,7 +1,7 @@
 import React from "react";
 import {tv} from "tailwind-variants";
 
-import {HAnchor} from "./Anchor";
+import {UIAnchor} from "./Anchor";
 
 function styled() {
 }
@@ -13,22 +13,22 @@ styled.notFound = tv({
     }
 })
 
-export interface HNotFoundProps {
+export interface UINotFoundProps {
     href: string;
 
     children: React.ReactNode;
 }
 
-export function HNotFound({href, children}: HNotFoundProps) {
+export function UINotFound({href, children}: UINotFoundProps) {
     const {container, anchor} = styled.notFound()
 
     return <p className={container()}>
-        <HAnchor
+        <UIAnchor
             href={href}
             newWindow
             className={anchor()}
         >
             {children}
-        </HAnchor>
+        </UIAnchor>
     </p>
 }

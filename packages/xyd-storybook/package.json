@@ -16,6 +16,7 @@
     "remark-gfm": "^4.0.0",
     "@xyd/components": "workspace:*",
     "@xyd/ui": "workspace:*",
+    "@xyd/ui2": "workspace:*",
     "@xyd/atlas": "workspace:*"
   },
   "devDependencies": {

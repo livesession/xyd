@@ -14,14 +14,13 @@ import {
 import type {
     FwSidebarGroupProps
 } from "@xyd/framework"
-import {LyDefault} from "@xyd/ui/layouts"
 import {Layout as ComponentLayout} from "@xyd/components/layouts"
 import {
-    HNav,
+    UINav,
 
-    HAside,
-    HMenu,
-} from "@xyd/ui/headless";
+    UIAside,
+    UIMenu,
+} from "@xyd/ui";
 import {Settings} from "@xyd/core";
 
 // TODO: theme settings context
@@ -51,9 +50,7 @@ function ThemeRoot({children}) {
     </>
 }
 
-const Layout = LyDefault(ThemeRoot)
-
-// TODO: remove any
+// TODO: theme should take care of mdx components props
 export default function ThemeGusto(props: ThemeProps) {
     // TODO: breadcrumbs, navigation links
     // TODO: move to common for themes
@@ -70,7 +67,8 @@ export default function ThemeGusto(props: ThemeProps) {
             header={<Navbar/>}
             aside={<Sidebar themeSettings={props.themeSettings}/>}
             content={<>
-                {props.breadcrumbs ? <FwBreadcrumbs/> : undefined}
+                {/*TODO: optional breadcrumbs*/}
+                {/*{props.breadcrumbs ? <FwBreadcrumbs/> : undefined}*/}
                 {/* TODO: FIX THAT */}
                 <div style={{
                     display: "flex",
@@ -89,21 +87,21 @@ export default function ThemeGusto(props: ThemeProps) {
 
 // TODO: finish search - and move to framework?
 function Navbar() {
-    return <HNav>
+    return <UINav>
         <FwNavLogo/>
 
         <FwTopbarLinks/>
-    </HNav>
+    </UINav>
 }
 
 // TODO: onePathBehaviour does not work - fix that
 function Sidebar({themeSettings}: { themeSettings?: ThemeSettings }) {
-    return <HAside>
-        <HMenu>
+    return <UIAside>
+        <UIMenu>
             <FwSidebarGroups
                 onePathBehaviour={themeSettings?.sidebar?.onePathBehaviour}
                 clientSideRouting={themeSettings?.sidebar?.clientSideRouting}
             />
-        </HMenu>
-    </HAside>
+        </UIMenu>
+    </UIAside>
 }

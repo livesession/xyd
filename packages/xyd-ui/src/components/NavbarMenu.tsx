@@ -3,7 +3,7 @@ import {Menu, MenuContent, MenuItem, MenuSubTrigger} from "@radix-ui/react-menu"
 import cn from "clsx";
 import {tv} from "tailwind-variants";
 
-import {HAnchor} from "./Anchor";
+import {UIAnchor} from "./Anchor";
 
 function styled() {
 
@@ -34,15 +34,15 @@ styled.item = tv({
     },
 })
 
-export interface HNavbarMenuProps {
+export interface UINavbarMenuProps {
     children: React.ReactNode;
 
-    menu: React.ReactElement<HNavbarMenuItemProps>[]; // Updated type
+    menu: React.ReactElement<UINavbarMenuItemProps>[]; // Updated type
 
     className?: string;
 }
 
-export function HNavbarMenu(props: HNavbarMenuProps) {
+export function UINavbarMenu(props: UINavbarMenuProps) {
     const {container, trigger, content} = styled.menu()
 
     return (
@@ -59,7 +59,7 @@ export function HNavbarMenu(props: HNavbarMenuProps) {
     );
 }
 
-export interface HNavbarMenuItemProps {
+export interface UINavbarMenuItemProps {
     onSelect: () => void;
 
     children: React.ReactNode;
@@ -67,15 +67,15 @@ export interface HNavbarMenuItemProps {
     newWindow?: boolean;
 }
 
-export function HNavbarMenuItem(props: HNavbarMenuItemProps) {
+export function UINavbarMenuItem(props: UINavbarMenuItemProps) {
     const {anchor} = styled.item()
 
     return <MenuItem onSelect={props.onSelect}>
-        <HAnchor
+        <UIAnchor
             className={anchor()}
             newWindow={props.newWindow}
         >
             {props.children}
-        </HAnchor>
+        </UIAnchor>
     </MenuItem>
 }

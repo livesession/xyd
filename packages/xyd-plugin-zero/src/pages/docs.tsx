@@ -40,7 +40,11 @@ export async function loader({request}: { request: any }) {
 
     const code = await compileBySlug(slug, true)
 
-    const {groups: sidebarGroups, breadcrumbs, navlinks} = await mapSettingsToProps(
+    const {
+        groups: sidebarGroups,
+        breadcrumbs,
+        navlinks,
+    } = await mapSettingsToProps(
         settings,
         slug
     )
@@ -73,9 +77,10 @@ function mdxContent(code: string) {
     if (!mdxExport) {
         return {}
     }
+
     return {
         component: content?.default,
-        toc: content?.toccontent,
+        toc: content?.toc,
         frontmatter: content?.frontmatter,
     }
 }
@@ -98,7 +103,6 @@ const components = {
 export default function Slug({loaderData, ...rest}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
     const Component = MemoMDXComponent(content.component)
-
 
     return <Theme
         settings={settings}

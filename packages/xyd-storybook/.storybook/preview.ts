@@ -1,6 +1,7 @@
 import type {Preview} from "@storybook/react";
 
 import "@xyd/ui/index.css";
+import "@xyd/ui2/index.css";
 import '@xyd/atlas/index.css';
 import "@xyd/components/index.css";
 

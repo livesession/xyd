@@ -25,13 +25,13 @@ function scrollToTop(event) {
     window.scrollTo({top: 0, behavior: 'smooth'})
 }
 
-export interface HBackToTopProps {
+export interface UIBackToTopProps {
     children: JSX.Element
 
     className?: string
 }
 
-export function HBackToTop(props: HBackToTopProps) {
+export function UIBackToTop(props: UIBackToTopProps) {
     const {button, icon} = styled.backToTop()
     const ref = useRef<HTMLButtonElement>(null)
 
