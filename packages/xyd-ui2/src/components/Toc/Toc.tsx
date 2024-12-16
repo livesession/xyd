@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useContext} from "react"
+import {Link} from "react-router";
 
 import {$toc, $scroller} from "./Toc.styles";
 
@@ -41,6 +42,43 @@ export function Toc({children, defaultValue}: TocProps) {
     function onChange(v: string) {
         setValue(v)
     }
+
+
+    // TODO: more reactish
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                let set = false
+                entries.forEach(entry => {
+                    if (set) {
+                        return
+                    }
+                    if (!entry.isIntersecting) {
+                        return
+                    }
+
+                    if (entry.target instanceof HTMLHeadingElement) {
+                        const rect = entry.target.getBoundingClientRect();
+                        const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+                        console.log(isVisible, entry.target.innerText, 11);
+                        if (isVisible) {
+                            set = true
+                            setValue(entry.target.innerText);
+                        }
+                    }
+                });
+            },
+            {threshold: 0.3}
+        );
+
+        document.querySelectorAll("h2").forEach(ref => {
+            if (ref) observer.observe(ref);
+        });
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
     useEffect(() => {
         handleScroll(); // Initial call to set the values
@@ -89,7 +127,25 @@ Toc.Item = function TocItem({
         <a
             className={`${$toc.link} ${active && $toc.link$$active}`}
             href={href}
-            onClick={() => onChange(value)}
+            onClick={(e) => {
+                // TODO: use react-router but for some reason does not work
+                e.preventDefault()
+                onChange(value)
+
+                let found = false
+
+                // TODO: below is only a temporary solution
+                document.querySelectorAll("h2").forEach(e => {
+                    if (found) {
+                        return
+                    }
+
+                    if (e.innerText === value) {
+                        found = true
+                        e.scrollIntoView()
+                    }
+                })
+            }}
         >
             {children}
         </a>

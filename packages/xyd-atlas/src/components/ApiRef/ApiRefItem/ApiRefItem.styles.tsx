@@ -17,14 +17,14 @@ export const $navbar = {
 
         padding: 8px;
 
-        border: 1px solid rgb(236, 236, 241);
+        border: 1px solid var(--atlas-comp-apiref-item-border-color);
         border-radius: 8px;
-        
+
         font-size: 13px;
     `,
     label: css`
-        color: #6e6e80;
-        
+        color: var(--atlas-comp-apiref-item-navbar-color);
+
         margin-right: 4px;
     `,
 }

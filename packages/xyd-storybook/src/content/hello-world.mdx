@@ -2,8 +2,15 @@ import {
     Callout,
     Details,
     Steps,
-    Tabs
+    Tabs,
+    GuideCard
 } from '@xyd/components/writer';
+
+import {
+    IconSessionReplay,
+    IconMetrics,
+    IconFunnels
+} from "./Icons";
 
 # Product Analytics
 ### Learn how to analyze user behavior to optimize your product.
@@ -15,7 +22,8 @@ LiveSession provides comprehensive APIs to analyze user interactions within your
 To get started with product analytics, you can use the session recording and event tracking endpoints in the REST API, as shown in the examples below. You can either use the [REST API](https://livesession.com/docs/api) from your preferred HTTP client or utilize our official SDKs for popular programming languages.
 
 <Callout>
-    Start analyzing user sessions today using LiveSession's intuitive tools. Sign up to unlock a 14-day free trial and see the impact of real-time insights.
+    Start analyzing user sessions today using LiveSession's intuitive tools. Sign up to unlock a 14-day free trial and
+    see the impact of real-time insights.
 </Callout>
 
 > Leverage LiveSession's real-time analytics to enhance your product and user experience.
@@ -24,16 +32,19 @@ Here are a few examples of how LiveSession can improve your product workflows:
 
 <Steps>
     <Steps.Item>
-        **Identifying bottlenecks:** Detect areas where users struggle within your app, such as confusing UI elements or lengthy onboarding steps.
+        **Identifying bottlenecks:** Detect areas where users struggle within your app, such as confusing UI elements or
+        lengthy onboarding steps.
     </Steps.Item>
     <Steps.Item>
-        **Improving feature adoption:** Analyze which features are underutilized and develop strategies to improve their discoverability.
+        **Improving feature adoption:** Analyze which features are underutilized and develop strategies to improve their
+        discoverability.
     </Steps.Item>
     <Steps.Item>
         **Reducing churn:** Use behavioral data to identify churn risks and proactively address user pain points.
     </Steps.Item>
     <Steps.Item>
-        **Optimizing conversion rates:** Track and analyze key user journeys to increase your product's conversion rates.
+        **Optimizing conversion rates:** Track and analyze key user journeys to increase your product's conversion
+        rates.
     </Steps.Item>
 </Steps>
 
@@ -58,13 +69,16 @@ Our analytics tools are designed for seamless integration and powerful insights:
 #### Example Use Cases
 <Tabs items={["User Behavior", "Feature Adoption", "Churn Analysis"]}>
     <Tabs.Content value="User Behavior">
-        Gain insights into user behavior by replaying sessions and analyzing click patterns. This helps uncover friction points in your app's user experience.
+        Gain insights into user behavior by replaying sessions and analyzing click patterns. This helps uncover friction
+        points in your app's user experience.
     </Tabs.Content>
     <Tabs.Content value="Feature Adoption">
-        Understand how users engage with new features. Track metrics like time to adoption and overall usage to measure feature success.
+        Understand how users engage with new features. Track metrics like time to adoption and overall usage to measure
+        feature success.
     </Tabs.Content>
     <Tabs.Content value="Churn Analysis">
-        Use session data to identify behavioral patterns of users who are at risk of churning and implement targeted retention strategies.
+        Use session data to identify behavioral patterns of users who are at risk of churning and implement targeted
+        retention strategies.
     </Tabs.Content>
 </Tabs>
 
@@ -94,3 +108,23 @@ const replayData = await livesession.getSessionReplay({ sessionId: "session_9876
 
 console.log(replayData);
 ```
+
+## Next Steps
+
+<GuideCard
+    icon={<IconSessionReplay/>}
+    title="Session Replay"
+    body="Visualize user interactions in your product with detailed session replays."
+/>
+
+<GuideCard
+    icon={<IconMetrics/>}
+    title="Metrics Analysis"
+    body="Analyze key metrics to understand user behavior and optimize your product workflows."
+/>
+
+<GuideCard
+    icon={<IconFunnels/>}
+    title="Funnel Analysis"
+    body="Track user journeys and identify drop-offs to optimize conversion rates."
+/>

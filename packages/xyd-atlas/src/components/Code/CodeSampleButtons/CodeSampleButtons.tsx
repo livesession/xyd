@@ -100,7 +100,6 @@ function $SampleButton({onClick, children, activeExample, example}: {
     return <button
         onClick={onClick}
         className={`${$button.host} ${markExampleAsActive && $button.$$active}`}
-
     >
         {children}
     </button>

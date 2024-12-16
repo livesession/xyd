@@ -21,8 +21,8 @@ export const $li = {
         margin: 0;
         padding: 0;
 
-        border-top: 1px solid #ececf1;
-        
+        border-top: 1px solid var(--atlas-comp-apiref-properties-border-color);
+
         &:first-child {
             padding-top: 0;
         }
@@ -37,7 +37,7 @@ export const $description = {
     host: css`
         font-size: 14px;
         line-height: 22px;
-        color: rgb(110, 110, 128);
+        color: var(--atlas-comp-apiref-properties-description-color);
     `
 }
 
@@ -49,7 +49,7 @@ export const $dl = {
         justify-content: flex-start;
         flex-wrap: wrap;
         gap: 10px;
-        
+
         margin: 8px 0;
 
         dd {
@@ -66,7 +66,7 @@ export const $propNameCode = {
 
         font-weight: 600;
         font-size: 13px;
-        color: #000;
+        color: var(--atlas-comp-apiref-properties-prop__name-color);
     `,
 }
 
@@ -79,7 +79,7 @@ export const $propTypeCode = {
         border-radius: 4px;
 
         font-size: 10px;
-        color: rgb(110, 110, 128);
+        color: var(--atlas-comp-apiref-properties-prop__type-color);
     `,
 }
 
@@ -110,7 +110,7 @@ export const $subProps = {
     li: css`
         padding: 0 16px;
 
-        border-top: 1px solid #ececf1;
+        border-top: 1px solid var(--atlas-comp-apiref-properties-border-color);
     `,
 }
 
@@ -127,16 +127,17 @@ export const $propToggle = {
 
         cursor: pointer;
         color: inherit;
-        
+
         font-size: 13px;
+
         svg {
-            font-size: 13ppx;
+            font-size: 13px;
         }
 
         &:hover {
             svg { // in the future it should be deprecated
                 transition: all ease-in .1s;
-                color: rgb(112, 81, 212);
+                color: var(--atlas-comp-apiref-properties-color--active);
             }
         }
     `,
@@ -147,7 +148,7 @@ export const $propToggle = {
 
         &:hover {
             transition: all ease-in .1s;
-            color: rgb(112, 81, 212);
+            color: var(--atlas-comp-apiref-properties-color--active);
         }
     `
 }

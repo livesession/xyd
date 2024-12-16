@@ -17,7 +17,8 @@
     "@xyd/components": "workspace:*",
     "@xyd/ui": "workspace:*",
     "@xyd/ui2": "workspace:*",
-    "@xyd/atlas": "workspace:*"
+    "@xyd/atlas": "workspace:*",
+    "@xyd/fable-wiki": "workspace:*"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.9.0",

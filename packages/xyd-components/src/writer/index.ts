@@ -6,7 +6,11 @@ export * from "./Code"
 
 export * from "./Details"
 
+export * from "./GuideCard"
+
 export * from "./Hr"
+
+export * from "./Icon"
 
 export * from "./Pre"
 
