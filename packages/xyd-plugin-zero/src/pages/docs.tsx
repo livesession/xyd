@@ -2,7 +2,7 @@ import React from "react";
 
 import {
     getComponents,
-} from "@xyd/ui/headless";
+} from "@xyd/ui";
 import {PageFrontMatter} from "@xyd/core"
 import {mapSettingsToProps} from "@xyd/framework/hydration";
 import {compileBySlug} from "@xyd/content"
@@ -17,8 +17,13 @@ import Theme from "@xyd/theme-gusto"
 import {
     Callout,
     Details,
+    GuideCard,
     Steps,
-    Tabs
+    Tabs,
+
+    IconSessionReplay,
+    IconMetrics,
+    IconFunnels,
 } from "@xyd/components/writer";
 
 interface loaderData {
@@ -96,8 +101,14 @@ const components = {
     ...getComponents(),
     Callout,
     Details,
+    GuideCard,
     Steps,
     Tabs,
+
+
+    IconSessionReplay,
+    IconMetrics,
+    IconFunnels,
 }
 
 export default function Slug({loaderData, ...rest}: { loaderData: loaderData }) {

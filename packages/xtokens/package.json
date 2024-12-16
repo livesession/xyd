@@ -1,0 +1,26 @@
+{
+  "private": true,
+  "name": "@xyd/xtokens",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    "./index.css": "./dist/index.css",
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "clean": "rimraf build",
+    "prebuild": "pnpm clean",
+    "build": "tsup"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0"
+  }
+}
