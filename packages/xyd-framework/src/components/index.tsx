@@ -1,4 +1,6 @@
 import React, {isValidElement, useContext} from "react";
+import {useLocation} from "react-router";
+
 import {
     UINavItem,
     UINavLogo,
@@ -172,10 +174,17 @@ function FwToc() {
 
     flatten(toc)
 
-    return null
-    return <Toc>
+    // TODO: its temporary
+    const tocFinal = flatToc.filter(item => item.depth === 2)
+
+    const location = useLocation()
+
+    // TODO: better in the future
+    const defaultValue = location.hash ? location.hash.replace("#", "") : tocFinal[0]?.value
+
+    return <Toc defaultValue={defaultValue}>
         {
-            flatToc.map((item, index) => <Toc.Item
+            tocFinal.map((item, index) => <Toc.Item
                 key={index + item.value + item.depth}
                 value={item.value}
             >

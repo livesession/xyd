@@ -15,7 +15,7 @@ export const $copy = {
 
         &:hover {
             transition: ease-in 0.1s;
-            background: #e3e3eb;
+            background: var(--atlas-comp-code-copy-background--active);
         }
     `
 }

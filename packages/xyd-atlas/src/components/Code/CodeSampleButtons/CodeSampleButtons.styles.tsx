@@ -9,14 +9,14 @@ export const $sample = {
         display: flex;
         align-items: center;
         border-radius: 8px;
-        background-color: #F3F4F6;
+        background-color: var(--atlas-comp-code-sample_buttons-container-background);
     `
 }
 
 export const $arrow = {
     host: css`
         padding: 8px;
-        background-color: #ffffff;
+        background-color: var(--atlas-comp-code-sample_buttons-background--active);
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     `,
     icon: css`
@@ -33,7 +33,7 @@ export const $scroller = {
     container: css`
         display: inline-flex;
         gap: 4px;
-        
+
         padding: 4px;
         margin-left: 4px;
     `
@@ -53,15 +53,15 @@ export const $button = {
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 300ms;
 
-        color: #6B7280;
+        color: var(--atlas-comp-code-sample_buttons-color);
 
         &:hover {
-            color: #111827;
+            color: var(--atlas-comp-code-sample_buttons-color--active);
         }
     `,
     $$active: css`
-        color: #111827;
-        background-color: #ffffff;
+        color: var(--atlas-comp-code-sample_buttons-color--active);
+        background-color: var(--atlas-comp-code-sample_buttons-background--active);
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     `
 }

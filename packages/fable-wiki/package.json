@@ -1,0 +1,30 @@
+{
+  "private": true,
+  "name": "@xyd/fable-wiki",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    "./atlas.css": "./dist/atlas.css",
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "clean": "rimraf build",
+    "prebuild": "pnpm clean",
+    "build": "rollup -c rollup.config.js"
+  },
+  "dependencies": {
+    "@xyd/xtokens": "workspace:*"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "postcss-url": "^10.1.3",
+    "rollup-plugin-postcss": "^4.0.2"
+  }
+}
