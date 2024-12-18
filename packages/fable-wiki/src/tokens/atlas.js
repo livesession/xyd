@@ -9,7 +9,7 @@ tokens.ref({
         dark60: "#201d1d",
         grey60: "#6e6e80",
         grey40: "#ececf1",
-        purpel60: "#7051d4",
+        purple60: "#7051d4",
         blue60: "#60a5fa",
         blue20: "#eef2ff",
     },
@@ -19,7 +19,7 @@ tokens.sys({
     color: {
         "primary.text": "ref.palette.dark60",
         "secondary.text": "ref.palette.grey60",
-        "tertiary.text": "ref.palette.purpel60",
+        "tertiary.text": "ref.palette.purple60",
         "primary.border": "ref.palette.grey40",
         "primary.background": "ref.palette.grey40",
     },

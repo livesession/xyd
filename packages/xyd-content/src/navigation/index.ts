@@ -4,17 +4,17 @@ import path from 'path';
 
 import matter from 'gray-matter';
 
-import {FrontMatter, Navigation, PageFrontMatter, Tab} from "@xyd/core";
+import {FrontMatter, Sidebar, PageFrontMatter, Header} from "@xyd/core";
 
 // TODO: better algorithm + data structures - since it's on build time it's not a big deal nevertheless it should be changed in the future
 
 // pageFrontMatters gets frontmatters for given navigation
-export async function pageFrontMatters(navigation: Navigation[]): Promise<PageFrontMatter> {
+export async function pageFrontMatters(navigation: Sidebar[]): Promise<PageFrontMatter> {
     const frontmatters: PageFrontMatter = {}
 
     const promises: Promise<any>[] = []
 
-    function mapPages(page: string | Navigation) {
+    function mapPages(page: string | Sidebar) {
         if (typeof page !== "string") {
             page.pages?.forEach(mapPages)
             return
@@ -23,7 +23,7 @@ export async function pageFrontMatters(navigation: Navigation[]): Promise<PageFr
         promises.push(job(page, frontmatters))
     }
 
-    navigation.map(async (nav: Navigation) => {
+    navigation.map(async (nav: Sidebar) => {
         nav.pages?.forEach(mapPages)
     })
 
@@ -32,13 +32,13 @@ export async function pageFrontMatters(navigation: Navigation[]): Promise<PageFr
     return frontmatters
 }
 
-// filterNavigation filter navigation items by top levels of 'tabs' configuration and current 'slug'
+// filterNavigation filter navigation items by top levels of 'header' configuration and current 'slug'
 export function filterNavigationByLevels(
-    tabs: Tab[],
+    headers: Header[],
     slug: string
 ) {
-    const topLevelTabMatcher = tabs?.reduce((acc: any, tab) => {
-        const tabLevel = tab?.url?.split("/")?.length
+    const topLevelTabMatcher = headers?.reduce((acc: any, header) => {
+        const tabLevel = header?.url?.split("/")?.length
 
         if (!tabLevel) {
             return {
@@ -49,17 +49,17 @@ export function filterNavigationByLevels(
         if (!acc[tabLevel]) {
             return {
                 ...acc,
-                [tabLevel]: new Set().add(tab?.url)
+                [tabLevel]: new Set().add(header?.url)
             }
         }
 
         return {
             ...acc,
-            [tabLevel]: acc[tabLevel].add(tab?.url)
+            [tabLevel]: acc[tabLevel].add(header?.url)
         }
     }, {}) as { [level: number]: Set<string> }
 
-    return (nav: Navigation) => {
+    return (nav: Sidebar) => {
         let match = false
 
         Object.keys(topLevelTabMatcher).forEach((levelStr) => {
@@ -69,7 +69,7 @@ export function filterNavigationByLevels(
             const level = parseInt(levelStr)
             const findThisSlug = slug.split("/").filter(s => !!s).slice(0, level).join("/")
 
-            function findMatchedPage(page: string | Navigation) {
+            function findMatchedPage(page: string | Sidebar) {
                 if (typeof page !== "string") {
                     page.pages?.forEach(findMatchedPage)
                     return

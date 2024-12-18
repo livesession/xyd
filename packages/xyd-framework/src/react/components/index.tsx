@@ -1,52 +1,27 @@
-import React, {isValidElement, useContext} from "react";
+import React, {isValidElement} from "react";
 import {useLocation} from "react-router";
 
 import {
-    UINavItem,
-    UINavLogo,
-
-    UIToc,
-    UITocItem,
-    UITocMeta,
-
     UIBreadcrumb,
 
     UINavLinks
 } from "@xyd/ui";
-import {Toc} from "@xyd/ui2"
+import {Toc, SubNav} from "@xyd/ui2"
 import type {ITOC} from "@xyd/ui";
 
 import {useBreadcrumbs, useNavLinks, useSettings, useSidebarGroups, useToC} from "../contexts";
 import {FwSidebarGroup, FwSidebarGroupContext} from "./sidebar";
-import {UIContext} from "../contexts/ui";
+import {Nav} from "@xyd/ui2";
 
-// TODO: !!! THIS SHOULD BE DONE AT DIFFERENT LEVEL !!!
-function manualHydration(obj: any, key = 0): React.ReactElement | null {
-    if (typeof obj !== 'object' || obj === null) {
-        return null;
-    }
-
-    const {type, props} = obj || {};
-    if (typeof type !== 'string' && typeof type !== 'function') {
-        return null;
-    }
-
-    let children = []
-    if (props?.children?.map && typeof props?.children?.map === "function") {
-        children = props?.children?.map((child: any, i) => manualHydration(child, key + i)) || []
-    }
-
-    return React.createElement(type, {...props, children, key});
-}
+import {manualHydration} from "../utils/manualHydration";
+import {useMatchedSubNav} from "../hooks";
 
 function FwNavLogo() {
     const settings = useSettings()
 
     const logo = isValidElement(settings?.styling?.logo) ? settings?.styling?.logo : manualHydration(settings?.styling?.logo)
 
-    return <UINavLogo>
-        {logo}
-    </UINavLogo>
+    return logo
 }
 
 function isActive(l: string) {
@@ -59,20 +34,57 @@ function isActive(l: string) {
     return false // TODO: ssr
 }
 
-function FwTopbarLinks() {
+function FwNav({kind}: { kind?: "middle" }) {
     const settings = useSettings()
+    const location = useLocation()
 
-    const uiContext = useContext(UIContext)
+    const active = settings?.structure?.header?.find(item => isActive(item.url || ""))
 
-    return settings?.structure?.topbarLinks?.map((item, index) => {
-        return <UINavItem
-            key={index + (item.url || "") + item.name}
-            href={item?.url || ""}
-            active={isActive(item.url || "")}
-        >
-            {item.name}
-        </UINavItem>
-    })
+    return <Nav
+        value={active?.url || ""}
+        kind={kind}
+        logo={<FwNavLogo/>}
+        onChange={() => {
+        }}
+    >
+        {
+            settings?.structure?.header?.map((item, index) => {
+                return <Nav.Item
+                    key={index + (item.url || "") + item.name}
+                    href={item?.url || ""}
+                    value={item.url}
+                >
+                    {item.name}
+                </Nav.Item>
+            })
+        }
+    </Nav>
+}
+
+function FwSubNav() {
+    const matchedSubnav = useMatchedSubNav()
+    const location = useLocation()
+
+    if (!matchedSubnav) {
+        return null
+    }
+
+    const active = matchedSubnav?.items.find(item => location.pathname.startsWith(item.url || ""))
+
+    // TODO: value
+    return <SubNav
+        title={matchedSubnav?.name}
+        value={active?.url || ""}
+        onChange={() => {
+        }}
+    >
+        {matchedSubnav?.items.map((item, index) => {
+            return <SubNav.Item value={item.url || ""} href={item.url}>
+                {item.name}
+            </SubNav.Item>
+        })}
+    </SubNav>
+
 }
 
 export interface FwSidebarGroupsProps {
@@ -88,7 +100,7 @@ function FwSidebarGroups(props: FwSidebarGroupsProps) {
         clientSideRouting={props.clientSideRouting}
     >
         {
-            groups.map((group, index) => <FwSidebarGroup
+            groups?.map((group, index) => <FwSidebarGroup
                 key={index + group.group}
                 {...group}
             />)
@@ -99,53 +111,6 @@ function FwSidebarGroups(props: FwSidebarGroupsProps) {
 type FlatTOC = {
     depth: number
     value: string
-}
-
-// TODO: finish
-function FwTocOld() {
-    const toc = useToC()
-
-    if (!toc) {
-        return null
-    }
-
-    const flatToc: FlatTOC[] = []
-
-    const flatten = (toc?: ITOC[]) => {
-        if (!toc) {
-            return
-        }
-
-        toc.forEach(item => {
-            flatToc.push({
-                depth: item.depth,
-                value: item.value
-            })
-
-            flatten(item.children)
-        })
-    }
-
-    flatten(toc)
-
-    // TODO: title + meta
-    return <UIToc
-        title=""
-        meta={<></>}
-    >
-        <>
-            {
-                flatToc.map((item, index) => <UITocItem
-                    key={index + item.value + item.depth}
-                    // @ts-ignore !!! TODO !!!
-                    depth={item.depth}
-                    href=""
-                >
-                    {item.value}
-                </UITocItem>)
-            }
-        </>
-    </UIToc>
 }
 
 function FwToc() {
@@ -217,14 +182,14 @@ function FwNavLinks() {
 }
 
 export {
-    FwNavLogo,
-    FwTopbarLinks,
-    FwSidebarGroups,
-    FwToc,
-    FwBreadcrumbs,
-    FwNavLinks
-}
+    FwNav,
+    FwSubNav,
 
-export {
-    FwHead
-} from "./head"
+    FwBreadcrumbs,
+    FwToc,
+    FwNavLinks,
+
+    FwSidebarGroups,
+
+    useMatchedSubNav
+}

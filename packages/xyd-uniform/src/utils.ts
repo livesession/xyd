@@ -1,6 +1,6 @@
 import path from 'path';
 import matter from 'gray-matter';
-import {Navigation, FrontMatter, PageFrontMatter} from "@xyd/core";
+import {Sidebar, FrontMatter, PageFrontMatter} from "@xyd/core";
 
 import {Reference} from "./types";
 import uniform from "./index";
@@ -27,7 +27,7 @@ export function pluginNavigation(options: pluginNavigationOptions) {
 
     return function pluginNavigationInner(cb: (cb: () => {
         pageFrontMatter: PageFrontMatter
-        navigation: Navigation[]
+        sidebar: Sidebar[]
     }) => void) {
         const pageFrontMatter: PageFrontMatter = {}
         const groupMaps: GroupMap = {}
@@ -35,7 +35,7 @@ export function pluginNavigation(options: pluginNavigationOptions) {
         cb(() => {
             return {
                 pageFrontMatter: pageFrontMatter,
-                navigation: convertGroupMapsToNavigations(groupMaps) as Navigation[]
+                sidebar: convertGroupMapsToNavigations(groupMaps) as Sidebar[]
             }
         })
 
@@ -83,20 +83,20 @@ export function pluginNavigation(options: pluginNavigationOptions) {
 }
 
 
-function convertGroupMapsToNavigations(groupMaps: GroupMap): Navigation[] {
-    const nav: Navigation[] = []
+function convertGroupMapsToNavigations(groupMaps: GroupMap): Sidebar[] {
+    const nav: Sidebar[] = []
 
     Object.keys(groupMaps).map((groupName) => {
         const current = groupMaps[groupName]
 
-        const pages: string[] | Navigation[] = []
+        const pages: string[] | Sidebar[] = []
 
         current.pages.forEach((page: string) => {
             pages.push(page)
         })
 
         if (Object.keys(current.__groups).length) {
-            const subNav: Navigation = {
+            const subNav: Sidebar = {
                 group: groupName,
                 pages: convertGroupMapsToNavigations(current.__groups)
             }

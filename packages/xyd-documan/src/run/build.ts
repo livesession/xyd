@@ -5,14 +5,14 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import {reactRouter} from "@xydjs/react-router-dev/vite";
 
 import {vitePlugins as xydContentVitePlugins} from "@xyd/content"
-import {Navigation, Settings} from "@xyd/core";
+import {Sidebar, Settings} from "@xyd/core";
 import {pluginZero} from "@xyd/plugin-zero";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // TODO: refactor?
-function fsNavPages(nav: Navigation): string[] {
+function fsNavPages(nav: Sidebar): string[] {
     const resp: string[] = []
 
     nav?.pages?.map((page) => {
@@ -40,7 +40,7 @@ export async function build() {
 
     const settings = resp.settings
 
-    const fsAllPages = settings?.structure?.navigation.reduce((acc: string[], nav: Navigation) => {
+    const fsAllPages = settings?.structure?.sidebar.reduce((acc: string[], nav: Sidebar) => {
         return [
             ...acc,
             ...fsNavPages(nav)

@@ -85,16 +85,16 @@ function preinstall(options: graphqlPluginOptions) {
             })
         )
 
-        if (settings.structure?.navigation) {
+        if (settings.structure?.sidebar) {
             if (!options.group) {
-                settings.structure.navigation.push(...uniformWithNavigation.out.navigation)
+                settings.structure.sidebar.push(...uniformWithNavigation.out.sidebar)
 
                 return {
                     graphqlMerged: mergedChunks
                 }
             }
 
-            const currentGroup = settings.structure.navigation.find(nav => nav.group === options.group)
+            const currentGroup = settings.structure.sidebar.find(nav => nav.group === options.group)
 
             if (!currentGroup) {
                 return {
@@ -102,11 +102,11 @@ function preinstall(options: graphqlPluginOptions) {
                 }
             }
 
-            if (currentGroup?.pages) {
-                currentGroup.pages.push(...uniformWithNavigation.out.navigation)
-            } else {
-                console.error('group does not have pages', currentGroup)
+            if (!currentGroup.pages) {
+                currentGroup.pages = []
             }
+
+            currentGroup.pages.push(...uniformWithNavigation.out.sidebar)
 
             return {
                 graphqlMerged: mergedChunks
@@ -114,7 +114,7 @@ function preinstall(options: graphqlPluginOptions) {
         }
 
         settings.structure = {
-            navigation: uniformWithNavigation.out.navigation
+            sidebar: uniformWithNavigation.out.sidebar
         }
 
         return {
