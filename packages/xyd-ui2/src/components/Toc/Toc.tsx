@@ -60,7 +60,7 @@ export function Toc({children, defaultValue}: TocProps) {
                     if (entry.target instanceof HTMLHeadingElement) {
                         const rect = entry.target.getBoundingClientRect();
                         const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-                        console.log(isVisible, entry.target.innerText, 11);
+
                         if (isVisible) {
                             set = true
                             setValue(entry.target.innerText);

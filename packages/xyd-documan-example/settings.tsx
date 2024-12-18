@@ -36,44 +36,163 @@ export default {
             </defs>
         </svg>
     },
+
     "structure": {
-        "navigation": [
+        "sidebar": [
+            //  docs
             {
-                "group": "Getting Started",
-                "pages": [
-                    "docs/get-started/hello",
+                "match": "docs",
+                "items": [
+                    {
+                        "group": "Getting Started",
+                        "pages": [
+                            "docs/get-started/hello",
+                        ],
+                    },
+                ]
+            },
+
+            // apps
+            {
+                "match": "docs/apps/build",
+                "items": [
+                    {
+                        "group": "Getting Started",
+                        "pages": [
+                            "docs/apps/build/overview",
+                        ],
+                    },
+                    {
+                        "group": "Surfaces",
+                        "pages": [
+                            "docs/apps/build/surfaces/overview",
+                        ],
+                    },
+                ]
+            },
+            {
+                "match": "docs/apps/design",
+                "items": [
+                    {
+                        "group": "Getting Started",
+                        "pages": [
+                            "docs/apps/design/overview",
+                        ],
+                    }
+                ]
+            },
+            {
+                "match": "docs/apps/launch",
+                "items": [
+                    {
+                        "group": "Getting Started",
+                        "pages": [
+                            "docs/apps/launch/overview",
+                        ],
+                    }
+                ]
+            },
+
+            // api
+            {
+                "match": "docs/api/browser",
+                "items": [
+                    {
+                        "group": "Getting Started",
+                        "pages": [
+                            "docs/api/browser/overview",
+                        ],
+                    }
+                ]
+            },
+            {
+                "match": "docs/api/rest",
+                "items": [
+                    {
+                        "group": "Getting Started",
+                        "pages": [
+                            "docs/api/rest/overview",
+                        ],
+                    }
+                ]
+            },
+            {
+                "match": "docs/api/graphql",
+                "items": [
+                    {
+                        "group": "Getting Started",
+                        "pages": [
+                            "docs/api/graphql/overview",
+                        ],
+                    }
                 ]
             },
         ],
-        "topbarLinks": [
+
+        "header": [
             {
                 "name": "Docs",
                 "url": "/docs"
             },
             {
-                "name": "Rest API",
-                "url": "/rest"
+                "name": "APIs and references",
+                "url": "/docs/api"
             },
             {
-                "name": "GraphQL",
-                "url": "/graphql"
+                "sub": {
+                    "match": "/docs/api",
+                    "name": "API",
+                    "items": [
+                        {
+                            "name": "Browser API",
+                            "url": "/docs/api/browser"
+                        },
+                        {
+                            "name": "GraphQL",
+                            "url": "/docs/api/graphql"
+                        },
+                    ]
+                }
             },
+            {
+                "sub": {
+                    "match": "/docs/apps",
+                    "name": "Apps",
+                    "items": [
+                        {
+                            "name": "Build",
+                            "url": "/docs/apps/build"
+                        },
+                        {
+                            "name": "Design",
+                            "url": "/docs/apps/design"
+                        },
+                        {
+                            "name": "Launch",
+                            "url": "/docs/apps/launch"
+                        }
+                    ]
+                }
+            }
+
         ],
-        "tabs": [
-            {
-                "name": "Docs",
-                "url": "docs"
-            },
-            {
-                "name": "GraphQL",
-                "url": "graphql"
-            },
-            {
-                "name": "REST API",
-                "url": "rest"
-            },
-        ]
+
+        // "anchors": [
+        //     {
+        //         "name": "Docs",
+        //         "url": "docs"
+        //     },
+        //     {
+        //         "name": "GraphQL",
+        //         "url": "graphql"
+        //     },
+        //     {
+        //         "name": "REST API",
+        //         "url": "rest"
+        //     },
+        // ],
     },
+
     "api": {
         "openapi": "./openapi.yaml",
         "graphql": "./schema.graphqls"

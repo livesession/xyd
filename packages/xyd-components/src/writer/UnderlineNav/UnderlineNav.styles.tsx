@@ -27,7 +27,6 @@ export const $nav = {
         height: 100%;
 
         &[data-state="active"] { // TODO: in the future it should not be possible
-
             a {
                 border-bottom-color: rgb(112, 81, 212);
             }

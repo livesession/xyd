@@ -2,7 +2,7 @@ import React, {} from 'react';
 import type {Meta} from '@storybook/react';
 
 export default {
-    title: 'UI/Example',
+    title: 'Templates/Pages',
 } as Meta;
 
 export const Default = () => {
@@ -11,7 +11,5 @@ export const Default = () => {
         paddingTop: "0px",
         margin: "0 auto",
     }}>
-        TODO: finish
     </div>
 }
-
