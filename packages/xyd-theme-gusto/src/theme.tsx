@@ -15,10 +15,6 @@ import type {
     FwSidebarGroupProps
 } from "@xyd/framework"
 import {Layout} from "@xyd/components/layouts"
-import {
-    UIAside,
-    UIMenu,
-} from "@xyd/ui";
 import {Settings} from "@xyd/core";
 
 // TODO: theme settings context
@@ -93,12 +89,8 @@ function Navbar() {
 
 // TODO: onePathBehaviour does not work - fix that
 function Sidebar({themeSettings}: { themeSettings?: ThemeSettings }) {
-    return <UIAside>
-        <UIMenu>
-            <FwSidebarGroups
-                onePathBehaviour={themeSettings?.sidebar?.onePathBehaviour}
-                clientSideRouting={themeSettings?.sidebar?.clientSideRouting}
-            />
-        </UIMenu>
-    </UIAside>
+    return <FwSidebarGroups
+        onePathBehaviour={themeSettings?.sidebar?.onePathBehaviour}
+        clientSideRouting={themeSettings?.sidebar?.clientSideRouting}
+    />
 }

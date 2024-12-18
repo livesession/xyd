@@ -1,6 +1,6 @@
-import React, {useContext, useState} from "react"
+import React, {useContext} from "react"
 
-import {UIFile, UIFolder, UISeparator} from "@xyd/ui";
+import {UISidebar} from "@xyd/ui2";
 
 import {useGroup} from "./sidebar-group";
 import {UIContext} from "../../contexts/ui";
@@ -13,11 +13,11 @@ export interface FwSidebarGroupProps {
     items: FwSidebarItemProps[]
 }
 
-export function FwSidebarGroup(props: FwSidebarGroupProps) {
+export function FwSidebarItemGroup(props: FwSidebarGroupProps) {
     return <>
-        <UISeparator>
+        <UISidebar.ItemHeader>
             {props.group}
-        </UISeparator>
+        </UISidebar.ItemHeader>
 
         {props.items.map((item, index) => <FwSidebarItem
             key={index + item.href}
@@ -50,35 +50,63 @@ function FwSidebarItem(props: FwSidebarItemProps) {
 
     const uiContext = useContext(UIContext)
 
-    if (props.items?.length) {
-        return <UIFolder
-            title={props.title}
-            asButton
-            active={props.active}
-            isOpen={isActive}
-            onClick={setActive}
-        >
-            <>
-                {
-                    props.items?.map((item, index) => <FwSidebarItem
-                        key={index + item.href}
-                        title={item.title}
-                        href={item.href}
-                        items={item.items}
-                        active={item.active}
-                        level={(props.level || 0) + 1}
-                    />)
-                }
-            </>
-        </UIFolder>
-    }
-
     const activeLink = props.active || uiContext?.href === props.href
 
-    return <UIFile
-        title={props.title}
+    return <UISidebar.Item
+        button={!!props.items?.length}
         href={props.href}
         active={activeLink}
-        onClick={onClick ? (e) => onClick(e, props) : undefined}
-    />
+        onClick={() => {
+        }}
+    >
+        {props.title}
+        {
+            props.items?.length && <UISidebar.SubTree>
+                <>
+                    {
+                        props.items?.map((item, index) => <FwSidebarItem
+                            key={index + item.href}
+                            title={item.title}
+                            href={item.href}
+                            items={item.items}
+                            active={item.active}
+                            level={(props.level || 0) + 1}
+                        />)
+                    }
+                </>
+            </UISidebar.SubTree>
+        }
+    </UISidebar.Item>
+
+    // if (props.items?.length) {
+    //     return <UIFolder
+    //         title={props.title}
+    //         asButton
+    //         active={props.active}
+    //         isOpen={isActive}
+    //         onClick={setActive}
+    //     >
+    //         <>
+    //             {
+    //                 props.items?.map((item, index) => <FwSidebarItem
+    //                     key={index + item.href}
+    //                     title={item.title}
+    //                     href={item.href}
+    //                     items={item.items}
+    //                     active={item.active}
+    //                     level={(props.level || 0) + 1}
+    //                 />)
+    //             }
+    //         </>
+    //     </UISidebar.SubTree>
+    // }
+    //
+    // const activeLink = props.active || uiContext?.href === props.href
+    //
+    // return <UISidebar.Item
+    //     title={props.title}
+    //     href={props.href}
+    //     active={activeLink}
+    //     onClick={onClick ? (e) => onClick(e, props) : undefined}
+    // />
 }

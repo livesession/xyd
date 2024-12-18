@@ -151,11 +151,8 @@ export interface Structure {
     // Array of version names. Only use this if you want to show different versions of docs with a dropdown in the navigation bar.
     versions?: string[]
 
-    // An array of the anchors, includes the icon, color, and url.
-    anchors?: Anchor[]
-
-    // Override the default configurations for the top-most anchor. Note: if you have tabs configured, this does not apply.
-    topAnchor?: Anchor
+    // Anchors, includes the icon, name, and url.
+    anchors?: AnchorRoot
 
     // An object of social media accounts where the key:property pair represents the social media platform and the account url.
     footerSocials?: FooterSocials
@@ -224,36 +221,18 @@ export interface CallToAction {
 }
 
 export interface Anchor {
-    // The Font Awesome icon used to feature the anchor.
-    icon?: string
+    // The Font Awesome or JSX icon used to feature the anchor.
+    icon?: string | JSX.Element
 
     // The name of the anchor label.
     name?: string
 
     // The start of the URL that marks what pages go in the anchor. Generally, this is the name of the folder you put your pages in.
     url?: string
-
-    // The hex color of the anchor icon background. Can also be a gradient if you pass an object with the properties from and to that are each a hex color.
-    color?: string
-
-    // Used if you want to hide an anchor until the correct docs version is selected.
-    version?: string
-
-    // Pass `true` if you want to hide the anchor until you directly link someone to docs inside it.
-    isDefaultHidden?: boolean
-
-    // One of: “brands”, “duotone”, “light”, “sharp-solid”, “solid”, or “thin”
-    iconType?: string
-}
-
-export interface AnchorV2 {
-    // The name of the anchor label.
-    name?: string
 }
 
 export interface AnchorRoot {
-    top: AnchorV2 | AnchorV2[]
-    bottom: AnchorV2 | AnchorV2[]
+    bottom: Anchor[]
 }
 
 export interface FooterSocials {
