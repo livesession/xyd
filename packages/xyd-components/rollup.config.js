@@ -105,5 +105,5 @@ export default [
         },
         plugins: [dts()],
         external
-    },
+    }
 ];

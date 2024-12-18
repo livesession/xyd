@@ -3,35 +3,47 @@ import React from "react"
 import {$guide} from "./GuideCard.styles";
 
 export interface GuideCardProps {
-    icon: React.ReactNode;
+    children: React.ReactNode;
+    href: string
     title: string;
-    body: string;
+    icon?: React.ReactNode;
+    kind?: "secondary"
 }
 
 export function GuideCard({
+                              children,
+                              href,
                               icon,
                               title,
-                              body,
+                              kind,
 
                           }: GuideCardProps) {
-    return <a className={$guide.host}>
-        <div className={$guide.item}>
-            <div className={$guide.icon}>
-                {icon}
-            </div>
-            <div className={$guide.right}>
-                <div className={$guide.title}>
-                    <div className={`${$guide.title} ${$guide.titleBody}`}>
-                        {title}
+    return <div className={`
+        ${$guide.host}
+        ${kind === "secondary" && $guide.host$$secondary}
+    `}>
+        <a className={$guide.link} href={href}>
+            <div className={`
+                ${$guide.item}
+                ${kind === "secondary" && $guide.item$$secondary}
+            `}>
+                {icon && <div className={$guide.icon}>
+                    {icon}
+                </div>}
+                <div className={$guide.right}>
+                    <div className={$guide.title}>
+                        <div className={`${$guide.title} ${$guide.titleBody}`}>
+                            {title}
+                        </div>
+                        <$Pointer/>
                     </div>
-                    <$Pointer/>
-                </div>
-                <div className={$guide.body}>
-                    {body}
+                    <div className={$guide.body}>
+                        {children}
+                    </div>
                 </div>
             </div>
-        </div>
-    </a>
+        </a>
+    </div>
 }
 
 function $Pointer() {

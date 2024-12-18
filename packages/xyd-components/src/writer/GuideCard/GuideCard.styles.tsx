@@ -2,7 +2,27 @@ import {css} from "@linaria/core";
 
 export const $guide = {
     host: css`
+    `,
+    host$$secondary: css`
+        //flex-grow: 1;
+        //width: 100%;
+        display: flex;
+        position: relative;
+        overflow: hidden;
+        border: .5px solid #ececf1;
+        background: linear-gradient(238deg, rgba(247, 247, 248, .5) 0%, rgba(247, 247, 248, 1) 100%);
+        border-radius: 8px;
+        padding: 16px 20px 20px;
+        z-index: 0;
+        transition: box-shadow .2s ease-in-out, background-image .2s ease;
 
+        &:hover {
+            background: linear-gradient(238deg, rgba(255, 255, 255, .5) 0%, rgba(250, 250, 250, 1) 100%);
+        }
+    `,
+    link: css`
+        width: 100%;
+        height: 100%;
     `,
     item: css`
         border-radius: 8px;
@@ -11,13 +31,17 @@ export const $guide = {
         align-items: flex-start;
         cursor: pointer;
         transition: opacity .15s;
-        
+
         &:hover {
             [data-pointer="true"] {
                 opacity: 1;
                 transform: translate(0);
             }
         }
+    `,
+    item$$secondary: css`
+        width: 100%;
+        height: 100%;
     `,
     icon: css`
         line-height: 0px;
