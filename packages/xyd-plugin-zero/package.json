@@ -3,15 +3,12 @@
   "name": "@xyd/plugin-zero",
   "version": "0.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "main": "./dist/index.js",
+  "type": "module",
   "types": "dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
-    ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
-    }
+    ".": "./dist/index.js"
   },
   "scripts": {
     "clean": "rimraf build",
@@ -20,6 +17,10 @@
     "watch": "tsup --watch"
   },
   "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "peerDependencies": {
     "@xyd/atlas": "workspace:*",
     "@xyd/core": "workspace:*",
     "@xyd/content": "workspace:*",
@@ -36,9 +37,7 @@
     "react-dom": "^18.3.1",
     "react-router": "7.0.0-pre.5",
     "codehike": "^1.0.3",
-    "lightningcss": "^1.27.0"
-  },
-  "devDependencies": {
+    "lightningcss": "^1.27.0",
     "@react-router/dev": "7.0.0-pre.5",
     "@types/react": "^18.3.9",
     "@types/react-dom": "^18.3.0",
@@ -47,5 +46,19 @@
     "typescript": "^5.6.2",
     "vite": "^5.4.9",
     "vite-tsconfig-paths": "^5.0.1"
+  },
+  "peerDependenciesMeta": {
+    "@react-router/node": {
+      "optional": true
+    },
+    "@react-router/serve": {
+      "optional": true
+    },
+    "react-router": {
+      "optional": true
+    },
+    "@react-router/dev": {
+      "optional": true
+    }
   }
 }
