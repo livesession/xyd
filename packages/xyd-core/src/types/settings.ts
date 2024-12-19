@@ -271,6 +271,12 @@ export interface API {
 
     // A string or an array of strings of URL(s) or relative path(s) pointing to your GraphQL file.
     graphql?: string | string[]
+
+    // TODO: better in the future?
+    match?: {
+        graphql?: string
+        openapi?: string
+    }
 }
 
 export interface APIInfo {

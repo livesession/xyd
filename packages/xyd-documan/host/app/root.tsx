@@ -5,9 +5,12 @@ import {
     Scripts,
 } from "react-router";
 
+// TODO: move to theme?
 import "@xyd/ui/index.css";
 import "@xyd/ui2/index.css";
 import "@xyd/components/index.css"
+import "@xyd/fable-wiki/atlas.css"
+import '@xyd/atlas/index.css';
 
 import "./tailwind.css";
 

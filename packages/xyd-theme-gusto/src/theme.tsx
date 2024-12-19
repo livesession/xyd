@@ -76,6 +76,7 @@ function Gusto(props: ThemeProps) {
         </>
         }
         contentNav={props.toc ? <FwToc/> : undefined}
+        kind={props.themeSettings?.bigArticle ? "fullwidth" : undefined}
     />
 }
 

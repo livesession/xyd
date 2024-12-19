@@ -26,7 +26,7 @@ export async function pluginZero(): Promise<{
             urlPrefix: "/docs"
         }
 
-        const docs = docsPlugin(options)
+        const docs = docsPlugin(undefined, options)
         docs.preinstall = docs.preinstall || []
 
         let preinstallMerge = {}
@@ -66,10 +66,9 @@ export async function pluginZero(): Promise<{
 
     {
         const options = {
-            urlPrefix: "/graphql"
         }
 
-        const gql = graphqlPlugin(options)
+        const gql = graphqlPlugin(settings, options)
         gql.preinstall = gql.preinstall || []
 
         let preinstallMerge = {}
@@ -99,11 +98,13 @@ export async function pluginZero(): Promise<{
     }
 
     {
-        const options = {
-            urlPrefix: "/rest"
+        if (typeof settings?.api?.graphql === "string") {
         }
 
-        const oap = openapiPlugin(options)
+        const options = {
+        }
+
+        const oap = openapiPlugin(settings, options)
         oap.preinstall = oap.preinstall || []
 
         let preinstallMerge = {}

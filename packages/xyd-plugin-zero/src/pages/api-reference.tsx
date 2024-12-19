@@ -156,16 +156,18 @@ const LazyAtlasMDX = (id: string) => lazy(async () => {
     let mod;
     let urlPrefix;
 
+    // TODO: dynamic prefix !!!!
+
     switch (id) {
         case "xyd-plugin-zero/openapi":
             // @ts-ignore
             mod = await import("virtual:xyd-plugin-zero/openapi");
-            urlPrefix = "/rest"
+            urlPrefix = "/docs/api/rest"
             break;
         case "xyd-plugin-zero/graphql":
             // @ts-ignore
             mod = await import("virtual:xyd-plugin-zero/graphql");
-            urlPrefix = "/graphql"
+            urlPrefix = "/docs/api/graphql"
             break;
         default:
             throw new Error("invalid route id");
