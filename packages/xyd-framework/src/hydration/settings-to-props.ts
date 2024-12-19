@@ -1,10 +1,55 @@
 // server-only
 
-import {Navigation, PageFrontMatter, Settings} from "@xyd/core";
+import {Sidebar, PageFrontMatter, Settings, SidebarMulti} from "@xyd/core";
 import {filterNavigationByLevels, pageFrontMatters} from "@xyd/content/navigation";
 import {IBreadcrumb, INavLinks} from "@xyd/ui";
 
-import {FwSidebarGroupProps} from "../components/sidebar";
+import {FwSidebarGroupProps} from "../react";
+
+// TODO: framework vs content responsibility
+
+function filterNavigation(settings: Settings, slug: string): Sidebar[] {
+    const sidebarItems: Sidebar[] = []
+
+    let multiSidebarMatch: SidebarMulti | null = null
+
+    settings?.structure?.sidebar.filter(sidebar => {
+        if ("match" in sidebar) {
+            const sideMatch = normalizeHref(sidebar.match)
+            const normalizeSlug = normalizeHref(slug)
+
+            // TODO: startWith is not enough e.g `/docs/apps/buildISSUE` if `/docs/apps/build`
+            if (normalizeSlug.startsWith(sideMatch)) {
+                if (multiSidebarMatch) {
+                    const findByMatchLvl = multiSidebarMatch.match.split("/").length
+                    const urlMatchLvl = sideMatch.split("/").length
+
+                    if (urlMatchLvl > findByMatchLvl) {
+                        multiSidebarMatch = sidebar
+                    }
+                } else {
+                    multiSidebarMatch = sidebar
+                }
+            }
+
+            return
+        }
+
+        // TODO: better algorithm
+        const ok = filterNavigationByLevels(settings?.structure?.header || [], slug)(sidebar)
+
+        if (ok) {
+            sidebarItems.push(sidebar)
+        }
+    })
+
+    if (multiSidebarMatch != null) {
+        const side = multiSidebarMatch as SidebarMulti
+        sidebarItems.push(...side.items)
+    }
+
+    return sidebarItems
+}
 
 // TODO: rename this because it's no longer 'navigation' because it returns breadcrumbs, sidebar and nextlinks props
 // TODO: breadcrumbs and frontmatters as content plugins?
@@ -22,6 +67,14 @@ function normalizeHrefCheck(first: string, second: string) {
     return first === second
 }
 
+function normalizeHref(href: string) {
+    if (href.startsWith("/")) {
+        return href
+    }
+
+    return `/${href}`
+}
+
 function safePageLink(page: string): string {
     return page?.startsWith("/") ? page : `/${page}`
 }
@@ -35,7 +88,7 @@ export async function mapSettingsToProps(
     breadcrumbs: IBreadcrumb[]
     navlinks?: INavLinks
 }> {
-    const filteredNav = settings.structure?.navigation?.filter(filterNavigationByLevels(settings?.structure?.tabs || [], slug)) || []
+    const filteredNav = filterNavigation(settings, slug)
     const frontmatters = await pageFrontMatters(filteredNav)
 
     const slugFrontmatter = frontmatters[slug] || null
@@ -43,9 +96,9 @@ export async function mapSettingsToProps(
     let navlinks: INavLinks | undefined = undefined
 
     function mapItems(
-        page: string | Navigation,
-        currentNav: Navigation,
-        nav: Navigation[]
+        page: string | Sidebar,
+        currentNav: Sidebar,
+        nav: Sidebar[]
     ) {
         if (typeof page !== "string") {
             const items = page.pages?.map((p) => mapItems(p, page, nav))
@@ -79,7 +132,6 @@ export async function mapSettingsToProps(
                 navlinks = nlinks
             }
 
-            // console.log(page, currentNav.group, nav)
             if (currentNav.group) {
                 breadcrumbs.push({
                     title: currentNav.group,
@@ -100,9 +152,20 @@ export async function mapSettingsToProps(
     }
 
     const groups = filteredNav.map((nav) => {
+        // TODO: finish
+        if ("match" in nav) {
+            return {
+                group: "",
+                items: [],
+            } as FwSidebarGroupProps
+        }
+
         return {
             group: nav.group,
-            items: nav.pages?.map((p) => mapItems(p, nav, filteredNav)) || [],
+            items: nav.pages?.map((p) => {
+                // @ts-ignore
+                return mapItems(p, nav, filteredNav)
+            }) || [],
         } as FwSidebarGroupProps
     }) || []
 
@@ -114,9 +177,9 @@ export async function mapSettingsToProps(
 }
 
 function mapNavToLinks(
-    page: string | Navigation,
-    currentNav: Navigation,
-    nav: Navigation[],
+    page: string | Sidebar,
+    currentNav: Sidebar,
+    nav: Sidebar[],
     frontmatters: PageFrontMatter
 ): INavLinks | undefined {
     if (!currentNav.group) {

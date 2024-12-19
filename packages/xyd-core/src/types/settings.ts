@@ -47,7 +47,7 @@ export interface Styling {
     modeToggle?: ModeToggle
 
     // Customize the styling of components within the sidebar.
-    sidebar?: Sidebar
+    sidebar?: StyleSidebar
 
     // Styling configurations for the topbar.
     topbar?: Topbar
@@ -117,8 +117,8 @@ export interface ModeToggle {
     isHidden?: boolean
 }
 
-export interface Sidebar {
-    // The styling of the navigation item.
+export interface StyleSidebar {
+    // The styling of the sidebar item.
     items: "container" | "card" | "border" | "undecorated"
 }
 
@@ -139,11 +139,11 @@ export type Rounded = "default" | "sharp"
 
 // ------ START  setting for structure START ------
 export interface Structure {
-    // An array of groups with all the pages within that group
-    navigation: Navigation[]
+    // Definition of sidebar - an array of groups with all the pages within that group
+    sidebar: (SidebarMulti | Sidebar) []
 
-    // Array of names and urls of links you want to include in the topbar
-    topbarLinks?: TopbarLink[]
+    // Array of headers
+    header?: Header[]
 
     // The call to action button in the topbar
     topbarCtaButton?: CallToAction
@@ -151,14 +151,8 @@ export interface Structure {
     // Array of version names. Only use this if you want to show different versions of docs with a dropdown in the navigation bar.
     versions?: string[]
 
-    // An array of the anchors, includes the icon, color, and url.
-    anchors?: Anchor[]
-
-    // Override the default configurations for the top-most anchor. Note: if you have tabs configured, this does not apply.
-    topAnchor?: Anchor
-
-    // An array of navigational tabs.
-    tabs?: Tab[]
+    // Anchors, includes the icon, name, and url.
+    anchors?: AnchorRoot
 
     // An object of social media accounts where the key:property pair represents the social media platform and the account url.
     footerSocials?: FooterSocials
@@ -170,13 +164,21 @@ export interface Structure {
     search?: Search
 }
 
-export interface Navigation {
+export interface SidebarMulti {
+    // routing match
+    match: string
+
+    // sidebar items
+    items: Sidebar[]
+}
+
+export interface Sidebar {
     // The name of the group.
     group?: string
 
     // The relative paths to the markdown files that will serve as pages.
     // Note: groups are recursive, so to add a sub-folder add another group object in the page array.
-    pages?: (string | Navigation)[]
+    pages?: (string | Sidebar)[]
 
     // The Fontawesome icon for the group. Note: this only applies to sub-folders.
     icon?: string
@@ -185,12 +187,20 @@ export interface Navigation {
     iconType?: string
 }
 
-export interface TopbarLink {
+export interface SubHeader {
+    match: string
+    name: string
+    items: Header[]
+}
+
+export interface Header {
     // The name of the button.
     name?: string
 
     // The url once you click on the button. Example: https://mintlify.com/contact
     url?: string
+
+    sub?: SubHeader
 }
 
 export interface CallToAction {
@@ -211,37 +221,18 @@ export interface CallToAction {
 }
 
 export interface Anchor {
-    // The Font Awesome icon used to feature the anchor.
-    icon?: string
+    // The Font Awesome or JSX icon used to feature the anchor.
+    icon?: string | JSX.Element
 
     // The name of the anchor label.
     name?: string
 
     // The start of the URL that marks what pages go in the anchor. Generally, this is the name of the folder you put your pages in.
     url?: string
-
-    // The hex color of the anchor icon background. Can also be a gradient if you pass an object with the properties from and to that are each a hex color.
-    color?: string
-
-    // Used if you want to hide an anchor until the correct docs version is selected.
-    version?: string
-
-    // Pass `true` if you want to hide the anchor until you directly link someone to docs inside it.
-    isDefaultHidden?: boolean
-
-    // One of: “brands”, “duotone”, “light”, “sharp-solid”, “solid”, or “thin”
-    iconType?: string
 }
 
-export interface Tab {
-    // The name of the tab label.
-    name?: string
-
-    // The start of the URL that marks what pages go in the tab. Generally, this is the name of the folder you put your pages in.
-    url?: string
-
-    // Pass true if you want to hide the tab until you directly link someone to docs inside it.
-    isDefaultHidden?: boolean
+export interface AnchorRoot {
+    bottom: Anchor[]
 }
 
 export interface FooterSocials {
@@ -280,6 +271,12 @@ export interface API {
 
     // A string or an array of strings of URL(s) or relative path(s) pointing to your GraphQL file.
     graphql?: string | string[]
+
+    // TODO: better in the future?
+    match?: {
+        graphql?: string
+        openapi?: string
+    }
 }
 
 export interface APIInfo {

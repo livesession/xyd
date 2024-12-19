@@ -7,25 +7,20 @@ import {
 } from '@xyd/components/layouts';
 
 import {
-    getComponents,
     UIAside,
     UIBreadcrumb,
 
     UIFile,
     UIFolder,
     UIMenu,
-    UINav,
 
-    UINavItem,
     UINavLinks,
-    UINavLogo,
 
     UISeparator,
+    getComponents,
 
-    UIToc,
-    UITocItem,
 } from "@xyd/ui";
-import {Toc} from "@xyd/ui2"
+import {Nav, Toc, SubNav} from "@xyd/ui2"
 
 import {LiveSessionPlatformLogo} from "./logo.tsx";
 import Content from "../../content/hello-world.mdx";
@@ -42,6 +37,7 @@ export default {
 export const Default = () => {
     return <Layout
         header={<DemoNavbar/>}
+        subheader
         aside={<DemoSidebar/>}
         content={<DemoContent/>}
         contentNav={<DemoTOC/>}
@@ -49,23 +45,34 @@ export const Default = () => {
 }
 
 function DemoNavbar() {
-    return <UINav>
-        <UINavLogo>
-            <LiveSessionPlatformLogo/>
-        </UINavLogo>
-
-        <>
-            <UINavItem href="/example" active>
+    return <>
+        <Nav
+            value="api-reference"
+            logo={<LiveSessionPlatformLogo/>}
+            kind="middle"
+        >
+            <Nav.Item value="docs" href="/docs">
                 Docs
-            </UINavItem>
-            <UINavItem href="/example">
+            </Nav.Item>
+            <Nav.Item value="api-reference" href="/api">
                 API Reference
-            </UINavItem>
-            <UINavItem href="/example">
+            </Nav.Item>
+            <Nav.Item value="graphql" href="/graphql">
                 GraphQL
-            </UINavItem>
-        </>
-    </UINav>
+            </Nav.Item>
+        </Nav>
+        <SubNav title="Apps" value="build">
+            <SubNav.Item value="build" href="/build">
+                Build
+            </SubNav.Item>
+            <SubNav.Item value="design" href="/design">
+                Design
+            </SubNav.Item>
+            <SubNav.Item value="launch" href="/launch">
+                Launch
+            </SubNav.Item>
+        </SubNav>
+    </>
 }
 
 function DemoSidebar() {
@@ -78,6 +85,15 @@ function DemoSidebar() {
             </UISeparator>
 
             <UIFile title="Introduction" href="/introduction"/>
+            <UIFolder title="Root nested" isOpen active>
+                <UIFile title="Nested A"/>
+                <UIFile title="Nested B"/>
+                <UIFolder title="Nested root C" isOpen active>
+                    <UIFile title="Nested C.A"/>
+                    <UIFile title="Nested C.B"/>
+                </UIFolder>
+            </UIFolder>
+
             <UIFile title="Authentication" href="/authentication"/>
             <UIFile title="Making Requests" href="/making-requests"/>
 

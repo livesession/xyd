@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useState} from "react";
-import {useLocation, useNavigate} from "react-router";
+import {useLocation} from "react-router";
 
 import {FwSidebarItemProps} from "./sidebar";
 import { UIContext } from "../../contexts/ui";

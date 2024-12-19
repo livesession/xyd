@@ -70,7 +70,7 @@ styled.separator = tv({
     variants: {
         active: {
             true: {
-                container: "mt-5 mb-2 px-2 py-1.5 text-sm font-semibold text-gray-900 first:mt-0 dark:text-gray-100"
+                container: "mt-5 mb-2 px-2 text-xs tracking-wide font-semibold text-gray-900 first:mt-0 dark:text-gray-100"
             }
         }
     }
@@ -89,7 +89,7 @@ styled.file = tv({
             false: {
                 list: "",
                 link: cn(
-                    'text-[#1c1e1e] hover:bg-gray-100 hover:text-gray-900',
+                    'text-[#6e6e80] hover:bg-gray-100 hover:text-gray-900',
                     'dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50',
                     'contrast-more:text-gray-900 contrast-more:dark:text-gray-50',
                     'contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50'
@@ -135,7 +135,7 @@ styled.folder = tv({
             },
             false: {
                 container: cn(
-                    'text-[#1c1e1e] hover:bg-gray-100 hover:text-gray-900',
+                    'text-[#6e6e80] hover:bg-gray-100 hover:text-gray-900',
                     'dark:text-neutral-400 dark:hover:bg-primary-100/5 dark:hover:text-gray-50',
                     'contrast-more:text-gray-900 contrast-more:dark:text-gray-50',
                     'contrast-more:border-transparent contrast-more:hover:border-gray-900 contrast-more:dark:hover:border-gray-50'
@@ -151,7 +151,7 @@ styled.folder = tv({
 })
 
 styled.menu = tv({
-    base: "flex flex-col gap-1",
+    base: "flex flex-col",
     variants: {
         mobile: {
             true: "xyd-menu-mobile md:hidden",

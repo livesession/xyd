@@ -1,11 +1,23 @@
 import {css} from "@linaria/core";
 
 const globalPageGutter = '8px';
-const globalHeaderHeight = '46px';
+export const globalHeaderHeight = '46px';
 const globalHeaderWarningHeight = "0px";
+const contentTopSpace = "12px";
+
+const globalHeaderHeightWithSub = '90px';
 
 const cubicMove = "cubic-bezier(.65, 0, .35, 1)";
 const sidebarWidth = "210px";
+
+// TODO: better solution - design tokens
+export const globals = css`
+    :global() {
+        :root {
+            --xyd-navbar-height: ${globalHeaderHeight};
+        }
+    }
+`;
 
 export const $layout = {
     host: css`
@@ -21,7 +33,15 @@ export const $layout = {
         right: ${globalPageGutter};
         left: ${globalPageGutter};
 
-        height: ${globalHeaderHeight}
+        height: ${globalHeaderHeight};
+    `,
+    header$$sub: css`
+        flex-direction: column;
+        height: ${globalHeaderHeightWithSub};
+        transition: transform 200ms;
+    `,
+    header$$hideMain: css`
+        transform: translateY(calc(-${globalHeaderHeight} + 3px));
     `,
     main: css`
         position: fixed;
@@ -29,7 +49,10 @@ export const $layout = {
         bottom: ${globalPageGutter};
         left: ${globalPageGutter};
         right: ${globalPageGutter};
-    }
+    }`,
+    main$$sub: css`
+        top: calc(${globalHeaderHeightWithSub} + ${globalHeaderWarningHeight});
+        transition: top 200ms;
     `,
     sidebar: css`
         flex-direction: column;
@@ -41,7 +64,7 @@ export const $layout = {
         z-index: 101;
         width: ${sidebarWidth};
         border: 0;
-        padding: 14px 0 0;
+        padding: ${contentTopSpace} 0 0;
         overflow: visible;
         background: none;
         border-radius: 0;
@@ -54,7 +77,7 @@ export const $layout = {
 export const $page = {
     host: css`
         position: absolute;
-        top: 0;
+        top: ${contentTopSpace};
         right: 0;
         bottom: 0;
         z-index: 201;
@@ -62,7 +85,7 @@ export const $page = {
 
         //border-radius: 8px;
         //border: 1px solid #ececf1;
-        
+
         overflow: hidden;
         transition: opacity .3s ${cubicMove};
 
@@ -90,14 +113,20 @@ export const $page = {
     articleContainer: css`
         width: 980px;
         padding: 40px 56px;
+        padding-top: 20px;
         max-width: 100%;
         margin: 0 auto;
-    `
+    `,
+    articleContainer$$fullWidth: css`
+        width: 1200px;
+    `,
+
 }
 
 export const $article = {
     host: css`
         display: flex;
+        gap: 30px;
         width: 100%;
         align-items: flex-start;;
     `,
@@ -107,7 +136,7 @@ export const $article = {
     `,
     nav: css`
         position: sticky;
-        top: 50px;
+        top: 30px;
         width: 180px;
         margin-top: 0;
         margin-left: 50px;

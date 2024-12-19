@@ -13,10 +13,10 @@ import {
 } from "@xyd/uniform/markdown";
 
 import {Plugin} from "../../types"
+import {SidebarMulti} from "@xyd/core/src/types/settings";
 
 interface openapiPluginOptions {
-    urlPrefix: string
-    group?: string // TODO: nested groups ?
+    urlPrefix?: string
     root?: string
 }
 
@@ -36,13 +36,32 @@ function preinstall(options: openapiPluginOptions) {
             return
         }
 
+        let urlPrefix = ""
+
+        if (settings?.api?.match?.openapi) {
+            settings?.structure?.sidebar.forEach((sidebar) => {
+                if ("match" in sidebar) {
+                    if (sidebar.match === settings?.api?.match?.openapi) {
+                        if (urlPrefix) {
+                            throw new Error('multiple sidebars found for openapi match')
+                        }
+                        urlPrefix = sidebar.match
+                    }
+                }
+            })
+        }
+
+        if (!urlPrefix) {
+            throw new Error('urlPrefix not found')
+        }
+
         const openApiPath = path.join(root, settings.api?.openapi);
         const schema = await deferencedOpenAPI(openApiPath)
 
         const uniformRefs = oapSchemaToReferences(schema)
         const uniformWithNavigation = uniform(uniformRefs, {
             plugins: [pluginNavigation({
-                urlPrefix: options.urlPrefix,
+                urlPrefix,
             })]
         })
 
@@ -57,7 +76,7 @@ function preinstall(options: openapiPluginOptions) {
                 const ast = referenceAST(ref)
                 const md = compileMarkdown(ast)
 
-                const byCanonical = path.join(options.urlPrefix, ref.canonical) // TODO: get canoncial name from uniformWithNavigation ?
+                const byCanonical = path.join(urlPrefix, ref.canonical) // TODO: get canoncial name from uniformWithNavigation ?
                 const mdPath = path.join(root, byCanonical + '.md')
 
                 const frontmatter = uniformWithNavigation.out.pageFrontMatter[byCanonical]
@@ -82,28 +101,30 @@ function preinstall(options: openapiPluginOptions) {
             })
         )
 
-        if (settings.structure?.navigation) {
-            if (!options.group) {
-                settings.structure.navigation.push(...uniformWithNavigation.out.navigation)
+        if (settings.structure?.sidebar) {
+            if (settings?.api?.match?.openapi) {
+                const sidebars: SidebarMulti[] = []
+
+                settings.structure.sidebar.forEach((sidebar) => {
+                    if ("match" in sidebar) {
+                        if (sidebar.match === settings?.api?.match?.openapi) {
+                            sidebars.push(sidebar)
+                        }
+                    }
+                })
+
+                if (sidebars.length > 1) {
+                    throw new Error('multiple sidebars found for openapi match')
+                }
+
+                sidebars[0].items.push(...uniformWithNavigation.out.sidebar)
 
                 return {
                     openapiMerged: mergedChunks
                 }
             }
 
-            const currentGroup = settings.structure.navigation.find(nav => nav.group === options.group)
-
-            if (!currentGroup) {
-                return {
-                    openapiMerged: mergedChunks
-                }
-            }
-
-            if (currentGroup?.pages) {
-                currentGroup.pages.push(...uniformWithNavigation.out.navigation)
-            } else {
-                console.error('group does not have pages', currentGroup)
-            }
+            settings.structure.sidebar.push(...uniformWithNavigation.out.sidebar)
 
             return {
                 openapiMerged: mergedChunks
@@ -111,7 +132,7 @@ function preinstall(options: openapiPluginOptions) {
         }
 
         settings.structure = {
-            navigation: uniformWithNavigation.out.navigation
+            sidebar: uniformWithNavigation.out.sidebar
         }
 
         return {
@@ -144,13 +165,33 @@ function vitePluginOapContent() {
 }
 
 // TODO: custom route?
-function plugin(options: openapiPluginOptions) {
+function plugin(
+    settings: Settings,
+    options: openapiPluginOptions
+) {
+    let routeMatch = ""
+
+    if (settings?.api?.match?.openapi) {
+        settings?.structure?.sidebar.forEach((sidebar) => {
+            if ("match" in sidebar) {
+                if (sidebar.match === settings?.api?.match?.openapi) {
+                    if (routeMatch) {
+                        throw new Error('multiple sidebars found for graphql match')
+                    }
+                    routeMatch = sidebar.match.endsWith("/") ? `${sidebar.match}*` : `${sidebar.match}/*`
+                }
+            }
+        })
+    } else {
+        routeMatch = options.urlPrefix ? `${options.urlPrefix}/*` : "/rest/*"
+    }
+
     return {
         preinstall: [
             preinstall
         ],
         routes: [
-            route(options.urlPrefix ? options.urlPrefix + "/*" : "/rest/*", "../../../xyd-plugin-zero/src/pages/api-reference.tsx", {
+            route(routeMatch, "../../../xyd-plugin-zero/src/pages/api-reference.tsx", {
                 id: "xyd-plugin-zero/openapi",
             }),
         ],

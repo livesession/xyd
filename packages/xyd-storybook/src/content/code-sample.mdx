@@ -1,0 +1,12 @@
+```js Track User Events
+import ls from " @livesession/sdk";
+
+ls.init("123456789", { keystrokes: true, rootHostname: ".mypage.com" });
+
+ls.track("User Subscribed", {
+  plan: "premium",
+  seats: 1,
+  total: 255.50,
+  isPatron: true
+});
+```

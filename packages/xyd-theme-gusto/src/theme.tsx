@@ -2,25 +2,19 @@ import React from "react"
 
 import {ITOC, IBreadcrumb, INavLinks} from "@xyd/ui"
 import {
-    FwHead,
-    FwNavLogo,
-    FwTopbarLinks,
-    FwSidebarGroups,
+    FwNav,
     FwToc,
-    FwBreadcrumbs,
     FwNavLinks,
+    FwSubNav,
+
+    FwSidebarGroups,
     WithApp,
+    useMatchedSubNav,
 } from "@xyd/framework"
 import type {
     FwSidebarGroupProps
 } from "@xyd/framework"
-import {Layout as ComponentLayout} from "@xyd/components/layouts"
-import {
-    UINav,
-
-    UIAside,
-    UIMenu,
-} from "@xyd/ui";
+import {Layout} from "@xyd/components/layouts"
 import {Settings} from "@xyd/core";
 
 // TODO: theme settings context
@@ -43,13 +37,6 @@ export interface ThemeProps {
     navlinks?: INavLinks
 }
 
-function ThemeRoot({children}) {
-    return <>
-        <FwHead/>
-        {children}
-    </>
-}
-
 // TODO: theme should take care of mdx components props
 export default function ThemeGusto(props: ThemeProps) {
     // TODO: breadcrumbs, navigation links
@@ -63,45 +50,48 @@ export default function ThemeGusto(props: ThemeProps) {
     )
 
     return <App>
-        <ComponentLayout
-            header={<Navbar/>}
-            aside={<Sidebar themeSettings={props.themeSettings}/>}
-            content={<>
-                {/*TODO: optional breadcrumbs*/}
-                {/*{props.breadcrumbs ? <FwBreadcrumbs/> : undefined}*/}
-                {/* TODO: FIX THAT */}
-                <div style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "24px"
-                }}>
-                    {props.children}
-                </div>
-                {props.navlinks ? <FwNavLinks/> : undefined}
-            </>
-            }
-            contentNav={props.toc ? <FwToc/> : undefined}
-        />
+        <Gusto {...props}/>
     </App>
+}
+
+function Gusto(props: ThemeProps) {
+    const subheader = !!useMatchedSubNav()
+
+    return <Layout
+        header={<Navbar/>}
+        subheader={subheader}
+        aside={<Sidebar themeSettings={props.themeSettings}/>}
+        content={<>
+            {/*TODO: optional breadcrumbs*/}
+            {/*{props.breadcrumbs ? <FwBreadcrumbs/> : undefined}*/}
+            {/* TODO: FIX THAT */}
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "24px"
+            }}>
+                {props.children}
+            </div>
+            {props.navlinks ? <FwNavLinks/> : undefined}
+        </>
+        }
+        contentNav={props.toc ? <FwToc/> : undefined}
+        kind={props.themeSettings?.bigArticle ? "fullwidth" : undefined}
+    />
 }
 
 // TODO: finish search - and move to framework?
 function Navbar() {
-    return <UINav>
-        <FwNavLogo/>
-
-        <FwTopbarLinks/>
-    </UINav>
+    return <>
+        <FwNav kind="middle"/>
+        <FwSubNav/>
+    </>
 }
 
 // TODO: onePathBehaviour does not work - fix that
 function Sidebar({themeSettings}: { themeSettings?: ThemeSettings }) {
-    return <UIAside>
-        <UIMenu>
-            <FwSidebarGroups
-                onePathBehaviour={themeSettings?.sidebar?.onePathBehaviour}
-                clientSideRouting={themeSettings?.sidebar?.clientSideRouting}
-            />
-        </UIMenu>
-    </UIAside>
+    return <FwSidebarGroups
+        onePathBehaviour={themeSettings?.sidebar?.onePathBehaviour}
+        clientSideRouting={themeSettings?.sidebar?.clientSideRouting}
+    />
 }
