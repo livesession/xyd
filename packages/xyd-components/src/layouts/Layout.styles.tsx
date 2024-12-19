@@ -116,7 +116,11 @@ export const $page = {
         padding-top: 20px;
         max-width: 100%;
         margin: 0 auto;
-    `
+    `,
+    articleContainer$$fullWidth: css`
+        width: 1200px;
+    `,
+
 }
 
 export const $article = {

@@ -56,12 +56,11 @@ function FwSidebarItem(props: FwSidebarItemProps) {
         button={!!props.items?.length}
         href={props.href}
         active={activeLink}
-        onClick={() => {
-        }}
+        onClick={setActive}
     >
         {props.title}
         {
-            props.items?.length && <UISidebar.SubTree>
+            props.items?.length && <UISidebar.SubTree isOpen={isActive}>
                 <>
                     {
                         props.items?.map((item, index) => <FwSidebarItem

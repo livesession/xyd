@@ -89,7 +89,7 @@ export function vitePluginTheme() {
 }
 
 // TODO: custom route?
-function plugin(options: docsPluginOptions) {
+function plugin(_, options: docsPluginOptions) {
     return {
         preinstall: [
             preinstall

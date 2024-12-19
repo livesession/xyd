@@ -8,6 +8,7 @@ export interface LayoutProps {
     content: React.ReactNode;
     contentNav: React.ReactNode;
     subheader?: boolean;
+    kind?: "fullwidth"
 }
 
 
@@ -65,16 +66,21 @@ export function Layout(props: LayoutProps) {
             <div className={$page.host}>
                 <div className={$page.scroll}>
                     <div className={$page.container}>
-                        <div className={$page.articleContainer}>
+                        <div className={`
+                            ${$page.articleContainer}
+                            ${props.kind == "fullwidth" && $page.articleContainer$$fullWidth}
+                        `}>
                             <article className={$article.host}>
                                 <section className={$article.content}>
                                     {props.content}
                                 </section>
-                                <nav className={`
+                                {
+                                    props.kind != "fullwidth" && <nav className={`
                                     ${$article.nav}
                                 `}>
-                                    {props.contentNav}
-                                </nav>
+                                        {props.contentNav}
+                                    </nav>
+                                }
                             </article>
                         </div>
                     </div>

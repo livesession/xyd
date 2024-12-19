@@ -94,7 +94,7 @@ type Query {
     """
     ---
     title: Users
-    group: [GraphQL, Users]
+    group: [Endpoints, Users]
     ---
 
     Get a list of all users
@@ -104,7 +104,7 @@ type Query {
     """
     ---
     title: User
-    group: [GraphQL, Users]
+    group: [Endpoints, Users]
     ---
 
     Get a user by ID
@@ -114,7 +114,7 @@ type Query {
     """
     ---
     title: Todos
-    group: [GraphQL, Todos]
+    group: [Endpoints, Todos]
     ---
 
     Get a list of all todos
@@ -124,7 +124,7 @@ type Query {
     """
     ---
     title: Todo
-    group: [GraphQL, Todos]
+    group: [Endpoints, Todos]
     ---
 
     Get a todo by ID
@@ -145,7 +145,7 @@ type Mutation {
     """
     ---
     title: Create User
-    group: [GraphQL, Users]
+    group: [Endpoints, Users]
     ---
 
     Create a new user
@@ -155,7 +155,7 @@ type Mutation {
     """
     ---
     title: Create Todo
-    group: [GraphQL, Todos]
+    group: [Endpoints, Todos]
     ---
 
     Create a new todo
@@ -165,7 +165,7 @@ type Mutation {
     """
     ---
     title: Update Todo
-    group: [GraphQL, Todos]
+    group: [Endpoints, Todos]
     ---
 
     Update an existing todo
@@ -175,7 +175,7 @@ type Mutation {
     """
     ---
     title: Delete Todo
-    group: [GraphQL, Todos]
+    group: [Endpoints, Todos]
     ---
 
     Delete a todo by ID

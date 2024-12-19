@@ -144,8 +144,12 @@ export default {
                     "name": "API",
                     "items": [
                         {
-                            "name": "Browser API",
+                            "name": "Browser",
                             "url": "/docs/api/browser"
+                        },
+                        {
+                            "name": "REST",
+                            "url": "/docs/api/rest"
                         },
                         {
                             "name": "GraphQL",
@@ -195,6 +199,12 @@ export default {
 
     "api": {
         "openapi": "./openapi.yaml",
-        "graphql": "./schema.graphqls"
+        "graphql": "./schema.graphqls",
+
+        // TODO: in the futre per api?
+        "match": {
+            "graphql": "docs/api/graphql",
+            "openapi": "docs/api/rest"
+        }
     }
 }
