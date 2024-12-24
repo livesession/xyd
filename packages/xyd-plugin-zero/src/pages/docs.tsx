@@ -1,5 +1,5 @@
 import React from "react";
-
+import {redirect} from "react-router";
 import {
     getComponents,
 } from "@xyd/ui";
@@ -20,10 +20,12 @@ import {
     GuideCard,
     Steps,
     Tabs,
+    Table,
 
     IconSessionReplay,
     IconMetrics,
     IconFunnels,
+    IconCode,
 } from "@xyd/components/writer";
 
 interface loaderData {
@@ -43,8 +45,14 @@ function getPathname(url: string) {
 export async function loader({request}: { request: any }) {
     const slug = getPathname(request.url)
 
-    const code = await compileBySlug(slug, true)
+    let code = ""
+    let error: any
 
+    try {
+        code = await compileBySlug(slug, true)
+    } catch (e) {
+        error = e
+    }
     const {
         groups: sidebarGroups,
         breadcrumbs,
@@ -53,6 +61,18 @@ export async function loader({request}: { request: any }) {
         settings,
         slug
     )
+
+    if (error) {
+        if (sidebarGroups && error.code === "ENOENT") {
+            const firstItem = sidebarGroups?.[0]?.items?.[0]
+
+            if (firstItem) {
+                return redirect(firstItem.href)
+            }
+        }
+
+        console.error(error)
+    }
 
     return {
         sidebarGroups,
@@ -78,7 +98,7 @@ function mdxExport(code: string) {
 
 // // TODO: move to content?
 function mdxContent(code: string) {
-    const content = mdxExport(code)
+    const content = mdxExport(code) // TODO: fix any
     if (!mdxExport) {
         return {}
     }
@@ -87,6 +107,7 @@ function mdxContent(code: string) {
         component: content?.default,
         toc: content?.toc,
         frontmatter: content?.frontmatter,
+        themeSettings: content?.themeSettings || {},
     }
 }
 
@@ -104,11 +125,35 @@ const components = {
     GuideCard,
     Steps,
     Tabs,
-
+    Table,
 
     IconSessionReplay,
     IconMetrics,
     IconFunnels,
+    IconCode,
+
+    // TODO: refactor
+    Content({children}) {
+        return <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px"
+        }}>
+            {children}
+        </div>
+    },
+
+    // TODO: refactor
+    Subtitle({children}) {
+        return <div style={{
+            marginTop: "-18px",
+            fontSize: "18px",
+            color: "#7051d4",
+            fontWeight: 300
+        }}>
+            {children}
+        </div>
+    }
 }
 
 export default function Slug({loaderData, ...rest}: { loaderData: loaderData }) {
@@ -121,6 +166,7 @@ export default function Slug({loaderData, ...rest}: { loaderData: loaderData }) 
         toc={content.toc}
         breadcrumbs={loaderData.breadcrumbs}
         navlinks={loaderData.navlinks}
+        themeSettings={content.themeSettings}
     >
         {Component ? <Component components={components}/> : <></>}
     </Theme>

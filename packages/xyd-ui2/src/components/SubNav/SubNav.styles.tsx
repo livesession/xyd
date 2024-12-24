@@ -7,7 +7,7 @@ export const $subNav = {
         border-radius: 0.50rem;
         display: flex;
         flex-direction: row;
-        
+
         width: 100%;
         height: 44px;
         margin-top: 3px;
@@ -48,6 +48,12 @@ export const $subNav = {
         position: relative;
 
         &[data-state="active"] {
+            font-weight: 500;
+
+            a {
+                color: #202223;
+            }
+
             a:after {
                 background-color: #7051d4;
                 border-radius: 1px;
@@ -61,11 +67,15 @@ export const $subNav = {
         }
     `,
     link: css`
-        color: #202223;
+        color: #4b5563;
         //font: var(--font-sans-font-nav-item-active-base);
         line-height: 2.75rem;
         display: block;
         height: 100%;
         padding: 0 0.50rem;
+
+        &:hover {
+            color: #202223;
+        }
     `
 }

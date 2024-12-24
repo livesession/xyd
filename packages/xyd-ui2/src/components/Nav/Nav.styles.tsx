@@ -39,7 +39,7 @@ export const $list = {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 14px;
+        gap: 8px;
     `,
 }
 
@@ -49,19 +49,28 @@ export const $item = {
         position: relative;
         white-space: nowrap;
         color: #4b5563; /* Gray-600 */
-
+        padding: 6px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
         &:hover {
             color: #1f2937; /* Gray-800 */
         }
 
         &[data-state="active"] {
             font-weight: bold;
+            background: #f9f9f9;
+            border-radius: 8px;
         }
     `,
     title1: css`
         position: absolute;
         inset: 0;
         text-align: center;
+        align-items: center;
+        display: flex;
+        justify-content: center;
     `,
     title2: css`
         visibility: hidden;

@@ -6,17 +6,11 @@ export * from "./Anchor";
 
 export * from "./Breadcrumb";
 
-export * from "./Collapse";
-
 export * from "./Input";
 
 export * from "./MDX";
 
 export * from "./NavLinks";
-
-export * from "./Search";
-
-export * from "./Sidebar";
 
 
 

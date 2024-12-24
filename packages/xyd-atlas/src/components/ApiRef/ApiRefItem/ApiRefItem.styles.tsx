@@ -40,7 +40,7 @@ export const $refItem = {
     grid: css`
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        align-items: flex-start;
+        align-items: normal;
         gap: 100px;
     `,
 }

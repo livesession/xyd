@@ -10,7 +10,7 @@ import {Toc, SubNav, UISidebar} from "@xyd/ui2"
 import type {ITOC} from "@xyd/ui";
 
 import {useBreadcrumbs, useNavLinks, useSettings, useSidebarGroups, useToC} from "../contexts";
-import {FwSidebarItemGroup, FwSidebarGroupContext} from "./sidebar";
+import {FwSidebarItemGroup, FwSidebarGroupContext, FwSidebarItemProps} from "./sidebar";
 import {Nav} from "@xyd/ui2";
 
 import {manualHydration} from "../utils/manualHydration";
@@ -24,20 +24,14 @@ function FwNavLogo() {
     return logo
 }
 
-function isActive(l: string) {
-    let ll = l.startsWith("/") ? l : "/" + l
-
-    if (typeof window !== "undefined") {
-        return window.location.pathname.startsWith(ll)
-    }
-
-    return false // TODO: ssr
-}
-
 function FwNav({kind}: { kind?: "middle" }) {
+    const matchedSubnav = useMatchedSubNav()
+    const location = useLocation()
+
     const settings = useSettings()
 
-    const active = settings?.structure?.header?.find(item => isActive(item.url || ""))
+    const headers = matchedSubnav ? matchedSubnav?.items : settings?.structure?.header
+    const active = headers?.find(item => location.pathname.startsWith(item.url || ""))
 
     return <Nav
         value={active?.url || ""}
@@ -68,7 +62,8 @@ function FwSubNav() {
         return null
     }
 
-    const active = matchedSubnav?.items.find(item => location.pathname.startsWith(item.url || ""))
+    // TODO: in the future routing props from settings like {match: "/docs/api/browser"}
+    const active = matchedSubnav?.items.findLast(item => location.pathname.startsWith(item.url || ""))
 
     // TODO: value
     return <SubNav
@@ -89,6 +84,24 @@ function FwSubNav() {
 export interface FwSidebarGroupsProps {
     onePathBehaviour?: boolean
     clientSideRouting?: boolean
+}
+
+function recursiveSearch(items: FwSidebarItemProps[], href: string, levels: any[] = []) {
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+
+        if (item.href === href) {
+            return [...levels, i]
+        }
+
+        if (item.items) {
+            const result = recursiveSearch(item.items, href, [...levels, i])
+            if (result) {
+                return result
+            }
+        }
+    }
+    return null
 }
 
 function FwSidebarGroups(props: FwSidebarGroupsProps) {
@@ -135,10 +148,24 @@ function FwSidebarGroups(props: FwSidebarGroupsProps) {
         </UISidebar.FooterItem>
     })
 
+    const location = useLocation()
+    const initialActiveItems: any[] = []
+    groups.forEach(group => {
+        const activeLevels = recursiveSearch(group.items, location.pathname) || []
+
+        activeLevels.reduce((acc, index) => {
+            initialActiveItems.push(acc[index])
+            acc[index].active = true
+            return acc[index].items
+        }, group.items)
+
+        return group
+    })
 
     return <FwSidebarGroupContext
         onePathBehaviour={props.onePathBehaviour}
         clientSideRouting={props.clientSideRouting}
+        initialActiveItems={initialActiveItems}
     >
         <UISidebar footerItems={footerItems && footerItems}>
             {
@@ -302,6 +329,4 @@ export {
     FwNavLinks,
 
     FwSidebarGroups,
-
-    useMatchedSubNav
 }

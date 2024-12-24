@@ -105,6 +105,9 @@ export const $code = {
         word-break: break-all;
 
         overflow-y: scroll;
+    `,
+    host$$full: css`
+        max-height: 100%;   
     `
 }
 
