@@ -92,17 +92,21 @@ export const $page = {
         left: ${sidebarWidth};
     `,
     scroll: css`
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        overflow: auto;
+        //position: absolute;
+        //top: 0;
+        //right: 0;
+        //bottom: 0;
+        //left: 0;
+        //overflow: auto;
+
+        overflow: scroll;
+        height: 100%;
+        
     `,
     container: css`
         padding: 0;
         width: 100%;
-        position: relative;
+        //position: relative; TODO: unset if during client render?
         min-height: 100%;
 
         max-width: 100%;

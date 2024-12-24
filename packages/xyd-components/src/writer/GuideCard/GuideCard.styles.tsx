@@ -94,3 +94,13 @@ export const $guide = {
         transition: opacity .15s ease-in-out, transform .15s ease-in-out;
     `
 }
+
+
+export const $list = {
+    host: css`
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        justify-content: center;
+        gap: 30px;
+    `
+}

@@ -1,4 +1,4 @@
-import React, {useContext} from "react"
+import React, {useContext, useState} from "react"
 
 import {UISidebar} from "@xyd/ui2";
 
@@ -48,15 +48,13 @@ function FwSidebarItem(props: FwSidebarItemProps) {
     const {active, onClick} = useGroup()
     const [isActive, setActive] = active(props)
 
-    const uiContext = useContext(UIContext)
-
-    const activeLink = props.active || uiContext?.href === props.href
-
     return <UISidebar.Item
         button={!!props.items?.length}
         href={props.href}
-        active={activeLink}
-        onClick={setActive}
+        active={isActive}
+        onClick={() => {
+            setActive()
+        }}
     >
         {props.title}
         {
@@ -68,7 +66,7 @@ function FwSidebarItem(props: FwSidebarItemProps) {
                             title={item.title}
                             href={item.href}
                             items={item.items}
-                            active={item.active}
+                            active={active(item)[0]}
                             level={(props.level || 0) + 1}
                         />)
                     }
@@ -76,36 +74,4 @@ function FwSidebarItem(props: FwSidebarItemProps) {
             </UISidebar.SubTree>
         }
     </UISidebar.Item>
-
-    // if (props.items?.length) {
-    //     return <UIFolder
-    //         title={props.title}
-    //         asButton
-    //         active={props.active}
-    //         isOpen={isActive}
-    //         onClick={setActive}
-    //     >
-    //         <>
-    //             {
-    //                 props.items?.map((item, index) => <FwSidebarItem
-    //                     key={index + item.href}
-    //                     title={item.title}
-    //                     href={item.href}
-    //                     items={item.items}
-    //                     active={item.active}
-    //                     level={(props.level || 0) + 1}
-    //                 />)
-    //             }
-    //         </>
-    //     </UISidebar.SubTree>
-    // }
-    //
-    // const activeLink = props.active || uiContext?.href === props.href
-    //
-    // return <UISidebar.Item
-    //     title={props.title}
-    //     href={props.href}
-    //     active={activeLink}
-    //     onClick={onClick ? (e) => onClick(e, props) : undefined}
-    // />
 }

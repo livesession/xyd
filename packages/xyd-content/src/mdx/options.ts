@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 
 import {remarkMdxToc, RemarkMdxTocOptions} from "@/mdx/toc";
 import {remarkInjectCodeMeta} from "@/mdx/code";
+import {extractThemeSettings} from "@/mdx/themeSettings";
 
 export function mdxOptions(toc: RemarkMdxTocOptions) {
     return {
@@ -12,7 +13,8 @@ export function mdxOptions(toc: RemarkMdxTocOptions) {
             remarkMdxFrontmatter,
             remarkGfm,
             remarkInjectCodeMeta,
-            remarkMdxToc(toc)
+            remarkMdxToc(toc),
+            extractThemeSettings
         ],
         rehypePlugins: []
     }

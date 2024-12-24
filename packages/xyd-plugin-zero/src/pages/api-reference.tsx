@@ -1,12 +1,15 @@
 import path from "path";
 import {promises as fs} from "fs";
 
-import React, {lazy, useState, Suspense, memo, useContext} from "react";
+import React, {useContext, createContext} from "react";
+import {redirect, UNSAFE_DataRouterStateContext} from "react-router";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
+import remarkGfm from "remark-gfm";
 import {parse} from "codehike";
 import {visit} from "unist-util-visit";
 import {recmaCodeHike, remarkCodeHike} from "codehike/mdx";
 import {compile as mdxCompile} from "@mdx-js/mdx";
-import {UNSAFE_DataRouterStateContext} from "react-router";
 
 import {PageFrontMatter} from "@xyd/core";
 import {FwSidebarGroupProps} from "@xyd/framework";
@@ -15,8 +18,10 @@ import {
     AtlasLazy
 } from "@xyd/atlas";
 import {mapSettingsToProps} from "@xyd/framework/hydration";
+import {renderoll} from "@xyd/foo/renderoll";
 // import {lazyReferences} from "@xyd/uniform/content"
 import "@xyd/atlas/index.css"
+import "@xyd/foo/index.css"
 
 // @ts-ignore  // TODO: types
 // import Theme from "virtual:xyd-theme" // TODO: for some reasons this cannot be hydrated by react-router
@@ -25,14 +30,66 @@ import Theme from "@xyd/theme-gusto"
 // @ts-ignore // TODO: tyoes
 import settings from 'virtual:xyd-settings';
 
-let lazyReferences: any
-lazyReferences = async function() {
-    return []
+import './styles.css'
+
+import {
+    Callout,
+    Details,
+    GuideCard,
+    Steps,
+    Tabs,
+    Table,
+
+    IconSessionReplay,
+    IconMetrics,
+    IconFunnels,
+    IconCode,
+} from "@xyd/components/writer"
+import {
+    getComponents,
+} from "@xyd/ui";
+import {Simulate} from "react-dom/test-utils";
+import load = Simulate.load;
+
+const components = {
+    ...getComponents(),
+    Callout,
+    Details,
+    GuideCard,
+    Steps,
+    Tabs,
+    Table,
+
+    IconSessionReplay,
+    IconMetrics,
+    IconFunnels,
+    IconCode,
+
+    // TODO: refactor
+    Content({children}) {
+        return <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px"
+        }}>
+            {children}
+        </div>
+    },
+
+    // TODO: refactor
+    Subtitle({children}) {
+        return <div style={{
+            marginTop: "-18px",
+            fontSize: "18px",
+            color: "#7051d4",
+            fontWeight: 300
+        }}>
+            {children}
+        </div>
+    }
 }
-if (typeof window === "undefined") {
-    const abc = await import("@xyd/uniform/content")
-   lazyReferences =  abc.lazyReferences
-}
+
+const ComponentContent = components.Content
 
 // since unist does not support heading level > 6, we need to normalize them
 function normalizeCustomHeadings() {
@@ -71,13 +128,14 @@ const codeHikeOptions = {
 // TODO: map every file and merge them or load via client-side ?
 async function compileBySlug(slug: string) {
     // TODO: cwd ?
-    const filePath = path.join(process.cwd(), `${slug}.md`)
+    let filePath = path.join(process.cwd(), `${slug}.md`)
 
     try {
         await fs.access(filePath)
-    } catch (e) {
-        console.error(e)
-        return ""
+    } catch (_) {
+        filePath = path.join(process.cwd(), `${slug}.mdx`)
+
+        await fs.access(filePath)
     }
 
     const content = await fs.readFile(filePath, "utf-8");
@@ -86,8 +144,22 @@ async function compileBySlug(slug: string) {
 }
 
 async function compile(content: string): Promise<string> {
+    // const mdOptions = mdxOptions({
+    //     minDepth: 2 // TODO: configurable?
+    // })
+
     const compiled = await mdxCompile(content, {
-        remarkPlugins: [normalizeCustomHeadings, [remarkCodeHike, codeHikeOptions]],
+        remarkPlugins: [
+            normalizeCustomHeadings,
+            [remarkCodeHike, codeHikeOptions],
+            remarkFrontmatter,
+            remarkMdxFrontmatter,
+            remarkGfm
+            // ...mdOptions.remarkPlugins
+        ],
+        rehypePlugins: [
+            // ...mdOptions.rehypePlugins
+        ],
         recmaPlugins: [
             [recmaCodeHike, codeHikeOptions]
         ],
@@ -111,15 +183,35 @@ function getPathname(url: string) {
 }
 
 // TODO: fix anty
-export async function loader({request, ...rest}: { request: any }) {
+export async function loader({request}: { request: any }) {
     const slug = getPathname(request.url)
 
-    const code = await compileBySlug(slug)
+    let code = ""
+    let error: any
+
+    try {
+        code = await compileBySlug(slug)
+    } catch (e) {
+        error = e
+    }
 
     const {groups: sidebarGroups} = await mapSettingsToProps(
         settings,
         slug
     )
+
+    // TODO: dry with docs.tsx - resolver?
+    if (error) {
+        if (sidebarGroups && error.code === "ENOENT") {
+            const firstItem = sidebarGroups?.[0]?.items?.[0]
+
+            if (firstItem) {
+                return redirect(firstItem.href)
+            }
+        }
+
+        console.error(error)
+    }
 
     return {
         sidebarGroups,
@@ -128,13 +220,7 @@ export async function loader({request, ...rest}: { request: any }) {
     } as loaderData
 }
 
-// TODO: move below to content?
-function getMDXComponent(code: string) {
-    const mdxExport = getMDXExport(code)
-    return mdxExport.default
-}
-
-function getMDXExport(code: string) {
+function mdxExport(code: string) {
     const scope = {
         Fragment: React.Fragment,
         jsxs: React.createElement,
@@ -145,97 +231,157 @@ function getMDXExport(code: string) {
     return fn(scope)
 }
 
-function MDXContent(code: string) {
-    return React.useMemo(
-        () => code ? getMDXComponent(code) : null,
-        [code]
-    )
-}
+function renderollAsyncClient(routeId: string, slug: string) {
+    return async () => {
+        let mod;
+        let urlPrefix;
 
-const LazyAtlasMDX = (id: string) => lazy(async () => {
-    let mod;
-    let urlPrefix;
+        switch (routeId) {
+            case "xyd-plugin-zero/openapi":
+                // @ts-ignore
+                mod = await import("virtual:xyd-plugin-zero/openapi");
+                urlPrefix = "/docs/api/rest" // TODO: dynamic urlPreifx
+                break;
+            case "xyd-plugin-zero/graphql":
+                // @ts-ignore
+                mod = await import("virtual:xyd-plugin-zero/graphql");
+                urlPrefix = "/docs/api/graphql" // TODO: dynamic urlPreifx
+                break;
+            default:
+                throw new Error("invalid route id");
+        }
 
-    // TODO: dynamic prefix !!!!
+        const {data} = mod.default
 
-    switch (id) {
-        case "xyd-plugin-zero/openapi":
-            // @ts-ignore
-            mod = await import("virtual:xyd-plugin-zero/openapi");
-            urlPrefix = "/docs/api/rest"
-            break;
-        case "xyd-plugin-zero/graphql":
-            // @ts-ignore
-            mod = await import("virtual:xyd-plugin-zero/graphql");
-            urlPrefix = "/docs/api/graphql"
-            break;
-        default:
-            throw new Error("invalid route id");
-    }
+        if (!Array.isArray(data)) {
+            console.warn(`mod.default is not an array, current type is: ${typeof mod.default}`)
 
-    const references = []
+            return
+        }
 
-    if (Array.isArray(mod.default)) {
-        for (const chunk of mod.default) {
-            try {
-                const code = await compile(chunk) // TODO: do we need real path?
-                const Content = getMDXComponent(code)
-                const content = Content ? parse(Content) : null
+        // TODO: in the future custom position
+        const mdxComponents: any[] = []
+        const prevRefs = []
+        const nextRefs = []
 
+        let pos = 0;
+
+        for (const chunk of data) {
+            if (chunk.slug === slug) {
+                pos = 1
+                continue
+            }
+
+            const references = pos === 0 ? prevRefs : nextRefs
+
+            const code = await compile(chunk.content) // TODO: do we need real path?
+            const mdx = mdxExport(code)
+            const Content = mdx.default
+            const content = Content ? parse(Content, {
+                components
+            }) : null
+
+            // TODO: support non-fererence pages
+            if (content.references) {
                 references.push(...(content?.references || []) as [])
-            } catch (e) {
-                console.error(e)
+            } else {
+                mdxComponents.push(content)
             }
         }
-    } else {
-        console.warn(`mod.default is not an array, current type is: ${typeof mod.default}`)
+
+        return [
+            ({onLoaded}) => <>
+                <ComponentContent>
+                    {mdxComponents}
+                </ComponentContent>
+
+                {
+                    prevRefs.length ? <div>
+                        <AtlasLazy
+                            references={prevRefs}
+                            urlPrefix={urlPrefix}
+                            slug={slug}
+                            onLoaded={onLoaded}
+                        />
+                    </div> : null
+                }
+            </>,
+
+            ({onLoaded}) => <>
+                {
+                    nextRefs.length ? <div>
+                        <AtlasLazy
+                            references={nextRefs}
+                            urlPrefix={urlPrefix}
+                            slug={slug}
+                            onLoaded={onLoaded}
+                        />
+                    </div> : null
+                }
+            </>
+        ]
     }
+}
 
-    // const references = await lazyReferences(mod)
-
-    return {
-        default: ({slug, onLoaded}: { slug: string, onLoaded: () => void }) => {
-            return <AtlasLazy
-                references={references}
-                urlPrefix={urlPrefix}
-                slug={slug}
-                onLoaded={onLoaded}
-            />
-        }
-    }
-});
-
-// TODO props
-function lazyAtlasMDX() {
+function getRouteId() {
     const routerState = useContext(UNSAFE_DataRouterStateContext)
-    let id: string = ""
+    let routeId: string = ""
 
     routerState?.matches?.forEach(match => {
         const loader = routerState?.loaderData[match?.route?.id]
 
         if (loader) {
-            id = match?.route?.id
+            routeId = match?.route?.id
         }
     })
 
-    return memo(LazyAtlasMDX(id))
+    return routeId
 }
 
-function Loading() {
-    return <></>;
+function MemoMDXComponent(codeComponent: any) {
+    return React.useMemo(
+        () => codeComponent ? codeComponent : null,
+        [codeComponent]
+    )
 }
 
-export default function APIReference({loaderData}: { loaderData: loaderData }) {
-    const [hideOriginal, setHideOriginal] = useState(false);
-
-    const Content = MDXContent(loaderData.code)
-    const content = Content ? parse(Content) : null
-
-    const MemoizedLazyAtlas = lazyAtlasMDX()
-
-    function onLoad() {
-        setHideOriginal(true)
+// // TODO: move to content?
+function mdxContent(code: string) {
+    const content = mdxExport(code) // TODO: fix any
+    if (!mdxExport) {
+        return {}
     }
+
+    return {
+        component: content?.default,
+    }
+}
+
+// TODO: in the future more smoother loader - first fast server render then move to ideal position of client and then replace and 3 items at start
+export default function APIReference({loaderData}: { loaderData: loaderData }) {
+    const content = mdxContent(loaderData.code)
+    const serverComponent = content ? parse(content.component, {
+        components
+    }) : null
+
+    const memoizedServerComponent = MemoMDXComponent(serverComponent)
+
+    const serverAtlasOrMDX = memoizedServerComponent?.references ?
+        <Atlas references={memoizedServerComponent?.references || []}/> :
+        <ComponentContent>
+            {memoizedServerComponent}
+        </ComponentContent>
+
+    const routeId = getRouteId()
+
+    const RenderollContent = renderoll(
+        renderollAsyncClient(routeId, loaderData.slug),
+        {
+            decorator: ({children}) => <ComponentContent>
+                {children}
+            </ComponentContent>
+        }
+    )
 
     // TODO: dynamic theme
     // TODO: check theme props - is theme compatible with xyd?
@@ -249,19 +395,8 @@ export default function APIReference({loaderData}: { loaderData: loaderData }) {
             }
         }}
     >
-
-        <Atlas references={content?.references || []}/>
-
-        {/*  TODO: check if it degrades SEO !!!*/}
-        <div className={hideOriginal ? "" : "hidden"}>
-            {hideOriginal ? <></> : content && <Atlas references={content?.references || []}/>}
-
-            <Suspense fallback={<Loading/>}>
-                <MemoizedLazyAtlas
-                    onLoaded={onLoad}
-                    slug={loaderData.slug}
-                />
-            </Suspense>
-        </div>
+        <RenderollContent>
+            {serverAtlasOrMDX}
+        </RenderollContent>
     </Theme>
 }

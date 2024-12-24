@@ -1,8 +1,9 @@
-import React, {createContext, useContext, useState} from "react";
-import {useLocation} from "react-router";
+import React, {createContext, useContext, useEffect, useState} from "react";
+import {useLocation, useNavigation, useNavigate} from "react-router";
 
-import {FwSidebarItemProps} from "./sidebar";
-import { UIContext } from "../../contexts/ui";
+import {FwSidebarGroupProps, FwSidebarItemProps} from "./sidebar";
+import {UIContext} from "../../contexts/ui";
+import {useSidebarGroups} from "../../contexts";
 
 
 export interface FwGroupContext {
@@ -19,22 +20,24 @@ const groupContext = createContext<FwGroupContext>({
 })
 
 export function FwSidebarGroupContext({
-                                        children,
-                                        onePathBehaviour,
-                                        clientSideRouting,
-                                    }:
-                                        {
-                                            children: React.ReactNode,
-                                            onePathBehaviour?: boolean,
-                                            clientSideRouting?: boolean // TODO: scrollRouting?
-                                        }) {
+                                          children,
+                                          onePathBehaviour,
+                                          clientSideRouting,
+                                          initialActiveItems,
+                                      }:
+                                      {
+                                          children: React.ReactNode,
+                                          onePathBehaviour?: boolean,
+                                          clientSideRouting?: boolean // TODO: scrollRouting?,
+                                          initialActiveItems: any[]
+                                      }) {
 
     let groupBehaviour: GroupBehaviour
 
     if (onePathBehaviour) {
-        groupBehaviour = useOnePathBehaviour()
+        groupBehaviour = useOnePathBehaviour(initialActiveItems)
     } else {
-        groupBehaviour = useDefaultBehaviour()
+        groupBehaviour = useDefaultBehaviour(initialActiveItems)
     }
     const location = useLocation()
 
@@ -73,24 +76,87 @@ function getLastValue(set) {
     return value;
 }
 
-function useDefaultBehaviour() {
-    const [weakSet] = useState(() => new Set<string>());
+function stringify(item: FwSidebarItemProps) {
+    return JSON.stringify({
+        title: item.title,
+        href: item.href,
+        items: item.items?.map((item) => stringify(item)),
+    })
+}
+
+function recursiveSearch(items: FwSidebarItemProps[], href: string, levels: any[] = []) {
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+
+        if (item.href === href) {
+            return [...levels, i]
+        }
+
+        if (item.items) {
+            const result = recursiveSearch(item.items, href, [...levels, i])
+            if (result) {
+                return result
+            }
+        }
+    }
+    return null
+}
+
+function calcActive(groups: FwSidebarGroupProps[], url: any) {
+    const initialActiveItems: any[] = []
+
+    groups.forEach(group => {
+        const activeLevels = recursiveSearch(group.items, url) || []
+
+        activeLevels.reduce((acc, index) => {
+            initialActiveItems.push({
+                ...acc[index],
+                active: true
+            })
+            return acc[index].items
+        }, group.items)
+
+        return group
+    })
+
+    return initialActiveItems
+}
+
+function useDefaultBehaviour(initialActiveItems: any[]) {
+    const groups = useSidebarGroups()
+    const [weakSet] = useState(() => new Set<string>(initialActiveItems.map((item) => stringify(item))));
     const [, setForceUpdate] = useState(0);
+
+    useEffect(() => {
+        window.addEventListener('xyd.history.pushState', (event: CustomEvent) => {
+            const url = event.detail?.url
+
+            if (!url) {
+                return
+            }
+            // TODO: better data structures
+            const active = calcActive(groups, url)
+            weakSet.clear()
+            active.forEach((item) => {
+                addItem(item)
+            })
+        });
+    }, [])
 
     const forceUpdate = () => setForceUpdate((prev) => prev + 1);
 
     const addItem = (item: FwSidebarItemProps) => {
-        weakSet.add(JSON.stringify(item));
+        weakSet.add(stringify(item));
         forceUpdate();
     };
 
     const deleteItem = (item: FwSidebarItemProps) => {
-        weakSet.delete(JSON.stringify(item));
+        weakSet.delete(stringify(item));
         forceUpdate();
     };
 
     const hasItem = (item: FwSidebarItemProps) => {
-        return weakSet.has(JSON.stringify(item));
+        return weakSet.has(stringify(item));
     };
 
     return (item: FwSidebarItemProps): [boolean, () => void] => [
@@ -105,25 +171,25 @@ function useDefaultBehaviour() {
     ]
 }
 
-function useOnePathBehaviour() {
-    const [weakSet] = useState(() => new Set<string>());
+function useOnePathBehaviour(initialActiveItems: any[]) {
+    const [weakSet] = useState(() => new Set<string>(initialActiveItems.map((item) => stringify(item))));
     const [lastLevel, setLastLevel] = useState<false | number | undefined>(false);
     const [, setForceUpdate] = useState(0);
 
     const forceUpdate = () => setForceUpdate((prev) => prev + 1);
 
     const addItem = (item: FwSidebarItemProps) => {
-        weakSet.add(JSON.stringify(item));
+        weakSet.add(stringify(item));
         forceUpdate();
     };
 
     const deleteItem = (item: FwSidebarItemProps) => {
-        weakSet.delete(JSON.stringify(item));
+        weakSet.delete(stringify(item));
         forceUpdate();
     };
 
     const hasItem = (item: FwSidebarItemProps) => {
-        return weakSet.has(JSON.stringify(item));
+        return weakSet.has(stringify(item));
     };
 
     const clear = () => {

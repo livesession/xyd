@@ -64,6 +64,7 @@ export const $footer = {
 export const $item = {
     host: css`
         color: #6e6e80;
+        font-size: 14px;
     `,
     link: css`
         display: flex;
@@ -101,14 +102,14 @@ export const $tree = {
 
 export const $itemHeader = {
     host: css`
-        padding-left: 12px;
-        padding-right: 8px;
-        margin-bottom: 8px;
-        margin-top: 12px;
+        // TODO: calc based on items?
+        padding-left: 10px;
+        margin-bottom: 6px;
+        margin-top: 16px;
         font-size: 12px;
         line-height: 16px;
         font-weight: 600;
-        letter-spacing: 0.4px;
+        letter-spacing: 1px;
         color: #111827;
     `
 }

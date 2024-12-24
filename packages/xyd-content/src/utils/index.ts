@@ -13,12 +13,7 @@ export async function compileBySlug(
     // TODO: cwd ?
     const filePath = path.join(process.cwd(), `${slug}.${mdx ? "mdx" : "md"}`)
 
-    try {
-        await fs.access(filePath)
-    } catch (e) {
-        console.error(e)
-        return ""
-    }
+    await fs.access(filePath)
 
     const content = await fs.readFile(filePath, "utf-8");
 

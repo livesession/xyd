@@ -1,4 +1,5 @@
 import React, {useEffect, useRef} from "react";
+import {useNavigate} from "react-router";
 
 import {Reference} from "@xyd/uniform";
 
@@ -13,7 +14,13 @@ export interface AtlasLazyProps {
     references: MDXReference<Reference>[]
     urlPrefix: string
     slug: string,
-    onLoaded: () => void
+    onLoaded?: () => void
+}
+
+function pushStateWithEvent(url: string, eventName: string, eventData: any) {
+    window.history.pushState(null, "", url);
+    const event = new CustomEvent(eventName, {detail: eventData});
+    window.dispatchEvent(event);
 }
 
 export function AtlasLazy(props: AtlasLazyProps) {
@@ -27,6 +34,8 @@ export function AtlasLazy(props: AtlasLazyProps) {
 
     // Scroll to the 30th component on mount
     useEffect(() => {
+        return // TODO: temporary
+
         // return // TODO: maybe in the future
         // Prevent scrolling
         // document.body.style.overflow = 'hidden';
@@ -44,18 +53,50 @@ export function AtlasLazy(props: AtlasLazyProps) {
 
     // Use Intersection Observer to detect when the 30th component is in view
     useEffect(() => {
+        // const observer = new IntersectionObserver(
+        //     (entries) => {
+        //         entries.forEach(entry => {
+        //             if (entry.isIntersecting) {
+        //                 const refSlug = entry.target.getAttribute("data-slug");
+        //
+        //                 console.log('refSlug', refSlug)
+        //
+        //             }
+        //         });
+        //     },
+        //     {threshold: 0.5}
+        // );
+        //
+        // targetRefs.current.forEach(ref => {
+        //     if (ref) observer.observe(ref);
+        // });
+        //
+        // return () => {
+        //     observer.disconnect();
+        // };
+        //
+        // return // TODO: temporary
+
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const refSlug = entry.target.getAttribute("data-slug");
-                        if (startupLocation?.current && window.location.pathname.startsWith(startupLocation?.current)) {
-                            window.history.pushState(null, "", `${refSlug}`);
-                        }
+                        window.history.pushState(null, "", `${refSlug}`);
+                        const event = new CustomEvent("xyd.history.pushState", {
+                            detail: {
+                                url: refSlug,
+                            }
+                        });
+                        window.dispatchEvent(event);
+
+                        // if (startupLocation?.current && window.location.pathname.startsWith(startupLocation?.current)) {
+                        //     window.history.pushState(null, "", `${refSlug}`);
+                        // }
                     }
                 });
             },
-            {threshold: 0.5}
+            {threshold: 0.7}
         );
 
         targetRefs.current.forEach(ref => {
@@ -68,9 +109,11 @@ export function AtlasLazy(props: AtlasLazyProps) {
     }, []);
 
     useEffect(() => {
+        return // TODO: temporary
+
         setPosition()
-        props.onLoaded();
-    }, [props.onLoaded]);
+        props.onLoaded?.();
+    }, []);
 
     return props.references.map((reference: any, i: number) => <>
         <div
