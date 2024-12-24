@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, {useCallback, useEffect, useRef, useState} from "react"
 
 import {$layout, $page, $article, globalHeaderHeight} from "./Layout.styles"
 
@@ -14,39 +14,63 @@ export interface LayoutProps {
 
 export function Layout(props: LayoutProps) {
     const [hideMainHeader, setHideMainHeader] = useState(false)
-    const [lastScrollTop, setLastScrollTop] = useState(0)
+    const [scrollTop, setScrollTop] = useState(0)
+    const [controlScrollPos, setControlScrollPos] = useState(0)
 
-    function handleScroll(e) {
-        console.log("scrolling")
+    useEffect(() => {
+        if (scrollTop === controlScrollPos) {
+            return
+        }
+
+
+        const checkpoint = parseInt(globalHeaderHeight, 10) / 2
+        const diff = scrollTop - controlScrollPos
+        const reversePosDiff = Math.abs(scrollTop - controlScrollPos)
+
+        if (diff > checkpoint) {
+            setHideMainHeader(true)
+        } else if (reversePosDiff > checkpoint) {
+            setHideMainHeader(false)
+        }
+    }, [
+        scrollTop,
+        controlScrollPos,
+    ]);
+
+
+    function onScroll(e: Event) {
+        if (!(e.target instanceof HTMLElement)) {
+            return
+        }
+
+        const scroll = e.target?.scrollTop
+        setScrollTop(scroll)
+    }
+
+    function onScrollFinish(e: Event) {
+        if (!(e.target instanceof HTMLElement)) {
+            return
+        }
+
+        setControlScrollPos(e.target?.scrollTop)
     }
 
     // TODO: by ref?
     useEffect(() => {
+        // return // TODO: UNCOMMENT
+
         if (!props.subheader) {
             return
         }
 
-        document.querySelector(`.${$page.scroll}`)?.addEventListener("scroll", (e) => {
-            // @ts-ignore
-            const scrollTop = e.target?.scrollTop
-
-            setLastScrollTop(scrollTop)
-
-            if (!lastScrollTop || (scrollTop >= lastScrollTop)) {
-                if (scrollTop > parseInt(globalHeaderHeight, 10)) {
-                    setHideMainHeader(true)
-                }
-            } else {
-                if (lastScrollTop - scrollTop > (parseInt(globalHeaderHeight, 10) / 2)) {
-                    setHideMainHeader(false)
-                }
-            }
-        })
+        document.querySelector(`.${$page.scroll}`)?.addEventListener("scroll", onScroll)
+        document.querySelector(`.${$page.scroll}`)?.addEventListener("scrollend", onScrollFinish)
 
         return () => {
-            document.querySelector(`.${$page.scroll}`)?.removeEventListener("scroll", handleScroll)
+            document.querySelector(`.${$page.scroll}`)?.removeEventListener("scroll", onScroll)
+            document.querySelector(`.${$page.scroll}`)?.removeEventListener("scrollend", onScrollFinish)
         }
-    }, [lastScrollTop]);
+    }, []);
 
     return <div className={$layout.host}>
         <header className={`
@@ -75,7 +99,7 @@ export function Layout(props: LayoutProps) {
                                     {props.content}
                                 </section>
                                 {
-                                    props.kind != "fullwidth" && <nav className={`
+                                    props.contentNav && <nav className={`
                                     ${$article.nav}
                                 `}>
                                         {props.contentNav}

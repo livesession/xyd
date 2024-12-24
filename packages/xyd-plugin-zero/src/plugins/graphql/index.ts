@@ -14,7 +14,7 @@ import {
 } from "@xyd/uniform/markdown";
 
 import {Plugin} from "../../types"
-import {SidebarMulti} from "@xyd/core/src/types/settings";
+import {Sidebar, SidebarMulti} from "@xyd/core/src/types/settings";
 
 interface graphqlPluginOptions {
     urlPrefix?: string
@@ -22,6 +22,60 @@ interface graphqlPluginOptions {
 }
 
 // TODO: it should also have vite plugin to have this merged files + theme
+
+async function bfsDirectoryTraversal(startPath: string, map) {
+    const queue = [startPath];
+    const result: any[] = [];
+
+    while (queue.length > 0) {
+        const currentPath = queue.shift();
+        if (!currentPath) continue;
+
+        const dirEntries = await fs.readdir(currentPath, {withFileTypes: true});
+
+        for (const entry of dirEntries) {
+            const fullPath = path.join(currentPath, entry.name);
+            const absolutePath = path.resolve(fullPath);
+
+            if (entry.isDirectory()) {
+                queue.push(fullPath);
+            } else {
+                if (map[absolutePath]) {
+                    continue
+                }
+                result.push(fullPath);
+            }
+        }
+    }
+
+    return result;
+}
+
+function flatPages(
+    sidebar: (SidebarMulti | Sidebar) [],
+    resp: string[] = []
+) {
+    sidebar.map(async side => {
+        if ("match" in side) {
+            side.items.map(item => {
+                return flatPages([item], resp)
+            })
+
+            return
+        }
+
+        side?.pages?.map(async page => {
+            if (typeof page === "string") {
+                resp.push(page)
+                return
+            }
+
+            return flatPages([page], resp)
+        })
+    })
+
+    return resp
+}
 
 // preinstall adds graphql navigation to settings
 function preinstall(options: graphqlPluginOptions) {
@@ -64,15 +118,58 @@ function preinstall(options: graphqlPluginOptions) {
             })]
         })
 
+        const gqlData = {
+            slugs: {},
+            data: [] as any[], // TODO: fix any
+            i: 0,
+            set: (slug, content: string, options = {}) => {
+                if (gqlData.slugs[slug]) {
+                    console.error('slug already exists', slug)
+                }
+
+                gqlData.data.push({
+                    slug,
+                    content,
+                    options
+                })
+            }
+        }
+
+        const gqlSidebars: SidebarMulti[] = []
+
+        if (settings.structure?.sidebar) {
+            if (settings?.api?.match?.graphql) {
+                // TODO: DRY
+                settings.structure.sidebar.forEach((sidebar) => {
+                    if ("match" in sidebar) {
+                        if (sidebar.match === settings?.api?.match?.graphql) {
+                            gqlSidebars.push(sidebar)
+                        }
+                    }
+                })
+
+                if (gqlSidebars.length > 1) {
+                    throw new Error('multiple sidebars found for graphql match')
+                }
+            }
+        }
+        const otherGqlPages = flatPages(gqlSidebars)
+
+        // TODO: custom `fn` logic?
+        await Promise.all(otherGqlPages.map(async (page) => {
+            const content = await fs.readFile(path.join(root, page + '.mdx'), "utf-8") // TODO: support .md
+            gqlData.set(page, content + "\n")
+        }))
+
         // TODO: for some reasons we have to split big content because of maximum call stack size bug inside mdx compile?
-        const mergedChunks = [] as string[]
         let chunkId = 0
 
         // TODO: title can be different than navigation page
         // TODO: get mapping from plugin?
         // TODO: !!! FINISH !!!
+        // TODO: check if we still need chunks
         await Promise.all(
-            uniformWithNavigation.references.map(async (ref, i) => {
+            uniformWithNavigation.references.map(async (ref) => {
                 const ast = referenceAST(ref)
                 const md = compileMarkdown(ast)
 
@@ -90,48 +187,28 @@ function preinstall(options: graphqlPluginOptions) {
                 });
 
                 await fs.writeFile(mdPath, content)
-                if (!mergedChunks[chunkId]) {
-                    mergedChunks[chunkId] = ""
-                }
 
-                // TODO: check based on size? but remember its only a hot-fix
-                if (i % 5 === 0) {
-                    chunkId++
-                    mergedChunks[chunkId] = ""
-                }
-
-                mergedChunks[chunkId] += md + "\n" // TODO: fix
+                gqlData.set(byCanonical, md + "\n", {atlas: true}) // // TODO: group chunks like previously but + loading fs content?
             })
         )
 
         if (settings.structure?.sidebar) {
             if (settings?.api?.match?.graphql) {
-                const sidebars: SidebarMulti[] = []
-
-                // TODO: DRY
-                settings.structure.sidebar.forEach((sidebar) => {
-                    if ("match" in sidebar) {
-                        if (sidebar.match === settings?.api?.match?.graphql) {
-                            sidebars.push(sidebar)
-                        }
-                    }
-                })
-
-                if (sidebars.length > 1) {
-                    throw new Error('multiple sidebars found for graphql match')
-                }
-
-                sidebars[0].items.push(...uniformWithNavigation.out.sidebar)
+                gqlSidebars[0].items.push(...uniformWithNavigation.out.sidebar)
 
                 return {
-                    graphqlMerged: mergedChunks
+                    graphqlMerged: {
+                        data: gqlData.data,
+                    }
                 }
             }
 
             settings.structure.sidebar.push(...uniformWithNavigation.out.sidebar)
 
             return {
-                graphqlMerged: mergedChunks
+                graphqlMerged: {
+                    data: gqlData.data,
+                }
             }
         }
 
@@ -140,7 +217,9 @@ function preinstall(options: graphqlPluginOptions) {
         }
 
         return {
-            graphqlMerged: mergedChunks
+            graphqlMerged: {
+                data: gqlData.data,
+            }
         }
     }
 }

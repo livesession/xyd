@@ -29,6 +29,7 @@
     "@xyd/openapi": "workspace:*",
     "@xyd/uniform": "workspace:*",
     "@xyd/theme-gusto": "workspace:*",
+    "@xyd/foo": "workspace:*",
     "@react-router/node": "7.0.0-pre.5",
     "@react-router/serve": "7.0.0-pre.5",
     "@types/react-dom": "^18.3.1",
@@ -41,7 +42,6 @@
   "devDependencies": {
     "@react-router/dev": "7.0.0-pre.5",
     "@types/react": "^18.3.9",
-    "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",

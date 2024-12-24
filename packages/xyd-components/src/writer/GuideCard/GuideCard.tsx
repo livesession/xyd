@@ -1,6 +1,6 @@
 import React from "react"
 
-import {$guide} from "./GuideCard.styles";
+import {$guide, $list} from "./GuideCard.styles";
 
 export interface GuideCardProps {
     children: React.ReactNode;
@@ -43,6 +43,12 @@ export function GuideCard({
                 </div>
             </div>
         </a>
+    </div>
+}
+
+GuideCard.List = function GuideCardList({children}: { children: React.ReactNode }) {
+    return <div className={$list.host}>
+        {children}
     </div>
 }
 

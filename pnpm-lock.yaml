@@ -395,6 +395,12 @@ importers:
         specifier: ^5.0.1
         version: 5.1.4(typescript@5.7.2)(vite@5.4.11(@types/node@22.10.2)(lightningcss@1.28.2)(terser@5.37.0))
 
+  packages/xyd-foo:
+    dependencies:
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+
   packages/xyd-framework:
     dependencies:
       '@xyd/content':
@@ -553,6 +559,9 @@ importers:
       '@xyd/core':
         specifier: workspace:*
         version: link:../xyd-core
+      '@xyd/foo':
+        specifier: workspace:*
+        version: link:../xyd-foo
       '@xyd/framework':
         specifier: workspace:*
         version: link:../xyd-framework

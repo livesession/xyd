@@ -37,9 +37,8 @@ export interface CodeSampleProps {
     name: string;
     description: string;
     codeblocks: MDXCodeSampleBlock[];
+    size?: "full"
 }
-
-// const $$LocalStoredTab = withLocalStored(TabsPrimitive.Root);
 
 export function CodeSample(props: CodeSampleProps) {
     const [highlighted, setHighlighted] = useState<HighlightedCode[]>([]);
@@ -94,7 +93,10 @@ export function CodeSample(props: CodeSampleProps) {
             {highlighted?.map((codeblock, i) => (
                 <TabsPrimitive.Content value={codeblock.meta} key={i}>
                     <Pre
-                        className={$code.host}
+                        className={`
+                            ${$code.host}
+                            ${props?.size === "full" && $code.host$$full}
+                        `}
                         style={codeblock?.style || codeblock?.style}
                         code={codeblock}
                         handlers={[mark, lineNumber]}

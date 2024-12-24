@@ -1,11 +1,11 @@
-import React, {Children, cloneElement, useEffect, useRef, useState} from 'react'
-import type {ComponentProps, ReactElement, ReactNode} from 'react'
+import React from 'react'
 import cn from 'clsx'
 
 import {
     Blockquote,
     Code,
     Details,
+    Heading,
     Hr,
     Table,
 } from '@xyd/components/writer'
@@ -13,82 +13,7 @@ import {CodeSample} from "@xyd/components/coder";
 
 import {
     UIAnchor,
-    UICollapse
 } from './index'
-
-// import type {AnchorProps} from './components'
-// import type {DocsThemeConfig} from './constants'
-// import {DetailsProvider, useDetails, useSetActiveAnchor} from './contexts'
-// import {useIntersectionObserver, useSlugs} from './contexts'
-
-// Anchor links
-function HeadingLink({
-                         tag: Tag,
-                         context,
-                         children,
-                         id,
-                         className,
-                         ...props
-                     }: ComponentProps<'h2'> & {
-    tag: `h${2 | 3 | 4 | 5 | 6}`
-    context: { index: number }
-}): ReactElement {
-    // const setActiveAnchor = useSetActiveAnchor()
-    // const slugs = useSlugs()
-    // const observer = useIntersectionObserver()
-    const obRef = useRef<HTMLAnchorElement>(null)
-
-    // TODO: implt
-    // useEffect(() => {
-    //     if (!id) return
-    //     const heading = obRef.current
-    //     if (!heading) return
-    //     slugs.set(heading, [id, (context.index += 1)])
-    //     observer?.observe(heading)
-    //
-    //     return () => {
-    //         observer?.disconnect()
-    //         slugs.delete(heading)
-    //         setActiveAnchor(f => {
-    //             const ret = {...f}
-    //             delete ret[id]
-    //             return ret
-    //         })
-    //     }
-    // }, [id, context, slugs, observer, setActiveAnchor])
-
-    return (
-        <Tag
-            className={
-                // can be added by footnotes
-                className === 'sr-only'
-                    ? 'sr-only'
-                    : cn(
-                        'font-light tracking-wide text-[#202123] dark:text-slate-100',
-                        {
-                            h2: 'mt-4-x pb-3-x text-3xl',
-                            h3: 'mt-4-x pb-3-x text-2xl',
-                            h4: 'mt-4-x pb-3-x text-xl',
-                            h5: 'mt-4-x pb-3-x text-lg',
-                            h6: 'mt-4-x pb-3-x text-base'
-                        }[Tag]
-                    )
-            }
-            {...props}
-        >
-            {children}
-            {id && (
-                <a
-                    href={`#${id}`}
-                    id={id}
-                    className="subheading-anchor"
-                    aria-label="Permalink for this section"
-                    ref={obRef}
-                />
-            )}
-        </Tag>
-    )
-}
 
 const EXTERNAL_HREF_REGEX = /https?:\/\//
 
@@ -104,25 +29,15 @@ const Link = ({href = '', className, ...props}) => (
     />
 )
 
-const A = ({href = '', ...props}) => (
-    <UIAnchor href={href} newWindow={EXTERNAL_HREF_REGEX.test(href)} {...props} />
-)
-
 // TODO: MOVE SOMWHERE ELSE
 export const getComponents = () => {
-    const context = {index: 0}
     return {
-        h1: props => (
-            <h1
-                className="mt-2-x text-4xl font-light text-[#202123] dark:text-slate-100"
-                {...props}
-            />
-        ),
-        h2: props => <HeadingLink tag="h2" context={context} {...props} />,
-        h3: props => <HeadingLink tag="h3" context={context} {...props} />,
-        h4: props => <HeadingLink tag="h4" context={context} {...props} />,
-        h5: props => <HeadingLink tag="h5" context={context} {...props} />,
-        h6: props => <HeadingLink tag="h6" context={context} {...props} />,
+        h1: (props) => <div><Heading id={props.children} {...props}/></div>,
+        h2: props => <div><Heading id={props.children} size={2} {...props} /></div>,
+        h3: props => <div><Heading id={props.children} size={3} {...props} /></div>,
+        h4: props => <div><Heading id={props.children} size={4} {...props} /></div>,
+        h5: props => <div><Heading id={props.children} size={5} {...props} /></div>,
+        h6: props => <div><Heading id={props.children} size={6} {...props} /></div>,
         p: props => <p className="mt-6-x first:mt-0" {...props} />,
 
         ul: props => (
@@ -144,7 +59,6 @@ export const getComponents = () => {
         th: Table.Th,
         td: Table.Td,
 
-
         code: Code,
         pre: props => {
             const lang = (props?.children?.props?.className || "").replace("language-", "") // TODO: better solution
@@ -159,6 +73,7 @@ export const getComponents = () => {
                         meta: lang,
                     }
                 ]}
+                size="full" // TODO: in the future configurable
             />
         },
         details: Details,

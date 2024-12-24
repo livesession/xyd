@@ -8,6 +8,8 @@ export * from "./Details"
 
 export * from "./GuideCard"
 
+export * from "./Heading"
+
 export * from "./Hr"
 
 export * from "./Icon"
