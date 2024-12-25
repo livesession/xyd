@@ -182,6 +182,25 @@ function getPathname(url: string) {
     return parsedUrl.pathname.replace(/^\//, '');
 }
 
+// TODO: fix any
+function findFirstUrl(items: any): string {
+    const queue = [...items];
+
+    while (queue.length > 0) {
+        const item = queue.shift();
+
+        if (item.href) {
+            return item.href;
+        }
+
+        if (item.items) {
+            queue.push(...item.items);
+        }
+    }
+
+    return "";
+}
+
 // TODO: fix anty
 export async function loader({request}: { request: any }) {
     const slug = getPathname(request.url)
@@ -203,10 +222,10 @@ export async function loader({request}: { request: any }) {
     // TODO: dry with docs.tsx - resolver?
     if (error) {
         if (sidebarGroups && error.code === "ENOENT") {
-            const firstItem = sidebarGroups?.[0]?.items?.[0]
+            const firstItem = findFirstUrl(sidebarGroups?.[0]?.items)
 
             if (firstItem) {
-                return redirect(firstItem.href)
+                return redirect(firstItem)
             }
         }
 
@@ -285,7 +304,11 @@ function renderollAsyncClient(routeId: string, slug: string) {
             if (content.references) {
                 references.push(...(content?.references || []) as [])
             } else {
-                mdxComponents.push(content)
+                mdxComponents.push(<div data-slug={`/${chunk.slug}`}>
+                    <ComponentContent>
+                        {content}
+                    </ComponentContent>
+                </div>)
             }
         }
 
@@ -367,7 +390,12 @@ export default function APIReference({loaderData}: { loaderData: loaderData }) {
     const memoizedServerComponent = MemoMDXComponent(serverComponent)
 
     const serverAtlasOrMDX = memoizedServerComponent?.references ?
-        <Atlas references={memoizedServerComponent?.references || []}/> :
+        <AtlasLazy
+            references={memoizedServerComponent?.references || []}
+            // TODO: finish
+            urlPrefix={"/docs/api/graphql"}
+            slug={`/${loaderData.slug}`}
+        /> :
         <ComponentContent>
             {memoizedServerComponent}
         </ComponentContent>

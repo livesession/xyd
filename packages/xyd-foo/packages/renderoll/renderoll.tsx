@@ -5,11 +5,13 @@ import {css} from "@linaria/core";
 const styles = {
     loader: {
         host: css`
-            width: 100vh;
-            height: 100vh;
             background: white;
             z-index: 999999;
             position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
         `
     },
     serveComponent: {
@@ -63,6 +65,8 @@ export function renderoll(
                 </div>
             }
 
+            {!once && <$Loader/>}
+
             <Suspense fallback={<$Loader/>}>
                 <$RenderLazyComponent>
                     {children}
@@ -82,6 +86,40 @@ function $Loader() {
     return <div className={styles.loader.host}/>
 }
 
+// TODO: in the future different method than data-slug
+// custom observer logic instead not pixel perfect threshold
+function historyPushStateScroller() {
+    const elements = document.querySelectorAll('[data-slug]');
+
+    if (!elements.length) {
+        console.warn("No elements with [data-slug] found.");
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) {
+                return
+            }
+
+            const slug = entry.target.getAttribute("data-slug");
+
+            window.history.pushState(null, "", `${slug}`);
+
+            const event = new CustomEvent("xyd.history.pushState", {
+                detail: {
+                    url: slug,
+                }
+            });
+            window.dispatchEvent(event);
+        });
+    }, {threshold: 0.3});
+
+    elements.forEach(element => observer.observe(element));
+
+    return observer
+}
+
 function $Lazy(
     async: () => Promise<any>,
     options?: RenderollOptions
@@ -91,16 +129,21 @@ function $Lazy(
 
         return {
             default: ({children}) => {
+                const [count, setCount] = useState(0)
                 const serverContent = useRef<Element>(null);
                 const {onFinish} = useContext($LazyContext)
 
-                const [count, setCount] = useState(0)
+                useEffect(() => {
+                    const observer = historyPushStateScroller()
 
-                function onLoaded() {
-                    setCount(count + 1)
-                }
+                    if (!observer) {
+                        return
+                    }
 
-                const loaded = !!count
+                    return () => {
+                        observer.disconnect();
+                    };
+                }, []);
 
                 useEffect(() => {
                     if (serverContent?.current) {
@@ -110,6 +153,12 @@ function $Lazy(
                         onFinish()
                     }
                 }, [serverContent]);
+
+                function onLoaded() {
+                    setCount(count + 1)
+                }
+
+                const loaded = !!count
 
                 const tree = <>
                     <Prev onLoaded={onLoaded}/>
