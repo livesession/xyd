@@ -118,6 +118,22 @@ function preinstall(options: graphqlPluginOptions) {
             })]
         })
 
+        function uniformSidebarLevelMap(pages: string []) {
+            const out = {};
+            let level = 0;
+
+            function recursive(items: string[]) {
+                for (const item of items) {
+                    out[item] = level++;
+                }
+            }
+
+            recursive(pages); // Start recursion
+            return out;
+        }
+
+        let pageLevels = {}
+
         const gqlData = {
             slugs: {},
             data: [] as any[], // TODO: fix any
@@ -126,12 +142,14 @@ function preinstall(options: graphqlPluginOptions) {
                 if (gqlData.slugs[slug]) {
                     console.error('slug already exists', slug)
                 }
+                // TODO: in the future custom sort
+                const level = pageLevels[slug]
 
-                gqlData.data.push({
+                gqlData.data[level] = {
                     slug,
                     content,
                     options
-                })
+                }
             }
         }
 
@@ -153,16 +171,20 @@ function preinstall(options: graphqlPluginOptions) {
                 }
             }
         }
+
         const otherGqlPages = flatPages(gqlSidebars)
+        const flatGqlPages = [
+            ...otherGqlPages,
+            ...flatPages(uniformWithNavigation.out.sidebar),
+        ]
+
+        pageLevels = uniformSidebarLevelMap(flatGqlPages)
 
         // TODO: custom `fn` logic?
         await Promise.all(otherGqlPages.map(async (page) => {
             const content = await fs.readFile(path.join(root, page + '.mdx'), "utf-8") // TODO: support .md
             gqlData.set(page, content + "\n")
         }))
-
-        // TODO: for some reasons we have to split big content because of maximum call stack size bug inside mdx compile?
-        let chunkId = 0
 
         // TODO: title can be different than navigation page
         // TODO: get mapping from plugin?
