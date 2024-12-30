@@ -24,7 +24,6 @@
     "@xyd/core": "workspace:*",
     "@xyd/content": "workspace:*",
     "@xyd/framework": "workspace:*",
-    "@xyd/ui": "workspace:*",
     "@xyd/gql": "workspace:*",
     "@xyd/openapi": "workspace:*",
     "@xyd/uniform": "workspace:*",

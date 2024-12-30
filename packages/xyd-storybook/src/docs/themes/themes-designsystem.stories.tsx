@@ -12,7 +12,7 @@ import {
     Tabs,
     UnderlineNav,
 } from '@xyd/components/writer';
-import {getComponents} from "@xyd/ui";
+import {getComponents} from "@xyd/components/mdx";
 
 const {
     h1: H1,

@@ -38,7 +38,15 @@ export function heading(
         [u('text', `!canonical ${canonical}`)]
     )
 
-    const uDesc = u('paragraph', [u('text', description)])
+    let uDesc = [
+        u(
+            'heading',
+            {depth: START_DEPTH_LEVEL},
+            [u('text', `!description`),]
+        ),
+        u('paragraph', [u('text', description)])
+    ]
+
 
     let uRefCategory
     if (refCategory) {

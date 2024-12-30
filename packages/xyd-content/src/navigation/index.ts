@@ -2,9 +2,17 @@ import {promises as fs} from 'fs';
 import fs2, {open} from 'fs';
 import path from 'path';
 
+import remarkFrontmatter from "remark-frontmatter";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import matter from 'gray-matter';
+import {VFile} from "vfile";
+import {compile as mdxCompile} from "@mdx-js/mdx";
 
 import {FrontMatter, Sidebar, PageFrontMatter, Header} from "@xyd/core";
+import React from "react";
+import {Plugin} from "unified";
+import {Node as UnistNode} from "unist";
+import {visit} from "unist-util-visit";
 
 // TODO: better algorithm + data structures - since it's on build time it's not a big deal nevertheless it should be changed in the future
 
@@ -112,6 +120,57 @@ async function getFrontmatter(filePath: string, chunkSize = 1024 * 5) { // 5 KB 
     });
 }
 
+function mdxExport(code: string) {
+    const scope = {
+        Fragment: React.Fragment,
+        jsxs: React.createElement,
+        jsx: React.createElement,
+        jsxDEV: React.createElement,
+    }
+    const fn = new Function(...Object.keys(scope), code)
+    return fn(scope)
+}
+
+async function getFrontmatterV2(filePath: string): Promise<FrontMatter> {
+    const body = await fs.readFile(filePath, "utf-8");
+
+    const vfile = new VFile({
+        path: filePath,
+        value: body,
+        contents: body
+    });
+
+    const compiled = await mdxCompile(vfile, {
+        remarkPlugins: [
+            remarkFrontmatter,
+            remarkMdxFrontmatter
+        ],
+        rehypePlugins: [],
+        recmaPlugins: [],
+        outputFormat: 'function-body',
+        development: false,
+    });
+
+    const code = String(compiled)
+
+    const {
+        reactFrontmatter, // in the future same key?
+        frontmatter
+    } = mdxExport(code)
+
+    const matter: FrontMatter = frontmatter
+
+    if (reactFrontmatter) {
+        if (typeof reactFrontmatter?.title === "function") {
+            matter.title = {
+                code: reactFrontmatter.title.toString()
+            }
+        }
+    }
+
+    return matter
+}
+
 async function job(page: string, frontmatters: PageFrontMatter) {
     // TODO: it can be cwd because on build time it has entire path?
     let filePath = path.join(process.cwd(), `${page}.mdx`) // TODO: support md toos
@@ -126,7 +185,7 @@ async function job(page: string, frontmatters: PageFrontMatter) {
         }
     }
 
-    const resp = await getFrontmatter(filePath) as FrontMatter
+    const matter = await getFrontmatterV2(filePath)
 
-    frontmatters[page] = resp
+    frontmatters[page] = matter
 }

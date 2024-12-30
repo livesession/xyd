@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import type {Meta} from '@storybook/react';
 import {MemoryRouter} from "react-router";
 
@@ -7,12 +7,12 @@ import {
 } from '@xyd/components/layouts';
 
 import {
-    UIBreadcrumb,
-
-    UINavLinks,
-
     getComponents,
-} from "@xyd/ui";
+} from "@xyd/components/mdx";
+import {
+    Breadcrumbs,
+    NavLinks
+} from "@xyd/components/writer"
 import {
     Nav,
     Toc,
@@ -212,7 +212,7 @@ function DemoSidebarFooter() {
 
 function DemoContent() {
     return <>
-        <UIBreadcrumb
+        <Breadcrumbs
             items={[
                 {
                     title: "APIs",
@@ -233,7 +233,7 @@ function DemoContent() {
             <Content components={getComponents()}/>
         </div>
 
-        <UINavLinks
+        <NavLinks
             prev={{
                 title: "Prev",
                 href: "/prev"

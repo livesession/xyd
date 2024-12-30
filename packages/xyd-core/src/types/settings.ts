@@ -263,14 +263,16 @@ export interface Search {
 
 
 // ------ START  setting for API START ------
+export type APIFile = string | string[] | { [id: string]: string }
+
 export interface API {
     info?: APIInfo
 
-    // A string or an array of strings of URL(s) or relative path(s) pointing to your OpenAPI file.
-    openapi?: string | string[]
+    // A string/array/map of strings of URL(s) or relative path(s) pointing to your OpenAPI file.
+    openapi?: APIFile
 
     // A string or an array of strings of URL(s) or relative path(s) pointing to your GraphQL file.
-    graphql?: string | string[]
+    graphql?: APIFile
 
     // TODO: better in the future?
     match?: {

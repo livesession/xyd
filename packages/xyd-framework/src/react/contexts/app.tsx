@@ -1,7 +1,7 @@
 import React, {createContext, useContext} from "react";
 
 import {Settings} from "@xyd/core";
-import {ITOC, IBreadcrumb, INavLinks} from "@xyd/ui";
+import type {ITOC, IBreadcrumb, INavLinks} from "@xyd/ui2";
 
 import {FwSidebarGroupProps} from "../components/sidebar";
 

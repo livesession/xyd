@@ -35,10 +35,13 @@ export function referenceAST(ref: Reference) {
         ref.context
     )
 
+    if (mdHeading?.description?.length) {
+        md.push(...mdHeading.description)
+    }
+
     md.push(
         mdHeading.title,
         mdHeading.canonical,
-        mdHeading.description,
     )
 
     if (mdHeading.category) {
