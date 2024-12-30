@@ -2,7 +2,7 @@ import {defineConfig, Options} from 'tsup';
 
 const config: Options = {
     entry: ['index.ts'],
-    format: ['esm', 'cjs'], // Output both ESM and CJS formats
+    format: ['esm'], // Output both ESM and CJS formats
     target: 'node16', // Ensure compatibility with Node.js 16
     dts: {
         entry: 'index.ts', // Specify the entry for DTS

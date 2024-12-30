@@ -33,7 +33,7 @@ Create a new todo
 
 ####### !!tabs
 
-```curl !code curl
+```bash !code curl
 curl --request POST \
      --url https://api.example.com/v1/todos \
      --header 'accept: application/json' \

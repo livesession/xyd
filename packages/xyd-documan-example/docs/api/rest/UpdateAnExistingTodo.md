@@ -33,7 +33,7 @@ Update an existing todo
 
 ####### !!tabs
 
-```curl !code curl
+```bash !code curl
 curl --request PUT \
      --url https://api.example.com/v1/todos/todoId \
      --header 'accept: application/json' \

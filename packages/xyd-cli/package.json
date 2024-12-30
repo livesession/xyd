@@ -1,0 +1,28 @@
+{
+  "name": "@xydjs/cli",
+  "version": "0.0.1-pre.0",
+  "keywords": [],
+  "author": "",
+  "description": "",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "xyd": "bin.js"
+  },
+  "files": [
+    "dist/",
+    "bin.js",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@xyd/documan": "workspace:*",
+    "arg": "^5.0.2",
+    "colors": "^1.4.0",
+    "semver": "^7.6.3"
+  },
+  "devDependencies": {
+  }
+}

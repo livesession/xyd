@@ -5,7 +5,7 @@
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
-    ".": "./dist/index.mjs",
+    ".": "./dist/index.js",
     "./dev": "./dist/dev.js",
     "./build": "./dist/build.js"
   },
@@ -16,15 +16,7 @@
   },
   "dependencies": {
     "@xyd/atlas": "workspace:*",
-    "@xyd/core": "workspace:*",
-    "@xyd/content": "workspace:*",
-    "@xyd/framework": "workspace:*",
     "@xyd/gql": "workspace:*",
-    "@xyd/ui": "workspace:*",
-    "@xyd/openapi": "workspace:*",
-    "@xyd/uniform": "workspace:*",
-    "@xyd/theme-gusto": "workspace:*",
-    "@xyd/plugin-zero": "workspace:*",
     "@react-router/node": "7.0.0-pre.5",
     "@react-router/serve": "7.0.0-pre.5",
     "@types/express": "^5.0.0",
@@ -46,6 +38,14 @@
     "yaml": "^2.6.0"
   },
   "devDependencies": {
+    "@xyd/core": "workspace:*",
+    "@xyd/content": "workspace:*",
+    "@xyd/framework": "workspace:*",
+    "@xyd/ui": "workspace:*",
+    "@xyd/openapi": "workspace:*",
+    "@xyd/uniform": "workspace:*",
+    "@xyd/theme-gusto": "workspace:*",
+    "@xyd/plugin-zero": "workspace:*",
     "@mdx-js/rollup": "^3.1.0",
     "@xydjs/react-router-dev": "7.0.0-xyd.1",
     "@types/react": "^18.3.9",
