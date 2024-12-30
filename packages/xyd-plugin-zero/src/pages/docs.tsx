@@ -1,12 +1,13 @@
 import React from "react";
 import {redirect} from "react-router";
+
 import {
     getComponents,
-} from "@xyd/ui";
+} from "@xyd/components/mdx";
 import {PageFrontMatter} from "@xyd/core"
 import {mapSettingsToProps} from "@xyd/framework/hydration";
 import {compileBySlug} from "@xyd/content"
-import {IBreadcrumb, INavLinks} from "@xyd/ui";
+import type {IBreadcrumb, INavLinks} from "@xyd/ui2";
 import {FwSidebarGroupProps} from "@xyd/framework";
 
 // @ts-ignore // TODO: tyoes
@@ -21,11 +22,13 @@ import {
     Steps,
     Tabs,
     Table,
+    Badge,
 
     IconSessionReplay,
     IconMetrics,
     IconFunnels,
     IconCode,
+    IconCustomEvent
 } from "@xyd/components/writer";
 
 interface loaderData {
@@ -95,7 +98,6 @@ function mdxExport(code: string) {
     return fn(scope)
 }
 
-
 // // TODO: move to content?
 function mdxContent(code: string) {
     const content = mdxExport(code) // TODO: fix any
@@ -126,11 +128,13 @@ const components = {
     Steps,
     Tabs,
     Table,
+    Badge,
 
     IconSessionReplay,
     IconMetrics,
     IconFunnels,
     IconCode,
+    IconCustomEvent,
 
     // TODO: refactor
     Content({children}) {

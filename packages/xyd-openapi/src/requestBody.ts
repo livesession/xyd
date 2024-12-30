@@ -12,17 +12,36 @@ export function oapRequestBodyToDefinitionProperties(
 
     let schemaObject: OpenAPIV3.SchemaObject | undefined
 
+    if (schema.allOf) {
+        return schema.allOf.reduce((acc, of) => {
+            const fakeBody: OpenAPIV3.RequestBodyObject = {
+                content: {
+                    'application/json': {
+                        schema: of
+                    }
+                }
+            }
+
+            return [
+                ...acc,
+                ...oapRequestBodyToDefinitionProperties(fakeBody) || []
+            ]
+        }, [] as DefinitionProperty[])
+    }
+
     switch (schema.type) {
-        case 'object':
+        case 'object': {
             schemaObject = schema
             break
-        case 'array':
+        }
+        case 'array': {
             const arrSchema = schema as OpenAPIV3.ArraySchemaObject
 
             const items = arrSchema.items as OpenAPIV3.SchemaObject
 
             schemaObject = items
             break
+        }
         default:
             // TODO: primitive types ???
             break

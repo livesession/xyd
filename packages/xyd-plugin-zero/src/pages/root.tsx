@@ -5,10 +5,6 @@ import {
     Scripts,
 } from "react-router";
 
-import "@xyd/ui/index.css";
-
-import "./tailwind.css";
-
 // TODO: config from core settings
 export const meta = () => {
     return [

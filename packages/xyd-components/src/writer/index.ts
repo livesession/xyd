@@ -1,4 +1,8 @@
+export * from "./Badge"
+
 export * from "./Blockquote"
+
+export * from "./Breadcrumbs"
 
 export * from "./Callout"
 
@@ -13,6 +17,8 @@ export * from "./Heading"
 export * from "./Hr"
 
 export * from "./Icon"
+
+export * from "./NavLinks"
 
 export * from "./Pre"
 

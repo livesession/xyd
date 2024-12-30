@@ -5,13 +5,14 @@ import {css} from "@linaria/core";
 const styles = {
     loader: {
         host: css`
-            background: white;
             z-index: 999999;
             position: absolute;
             left: 0;
             top: 0;
             right: 0;
             bottom: 0;
+
+            background: white; // TODO: customization
         `
     },
     serveComponent: {

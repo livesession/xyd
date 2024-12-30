@@ -1,13 +1,9 @@
 import React, {isValidElement} from "react";
 import {useLocation} from "react-router";
 
-import {
-    UIBreadcrumb,
-
-    UINavLinks
-} from "@xyd/ui";
 import {Toc, SubNav, UISidebar} from "@xyd/ui2"
-import type {ITOC} from "@xyd/ui";
+import type {ITOC} from "@xyd/ui2";
+import {Breadcrumbs, NavLinks} from "@xyd/components/writer";
 
 import {useBreadcrumbs, useNavLinks, useSettings, useSidebarGroups, useToC} from "../contexts";
 import {FwSidebarItemGroup, FwSidebarGroupContext, FwSidebarItemProps} from "./sidebar";
@@ -67,7 +63,7 @@ function FwSubNav() {
 
     // TODO: value
     return <SubNav
-        title={matchedSubnav?.name}
+        title={matchedSubnav?.name || ""}
         value={active?.url || ""}
         onChange={() => {
         }}
@@ -233,7 +229,7 @@ function FwToc() {
 function FwBreadcrumbs() {
     const breadcrumbs = useBreadcrumbs()
 
-    return <UIBreadcrumb
+    return <Breadcrumbs
         items={breadcrumbs || []}
     />
 }
@@ -242,12 +238,18 @@ function FwBreadcrumbs() {
 function FwNavLinks() {
     const navlinks = useNavLinks()
 
+    // TODO: in the future - because of custom react frontmatter
+    if (typeof navlinks?.prev?.title !== "string" || typeof navlinks?.next?.title !== "string") {
+        return null
+    }
+
     if (navlinks?.prev || navlinks?.next) {
-        return <UINavLinks
+        return <NavLinks
             prev={navlinks.prev}
             next={navlinks.next}
         />
     }
+
     return null
 }
 
