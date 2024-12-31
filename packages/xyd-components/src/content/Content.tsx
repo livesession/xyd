@@ -1,15 +1,28 @@
 import React from 'react'
 
 import {
+    Badge,
     Blockquote,
+    Callout,
     Code,
     Details,
+    GuideCard,
     Heading,
     Hr,
     Table,
+    Tabs,
+    Steps,
+
+    IconCode,
+    IconCustomEvent,
+    IconFunnels,
+    IconMetrics,
+    IconSessionReplay,
 } from '@xyd/components/writer'
 import {CodeSample} from "@xyd/components/coder";
 
+import {Content as ContentComponent} from "./Content/index";
+import {Subtitle} from "./Subtitle";
 import {Anchor} from "./Anchor";
 
 const EXTERNAL_HREF_REGEX = /https?:\/\//
@@ -22,7 +35,17 @@ const Link = ({href = '', className, ...props}) => (
     />
 )
 
-export const getComponents = () => {
+// TODO: options?
+export default function content() {
+    return {
+        ...stdContent(),
+        ...writerContent(),
+        ...helperContent(),
+        ...iconContent(),
+    }
+}
+
+export function stdContent() {
     return {
         h1: (props) => <div><Heading id={props.children} {...props}/></div>,
         h2: props => <div><Heading id={props.children} size={2} {...props} /></div>,
@@ -76,3 +99,33 @@ export const getComponents = () => {
         a: Link,
     }
 }
+
+export function writerContent() {
+    return {
+        Callout,
+        Details,
+        GuideCard,
+        Steps,
+        Tabs,
+        Table,
+        Badge,
+    }
+}
+
+export function helperContent() {
+    return {
+        Content: ContentComponent,
+        Subtitle
+    }
+}
+
+export function iconContent() {
+    return {
+        IconSessionReplay,
+        IconMetrics,
+        IconFunnels,
+        IconCode,
+        IconCustomEvent,
+    }
+}
+

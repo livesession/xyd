@@ -1,6 +1,10 @@
 import React from "react"
 
+import {Settings} from "@xyd/core";
 import type {ITOC, IBreadcrumb, INavLinks} from "@xyd/ui2"
+import type {
+    FwSidebarGroupProps
+} from "@xyd/framework"
 import {
     FwNav,
     FwToc,
@@ -11,11 +15,15 @@ import {
     WithApp,
     useMatchedSubNav,
 } from "@xyd/framework"
-import type {
-    FwSidebarGroupProps
-} from "@xyd/framework"
 import {Layout} from "@xyd/components/layouts"
-import {Settings} from "@xyd/core";
+
+// TODO: what about atlas? it's loaded by plugin - probably we need better mechanism for loading css
+import "@xyd/ui2/index.css";
+import "@xyd/components/index.css";
+import "@xyd/fable-wiki/atlas.css";
+import '@xyd/atlas/index.css';
+
+import './index.css';
 
 // TODO: theme settings context
 export interface ThemeSettings {

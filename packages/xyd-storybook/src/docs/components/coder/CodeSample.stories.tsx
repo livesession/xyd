@@ -1,7 +1,7 @@
 import React, {} from 'react';
 import type {Meta} from '@storybook/react';
 
-import {getComponents} from "@xyd/components/mdx";
+import getContentComponents from "@xyd/components/content";
 
 import Content from "../../../content/code-sample.mdx";
 import {MemoryRouter} from "react-router";
@@ -21,6 +21,6 @@ export const Default = () => {
         paddingTop: "0px",
         margin: "0 auto",
     }}>
-        <Content components={getComponents()}/>
+        <Content components={getContentComponents()}/>
     </div>
 }

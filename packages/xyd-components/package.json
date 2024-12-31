@@ -15,11 +15,11 @@
     "./coder": {
       "import": "./dist/coder.js"
     },
+    "./content": {
+      "import": "./dist/content.js"
+    },
     "./layouts": {
       "import": "./dist/layouts.js"
-    },
-    "./mdx": {
-      "import": "./dist/mdx.js"
     },
     "./writer": {
       "import": "./dist/writer.js"

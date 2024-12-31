@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import {defineConfig} from 'tsup';
 
 export default defineConfig({
     entry: {
@@ -18,7 +18,11 @@ export default defineConfig({
     esbuildOptions: (options) => {
         options.platform = 'node'; // Ensure the platform is set to Node.js
         options.external = ['node:fs/promises']; // Mark 'node:fs/promises' as external
-        options.loader = { '.js': 'jsx' }; // Ensure proper handling of .js files
+        options.loader = {
+            '.js': 'jsx',
+            '.woff': 'file', // Add loader for .woff files
+            '.woff2': 'file' // Add loader for .woff2 files
+        }; // Ensure proper handling of .js files
     },
     ignoreWatch: ['node_modules', 'dist', '.git', 'build'] // Exclude unnecessary directories
 });

@@ -12,85 +12,21 @@ import {recmaCodeHike, remarkCodeHike} from "codehike/mdx";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
 import {PageFrontMatter} from "@xyd/core";
+import {mapSettingsToProps} from "@xyd/framework/hydration";
 import {FwSidebarGroupProps} from "@xyd/framework";
+import {renderoll} from "@xyd/foo/renderoll";
 import {
     AtlasLazy
 } from "@xyd/atlas";
-import {mapSettingsToProps} from "@xyd/framework/hydration";
-import {renderoll} from "@xyd/foo/renderoll";
+import getContentComponents from "@xyd/components/content";
 
-import "@xyd/atlas/index.css"
-import "@xyd/foo/index.css"
-
-// @ts-ignore  // TODO: types
-// import Theme from "virtual:xyd-theme" // TODO: for some reasons this cannot be hydrated by react-router
-import Theme from "@xyd/theme-gusto"
-
-// @ts-ignore // TODO: tyoes
+import Theme from "virtual:xyd-theme" // TODO: for some reasons this cannot be hydrated by react-router
 import settings from 'virtual:xyd-settings';
 
-import {
-    Callout,
-    Details,
-    GuideCard,
-    Steps,
-    Tabs,
-    Table,
+import "virtual:xyd-theme/index.css"
 
-    IconSessionReplay,
-    IconMetrics,
-    IconFunnels,
-    IconCode,
-    IconCustomEvent,
-
-    Code
-} from "@xyd/components/writer"
-import {
-    getComponents,
-} from "@xyd/components/mdx";
-
-const components = {
-    ...getComponents(),
-    Callout,
-    Details,
-    GuideCard,
-    Steps,
-    Tabs,
-    Table,
-
-    IconSessionReplay,
-    IconMetrics,
-    IconFunnels,
-    IconCode,
-    IconCustomEvent,
-
-    // TODO: refactor
-    Content({children}) {
-        return <div style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "24px"
-        }}>
-            {children}
-        </div>
-    },
-
-    // TODO: refactor
-    Subtitle({children}) {
-        return <div style={{
-            marginTop: "-18px",
-            fontSize: "18px",
-            color: "#7051d4",
-            fontWeight: 300
-        }}>
-            {children}
-        </div>
-    },
-
-    Code
-}
-
-const ComponentContent = components.Content
+const contentComponents = getContentComponents()
+const ComponentContent = contentComponents.Content
 
 // since unist does not support heading level > 6, we need to normalize them
 function normalizeCustomHeadings() {
@@ -335,7 +271,7 @@ function renderollAsyncClient(routeId: string, slug: string) {
             const mdx = mdxExport(code)
             const Content = mdx.default
             const content = Content ? parse(Content, {
-                components
+                components: contentComponents
             }) : null
 
             // TODO: support non-fererence pages
@@ -428,7 +364,7 @@ function mdxContent(code: string) {
 export default function APIReference({loaderData}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
     const serverComponent = content ? parse(content.component, {
-        components
+        components: contentComponents
     }) : null
 
     const memoizedServerComponent = MemoMDXComponent(serverComponent)

@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import {Plugin as VitePlugin} from "vite";
 import {route} from "@react-router/dev/routes";
 
@@ -5,6 +8,7 @@ import {Settings} from "@xyd/core";
 
 import {Plugin} from "../../types";
 import {readSettings} from "./settings";
+import path from "node:path";
 
 interface docsPluginOptions {
     urlPrefix?: string
@@ -45,6 +49,32 @@ function vitePluginSettings() {
     }
 }
 
+export function vitePluginThemeCSS() {
+    return async function ({preinstall}: { preinstall: { settings: Settings } }): Promise<VitePlugin> {
+        return {
+            name: 'virtual:xyd-theme-css',
+
+            resolveId(source) {
+                // TODO: BAD SOLUTION
+                if (source === 'virtual:xyd-theme/index.css') {
+                    switch (preinstall.settings.styling?.theme) {
+                        // TODO: support another themes
+                        case "gusto": {
+                            const gustoCss = import.meta.url.split("xyd/packages")[0] += "xyd/node_modules/@xyd/theme-gusto/dist/index.css"
+                            return gustoCss.replace("file://", "")
+                        }
+                        default: {
+                            const gustoCss = import.meta.url.split("xyd/packages")[0] += "xyd/node_modules/@xyd/theme-gusto/dist/index.css"
+                            return gustoCss.replace("file://", "")
+                        }
+                    }
+                }
+                return null;
+            },
+        };
+    };
+}
+
 export function vitePluginTheme() {
     return async function ({
                                preinstall
@@ -56,19 +86,10 @@ export function vitePluginTheme() {
         return {
             name: 'virtual:xyd-theme',
             resolveId(id) {
-                if (id !== 'virtual:xyd-theme') {
-                    return null
+                if (id === 'virtual:xyd-theme') {
+                    return id;
                 }
-
-                switch (preinstall.settings.styling?.theme) {
-                    // TODO: support another themes
-                    case "gusto": {
-                        return '@xyd/theme-gusto';
-                    }
-                    default: {
-                        return '@xyd/theme-gusto';
-                    }
-                }
+                return null;
             },
             async load(id) {
                 if (id === 'virtual:xyd-theme') {
@@ -101,7 +122,8 @@ function plugin(_, options: docsPluginOptions) {
         ],
         vitePlugins: [
             vitePluginSettings,
-            vitePluginTheme
+            vitePluginTheme,
+            vitePluginThemeCSS,
         ]
     }
 }

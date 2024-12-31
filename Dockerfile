@@ -13,6 +13,9 @@ COPY . .
 # Force install Rollup for ARM64 compatibility
 RUN pnpm install --platform=linux-arm64 @rollup/rollup
 
+# Build the @xyd/atlas package first TODO: in the future better solution
+RUN pnpm --filter @xyd/atlas run build
+
 # Install dependencies and build the project
 RUN pnpm install && pnpm run build
 
