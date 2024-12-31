@@ -27,6 +27,7 @@ export async function dev() {
         // root: path.join(__dirname, "../"), // TODO: bundler?
         root: process.env.XYD_DOCUMAN_ROOT || path.join(__dirname, "../host"), // TODO: bundler?
         server: {
+            host: true,
             port: port,
             fs: {
                 allow: [
