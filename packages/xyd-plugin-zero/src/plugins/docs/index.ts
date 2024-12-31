@@ -60,11 +60,11 @@ export function vitePluginThemeCSS() {
                     switch (preinstall.settings.styling?.theme) {
                         // TODO: support another themes
                         case "gusto": {
-                            const gustoCss = import.meta.url.split("xyd/packages")[0] += "xyd/node_modules/@xyd/theme-gusto/dist/index.css"
+                            const gustoCss = import.meta.url.split("packages/")[0] += "node_modules/@xyd/theme-gusto/dist/index.css"
                             return gustoCss.replace("file://", "")
                         }
                         default: {
-                            const gustoCss = import.meta.url.split("xyd/packages")[0] += "xyd/node_modules/@xyd/theme-gusto/dist/index.css"
+                            const gustoCss = import.meta.url.split("packages/")[0] += "node_modules/@xyd/theme-gusto/dist/index.css"
                             return gustoCss.replace("file://", "")
                         }
                     }
