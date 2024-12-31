@@ -11,13 +11,16 @@ WORKDIR /app
 COPY . .
 
 # Force install Rollup for ARM64 compatibility
-RUN pnpm install --platform=linux-arm64 @rollup/rollup
+#RUN pnpm install --platform=linux-arm64 @rollup/rollup
 
-# Build the @xyd/atlas package first TODO: in the future better solution
+# Install dependencies
+RUN pnpm install
+
+# Build the @xyd/atlas package first
 RUN pnpm --filter @xyd/atlas run build
 
 # Install dependencies and build the project
-RUN pnpm install && pnpm run build
+RUN pnpm run build
 
 # Navigate to the CLI package and install it globally
 WORKDIR /app/packages/xyd-cli
