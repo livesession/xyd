@@ -86,8 +86,9 @@ export default defineConfig({
         },
         resolve: true, // Resolve external types
     },
-
-    format: ["esm"],
+    format: ['esm'],
+    // outDir: 'dist',
+    // target: 'node16',
     platform: 'node',
     shims: false,
     splitting: false,

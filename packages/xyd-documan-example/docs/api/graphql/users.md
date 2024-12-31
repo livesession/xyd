@@ -1,12 +1,14 @@
 ---
 title: Users
 ---
-## !!references users
-
-### !canonical users
+## !description
 
 
 Get a list of all users
+
+## !!references users
+
+### !canonical users
 
 ### !category graphql
 

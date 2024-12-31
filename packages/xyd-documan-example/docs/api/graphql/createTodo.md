@@ -1,12 +1,14 @@
 ---
 title: Create Todo
 ---
-## !!references createTodo
-
-### !canonical createTodo
+## !description
 
 
 Create a new todo
+
+## !!references createTodo
+
+### !canonical createTodo
 
 ### !category graphql
 

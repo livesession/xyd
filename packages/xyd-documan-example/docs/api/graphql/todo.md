@@ -1,12 +1,14 @@
 ---
 title: Todo
 ---
-## !!references todo
-
-### !canonical todo
+## !description
 
 
 Get a todo by ID
+
+## !!references todo
+
+### !canonical todo
 
 ### !category graphql
 

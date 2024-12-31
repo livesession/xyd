@@ -1,12 +1,14 @@
 ---
 title: User
 ---
-## !!references user
-
-### !canonical user
+## !description
 
 
 Get a user by ID
+
+## !!references user
+
+### !canonical user
 
 ### !category graphql
 

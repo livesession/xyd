@@ -1,13 +1,15 @@
 ---
 title: Create Todo
 ---
-## !!references Create a new todo
-
-### !canonical CreateANewTodo
+## !description
 
 
 Create a new todo
 
+
+## !!references Create a new todo
+
+### !canonical CreateANewTodo
 
 ### !category rest
 

@@ -15,7 +15,6 @@
     "react-dom": "^18.3.1",
     "remark-gfm": "^4.0.0",
     "@xyd/components": "workspace:*",
-    "@xyd/ui": "workspace:*",
     "@xyd/ui2": "workspace:*",
     "@xyd/atlas": "workspace:*",
     "@xyd/fable-wiki": "workspace:*"

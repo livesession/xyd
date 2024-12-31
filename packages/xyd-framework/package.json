@@ -26,7 +26,6 @@
   },
   "author": "",
   "dependencies": {
-    "@xyd/ui": "workspace:*",
     "@xyd/ui2": "workspace:*",
     "@xyd/core": "workspace:*",
     "@xyd/content": "workspace:*",
@@ -34,8 +33,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "remark-gfm": "^4.0.0",
-    "tailwind-merge": "^2.5.2",
-    "tailwindcss-animate": "^1.0.7",
     "vite-plugin-mdx": "^3.6.0",
     "zod": "^3.23.8"
   },
@@ -48,7 +45,6 @@
     "rehype-pretty-code": "^0.14.0",
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.0.0",
-    "tailwindcss": "^3.4.11",
     "typescript": "5.6.2",
     "vite": "^5.4.5",
     "tsup": "^8.3.0"

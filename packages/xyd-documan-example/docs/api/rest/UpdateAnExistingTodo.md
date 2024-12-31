@@ -1,13 +1,15 @@
 ---
 title: Update Todo
 ---
-## !!references Update an existing todo
-
-### !canonical UpdateAnExistingTodo
+## !description
 
 
 Update an existing todo
 
+
+## !!references Update an existing todo
+
+### !canonical UpdateAnExistingTodo
 
 ### !category rest
 

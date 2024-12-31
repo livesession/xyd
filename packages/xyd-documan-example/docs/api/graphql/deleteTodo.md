@@ -1,12 +1,14 @@
 ---
 title: Delete Todo
 ---
-## !!references deleteTodo
-
-### !canonical deleteTodo
+## !description
 
 
 Delete a todo by ID
+
+## !!references deleteTodo
+
+### !canonical deleteTodo
 
 ### !category graphql
 

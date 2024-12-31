@@ -1,12 +1,14 @@
 ---
 title: Create User
 ---
-## !!references createUser
-
-### !canonical createUser
+## !description
 
 
 Create a new user
+
+## !!references createUser
+
+### !canonical createUser
 
 ### !category graphql
 

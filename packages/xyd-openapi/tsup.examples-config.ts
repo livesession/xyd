@@ -6,12 +6,12 @@ const isDebugMode = !!process.env.DEBUG
 
 export default defineConfig({
     entry: [
-        "./examples/basic/index.ts"
+        "./examples/webhooks/index.ts"
     ],
     format: ['esm', 'cjs'], // Output both ESM and CJS formats
     target: 'node16', // Ensure compatibility with Node.js 16
     dts: {
-        entry: "./examples/basic/index.ts",
+        entry: "./examples/webhooks/index.ts",
         resolve: true, // Resolve external types
     },
     splitting: false, // Disable code splitting

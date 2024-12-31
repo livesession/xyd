@@ -1,0 +1,3 @@
+export {
+    getComponents
+} from "./MDX"

@@ -2,7 +2,7 @@
 
 import {Sidebar, PageFrontMatter, Settings, SidebarMulti} from "@xyd/core";
 import {filterNavigationByLevels, pageFrontMatters} from "@xyd/content/navigation";
-import {IBreadcrumb, INavLinks} from "@xyd/ui";
+import {IBreadcrumb, INavLinks} from "@xyd/ui2";
 
 import {FwSidebarGroupProps} from "../react";
 
@@ -118,7 +118,16 @@ export async function mapSettingsToProps(
             }
         }
 
-        const title = frontmatters && frontmatters[page] && frontmatters[page].title
+        const matterTitle = frontmatters && frontmatters[page] && frontmatters[page].title
+
+        let title = ""
+
+        if (typeof matterTitle === "string") {
+            title = matterTitle
+        } else {
+            // @ts-ignore
+            title = matterTitle
+        }
 
         if (!title) {
             console.error("Title not found for page", page)
@@ -139,12 +148,14 @@ export async function mapSettingsToProps(
                 })
             }
             breadcrumbs.push({
+                // @ts-ignore
                 title,
                 href: page,
             })
         }
 
         return {
+            // @ts-ignore
             title,
             href: safePageLink(page),
             active: false // TODO:
@@ -209,10 +220,12 @@ function mapNavToLinks(
         // prev and next found on same nav (pages)
         return {
             prev: {
+                // @ts-ignore
                 title: prevTitle,
                 href: safePageLink(prev),
             },
             next: {
+                // @ts-ignore
                 title: nextTitle,
                 href: safePageLink(next),
             }
@@ -263,6 +276,7 @@ function mapNavToLinks(
 
             return {
                 next: {
+                    // @ts-ignore
                     title: nextTitle,
                     href: safePageLink(next),
                 },
@@ -278,6 +292,7 @@ function mapNavToLinks(
 
             return {
                 prev: {
+                    // @ts-ignore
                     title: nextTitle,
                     href: safePageLink(prev),
                 },
@@ -297,10 +312,12 @@ function mapNavToLinks(
 
     return {
         prev: {
+            // @ts-ignore
             title: prevTitle,
             href: safePageLink(prev),
         },
         next: {
+            // @ts-ignore
             title: nextTitle,
             href: safePageLink(next),
         }

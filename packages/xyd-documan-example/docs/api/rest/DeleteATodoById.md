@@ -1,13 +1,15 @@
 ---
 title: Delete Todo
 ---
-## !!references Delete a todo by ID
-
-### !canonical DeleteATodoById
+## !description
 
 
 Delete a todo by ID
 
+
+## !!references Delete a todo by ID
+
+### !canonical DeleteATodoById
 
 ### !category rest
 

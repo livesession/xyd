@@ -1,6 +1,6 @@
 import React from "react"
 
-import {ITOC, IBreadcrumb, INavLinks} from "@xyd/ui"
+import type {ITOC, IBreadcrumb, INavLinks} from "@xyd/ui2"
 import {
     FwNav,
     FwToc,

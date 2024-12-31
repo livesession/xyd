@@ -1,12 +1,14 @@
 ---
 title: Update Todo
 ---
-## !!references updateTodo
-
-### !canonical updateTodo
+## !description
 
 
 Update an existing todo
+
+## !!references updateTodo
+
+### !canonical updateTodo
 
 ### !category graphql
 

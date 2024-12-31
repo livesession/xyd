@@ -1,12 +1,14 @@
 ---
 title: Todos
 ---
-## !!references todos
-
-### !canonical todos
+## !description
 
 
 Get a list of all todos
+
+## !!references todos
+
+### !canonical todos
 
 ### !category graphql
 

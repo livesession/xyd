@@ -26,7 +26,8 @@ export default [
             index: 'index.ts',
             coder: 'coder.ts',
             layouts: 'layouts.ts',
-            writer: 'writer.ts'
+            mdx: 'mdx.ts',
+            writer: 'writer.ts',
         },
         output: [
             {
@@ -92,6 +93,15 @@ export default [
         input: 'layouts.ts',
         output: {
             file: 'dist/layouts.d.ts',
+            format: 'es',
+        },
+        plugins: [dts()],
+        external
+    },
+    {
+        input: 'mdx.ts',
+        output: {
+            file: 'dist/mdx.d.ts',
             format: 'es',
         },
         plugins: [dts()],

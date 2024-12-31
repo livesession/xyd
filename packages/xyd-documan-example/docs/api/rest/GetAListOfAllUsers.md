@@ -1,13 +1,15 @@
 ---
 title: Users
 ---
-## !!references Get a list of all users
-
-### !canonical GetAListOfAllUsers
+## !description
 
 
 Get a list of all users
 
+
+## !!references Get a list of all users
+
+### !canonical GetAListOfAllUsers
 
 ### !category rest
 
