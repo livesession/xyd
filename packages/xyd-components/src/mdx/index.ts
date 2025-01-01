@@ -1,3 +1,0 @@
-export {
-    getComponents
-} from "./MDX"

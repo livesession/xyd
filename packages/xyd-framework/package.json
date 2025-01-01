@@ -16,6 +16,10 @@
     "./hydration": {
       "require": "./dist/hydration.js",
       "import": "./dist/hydration.mjs"
+    },
+    "./react": {
+      "require": "./dist/react.js",
+      "import": "./dist/react.mjs"
     }
   },
   "scripts": {

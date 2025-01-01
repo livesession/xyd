@@ -2,32 +2,19 @@ import React, {useState} from 'react';
 import type {Meta} from '@storybook/react';
 
 import {
-    Callout,
-    Code,
-    Details,
     Hr,
     Pre,
-    Steps,
     Table,
-    Tabs,
     UnderlineNav,
 } from '@xyd/components/writer';
-import {getComponents} from "@xyd/components/mdx";
+import getContentComponents from "@xyd/components/content";
 
 const {
     h1: H1,
-    h2: H2,
     h3: H3,
     h4: H4,
-    h5: H5,
-    h6: H6,
-
     p: Text,
-
-    ul: Ul,
-    ol: Ol,
-    li: Li,
-} = getComponents()
+} = getContentComponents();
 
 export default {
     title: 'Themes',

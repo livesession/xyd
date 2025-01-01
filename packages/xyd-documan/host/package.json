@@ -15,9 +15,6 @@
     "@xyd/theme-gusto": "workspace:*",
     "@react-router/node": "7.0.0-pre.5",
     "@react-router/serve": "7.0.0-pre.5",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.7.5",
-    "@types/react-dom": "^18.3.1",
     "codehike": "^1.0.3",
     "express": "^4.21.1",
     "isbot": "^5.1.17",
@@ -32,9 +29,10 @@
     "yaml": "^2.6.0"
   },
   "devDependencies": {
+    "@types/node": "^22.7.5",
+    "@types/react-dom": "^18.3.1",
     "@mdx-js/rollup": "^3.1.0",
     "@types/react": "^18.3.9",
-    "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.2",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",

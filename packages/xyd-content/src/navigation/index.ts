@@ -2,6 +2,7 @@ import {promises as fs} from 'fs';
 import fs2, {open} from 'fs';
 import path from 'path';
 
+import React from "react";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import matter from 'gray-matter';
@@ -9,10 +10,6 @@ import {VFile} from "vfile";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
 import {FrontMatter, Sidebar, PageFrontMatter, Header} from "@xyd/core";
-import React from "react";
-import {Plugin} from "unified";
-import {Node as UnistNode} from "unist";
-import {visit} from "unist-util-visit";
 
 // TODO: better algorithm + data structures - since it's on build time it's not a big deal nevertheless it should be changed in the future
 

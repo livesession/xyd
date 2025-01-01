@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from "react"
+import React, {useEffect, useState} from "react"
 
 import {$layout, $page, $article, globalHeaderHeight} from "./Layout.styles"
 
@@ -11,7 +11,6 @@ export interface LayoutProps {
     kind?: "fullwidth"
 }
 
-
 export function Layout(props: LayoutProps) {
     const [hideMainHeader, setHideMainHeader] = useState(false)
     const [scrollTop, setScrollTop] = useState(0)
@@ -21,7 +20,6 @@ export function Layout(props: LayoutProps) {
         if (scrollTop === controlScrollPos) {
             return
         }
-
 
         const checkpoint = parseInt(globalHeaderHeight, 10) / 2
         const diff = scrollTop - controlScrollPos
@@ -36,7 +34,6 @@ export function Layout(props: LayoutProps) {
         scrollTop,
         controlScrollPos,
     ]);
-
 
     function onScroll(e: Event) {
         if (!(e.target instanceof HTMLElement)) {
@@ -56,6 +53,7 @@ export function Layout(props: LayoutProps) {
     }
 
     // TODO: by ref?
+    // TODO: MOVE SOMEWHERE ELSE BECAUSE IT DECREASE PERFORMANCE (RERENDER)
     useEffect(() => {
         // return // TODO: UNCOMMENT
 

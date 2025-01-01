@@ -6,9 +6,7 @@ import {
     Layout,
 } from '@xyd/components/layouts';
 
-import {
-    getComponents,
-} from "@xyd/components/mdx";
+import getContentComponents from "@xyd/components/content";
 import {
     Breadcrumbs,
     NavLinks
@@ -230,7 +228,7 @@ function DemoContent() {
             flexDirection: "column",
             gap: "24px"
         }}>
-            <Content components={getComponents()}/>
+            <Content components={getContentComponents()}/>
         </div>
 
         <NavLinks

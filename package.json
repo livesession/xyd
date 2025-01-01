@@ -7,9 +7,8 @@
   },
   "packageManager": "pnpm@9.10.0",
   "scripts": {
-    "build": "pnpm run --filter=\"./packages/**/*\" build",
+    "build": "./build.sh",
     "watch": "pnpm build && pnpm run --filter=\"./packages/**/*\" --parallel build --watch",
-    "build_old": "pnpm -r run build",
     "build:gql": "pnpm run --filter=\"./packages/xyd-gql\" build",
     "build:uniform": "pnpm run --filter=\"./packages/xyd-uniform\" build",
     "build:atlas-storybook": "pnpm run --filter=\"./packages/xyd-atlas\" build-storybook",

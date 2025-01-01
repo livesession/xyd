@@ -9,7 +9,11 @@ export interface UISidebarProps {
 }
 
 export function UISidebar({children, footerItems}: UISidebarProps) {
-    return <div className={$sidebar.host}>
+    // TODO: in the future theming api?
+    return <div className={`
+        xyd_ui-comp-sidebar
+        ${$sidebar.host}
+    `}>
         <ul className={$sidebar.ul}>
             {children}
         </ul>
