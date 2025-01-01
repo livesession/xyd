@@ -24,7 +24,7 @@ export default [
     {
         input: {
             index: 'index.ts',
-            renderoll: 'renderoll.ts'
+            renderoll: 'packages/renderoll/index.ts'
         },
         output: [
             {
@@ -78,7 +78,7 @@ export default [
         external
     },
     {
-        input: 'renderoll.ts',
+        input: 'packages/renderoll/index.ts',
         output: {
             file: 'dist/renderoll.d.ts',
             format: 'es',

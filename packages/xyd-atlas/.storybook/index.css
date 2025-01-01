@@ -1,0 +1,32 @@
+@font-face {
+    font-family: 'Fustat';
+    src: url('./public/fonts/fustat-regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Fustat';
+    src: url('./public/fonts/fustat-ext-500.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Fustat';
+    src: url('./public/fonts/fustat-ext-600.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Fustat';
+    src: url('./public/fonts/fustat-ext-700.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* Example usage */
+body {
+    font-family: 'Fustat', sans-serif;
+}

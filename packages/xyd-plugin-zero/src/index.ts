@@ -2,9 +2,11 @@ import {Settings} from "@xyd/core";
 import type {Plugin as VitePlugin} from "vite";
 import {RouteConfigEntry} from "@react-router/dev/routes";
 
-import {docsPlugin} from "./plugins/docs";
-import {graphqlPlugin} from "./plugins/graphql";
-import {openapiPlugin} from "./plugins/openapi";
+import {docsPreset} from "./presets/docs";
+import {graphqlPreset} from "./presets/graphql";
+import {openapiPreset} from "./presets/openapi";
+
+import type {PluginOutput, Plugin} from "./types";
 
 // TODO: where a plugin runner function should be placed?
 // TODO: better plugin runner
@@ -12,11 +14,7 @@ import {openapiPlugin} from "./plugins/openapi";
 // type VitePlugin = any
 
 // TODO: return routes?
-export async function pluginZero(): Promise<{
-    vitePlugins: VitePlugin[],
-    settings: Settings,
-    routes: RouteConfigEntry[]
-} | null> {
+export async function pluginZero(): Promise<PluginOutput | null> {
     let settings: Settings | null = null
     const vitePlugins: VitePlugin[] = []
     const routes: RouteConfigEntry[] = []
@@ -26,7 +24,7 @@ export async function pluginZero(): Promise<{
             urlPrefix: "/docs"
         }
 
-        const docs = docsPlugin(undefined, options)
+        const docs = docsPreset(undefined, options)
         docs.preinstall = docs.preinstall || []
 
         let preinstallMerge = {}
@@ -65,10 +63,9 @@ export async function pluginZero(): Promise<{
     }
 
     {
-        const options = {
-        }
+        const options = {}
 
-        const gql = graphqlPlugin(settings, options)
+        const gql = graphqlPreset(settings, options)
         gql.preinstall = gql.preinstall || []
 
         let preinstallMerge = {}
@@ -101,10 +98,9 @@ export async function pluginZero(): Promise<{
         if (typeof settings?.api?.graphql === "string") {
         }
 
-        const options = {
-        }
+        const options = {}
 
-        const oap = openapiPlugin(settings, options)
+        const oap = openapiPreset(settings, options)
         oap.preinstall = oap.preinstall || []
 
         let preinstallMerge = {}
@@ -138,5 +134,10 @@ export async function pluginZero(): Promise<{
         settings,
         routes
     }
+}
+
+export type {
+    Plugin,
+    PluginOutput
 }
 

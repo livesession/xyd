@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "module": "esnext",
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "module": "node16",
+    "moduleResolution": "node16",
     "target": "ES6",
     "lib": [
       "dom",
@@ -25,7 +25,7 @@
     "strictNullChecks": true
   },
   "include": [
-    "src",
+    "packages/css/src",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

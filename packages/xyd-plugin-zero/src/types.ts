@@ -7,7 +7,7 @@ type VitePluginData = {
     preinstall: any // TODO: fix any
 }
 
-export type Plugin<T> = (
+export type Preset<T> = (
     settings?: Settings,
     options?: T
 ) => {
@@ -18,4 +18,12 @@ export type Plugin<T> = (
     vitePlugins: (() => (data: VitePluginData) => Promise<VitePlugin>)[]
 }
 
+export interface PluginOutput {
+    vitePlugins: VitePlugin[],
 
+    settings: Settings,
+
+    routes: RouteConfigEntry[]
+}
+
+export type Plugin = () => Promise<PluginOutput | null>

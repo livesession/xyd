@@ -2,15 +2,17 @@ import {defineConfig} from 'tsup';
 
 export default defineConfig({
     entry: {
-        index: 'index.ts',
-        hydration: 'hydration.ts',
+        index: 'src/index.ts',
+        react: 'packages/react/index.ts',
+        hydration: 'packages/hydration/index.ts',
     },
     format: ['esm', 'cjs'], // Output both ESM and CJS formats
     target: 'node16', // Ensure compatibility with Node.js 16
     dts: {
         entry: {
-            index: 'index.ts',
-            hydration: 'hydration.ts',
+            index: 'src/index.ts',
+            react: 'packages/react/index.ts',
+            hydration: 'packages/hydration/index.ts',
         },
         resolve: true, // Resolve external types
     },

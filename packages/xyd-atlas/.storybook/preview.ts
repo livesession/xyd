@@ -1,5 +1,6 @@
 import "@xyd/fable-wiki/atlas.css"
-import '../src/index.css'
+
+import './index.css'
 import '../dist/index.css'
 
 /** @type { import('@storybook/react').Preview } */

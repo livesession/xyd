@@ -1,35 +1,18 @@
 import React from "react";
 import {redirect} from "react-router";
 
-import {
-    getComponents,
-} from "@xyd/components/mdx";
 import {PageFrontMatter} from "@xyd/core"
-import {mapSettingsToProps} from "@xyd/framework/hydration";
 import {compileBySlug} from "@xyd/content"
+import getContentComponents from "@xyd/components/content";
+import {mapSettingsToProps} from "@xyd/framework/hydration";
 import type {IBreadcrumb, INavLinks} from "@xyd/ui2";
-import {FwSidebarGroupProps} from "@xyd/framework";
+import {Framework} from "@xyd/framework/react";
+import type {FwSidebarGroupProps} from "@xyd/framework/react";
 
-// @ts-ignore // TODO: tyoes
 import settings from 'virtual:xyd-settings';
-// @ts-ignore  // TODO: types
-// import Theme from "virtual:xyd-theme" // TODO: for some reasons this cannot be hydrated by react-router
-import Theme from "@xyd/theme-gusto"
-import {
-    Callout,
-    Details,
-    GuideCard,
-    Steps,
-    Tabs,
-    Table,
-    Badge,
+import Theme from "virtual:xyd-theme"
 
-    IconSessionReplay,
-    IconMetrics,
-    IconFunnels,
-    IconCode,
-    IconCustomEvent
-} from "@xyd/components/writer";
+import "virtual:xyd-theme/index.css"
 
 interface loaderData {
     sidebarGroups: FwSidebarGroupProps[]
@@ -39,6 +22,8 @@ interface loaderData {
     slug: string
     code: string
 }
+
+const contentComponents = getContentComponents()
 
 function getPathname(url: string) {
     const parsedUrl = new URL(url);
@@ -120,58 +105,21 @@ export function MemoMDXComponent(codeComponent: any) {
     )
 }
 
-const components = {
-    ...getComponents(),
-    Callout,
-    Details,
-    GuideCard,
-    Steps,
-    Tabs,
-    Table,
-    Badge,
-
-    IconSessionReplay,
-    IconMetrics,
-    IconFunnels,
-    IconCode,
-    IconCustomEvent,
-
-    // TODO: refactor
-    Content({children}) {
-        return <div style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "24px"
-        }}>
-            {children}
-        </div>
-    },
-
-    // TODO: refactor
-    Subtitle({children}) {
-        return <div style={{
-            marginTop: "-18px",
-            fontSize: "18px",
-            color: "#7051d4",
-            fontWeight: 300
-        }}>
-            {children}
-        </div>
-    }
-}
-
 export default function Slug({loaderData, ...rest}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
     const Component = MemoMDXComponent(content.component)
 
-    return <Theme
+    return <Framework
         settings={settings}
         sidebarGroups={loaderData.sidebarGroups}
         toc={content.toc}
         breadcrumbs={loaderData.breadcrumbs}
         navlinks={loaderData.navlinks}
-        themeSettings={content.themeSettings}
     >
-        {Component ? <Component components={components}/> : <></>}
-    </Theme>
+        <Theme
+            themeSettings={content.themeSettings}
+        >
+            {Component ? <Component components={contentComponents}/> : <></>}
+        </Theme>
+    </Framework>
 }

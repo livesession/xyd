@@ -1,11 +1,6 @@
 import type {Preview} from "@storybook/react";
 
-import "@xyd/ui2/index.css";
-import "@xyd/fable-wiki/atlas.css"
-import '@xyd/atlas/index.css';
-import "@xyd/components/index.css";
-
-import '../src/index.css';
+import "@xyd/fable-wiki/theme.css"
 
 const preview: Preview = {
     parameters: {
