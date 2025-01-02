@@ -8,6 +8,7 @@ export interface GuideCardProps {
     title: string;
     icon?: React.ReactNode;
     kind?: "secondary"
+    size?: "sm" | "md"
 }
 
 export function GuideCard({
@@ -16,11 +17,13 @@ export function GuideCard({
                               icon,
                               title,
                               kind,
+                              size,
 
                           }: GuideCardProps) {
     return <div className={`
         ${$guide.host}
         ${kind === "secondary" && $guide.host$$secondary}
+        ${kind === "secondary" && size == "md" && $guide.host$$secondary$$md}
     `}>
         <a className={$guide.link} href={href}>
             <div className={`
@@ -32,12 +35,19 @@ export function GuideCard({
                 </div>}
                 <div className={$guide.right}>
                     <div className={$guide.title}>
-                        <div className={`${$guide.title} ${$guide.titleBody}`}>
+                        <div className={`
+                            ${$guide.title} 
+                            ${$guide.titleBody}
+                            ${size == "md" && $guide.titleBody$$md}
+                        `}>
                             {title}
                         </div>
                         <$Pointer/>
                     </div>
-                    <div className={$guide.body}>
+                    <div className={`
+                        ${$guide.body}
+                        ${size == "md" && $guide.body$$md}
+                    `}>
                         {children}
                     </div>
                 </div>

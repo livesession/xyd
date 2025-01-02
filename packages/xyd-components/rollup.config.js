@@ -24,9 +24,11 @@ export default [
     {
         input: {
             index: 'index.ts',
+            brand: 'src/brand/index.ts',
             coder: 'coder.ts',
             content: 'content.ts',
             layouts: 'layouts.ts',
+            views: 'src/views/index.ts',
             writer: 'writer.ts',
         },
         output: [
@@ -81,6 +83,15 @@ export default [
         external
     },
     {
+        input: 'src/brand/index.ts',
+        output: {
+            file: 'dist/brand.d.ts',
+            format: 'es',
+        },
+        plugins: [dts()],
+        external
+    },
+    {
         input: 'coder.ts',
         output: {
             file: 'dist/coder.d.ts',
@@ -102,6 +113,15 @@ export default [
         input: 'layouts.ts',
         output: {
             file: 'dist/layouts.d.ts',
+            format: 'es',
+        },
+        plugins: [dts()],
+        external
+    },
+    {
+        input: 'src/views/index.ts',
+        output: {
+            file: 'dist/views.d.ts',
             format: 'es',
         },
         plugins: [dts()],

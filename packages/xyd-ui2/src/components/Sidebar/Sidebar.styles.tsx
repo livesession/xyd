@@ -70,6 +70,7 @@ export const $item = {
         display: flex;
         width: 100%;
         padding: 2px;
+        font-weight: 500;
     `,
     link$$active: css`
         background: #fff;

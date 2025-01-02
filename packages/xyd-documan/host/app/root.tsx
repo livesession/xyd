@@ -7,6 +7,8 @@ import {
     Scripts,
 } from "react-router";
 
+import './index.css'
+
 // TODO: config from core settings
 export const meta = () => {
     return [

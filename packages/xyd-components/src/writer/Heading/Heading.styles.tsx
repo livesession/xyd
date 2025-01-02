@@ -70,5 +70,4 @@ export const $heading = {
         color: #7051d4;
         transition: opacity .15s ease;
     `
-
 }

@@ -43,9 +43,6 @@ export function Framework(props: FrameworkProps) {
         navlinks: props.navlinks,
     }}>
         {props.children}
-        <div>
-            hello WORLD
-        </div>
     </FrameworkContext.Provider>
 }
 
