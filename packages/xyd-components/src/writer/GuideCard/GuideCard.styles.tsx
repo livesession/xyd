@@ -20,6 +20,9 @@ export const $guide = {
             background: linear-gradient(238deg, rgba(255, 255, 255, .5) 0%, rgba(250, 250, 250, 1) 100%);
         }
     `,
+    host$$secondary$$md: css`
+        padding: 21px 25px 25px;
+    `,
     link: css`
         width: 100%;
         height: 100%;
@@ -61,6 +64,9 @@ export const $guide = {
     `,
     right: css`
         padding-left: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
     `,
     title: css`
         display: flex;
@@ -68,13 +74,13 @@ export const $guide = {
         font-weight: 400;
         align-items: center;
         transition: color .15s;
-
-        font-size: 16px;
-        line-height: 24px;
     `,
     titleBody: css`
         font-size: 16px;
-        line-height: 24px;
+        line-height: 20px;
+    `,
+    titleBody$$md: css`
+        font-size: 18px;
     `,
     body: css`
         font-weight: 400;
@@ -85,6 +91,9 @@ export const $guide = {
         white-space: normal;
         overflow: hidden;
         text-overflow: ellipsis;
+    `,
+    body$$md: css`
+        font-size: 16px;
     `,
     pointer: css`
         opacity: 0;

@@ -12,6 +12,9 @@
     ".": {
       "import": "./dist/index.js"
     },
+    "./brand": {
+      "import": "./dist/brand.js"
+    },
     "./coder": {
       "import": "./dist/coder.js"
     },
@@ -20,6 +23,9 @@
     },
     "./layouts": {
       "import": "./dist/layouts.js"
+    },
+    "./views": {
+      "import": "./dist/views.js"
     },
     "./writer": {
       "import": "./dist/writer.js"

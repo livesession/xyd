@@ -24,6 +24,7 @@ export function Heading({children, size = 1, as, id, onClick}: HeadingProps) {
             ${size === 4 && $heading.h4}
             ${size === 5 && $heading.h5}
             ${size === 6 && $heading.h6}
+            xyd_comp-comp-heading
         `}
         onClick={onClick}
     >

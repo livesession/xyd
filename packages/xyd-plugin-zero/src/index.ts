@@ -21,7 +21,7 @@ export async function pluginZero(): Promise<PluginOutput | null> {
 
     {
         const options = {
-            urlPrefix: "/docs"
+            urlPrefix: "/docs" // TODO: configurable
         }
 
         const docs = docsPreset(undefined, options)
@@ -62,7 +62,7 @@ export async function pluginZero(): Promise<PluginOutput | null> {
         return null
     }
 
-    {
+    if (settings?.api?.graphql) {
         const options = {}
 
         const gql = graphqlPreset(settings, options)
@@ -94,10 +94,7 @@ export async function pluginZero(): Promise<PluginOutput | null> {
         routes.push(...gql.routes)
     }
 
-    {
-        if (typeof settings?.api?.graphql === "string") {
-        }
-
+    if (settings?.api?.openapi) {
         const options = {}
 
         const oap = openapiPreset(settings, options)
