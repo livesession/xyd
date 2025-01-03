@@ -25,6 +25,7 @@ import Theme from "virtual:xyd-theme" // TODO: for some reasons this cannot be h
 import settings from 'virtual:xyd-settings';
 
 import "virtual:xyd-theme/index.css"
+import "virtual:xyd-theme-override/index.css"
 
 const contentComponents = getContentComponents()
 const ComponentContent = contentComponents.Content

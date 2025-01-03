@@ -8,20 +8,16 @@ import {openapiPreset} from "./presets/openapi";
 
 import type {PluginOutput, Plugin} from "./types";
 
-// TODO: where a plugin runner function should be placed?
 // TODO: better plugin runner
-
-// type VitePlugin = any
-
-// TODO: return routes?
 export async function pluginZero(): Promise<PluginOutput | null> {
     let settings: Settings | null = null
     const vitePlugins: VitePlugin[] = []
     const routes: RouteConfigEntry[] = []
 
+    // base docs preset setup
     {
         const options = {
-            urlPrefix: "/docs" // TODO: configurable
+            urlPrefix: "" // TODO: configurable
         }
 
         const docs = docsPreset(undefined, options)
@@ -30,7 +26,9 @@ export async function pluginZero(): Promise<PluginOutput | null> {
         let preinstallMerge = {}
 
         for (const preinstall of docs.preinstall) {
-            const resp = await preinstall()()
+            const resp = await preinstall()({}, {
+                routes: docs.routes
+            })
 
             if (resp && typeof resp === 'object') {
                 preinstallMerge = {
@@ -58,10 +56,10 @@ export async function pluginZero(): Promise<PluginOutput | null> {
     }
 
     if (!settings) {
-        console.error('settings not found')
-        return null
+        throw new Error("settings not found")
     }
 
+    // graphql preset setup
     if (settings?.api?.graphql) {
         const options = {}
 
@@ -71,7 +69,9 @@ export async function pluginZero(): Promise<PluginOutput | null> {
         let preinstallMerge = {}
 
         for (const preinstall of gql.preinstall) {
-            const resp = await preinstall(options)(settings)
+            const resp = await preinstall(options)(settings, {
+                routes: gql.routes
+            })
 
             if (resp && typeof resp === 'object') {
                 preinstallMerge = {
@@ -94,6 +94,7 @@ export async function pluginZero(): Promise<PluginOutput | null> {
         routes.push(...gql.routes)
     }
 
+    // openapi preset setup
     if (settings?.api?.openapi) {
         const options = {}
 
@@ -103,7 +104,9 @@ export async function pluginZero(): Promise<PluginOutput | null> {
         let preinstallMerge = {}
 
         for (const preinstall of oap.preinstall) {
-            const resp = await preinstall(options)(settings)
+            const resp = await preinstall(options)(settings, {
+                routes: oap.routes
+            })
 
             if (resp && typeof resp === 'object') {
                 preinstallMerge = {

@@ -7,12 +7,16 @@ type VitePluginData = {
     preinstall: any // TODO: fix any
 }
 
+export interface PresetData {
+    routes: RouteConfigEntry[]
+}
+
 export type Preset<T> = (
     settings?: Settings,
     options?: T
 ) => {
     // TODO: args and return should be based on passed preinstall plugin
-    preinstall: ((options?: any) => (settings?: Settings) => Promise<any>)[]
+    preinstall: ((options?: any) => (settings: Settings, data: PresetData) => Promise<any>)[]
     routes: RouteConfigEntry[]
     // TODO: 'data' comes from merged object of preinstall
     vitePlugins: (() => (data: VitePluginData) => Promise<VitePlugin>)[]

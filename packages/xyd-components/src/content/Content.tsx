@@ -18,8 +18,8 @@ import {
     IconFunnels,
     IconMetrics,
     IconSessionReplay,
-} from '@xyd/components/writer'
-import {CodeSample} from "@xyd/components/coder";
+} from '../writer'
+import {CodeSample} from "../coder";
 
 import {Content as ContentComponent} from "./Content/index";
 import {Subtitle} from "./Subtitle";

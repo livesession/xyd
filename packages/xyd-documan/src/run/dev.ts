@@ -19,7 +19,6 @@ export async function dev() {
 
     const allowCwd = searchForWorkspaceRoot(process.cwd())
 
-
     const preview = await createServer({
         // any valid user config options, plus `mode` and `configFile`
         // configFile: path.join(__dirname, "../src/vite/empty-config.ts"), // TODO: bundler??
@@ -50,7 +49,6 @@ export async function dev() {
             // ],
         },
         optimizeDeps: {
-
             include: ["react/jsx-runtime"],
         },
         // @ts-ignore

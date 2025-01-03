@@ -23,7 +23,7 @@ const $button = {
         }
     `,
 
-    host$$primary: css`
+    host$$secondary: css`
         color: #fff;
         background-color: rgb(112, 81, 212);
 
@@ -35,13 +35,13 @@ const $button = {
 
 export interface ButtonProps {
     children: React.ReactNode
-    kind?: "primary"
+    kind?: "secondary"
 }
 
 export function Button({children, kind}: ButtonProps) {
     return <button className={`
         ${$button.host}
-        ${kind === "primary" && $button.host$$primary}
+        ${kind === "secondary" && $button.host$$secondary}
     `}>
         {children}
     </button>

@@ -24,6 +24,9 @@
     "./layouts": {
       "import": "./dist/layouts.js"
     },
+    "./pages": {
+      "import": "./dist/pages.js"
+    },
     "./views": {
       "import": "./dist/views.js"
     },

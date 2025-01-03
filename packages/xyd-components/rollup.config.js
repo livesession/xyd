@@ -28,6 +28,7 @@ export default [
             coder: 'coder.ts',
             content: 'content.ts',
             layouts: 'layouts.ts',
+            pages: 'src/pages/index.ts',
             views: 'src/views/index.ts',
             writer: 'writer.ts',
         },
@@ -113,6 +114,15 @@ export default [
         input: 'layouts.ts',
         output: {
             file: 'dist/layouts.d.ts',
+            format: 'es',
+        },
+        plugins: [dts()],
+        external
+    },
+    {
+        input: 'src/pages/index.ts',
+        output: {
+            file: 'dist/pages.d.ts',
             format: 'es',
         },
         plugins: [dts()],

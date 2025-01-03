@@ -1,20 +1,25 @@
-// TODO: !!! THIS SHOULD BE DONE AT DIFFERENT LEVEL !!!
-import React from "react";
+import React, {ReactElement} from "react";
 
-export function manualHydration(obj: any, key = 0): React.ReactElement | null {
+export function manualHydration(obj: any, key = 0): ReactElement<any, string | React.JSXElementConstructor<any>> {
     if (typeof obj !== 'object' || obj === null) {
-        return null;
+        return React.createElement(React.Fragment, {key});
     }
 
     const {type, props} = obj || {};
     if (typeof type !== 'string' && typeof type !== 'function') {
-        return null;
+        return React.createElement(React.Fragment, {key});
     }
 
-    let children = []
-    if (props?.children?.map && typeof props?.children?.map === "function") {
-        children = props?.children?.map((child: any, i) => manualHydration(child, key + i)) || []
+    let children: ReactElement<any, string | React.JSXElementConstructor<any>>[] = [];
+    if (props?.children) {
+        if (Array.isArray(props.children)) {
+            children = props.children.map((child: any, i) => manualHydration(child, key + i)) || [];
+        } else {
+            children = [manualHydration(props.children, key)];
+        }
     }
 
-    return React.createElement(type, {...props, children, key});
+    const elementProps = {...props, children, key};
+
+    return React.createElement(type, elementProps);
 }

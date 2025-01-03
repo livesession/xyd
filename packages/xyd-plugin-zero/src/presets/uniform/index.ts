@@ -16,7 +16,7 @@ import {
     compile as compileMarkdown,
     referenceAST
 } from "@xyd/uniform/markdown";
-import {Preset} from "../../types";
+import {Preset, PresetData} from "../../types";
 
 export interface uniformPresetOptions {
     urlPrefix?: string
@@ -200,21 +200,25 @@ async function uniformResolver(
 
         pageLevels = uniformSidebarLevelMap(flatUniformPages)
 
-        // TODO: custom `fn` logic?
-        await Promise.all(otherUniformPages.map(async (page) => {
-            const content = await fs.readFile(path.join(root, page + '.mdx'), "utf-8") // TODO: support .md
-            uniformData.set(page, content + "\n")
-        }))
-
-        await Promise.all(Object.keys(groups).map(async (group) => {
-            try {
-                // TODO: only if `group_index`
-                const page = groups[group]
+        {
+            // TODO: below should be inside uniform?
+            // TODO: custom `fn` logic?
+            await Promise.all(otherUniformPages.map(async (page) => {
                 const content = await fs.readFile(path.join(root, page + '.mdx'), "utf-8") // TODO: support .md
                 uniformData.set(page, content + "\n")
-            } catch (e) {
-            }
-        }))
+            }))
+
+            await Promise.all(Object.keys(groups).map(async (group) => {
+                try {
+                    // TODO: only if `group_index`
+                    const page = groups[group]
+                    const content = await fs.readFile(path.join(root, page + '.mdx'), "utf-8") // TODO: support .md
+                    uniformData.set(page, content + "\n")
+                } catch (e) {
+                }
+            }))
+        }
+
     }
 
     await Promise.all(
@@ -241,25 +245,25 @@ async function uniformResolver(
         })
     )
 
-    if (sidebar) {
-        if (matchRoute) {
-            uniformSidebars[0].items.push(...uniformWithNavigation.out.sidebar)
-
-            return {
-                data: uniformData.data,
-            }
+    if (!sidebar) {
+        return {
+            sidebar: uniformWithNavigation.out.sidebar,
+            data: uniformData.data
         }
+    }
 
-        sidebar.push(...uniformWithNavigation.out.sidebar)
+    if (matchRoute) {
+        uniformSidebars[0].items.push(...uniformWithNavigation.out.sidebar)
 
         return {
             data: uniformData.data,
         }
     }
 
+    sidebar.push(...uniformWithNavigation.out.sidebar)
+
     return {
-        sidebar: uniformWithNavigation.out.sidebar,
-        data: uniformData.data
+        data: uniformData.data,
     }
 }
 
@@ -270,7 +274,7 @@ function preinstall(
     apiFile: APIFile,
 ) {
     return function preinstallInner(options: uniformPresetOptions) {
-        return async function uniformPluginInner(settings: Settings) {
+        return async function uniformPluginInner(settings: Settings, data: PresetData) {
             const root = options.root ?? process.cwd()
 
             if (!apiFile) {

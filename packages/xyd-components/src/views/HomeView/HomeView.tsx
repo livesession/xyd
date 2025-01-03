@@ -40,6 +40,16 @@ const $body = {
         display: flex;
         flex-direction: column;
         gap: 80px;
+
+        @media (max-width: 1200px) {
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        @media (max-width: 768px) {
+            width: 100%;
+            padding: 0 10px;
+        }
     `
 }
 

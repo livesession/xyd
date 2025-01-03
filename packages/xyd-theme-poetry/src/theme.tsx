@@ -8,11 +8,8 @@ import {
     FwNav,
     FwToc,
     FwNavLinks,
-    FwSubNav,
 
     FwSidebarGroups,
-
-    useMatchedSubNav,
 } from "@xyd/framework/react"
 
 import {Layout} from "./components/Layouts";
@@ -39,12 +36,9 @@ export interface ThemeSettings {
 export interface ThemeProps extends ITheme<ThemeSettings> {
 }
 
-export default function ThemeFableWiki(props: ThemeProps) {
-    const subheader = !!useMatchedSubNav()
-
+export default function ThemePoetry(props: ThemeProps) {
     return <Layout
         header={<Navbar/>}
-        subheader={subheader}
         aside={<Sidebar themeSettings={props.themeSettings}/>}
         content={<>
             {/*TODO: optional breadcrumbs*/}
@@ -65,7 +59,6 @@ export default function ThemeFableWiki(props: ThemeProps) {
 function Navbar() {
     return <>
         <FwNav kind="middle"/>
-        <FwSubNav/>
     </>
 }
 

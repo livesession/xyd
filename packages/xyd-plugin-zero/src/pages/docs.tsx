@@ -1,18 +1,23 @@
+import path from "node:path";
+
 import React from "react";
 import {redirect} from "react-router";
 
 import {PageFrontMatter} from "@xyd/core"
 import {compileBySlug} from "@xyd/content"
+import {Layout} from "@xyd/components/layouts";
 import getContentComponents from "@xyd/components/content";
-import {mapSettingsToProps} from "@xyd/framework/hydration";
+import {HomePage} from "@xyd/components/pages";
 import type {IBreadcrumb, INavLinks} from "@xyd/ui2";
-import {Framework} from "@xyd/framework/react";
+import {mapSettingsToProps} from "@xyd/framework/hydration";
+import {Framework, FwNav} from "@xyd/framework/react";
 import type {FwSidebarGroupProps} from "@xyd/framework/react";
 
 import settings from 'virtual:xyd-settings';
-import Theme from "virtual:xyd-theme"
+import Theme from "virtual:xyd-theme";
 
 import "virtual:xyd-theme/index.css"
+import "virtual:xyd-theme-override/index.css"
 
 interface loaderData {
     sidebarGroups: FwSidebarGroupProps[]
@@ -25,13 +30,24 @@ interface loaderData {
 
 const contentComponents = getContentComponents()
 
+const supportedExtensions = {
+    ".mdx": true,
+    ".md": true,
+    "": true,
+}
+
 function getPathname(url: string) {
     const parsedUrl = new URL(url);
     return parsedUrl.pathname.replace(/^\//, '');
 }
 
 export async function loader({request}: { request: any }) {
-    const slug = getPathname(request.url)
+    const slug = getPathname(request.url || "index") || "index"
+    const ext = path.extname(slug)
+
+    if (!supportedExtensions[ext]) {
+        return {}
+    }
 
     let code = ""
     let error: any
@@ -41,6 +57,16 @@ export async function loader({request}: { request: any }) {
     } catch (e) {
         error = e
     }
+
+    if (error?.code === "ENOENT") {
+        try {
+            // TODO: better index algorithm
+            code = await compileBySlug(slug + "/index", true)
+        } catch (e) {
+            error = e
+        }
+    }
+
     const {
         groups: sidebarGroups,
         breadcrumbs,
@@ -95,6 +121,7 @@ function mdxContent(code: string) {
         toc: content?.toc,
         frontmatter: content?.frontmatter,
         themeSettings: content?.themeSettings || {},
+        page: content?.page || false,
     }
 }
 
@@ -105,21 +132,36 @@ export function MemoMDXComponent(codeComponent: any) {
     )
 }
 
-export default function Slug({loaderData, ...rest}: { loaderData: loaderData }) {
+export default function CustomPage({loaderData, ...rest}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
     const Component = MemoMDXComponent(content.component)
 
     return <Framework
         settings={settings}
-        sidebarGroups={loaderData.sidebarGroups}
-        toc={content.toc}
-        breadcrumbs={loaderData.breadcrumbs}
+        sidebarGroups={loaderData.sidebarGroups || []}
+        toc={content.toc || []}
+        breadcrumbs={loaderData.breadcrumbs || []}
         navlinks={loaderData.navlinks}
     >
-        <Theme
+        {content?.page ? <Component components={{
+            ...contentComponents,
+            // TODO: another page components
+            HomePage: (props) => <HomePage
+                {...props}
+                // TODO: get props from theme about nav (middle etc)
+                // TODO: footer
+                // TODO: style
+                header={<div style={{marginLeft: "var(--xyd-global-page-gutter)"}}>
+                    <FwNav kind="middle"/>
+                </div>}
+
+            >
+                {props.children}
+            </HomePage>,
+        }}/> : <Theme
             themeSettings={content.themeSettings}
         >
             {Component ? <Component components={contentComponents}/> : <></>}
-        </Theme>
+        </Theme>}
     </Framework>
 }
