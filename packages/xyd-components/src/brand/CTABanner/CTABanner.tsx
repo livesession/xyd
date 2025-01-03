@@ -19,6 +19,11 @@ const $banner = {
         gap: 40px;
     `,
     headingEffect: css`
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
         background: -webkit-linear-gradient(
                 120deg,
                 var(--headingEffect-color-tertiary) 20%,

@@ -1,13 +1,9 @@
 import {
-    Links,
     Meta,
-    // Links,
-    // Meta,
+    Links,
     Outlet,
     Scripts,
 } from "react-router";
-
-import './index.css'
 
 // TODO: config from core settings
 export const meta = () => {

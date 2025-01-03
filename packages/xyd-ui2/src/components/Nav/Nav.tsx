@@ -19,7 +19,10 @@ export function Nav({children, value, onChange, logo, kind}: NavProps) {
                 ${$nav.nav}
                 ${kind === "middle" && $nav.nav$$middle}
             `}>
-                <div className={$logo.host}>
+                <div className={`
+                    ${$logo.host}
+                    xyd_ui-comp-nav-logo
+                `}>
                     {logo}
                 </div>
                 <RadixTabs.List asChild>

@@ -1,18 +1,57 @@
-import {Plugin as VitePlugin} from "vite";
+import {promises as fs} from 'fs';
+import path from "node:path";
+
+import {createServer, Plugin as VitePlugin} from "vite";
 import {route} from "@react-router/dev/routes";
 
 import {Settings} from "@xyd/core";
 
-import {Preset} from "../../types";
+import {Preset, PresetData} from "../../types";
 import {readSettings} from "./settings";
 
 interface docsPluginOptions {
     urlPrefix?: string
 }
 
+// TODO: find better solution - maybe something what rr7 use?
+async function loadModule(filePath: string) {
+    const server = await createServer({
+        optimizeDeps: {
+            include: ["react/jsx-runtime"],
+        },
+    });
+
+    try {
+        const module = await server.ssrLoadModule(filePath);
+        return module.default;
+    } finally {
+        await server.close();
+    }
+}
+
 function preinstall() {
-    return async function docsPluginInner() {
+    return async function docsPluginInner(_, data: PresetData) {
+        // TODO: configurable root?
+        const root = process.cwd()
+
         const settings = await readSettings()
+
+        let themeRoutesExists = false
+        try {
+            await fs.access(path.join(root, ".xyd/theme/routes.ts"))
+            themeRoutesExists = true
+        } catch (_) {
+        }
+
+        if (themeRoutesExists) {
+            const routeMod = await loadModule(path.join(root, ".xyd/theme/routes.ts"))
+
+            const routes = routeMod((routePath, routeFile, routeOptions) => {
+                return route(routePath, path.join(root, ".xyd/theme", routeFile), routeOptions)
+            })
+
+            data.routes.push(...routes)
+        }
 
         return {
             settings
@@ -54,7 +93,7 @@ export function vitePluginThemeCSS() {
                 // TODO: BAD SOLUTION
                 if (source === 'virtual:xyd-theme/index.css') {
                     switch (preinstall.settings.styling?.theme) {
-                        // TODO: support another themes
+                        // TODO: support another themes + custom themes
                         case "gusto": {
                             const gustoCss = import.meta.url.split("xyd/packages")[0] += "xyd/node_modules/@xyd/theme-gusto/dist/index.css"
                             return gustoCss.replace("file://", "")
@@ -68,6 +107,23 @@ export function vitePluginThemeCSS() {
                             return fableCss.replace("file://", "")
                         }
                     }
+                }
+                return null;
+            },
+        };
+    };
+}
+
+export function vitePluginThemeOverrideCSS() {
+    return async function ({preinstall}: { preinstall: { settings: Settings } }): Promise<VitePlugin> {
+        return {
+            name: 'virtual:xyd-theme-override-css',
+
+            resolveId(id) {
+                if (id === 'virtual:xyd-theme-override/index.css') {
+                    // TODO: configurable root?
+                    const root = process.cwd()
+                    return path.join(root, ".xyd/theme/index.css")
                 }
                 return null;
             },
@@ -94,7 +150,7 @@ export function vitePluginTheme() {
             async load(id) {
                 if (id === 'virtual:xyd-theme') {
                     switch (preinstall.settings.styling?.theme) {
-                        // TODO: support another themes
+                        // TODO: support another themes + custom themes
                         case "gusto": {
                             return `import Theme from '@xyd/theme-gusto'; export default Theme;`;
                         }
@@ -113,13 +169,14 @@ export function vitePluginTheme() {
     }
 }
 
-// TODO: custom route?
-function preset(_, options: docsPluginOptions) {
+function preset(settings: Settings, options: docsPluginOptions) {
     return {
         preinstall: [
             preinstall
         ],
         routes: [
+            route("", "../../../xyd-plugin-zero/src/pages/docs.tsx"),
+            // TODO: custom routes
             route(options.urlPrefix ? `${options.urlPrefix}/*` : "*", "../../../xyd-plugin-zero/src/pages/docs.tsx", { // TODO: absolute paths does not works
                 id: "xyd-plugin-zero/docs",
             }),
@@ -128,6 +185,7 @@ function preset(_, options: docsPluginOptions) {
             vitePluginSettings,
             vitePluginTheme,
             vitePluginThemeCSS,
+            vitePluginThemeOverrideCSS,
         ]
     }
 }

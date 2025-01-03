@@ -17,7 +17,10 @@ function FwNavLogo() {
 
     const logo = isValidElement(settings?.styling?.logo) ? settings?.styling?.logo : manualHydration(settings?.styling?.logo)
 
-    return logo
+    // TODO: configurable url?
+    return <a href="/">
+        {logo}
+    </a>
 }
 
 function FwNav({kind}: { kind?: "middle" }) {

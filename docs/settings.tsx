@@ -11,7 +11,6 @@ export default {
             xmlns="http://www.w3.org/2000/svg"
             style={{
                 width: 24,
-                marginLeft: 210
             }}
         >
             <path
@@ -51,6 +50,7 @@ export default {
         </svg>,
         "theme": "poetry"
     },
+
     "structure": {
         "header": [
             {

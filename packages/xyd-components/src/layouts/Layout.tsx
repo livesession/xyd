@@ -71,13 +71,12 @@ export function Layout(props: LayoutProps) {
     }, []);
 
     return <div className={$layout.host}>
-        <header className={`
-            ${$layout.header}
+        <Layout.Header className={`
             ${props.subheader && $layout.header$$sub}
             ${hideMainHeader && $layout.header$$hideMain}
         `}>
             {props.header}
-        </header>
+        </Layout.Header>
         <main className={`
             ${$layout.main}
             ${!hideMainHeader && props.subheader && $layout.main$$sub}
@@ -110,4 +109,13 @@ export function Layout(props: LayoutProps) {
             </div>
         </main>
     </div>
+}
+
+Layout.Header = function LayoutHeader({className, children}: { className?: string, children: React.ReactNode }) {
+    return <header className={`
+            ${$layout.header}
+            ${className}
+        `}>
+        {children}
+    </header>
 }

@@ -15,6 +15,7 @@ export const globals = css`
     :global() {
         :root {
             --xyd-navbar-height: ${globalHeaderHeight};
+            --xyd-global-page-gutter: ${globalPageGutter};
         }
     }
 `;
