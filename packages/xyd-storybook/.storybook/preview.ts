@@ -2,6 +2,8 @@ import type {Preview} from "@storybook/react";
 
 import "@xyd/fable-wiki/theme.css"
 
+import './styles.css'
+
 const preview: Preview = {
     parameters: {
         options: {
