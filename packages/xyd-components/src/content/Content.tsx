@@ -42,6 +42,7 @@ export default function content() {
         ...writerContent(),
         ...helperContent(),
         ...iconContent(),
+        ...coderContent(),
     }
 }
 
@@ -129,3 +130,8 @@ export function iconContent() {
     }
 }
 
+export function coderContent() {
+    return {
+        CodeSample,
+    }
+}

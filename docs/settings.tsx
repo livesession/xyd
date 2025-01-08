@@ -72,21 +72,17 @@ export default {
                         "pages": [
                             "docs/what-is-xyd",
                             "docs/getting-started",
-                        ]
+                        ],
                     },
                     {
-                        "group": "Writing",
+                        "group": "Components",
                         "pages": [
-                            "docs/what-is-xyd",
-                            "docs/getting-started",
-                        ]
-                    },
-                    {
-                        "group": "Customization",
-                        "pages": [
-                            "docs/what-is-xyd",
-                            "docs/getting-started",
-                        ]
+                            "docs/components/guide-cards",
+                            "docs/components/callout",
+                            "docs/components/steps",
+                            "docs/components/code-sample",
+
+                        ],
                     },
                 ]
             },

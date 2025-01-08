@@ -1,0 +1,49 @@
+---
+title: Guide Cards
+---
+
+# Guide Cards
+<Subtitle>
+    Show cards side by side in a grid format.
+</Subtitle>
+
+## Overview
+The `GuideCard` component lets you group multiple Card components together. It’s most often used to put multiple cards on the same column.
+
+## Example
+<GuideCard.List>
+    <GuideCard
+        icon={<IconCode/>}
+        title="Example Title 1"
+        kind="secondary"
+    >
+        This is an example description for the first guide card.
+    </GuideCard>
+
+    <GuideCard
+        icon={<IconMetrics/>}
+        title="Example Title 2"
+    >
+        This is an example description for the second guide card.
+    </GuideCard>
+</GuideCard.List>
+
+## Usage
+
+```tsx
+<GuideCard.List>
+    <GuideCard
+        icon={<IconCode/>}
+        title="Example Title 1"
+        kind="secondary"
+    >
+        This is an example description for the first guide card.
+    </GuideCard>
+
+    <GuideCard
+        icon={<IconMetrics/>}
+        title="Example Title 2"
+    >
+        This is an example description for the second guide card.
+    </GuideCard>
+</GuideCard.List>

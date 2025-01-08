@@ -117,7 +117,6 @@ export const $page = {
     articleContainer$$fullWidth: css`
         width: 1200px;
     `,
-
 }
 
 export const $article = {
@@ -139,5 +138,8 @@ export const $article = {
         margin-left: 50px;
         padding-left: 16px;
         flex: none;
+    `,
+    nav$$equal: css`
+        flex: 1;
     `
 }
