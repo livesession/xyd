@@ -30,7 +30,10 @@ export interface ThemeSettings {
         onePathBehaviour?: boolean
         clientSideRouting?: boolean
     }
-    bigArticle?: boolean
+    contentNav?: React.ReactNode
+    layout?: {
+        kind?: "fullwidth" | "equal"
+    }
 }
 
 export interface ThemeProps extends ITheme<ThemeSettings> {
@@ -50,8 +53,12 @@ export default function ThemePoetry(props: ThemeProps) {
             <FwNavLinks/>
         </>
         }
-        contentNav={props.themeSettings?.hideToc ? null : <FwToc/>}
-        kind={props.themeSettings?.bigArticle ? "fullwidth" : undefined}
+        contentNav={
+            props.themeSettings?.hideToc
+                ? null
+                : props.themeSettings?.contentNav ? props.themeSettings.contentNav : <FwToc/>
+        }
+        kind={props.themeSettings?.layout?.kind || undefined}
     />
 }
 

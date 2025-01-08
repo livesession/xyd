@@ -5,7 +5,6 @@ import {redirect} from "react-router";
 
 import {PageFrontMatter} from "@xyd/core"
 import {compileBySlug} from "@xyd/content"
-import {Layout} from "@xyd/components/layouts";
 import getContentComponents from "@xyd/components/content";
 import {HomePage} from "@xyd/components/pages";
 import type {IBreadcrumb, INavLinks} from "@xyd/ui2";

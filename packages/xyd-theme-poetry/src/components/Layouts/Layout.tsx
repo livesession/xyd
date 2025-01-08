@@ -8,7 +8,7 @@ export interface LayoutProps {
     content: React.ReactNode;
     contentNav: React.ReactNode;
     subheader?: boolean;
-    kind?: "fullwidth"
+    kind?: "fullwidth" | "equal"
 }
 
 // TODO: move scroller to xyd-foo
@@ -92,6 +92,7 @@ export function Layout(props: LayoutProps) {
                         <div className={`
                             ${$page.articleContainer}
                             ${props.kind == "fullwidth" && $page.articleContainer$$fullWidth}
+                            ${props.kind == "equal" && $page.articleContainer$$fullWidth}
                         `}>
                             <article className={$article.host}>
                                 <section className={$article.content}>
@@ -100,6 +101,7 @@ export function Layout(props: LayoutProps) {
                                 {
                                     props.contentNav && <nav className={`
                                     ${$article.nav}
+                                    ${props.kind == "equal" && $article.nav$$equal}
                                 `}>
                                         {props.contentNav}
                                     </nav>

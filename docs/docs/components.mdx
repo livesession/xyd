@@ -1,0 +1,178 @@
+---
+title: Components
+---
+
+export const themeSettings = {
+    layout: {
+        kind: "equal"
+    }
+}
+
+export const examples = {
+    GuideCards: () => <GuideCard.List>
+        <GuideCard
+            icon={<IconSessionReplay/>}
+            title="Session Replay"
+            kind="secondary"
+        >
+            Visualize user interactions in your product with detailed session replays.
+        </GuideCard>
+
+        <GuideCard
+            icon={<IconMetrics/>}
+            title="Metrics Analysis"
+        >
+            Analyze key metrics to understand user behavior and optimize your product workflows.
+        </GuideCard>
+
+        <GuideCard
+            icon={<IconFunnels/>}
+            title="Funnel Analysis"
+        >
+            Track user journeys and identify drop-offs to optimize conversion rates.
+        </GuideCard>
+    </GuideCard.List>
+}
+
+# Components
+
+## Guide Cards
+Show cards side by side in a grid format
+
+The `GuideCard` component lets you group multiple Card components together. It’s most often used to put multiple cards on the same colum
+
+<GuideCard.List>
+    <GuideCard
+        icon={<IconSessionReplay/>}
+        title="Session Replay"
+        kind="secondary"
+    >
+        Visualize user interactions in your product with detailed session replays.
+    </GuideCard>
+
+    <GuideCard
+        icon={<IconMetrics/>}
+        title="Metrics Analysis"
+    >
+        Analyze key metrics to understand user behavior and optimize your product workflows.
+    </GuideCard>
+
+    <GuideCard
+        icon={<IconFunnels/>}
+        title="Funnel Analysis"
+    >
+        Track user journeys and identify drop-offs to optimize conversion rates.
+    </GuideCard>
+</GuideCard.List>
+
+```tsx
+<GuideCard.List>
+    <GuideCard
+        icon={<IconSessionReplay/>}
+        title="Session Replay"
+        kind="secondary"
+    >
+        Visualize user interactions in your product with detailed session replays.
+    </GuideCard>
+
+    <GuideCard
+        icon={<IconMetrics/>}
+        title="Metrics Analysis"
+    >
+        Analyze key metrics to understand user behavior and optimize your product workflows.
+    </GuideCard>
+
+    <GuideCard
+        icon={<IconFunnels/>}
+        title="Funnel Analysis"
+    >
+        Track user journeys and identify drop-offs to optimize conversion rates.
+    </GuideCard>
+</GuideCard.List>
+```
+
+## Callouts
+Use callouts to add eye-catching context to your content
+
+<Callout>
+    Track custom events tailored to your specific
+    business needs for deeper analytics.
+</Callout>
+
+```tsx
+<Callout>
+    Track custom events tailored to your specific
+    business needs for deeper analytics.
+</Callout>
+```
+
+## Steps
+<Subtitle>
+    Sequence content using the Steps component
+</Subtitle>
+
+Steps are the best way to display a series of actions of events to your users. You can add as many steps as desired.
+
+<Steps>
+    <Steps.Item>
+        These are instructions or content that only pertain to the first step.
+    </Steps.Item>
+    <Steps.Item>
+        These are instructions or content that only pertain to the second step.
+    </Steps.Item>
+    <Steps.Item>
+        These are instructions or content that only pertain to the third step.
+    </Steps.Item>
+</Steps>
+
+```tsx
+<Steps>
+    <Steps.Item>
+        These are instructions or content that only pertain to the first step.
+    </Steps.Item>
+    <Steps.Item>
+        These are instructions or content that only pertain to the second step.
+    </Steps.Item>
+    <Steps.Item>
+        These are instructions or content that only pertain to the third step.
+    </Steps.Item>
+</Steps>
+```
+
+## CodeSample
+<Tabs items={["Example", "Markdown"]}>
+    <Tabs.Content value="Example">
+        <Content>
+            <CodeSample
+                name="helloWorld.js"
+                description="Hello World in JavaScript"
+                codeblocks={[
+                    {
+                        value: "console.log('Hello World');",
+                        lang: "js",
+                        meta: "helloWorld.js",
+                    }
+                ]}
+                size="full"
+            />
+        </Content>
+    </Tabs.Content>
+    <Tabs.Content value="Markdown">
+        <Content>
+            <CodeSample
+                name="helloWorld.md"
+                description="Hello World in Markdown"
+                codeblocks={[
+                    {
+                        value: ` \`\`\`js \n console.log('Hello World'); \n \`\`\`
+                    `,
+                        lang: "markdown",
+                        meta: "helloWorld.md",
+                    }
+                ]}
+                size="full"
+            />
+        </Content>
+    </Tabs.Content>
+</Tabs>
+
