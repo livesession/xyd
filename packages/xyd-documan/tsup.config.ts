@@ -76,12 +76,14 @@ export default defineConfig({
         index: 'src/index.ts',
         dev: 'src/commands/dev.ts',
         build: 'src/commands/build.ts',
+        serve: 'src/commands/serve.ts',
     },
     dts: {
         entry: {
             index: 'src/index.ts',
             dev: 'src/commands/dev.ts',
             build: 'src/commands/build.ts',
+            serve: 'src/commands/serve.ts',
         },
         resolve: true, // Resolve external types
     },
@@ -97,7 +99,12 @@ export default defineConfig({
         ...deps,
 
         // needed by @xyd/plugin-zero
+        "react-router",
         "@react-router/dev",
+        "@react-router/express",
+
+        "@xyd-js/react-router-dev",
+
         "@readme/json-schema-ref-parser",
         "@apidevtools/json-schema-ref-parser",
         //

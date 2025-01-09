@@ -1,7 +1,9 @@
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {createServer, searchForWorkspaceRoot} from "vite";
-import {reactRouter} from "@xydjs/react-router-dev/vite";
+
+import {reactRouter} from "@xyd-js/react-router-dev/vite";
+// import { reactRouter } from "@react-router/dev/vite";
 
 import {vitePlugins as xydContentVitePlugins} from "@xyd/content";
 import {pluginZero} from "@xyd/plugin-zero";
@@ -24,7 +26,7 @@ export async function dev() {
         // configFile: path.join(__dirname, "../src/vite/empty-config.ts"), // TODO: bundler??
         // configFile: path.join(__dirname, "../"), // TODO: bundler??
         // root: path.join(__dirname, "../"), // TODO: bundler?
-        root: process.env.XYD_DOCUMAN_ROOT || path.join(__dirname, "../host"), // TODO: bundler?
+        root: process.env.XYD_DOCUMAN_HOST || path.join(__dirname, "../host"), // TODO: bundler?
         server: {
             port: port,
             fs: {
@@ -59,19 +61,10 @@ export async function dev() {
                 }
             }) as Plugin[]),
             reactRouter({
-                presets: [ // TODO: add routes from plugins as react-router presets
-                    {
-                        name: "xyd-documan",
-
-                        defineRoutes() {
-                            return resp.routes
-                        }
-                    }
-                ]
+                routes: resp.routes
             }),
+            // reactRouter(),
             ...resp.vitePlugins
-            // injectSettingsPlugin(settings),
-            // virtualApiFullPlugin(),
         ],
     });
 
