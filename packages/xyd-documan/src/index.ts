@@ -1,5 +1,7 @@
 export {
     build,
 
-    dev
+    dev,
+
+    serve
 } from "./run"

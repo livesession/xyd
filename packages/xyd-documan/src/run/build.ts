@@ -1,35 +1,18 @@
 import path from "node:path";
+import fs from "node:fs";
 import {fileURLToPath} from "node:url";
+
 import {build as viteBuild} from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
-import {reactRouter} from "@xydjs/react-router-dev/vite";
+
+import {reactRouter} from "@xyd-js/react-router-dev/vite";
+// import { reactRouter } from "@react-router/dev/vite";
 
 import {vitePlugins as xydContentVitePlugins} from "@xyd/content"
-import {Sidebar, Settings} from "@xyd/core";
 import {pluginZero} from "@xyd/plugin-zero";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// TODO: refactor?
-function fsNavPages(nav: Sidebar): string[] {
-    const resp: string[] = []
-
-    nav?.pages?.map((page) => {
-        if (typeof page === 'string') {
-            resp.push(path.join(process.cwd(), page))
-        } else {
-            resp.push(...fsNavPages(page))
-        }
-    })
-
-    return resp
-}
-
-
-// export interface buildOptions { // TODO: finish
-//     toc?: RemarkMdxTocOptions
-// }
 
 // Define the main function to run the builds
 export async function build() {
@@ -38,20 +21,31 @@ export async function build() {
         throw new Error("PluginZero not found")
     }
 
-    const settings = resp.settings
+    const buildDir = path.join(process.cwd(), ".xyd/build");
 
-    const fsAllPages = settings?.structure?.sidebar.reduce((acc: string[], nav: Sidebar) => {
-        return [
-            ...acc,
-            ...fsNavPages(nav)
-        ]
-    }, [] as string[]) || []
+    {
+        const packageJsonPath = path.join(buildDir, 'package.json');
+
+        const packageJsonContent = {
+            type: "module",
+            scripts: {},
+            dependencies: {},
+            devDependencies: {}
+        };
+
+        // Ensure the build directory exists
+        if (!fs.existsSync(buildDir)) {
+            fs.mkdirSync(buildDir, {recursive: true});
+        }
+
+        // Write the package.json file
+        fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
+    }
 
     try {
         // Build the client-side bundle
         await viteBuild({
-            configFile: path.join(__dirname, "../src/vite/empty-config.ts"), // TODO: bundler
-            root: path.join(__dirname, "../host"), // TODO: bundler
+            root: path.join(__dirname, "../host"),
             // @ts-ignore
             plugins: [
                 ...(xydContentVitePlugins({
@@ -60,16 +54,11 @@ export async function build() {
                     }
                 }) as Plugin[]),
                 reactRouter({
-                    async prerender() {
-                        return [
-                            "/",
-                            ...fsAllPages,
-                        ]
-                    },
+                    outDir: buildDir,
+                    routes: resp.routes
                 }),
                 tsconfigPaths(),
                 ...resp.vitePlugins
-                // injectSettingsPlugin(settings),
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
@@ -78,8 +67,10 @@ export async function build() {
 
         // Build the SSR bundle
         await viteBuild({
-            configFile: path.join(__dirname, "../src/vite/empty-config.ts"), // TODO: bundler
-            root: path.join(__dirname, "../host"), // TODO: bundler
+            root: path.join(__dirname, "../host"),
+            build: {
+                ssr: true,
+            },
             // @ts-ignore
             plugins: [
                 ...(xydContentVitePlugins({
@@ -87,22 +78,13 @@ export async function build() {
                         minDepth: 2,
                     }
                 }) as Plugin[]),
-                reactRouter(),
                 reactRouter({
-                    async prerender() {
-                        return [
-                            "/",
-                            ...fsAllPages,
-                        ]
-                    },
+                    outDir: buildDir,
+                    routes: resp.routes
                 }),
                 tsconfigPaths(),
                 ...resp.vitePlugins
-                // injectSettingsPlugin(settings),
             ],
-            build: {
-                ssr: true,
-            },
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
             }
