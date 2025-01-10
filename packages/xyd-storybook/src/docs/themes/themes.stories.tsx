@@ -4,19 +4,19 @@ import {MemoryRouter} from "react-router";
 
 import {
     Layout,
-} from '@xyd/components/layouts';
+} from '@xyd-js/components/layouts';
 
-import getContentComponents from "@xyd/components/content";
+import getContentComponents from "@xyd-js/components/content";
 import {
     Breadcrumbs,
     NavLinks
-} from "@xyd/components/writer"
+} from "@xyd-js/components/writer"
 import {
     Nav,
     Toc,
     SubNav,
     UISidebar
-} from "@xyd/ui2"
+} from "@xyd-js/ui"
 
 import {LiveSessionPlatformLogo} from "./logo.tsx";
 import Content from "../../content/hello-world.mdx";

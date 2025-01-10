@@ -1,5 +1,5 @@
-import {Settings} from "@xyd/core";
-import {deferencedOpenAPI, oapSchemaToReferences} from "@xyd/openapi";
+import {Settings} from "@xyd-js/core";
+import {deferencedOpenAPI, oapSchemaToReferences} from "@xyd-js/openapi";
 
 import {Preset} from "../../types"
 import {uniformPreset} from "../uniform"

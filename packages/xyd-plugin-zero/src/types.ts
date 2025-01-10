@@ -1,7 +1,7 @@
 import {Plugin as VitePlugin} from "vite"
 import {RouteConfigEntry} from "@react-router/dev/routes";
 
-import {Settings} from "@xyd/core";
+import {Settings} from "@xyd-js/core";
 
 type VitePluginData = {
     preinstall: any // TODO: fix any

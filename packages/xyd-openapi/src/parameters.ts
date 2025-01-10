@@ -1,5 +1,5 @@
 import {OpenAPIV3} from "openapi-types";
-import {DefinitionProperty} from "@xyd/uniform";
+import {DefinitionProperty} from "@xyd-js/uniform";
 
 // oapParametersToDefinitionProperties converts OpenAPI parameters to uniform DefinitionProperties
 export function oapParametersToDefinitionProperties(

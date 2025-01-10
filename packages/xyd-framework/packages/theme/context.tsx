@@ -1,6 +1,6 @@
 import {createContext, useContext} from "react";
 
-import type {ITheme} from "@xyd/framework";
+import type {ITheme} from "@xyd-js/framework";
 
 const theme = createContext<ITheme<any> | null>(null)
 

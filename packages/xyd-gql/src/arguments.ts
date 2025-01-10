@@ -1,6 +1,6 @@
 import {GraphQLArgument} from "graphql/type/definition";
 import {GraphQLInputObjectType} from "graphql/type";
-import {DefinitionProperty} from "@xyd/uniform";
+import {DefinitionProperty} from "@xyd-js/uniform";
 
 import {fieldIntoDefinitionProperty} from "./fields";
 

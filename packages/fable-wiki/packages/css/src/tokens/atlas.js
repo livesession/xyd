@@ -1,4 +1,4 @@
-import {xtokens} from "@xyd/xtokens";
+import {xtokens} from "@xyd-js/xtokens";
 
 const tokens = xtokens("atlas");
 

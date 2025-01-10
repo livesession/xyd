@@ -1,23 +1,23 @@
 import React from "react"
 
-import {helperContent} from "@xyd/components/content"
+import {helperContent} from "@xyd-js/components/content"
 import type {
     ITheme
-} from "@xyd/framework"
+} from "@xyd-js/framework"
 import {
     FwNav,
     FwToc,
     FwNavLinks,
 
     FwSidebarGroups,
-} from "@xyd/framework/react"
+} from "@xyd-js/framework/react"
 
 import {Layout} from "./components/Layouts";
 
-import "@xyd/ui2/index.css";
-import "@xyd/components/index.css";
+import "@xyd-js/ui/index.css";
+import "@xyd-js/components/index.css";
 // TODO: what about atlas? it's loaded by plugin - probably we need better mechanism for loading css
-import '@xyd/atlas/index.css';
+import '@xyd-js/atlas/index.css';
 
 import './index.css';
 import './override.css';

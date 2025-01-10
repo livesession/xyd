@@ -1,7 +1,6 @@
 {
-  "private": true,
-  "name": "@xyd/xtokens",
-  "version": "0.0.0",
+  "name": "@xyd-js/xtokens",
+  "version": "0.1.0-xyd.0",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

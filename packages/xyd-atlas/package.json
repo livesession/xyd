@@ -1,7 +1,6 @@
 {
-  "private": true,
-  "name": "@xyd/atlas",
-  "version": "0.0.0",
+  "name": "@xyd-js/atlas",
+  "version": "0.1.0-xyd.1",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -26,7 +25,7 @@
     "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0",
     "@radix-ui/react-tabs": "^1.1.1",
-    "@xyd/uniform": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
     "codehike": "^1.0.2",
     "lucide-react": "^0.447.0",
     "react": "^18.3.1"
@@ -49,7 +48,7 @@
     "@storybook/test": "^8.4.5",
     "@wyw-in-js/rollup": "^0.5.5",
     "@wyw-in-js/vite": "^0.5.5",
-    "@xyd/gql": "workspace:*",
+    "@xyd-js/gql": "workspace:*",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
     "prop-types": "^15.8.1",

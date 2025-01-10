@@ -1,3 +1,3 @@
-# @xyd/core
+# @xyd-js/core
 
 xyd core kit

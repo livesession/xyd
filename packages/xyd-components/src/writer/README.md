@@ -1,1 +1,1 @@
-# @xyd/components/writer
+# @xyd-js/components/writer

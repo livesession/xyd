@@ -8,8 +8,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import {reactRouter} from "@xyd-js/react-router-dev/vite";
 // import { reactRouter } from "@react-router/dev/vite";
 
-import {vitePlugins as xydContentVitePlugins} from "@xyd/content"
-import {pluginZero} from "@xyd/plugin-zero";
+import {vitePlugins as xydContentVitePlugins} from "@xyd-js/content"
+import {pluginZero} from "@xyd-js/plugin-zero";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,7 +62,7 @@ export async function build() {
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
-            }
+            },
         });
 
         // Build the SSR bundle
@@ -87,7 +87,7 @@ export async function build() {
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
-            }
+            },
         });
 
         console.log('Build completed successfully.'); // TODO: better message

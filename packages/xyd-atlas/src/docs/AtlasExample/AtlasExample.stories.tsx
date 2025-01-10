@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import type {Meta} from '@storybook/react';
 
-import {Reference} from '@xyd/uniform';
+import {Reference} from '@xyd-js/uniform';
 
 import {MDXReference} from "@/utils/mdx";
 import {Atlas} from '@/components/Atlas';

@@ -1,7 +1,6 @@
 {
-  "private": true,
-  "name": "@xyd/components",
-  "version": "0.0.0",
+  "name": "@xyd-js/components",
+  "version": "0.1.0-xyd.0",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

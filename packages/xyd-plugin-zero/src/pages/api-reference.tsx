@@ -11,15 +11,15 @@ import {visit} from "unist-util-visit";
 import {recmaCodeHike, remarkCodeHike} from "codehike/mdx";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
-import {PageFrontMatter} from "@xyd/core";
-import {renderoll} from "@xyd/foo/renderoll";
+import {PageFrontMatter} from "@xyd-js/core";
+import {renderoll} from "@xyd-js/foo/renderoll";
 import {
     AtlasLazy
-} from "@xyd/atlas";
-import getContentComponents from "@xyd/components/content";
-import {mapSettingsToProps} from "@xyd/framework/hydration";
-import {Framework} from "@xyd/framework/react";
-import type {FwSidebarGroupProps} from "@xyd/framework/react";
+} from "@xyd-js/atlas";
+import getContentComponents from "@xyd-js/components/content";
+import {mapSettingsToProps} from "@xyd-js/framework/hydration";
+import {Framework} from "@xyd-js/framework/react";
+import type {FwSidebarGroupProps} from "@xyd-js/framework/react";
 
 import Theme from "virtual:xyd-theme" // TODO: for some reasons this cannot be hydrated by react-router
 import settings from 'virtual:xyd-settings';

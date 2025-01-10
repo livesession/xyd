@@ -1,6 +1,6 @@
 import {getDocumentLoaders, loadSchema} from "@graphql-markdown/graphql";
 import {OperationTypeNode} from "graphql/language/ast";
-import {Reference, ReferenceType} from "@xyd/uniform"
+import {Reference, ReferenceType} from "@xyd-js/uniform"
 
 import {
     graphqlOperationReferences

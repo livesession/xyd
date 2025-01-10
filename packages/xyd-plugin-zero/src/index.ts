@@ -1,4 +1,4 @@
-import {Settings} from "@xyd/core";
+import {Settings} from "@xyd-js/core";
 import type {Plugin as VitePlugin} from "vite";
 import {RouteConfigEntry} from "@react-router/dev/routes";
 

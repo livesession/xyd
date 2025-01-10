@@ -7,7 +7,7 @@ import {
     GraphQLInputObjectType
 } from "graphql/type";
 import {GraphQLObjectType} from "graphql";
-import {DefinitionProperty} from "@xyd/uniform";
+import {DefinitionProperty} from "@xyd-js/uniform";
 
 // fieldIntoDefinitionProperty converts GraphQL fields (field or input field) into xyd 'uniform' definition property
 export function fieldIntoDefinitionProperty(

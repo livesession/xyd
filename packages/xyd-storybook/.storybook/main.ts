@@ -12,7 +12,7 @@ function getAbsolutePath(value: string): any {
     return dirname(require.resolve(join(value, "package.json")));
 }
 
-function remarkInjectMeta() { // TODO: move to @xyd/content
+function remarkInjectMeta() { // TODO: move to @xyd-js/content
     return (tree) => {
         visit(tree, 'code', (node) => {
             if (node.meta) {

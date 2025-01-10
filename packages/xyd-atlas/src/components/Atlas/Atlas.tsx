@@ -1,6 +1,6 @@
 import React from "react";
 
-import {Reference} from "@xyd/uniform";
+import {Reference} from "@xyd-js/uniform";
 
 import {MDXReference} from "@/utils/mdx";
 import {ApiRefItem} from "@/components/ApiRef";

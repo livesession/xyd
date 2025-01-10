@@ -1,6 +1,6 @@
 import React from "react";
 
-import {OpenAPIReferenceContext, Reference, ReferenceCategory} from "@xyd/uniform";
+import {OpenAPIReferenceContext, Reference, ReferenceCategory} from "@xyd-js/uniform";
 
 import {MDXReference} from "@/utils/mdx";
 import {

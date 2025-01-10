@@ -61,10 +61,10 @@ export async function serve() {
                 ?.address;
 
         if (!address) {
-            console.log(`[react-router-serve] http://localhost:${port}`);
+            console.log(`[xyd-serve] http://localhost:${port}`);
         } else {
             console.log(
-                `[react-router-serve] http://localhost:${port} (http://${address}:${port})`
+                `[xyd-serve] http://localhost:${port} (http://${address}:${port})`
             );
         }
     };

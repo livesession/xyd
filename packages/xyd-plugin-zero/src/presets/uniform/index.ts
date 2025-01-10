@@ -10,12 +10,12 @@ import {
     APIFile,
     Sidebar,
     SidebarMulti
-} from "@xyd/core";
-import uniform, {pluginNavigation, Reference} from "@xyd/uniform";
+} from "@xyd-js/core";
+import uniform, {pluginNavigation, Reference} from "@xyd-js/uniform";
 import {
     compile as compileMarkdown,
     referenceAST
-} from "@xyd/uniform/markdown";
+} from "@xyd-js/uniform/markdown";
 import {Preset, PresetData} from "../../types";
 
 export interface uniformPresetOptions {
@@ -428,13 +428,21 @@ export function uniformPreset(
             routeMatches.push(`${options.urlPrefix}/*`)
         }
 
+        let basePath = ""
+
+        if (process.env.XYD_CLI) {
+            basePath = path.join(__dirname, "../plugins/xyd-plugin-zero")
+        } else {
+            basePath = "../../../xyd-plugin-zero"
+        }
+
         return {
             preinstall: [
                 preinstall(id, uniformApiResolver, apiFile)
             ],
             routes: routeMatches.map((routeMatch, i) => route(
                     `${routeMatch}/*`,
-                    "../../../xyd-plugin-zero/src/pages/api-reference.tsx", {
+                    path.join(basePath, "src/pages/api-reference.tsx"), {
                         id: `xyd-plugin-zero/${id}-${i}`,
                     }
                 ),

@@ -1,5 +1,5 @@
 import {OpenAPIV3} from "openapi-types";
-import {Definition, ExampleGroup, Reference, ReferenceCategory} from "@xyd/uniform";
+import {Definition, ExampleGroup, Reference, ReferenceCategory} from "@xyd-js/uniform";
 
 import {oapParametersToDefinitionProperties} from "./parameters";
 import {oapRequestBodyToDefinitionProperties} from "./requestBody";

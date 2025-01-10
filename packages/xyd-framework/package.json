@@ -1,7 +1,6 @@
 {
-  "private": true,
-  "name": "@xyd/framework",
-  "version": "0.0.0",
+  "name": "@xyd-js/framework",
+  "version": "0.1.0-xyd.1",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -30,9 +29,9 @@
   },
   "author": "",
   "dependencies": {
-    "@xyd/ui2": "workspace:*",
-    "@xyd/core": "workspace:*",
-    "@xyd/content": "workspace:*",
+    "@xyd-js/ui": "workspace:*",
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/content": "workspace:*",
     "isbot": "^4.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

@@ -1,1 +1,1 @@
-# @xyd/theme-poetry
+# @xyd-js/theme-poetry

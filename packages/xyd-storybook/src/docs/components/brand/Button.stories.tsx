@@ -1,7 +1,7 @@
 import React, {} from 'react';
 import type {Meta} from '@storybook/react';
 
-import {Button} from "@xyd/components/brand";
+import {Button} from "@xyd-js/components/brand";
 
 export default {
     title: 'Components/Brand/Button',

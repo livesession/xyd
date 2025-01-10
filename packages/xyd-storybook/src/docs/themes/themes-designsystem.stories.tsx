@@ -6,8 +6,8 @@ import {
     Pre,
     Table,
     UnderlineNav,
-} from '@xyd/components/writer';
-import getContentComponents from "@xyd/components/content";
+} from '@xyd-js/components/writer';
+import getContentComponents from "@xyd-js/components/content";
 
 const {
     h1: H1,
@@ -110,7 +110,7 @@ function $ReactTabView() {
         <div>
             <H3>Import</H3>
             <Pre>
-                {`import {Pre} from '@xyd/components/writer'`}
+                {`import {Pre} from '@xyd-js/components/writer'`}
             </Pre>
         </div>
 

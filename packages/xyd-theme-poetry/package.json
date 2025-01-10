@@ -1,7 +1,6 @@
 {
-  "private": true,
-  "name": "@xyd/theme-poetry",
-  "version": "0.0.0",
+  "name": "@xyd-js/theme-poetry",
+  "version": "0.1.0-xyd.1",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -18,11 +17,11 @@
     "build": "rollup -c rollup.config.js"
   },
   "dependencies": {
-    "@xyd/components": "workspace:*",
-    "@xyd/xtokens": "workspace:*"
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/xtokens": "workspace:*"
   },
   "peerDependencies": {
-    "@xyd/framework": "workspace:*"
+    "@xyd-js/framework": "workspace:*"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",

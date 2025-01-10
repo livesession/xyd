@@ -1,1 +1,1 @@
-# @xyd/theme-gusto
+# @xyd-js/theme-gusto

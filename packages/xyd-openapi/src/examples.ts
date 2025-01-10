@@ -6,7 +6,7 @@ import oasToSnippet from "@readme/oas-to-snippet";
 import OpenAPISampler from "openapi-sampler";
 import type {JSONSchema7} from "json-schema";
 
-import {ExampleGroup, Example} from "@xyd/uniform";
+import {ExampleGroup, Example} from "@xyd-js/uniform";
 
 // TODO: option with another languages
 // TODO: uniform plugins

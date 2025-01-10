@@ -1,6 +1,6 @@
 import type {Preview} from "@storybook/react";
 
-import "@xyd/fable-wiki/theme.css"
+import "@xyd-js/fable-wiki/theme.css"
 
 import './styles.css'
 

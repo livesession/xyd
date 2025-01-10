@@ -1,6 +1,6 @@
 import {OpenAPIV3} from "openapi-types";
 import Oas from "oas";
-import {Reference, ReferenceType} from "@xyd/uniform";
+import {Reference, ReferenceType} from "@xyd-js/uniform";
 
 import {SUPPORTED_HTTP_METHODS} from "./const";
 import {oapPathToReference} from "./paths";

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import {useNavigate} from "react-router";
 
-import {Reference} from "@xyd/uniform";
+import {Reference} from "@xyd-js/uniform";
 
 import {MDXReference} from "@/utils/mdx";
 import {ApiRefItem} from "@/components/ApiRef";

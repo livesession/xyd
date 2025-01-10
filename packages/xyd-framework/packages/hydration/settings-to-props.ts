@@ -1,8 +1,8 @@
 // server-only
 
-import {Sidebar, PageFrontMatter, Settings, SidebarMulti} from "@xyd/core";
-import {filterNavigationByLevels, pageFrontMatters} from "@xyd/content/navigation";
-import {IBreadcrumb, INavLinks} from "@xyd/ui2";
+import {Sidebar, PageFrontMatter, Settings, SidebarMulti} from "@xyd-js/core";
+import {filterNavigationByLevels, pageFrontMatters} from "@xyd-js/content/navigation";
+import {IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
 import {FwSidebarGroupProps} from "../react";
 
@@ -79,7 +79,7 @@ function safePageLink(page: string): string {
     return page?.startsWith("/") ? page : `/${page}`
 }
 
-// mapNavigationToProps maps @xyd/core navigation into @xyd/ui props
+// mapNavigationToProps maps @xyd-js/core navigation into @xyd-js/ui props
 export async function mapSettingsToProps(
     settings: Settings,
     slug: string

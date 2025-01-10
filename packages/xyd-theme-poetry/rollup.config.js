@@ -18,7 +18,7 @@ const external = [
     'react-router',
 
     // TODO: another `@xyd` packages?
-    '@xyd/framework/react'
+    '@xyd-js/framework/react'
 ];
 
 export default [
