@@ -46,7 +46,6 @@ export function Framework(props: FrameworkProps) {
     </FrameworkContext.Provider>
 }
 
-
 export function useSidebarGroups() {
     const ctx = useContext(FrameworkContext)
 

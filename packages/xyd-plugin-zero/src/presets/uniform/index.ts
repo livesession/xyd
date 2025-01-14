@@ -431,7 +431,7 @@ export function uniformPreset(
         let basePath = ""
 
         if (process.env.XYD_CLI) {
-            basePath = path.join(__dirname, "../plugins/xyd-plugin-zero")
+            basePath = path.join(__dirname, "./plugins/xyd-plugin-zero")
         } else {
             basePath = "../../../xyd-plugin-zero"
         }

@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/documan",
-  "version": "0.1.0-xyd.0",
+  "version": "0.1.0-xyd.11",
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
@@ -9,21 +9,18 @@
     "./build": "./dist/build.js",
     "./serve": "./dist/serve.js"
   },
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "scripts": {
     "build": "tsup",
     "build:tsc": "tsc --project ./tsconfig.build.json",
     "watch": "tsup --watch"
   },
   "dependencies": {
-    "@xyd-js/atlas": "workspace:*",
     "@xyd-js/content": "workspace:*",
-    "@xyd-js/core": "workspace:*",
-    "@xyd-js/framework": "workspace:*",
-    "@xyd-js/gql": "workspace:*",
-    "@xyd-js/openapi": "workspace:*",
     "@xyd-js/plugin-zero": "workspace:*",
-    "@xyd-js/theme-poetry": "workspace:*",
-    "@xyd-js/uniform": "workspace:*",
     "@xyd-js/react-router-dev": "7.1.1-xyd.3",
     "@react-router/node": "^7.1.1",
     "@react-router/serve": "^7.1.1",

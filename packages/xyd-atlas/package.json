@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/atlas",
-  "version": "0.1.0-xyd.1",
+  "version": "0.1.0-xyd.5",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -20,25 +20,31 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@code-hike/lighter": "^1.0.0",
-    "@emotion/react": "^11.13.5",
-    "@linaria/atomic": "^6.2.0",
-    "@linaria/core": "^6.2.0",
-    "@radix-ui/react-tabs": "^1.1.1",
     "@xyd-js/uniform": "workspace:*",
+    "@code-hike/lighter": "^1.0.0",
+    "@radix-ui/react-tabs": "^1.1.1",
     "codehike": "^1.0.2",
-    "lucide-react": "^0.447.0",
+    "lucide-react": "^0.447.0"
+  },
+  "peerDependencies": {
     "react": "^18.3.1"
   },
   "devDependencies": {
+    "@xyd-js/gql": "workspace:*",
+    "@linaria/atomic": "^6.2.0",
+    "@linaria/core": "^6.2.0",
+    "@babel/preset-typescript": "^7.26.0",
+    "@babel/preset-react": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-flow": "^7.25.9",
-    "@chromatic-com/storybook": "^3.2.2",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-typescript": "^12.1.1",
+    "@wyw-in-js/rollup": "^0.5.5",
+    "@wyw-in-js/vite": "^0.5.5",
+    "@chromatic-com/storybook": "^3.2.2",
     "@storybook/addon-essentials": "^8.4.5",
     "@storybook/addon-interactions": "^8.4.5",
     "@storybook/addon-onboarding": "^8.4.5",
@@ -46,16 +52,17 @@
     "@storybook/react": "^8.4.5",
     "@storybook/react-vite": "^8.4.5",
     "@storybook/test": "^8.4.5",
-    "@wyw-in-js/rollup": "^0.5.5",
-    "@wyw-in-js/vite": "^0.5.5",
-    "@xyd-js/gql": "workspace:*",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
-    "prop-types": "^15.8.1",
+    "postcss-import": "^16.1.0",
     "rollup": "^4.27.4",
     "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-dts": "^6.1.1",
+    "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-terser": "^7.0.2",
+    "tsup": "^8.3.0",
+    "rimraf": "^3.0.2",
+    "prop-types": "^15.8.1",
     "storybook": "^8.4.5"
   }
 }

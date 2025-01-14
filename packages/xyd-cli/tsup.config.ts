@@ -1,9 +1,8 @@
 import {execSync} from 'child_process';
 
 import {defineConfig} from "tsup";
-import {copyFileSync, mkdirSync, existsSync, writeFileSync} from 'fs';
+import {mkdirSync, existsSync} from 'fs';
 import {join} from 'path';
-
 
 import cliPkg from './package.json';
 import fableWikiPkg from '../fable-wiki/package.json';
@@ -91,6 +90,7 @@ const external = [
     uniformPkg.name,
 ].indexOf(dep) === -1)
 
+
 export default defineConfig([
     {
         clean: true,
@@ -103,48 +103,33 @@ export default defineConfig([
         external,
         plugins: [],
         onSuccess: async () => {
-            const cliDir = join(__dirname, '.cli');
-            const distDir = join(cliDir, 'dist');
-            const hostDir = join(cliDir, 'host');
+            // TODO: DEV AND PROD MOD
+            const cliDir = join(__dirname, process.env.XYD_DEV_MODE ? '../../cli' : './.cli');
             const pluginPagesDir = join(cliDir, 'plugins/xyd-plugin-zero/src/pages');
 
             // Create necessary directories
-            [cliDir, distDir, hostDir, pluginPagesDir].forEach(dir => {
+            [cliDir, pluginPagesDir].forEach(dir => {
                 if (!existsSync(dir)) {
                     mkdirSync(dir, {recursive: true});
                 }
             });
 
             // Copy dist folder
-            execSync(`cp -r dist/* ${distDir}`);
+            execSync(`cp -r dist/* ${cliDir}`);
 
             // Copy host folder
-            execSync(`cp -r ../xyd-documan/host/* ${hostDir}`);
+            {
+                execSync(`rsync -av --exclude-from='../xyd-documan/host/.gitignore' ../xyd-documan/host/ ${cliDir}`);
+            }
 
             // Copy plugin-zero pages
             execSync(`cp -r ../xyd-plugin-zero/src/pages/* ${pluginPagesDir}`);
 
-            // Combine package.json dependencies
-
-            const cliPkgs = {
-                normal: Object.keys(deps.normal).reduce((acc, dep) => {
-                    if (dep.startsWith('@xyd-js')) {
-                        return acc;
-                    }
-
-                    acc[dep] = deps.normal[dep];
-
-                    return acc
-                }, {}),
-                dev: Object.keys(deps.dev).reduce((acc, dep) => {
-                    if (dep.startsWith('@xyd-js')) {
-                        return acc;
-                    }
-
-                    acc[dep] = deps.dev[dep];
-
-                    return acc
-                }, {})
+            // TODO: DEV AND PROD MOD
+            if (process.env.XYD_DEV_MODE) {
+                execSync(`cd ${cliDir} && pnpm i && pnpm link --global`);
+            } else {
+                // for prod npm?
             }
         },
     },

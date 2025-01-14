@@ -1,6 +1,5 @@
 import React, {forwardRef} from 'react'
 import type {ComponentProps, ReactElement} from 'react'
-// import {Link} from "react-router";
 
 import {$anchor} from "./Anchor.styles";
 

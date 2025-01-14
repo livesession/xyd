@@ -1,28 +1,22 @@
 {
   "name": "@xyd-js/cli",
-  "version": "0.1.0-xyd.1",
+  "version": "0.1.0-xyd.4",
   "keywords": [],
   "author": "",
   "description": "",
   "type": "module",
-  "main": "./.cli/dist/index.js",
+  "main": "dist/index.js",
   "bin": {
     "xyd": "bin.js"
   },
   "files": [
-    ".cli/",
-    "bin.js",
-    "README.md"
+    ".cli",
+    ".cli/package.json"
   ],
   "scripts": {
     "build": "tsup"
   },
   "dependencies": {
-    "@xyd-js/atlas": "workspace:*",
-    "@xyd-js/content": "workspace:*",
-    "@xyd-js/components": "workspace:*",
-    "@xyd-js/framework": "workspace:*",
-    "@xyd-js/theme-poetry": "workspace:*",
     "@xyd-js/react-router-dev": "7.1.1-xyd.3",
     "arg": "^5.0.2",
     "colors": "^1.4.0",
@@ -62,12 +56,15 @@
     "get-port": "^7.1.0",
     "lightningcss": "^1.27.0",
     "morgan": "^1.10.0",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "devDependencies": {
     "@xyd-js/documan": "workspace:*",
+    "tsup": "^8.3.0",
     "arg": "^5.0.2",
     "colors": "^1.4.0",
-    "semver": "^7.6.3"
+    "semver": "^7.6.3",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

@@ -98,12 +98,10 @@ export function vitePluginThemeCSS() {
                     if (process.env.XYD_CLI) {
                         const __filename = fileURLToPath(import.meta.url);
                         const __dirname = path.dirname(__filename);
-                        basePath = path.join(__dirname, "../../")
+                        basePath = __dirname + "/"
                     } else {
                         basePath = import.meta.url.split("xyd/packages")[0] += "xyd/"
                     }
-
-                    console.log(basePath, "basePath", process.env.XYD_CLI)
 
                     switch (preinstall.settings.styling?.theme) {
                         // TODO: support another themes + custom themes
@@ -128,15 +126,30 @@ export function vitePluginThemeCSS() {
 }
 
 export function vitePluginThemeOverrideCSS() {
-    return async function ({preinstall}: { preinstall: { settings: Settings } }): Promise<VitePlugin> {
+    return async function ({ preinstall }: { preinstall: { settings: Settings } }): Promise<VitePlugin> {
         return {
             name: 'virtual:xyd-theme-override-css',
 
-            resolveId(id) {
+            async resolveId(id) {
                 if (id === 'virtual:xyd-theme-override/index.css') {
-                    // TODO: configurable root?
-                    const root = process.cwd()
-                    return path.join(root, ".xyd/theme/index.css")
+                    const root = process.cwd();
+                    const filePath = path.join(root, ".xyd/theme/index.css");
+
+                    try {
+                        await fs.access(filePath);
+                        return filePath;
+                    } catch {
+                        // File does not exist, omit it
+                        return 'virtual:xyd-theme-override/empty.css';
+                    }
+                }
+                return null;
+            },
+
+            async load(id) {
+                if (id === 'virtual:xyd-theme-override/empty.css') {
+                    // Return an empty module
+                    return '';
                 }
                 return null;
             },
@@ -190,12 +203,11 @@ function preset(settings: Settings, options: docsPluginOptions) {
     let basePath = ""
 
     if (process.env.XYD_CLI) {
-        basePath = path.join(__dirname, "../plugins/xyd-plugin-zero")
+        basePath = path.join(__dirname, "./plugins/xyd-plugin-zero")
     } else {
         basePath = "../../../xyd-plugin-zero"
     }
 
-    console.log("__dirname", __dirname, basePath)
     return {
         preinstall: [
             preinstall

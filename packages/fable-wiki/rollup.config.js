@@ -8,16 +8,16 @@ import postcss from 'rollup-plugin-postcss';
 import postcssImport from 'postcss-import';
 
 const require = createRequire(import.meta.url);
-const {dependencies} = require('./package.json', {assert: {type: 'json'}});
+const {
+    dependencies,
+    peerDependencies,
+    devDependencies
+} = require('./package.json', {assert: {type: 'json'}});
 
-// unify theme build system
 const external = [
     ...Object.keys(dependencies),
-    'react',
-    'react-router',
-
-    // TODO: another `@xyd` packages?
-    '@xyd-js/framework/react'
+    ...Object.keys(peerDependencies),
+    ...Object.keys(devDependencies),
 ];
 
 export default [

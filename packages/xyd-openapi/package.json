@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/openapi",
-  "version": "0.1.0-xyd.0",
+  "version": "0.1.0-xyd.1",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",
@@ -11,8 +11,8 @@
     "build:examples": "tsup --config tsup.examples-config.ts"
   },
   "dependencies": {
-    "@readme/oas-to-snippet": "^26.0.1",
     "@xyd-js/uniform": "workspace:*",
+    "@readme/oas-to-snippet": "^26.0.1",
     "js-yaml": "^4.1.0",
     "json-schema-ref-parser": "^9.0.9",
     "oas": "^25.0.3",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
-    "tsup": "^8.3.0"
+    "tsup": "^8.3.0",
+    "rimraf": "^3.0.2"
   }
 }

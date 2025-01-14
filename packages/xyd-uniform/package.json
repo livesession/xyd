@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/uniform",
-  "version": "0.1.0-xyd.2",
+  "version": "0.1.0-xyd.4",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",
@@ -17,17 +17,20 @@
   },
   "dependencies": {
     "@xyd-js/core": "workspace:*",
+    "codehike": "^1.0.3",
+    "gray-matter": "^4.0.3",
     "remark": "^15.0.1",
     "remark-stringify": "^11.0.0",
-    "gray-matter": "^4.0.3",
     "unist-builder": "^4.0.0",
-    "unist-util-visit": "^5.0.0",
-    "codehike": "^1.0.3"
-  },
-  "devDependencies": {
-    "tsup": "^8.3.0"
+    "unist-util-visit": "^5.0.0"
   },
   "peerDependencies": {
     "@mdx-js/mdx": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0",
+    "typescript": "^4.5.5"
   }
 }

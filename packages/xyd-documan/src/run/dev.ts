@@ -26,7 +26,7 @@ export async function dev() {
         // configFile: path.join(__dirname, "../src/vite/empty-config.ts"), // TODO: bundler??
         // configFile: path.join(__dirname, "../"), // TODO: bundler??
         // root: path.join(__dirname, "../"), // TODO: bundler?
-        root: process.env.XYD_DOCUMAN_HOST || path.join(__dirname, "../host"), // TODO: bundler?
+        root: process.env.XYD_CLI ? __dirname : process.env.XYD_DOCUMAN_HOST || path.join(__dirname, "../host"), // TODO: bundler?
         server: {
             port: port,
             fs: {

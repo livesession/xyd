@@ -17,7 +17,7 @@ import {Layout} from "./components/Layouts";
 import "@xyd-js/ui/index.css";
 import "@xyd-js/components/index.css";
 // TODO: what about atlas? it's loaded by plugin - probably we need better mechanism for loading css
-import '@xyd-js/atlas/index.css';
+// import '@xyd-js/atlas/index.css'; TODO: FINISH !!!
 
 import './index.css';
 import './override.css';

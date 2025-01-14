@@ -1,5 +1,7 @@
+import React from 'react'
+
 export interface ITheme<T> {
-    children: JSX.Element | JSX.Element[]
+    children: React.ReactNode
 
     themeSettings?: T
 }

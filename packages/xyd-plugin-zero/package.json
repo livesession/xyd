@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-zero",
-  "version": "0.1.0-xyd.0",
+  "version": "0.1.0-xyd.8",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -9,6 +9,10 @@
     "./package.json": "./package.json",
     ".": "./dist/index.js"
   },
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "scripts": {
     "clean": "rimraf build",
     "prebuild": "pnpm clean",
@@ -16,30 +20,33 @@
     "watch": "tsup --watch"
   },
   "dependencies": {
+    "codehike": "^1.0.3"
+  },
+  "peerDependencies": {
+    "@xyd-js/framework": "workspace:*",
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/content": "workspace:*",
+    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/openapi": "workspace:*",
+    "@xyd-js/gql": "workspace:*",
+    "@xyd-js/foo": "workspace:*",
+    "@xyd-js/uniform":  "workspace:*",
+    "@react-router/dev": "^7.1.1",
     "@react-router/node": "^7.1.1",
     "@react-router/serve": "^7.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router": "^7.1.1",
-    "codehike": "^1.0.3",
-    "lightningcss": "^1.27.0"
+    "react-router": "^7.1.1"
   },
   "devDependencies": {
-    "@xyd-js/atlas": "workspace:*",
-    "@xyd-js/core": "workspace:*",
-    "@xyd-js/content": "workspace:*",
-    "@xyd-js/framework": "workspace:*",
-    "@xyd-js/gql": "workspace:*",
-    "@xyd-js/openapi": "workspace:*",
-    "@xyd-js/uniform": "workspace:*",
-    "@xyd-js/foo": "workspace:*",
     "@types/react-dom": "^18.3.1",
-    "@xyd-js/react-router-dev": "7.1.1-xyd.3",
     "@types/react": "^18.3.9",
     "@vitejs/plugin-react": "^4.3.2",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",
     "vite": "^5.4.9",
-    "vite-tsconfig-paths": "^5.0.1"
+    "vite-tsconfig-paths": "^5.0.1",
+    "rimraf": "^3.0.2"
   }
 }

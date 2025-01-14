@@ -1,26 +1,27 @@
 {
   "name": "@xyd-js/framework",
-  "version": "0.1.0-xyd.1",
+  "version": "0.1.0-xyd.19",
   "description": "",
+  "type": "module",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     "./index.css": "./dist/index.css",
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.js"
     },
     "./hydration": {
-      "require": "./dist/hydration.js",
-      "import": "./dist/hydration.mjs"
+      "import": "./dist/hydration.js"
     },
     "./react": {
-      "require": "./dist/react.js",
-      "import": "./dist/react.mjs"
+      "import": "./dist/react.js"
     }
   },
+  "files": [
+    "package.json",
+    "dist"
+  ],
   "scripts": {
     "clean": "rimraf build",
     "prebuild": "pnpm clean",
@@ -29,20 +30,21 @@
   },
   "author": "",
   "dependencies": {
+  },
+  "peerDependencies": {
     "@xyd-js/ui": "workspace:*",
-    "@xyd-js/core": "workspace:*",
     "@xyd-js/content": "workspace:*",
-    "isbot": "^4.4.0",
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/core": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "remark-gfm": "^4.0.0",
-    "vite-plugin-mdx": "^3.6.0",
-    "zod": "^3.23.8"
+    "react-router": "^7.1.1"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.24.7",
     "@mdx-js/rollup": "^3.0.1",
     "@types/node": "22.5.5",
+    "rimraf": "^3.0.2",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
     "rehype-pretty-code": "^0.14.0",

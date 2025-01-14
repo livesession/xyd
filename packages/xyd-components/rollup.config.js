@@ -10,15 +10,20 @@ import babel from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';
 import wyw from '@wyw-in-js/rollup';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 import {createRequire} from 'module';
 
 const require = createRequire(import.meta.url);
-const {dependencies} = require('./package.json', {assert: {type: 'json'}});
+const {
+    dependencies,
+    peerDependencies,
+    devDependencies
+} = require('./package.json', {assert: {type: 'json'}});
 
-const external = Object.keys(dependencies);
+const external = [
+    ...Object.keys(dependencies),
+    ...Object.keys(peerDependencies),
+    ...Object.keys(devDependencies),
+];
 
 export default [
     {
@@ -36,7 +41,7 @@ export default [
             {
                 dir: 'dist',
                 format: 'esm',
-                sourcemap: false,
+                sourcemap: true,
                 entryFileNames: '[name].js'
             }
         ],

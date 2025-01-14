@@ -62,3 +62,6 @@ storybook-static/
 
 # xyd
 .xyd/build
+
+# dev cli
+cli/

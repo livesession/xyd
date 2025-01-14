@@ -1,5 +1,4 @@
 import React, {useEffect, useRef} from "react";
-import {useNavigate} from "react-router";
 
 import {Reference} from "@xyd-js/uniform";
 
