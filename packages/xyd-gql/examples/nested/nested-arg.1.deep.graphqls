@@ -1,0 +1,12 @@
+input BookInput {
+    title: String!
+    author: Author!
+}
+
+input Author {
+    name: String!
+}
+
+type Mutation {
+    addBook(bookInput: BookInput): Boolean!
+}

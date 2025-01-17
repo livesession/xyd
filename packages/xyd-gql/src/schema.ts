@@ -1,10 +1,21 @@
-import {getDocumentLoaders, loadSchema} from "@graphql-markdown/graphql";
-import {OperationTypeNode} from "graphql/language/ast";
-import {Reference, ReferenceType} from "@xyd-js/uniform"
-
 import {
-    graphqlOperationReferences
-} from "./utils";
+    GraphQLInputObjectType,
+    GraphQLObjectType,
+    GraphQLEnumType,
+    isSpecifiedScalarType,
+    isIntrospectionType
+} from "graphql";
+import {OperationTypeNode} from "graphql/language/ast";
+
+import {getDocumentLoaders, loadSchema} from "@graphql-markdown/graphql";
+import {GraphQLScalarType} from "@graphql-markdown/types";
+
+import type {Reference} from "@xyd-js/uniform"
+import {ReferenceType} from "@xyd-js/uniform"
+import {gqlInputToUniformRef} from "./hydration/gql-input";
+import {gqlEnumToUniformRef, gqlScalarToUniformRef} from "./hydration/gql-types";
+import {gqlObjectToUniformRef} from "./hydration/gql-object";
+import {gqlOperationsToUniformRef} from "./utils";
 
 // TODO: support multi graphql files
 // TODO: !!! CIRCULAR_DEPENDENCY !!!
@@ -27,7 +38,7 @@ export async function gqlSchemaToReferences(
     const queryFields = queries?.getFields?.()
 
     if (queryFields) {
-        references.push(...graphqlOperationReferences(
+        references.push(...gqlOperationsToUniformRef(
             ReferenceType.GRAPHQL_QUERY,
             queryFields
         ))
@@ -37,10 +48,59 @@ export async function gqlSchemaToReferences(
     const mutationFields = mutations?.getFields?.()
 
     if (mutationFields) {
-        references.push(...graphqlOperationReferences(
+        references.push(...gqlOperationsToUniformRef(
             ReferenceType.GRAPHQL_MUTATION,
             mutationFields
         ))
+    }
+
+    const typeMap = schema.getTypeMap();
+
+    for (const gqlType of Object.values(typeMap)) {
+        const builtInType = isSpecifiedScalarType(gqlType) ||
+            isIntrospectionType(gqlType) ||
+            gqlType.name === "Mutation"
+
+        if (builtInType) {
+            continue;
+        }
+
+        switch (gqlType.constructor.name) {
+            case 'GraphQLObjectType': {
+                const type = gqlType as GraphQLObjectType;
+
+                references.push(gqlObjectToUniformRef(type))
+
+                break
+            }
+
+            case 'GraphQLInputObjectType': {
+                const type = gqlType as GraphQLInputObjectType;
+
+                references.push(gqlInputToUniformRef(type))
+                break
+            }
+
+            case 'GraphQLEnumType': {
+                const type = gqlType as GraphQLEnumType;
+
+                references.push(gqlEnumToUniformRef(type))
+
+                break
+            }
+
+            case 'GraphQLScalarType': {
+                const type = gqlType as GraphQLScalarType
+
+                references.push(gqlScalarToUniformRef(type))
+
+                break
+            }
+
+            default: {
+                console.debug(`Unsupported type: ${gqlType.constructor.name}`)
+            }
+        }
     }
 
     return references

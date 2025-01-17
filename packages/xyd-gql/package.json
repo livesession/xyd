@@ -8,21 +8,24 @@
     "clean": "rimraf build",
     "prebuild": "pnpm clean",
     "build": "tsup",
-    "build:examples": "tsup --config tsup.examples-config.ts"
+    "build:examples": "tsup --config tsup.examples-config.ts",
+    "test": "vitest",
+    "ci:test": "vitest run"
   },
   "dependencies": {
-    "@xyd-js/uniform": "workspace:*",
-    "@xyd-js/core": "workspace:*",
     "@graphql-markdown/core": "^1.12.0",
     "@graphql-markdown/graphql": "^1.1.4",
     "@graphql-markdown/types": "^1.4.0",
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
     "graphql-config": "^5.1.2",
     "gray-matter": "^4.0.3",
     "json-to-graphql-query": "^2.3.0"
   },
   "devDependencies": {
-    "tsup": "^8.3.0",
     "rimraf": "^3.0.2",
-    "typescript": "^4.5.5"
+    "tsup": "^8.3.0",
+    "typescript": "^4.5.5",
+    "vitest": "^2.1.1"
   }
 }

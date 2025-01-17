@@ -1,0 +1,28 @@
+"""
+This is a custom scalar type for Date.
+"""
+scalar Date
+
+"""
+This is a custom enum type for Role.
+"""
+enum Role {
+    ADMIN
+    OWNER
+}
+
+"""
+This is a custom input type for Book.
+"""
+input BookInput {
+    title: String!
+    author: String!
+}
+
+"""
+This is a custom type for Book.
+"""
+type Book {
+    title: String!
+    author: String!
+}
