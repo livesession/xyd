@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import type {Meta} from '@storybook/react';
 
-import {UISidebar} from '@xyd/ui2';
-import {Layout} from "@xyd/components/layouts";
+import {UISidebar} from '@xyd-js/ui';
+import {Layout} from "@xyd-js/components/layouts";
 
 export default {
     title: 'UI/Sidebar',

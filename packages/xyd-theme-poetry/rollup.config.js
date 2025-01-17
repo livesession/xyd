@@ -9,16 +9,24 @@ import postcssImport from 'postcss-import';
 import wyw from '@wyw-in-js/rollup';
 
 const require = createRequire(import.meta.url);
-const {dependencies} = require('./package.json', {assert: {type: 'json'}});
 
-// unify theme build system
+const {
+    dependencies,
+    peerDependencies,
+    devDependencies
+} = require('./package.json', {assert: {type: 'json'}});
+
 const external = [
     ...Object.keys(dependencies),
-    'react',
-    'react-router',
-
-    // TODO: another `@xyd` packages?
-    '@xyd/framework/react'
+    ...Object.keys(peerDependencies),
+    ...Object.keys(devDependencies),
+    "@xyd-js/framework/react",
+    "@xyd-js/components/brand",
+    "@xyd-js/components/coder",
+    "@xyd-js/components/content",
+    "@xyd-js/components/layouts",
+    "@xyd-js/components/pages",
+    "@xyd-js/components/views",
 ];
 
 export default [

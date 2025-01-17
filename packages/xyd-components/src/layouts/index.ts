@@ -1,4 +1,4 @@
-// TODO: move this pkg @xyd/layouts ?
+// TODO: move this pkg @xyd-js/layouts ?
 
 export {
     Layout

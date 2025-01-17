@@ -1,4 +1,4 @@
-import {Example, ExampleRoot} from "@xyd/uniform";
+import {Example, ExampleRoot} from "@xyd-js/uniform";
 import React, {useState} from "react";
 
 import {MDXReference} from "@/utils/mdx"

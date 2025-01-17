@@ -1,7 +1,7 @@
 import React, {} from 'react';
 import type {Meta} from '@storybook/react';
 
-import {Nav} from '@xyd/ui2';
+import {Nav} from '@xyd-js/ui';
 
 export default {
     title: 'UI/Nav',

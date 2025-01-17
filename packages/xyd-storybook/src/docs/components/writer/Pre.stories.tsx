@@ -3,7 +3,7 @@ import type {Meta} from '@storybook/react';
 
 import {
     Pre
-} from "@xyd/components/writer"
+} from "@xyd-js/components/writer"
 
 export default {
     title: 'Components/Writer/Pre',
@@ -16,7 +16,7 @@ export const Default = () => {
         margin: "0 auto",
     }}>
         <Pre>
-            {`import {Pre} from '@xyd/components/coder'`}
+            {`import {Pre} from '@xyd-js/components/coder'`}
         </Pre>
     </div>
 }

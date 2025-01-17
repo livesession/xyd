@@ -1,7 +1,7 @@
 import React, {} from 'react';
 import type {Meta} from '@storybook/react';
 
-import {CTABanner, Button} from "@xyd/components/brand";
+import {CTABanner, Button} from "@xyd-js/components/brand";
 
 export default {
     title: 'Components/Brand/CTABanner',

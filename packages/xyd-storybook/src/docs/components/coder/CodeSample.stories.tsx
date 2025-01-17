@@ -1,7 +1,7 @@
 import React, {} from 'react';
 import type {Meta} from '@storybook/react';
 
-import getContentComponents from "@xyd/components/content";
+import getContentComponents from "@xyd-js/components/content";
 
 import Content from "../../../content/code-sample.mdx";
 import {MemoryRouter} from "react-router";

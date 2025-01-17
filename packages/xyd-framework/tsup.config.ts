@@ -6,7 +6,7 @@ export default defineConfig({
         react: 'packages/react/index.ts',
         hydration: 'packages/hydration/index.ts',
     },
-    format: ['esm', 'cjs'], // Output both ESM and CJS formats
+    format: ['esm'], // Output both ESM and CJS formats
     target: 'node16', // Ensure compatibility with Node.js 16
     dts: {
         entry: {

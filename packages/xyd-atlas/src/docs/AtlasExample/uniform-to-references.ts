@@ -5,11 +5,11 @@ import {visit} from "unist-util-visit";
 import {recmaCodeHike, remarkCodeHike} from "codehike/mdx";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
-import {Reference} from "@xyd/uniform";
+import {Reference} from "@xyd-js/uniform";
 import {
     compile as compileMarkdown,
     referenceAST
-} from "@xyd/uniform/markdown";
+} from "@xyd-js/uniform/markdown";
 
 import {MDXReference} from "@/utils/mdx";
 import todoAppUniform from "./todo-app.uniform.json";

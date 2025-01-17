@@ -1,7 +1,7 @@
 import React, {} from 'react';
 import type {Meta} from '@storybook/react';
 
-import {Badge} from "@xyd/components/writer";
+import {Badge} from "@xyd-js/components/writer";
 
 export default {
     title: 'Components/Writer/Badge',

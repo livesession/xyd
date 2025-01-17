@@ -4,7 +4,7 @@ import yaml from "js-yaml";
 import $refParser from "json-schema-ref-parser";
 import {OpenAPIV3} from "openapi-types";
 
-import {ReferenceType} from "@xyd/uniform";
+import {ReferenceType} from "@xyd-js/uniform";
 
 type Parameters = {
     query?: Record<string, string | number | boolean>;

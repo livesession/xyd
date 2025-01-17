@@ -1,7 +1,6 @@
 {
-  "private": true,
-  "name": "@xyd/core",
-  "version": "0.0.0",
+  "name": "@xyd-js/core",
+  "version": "0.1.0-xyd.2",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
@@ -13,6 +12,8 @@
   "dependencies": {
   },
   "devDependencies": {
-    "tsup": "^8.3.0"
+    "tsup": "^8.3.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.5.5"
   }
 }

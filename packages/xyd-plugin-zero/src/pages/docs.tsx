@@ -3,14 +3,14 @@ import path from "node:path";
 import React from "react";
 import {redirect} from "react-router";
 
-import {PageFrontMatter} from "@xyd/core"
-import {compileBySlug} from "@xyd/content"
-import getContentComponents from "@xyd/components/content";
-import {HomePage} from "@xyd/components/pages";
-import type {IBreadcrumb, INavLinks} from "@xyd/ui2";
-import {mapSettingsToProps} from "@xyd/framework/hydration";
-import {Framework, FwNav} from "@xyd/framework/react";
-import type {FwSidebarGroupProps} from "@xyd/framework/react";
+import {PageFrontMatter} from "@xyd-js/core"
+import {compileBySlug} from "@xyd-js/content"
+import getContentComponents from "@xyd-js/components/content";
+import {HomePage} from "@xyd-js/components/pages";
+import type {IBreadcrumb, INavLinks} from "@xyd-js/ui";
+import {mapSettingsToProps} from "@xyd-js/framework/hydration";
+import {Framework, FwNav} from "@xyd-js/framework/react";
+import type {FwSidebarGroupProps} from "@xyd-js/framework/react";
 
 import settings from 'virtual:xyd-settings';
 import Theme from "virtual:xyd-theme";

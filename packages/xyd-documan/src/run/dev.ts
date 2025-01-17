@@ -5,8 +5,8 @@ import {createServer, searchForWorkspaceRoot} from "vite";
 import {reactRouter} from "@xyd-js/react-router-dev/vite";
 // import { reactRouter } from "@react-router/dev/vite";
 
-import {vitePlugins as xydContentVitePlugins} from "@xyd/content";
-import {pluginZero} from "@xyd/plugin-zero";
+import {vitePlugins as xydContentVitePlugins} from "@xyd-js/content";
+import {pluginZero} from "@xyd-js/plugin-zero";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,12 +26,13 @@ export async function dev() {
         // configFile: path.join(__dirname, "../src/vite/empty-config.ts"), // TODO: bundler??
         // configFile: path.join(__dirname, "../"), // TODO: bundler??
         // root: path.join(__dirname, "../"), // TODO: bundler?
-        root: process.env.XYD_DOCUMAN_HOST || path.join(__dirname, "../host"), // TODO: bundler?
+        root: process.env.XYD_CLI ? __dirname : process.env.XYD_DOCUMAN_HOST || path.join(__dirname, "../host"), // TODO: bundler?
         server: {
             port: port,
             fs: {
                 allow: [
                     allowCwd,
+                    process.env.XYD_CLI ? path.join(__dirname, "../../") : "",
                     // path.join(__dirname, "../node_modules") // Ensure node_modules from xyd-documan is included
                 ]
             }
@@ -39,15 +40,15 @@ export async function dev() {
         build: {
             rollupOptions: {
                 // Exclude package `B` from the client-side bundle
-                external: ["@xyd/uniform", "@xyd/uniform/content", "@xyd/plugin-zero"],
+                external: ["@xyd-js/uniform", "@xyd-js/uniform/content", "@xyd-js/plugin-zero"],
             },
         },
         ssr: {
-            external: ["@xyd/uniform", "@xyd/uniform/content", "@xyd/plugin-zero"],
+            external: ["@xyd-js/uniform", "@xyd-js/uniform/content", "@xyd-js/plugin-zero"],
             // noExternal: [
-            //     "@xyd/uniform",
-            //     "@xyd/uniform/content",
-            //     "@xyd/plugin-zero"
+            //     "@xyd-js/uniform",
+            //     "@xyd-js/uniform/content",
+            //     "@xyd-js/plugin-zero"
             // ],
         },
         optimizeDeps: {
@@ -63,7 +64,6 @@ export async function dev() {
             reactRouter({
                 routes: resp.routes
             }),
-            // reactRouter(),
             ...resp.vitePlugins
         ],
     });

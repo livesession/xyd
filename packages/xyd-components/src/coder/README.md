@@ -1,1 +1,1 @@
-# @xyd/components/coder
+# @xyd-js/components/coder

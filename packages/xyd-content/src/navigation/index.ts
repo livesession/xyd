@@ -9,7 +9,7 @@ import matter from 'gray-matter';
 import {VFile} from "vfile";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
-import {FrontMatter, Sidebar, PageFrontMatter, Header} from "@xyd/core";
+import {FrontMatter, Sidebar, PageFrontMatter, Header} from "@xyd-js/core";
 
 // TODO: better algorithm + data structures - since it's on build time it's not a big deal nevertheless it should be changed in the future
 

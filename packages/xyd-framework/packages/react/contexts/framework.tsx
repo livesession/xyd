@@ -1,7 +1,7 @@
 import React, {createContext, useContext} from "react";
 
-import {Settings} from "@xyd/core";
-import type {ITOC, IBreadcrumb, INavLinks} from "@xyd/ui2";
+import {Settings} from "@xyd-js/core";
+import type {ITOC, IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
 import {FwSidebarGroupProps} from "../components/sidebar";
 
@@ -45,7 +45,6 @@ export function Framework(props: FrameworkProps) {
         {props.children}
     </FrameworkContext.Provider>
 }
-
 
 export function useSidebarGroups() {
     const ctx = useContext(FrameworkContext)

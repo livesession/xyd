@@ -1,6 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import {fileURLToPath} from "node:url";
+import {execSync} from 'child_process';
 
 import {build as viteBuild} from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -8,8 +9,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import {reactRouter} from "@xyd-js/react-router-dev/vite";
 // import { reactRouter } from "@react-router/dev/vite";
 
-import {vitePlugins as xydContentVitePlugins} from "@xyd/content"
-import {pluginZero} from "@xyd/plugin-zero";
+import {vitePlugins as xydContentVitePlugins} from "@xyd-js/content"
+import {pluginZero} from "@xyd-js/plugin-zero";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,12 +25,21 @@ export async function build() {
     const buildDir = path.join(process.cwd(), ".xyd/build");
 
     {
+        // TODO: probably we should have better mechanism - maybe bundle?
+
         const packageJsonPath = path.join(buildDir, 'package.json');
 
         const packageJsonContent = {
             type: "module",
             scripts: {},
-            dependencies: {},
+            dependencies: { // TODO: better
+                "@xyd-js/content": "latest",
+                "@xyd-js/components": "latest",
+                "@xyd-js/framework": "latest",
+                "@xyd-js/theme-poetry": "latest",
+                "@react-router/node": "^7.1.1",
+                "isbot": "^5"
+            },
             devDependencies: {}
         };
 
@@ -40,12 +50,15 @@ export async function build() {
 
         // Write the package.json file
         fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
+
+        // Install packages inside buildDir
+        execSync('npm install', {cwd: buildDir, stdio: 'inherit'});
     }
 
     try {
         // Build the client-side bundle
         await viteBuild({
-            root: path.join(__dirname, "../host"),
+            root: process.env.XYD_CLI ? __dirname : process.env.XYD_DOCUMAN_HOST || path.join(__dirname, "../host"),
             // @ts-ignore
             plugins: [
                 ...(xydContentVitePlugins({
@@ -62,12 +75,12 @@ export async function build() {
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
-            }
+            },
         });
 
         // Build the SSR bundle
         await viteBuild({
-            root: path.join(__dirname, "../host"),
+            root: process.env.XYD_CLI ? __dirname : process.env.XYD_DOCUMAN_HOST || path.join(__dirname, "../host"),
             build: {
                 ssr: true,
             },
@@ -87,7 +100,7 @@ export async function build() {
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
-            }
+            },
         });
 
         console.log('Build completed successfully.'); // TODO: better message

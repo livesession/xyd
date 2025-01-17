@@ -1,7 +1,6 @@
 {
-  "private": true,
-  "name": "@xyd/content",
-  "version": "0.0.0",
+  "name": "@xyd-js/content",
+  "version": "0.1.0-xyd.4",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",
@@ -17,7 +16,7 @@
     "watch": "tsup --watch"
   },
   "dependencies": {
-    "@xyd/core": "workspace:*",
+    "@xyd-js/core": "workspace:*",
     "@mdx-js/mdx": "^3.1.0",
     "@mdx-js/rollup": "^3.0.1",
     "estree-util-is-identifier-name": "^3.0.0",
@@ -36,6 +35,9 @@
   },
   "devDependencies": {
     "@types/node": "^22.7.8",
-    "tsup": "^8.3.0"
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0",
+    "typescript": "^4.5.5",
+    "vite": "^6.0.7"
   }
 }

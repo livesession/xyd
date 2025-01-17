@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import {createServer} from 'vite';
 
-import {Settings} from "@xyd/core";
+import {Settings} from "@xyd-js/core";
 
 const extensions = ['tsx', 'jsx', 'js', 'ts', 'json'];
 

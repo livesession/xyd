@@ -1,32 +1,23 @@
 import {defineConfig, Options} from 'tsup';
 
-// TODO: use src/index.ts and src/<pkg>/index.ts pattern everywhere
-
-// const config: Options = {
-//     entry: {
-//         index: 'src/index.ts',
-//     },
-//     format: ['esm', 'cjs'], // Output both ESM and CJS formats
-//     target: 'node16', // Ensure compatibility with Node.js 16
-//     dts: {
-//         entry: {
-//             index: 'src/index.ts',
-//         },
-//         resolve: true, // Resolve external types
-//     },
-//     splitting: false, // Disable code splitting
-//     sourcemap: true, // Generate source maps
-//     clean: true, // Clean the output directory before each build
-//     esbuildOptions: (options) => {
-//         options.platform = 'node'; // Ensure the platform is set to Node.js
-//         options.external = ['node:fs/promises', 'vite']; // Mark 'node:fs/promises' as external
-//         options.loader = {'.js': 'jsx'}; // Ensure proper handling of .js files
-//     },
-//
-//     ignoreWatch: ['node_modules', 'dist', '.git', 'build'] // Exclude unnecessary directories
-// }
-
 import pkg from './package.json';
+
+const deps = [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.devDependencies || {}),
+].filter((dep) => [
+    // "@xyd-js/atlas",
+    // "@xyd-js/core",k
+    // "@xyd-js/content",
+    // "@xyd-js/framework",
+    // "@xyd-js/gql",
+    // "@xyd-js/openapi",
+    // "@xyd-js/uniform",
+    // "@xyd-js/foo",
+    // "@xyd-js/theme-gusto",
+    // "@xyd-js/theme-poetry",
+    // "@xyd-js/plugin-zero", // TODO: because plugin-zero has react-router dependency
+].indexOf(dep) === -1)
 
 const config: Options = {
     entry: {
@@ -39,17 +30,29 @@ const config: Options = {
         resolve: true, // Resolve external types
     },
     format: ['esm'],
-    // outDir: 'dist',
-    // target: 'node16',
     platform: 'node',
     shims: false,
     splitting: false,
     sourcemap: true,
     clean: true,
     external: [
-        // Externalize all dependencies from package.json
-        ...Object.keys(pkg.dependencies || {}),
-        ...Object.keys(pkg.devDependencies || {}),
+        ...deps,
+
+    //     "@graphql-markdown/core": "^1.12.0",
+    // "@graphql-markdown/graphql": "^1.1.4",
+    // "@graphql-markdown/types": "^1.4.0",
+    // "graphql-config": "^5.1.2",
+    // "gray-matter": "^4.0.3",
+    // "json-to-graphql-query": "^2.3.0"
+
+        // Externalize gql modules
+        // '@graphql-markdown/core',
+        // '@graphql-markdown/graphql',
+        // '@graphql-markdown/types',
+        // 'graphql-config',
+        // 'gray-matter',
+        // 'json-to-graphql-query',
+
         // Externalize Node.js built-in modules
         /^node:.*/,
         'fs',

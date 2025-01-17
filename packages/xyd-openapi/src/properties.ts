@@ -1,5 +1,5 @@
 import {OpenAPIV3} from "openapi-types";
-import {DefinitionProperty} from "@xyd/uniform";
+import {DefinitionProperty} from "@xyd-js/uniform";
 
 // schemaObjectToDefinitionProperties converts OpenAPI schema object to uniform DefinitionProperty[]
 export function schemaObjectToDefinitionProperties(v: OpenAPIV3.SchemaObject): DefinitionProperty[] {

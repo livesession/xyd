@@ -3,7 +3,7 @@ import type {Meta} from '@storybook/react';
 
 import {
     Breadcrumbs,
-} from '@xyd/components/writer';
+} from '@xyd-js/components/writer';
 
 export default {
     title: 'Components/Writer/Breadcrumbs',

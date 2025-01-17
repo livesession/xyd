@@ -1,7 +1,7 @@
 import React, {} from "react"
 
-import {Badge} from "@xyd/components/writer"
-import {UISidebar} from "@xyd/ui2";
+import {Badge} from "@xyd-js/components/writer"
+import {UISidebar} from "@xyd-js/ui";
 
 import {useGroup} from "./sidebar-group";
 
@@ -46,7 +46,7 @@ export interface FwSidebarItemProps {
     // internal
 }
 
-// TODO: move to @xyd/components/content
+// TODO: move to @xyd-js/components/content
 const components = {
     Frontmatter: {
         // TODO: css

@@ -1,10 +1,10 @@
 import React from "react"
 
-import {Layout} from "@xyd/components/layouts" // TODO: it has .dts errors on rollup
-import {helperContent} from "@xyd/components/content"
-import type {
+import {Layout} from "@xyd-js/components/layouts" // TODO: it has .dts errors on rollup
+import {helperContent} from "@xyd-js/components/content"
+import  {
     ITheme
-} from "@xyd/framework"
+} from "@xyd-js/framework" // TODO: SOME ISSUES WITH TYPES
 import {
     FwNav,
     FwToc,
@@ -14,13 +14,13 @@ import {
     FwSidebarGroups,
 
     useMatchedSubNav,
-} from "@xyd/framework/react"
+} from "@xyd-js/framework/react"
 
-import "@xyd/ui2/index.css";
-import "@xyd/components/index.css";
-import '@xyd/fable-wiki/tokens.css';
+import "@xyd-js/ui/index.css";
+import "@xyd-js/components/index.css";
+import '@xyd-js/fable-wiki/tokens.css';
 // TODO: what about atlas? it's loaded by plugin - probably we need better mechanism for loading css
-import '@xyd/atlas/index.css';
+// import '@xyd-js/atlas/index.css';
 
 import './index.css';
 
@@ -34,6 +34,11 @@ export interface ThemeSettings {
     }
     bigArticle?: boolean
 }
+
+// interface ITheme<T> {
+//     children: JSX.Element | JSX.Element[];
+//     themeSettings?: T;
+// }
 
 export interface ThemeProps extends ITheme<ThemeSettings> {
 }
@@ -60,6 +65,7 @@ export default function ThemeFableWiki(props: ThemeProps) {
     />
 }
 
+
 // TODO: finish search
 function Navbar() {
     return <>
@@ -75,3 +81,4 @@ function Sidebar({themeSettings}: { themeSettings?: ThemeSettings }) {
         clientSideRouting={themeSettings?.sidebar?.clientSideRouting}
     />
 }
+

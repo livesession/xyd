@@ -1,4 +1,4 @@
-import "@xyd/fable-wiki/atlas.css"
+import "@xyd-js/fable-wiki/atlas.css"
 
 import './index.css'
 import '../dist/index.css'

@@ -6,7 +6,7 @@ import {
 
     IconSessionReplay,
     IconMetrics
-} from '@xyd/components/writer';
+} from '@xyd-js/components/writer';
 
 export default {
     title: 'Components/Writer/GuideCard',

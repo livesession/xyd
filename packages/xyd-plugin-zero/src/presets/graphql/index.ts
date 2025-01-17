@@ -1,5 +1,5 @@
-import {Settings} from "@xyd/core";
-import {gqlSchemaToReferences} from "@xyd/gql";
+import {Settings} from "@xyd-js/core";
+import {gqlSchemaToReferences} from "@xyd-js/gql";
 
 import {Preset} from "../../types"
 import {uniformPreset} from "../uniform"

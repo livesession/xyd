@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {DefinitionProperty} from "@xyd/uniform";
+import {DefinitionProperty} from "@xyd-js/uniform";
 
 import {MDXReference, mdxValue} from "@/utils/mdx"
 import {

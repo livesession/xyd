@@ -1,6 +1,6 @@
 import path from 'path';
 import matter from 'gray-matter';
-import {Sidebar, FrontMatter, PageFrontMatter} from "@xyd/core";
+import {Sidebar, FrontMatter, PageFrontMatter} from "@xyd-js/core";
 
 import {Reference} from "./types";
 import uniform from "./index";

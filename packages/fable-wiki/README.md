@@ -1,1 +1,1 @@
-# @xyd/fable-wiki
+# @xyd-js/fable-wiki

@@ -6,7 +6,7 @@ import {
     ExampleGroup,
     Definition,
     Example,
-} from "@xyd/uniform";
+} from "@xyd-js/uniform";
 
 import {argumentsIntoDefinitionProperty} from "./arguments";
 import {fieldIntoDefinitionProperty} from "./fields";
