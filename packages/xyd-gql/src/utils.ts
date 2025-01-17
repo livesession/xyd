@@ -8,13 +8,12 @@ import {
     Example,
 } from "@xyd-js/uniform";
 
-import {argumentsIntoDefinitionProperty} from "./arguments";
-import {fieldIntoDefinitionProperty} from "./fields";
-import {simpleGraphqlExample} from "./examples";
+import {gqlArgToUniformDefinitionProperty} from "./hydration/gql-arg";
+import {gqlFieldToUniformDefinitionProperty} from "./hydration/gql-field";
+import {simpleGraphqlExample} from "./samples";
 
-// TODO: examples
-// graphqlOperationReferences is a helper function to create a list of xyd reference for a GraphQL query or mutation.
-export function graphqlOperationReferences(
+// gqlOperationsToUniformRef is a helper function to create a list of xyd reference for a GraphQL query or mutation.
+export function gqlOperationsToUniformRef(
     operationType: ReferenceType.GRAPHQL_MUTATION | ReferenceType.GRAPHQL_QUERY,
     fieldsMap: GraphQLFieldMap<any, any>
 ) {
@@ -23,8 +22,8 @@ export function graphqlOperationReferences(
     for (const [operationName, operationField] of Object.entries(fieldsMap)) {
         const definitions: Definition[] = []
 
-        const args = argumentsIntoDefinitionProperty(operationField.args)
-        const returns = fieldIntoDefinitionProperty(operationName, operationField)
+        const args = gqlArgToUniformDefinitionProperty(operationField.args)
+        const returns = gqlFieldToUniformDefinitionProperty(operationName, operationField)
         const returnProperties = returns.properties || []
 
         definitions.push({

@@ -1,3 +1,3 @@
 export {
-    gqlSchemaToReferences
+    gqlSchemaToReferences // TODO: rename to gqlSchemaToUniformRef ?
 } from "./schema"

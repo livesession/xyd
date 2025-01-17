@@ -1,10 +1,10 @@
 import {jsonToGraphQLQuery, VariableType} from "json-to-graphql-query";
+
 import {
     DefinitionProperty,
     ReferenceType
 } from "@xyd-js/uniform";
 
-// TODO: support args
 // simpleGraphqlExample is a helper function to create a simple GraphQL example query or mutation.
 export function simpleGraphqlExample(
     operationType: ReferenceType.GRAPHQL_QUERY | ReferenceType.GRAPHQL_MUTATION,
@@ -13,7 +13,6 @@ export function simpleGraphqlExample(
     returns: DefinitionProperty[],
 ) {
     let obj: any = {}
-
 
     switch (operationType) {
         case ReferenceType.GRAPHQL_QUERY: {

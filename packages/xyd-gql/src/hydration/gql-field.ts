@@ -1,4 +1,3 @@
-// overFields iterates over fields of object or input object types
 import {
     GraphQLField,
     GraphQLFieldMap,
@@ -7,10 +6,11 @@ import {
     GraphQLInputObjectType
 } from "graphql/type";
 import {GraphQLObjectType} from "graphql";
+
 import {DefinitionProperty} from "@xyd-js/uniform";
 
-// fieldIntoDefinitionProperty converts GraphQL fields (field or input field) into xyd 'uniform' definition property
-export function fieldIntoDefinitionProperty(
+// gqlFieldToUniformDefinitionProperty converts GraphQL fields (field or input field) into xyd 'uniform' definition property
+export function gqlFieldToUniformDefinitionProperty(
     fieldName: string,
     field: GraphQLField<any, any> | GraphQLInputField,
 ): DefinitionProperty {
@@ -134,7 +134,7 @@ function deepFieldMap(
     const properties: DefinitionProperty[] = []
 
     for (const [name, field] of Object.entries(fieldsMap)) {
-        const prop = fieldIntoDefinitionProperty(
+        const prop = gqlFieldToUniformDefinitionProperty(
             name,
             field,
         )
