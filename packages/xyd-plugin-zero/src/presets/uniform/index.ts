@@ -1,5 +1,6 @@
 import path from "path";
 import {promises as fs} from "fs";
+import {fileURLToPath} from "node:url";
 
 import matterStringify from "gray-matter/lib/stringify";
 import {Plugin as VitePlugin} from "vite"
@@ -431,6 +432,8 @@ export function uniformPreset(
         let basePath = ""
 
         if (process.env.XYD_CLI) {
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = path.dirname(__filename);
             basePath = path.join(__dirname, "./plugins/xyd-plugin-zero")
         } else {
             basePath = "../../../xyd-plugin-zero"

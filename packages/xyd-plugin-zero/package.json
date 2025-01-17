@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-zero",
-  "version": "0.1.0-xyd.8",
+  "version": "0.1.0-xyd.10",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

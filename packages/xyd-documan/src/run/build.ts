@@ -50,6 +50,9 @@ export async function build() {
 
         // Write the package.json file
         fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
+
+        // Install packages inside buildDir
+        execSync('npm install', {cwd: buildDir, stdio: 'inherit'});
     }
 
     try {
@@ -99,9 +102,6 @@ export async function build() {
                 include: ["react/jsx-runtime"],
             },
         });
-
-        // Install packages inside buildDir
-        execSync('npm install', {cwd: buildDir, stdio: 'inherit'});
 
         console.log('Build completed successfully.'); // TODO: better message
     } catch (error) {

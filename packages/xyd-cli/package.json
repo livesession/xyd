@@ -1,20 +1,21 @@
 {
   "name": "@xyd-js/cli",
-  "version": "0.1.0-xyd.4",
+  "version": "0.1.0-xyd.15",
   "keywords": [],
   "author": "",
   "description": "",
   "type": "module",
-  "main": "dist/index.js",
+  "main": ".cli/index.js",
   "bin": {
-    "xyd": "bin.js"
+    "xyd": ".cli/bin.js"
   },
   "files": [
     ".cli",
-    ".cli/package.json"
+    "postinstall.js"
   ],
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "postinstall": "node postinstall.js"
   },
   "dependencies": {
     "@xyd-js/react-router-dev": "7.1.1-xyd.3",

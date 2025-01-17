@@ -1,8 +1,11 @@
 import {execSync} from 'child_process';
 
-import {defineConfig} from "tsup";
-import {mkdirSync, existsSync} from 'fs';
+import {fileURLToPath} from "node:url";
+import path from "node:path";
+import {mkdirSync, existsSync, readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
+
+import {defineConfig} from 'tsup';
 
 import cliPkg from './package.json';
 import fableWikiPkg from '../fable-wiki/package.json';
@@ -23,6 +26,9 @@ import uiPkg from '../xyd-ui/package.json';
 import uniformPkg from '../xyd-uniform/package.json';
 
 const entry = ["index.ts"];
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const deps = {
     normal: {
@@ -90,6 +96,21 @@ const external = [
     uniformPkg.name,
 ].indexOf(dep) === -1)
 
+function replaceWorkspaceDependencies(packageJsonPath: string) {
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+    const dependencies = packageJson.dependencies || {};
+
+    for (const [key, value] of Object.entries(dependencies)) {
+        if (value === 'workspace:*') {
+            const packagePath = join(__dirname, `../${key.replace('@xyd-js/', 'xyd-')}/package.json`);
+            const packageVersion = JSON.parse(readFileSync(packagePath, 'utf-8')).version;
+            dependencies[key] = packageVersion;
+        }
+    }
+
+    packageJson.dependencies = dependencies;
+    writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+}
 
 export default defineConfig([
     {
@@ -120,6 +141,9 @@ export default defineConfig([
             // Copy host folder
             {
                 execSync(`rsync -av --exclude-from='../xyd-documan/host/.gitignore' ../xyd-documan/host/ ${cliDir}`);
+                if (!process.env.XYD_DEV_MODE) {
+                    replaceWorkspaceDependencies(join(cliDir, 'package.json'));
+                }
             }
 
             // Copy plugin-zero pages
