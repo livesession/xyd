@@ -38,6 +38,8 @@ export function ApiRefItem({reference}: ApiRefItemProps) {
 
         {topNavbar}
 
+        {reference.description.children}
+
         <div className={$refItem.grid}>
             <$Properties reference={reference}/>
             <ApiRefSamples examples={reference.examples}/>

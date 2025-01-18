@@ -24,7 +24,11 @@ export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
                 <li className={$li.host} key={i}>
                     <dl className={$dl.host}>
                         <$PropName name="name" value={mdxValue(property.name)}/>
-                        <$PropType name="type" value={mdxValue(property.type)}/>
+                        <$PropType
+                            name="type"
+                            value={mdxValue(property.type)}
+                            href={propertyTypeHref(property)}
+                        />
                     </dl>
                     <div className={$description.host}>
                         {property.children}
@@ -49,15 +53,20 @@ function $PropName({name, value}: { name: string, value: string }) {
     </>
 }
 
-function $PropType({name, value}: { name: string, value: string }) {
+function $PropType({name, value, href}: { name: string, value: string, href?: string }) {
     return <>
         <dd>
-            <code className={$propTypeCode.host}>{value}</code>
+            <code className={$propTypeCode.host}>
+                {
+                    href
+                        ? <a className={$propTypeCode.link} href={href}>{value}</a>
+                        : value
+                }
+            </code>
         </dd>
     </>
 }
 
-// const styles$ =
 function $SubProperties({properties}: { properties: MDXReference<DefinitionProperty>[] }) {
     const [expanded, setExpanded] = useState(false)
 
@@ -77,7 +86,11 @@ function $SubProperties({properties}: { properties: MDXReference<DefinitionPrope
                             return <li className={$subProps.li} key={i}>
                                 <dl className={$dl.host}>
                                     <$PropName name="name" value={mdxValue(prop.name)}/>
-                                    <$PropType name="type" value={mdxValue(prop.type)}/>
+                                    <$PropType
+                                        name="type"
+                                        value={mdxValue(prop.type)}
+                                        href={propertyTypeHref(prop)}
+                                    />
                                 </dl>
                                 <div className={$description.host}>
                                     {prop.children}
@@ -132,3 +145,13 @@ function $PropToggle(props: PropsToggleProps) {
     )
 }
 
+function propertyTypeHref(property: MDXReference<DefinitionProperty>) {
+    if (property?.context?.graphqlBuiltInType?.title === "true") { // graphqlBuiltInType should be a boolean
+        return undefined
+    }
+
+    // TODO: FINISH SLUG
+    return property.context?.graphqlTypeShort?.title
+        ? `/docs/api/graphql/${property.context?.graphqlTypeShort?.title}-${mdxValue(property.context?.graphqlTypeFlat?.title)}`
+        : undefined
+}

@@ -63,7 +63,7 @@ export function CodeExampleButtons({examples, activeExample, onClick}: CodeExamp
                     className={$scroller.host}
                 >
                     <div className={$scroller.container}>
-                        {examples.map((example) => (
+                        {examples?.map((example) => (
                             <$SampleButton
                                 key={example.codeblock.title}
                                 onClick={() => onClick(example)}

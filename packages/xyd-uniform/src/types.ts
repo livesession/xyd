@@ -116,6 +116,7 @@ export interface Definition {
 
     properties: DefinitionProperty[];
 
+
     type?: string;
 
     id?: string;
@@ -129,6 +130,8 @@ export interface DefinitionProperty {
     type: string;
 
     description: string;
+
+    context?: any // TODO: better type
 
     properties?: DefinitionProperty[];
 }

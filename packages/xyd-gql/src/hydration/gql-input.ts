@@ -18,7 +18,7 @@ export function gqlInputToUniformRef(gqlType: GraphQLInputObjectType): Reference
         canonical: `input-${gqlType.name}`, // TODO: better solution
         context: {
             graphqlName: gqlType.name,
-            graphqlType: "input" // TODO: better solution
+            graphqlTypeShort: "input" // TODO: better solution
         },
         definitions: [
             {
@@ -45,6 +45,10 @@ export function gqlInputToUniformDefinitionProperty(
         name: name,
         type: obj.toJSON(),
         description: description || "",
+        context: {
+            graphqlName: name,
+            graphqlTypeShort: "input"
+        },
         properties: nestedProps,
     }
 

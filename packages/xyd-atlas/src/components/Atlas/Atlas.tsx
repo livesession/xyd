@@ -16,8 +16,13 @@ export interface AtlasProps {
 export function Atlas(props: AtlasProps) {
     return <div className={$atlas.host}>
         {
-            props.references.map((reference, i) => <div key={i}>
-                    <ApiRefItem reference={reference}/>
+            props.references?.map((reference, i) => <div key={i}>
+                    <ApiRefItem
+                        reference={{
+
+                            ...reference
+                        }}
+                    />
                 </div>
             )
         }

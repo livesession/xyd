@@ -228,7 +228,6 @@ function FwToc() {
     </Toc>
 }
 
-// TODO: finish
 function FwBreadcrumbs() {
     const breadcrumbs = useBreadcrumbs()
 
@@ -237,14 +236,8 @@ function FwBreadcrumbs() {
     />
 }
 
-// TDOO: finish
 function FwNavLinks() {
     const navlinks = useNavLinks()
-
-    // TODO: in the future - because of custom react frontmatter
-    if (typeof navlinks?.prev?.title !== "string" || typeof navlinks?.next?.title !== "string") {
-        return null
-    }
 
     if (navlinks?.prev || navlinks?.next) {
         return <NavLinks

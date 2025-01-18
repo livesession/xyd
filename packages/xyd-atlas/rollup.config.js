@@ -27,7 +27,7 @@ export default [
         output: {
             dir: 'dist',
             format: 'esm',
-            sourcemap: false,
+            sourcemap: true,
         },
         plugins: [
             // alias({ TODO: finish?

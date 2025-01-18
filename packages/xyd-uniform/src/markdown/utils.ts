@@ -41,12 +41,11 @@ export function heading(
     let uDesc = [
         u(
             'heading',
-            {depth: START_DEPTH_LEVEL},
+            {depth: uTitle.depth + 1},
             [u('text', `!description`),]
         ),
         u('paragraph', [u('text', description)])
     ]
-
 
     let uRefCategory
     if (refCategory) {
@@ -191,6 +190,7 @@ export function definitions(definitions: Definition[]) {
                     name: prop.name,
                     type: prop.type,
                     description: prop.description,
+                    context: prop.context,
                     properties: prop.properties  // TODO: fix ts
                 },
                 md,
@@ -214,12 +214,33 @@ export function properties(
     const uPropName = u('paragraph', {depth}, [u('text', `!name ${paramName}`)]);
     const uPropType = u('paragraph', {depth}, [u('text', `!type ${props.type}`)]);
     const uPropDesc = u('paragraph', {depth}, [u('text', props.description || '')]);
+    const uContext = []
+
+    if (props.context && Object.keys(props.context)) {
+        uContext.push(u(
+            'heading',
+            {depth: depth + 1},
+            [
+                u('text', `!context`),
+            ]
+        ))
+
+        for (const [key, value] of Object.entries(props.context)) {
+            uContext.push(u(
+                    'heading',
+                    {depth: uContext[0].depth + 1},
+                    [u('text', `!${key} ${value}`)]
+                )
+            )
+        }
+    }
 
     output.push(
         uPropTitle,
         uPropName,
         uPropType,
-        uPropDesc
+        uPropDesc,
+        ...uContext
     );
 
     if (props.properties) {

@@ -1,5 +1,6 @@
 import type {Preview} from "@storybook/react";
 
+import "@xyd-js/atlas/index.css"
 import "@xyd-js/fable-wiki/theme.css"
 
 import './styles.css'
