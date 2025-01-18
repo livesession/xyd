@@ -17,7 +17,7 @@ export interface ApiRefSamplesProps {
 export function ApiRefSamples({examples}: ApiRefSamplesProps) {
     return <div className={$container.host}>
         {
-            examples.groups.map(({description, examples}, i) => {
+            examples.groups?.map(({description, examples}, i) => {
                 const [activeExample, setActiveExample] = useState<MDXReference<Example> | null>(examples?.[0])
 
                 const codeblocks = activeExample?.codeblock?.tabs?.map(tab => {

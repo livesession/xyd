@@ -5,9 +5,10 @@ import {
     GraphQLInputFieldMap,
     GraphQLInputObjectType
 } from "graphql/type";
-import {GraphQLObjectType} from "graphql";
+import {GraphQLObjectType, GraphQLNamedType} from "graphql";
 
 import {DefinitionProperty} from "@xyd-js/uniform";
+import {isIntrospectionType, isSpecifiedScalarType} from "graphql/index";
 
 // gqlFieldToUniformDefinitionProperty converts GraphQL fields (field or input field) into xyd 'uniform' definition property
 export function gqlFieldToUniformDefinitionProperty(
@@ -15,6 +16,7 @@ export function gqlFieldToUniformDefinitionProperty(
     field: GraphQLField<any, any> | GraphQLInputField,
 ): DefinitionProperty {
     let properties;
+    let graphqlTypeFlat: GraphQLNamedType | null = null
 
     // if 'ofType' types (non-null values e.g '!<type>')
     if ("ofType" in field.type) {
@@ -25,6 +27,7 @@ export function gqlFieldToUniformDefinitionProperty(
                         const objectType = field.type.ofType as GraphQLObjectType
 
                         properties = nestedProperties(objectType)
+                        graphqlTypeFlat = objectType
 
                         break
                     }
@@ -33,18 +36,24 @@ export function gqlFieldToUniformDefinitionProperty(
                         const inputObjectType = field.type.ofType as GraphQLInputObjectType
 
                         properties = nestedProperties(inputObjectType)
+                        graphqlTypeFlat = inputObjectType
 
                         break
                     }
 
-                    case "GraphQLScalarType" : {
+                    case "GraphQLScalarType": {
                         properties = definitionPropsFromNestedObj(field) || []
+                        graphqlTypeFlat = field.type.ofType as GraphQLNamedType
 
                         break
                     }
 
                     case "GraphQLNonNull": {
                         properties = definitionPropsFromNestedObj(field) || []
+
+                        if ("ofType" in field.type.ofType) {
+                            graphqlTypeFlat = field.type.ofType.ofType as GraphQLNamedType
+                        }
 
                         break
                     }
@@ -61,6 +70,7 @@ export function gqlFieldToUniformDefinitionProperty(
 
             case "GraphQLNonNull": {
                 properties = definitionPropsFromNestedObj(field) || []
+                graphqlTypeFlat = field.type.ofType as GraphQLNamedType
 
                 break
             }
@@ -77,6 +87,7 @@ export function gqlFieldToUniformDefinitionProperty(
     // if regular object type
     else if (field.type.constructor.name === "GraphQLObjectType") {
         const objectType = field.type as GraphQLObjectType
+        graphqlTypeFlat = field.type
 
         // TODO: support nested & circular references - ITS JUST A FAST SOLUTION FOR TESTING PURPOSES
         // properties = [
@@ -89,18 +100,57 @@ export function gqlFieldToUniformDefinitionProperty(
 
         // TODO: comment if bug with circular references
         properties = nestedProperties(objectType)
-    }
-
-    // if input object type
-    else if (field.type.constructor.name === "GraphQLInputObjectType") {
+    } else if (field.type.constructor.name === "GraphQLInputObjectType") {
         const objectType = field.type as GraphQLInputObjectType
 
+        graphqlTypeFlat = field.type
         properties = nestedProperties(objectType)
+    } else if (field.type.constructor.name === "GraphQLScalarType") {
+        graphqlTypeFlat = field.type
+    }
+
+
+    switch (graphqlTypeFlat?.constructor?.name) {
+        case "GraphQLList": {
+            if ("ofType" in graphqlTypeFlat) {
+                graphqlTypeFlat = graphqlTypeFlat.ofType as GraphQLNamedType
+            }
+        }
+    }
+
+    const builtInType = graphqlTypeFlat ? (isSpecifiedScalarType(graphqlTypeFlat) ||
+        isIntrospectionType(graphqlTypeFlat)
+    ) : undefined
+
+    let graphqlTypeShort = ""
+
+    switch (graphqlTypeFlat?.constructor?.name) {
+        case "GraphQLObjectType": {
+            graphqlTypeShort = "object"
+
+            break
+        }
+        case "GraphQLInputObjectType": {
+            graphqlTypeShort = "input"
+
+            break
+        }
+        case "GraphQLScalarType": {
+            graphqlTypeShort = "scalar"
+
+            break
+        }
     }
 
     return {
         name: fieldName,
         type: field.type.toJSON(),
+        context: {
+            graphqlBuiltInType: builtInType,
+            graphqlName: fieldName,
+            graphqlTypeFlat: graphqlTypeFlat && graphqlTypeFlat.toJSON(),
+            graphqlTypeShort,
+        },
         description: field.description || "",
         properties,
     }

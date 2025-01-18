@@ -32,7 +32,7 @@ export default [
             {
                 dir: 'dist',
                 format: 'esm',
-                sourcemap: false,
+                sourcemap: true,
                 entryFileNames: '[name].js'
             }
         ],

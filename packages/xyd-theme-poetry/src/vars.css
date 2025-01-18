@@ -2,4 +2,9 @@
     --headingEffect-color-tertiary: rgba(23, 119, 184, 0.5);
     --headingEffect-color-secondary: rgb(121, 85, 241);
     --headingEffect-color-primary: rgb(255, 105, 180);
+
+    /* atlas */
+    --atlas-comp-apiref-properties-color--active: #7051d4;
+    --atlas-comp-apiref-properties-border-color: #d2d5d8;
 }
+

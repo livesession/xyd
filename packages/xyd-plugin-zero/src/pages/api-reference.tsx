@@ -1,8 +1,8 @@
 import path from "path";
 import {promises as fs} from "fs";
 
-import React, {useContext} from "react";
-import {redirect, UNSAFE_DataRouterStateContext} from "react-router";
+import React, {} from "react";
+import {redirect} from "react-router";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkGfm from "remark-gfm";
@@ -12,7 +12,6 @@ import {recmaCodeHike, remarkCodeHike} from "codehike/mdx";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
 import {PageFrontMatter} from "@xyd-js/core";
-import {renderoll} from "@xyd-js/foo/renderoll";
 import {
     AtlasLazy
 } from "@xyd-js/atlas";
@@ -20,12 +19,22 @@ import getContentComponents from "@xyd-js/components/content";
 import {mapSettingsToProps} from "@xyd-js/framework/hydration";
 import {Framework} from "@xyd-js/framework/react";
 import type {FwSidebarGroupProps} from "@xyd-js/framework/react";
+import type {IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
 import Theme from "virtual:xyd-theme" // TODO: for some reasons this cannot be hydrated by react-router
 import settings from 'virtual:xyd-settings';
 
 import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
+
+interface loaderData {
+    sidebarGroups: FwSidebarGroupProps[]
+    breadcrumbs: IBreadcrumb[],
+    navlinks?: INavLinks,
+    toc: PageFrontMatter
+    slug: string
+    code: string
+}
 
 const contentComponents = getContentComponents()
 const ComponentContent = contentComponents.Content
@@ -136,42 +145,59 @@ function findFirstUrl(items: any): string {
     return "";
 }
 
+interface data {
+    groups: FwSidebarGroupProps[],
+    breadcrumbs: IBreadcrumb[]
+    navlinks?: INavLinks
+}
+
+const mapSettingsToPropsMap: { [key: string]: data } = {}
+
 // TODO: fix any
 export async function loader({request}: { request: any }) {
-    const slug = getPathname(request.url)
+    const slug = getPathname(request.url);
 
-    let code = ""
-    let error: any
+    let code = "";
+    let error: any;
 
     try {
-        code = await compileBySlug(slug)
+        code = await compileBySlug(slug);
     } catch (e) {
-        error = e
+        error = e;
+    }
+    let data: data
+
+    if (!mapSettingsToPropsMap[slug]) {
+        data = await mapSettingsToProps(
+            settings,
+            slug
+        );
+        mapSettingsToPropsMap[slug] = data
+    } else {
+        data = mapSettingsToPropsMap[slug]
     }
 
-    const {groups: sidebarGroups} = await mapSettingsToProps(
-        settings,
-        slug
-    )
+    const {groups: sidebarGroups, breadcrumbs, navlinks} = data;
 
-    // TODO: dry with docs.tsx - resolver?
     if (error) {
         if (sidebarGroups && error.code === "ENOENT") {
-            const firstItem = findFirstUrl(sidebarGroups?.[0]?.items)
+            const firstItem = findFirstUrl(sidebarGroups?.[0]?.items);
 
             if (firstItem) {
-                return redirect(firstItem)
+                return redirect(firstItem);
             }
         }
 
-        console.error(error)
+        console.error(error);
     }
 
     return {
         sidebarGroups,
+        breadcrumbs,
+        navlinks,
         slug,
-        code
-    } as loaderData
+        code,
+    } as loaderData;
 }
 
 function mdxExport(code: string) {
@@ -183,157 +209,6 @@ function mdxExport(code: string) {
     }
     const fn = new Function(...Object.keys(scope), code)
     return fn(scope)
-}
-
-function renderollAsyncClient(routeId: string, slug: string) {
-    return async () => {
-        let mod;
-        let urlPrefix;
-        let data;
-
-        // TODO: fix any
-        function moduleData(mods: any, id: string) {
-            mod = mods.default[id]
-            if (!mod) {
-                throw new Error(`Unknown openapi id: ${id}`)
-            }
-            urlPrefix = mod.urlPrefix
-            data = mod.data
-        }
-
-        switch (routeId) {
-            case "xyd-plugin-zero/graphql": {
-                // @ts-ignore
-                mod = await import("virtual:xyd-plugin-zero/graphql");
-                urlPrefix = "/docs/api/graphql" // TODO: dynamic urlPreifx
-                data = mod.default.data
-                break;
-            }
-            case "xyd-plugin-zero/openapi": {
-                // @ts-ignore
-                mod = await import("virtual:xyd-plugin-zero/openapi");
-                urlPrefix = "/docs/api/openapi" // TODO: dynamic urlPrefix
-                data = mod.default.data
-                break;
-            }
-            default: {
-                if (routeId.includes("xyd-plugin-zero/openapi")) {
-                    const [_, id] = routeId.split("xyd-plugin-zero/openapi-")
-                    // @ts-ignore
-                    const mods = await import("virtual:xyd-plugin-zero/openapi")
-                    moduleData(mods, id)
-                    break;
-                }
-                if (routeId.includes("xyd-plugin-zero/graphql")) {
-                    const [_, id] = routeId.split("xyd-plugin-zero/graphql-")
-                    // @ts-ignore
-                    const mods = await import("virtual:xyd-plugin-zero/graphql")
-                    moduleData(mods, id)
-                    break;
-                }
-
-                throw new Error(`Unknown routeId: ${routeId}`);
-            }
-        }
-
-        if (!Array.isArray(data)) {
-            console.warn(`mod.default is not an array, current type is: ${typeof mod.default}`)
-
-            return
-        }
-
-        // TODO: in the future custom position
-        const prevRefs = []
-        const nextRefs = []
-        const mdxComponentsPrev: any[] = []
-        const mdxComponentsNext: any[] = []
-
-        let pos = 0;
-
-        for (const chunk of data) {
-            if (!chunk) {
-                continue
-            }
-
-            if (chunk.slug === slug) {
-                pos = 1
-                continue
-            }
-
-            const references = pos === 0 ? prevRefs : nextRefs
-
-            const code = await compile(chunk.content) // TODO: do we need real path?
-            const mdx = mdxExport(code)
-            const Content = mdx.default
-            const content = Content ? parse(Content, {
-                components: contentComponents
-            }) : null
-
-            // TODO: support non-fererence pages
-            if (content.references) {
-                references.push(...(content?.references || []) as [])
-            } else {
-                const mdxComponents = pos === 0 ? mdxComponentsPrev : mdxComponentsNext
-
-                mdxComponents.push(<div data-slug={`/${chunk.slug}`}>
-                    <ComponentContent>
-                        {content}
-                    </ComponentContent>
-                </div>)
-            }
-        }
-
-        return [
-            ({onLoaded}) => <>
-                <ComponentContent>
-                    {mdxComponentsPrev}
-                </ComponentContent>
-
-                {
-                    prevRefs.length ? <div>
-                        <AtlasLazy
-                            references={prevRefs}
-                            urlPrefix={urlPrefix}
-                            slug={slug}
-                            onLoaded={onLoaded}
-                        />
-                    </div> : null
-                }
-            </>,
-
-            ({onLoaded}) => <>
-                <ComponentContent>
-                    {mdxComponentsNext}
-                </ComponentContent>
-
-                {
-                    nextRefs.length ? <div>
-                        <AtlasLazy
-                            references={nextRefs}
-                            urlPrefix={urlPrefix}
-                            slug={slug}
-                            onLoaded={onLoaded}
-                        />
-                    </div> : null
-                }
-            </>
-        ]
-    }
-}
-
-function getRouteId() {
-    const routerState = useContext(UNSAFE_DataRouterStateContext)
-    let routeId: string = ""
-
-    routerState?.matches?.forEach(match => {
-        const loader = routerState?.loaderData[match?.route?.id]
-
-        if (loader) {
-            routeId = match?.route?.id
-        }
-    })
-
-    return routeId
 }
 
 function MemoMDXComponent(codeComponent: any) {
@@ -364,30 +239,11 @@ export default function APIReference({loaderData}: { loaderData: loaderData }) {
 
     const memoizedServerComponent = MemoMDXComponent(serverComponent)
 
-    const serverAtlasOrMDX = memoizedServerComponent?.references ?
-        <AtlasLazy
-            references={memoizedServerComponent?.references || []}
-            slug={loaderData.slug.startsWith("/") ? loaderData.slug : `/${loaderData.slug}`}
-            urlPrefix="/"
-        /> :
-        <ComponentContent>
-            {memoizedServerComponent}
-        </ComponentContent>
-
-    const routeId = getRouteId()
-
-    const RenderollContent = renderoll(
-        renderollAsyncClient(routeId, loaderData.slug),
-        {
-            decorator: ({children}) => <ComponentContent>
-                {children}
-            </ComponentContent>
-        }
-    )
-
     return <Framework
         settings={settings}
-        sidebarGroups={loaderData.sidebarGroups}
+        sidebarGroups={loaderData.sidebarGroups || []}
+        breadcrumbs={loaderData.breadcrumbs || []}
+        navlinks={loaderData.navlinks}
     >
         <Theme
             themeSettings={{
@@ -398,9 +254,11 @@ export default function APIReference({loaderData}: { loaderData: loaderData }) {
                 }
             }}
         >
-            <RenderollContent>
-                {serverAtlasOrMDX}
-            </RenderollContent>
+            <AtlasLazy
+                references={memoizedServerComponent?.references || []}
+                slug={loaderData.slug.startsWith("/") ? loaderData.slug : `/${loaderData.slug}`}
+                urlPrefix="/"
+            />
         </Theme>
     </Framework>
 }

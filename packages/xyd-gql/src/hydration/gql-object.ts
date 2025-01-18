@@ -20,7 +20,7 @@ export function gqlObjectToUniformRef(gqlType: GraphQLObjectType) {
         canonical: `object-${gqlType.name}`, // TODO: better solution
         context: {
             graphqlName: gqlType.name,
-            graphqlType: "object" // TODO: better solution
+            graphqlTypeShort: "object" // TODO: better solution
         },
         definitions: [
             {

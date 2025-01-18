@@ -21,8 +21,6 @@ export const $li = {
         margin: 0;
         padding: 0;
 
-        border-top: 1px solid var(--atlas-comp-apiref-properties-border-color);
-
         &:first-child {
             padding-top: 0;
         }
@@ -81,6 +79,14 @@ export const $propTypeCode = {
         font-size: 10px;
         color: var(--atlas-comp-apiref-properties-prop__type-color);
     `,
+    link: css`
+        color: var(--atlas-comp-apiref-properties-color--active);
+        text-decoration: underline;
+        
+        &:hover {
+            text-decoration: none;
+        }
+    `
 }
 
 export const $subProps = {
@@ -106,11 +112,10 @@ export const $subProps = {
         list-style: none;
 
         border: none;
+        border-left: 1px solid var(--atlas-comp-apiref-properties-border-color);
     `,
     li: css`
         padding: 0 16px;
-
-        border-top: 1px solid var(--atlas-comp-apiref-properties-border-color);
     `,
 }
 

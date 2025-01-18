@@ -15,7 +15,7 @@ const config: Options = {
     format: ['esm'], // Output both ESM and CJS formats
     target: 'node16', // Ensure compatibility with Node.js 16
     splitting: false, // Disable code splitting
-    sourcemap: false, // Generate source maps
+    sourcemap: true, // Generate source maps
     clean: true, // Clean the output directory before each build
     // esbuildOptions: (options) => {
     //     options.platform = 'node'; // Ensure the platform is set to Node.js

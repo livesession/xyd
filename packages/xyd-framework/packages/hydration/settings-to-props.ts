@@ -79,7 +79,7 @@ function safePageLink(page: string): string {
     return page?.startsWith("/") ? page : `/${page}`
 }
 
-// mapNavigationToProps maps @xyd-js/core navigation into @xyd-js/ui props
+// mapSettingsToProps maps @xyd-js/core settings into @xyd-js/ui props
 export async function mapSettingsToProps(
     settings: Settings,
     slug: string
@@ -187,6 +187,7 @@ export async function mapSettingsToProps(
     }
 }
 
+// TODO: support next-prev for different 'groups' levels
 function mapNavToLinks(
     page: string | Sidebar,
     currentNav: Sidebar,
@@ -205,121 +206,68 @@ function mapNavToLinks(
         return
     }
 
-    let prev = currentNav?.pages?.[currentPageIndex - 1]
-    let next = currentNav?.pages?.[currentPageIndex + 1]
+    // same group level
+    {
+        let prev = currentNav?.pages?.[currentPageIndex - 1]
+        let next = currentNav?.pages?.[currentPageIndex + 1]
 
-    if (prev && next) {
-        if (typeof prev !== "string" || typeof next !== "string") {
-            console.error("currently nested pages for navlinks are not supported (step 1)")
-            return
-        }
+        if (prev || next) {
+            if (prev && typeof prev !== "string") {
+                console.error("currently nested pages for navlinks are not supported (step 1)")
+                return
+            }
 
-        const prevTitle = frontmatters[prev]?.title || ""
-        const nextTitle = frontmatters[next]?.title || ""
+            if (next && typeof next !== "string") {
+                console.error("currently nested pages for navlinks are not supported (step 1)")
+                return
+            }
 
-        // prev and next found on same nav (pages)
-        return {
-            prev: {
-                // @ts-ignore
-                title: prevTitle,
-                href: safePageLink(prev),
-            },
-            next: {
-                // @ts-ignore
-                title: nextTitle,
-                href: safePageLink(next),
+            const prevTitle = prev ? frontmatters[prev]?.title || "" : ""
+            const nextTitle = next ? frontmatters[next]?.title || "" : ""
+
+            if (typeof prevTitle !== "string") {
+                console.error("currently navlink 'prev' must be a string")
+                return
+            }
+
+            if (typeof nextTitle !== "string") {
+                console.error("currently navlink 'next' must be a string")
+                return
+            }
+
+            if (prev && next) {
+                return {
+                    prev: {
+                        title: prevTitle,
+                        href: safePageLink(prev),
+                    },
+                    next: {
+                        title: nextTitle,
+                        href: safePageLink(next),
+                    }
+                }
+            }
+
+            if (prev) {
+                return {
+                    prev: {
+                        title: prevTitle,
+                        href: safePageLink(prev),
+                    },
+                }
+            }
+
+            if (next) {
+                return {
+                    next: {
+                        title: nextTitle,
+                        href: safePageLink(next),
+                    },
+                }
             }
         }
     }
 
-    const currentNavPosition = nav.findIndex(n => n.group === currentNav.group)
-    const foundNavIndex = currentNavPosition != undefined && currentNavPosition !== -1
 
-    if (!foundNavIndex) {
-        return
-    }
-
-    // search prev in previous nav
-    if (!prev) {
-        const prevNav = nav[currentNavPosition - 1]
-
-        if (prevNav) {
-            const prevNavLastPge = prevNav?.pages?.[prevNav.pages.length - 1]
-
-            if (typeof prevNavLastPge != "string") {
-                console.error("currently nested pages for navlinks are not supported (step 2)")
-            } else {
-                prev = prevNavLastPge
-            }
-        }
-    }
-
-    // search next in next nav
-    if (!next) {
-        const nextNav = nav[currentNavPosition + 1]
-
-        if (nextNav) {
-            const nextNavFirstPage = nextNav?.pages?.[0]
-
-            if (typeof nextNavFirstPage != "string") {
-                console.error("currently nested pages for navlinks are not supported (step 3)")
-            } else {
-                next = nextNavFirstPage
-            }
-        }
-    }
-
-
-    if (!prev) {
-        if (typeof next == "string") {
-            const nextTitle = frontmatters[next]?.title || ""
-
-            return {
-                next: {
-                    // @ts-ignore
-                    title: nextTitle,
-                    href: safePageLink(next),
-                },
-            }
-        } else {
-            console.error("currently nested pages for navlinks are not supported (step 4)")
-        }
-    }
-
-    if (!next) {
-        if (typeof prev == "string") {
-            const nextTitle = frontmatters[prev]?.title || ""
-
-            return {
-                prev: {
-                    // @ts-ignore
-                    title: nextTitle,
-                    href: safePageLink(prev),
-                },
-            }
-        } else {
-            console.error("currently nested pages for navlinks are not supported (step 5)")
-        }
-    }
-
-    if (typeof prev !== "string" || typeof next !== "string") {
-        console.error("currently nested pages for navlinks are not supported (step 6)")
-        return
-    }
-
-    const prevTitle = frontmatters[prev]?.title || ""
-    const nextTitle = frontmatters[next]?.title || ""
-
-    return {
-        prev: {
-            // @ts-ignore
-            title: prevTitle,
-            href: safePageLink(prev),
-        },
-        next: {
-            // @ts-ignore
-            title: nextTitle,
-            href: safePageLink(next),
-        }
-    }
+    return {}
 }

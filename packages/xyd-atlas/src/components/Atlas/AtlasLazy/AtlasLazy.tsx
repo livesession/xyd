@@ -16,7 +16,7 @@ export interface AtlasLazyProps {
 }
 
 export function AtlasLazy(props: AtlasLazyProps) {
-    return props.references.map((reference: any, i: number) => <>
+    return props.references?.map((reference: any, i: number) => <>
         <div
             key={i}
             // TODO: slug should be passed from reference or somrthing
