@@ -7,9 +7,8 @@ import {build as viteBuild} from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
 
 import {reactRouter} from "@xyd-js/react-router-dev/vite";
-// import { reactRouter } from "@react-router/dev/vite";
 
-import {vitePlugins as xydContentVitePlugins} from "@xyd-js/content"
+import {vitePlugins as xydContentVitePlugins} from "@xyd-js/content/vite"
 import {pluginZero} from "@xyd-js/plugin-zero";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -59,7 +58,6 @@ export async function build() {
         // Build the client-side bundle
         await viteBuild({
             root: process.env.XYD_CLI ? __dirname : process.env.XYD_DOCUMAN_HOST || path.join(__dirname, "../host"),
-            // @ts-ignore
             plugins: [
                 ...(xydContentVitePlugins({
                     toc: {
@@ -84,7 +82,6 @@ export async function build() {
             build: {
                 ssr: true,
             },
-            // @ts-ignore
             plugins: [
                 ...(xydContentVitePlugins({
                     toc: {

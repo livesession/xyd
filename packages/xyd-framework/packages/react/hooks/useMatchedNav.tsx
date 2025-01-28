@@ -2,8 +2,6 @@ import {useLocation} from "react-router";
 
 import {useSettings} from "../contexts";
 
-import {manualHydration} from "../utils/manualHydration";
-
 function normalizeHref(href: string) {
     if (href.startsWith("/")) {
         return href

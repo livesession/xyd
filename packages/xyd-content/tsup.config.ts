@@ -1,14 +1,14 @@
-import { defineConfig, Options } from 'tsup';
+import {defineConfig, Options} from 'tsup';
 
 const config: Options = {
     entry: {
-        index: 'index.ts',
-        navigation: 'navigation.ts',
+        index: 'src/index.ts',
+        vite: 'packages/vite/index.ts',
     },
     dts: {
         entry: {
-            index: 'index.ts',
-            navigation: 'navigation.ts',
+            index: 'src/index.ts',
+            vite: 'packages/vite/index.ts',
         },
         resolve: true, // Resolve external types
     },

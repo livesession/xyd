@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface Settings {
     // styling configurations for the documentation
     styling?: Styling
@@ -20,7 +22,7 @@ export interface Styling {
 
     // Path to logo image or object with path to “light” and “dark” mode logo images, and where the logo links to. SVG format is recommended.
     // It does not pixelate and the file size is generally smaller.
-    logo?: string | Logo | JSX.Element
+    logo?: string | Logo | React.JSX.Element
 
     // Path to the favicon image. For example: /path/to/favicon.svg
     favicon?: string;
@@ -222,7 +224,7 @@ export interface CallToAction {
 
 export interface Anchor {
     // The Font Awesome or JSX icon used to feature the anchor.
-    icon?: string | JSX.Element
+    icon?: string | React.JSX.Element
 
     // The name of the anchor label.
     name?: string

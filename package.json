@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@xyd-js/monorepo",
+  "name": "@xyd-js/project",
   "engines": {
     "pnpm": ">=9",
     "node": ">=20.17.0"

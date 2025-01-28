@@ -1,8 +1,7 @@
 import type {Plugin} from 'rollup';
 import mdx from '@mdx-js/rollup';
 
-import {RemarkMdxTocOptions} from "@/mdx/toc";
-import {mdxOptions} from "@/mdx/options";
+import {RemarkMdxTocOptions, mdOptions} from "../md";
 
 export interface VitePluginInterface {
     toc: RemarkMdxTocOptions
@@ -10,6 +9,6 @@ export interface VitePluginInterface {
 
 export function vitePlugins(options: VitePluginInterface): Plugin[] {
     return [
-        mdx(mdxOptions(options.toc)),
+        mdx(mdOptions(options.toc)),
     ];
 }

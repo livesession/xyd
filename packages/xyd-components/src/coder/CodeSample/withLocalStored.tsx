@@ -7,7 +7,7 @@ export interface CodeTabsProps {
     children: React.ReactNode
 }
 
-// TODO: interface
+// TODO: move to CodeTabs?
 export function withLocalStored(Component: any) {
     return function LocalStored(props: CodeTabsProps) {
         const [value, setValue] = useState(

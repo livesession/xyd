@@ -18,6 +18,17 @@ import {
     IconFunnels,
     IconMetrics,
     IconSessionReplay,
+    IconAlert,
+    IconBrowser,
+    IconREST,
+    IconGraphQL,
+    IconWebhooks,
+    IconJSBrowser,
+    IconJSNode,
+    IconStorybook,
+    IconReactRouter,
+    IconNextJS,
+    IconAppTemplate
 } from '../writer'
 import {CodeSample} from "../coder";
 
@@ -43,6 +54,7 @@ export default function content() {
         ...helperContent(),
         ...iconContent(),
         ...coderContent(),
+        ...directiveContent(),
     }
 }
 
@@ -113,6 +125,17 @@ export function writerContent() {
     }
 }
 
+export function directiveContent() {
+    return {
+        DirectiveCodeSample: (props) => {
+            return <CodeSample
+                {...props}
+                codeblocks={JSON.parse(props.codeblocks)}
+            />
+        }
+    }
+}
+
 export function helperContent() {
     return {
         Content: ContentComponent,
@@ -127,6 +150,17 @@ export function iconContent() {
         IconFunnels,
         IconCode,
         IconCustomEvent,
+        IconAlert,
+        IconBrowser,
+        IconREST,
+        IconGraphQL,
+        IconWebhooks,
+        IconJSBrowser,
+        IconJSNode,
+        IconStorybook,
+        IconReactRouter,
+        IconNextJS,
+        IconAppTemplate,
     }
 }
 

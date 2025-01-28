@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/atlas",
-  "version": "0.1.0-xyd.5",
+  "version": "0.1.0-xyd.6",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -27,7 +27,7 @@
     "lucide-react": "^0.447.0"
   },
   "peerDependencies": {
-    "react": "^18.3.1"
+    "react": "^19.0.0"
   },
   "devDependencies": {
     "@xyd-js/gql": "workspace:*",
