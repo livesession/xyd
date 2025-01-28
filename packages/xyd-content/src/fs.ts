@@ -4,7 +4,7 @@ import path from "path";
 import {VFile} from "vfile";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
-import {mdxOptions} from "@/mdx/options";
+import {mdOptions} from "../packages/md";
 
 export async function compileBySlug(
     slug: string,
@@ -27,13 +27,13 @@ async function compile(content: string, filePath: string): Promise<string> {
         contents: content
     });
 
-    const mdOptions = mdxOptions({
+    const opt = mdOptions({
         minDepth: 2 // TODO: configurable?
     })
 
     const compiled = await mdxCompile(vfile, {
-        remarkPlugins: mdOptions.remarkPlugins,
-        rehypePlugins: mdOptions.rehypePlugins,
+        remarkPlugins: opt.remarkPlugins,
+        rehypePlugins: opt.rehypePlugins,
         recmaPlugins: [],
         outputFormat: 'function-body',
         development: false,

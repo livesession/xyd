@@ -76,8 +76,14 @@ const codeHikeOptions = {
     // },
 };
 
+const compiledBySlug =  {}
+
 // TODO: map every file and merge them or load via client-side ?
 async function compileBySlug(slug: string) {
+    if (compiledBySlug[slug]) {
+        return compiledBySlug[slug]
+    }
+    console.time("api-reference compileBySlug")
     // TODO: cwd ?
     let filePath = path.join(process.cwd(), `${slug}.md`)
 
@@ -89,23 +95,37 @@ async function compileBySlug(slug: string) {
         await fs.access(filePath)
     }
 
+    console.time("api-reference readFile")
     const content = await fs.readFile(filePath, "utf-8");
+    console.timeEnd("api-reference readFile")
 
-    return await compile(content)
+    console.time("api-reference compile")
+    const resp = await compile(content)
+    console.timeEnd("api-reference compile")
+
+    console.timeEnd("api-reference compileBySlug")
+    compiledBySlug[slug] = resp
+    return resp
 }
 
 async function compile(content: string): Promise<string> {
     const compiled = await mdxCompile(content, {
         remarkPlugins: [
             normalizeCustomHeadings,
-            [remarkCodeHike, codeHikeOptions],
+            [
+                remarkCodeHike,
+                codeHikeOptions
+            ],
             remarkFrontmatter,
             remarkMdxFrontmatter,
             remarkGfm
         ],
         rehypePlugins: [],
         recmaPlugins: [
-            [recmaCodeHike, codeHikeOptions]
+            [
+                recmaCodeHike,
+                codeHikeOptions
+            ]
         ],
         outputFormat: 'function-body',
         development: false,
@@ -155,6 +175,7 @@ const mapSettingsToPropsMap: { [key: string]: data } = {}
 
 // TODO: fix any
 export async function loader({request}: { request: any }) {
+    console.time("api-reference loader")
     const slug = getPathname(request.url);
 
     let code = "";
@@ -191,6 +212,7 @@ export async function loader({request}: { request: any }) {
         console.error(error);
     }
 
+    console.timeEnd("api-reference loader")
     return {
         sidebarGroups,
         breadcrumbs,

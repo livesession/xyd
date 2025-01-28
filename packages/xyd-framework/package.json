@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/framework",
-  "version": "0.1.0-xyd.19",
+  "version": "0.1.0-xyd.20",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -36,8 +36,8 @@
     "@xyd-js/content": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/core": "workspace:*",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-router": "^7.1.1"
   },
   "devDependencies": {

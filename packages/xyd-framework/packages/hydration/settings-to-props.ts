@@ -1,7 +1,7 @@
 // server-only
 
 import {Sidebar, PageFrontMatter, Settings, SidebarMulti} from "@xyd-js/core";
-import {filterNavigationByLevels, pageFrontMatters} from "@xyd-js/content/navigation";
+import {filterNavigationByLevels, pageFrontMatters} from "@xyd-js/content";
 import {IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
 import {FwSidebarGroupProps} from "../react";

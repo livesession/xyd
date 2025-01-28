@@ -52,5 +52,8 @@ const config: StorybookConfig = {
         name: getAbsolutePath("@storybook/react-vite"),
         options: {},
     },
+    features: {
+        experimentalRSC: true,
+    }
 };
 export default config;

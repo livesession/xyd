@@ -24,7 +24,7 @@
     "@xyd-js/components": "workspace:*",
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/xtokens": "workspace:*",
-    "react": "^18.3.1"
+    "react": "^19.0.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.26.0",

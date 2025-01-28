@@ -8,5 +8,4 @@ export {
 
 export type {
     CodeSampleProps,
-    MDXCodeSampleBlock,
 } from "./CodeSample";

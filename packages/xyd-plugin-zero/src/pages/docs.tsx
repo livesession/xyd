@@ -87,6 +87,7 @@ export async function loader({request}: { request: any }) {
         console.error(error)
     }
 
+    console.timeEnd("docs loader")
     return {
         sidebarGroups,
         breadcrumbs,
