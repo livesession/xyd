@@ -38,7 +38,7 @@ import {Anchor} from "./Anchor";
 
 const EXTERNAL_HREF_REGEX = /https?:\/\//
 
-const Link = ({href = '', className, ...props}) => (
+const Link = ({href = '', className = "", ...props}) => (
     <Anchor
         href={href}
         newWindow={EXTERNAL_HREF_REGEX.test(href)}
