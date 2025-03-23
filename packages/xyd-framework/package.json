@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/framework",
-  "version": "0.1.0-xyd.20",
+  "version": "0.1.0-xyd.21",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -29,8 +29,7 @@
     "watch": "tsup --watch"
   },
   "author": "",
-  "dependencies": {
-  },
+  "dependencies": {},
   "peerDependencies": {
     "@xyd-js/ui": "workspace:*",
     "@xyd-js/content": "workspace:*",

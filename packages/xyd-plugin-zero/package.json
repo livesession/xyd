@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-zero",
-  "version": "0.1.0-xyd.11",
+  "version": "0.1.0-xyd.12",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -31,7 +31,7 @@
     "@xyd-js/openapi": "workspace:*",
     "@xyd-js/gql": "workspace:*",
     "@xyd-js/foo": "workspace:*",
-    "@xyd-js/uniform":  "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
     "@react-router/dev": "^7.1.1",
     "@react-router/node": "^7.1.1",
     "@react-router/serve": "^7.1.1",

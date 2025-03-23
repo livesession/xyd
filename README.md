@@ -15,3 +15,16 @@ XYD is a framework for building ambitious docs easier for everyone. </br></br> M
 ## Links
 * [Storybook](https://sb.xyd.dev) - collection of built-in components.
 
+## Commands
+```
+changeset
+```
+
+```
+changeset version
+```
+
+```
+changeset pre enter <RELEASE>
+```
+
