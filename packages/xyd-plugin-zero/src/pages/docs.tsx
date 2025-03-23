@@ -5,12 +5,11 @@ import {redirect} from "react-router";
 
 import {PageFrontMatter} from "@xyd-js/core"
 import {compileBySlug} from "@xyd-js/content"
+import {mapSettingsToProps} from "@xyd-js/framework/hydration";
+import {Framework, FwNav, type FwSidebarGroupProps} from "@xyd-js/framework/react";
 import getContentComponents from "@xyd-js/components/content";
 import {HomePage} from "@xyd-js/components/pages";
 import type {IBreadcrumb, INavLinks} from "@xyd-js/ui";
-import {mapSettingsToProps} from "@xyd-js/framework/hydration";
-import {Framework, FwNav} from "@xyd-js/framework/react";
-import type {FwSidebarGroupProps} from "@xyd-js/framework/react";
 
 import settings from 'virtual:xyd-settings';
 import Theme from "virtual:xyd-theme";
@@ -46,6 +45,15 @@ export async function loader({request}: { request: any }) {
 
     if (!supportedExtensions[ext]) {
         return {}
+    }
+
+    // TODO: in the future map instead of arr
+    if (settings.redirects && settings.redirects.length) {
+        for (const item of settings.redirects) {
+            if (item.source === getPathname(request.url)) {
+                return redirect(item.destination)
+            }
+        }
     }
 
     let code = ""

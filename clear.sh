@@ -4,8 +4,8 @@
 pnpm store prune
 
 # Define the directories to clean
-root_directories=("node_modules" "pnpm-lock.yaml", "dist")
-package_directories=("packages/*/node_modules" "packages/*/pnpm-lock.yaml", "packages/*/dist", "packages/*/.cli")
+root_directories=("node_modules" "pnpm-lock.yaml" "dist" "cli")
+package_directories=("packages/*/node_modules" "packages/*/pnpm-lock.yaml" "packages/*/dist" "packages/*/.cli")
 
 # Loop through each package directory and remove node_modules and pnpm-lock.yaml
 for dir in "${package_directories[@]}"; do
@@ -21,7 +21,7 @@ for dir in "${package_directories[@]}"; do
   done
 done
 
-# Remove the root node_modules and pnpm-lock.yaml
+# Remove the root node_modules, pnpm-lock.yaml, dist, and cli
 for dir in "${root_directories[@]}"; do
   if [ -d "$dir" ]; then
     echo "Removing $dir"

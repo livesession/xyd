@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/fable-wiki",
-  "version": "0.1.0-xyd.3",
+  "version": "0.1.0-xyd.6",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -18,8 +18,7 @@
     "prebuild": "pnpm clean && node generate-tokens-css.js",
     "build": "rollup -c rollup.config.js"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "peerDependencies": {
     "@xyd-js/components": "workspace:*",
     "@xyd-js/framework": "workspace:*",

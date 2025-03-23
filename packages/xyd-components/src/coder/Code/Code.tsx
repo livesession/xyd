@@ -13,11 +13,11 @@ export interface CodeProps {
 }
 
 export function Code(props: CodeProps) {
-    return <CodeTheme codeblocks={props.codeblocks} theme={props.theme}>
-        <Suspense fallback={<$Loading/>}>
+    return <Suspense fallback={<$Loading/>}>
+        <CodeTheme codeblocks={props.codeblocks} theme={props.theme}>
             {props.children}
-        </Suspense>
-    </CodeTheme>
+        </CodeTheme>
+    </Suspense>
 }
 
 function $Loading() {
@@ -28,6 +28,9 @@ function $Loading() {
 
 // TODO: fix any
 Code.LineNumber = function LineNumber(props: any) {
+    if (!props.children || !props.children.length) {
+        return null
+    }
     return (
         <>
         <span

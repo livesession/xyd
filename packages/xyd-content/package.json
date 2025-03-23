@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/content",
-  "version": "0.1.0-xyd.4",
+  "version": "0.1.0-xyd.7",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",

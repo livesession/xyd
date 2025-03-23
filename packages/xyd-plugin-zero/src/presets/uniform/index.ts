@@ -254,14 +254,15 @@ async function uniformResolver(
     }
 
     if (matchRoute) {
-        uniformSidebars[0].items.push(...uniformWithNavigation.out.sidebar)
+        // TODO: in the future custom position - before / after
+        uniformSidebars[0].items.unshift(...uniformWithNavigation.out.sidebar)
 
         return {
             data: uniformData.data,
         }
     }
 
-    sidebar.push(...uniformWithNavigation.out.sidebar)
+    sidebar.unshift(...uniformWithNavigation.out.sidebar)
 
     return {
         data: uniformData.data,
@@ -304,8 +305,8 @@ function preinstall(
                         sidebar: !settings.structure?.sidebar
                             ? resolved.sidebar
                             : [
+                                ...resolved.sidebar,
                                 ...!settings.structure?.sidebar || [],
-                                ...resolved.sidebar
                             ]
                     }
                 }
@@ -340,8 +341,8 @@ function preinstall(
                             sidebar: !settings.structure?.sidebar
                                 ? resolved.sidebar
                                 : [
+                                    ...resolved.sidebar,
                                     ...!settings.structure?.sidebar || [],
-                                    ...resolved.sidebar
                                 ]
                         }
                     }

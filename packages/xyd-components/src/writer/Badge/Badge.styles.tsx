@@ -15,6 +15,10 @@ export const $badge = {
         color: #000;
         background-color: #f8d047;
     `,
+    host$$info: css`
+        color: #fff;
+        background-color: #1FA6F2;
+    `,
     host$$sm: css`
         font-size: 12px;
         height: 18px;

@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/core",
-  "version": "0.1.0-xyd.2",
+  "version": "0.1.0-xyd.6",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
@@ -9,8 +9,7 @@
     "build": "tsup",
     "watch": "tsup --watch"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "tsup": "^8.3.0",
     "rimraf": "^3.0.2",

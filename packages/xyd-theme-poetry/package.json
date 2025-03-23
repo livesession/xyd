@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-poetry",
-  "version": "0.1.0-xyd.15",
+  "version": "0.1.0-xyd.18",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -32,7 +32,7 @@
     "@xyd-js/framework": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router": "^7.1.1"
+    "react-router": "7.1.1"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.26.0",
