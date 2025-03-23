@@ -38,7 +38,7 @@ export async function build() {
                 "@xyd-js/theme-poetry": "latest",
 
 
-                "@react-router/node": "^7.1.1",
+                "@react-router/node": "7.1.1",
                 "isbot": "^5"
             },
             devDependencies: {}
