@@ -26,6 +26,7 @@
     "@xyd-js/uniform": "0.1.0-xyd.5"
   },
   "changesets": [
-    "cool-bobcats-cover"
+    "cool-bobcats-cover",
+    "small-spiders-lick"
   ]
 }
