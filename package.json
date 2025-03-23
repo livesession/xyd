@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "@xyd-js/project",
   "engines": {
     "pnpm": ">=9",
@@ -7,6 +6,7 @@
   },
   "packageManager": "pnpm@9.10.0",
   "scripts": {
+    "dev": "pnpm lerna watch -- lerna run build",
     "build": "./build.sh",
     "watch": "pnpm build && pnpm run --filter=\"./packages/**/*\" --parallel build --watch",
     "build:gql": "pnpm run --filter=\"./packages/xyd-gql\" build",
@@ -18,9 +18,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.3",
+    "@changesets/cli": "^2.28.1",
     "@types/node": "20.9.0",
     "husky": "^9.1.6",
+    "lerna": "^8.1.9",
     "lint-staged": "^15.2.10",
+    "nx": "^20.3.2",
     "rimraf": "^3.0.2",
     "typescript": "^5.6.2",
     "vitest": "^2.1.1"

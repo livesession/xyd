@@ -11,14 +11,14 @@ import {
 
 // oapPathToReference converts an OpenAPI path to a uniform Reference
 export function oapPathToReference(
-    httpMethod: "get" | "put" | "post" | "delete", // TODO: ts type
+    httpMethod: "get" | "put" | "post" | "delete" | "patch", // TODO: ts type
     path: string,
     oapPath: OpenAPIV3.PathItemObject,
 ): Reference | null {
     const mType = httpMethodToUniformMethod(httpMethod)
 
     if (!mType) {
-        console.error(`Unsupported method: ${httpMethod}`)
+        console.error(`Unsupported method v222: ${httpMethod}`)
         return null
     }
 
@@ -42,7 +42,7 @@ export function oapPathToReference(
         context: {
             method: httpMethod,
 
-            path
+            path: `${encodeURIComponent(path)}`,
         },
 
         examples: {
@@ -59,10 +59,9 @@ export function oapPathToReference(
         Object.entries(paramtersMap).forEach(([key, definitionProperties]) => {
             let title: string
 
-            // TODO: add context to definition
             switch (key) {
                 case 'path':
-                    title = "Paths"
+                    title = "Path parameters"
                     break
                 case 'query':
                     title = "Query"

@@ -27,8 +27,14 @@ export function ApiRefItem({reference}: ApiRefItemProps) {
         case ReferenceCategory.REST: {
             const ctx = reference.context as MDXReference<OpenAPIReferenceContext>
 
+            if (!ctx || !ctx.method || !ctx.path || !ctx.path.title) {
+                break;
+            }
             // TODO: finish subitlte from ref
-            topNavbar = <$Navbar label={ctx.method.title} subtitle={`${ctx.path.title}`}/>
+            topNavbar = <$Navbar
+                label={ctx.method.title}
+                subtitle={`${decodeURIComponent(ctx.path.title)}`}
+            />
             break;
         }
     }
@@ -42,7 +48,7 @@ export function ApiRefItem({reference}: ApiRefItemProps) {
 
         <div className={$refItem.grid}>
             <$Properties reference={reference}/>
-            <ApiRefSamples examples={reference.examples}/>
+            {reference.examples && <ApiRefSamples examples={reference.examples}/>}
         </div>
 
     </div>

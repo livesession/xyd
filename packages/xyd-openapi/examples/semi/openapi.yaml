@@ -1,0 +1,365 @@
+openapi: 3.1.0
+
+info:
+  title: LiveSession API
+  version: v1
+
+servers:
+  - url: https://api.livesession.io/v1
+    description: Production server (uses live data)
+
+paths:
+  # BEGIN Sessions
+  /sessions:
+    get:
+      summary: Get Sessions
+      security:
+        - livesession_oauth: [ users.sessions:read ]
+        - api_token: [ users.sessions:read ]
+      description: |
+        ---
+        title: List sessions
+        group: [ENDPOINTS]
+        ---
+        
+        List of all sessions
+      tags:
+        - Sessions
+      parameters:
+        - name: page
+          in: query
+          description: The number of page to start with (default 0, max 10000).
+          schema:
+            type: integer
+        - name: size
+          in: query
+          description: The number of page's size (default 25, max 100).
+          schema:
+            type: integer
+        - name: email
+          in: query
+          description: The email address that you have associated with a session via [identify](https://developers.livesession.io/javascript-api/methods/#identify).
+          schema:
+            type: string
+        - name: visitor_id
+          in: query
+          description: The visitor ID.
+          schema:
+            type: string
+        - name: tz
+          in: query
+          description: IANA timezone. Default Europe/London if RelativeDateString is applied.
+          schema:
+            type: string
+        - name: date_from
+          in: query
+          description: ISO 8601 string or RelativeDateString. For RelativeDateString see table below for possible values.
+          schema:
+            oneOf:
+              - type: string
+              - $ref: '#/components/schemas/RelativeDateString'
+        - name: date_to
+          in: query
+          description: ISO 8601 string or [RelativeDateString](#/components/schemas/RelativeDateString). For RelativeDateString see table below for possible values.
+          schema:
+            oneOf:
+              - type: string
+              - $ref: '#/components/schemas/RelativeDateString'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetListSessionsResponse'
+        '400':
+          description: 400 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 500 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    api_token:
+      type: apiKey
+      name: Authorization
+      description: "[API Tokens](https://developers.livesession.io/rest-api/introduction/#creating-a-personal-access-token)"
+      in: header
+
+    livesession_oauth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://apis.livesession.io/accounts/v1/oauth2/authorize # TODO: more friendly url
+          tokenUrl: https://apis.livesession.io/accounts/v1/oauth2/access_token # TODO: more friendly url
+          refreshUrl: https://apis.livesession.io/accounts/v1/oauth2/access_token # TODO: more friendly url
+          scopes:
+            users.sessions:read: read user sessions
+
+            webhooks:read: read webhooks
+            webhooks:write: write webhooks
+
+            alerts:read: read alerts
+            alerts:write: write alerts
+
+            websites:read: read websites
+            websites:write: write websites
+
+            payment_intents:write: write payment intents
+            payment_intents.confirm: confirm payment intents
+
+  schemas:
+
+    # BEGIN Errors
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            code:
+              type: string
+            param:
+              type: string
+            message:
+              type: string
+            http_status_code:
+              type: integer
+            request_id:
+              type: string
+
+    # END Errors
+
+    # BEGIN Sessions
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+        website_id:
+          type: string
+        session_url:
+          type: string
+        creation_timestamp:
+          type: integer
+        duration:
+          type: integer
+        end_timestamp:
+          type: integer
+        active_time:
+          type: integer
+        end_url:
+          type: string
+        expiration_timestamp:
+          type: integer
+        last_event_timestamp:
+          type: integer
+        product:
+          type: string
+        device:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        last_seen_page_view_id:
+          type: string
+        seen:
+          type: boolean
+        referrer:
+          type: string
+        start_url:
+          type: string
+        visitor_first_session:
+          type: boolean
+        engagment_score:
+          type: number
+        visitor:
+          $ref: '#/components/schemas/SessionVisitorData'
+        resolution:
+          $ref: '#/components/schemas/SessionResolutionData'
+        os:
+          $ref: '#/components/schemas/SessionOsData'
+        browser:
+          $ref: '#/components/schemas/SessionBrowserData'
+        utm:
+          $ref: '#/components/schemas/SessionUTMData'
+        page_views_statistics:
+          $ref: '#/components/schemas/SessionPageViewsStatisticsData'
+        events_statistics:
+          $ref: '#/components/schemas/SessionEventsStatisticsData'
+
+    SessionVisitorData:
+      type: object
+      properties:
+        id:
+          type: string
+        ip:
+          type: string
+        geolocation:
+          $ref: '#/components/schemas/SessionVisitorDataGeolocation'
+        name:
+          type: string
+        email:
+          type: string
+        email_hash:
+          type: string
+        params:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionVisitorDataParams'
+        last_session_timestamp:
+          type: integer
+        first_session_timestamp:
+          type: integer
+
+    SessionOsData:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+
+    SessionBrowserData:
+      type: object
+      properties:
+        description:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+
+    SessionUTMData:
+      type: object
+      properties:
+        source:
+          type: string
+        medium:
+          type: string
+        campaign:
+          type: string
+        term:
+          type: string
+        content:
+          type: string
+
+    SessionEventsStatisticsData:
+      type: object
+      properties:
+        clicks:
+          type: integer
+        error_clicks:
+          type: integer
+        rage_clicks:
+          type: integer
+        error_logs:
+          type: integer
+        net_errors:
+          type: integer
+
+    SessionPageViewLocationData:
+      type: object
+      properties:
+        base:
+          type: string
+        href:
+          type: string
+        origin:
+          type: string
+        referrer:
+          type: string
+
+    SessionPageViewViewPortData:
+      type: object
+      properties:
+        height:
+          type: integer
+        width:
+          type: integer
+
+    SessionVisitorDataGeolocation:
+      type: object
+      properties:
+        country_code:
+          type: string
+        city:
+          type: string
+        region:
+          type: string
+
+    SessionVisitorDataParams:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+
+    SessionResolutionData:
+      type: object
+      properties:
+        height:
+          type: integer
+        width:
+          type: integer
+        resolution:
+          type: string
+
+    SessionPageViewsStatisticsData:
+      type: object
+      properties:
+        count:
+          type: integer
+
+    GetListSessionsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        page:
+          $ref: '#/components/schemas/Pagination'
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Session'
+
+    Pagination:
+      type: object
+      properties:
+        num:
+          type: integer
+        size:
+          type: integer
+
+    RelativeDateString:
+      type: string
+      description: |
+        * `TODAY` - Today since midnight
+        * `YESTERDAY` - Yesterday since midnight
+        * `BEGINNING_OF_WEEK` - Nearest monday since midnight
+        * `BEGINNING_OF_MONTH` - 1st of the month since midnight
+        * `BEGINNING_OF_PREV_MONTH` - Previous 1st of the month since midnight
+        * `TODAY-7DAYS` - Exact 7 days ago since midnight
+        * `TODAY-30DAYS` - Exact 30 days ago since midnight
+      enum:
+        - TODAY
+        - YESTERDAY
+        - BEGINNING_OF_WEEK
+        - BEGINNING_OF_MONTH
+        - BEGINNING_OF_PREV_MONTH
+        - TODAY-7DAYS
+        - TODAY-30DAYS
+    # END Sessions
+
+

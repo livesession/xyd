@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/framework",
-  "version": "0.1.0-xyd.20",
+  "version": "0.1.0-xyd.23",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -29,8 +29,7 @@
     "watch": "tsup --watch"
   },
   "author": "",
-  "dependencies": {
-  },
+  "dependencies": {},
   "peerDependencies": {
     "@xyd-js/ui": "workspace:*",
     "@xyd-js/content": "workspace:*",
@@ -38,7 +37,7 @@
     "@xyd-js/core": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router": "^7.1.1"
+    "react-router": "7.1.1"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.24.7",

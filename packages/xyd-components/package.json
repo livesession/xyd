@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/components",
-  "version": "0.1.0-xyd.2",
+  "version": "0.1.0-xyd.4",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -31,6 +31,9 @@
     },
     "./writer": {
       "import": "./dist/writer.js"
+    },
+    "./coder/themes/*": {
+      "import": "./dist/coder/themes/*"
     }
   },
   "scripts": {

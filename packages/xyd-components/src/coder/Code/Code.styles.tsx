@@ -18,7 +18,7 @@ export const $mark = {
 
 export const $lineNumber = {
     host: css`
-        margin: 0 4px;
+        margin: 0 12px 0px 4px;
         //text-align: right;
         user-select: none;
         opacity: 0.5;

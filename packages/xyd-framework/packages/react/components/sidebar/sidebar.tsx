@@ -60,7 +60,7 @@ const components = {
             {children}
         </div>,
     },
-    Badge: ({children}) => <Badge>
+    Badge: ({children, ...rest}) => <Badge {...rest}>
         {children}
     </Badge>
 }

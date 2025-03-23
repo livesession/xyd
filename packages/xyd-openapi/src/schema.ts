@@ -1,6 +1,7 @@
 import {OpenAPIV3} from "openapi-types";
 import Oas from "oas";
-import {Reference, ReferenceType} from "@xyd-js/uniform";
+
+import type {Reference, OpenAPIReferenceContext} from "@xyd-js/uniform";
 
 import {SUPPORTED_HTTP_METHODS} from "./const";
 import {oapPathToReference} from "./paths";
@@ -17,9 +18,9 @@ export function oapSchemaToReferences(
     const references: Reference[] = [];
     const oas = new Oas(schema as any);
 
-    Object.entries(schema.paths).forEach(([path, oapPath]) => {
-        let type: ReferenceType;
+    const server = schema.servers?.[0]?.url || ""
 
+    Object.entries(schema.paths).forEach(([path, oapPath]) => {
         SUPPORTED_HTTP_METHODS.forEach((eachMethod) => {
             const httpMethod = eachMethod.toLowerCase()
 
@@ -32,8 +33,10 @@ export function oapSchemaToReferences(
                     break
                 case 'delete':
                     break
+                case 'patch':
+                    break
                 default:
-                    console.error(`Unsupported method: ${httpMethod}`)
+                    console.error(`Unsupported method v111: ${httpMethod}`)
                     return
             }
 
@@ -44,6 +47,9 @@ export function oapSchemaToReferences(
             )
 
             if (reference) {
+                const ctx = reference.context as OpenAPIReferenceContext
+                ctx.path = `${encodeURIComponent(server)}${encodeURIComponent(path)}` // TODO: it should be inside `oapPathToReference` ?
+
                 const operation = oas.operation(path, httpMethod);
                 reference.examples.groups = oapExamples(oas, operation)
 
