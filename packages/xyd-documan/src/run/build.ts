@@ -32,10 +32,16 @@ export async function build() {
             type: "module",
             scripts: {},
             dependencies: { // TODO: better
-                "@xyd-js/content": "latest",
-                "@xyd-js/components": "latest",
-                "@xyd-js/framework": "latest",
-                "@xyd-js/theme-poetry": "latest",
+                // "@xyd-js/content": "latest",
+                // "@xyd-js/components": "latest",
+                // "@xyd-js/framework": "latest",
+                // "@xyd-js/theme-poetry": "latest",
+
+                "@xyd-js/content": "workspace:*",
+                "@xyd-js/components": "workspace:*",
+                "@xyd-js/framework": "workspace:*",
+                "@xyd-js/theme-poetry": "workspace:*",
+
                 "@react-router/node": "^7.1.1",
                 "isbot": "^5"
             },
@@ -51,7 +57,9 @@ export async function build() {
         fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
 
         // Install packages inside buildDir
-        execSync('npm install', {cwd: buildDir, stdio: 'inherit'});
+        // execSync('npm install', {cwd: buildDir, stdio: 'inherit'});
+
+        execSync('pnpm i', {cwd: buildDir, stdio: 'inherit'});
     }
 
     try {

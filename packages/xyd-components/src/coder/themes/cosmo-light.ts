@@ -2,7 +2,8 @@
 
 import {Theme} from "@code-hike/lighter";
 
-export const theme: Theme = {
+export default {
+    name: "cosmo-light",
     type: "light",
     colors: {
         "list.focusForeground": "#FFFFFF",
@@ -263,4 +264,4 @@ export const theme: Theme = {
             },
         },
     ],
-}
+} as Theme

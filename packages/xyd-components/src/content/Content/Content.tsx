@@ -5,7 +5,7 @@ const $content = {
     host: css`
         display: flex;
         flex-direction: column;
-        align-items: center;
+        //align-items: center;
         gap: 24px;
     `
 }

@@ -12,13 +12,10 @@ import {recmaCodeHike, remarkCodeHike} from "codehike/mdx";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
 import {PageFrontMatter} from "@xyd-js/core";
-import {
-    AtlasLazy
-} from "@xyd-js/atlas";
 import getContentComponents from "@xyd-js/components/content";
 import {mapSettingsToProps} from "@xyd-js/framework/hydration";
-import {Framework} from "@xyd-js/framework/react";
-import type {FwSidebarGroupProps} from "@xyd-js/framework/react";
+import {Framework, type FwSidebarGroupProps} from "@xyd-js/framework/react";
+import {AtlasLazy} from "@xyd-js/atlas";
 import type {IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
 import Theme from "virtual:xyd-theme" // TODO: for some reasons this cannot be hydrated by react-router

@@ -3,7 +3,7 @@ import { Theme } from "@code-hike/lighter";
 import { highlight } from "codehike/code";
 import type { HighlightedCode } from "codehike/code";
 
-import { theme as defaultTheme } from "./default-theme";
+import defaultTheme from "../themes/cosmo-light"
 
 export interface CodeThemeProps {
   codeblocks: CodeThemeBlockProps[];
@@ -46,6 +46,7 @@ export function CodeTheme(props: CodeThemeProps) {
   );
 }
 
+// `CodeThemeSync` ?
 export function CodeThemeCSR(props: CodeThemeProps) {
   const [highlighted, setHighlighted] = useState<HighlightedCode[]>([]);
 
@@ -56,7 +57,7 @@ export function CodeThemeCSR(props: CodeThemeProps) {
   }, [props.codeblocks, props.theme]);
 
   if (!highlighted) {
-    return <div>loading...</div>;
+    return <div>loading${`...`}</div>;
   }
 
   return (

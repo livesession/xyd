@@ -1,0 +1,895 @@
+[
+  {
+    "title": "JSerror",
+    "canonical": "Jserror",
+    "description": "---\ntitle: JSError\ngroup: [EVENT TYPES, session.event]\n---\n",
+    "category": "rest",
+    "type": "rest_post",
+    "context": {
+      "method": "post",
+      "path": "%2Fsession.event.JSError"
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "curl",
+                    "language": "curl",
+                    "code": "curl --request POST \\\n     --url https://example.com/session.event.JSError \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"message_id\": \"string\",\n  \"webhook_id\": \"string\",\n  \"webhook_type\": \"string\",\n  \"api_version\": \"string\",\n  \"account_id\": \"string\",\n  \"website_id\": \"string\",\n  \"created_at\": 0,\n  \"payload\": {\n    \"visitor\": {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"params\": [\n        {\n          \"name\": \"string\",\n          \"value\": \"string\"\n        }\n      ],\n      \"geolocation\": {\n        \"country_code\": \"string\",\n        \"city\": \"string\",\n        \"region\": \"string\"\n      }\n    },\n    \"event_name\": \"string\",\n    \"time\": 0,\n    \"name\": \"string\",\n    \"count\": 0,\n    \"value\": \"string\"\n  }\n}\n'"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Response",
+          "examples": []
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Request body",
+        "properties": [
+          {
+            "name": "message_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "webhook_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "webhook_type",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "api_version",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "account_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "website_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "created_at",
+            "type": "integer",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "payload",
+            "type": "",
+            "description": "",
+            "properties": [
+              {
+                "name": "visitor",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "The unique ID of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "The name of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "The email of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "params",
+                    "type": "array",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "geolocation",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "country_code",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "city",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "region",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "event_name",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "time",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "count",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "value",
+                "type": "string",
+                "description": "",
+                "properties": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "NetError",
+    "canonical": "Neterror",
+    "description": "---\ntitle: NetError\ngroup: [EVENT TYPES, session.event]\n---\n",
+    "category": "rest",
+    "type": "rest_post",
+    "context": {
+      "method": "post",
+      "path": "%2Fsession.event.NetError"
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "curl",
+                    "language": "curl",
+                    "code": "curl --request POST \\\n     --url https://example.com/session.event.NetError \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"message_id\": \"string\",\n  \"webhook_id\": \"string\",\n  \"webhook_type\": \"string\",\n  \"api_version\": \"string\",\n  \"account_id\": \"string\",\n  \"website_id\": \"string\",\n  \"created_at\": 0,\n  \"payload\": {\n    \"visitor\": {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"params\": [\n        {\n          \"name\": \"string\",\n          \"value\": \"string\"\n        }\n      ],\n      \"geolocation\": {\n        \"country_code\": \"string\",\n        \"city\": \"string\",\n        \"region\": \"string\"\n      }\n    },\n    \"event_name\": \"string\",\n    \"time\": 0,\n    \"name\": \"string\",\n    \"method\": \"string\",\n    \"url\": \"string\",\n    \"status\": 0\n  }\n}\n'"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Response",
+          "examples": []
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Request body",
+        "properties": [
+          {
+            "name": "message_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "webhook_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "webhook_type",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "api_version",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "account_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "website_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "created_at",
+            "type": "integer",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "payload",
+            "type": "",
+            "description": "",
+            "properties": [
+              {
+                "name": "visitor",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "The unique ID of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "The name of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "The email of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "params",
+                    "type": "array",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "geolocation",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "country_code",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "city",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "region",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "event_name",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "time",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "method",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "url",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "status",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "ErrorClick",
+    "canonical": "Errorclick",
+    "description": "---\ntitle: ErrorClick\ngroup: [EVENT TYPES, session.event]\n---\n",
+    "category": "rest",
+    "type": "rest_post",
+    "context": {
+      "method": "post",
+      "path": "%2Fsession.event.ErrorClick"
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "curl",
+                    "language": "curl",
+                    "code": "curl --request POST \\\n     --url https://example.com/session.event.ErrorClick \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"message_id\": \"string\",\n  \"webhook_id\": \"string\",\n  \"webhook_type\": \"string\",\n  \"api_version\": \"string\",\n  \"account_id\": \"string\",\n  \"website_id\": \"string\",\n  \"created_at\": 0,\n  \"payload\": {\n    \"visitor\": {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"params\": [\n        {\n          \"name\": \"string\",\n          \"value\": \"string\"\n        }\n      ],\n      \"geolocation\": {\n        \"country_code\": \"string\",\n        \"city\": \"string\",\n        \"region\": \"string\"\n      }\n    },\n    \"event_name\": \"string\",\n    \"time\": 0,\n    \"name\": \"string\",\n    \"message\": \"string\"\n  }\n}\n'"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Response",
+          "examples": []
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Request body",
+        "properties": [
+          {
+            "name": "message_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "webhook_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "webhook_type",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "api_version",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "account_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "website_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "created_at",
+            "type": "integer",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "payload",
+            "type": "",
+            "description": "",
+            "properties": [
+              {
+                "name": "visitor",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "The unique ID of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "The name of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "The email of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "params",
+                    "type": "array",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "geolocation",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "country_code",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "city",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "region",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "event_name",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "time",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "message",
+                "type": "string",
+                "description": "",
+                "properties": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Handle session event",
+    "canonical": "HandleSessionEvent",
+    "description": "---\ntitle: RageClick\ngroup: [EVENT TYPES, session.event]\n---\n",
+    "category": "rest",
+    "type": "rest_post",
+    "context": {
+      "method": "post",
+      "path": "%2Fsession.event.RageClick"
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "curl",
+                    "language": "curl",
+                    "code": "curl --request POST \\\n     --url https://example.com/session.event.RageClick \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"message_id\": \"string\",\n  \"webhook_id\": \"string\",\n  \"webhook_type\": \"string\",\n  \"api_version\": \"string\",\n  \"account_id\": \"string\",\n  \"website_id\": \"string\",\n  \"created_at\": 0,\n  \"payload\": {\n    \"visitor\": {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"params\": [\n        {\n          \"name\": \"string\",\n          \"value\": \"string\"\n        }\n      ],\n      \"geolocation\": {\n        \"country_code\": \"string\",\n        \"city\": \"string\",\n        \"region\": \"string\"\n      }\n    },\n    \"event_name\": \"string\",\n    \"time\": 0,\n    \"name\": \"string\",\n    \"clicks\": 0\n  }\n}\n'"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Response",
+          "examples": []
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Request body",
+        "properties": [
+          {
+            "name": "message_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "webhook_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "webhook_type",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "api_version",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "account_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "website_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "created_at",
+            "type": "integer",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "payload",
+            "type": "",
+            "description": "",
+            "properties": [
+              {
+                "name": "visitor",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "The unique ID of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "The name of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "The email of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "params",
+                    "type": "array",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "geolocation",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "country_code",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "city",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "region",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "event_name",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "time",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "clicks",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Handle session event",
+    "canonical": "HandleSessionEvent",
+    "description": "---\ntitle: Custom\ngroup: [EVENT TYPES, session.event]\n---\n",
+    "category": "rest",
+    "type": "rest_post",
+    "context": {
+      "method": "post",
+      "path": "%2Fsession.event.Custom"
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "curl",
+                    "language": "curl",
+                    "code": "curl --request POST \\\n     --url https://example.com/session.event.Custom \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"message_id\": \"string\",\n  \"webhook_id\": \"string\",\n  \"webhook_type\": \"string\",\n  \"api_version\": \"string\",\n  \"account_id\": \"string\",\n  \"website_id\": \"string\",\n  \"created_at\": 0,\n  \"payload\": {\n    \"visitor\": {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"email\": \"string\",\n      \"params\": [\n        {\n          \"name\": \"string\",\n          \"value\": \"string\"\n        }\n      ],\n      \"geolocation\": {\n        \"country_code\": \"string\",\n        \"city\": \"string\",\n        \"region\": \"string\"\n      }\n    },\n    \"event_name\": \"string\",\n    \"time\": 0,\n    \"name\": \"string\"\n  }\n}\n'"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Response",
+          "examples": []
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Request body",
+        "properties": [
+          {
+            "name": "message_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "webhook_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "webhook_type",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "api_version",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "account_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "website_id",
+            "type": "string",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "created_at",
+            "type": "integer",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "payload",
+            "type": "",
+            "description": "",
+            "properties": [
+              {
+                "name": "visitor",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "The unique ID of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "The name of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "The email of the visitor",
+                    "properties": []
+                  },
+                  {
+                    "name": "params",
+                    "type": "array",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "geolocation",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "country_code",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "city",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "region",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "event_name",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "time",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "properties",
+                "type": "object",
+                "description": "",
+                "properties": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "properties": []
+      }
+    ]
+  }
+]

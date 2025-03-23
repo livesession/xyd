@@ -65,5 +65,7 @@ storybook-static/
 
 # dev cli
 cli/
-
 .cli/
+
+# nx
+.nx

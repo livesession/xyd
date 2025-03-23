@@ -36,7 +36,7 @@
           {
             "name": "id",
             "type": "ID!",
-            "description": "The unique ID of the user",
+            "description": "The unique **ID** of the user [here](#/example)",
             "properties": []
           },
           {

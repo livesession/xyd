@@ -1,5 +1,6 @@
-import {fileURLToPath} from 'url';
-import {dirname} from 'path';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
@@ -25,6 +26,16 @@ const external = [
     ...Object.keys(devDependencies),
 ];
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const themesDir = path.resolve(__dirname, 'src/coder/themes');
+const themes = fs.readdirSync(themesDir).reduce((acc, file) => {
+    const themeName = path.basename(file, path.extname(file));
+    acc[`coder/themes/${themeName}`] = path.join(themesDir, file);
+    return acc;
+}, {});
+
 export default [
     {
         input: {
@@ -36,6 +47,7 @@ export default [
             pages: 'src/pages/index.ts',
             views: 'src/views/index.ts',
             writer: 'writer.ts',
+            ...themes
         },
         output: [
             {
@@ -150,5 +162,14 @@ export default [
         },
         plugins: [dts()],
         external
-    }
+    },
+    ...Object.keys(themes).map(theme => ({
+        input: themes[theme],
+        output: {
+            file: `dist/${theme}.d.ts`,
+            format: 'es',
+        },
+        plugins: [dts()],
+        external
+    }))
 ];

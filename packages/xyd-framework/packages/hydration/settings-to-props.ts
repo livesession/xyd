@@ -222,8 +222,20 @@ function mapNavToLinks(
                 return
             }
 
-            const prevTitle = prev ? frontmatters[prev]?.title || "" : ""
-            const nextTitle = next ? frontmatters[next]?.title || "" : ""
+            let prevTitle = prev ? frontmatters[prev]?.title || "" : ""
+            let nextTitle = next ? frontmatters[next]?.title || "" : ""
+
+            if (typeof prevTitle !== "string") {
+                if (prevTitle?.title) {
+                    prevTitle = prevTitle.title
+                }
+            }
+
+            if (typeof nextTitle !== "string") {
+                if (nextTitle?.title) {
+                    nextTitle = nextTitle.title
+                }
+            }
 
             if (typeof prevTitle !== "string") {
                 console.error("currently navlink 'prev' must be a string")

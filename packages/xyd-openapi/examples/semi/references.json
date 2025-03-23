@@ -1,0 +1,500 @@
+[
+  {
+    "title": "Get Sessions",
+    "canonical": "GetSessions",
+    "description": "---\ntitle: List sessions\ngroup: [ENDPOINTS]\n---\n\nList of all sessions\n",
+    "category": "rest",
+    "type": "rest_get",
+    "context": {
+      "method": "get",
+      "path": "https%3A%2F%2Fapi.livesession.io%2Fv1%2Fsessions"
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"total\": 0,\n  \"page\": {\n    \"num\": 0,\n    \"size\": 0\n  },\n  \"sessions\": [\n    {\n      \"id\": \"string\",\n      \"website_id\": \"string\",\n      \"session_url\": \"string\",\n      \"creation_timestamp\": 0,\n      \"duration\": 0,\n      \"end_timestamp\": 0,\n      \"active_time\": 0,\n      \"end_url\": \"string\",\n      \"expiration_timestamp\": 0,\n      \"last_event_timestamp\": 0,\n      \"product\": \"string\",\n      \"device\": \"string\",\n      \"tags\": [\n        \"string\"\n      ],\n      \"last_seen_page_view_id\": \"string\",\n      \"seen\": true,\n      \"referrer\": \"string\",\n      \"start_url\": \"string\",\n      \"visitor_first_session\": true,\n      \"engagment_score\": 0,\n      \"visitor\": {\n        \"id\": \"string\",\n        \"ip\": \"string\",\n        \"geolocation\": {\n          \"country_code\": \"string\",\n          \"city\": \"string\",\n          \"region\": \"string\"\n        },\n        \"name\": \"string\",\n        \"email\": \"string\",\n        \"email_hash\": \"string\",\n        \"params\": [\n          {\n            \"name\": \"string\",\n            \"value\": \"string\"\n          }\n        ],\n        \"last_session_timestamp\": 0,\n        \"first_session_timestamp\": 0\n      },\n      \"resolution\": {\n        \"height\": 0,\n        \"width\": 0,\n        \"resolution\": \"string\"\n      },\n      \"os\": {\n        \"name\": \"string\",\n        \"version\": \"string\"\n      },\n      \"browser\": {\n        \"description\": \"string\",\n        \"name\": \"string\",\n        \"version\": \"string\"\n      },\n      \"utm\": {\n        \"source\": \"string\",\n        \"medium\": \"string\",\n        \"campaign\": \"string\",\n        \"term\": \"string\",\n        \"content\": \"string\"\n      },\n      \"page_views_statistics\": {\n        \"count\": 0\n      },\n      \"events_statistics\": {\n        \"clicks\": 0,\n        \"error_clicks\": 0,\n        \"rage_clicks\": 0,\n        \"error_logs\": 0,\n        \"net_errors\": 0\n      }\n    }\n  ]\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Query",
+        "properties": [
+          {
+            "name": "page",
+            "type": "integer",
+            "description": "The number of page to start with (default 0, max 10000)."
+          },
+          {
+            "name": "size",
+            "type": "integer",
+            "description": "The number of page's size (default 25, max 100)."
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "description": "The email address that you have associated with a session via [identify](https://developers.livesession.io/javascript-api/methods/#identify)."
+          },
+          {
+            "name": "visitor_id",
+            "type": "string",
+            "description": "The visitor ID."
+          },
+          {
+            "name": "tz",
+            "type": "string",
+            "description": "IANA timezone. Default Europe/London if RelativeDateString is applied."
+          },
+          {
+            "name": "date_from",
+            "type": "",
+            "description": "ISO 8601 string or RelativeDateString. For RelativeDateString see table below for possible values."
+          },
+          {
+            "name": "date_to",
+            "type": "",
+            "description": "ISO 8601 string or [RelativeDateString](#/components/schemas/RelativeDateString). For RelativeDateString see table below for possible values."
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "properties": [
+          {
+            "name": "total",
+            "type": "integer",
+            "description": "",
+            "properties": []
+          },
+          {
+            "name": "page",
+            "type": "object",
+            "description": "",
+            "properties": [
+              {
+                "name": "num",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "size",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              }
+            ]
+          },
+          {
+            "name": "sessions",
+            "type": "array",
+            "description": "",
+            "properties": [
+              {
+                "name": "id",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "website_id",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "session_url",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "creation_timestamp",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "duration",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "end_timestamp",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "active_time",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "end_url",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "expiration_timestamp",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "last_event_timestamp",
+                "type": "integer",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "product",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "device",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "tags",
+                "type": "array",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "last_seen_page_view_id",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "seen",
+                "type": "boolean",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "referrer",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "start_url",
+                "type": "string",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "visitor_first_session",
+                "type": "boolean",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "engagment_score",
+                "type": "number",
+                "description": "",
+                "properties": []
+              },
+              {
+                "name": "visitor",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "ip",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "geolocation",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "country_code",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "city",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "region",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "email_hash",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "params",
+                    "type": "array",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "name",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "value",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "last_session_timestamp",
+                    "type": "integer",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "first_session_timestamp",
+                    "type": "integer",
+                    "description": "",
+                    "properties": []
+                  }
+                ]
+              },
+              {
+                "name": "resolution",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "height",
+                    "type": "integer",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "width",
+                    "type": "integer",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "resolution",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  }
+                ]
+              },
+              {
+                "name": "os",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "version",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  }
+                ]
+              },
+              {
+                "name": "browser",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "description",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "version",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  }
+                ]
+              },
+              {
+                "name": "utm",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "source",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "medium",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "campaign",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "term",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "content",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  }
+                ]
+              },
+              {
+                "name": "page_views_statistics",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "count",
+                    "type": "integer",
+                    "description": "",
+                    "properties": []
+                  }
+                ]
+              },
+              {
+                "name": "events_statistics",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "clicks",
+                    "type": "integer",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "error_clicks",
+                    "type": "integer",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "rage_clicks",
+                    "type": "integer",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "error_logs",
+                    "type": "integer",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "net_errors",
+                    "type": "integer",
+                    "description": "",
+                    "properties": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

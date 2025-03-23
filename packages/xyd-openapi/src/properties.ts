@@ -17,6 +17,12 @@ export function schemaObjectToDefinitionProperties(v: OpenAPIV3.SchemaObject): D
             }, [] as DefinitionProperty[])
         }
 
+        if (objProp.type === "array") {
+            const items = objProp.items as OpenAPIV3.SchemaObject
+
+            merged = schemaObjectToDefinitionProperties(items)
+        }
+
         return {
             name: name,
             type: objProp.type || "",

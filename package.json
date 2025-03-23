@@ -7,6 +7,7 @@
   },
   "packageManager": "pnpm@9.10.0",
   "scripts": {
+    "dev": "pnpm lerna watch -- lerna run build",
     "build": "./build.sh",
     "watch": "pnpm build && pnpm run --filter=\"./packages/**/*\" --parallel build --watch",
     "build:gql": "pnpm run --filter=\"./packages/xyd-gql\" build",
@@ -23,7 +24,9 @@
     "lint-staged": "^15.2.10",
     "rimraf": "^3.0.2",
     "typescript": "^5.6.2",
-    "vitest": "^2.1.1"
+    "vitest": "^2.1.1",
+    "lerna": "^8.1.9",
+    "nx": "^20.3.2"
   },
   "pre-commit": "lint-staged",
   "lint-staged": {

@@ -96,27 +96,6 @@ export function filterNavigationByLevels(
     }
 }
 
-async function getFrontmatter(filePath: string, chunkSize = 1024 * 5) { // 5 KB chunk
-    return new Promise((resolve, reject) => {
-        open(filePath, 'r', (err, fd) => {
-            if (err) return reject(err);
-
-            const buffer = Buffer.alloc(chunkSize);
-            fs2.read(fd, buffer, 0, chunkSize, 0, (err, bytesRead) => {
-                if (err) return reject(err);
-
-                const uint8Array = new Uint8Array(buffer.buffer, buffer.byteOffset, bytesRead);
-                const content = new TextDecoder('utf-8').decode(uint8Array);
-                const {data: frontmatter} = matter(content); // extract frontmatter
-                resolve(frontmatter);
-
-                fs2.close(fd, () => {
-                });
-            });
-        });
-    });
-}
-
 function mdxExport(code: string) {
     const scope = {
         Fragment: React.Fragment,
@@ -128,7 +107,7 @@ function mdxExport(code: string) {
     return fn(scope)
 }
 
-async function getFrontmatterV2(filePath: string): Promise<FrontMatter> {
+async function getFrontmatter(filePath: string): Promise<FrontMatter> {
     const body = await fs.readFile(filePath, "utf-8");
 
     const vfile = new VFile({
@@ -157,9 +136,14 @@ async function getFrontmatterV2(filePath: string): Promise<FrontMatter> {
 
     const matter: FrontMatter = frontmatter
 
+    let title = ""
+    if (typeof matter.title === "string" ) {
+        title = matter.title
+    }
     if (reactFrontmatter) {
         if (typeof reactFrontmatter?.title === "function") {
             matter.title = {
+                title,
                 code: reactFrontmatter.title.toString()
             }
         }
@@ -182,7 +166,7 @@ async function job(page: string, frontmatters: PageFrontMatter) {
         }
     }
 
-    const matter = await getFrontmatterV2(filePath)
+    const matter = await getFrontmatter(filePath)
 
     frontmatters[page] = matter
 }

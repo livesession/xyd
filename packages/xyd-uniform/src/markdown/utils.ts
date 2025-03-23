@@ -1,3 +1,4 @@
+import { fromMarkdown } from "mdast-util-from-markdown";
 import {u} from "unist-builder";
 
 import {
@@ -213,7 +214,8 @@ export function properties(
     const uPropTitle = u('heading', {depth}, [u('text', propTitle)]);
     const uPropName = u('paragraph', {depth}, [u('text', `!name ${paramName}`)]);
     const uPropType = u('paragraph', {depth}, [u('text', `!type ${props.type}`)]);
-    const uPropDesc = u('paragraph', {depth}, [u('text', props.description || '')]);
+    const markdownAst = fromMarkdown(props.description || '');
+    const uPropDesc = u("paragraph", { depth }, markdownAst.children);
     const uContext = []
 
     if (props.context && Object.keys(props.context)) {

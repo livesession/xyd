@@ -28,6 +28,9 @@ function $Loading() {
 
 // TODO: fix any
 Code.LineNumber = function LineNumber(props: any) {
+    if (!props.children || !props.children.length) {
+        return null
+    }
     return (
         <>
         <span

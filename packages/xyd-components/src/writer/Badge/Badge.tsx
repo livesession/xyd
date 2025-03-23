@@ -6,7 +6,7 @@ export interface BadgeProps {
     children: React.ReactNode;
 
     size?: "sm"
-    kind?: "warning"
+    kind?: "warning" | "info"
 }
 
 export function Badge({
@@ -20,6 +20,8 @@ export function Badge({
         ${size === "sm" && $badge.host$$sm}
         
         ${kind === "warning" && $badge.host$$warning}
+        
+        ${kind === "info" && $badge.host$$info}
     `}>
         <span className={$badge.item}>
             {children}
