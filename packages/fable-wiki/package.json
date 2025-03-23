@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/fable-wiki",
-  "version": "0.1.0-xyd.5",
+  "version": "0.1.0-xyd.6",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

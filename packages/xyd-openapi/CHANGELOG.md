@@ -1,5 +1,13 @@
 # @xyd-js/openapi
 
+## 0.1.0-xyd.4
+
+### Patch Changes
+
+- use react-router 7.1.1
+- Updated dependencies
+  - @xyd-js/uniform@0.1.0-xyd.8
+
 ## 0.1.0-xyd.3
 
 ### Patch Changes

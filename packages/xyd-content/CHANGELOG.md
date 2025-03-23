@@ -1,5 +1,13 @@
 # @xyd-js/content
 
+## 0.1.0-xyd.7
+
+### Patch Changes
+
+- use react-router 7.1.1
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.6
+
 ## 0.1.0-xyd.6
 
 ### Patch Changes
