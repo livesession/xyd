@@ -28,3 +28,7 @@ changeset version
 changeset pre enter <RELEASE>
 ```
 
+```
+pnpm changeset publish --otp=<OTP_CODE>
+```
+
