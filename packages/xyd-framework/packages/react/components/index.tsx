@@ -41,6 +41,9 @@ function FwNav({kind}: { kind?: "middle" }) {
     >
         {
             settings?.structure?.header?.map((item, index) => {
+                if (item.sub) {
+                    return null
+                }
                 return <Nav.Item
                     key={index + (item.url || "") + item.name}
                     href={item?.url || ""}
@@ -77,7 +80,6 @@ function FwSubNav() {
             </SubNav.Item>
         })}
     </SubNav>
-
 }
 
 export interface FwSidebarGroupsProps {

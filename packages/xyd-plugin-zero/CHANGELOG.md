@@ -1,5 +1,35 @@
 # @xyd-js/plugin-zero
 
+## 0.1.0-xyd.16
+
+### Patch Changes
+
+- ui tweaks
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.11
+  - @xyd-js/components@0.1.0-xyd.6
+  - @xyd-js/content@0.1.0-xyd.9
+  - @xyd-js/core@0.1.0-xyd.8
+  - @xyd-js/framework@0.1.0-xyd.25
+  - @xyd-js/gql@0.1.0-xyd.8
+  - @xyd-js/uniform@0.1.0-xyd.10
+  - @xyd-js/openapi@0.1.0-xyd.6
+
+## 0.1.0-xyd.15
+
+### Patch Changes
+
+- ui tweaks, and some code refactor
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.10
+  - @xyd-js/components@0.1.0-xyd.5
+  - @xyd-js/content@0.1.0-xyd.8
+  - @xyd-js/core@0.1.0-xyd.7
+  - @xyd-js/framework@0.1.0-xyd.24
+  - @xyd-js/gql@0.1.0-xyd.7
+  - @xyd-js/uniform@0.1.0-xyd.9
+  - @xyd-js/openapi@0.1.0-xyd.5
+
 ## 0.1.0-xyd.14
 
 ### Patch Changes

@@ -150,7 +150,7 @@ export default defineConfig([
             execSync(`cp -r ../xyd-plugin-zero/src/pages/* ${pluginPagesDir}`);
 
             // TODO: DEV AND PROD MOD
-            if (process.env.XYD_DEV_MODE) {
+            if (process.env.XYD_DEV_MODE && !process.env.XYD_DEV_CLI_NOINSTALL) {
                 execSync(`cd ${cliDir} && pnpm i && pnpm link --global`);
             } else {
                 // for prod npm?

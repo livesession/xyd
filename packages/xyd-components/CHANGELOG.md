@@ -1,5 +1,17 @@
 # @xyd-js/components
 
+## 0.1.0-xyd.6
+
+### Patch Changes
+
+- ui tweaks
+
+## 0.1.0-xyd.5
+
+### Patch Changes
+
+- ui tweaks, and some code refactor
+
 ## 0.1.0-xyd.4
 
 ### Patch Changes

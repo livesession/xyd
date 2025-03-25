@@ -1,10 +1,5 @@
 1.
-```
-export const page = ({children}) => <div>{children}</div>
-```
+better cli packages architecture
 
 2.
-user theme override
-
-3.
-better cli packages architecture
+node 20.19+ support

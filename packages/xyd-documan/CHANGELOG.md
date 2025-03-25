@@ -1,5 +1,29 @@
 # @xyd-js/documan
 
+## 0.1.0-xyd.23
+
+### Patch Changes
+
+- ui tweaks
+- Updated dependencies
+  - @xyd-js/content@0.1.0-xyd.9
+  - @xyd-js/plugin-zero@0.1.0-xyd.16
+
+## 0.1.0-xyd.22
+
+### Patch Changes
+
+- ui tweaks, and some code refactor
+- Updated dependencies
+  - @xyd-js/content@0.1.0-xyd.8
+  - @xyd-js/plugin-zero@0.1.0-xyd.15
+
+## 0.1.0-xyd.21
+
+### Patch Changes
+
+- update @xyd-js/react-router-dev
+
 ## 0.1.0-xyd.20
 
 ### Patch Changes

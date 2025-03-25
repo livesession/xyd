@@ -53,7 +53,6 @@ const components = {
         Title: ({children}) => <div style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
             width: "100%",
             gap: "10px",
         }}>

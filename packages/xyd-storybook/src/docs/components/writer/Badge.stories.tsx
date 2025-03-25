@@ -30,3 +30,15 @@ export const Warning = () => {
         </Badge>
     </div>
 }
+
+export const Info = () => {
+    return <div style={{
+        padding: "100px",
+        paddingTop: "0px",
+        margin: "0 auto",
+    }}>
+        <Badge kind="info">
+            Warning
+        </Badge>
+    </div>
+}

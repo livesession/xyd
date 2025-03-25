@@ -108,6 +108,7 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
                     {
                         type: "ExportNamedDeclaration",
                         specifiers: [],
+                        attributes: [],
                         source: null,
                         declaration: {
                             type: "VariableDeclaration",

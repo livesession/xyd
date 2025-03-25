@@ -4,7 +4,6 @@
   "npmClient": "pnpm",
   "packages": [
     "packages/*",
-    "!packages/xyd-storybook",
-    "!packages/xyd-cli"
+    "!packages/xyd-storybook"
   ]
 }

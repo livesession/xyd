@@ -4,6 +4,7 @@ import {MemoryRouter} from "react-router";
 
 import {
     Layout,
+    LayoutPrimary
 } from '@xyd-js/components/layouts';
 
 import getContentComponents from "@xyd-js/components/content";
@@ -31,7 +32,7 @@ export default {
 } as Meta;
 
 export const Default = () => {
-    return <Layout
+    return <LayoutPrimary
         header={<DemoNavbar/>}
         subheader
         aside={<DemoSidebar/>}
