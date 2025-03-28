@@ -64,13 +64,15 @@ Code.Bg = function CodeLine(props: any) {
 Code.Pre = function CodePre(props: {
                                 codeblock: HighlightedCode,
                                 size?: "full",
-                                handlers: AnnotationHandler[]
+                                handlers: AnnotationHandler[],
+                                className?: string,
                             }
 ) {
     return <Pre
         className={`
             ${$code.host}
             ${props?.size === "full" && $code.host$$full}
+            ${props.className}
         `}
         style={props.codeblock?.style || props.codeblock?.style}
         code={props.codeblock}

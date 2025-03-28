@@ -1,0 +1,53 @@
+# Agents
+
+## ToolsToFinalOutputFunction  `module-attribute`
+
+:::code-group
+```py
+ToolsToFinalOutputFunction: TypeAlias = Callable[
+    [RunContextWrapper[TContext], list[FunctionToolResult]],
+    MaybeAwaitable[ToolsToFinalOutputResult],
+]
+```
+:::
+
+A function that takes a run context and a list of tool results, and returns a `ToolToFinalOutputResult`.
+
+## ToolsToFinalOutputResult `dataclass`
+
+:::code-group
+```py
+ToolsToFinalOutputResult: TypeAlias = Union[
+    FinalOutput,
+    Tuple[FinalOutput, list[FunctionToolResult]],
+]
+```
+:::
+
+### is_final_output `instance-attribute`
+
+
+<Details
+    kind="tertiary"
+    title={<>
+        Source code in
+        <code>src/agents/agent.py</code>
+    </>
+    }
+    icon={<IconQuote/>}
+>
+    ```py
+    @dataclass
+    class ToolsToFinalOutputResult:
+    is_final_output: bool
+    """Whether this is the final output. If False, the LLM will run again and receive the tool call
+    output.
+    """
+
+    final_output: Any | None = None
+    """The final output. Can be None if `is_final_output` is False, otherwise must match the
+    `output_type` of the agent.
+    """
+    ```
+</Details>
+

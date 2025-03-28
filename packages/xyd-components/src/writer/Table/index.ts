@@ -8,3 +8,7 @@ export type {
     TableTrProps,
     TableTdProps
 } from "./Table"
+
+export {
+    TableV2
+} from "./TableV2"

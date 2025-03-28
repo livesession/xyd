@@ -5,20 +5,14 @@ import {Reference} from '@xyd-js/uniform';
 import {Atlas} from "@xyd-js/atlas";
 
 import {uniformToReferences} from "./uniform-to-references";
-import {MDXReference} from "../../utils/mdx.ts";
-
-const HelloWorld = () => {
-    return <h1>Hello, World!</h1>;
-};
+import {MDXReference} from "../../utils/mdx";
 
 export default {
     title: 'Atlas/Atlas',
-    component: HelloWorld,
+    component: Atlas,
 } as Meta;
 
-// const Template = (args) => <Atlas/>;
-
-const Template = (args) => {
+const Template = (args: any) => {
     const [references, setReferences] = useState<MDXReference<Reference[]> | []>([])
 
     async function load() {
@@ -45,3 +39,4 @@ const Template = (args) => {
 
 export const Default = Template.bind({});
 Default.args = {};
+

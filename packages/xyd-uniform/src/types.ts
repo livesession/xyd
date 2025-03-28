@@ -116,7 +116,6 @@ export interface Definition {
 
     properties: DefinitionProperty[];
 
-
     type?: string;
 
     id?: string;

@@ -22,6 +22,7 @@ export function mdCodeGroup() {
             }
 
             // Add metadata to the node
+            // TODO: is `code-group` ok name?
             node.data = {
                 hName: 'DirectiveCodeSample',
                 hProperties: {

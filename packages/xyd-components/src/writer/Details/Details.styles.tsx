@@ -38,6 +38,9 @@ export const $details = {
         cursor: pointer;
         padding: 20px 24px;
     `,
+    summary$$tertiary: css`
+        padding: 10px 24px;
+    `,
     summaryDeep: css`
         display: flex;
         align-items: center;
@@ -52,8 +55,18 @@ export const $details = {
         margin-left: 8px;
         font-weight: 700;
     `,
+    summaryDeep$text$$tertiary: css`
+        text-transform: none;
+        
+        code {
+            background: white;
+        }
+    `,
     label: css`
         flex: 1 1 auto;
+    `,
+    label$$tertriary: css`
+        padding: 10px;
     `,
     icon: css`
         flex: 0 0 auto;
@@ -72,5 +85,9 @@ export const $details = {
         code {
             background: white;
         }
+    `,
+    content$$tertiary: css`
+        background: white;
+        padding-top: 20px;
     `
 }

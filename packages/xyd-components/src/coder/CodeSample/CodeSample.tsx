@@ -17,6 +17,7 @@ export interface CodeSampleProps {
     description: string;
     codeblocks: CodeThemeBlockProps[];
     size?: "full"
+    kind?: "secondary"
     theme?: Theme
 }
 
@@ -28,6 +29,17 @@ export function CodeSample(props: CodeSampleProps) {
 
 function $ThemedCodeSample(props: CodeSampleProps) {
     const {highlighted} = useCodeTheme()
+
+    if (props.kind === "secondary") {
+        return <Code.Pre
+            codeblock={highlighted[0]}
+            handlers={[
+                annotations.mark,
+                annotations.bg,
+                annotations.lineNumbers
+            ]}
+        />
+    }
 
     return <$CodeSampleTabs
         description={props.description}

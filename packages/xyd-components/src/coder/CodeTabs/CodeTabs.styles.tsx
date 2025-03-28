@@ -10,6 +10,9 @@ export const $sample = {
         border: 1px solid rgb(236, 236, 241);
         border-radius: 16px;
     `,
+    pre$$single: css`
+        border: none !important; // TODO: bad, find another way - CodeSample another kind?
+    `
 }
 
 export const $languages = {
@@ -25,6 +28,9 @@ export const $languages = {
         border-bottom: 0px;
 
         min-width: 0;
+    `,
+    host$$single: css`
+      height: 0;
     `,
     list: css`
         display: flex;
@@ -84,6 +90,11 @@ export const $languages = {
         padding-left: 8px;
         padding-right: 8px;
         align-items: center;
+    `,
+    copy$$single: css`
+        top: 17px;
+        position: relative;
+        right: 5px;
     `
 }
 

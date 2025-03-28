@@ -23,12 +23,18 @@ const external = [
 
 export default [
     {
-        input: 'index.ts',
-        output: {
-            dir: 'dist',
-            format: 'esm',
-            sourcemap: true,
+        input: {
+            index: 'index.ts',
+            ["atlas-index"]: 'packages/atlas-index/index.ts'
         },
+        output: [
+            {
+                dir: 'dist',
+                format: 'esm',
+                sourcemap: true,
+                entryFileNames: '[name].js'
+            }
+        ],
         plugins: [
             // alias({ TODO: finish?
             //     entries: [
@@ -68,6 +74,15 @@ export default [
         input: 'index.ts',
         output: {
             dir: 'dist',
+            format: 'es',
+        },
+        plugins: [dts()],
+        external
+    },
+    {
+        input: 'packages/atlas-index/index.ts',
+        output: {
+            file: 'dist/atlas-index.d.ts',
             format: 'es',
         },
         plugins: [dts()],

@@ -28,7 +28,8 @@ import {
     IconStorybook,
     IconReactRouter,
     IconNextJS,
-    IconAppTemplate
+    IconAppTemplate,
+    IconQuote
 } from '../writer'
 import {CodeSample} from "../coder";
 
@@ -132,6 +133,23 @@ export function directiveContent() {
                 {...props}
                 codeblocks={JSON.parse(props.codeblocks)}
             />
+        },
+        DirectiveComponent: (props) => {
+            switch (props.directiveName) {
+                case "details": {
+                    const componentProps = JSON.parse(props.directiveProps || "{}")
+                    const codeProps = props.directiveProps ? JSON.parse(props.codeProps) : ""
+
+                    return <Details {...componentProps}>
+                        {codeProps && <CodeSample
+                            {...codeProps}
+                        />}
+                    </Details>
+                }
+                default: {
+                    return null
+                }
+            }
         }
     }
 }
@@ -161,6 +179,7 @@ export function iconContent() {
         IconReactRouter,
         IconNextJS,
         IconAppTemplate,
+        IconQuote,
     }
 }
 

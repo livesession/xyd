@@ -1,0 +1,251 @@
+[
+  {
+    "type": "mdxJsxAttribute",
+    "name": "kind",
+    "value": {
+      "type": "mdxJsxAttributeValueExpression",
+      "value": "\"tertiary\"",
+      "data": {
+        "estree": {
+          "type": "Program",
+          "start": 16,
+          "end": 26,
+          "body": [
+            {
+              "type": "ExpressionStatement",
+              "expression": {
+                "type": "Literal",
+                "start": 16,
+                "end": 26,
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 16,
+                    "offset": 16
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 26,
+                    "offset": 26
+                  }
+                },
+                "value": "tertiary",
+                "raw": "\"tertiary\"",
+                "range": [
+                  16,
+                  26
+                ]
+              },
+              "start": 16,
+              "end": 26,
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 16,
+                  "offset": 16
+                },
+                "end": {
+                  "line": 1,
+                  "column": 26,
+                  "offset": 26
+                }
+              },
+              "range": [
+                16,
+                26
+              ]
+            }
+          ],
+          "sourceType": "module",
+          "comments": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 16,
+              "offset": 16
+            },
+            "end": {
+              "line": 1,
+              "column": 26,
+              "offset": 26
+            }
+          },
+          "range": [
+            16,
+            26
+          ]
+        }
+      }
+    },
+    "position": {
+      "start": {
+        "line": 1,
+        "column": 11,
+        "offset": 10
+      },
+      "end": {
+        "line": 1,
+        "column": 28,
+        "offset": 27
+      }
+    }
+  },
+  {
+    "type": "mdxJsxAttribute",
+    "name": "title",
+    "value": {
+      "type": "mdxJsxAttributeValueExpression",
+      "value": "<>Source code in `src/schema.ts`</>",
+      "data": {
+        "estree": {
+          "type": "Program",
+          "start": 35,
+          "end": 70,
+          "body": [
+            {
+              "type": "ExpressionStatement",
+              "expression": {
+                "type": "JSXFragment",
+                "start": 35,
+                "end": 70,
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 35,
+                    "offset": 35
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 70,
+                    "offset": 70
+                  }
+                },
+                "openingFragment": {
+                  "type": "JSXOpeningFragment",
+                  "start": 35,
+                  "end": 37,
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 35,
+                      "offset": 35
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 37,
+                      "offset": 37
+                    }
+                  },
+                  "attributes": [],
+                  "selfClosing": false,
+                  "range": [
+                    35,
+                    37
+                  ]
+                },
+                "closingFragment": {
+                  "type": "JSXClosingFragment",
+                  "start": 67,
+                  "end": 70,
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 67,
+                      "offset": 67
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 70,
+                      "offset": 70
+                    }
+                  },
+                  "range": [
+                    67,
+                    70
+                  ]
+                },
+                "children": [
+                  {
+                    "type": "JSXText",
+                    "start": 37,
+                    "end": 67,
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 37,
+                        "offset": 37
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 67,
+                        "offset": 67
+                      }
+                    },
+                    "value": "Source code in `src/schema.ts`",
+                    "raw": "Source code in `src/schema.ts`",
+                    "range": [
+                      37,
+                      67
+                    ]
+                  }
+                ],
+                "range": [
+                  35,
+                  70
+                ]
+              },
+              "start": 35,
+              "end": 70,
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 35,
+                  "offset": 35
+                },
+                "end": {
+                  "line": 1,
+                  "column": 70,
+                  "offset": 70
+                }
+              },
+              "range": [
+                35,
+                70
+              ]
+            }
+          ],
+          "sourceType": "module",
+          "comments": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 35,
+              "offset": 35
+            },
+            "end": {
+              "line": 1,
+              "column": 70,
+              "offset": 70
+            }
+          },
+          "range": [
+            35,
+            70
+          ]
+        }
+      }
+    },
+    "position": {
+      "start": {
+        "line": 1,
+        "column": 29,
+        "offset": 28
+      },
+      "end": {
+        "line": 1,
+        "column": 72,
+        "offset": 71
+      }
+    }
+  }
+]

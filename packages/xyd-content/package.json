@@ -7,7 +7,8 @@
   "exports": {
     "./package.json": "./package.json",
     ".": "./dist/index.js",
-    "./vite": "./dist/vite.js"
+    "./vite": "./dist/vite.js",
+    "./md": "./dist/md.js"
   },
   "scripts": {
     "clean": "rimraf build",

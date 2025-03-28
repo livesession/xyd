@@ -8,6 +8,7 @@ import {remarkInjectCodeMeta} from "./md-code";
 import {extractThemeSettings} from "./md-themeSettings";
 import {extractPage} from "./md-page";
 import {mdCodeGroup} from "./md-codegroup";
+import {mdComponentDirective} from "./mdComponentDirective";
 
 export function defaultPlugins(toc: RemarkMdxTocOptions) {
     return [
@@ -19,6 +20,7 @@ export function defaultPlugins(toc: RemarkMdxTocOptions) {
         remarkInjectCodeMeta,
         extractThemeSettings,
         extractPage,
-        mdCodeGroup
+        mdCodeGroup,
+        mdComponentDirective
     ]
 }
