@@ -79,12 +79,24 @@ export function heading(
 
 
         for (const [key, value] of Object.entries(refContext)) {
-            uContext.push(u(
-                    'heading',
-                    {depth: uContext[0].depth + 1},
-                    [u('text', `!${key} ${value}`)]
-                )
-            )
+            if (typeof value === "object") {
+                // TODO: support ```<lang> ??
+                if (value.code) {
+                    uContext.push(
+                        u('heading', {depth: uContext[0].depth + 1}, [u('text', `!${key}`)])
+                    );
+
+                    uContext.push(
+                        u('code', {lang: value.lang}, value.code)
+                    );
+
+                    continue;
+                }
+            }
+
+            uContext.push(
+                u('heading', {depth: uContext[0].depth + 1}, [u('text', `!${key} ${value.toString()}`)])
+            );
         }
     }
 

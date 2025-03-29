@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/storybook",
-  "version": "0.0.1-xyd.2",
+  "version": "0.0.1-xyd.6",
   "type": "module",
   "scripts": {
     "dev": "storybook dev -p 6006",
@@ -10,13 +10,17 @@
   "dependencies": {
     "@mdx-js/react": "^3.0.1",
     "@mdx-js/rollup": "^3.0.1",
+    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/content": "workspace:*",
+    "@xyd-js/fable-wiki": "workspace:*",
+    "@xyd-js/ui": "workspace:*",
+    "acorn": "^8.14.1",
+    "acorn-jsx": "^5.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "remark-gfm": "^4.0.0",
-    "@xyd-js/components": "workspace:*",
-    "@xyd-js/ui": "workspace:*",
-    "@xyd-js/atlas": "workspace:*",
-    "@xyd-js/fable-wiki": "workspace:*"
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.9.0",

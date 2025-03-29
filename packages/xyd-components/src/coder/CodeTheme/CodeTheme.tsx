@@ -4,6 +4,7 @@ import { highlight } from "codehike/code";
 import type { HighlightedCode } from "codehike/code";
 
 import defaultTheme from "../themes/cosmo-light"
+import { Loader } from "../../ui";
 
 export interface CodeThemeProps {
   codeblocks: CodeThemeBlockProps[];
@@ -57,7 +58,7 @@ export function CodeThemeCSR(props: CodeThemeProps) {
   }, [props.codeblocks, props.theme]);
 
   if (!highlighted) {
-    return <div>loading${`...`}</div>;
+    return <Loader />;
   }
 
   return (

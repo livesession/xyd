@@ -1,0 +1,57 @@
+:root {
+  /* Ref tokens - Base values */
+  --XydAtlas-Ref-Palette-Primary-60: #7051d4;
+  --XydAtlas-Ref-Palette-Primary-70: #6045b9;
+  --XydAtlas-Ref-Palette-Primary-80: #4f399e;
+
+  --XydAtlas-Ref-Palette-Neutral-10: #F8F9FA;
+  --XydAtlas-Ref-Palette-Neutral-20: #F1F3F5;
+  --XydAtlas-Ref-Palette-Neutral-30: #E9ECEF;
+  --XydAtlas-Ref-Palette-Neutral-40: #DEE2E6;
+  --XydAtlas-Ref-Palette-Neutral-70: #6C757D;
+  --XydAtlas-Ref-Palette-Neutral-80: #495057;
+  --XydAtlas-Ref-Palette-Neutral-100: #212529;
+
+  /* System tokens - Semantic values */
+  --XydAtlas-Sys-Color-Primary: var(--XydAtlas-Ref-Palette-Primary-60);
+  --XydAtlas-Sys-Color-Primary--hover: var(--XydAtlas-Ref-Palette-Primary-70);
+  --XydAtlas-Sys-Color-Primary--active: var(--XydAtlas-Ref-Palette-Primary-80);
+  
+  --XydAtlas-Sys-Color-Surface: var(--XydAtlas-Ref-Palette-Neutral-10);
+  --XydAtlas-Sys-Color-Surface--hover: var(--XydAtlas-Ref-Palette-Neutral-20);
+  --XydAtlas-Sys-Color-Surface--active: var(--XydAtlas-Ref-Palette-Neutral-30);
+  
+  --XydAtlas-Sys-Color-Text-Primary: var(--XydAtlas-Ref-Palette-Neutral-100);
+  --XydAtlas-Sys-Color-Text-Secondary: var(--XydAtlas-Ref-Palette-Neutral-80);
+  --XydAtlas-Sys-Color-Text-Tertiary: var(--XydAtlas-Ref-Palette-Neutral-70);
+  
+  --XydAtlas-Sys-Color-Border: var(--XydAtlas-Ref-Palette-Neutral-30);
+  --XydAtlas-Sys-Color-Border--hover: var(--XydAtlas-Ref-Palette-Neutral-40);
+  --XydAtlas-Sys-Color-Border--active: var(--XydAtlas-Ref-Palette-Primary-60);
+
+  /* Component tokens - Specific component values */
+  /* ApiRef Properties */
+  --XydAtlas-Component-ApiRef-Properties__color-description: var(--XydAtlas-Sys-Color-Text-Secondary);
+  --XydAtlas-Component-ApiRef-Properties__color-propName: var(--XydAtlas-Sys-Color-Text-Primary);
+  --XydAtlas-Component-ApiRef-Properties__color-propType: var(--XydAtlas-Sys-Color-Text-Tertiary);
+  --XydAtlas-Component-ApiRef-Properties__color--active: var(--XydAtlas-Sys-Color-Primary);
+  --XydAtlas-Component-ApiRef-Properties__color-border: var(--XydAtlas-Sys-Color-Border);
+
+  /* ApiRef Item */
+  --XydAtlas-Component-ApiRef-Item__color-border: var(--XydAtlas-Sys-Color-Border);
+  --XydAtlas-Component-ApiRef-Item__color-navbar: var(--XydAtlas-Sys-Color-Text-Secondary);
+
+  /* Code Sample */
+  --XydAtlas-Component-Code-Sample__color-border: var(--XydAtlas-Sys-Color-Border);
+  --XydAtlas-Component-Code-Sample__color: var(--XydAtlas-Sys-Color-Text-Secondary);
+  --XydAtlas-Component-Code-Sample__color--active: var(--XydAtlas-Sys-Color-Primary);
+  --XydAtlas-Component-Code-Sample__color-background: var(--XydAtlas-Sys-Color-Surface--hover);
+  --XydAtlas-Component-Code-Sample__color-markBorder--active: var(--XydAtlas-Sys-Color-Primary);
+  --XydAtlas-Component-Code-Sample__color-markBackground--active: var(--XydAtlas-Sys-Color-Surface--hover);
+
+  /* Code Sample Buttons */
+  --XydAtlas-Component-Code-SampleButtons__color-containerBackground: var(--XydAtlas-Sys-Color-Surface);
+  --XydAtlas-Component-Code-SampleButtons__color-background--active: var(--XydAtlas-Sys-Color-Surface--active);
+  --XydAtlas-Component-Code-SampleButtons__color: var(--XydAtlas-Sys-Color-Text-Secondary);
+  --XydAtlas-Component-Code-SampleButtons__color--active: var(--XydAtlas-Sys-Color-Text-Primary);
+} 

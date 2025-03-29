@@ -53,7 +53,6 @@ const components = {
         Title: ({children}) => <div style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
             width: "100%",
             gap: "10px",
         }}>
@@ -89,7 +88,6 @@ function FwSidebarItem(props: FwSidebarItemProps) {
         const code = props.title.code
 
         Title = () => mdxExport(
-            // TODO: in the future better mechanism + support props + better components (provider?) - similar to codehik
             code.replace("() => ", ""),
             components
         )
@@ -97,13 +95,36 @@ function FwSidebarItem(props: FwSidebarItemProps) {
         Title = () => props.title
     }
 
+    const handleClick = () => {
+        // Only allow activation if item has an href
+        if (props.href) {
+            setActive()
+        } else if (props.items?.length) {
+            // If it's just a subtree without href, we still want to toggle it
+            setActive()
+        }
+    }
+
+    // Determine if this is a parent of the active item with href
+    const hasActiveChild = props.items?.some(item => {
+        const [itemActive] = active(item)
+        return (itemActive && item.href) || item.items?.some(subItem => {
+            const [subItemActive] = active(subItem)
+            return subItemActive && subItem.href
+        })
+    })
+    
+    // An item should only be considered active if it's the final target (has href)
+    const isActiveItem = !!(isActive && props.href)
+    // Only mark as parent active if it's a parent of an active item with href
+    const isParentActive = hasActiveChild
+
     return <UISidebar.Item
         button={!!props.items?.length}
         href={props.href}
-        active={isActive}
-        onClick={() => {
-            setActive()
-        }}
+        active={isActiveItem}
+        isParentActive={isParentActive}
+        onClick={handleClick}
     >
         <Title/>
 

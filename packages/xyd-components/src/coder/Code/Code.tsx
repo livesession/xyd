@@ -5,6 +5,7 @@ import {Theme} from "@code-hike/lighter";
 
 import {CodeTheme, type CodeThemeBlockProps} from "../CodeTheme";
 import {$lineNumber, $mark, $code} from "./Code.styles.tsx";
+import {CodeLoader} from "./CodeLoader.tsx";
 
 export interface CodeProps {
     codeblocks: CodeThemeBlockProps[];
@@ -13,17 +14,11 @@ export interface CodeProps {
 }
 
 export function Code(props: CodeProps) {
-    return <Suspense fallback={<$Loading/>}>
+    return <Suspense fallback={<CodeLoader/>}>
         <CodeTheme codeblocks={props.codeblocks} theme={props.theme}>
             {props.children}
         </CodeTheme>
     </Suspense>
-}
-
-function $Loading() {
-    return <>
-        loading...
-    </>
 }
 
 // TODO: fix any
@@ -64,13 +59,15 @@ Code.Bg = function CodeLine(props: any) {
 Code.Pre = function CodePre(props: {
                                 codeblock: HighlightedCode,
                                 size?: "full",
-                                handlers: AnnotationHandler[]
+                                handlers: AnnotationHandler[],
+                                className?: string,
                             }
 ) {
     return <Pre
         className={`
             ${$code.host}
             ${props?.size === "full" && $code.host$$full}
+            ${props.className}
         `}
         style={props.codeblock?.style || props.codeblock?.style}
         code={props.codeblock}

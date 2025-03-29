@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/cli",
-  "version": "0.1.0-xyd.22",
+  "version": "0.1.0-xyd.30",
   "keywords": [],
   "author": "",
   "description": "",
@@ -18,7 +18,7 @@
     "postinstall": "node postinstall.js"
   },
   "dependencies": {
-    "@xyd-js/react-router-dev": "7.1.1-xyd.3",
+    "@xyd-js/react-router-dev": "7.1.1-xyd.4",
     "arg": "^5.0.2",
     "colors": "^1.4.0",
     "semver": "^7.6.3",

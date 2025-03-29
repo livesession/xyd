@@ -20,6 +20,8 @@ export interface CodeTabsProps {
 
 export function withCodeTabs(PreComponent) {
     return function CodeTabs(props: CodeTabsProps) {
+        const isSingle = props.highlighted.length === 1 && !props.description
+
         return (
             <TabsPrimitive.Root
                 className={$sample.host}
@@ -36,6 +38,9 @@ export function withCodeTabs(PreComponent) {
                         <PreComponent
                             style={codeblock?.style || codeblock?.style}
                             codeblock={codeblock}
+                            className={`
+                                ${isSingle && $sample.pre$$single}
+                            `}
                         />
                     </TabsPrimitive.Content>
                 ))}
@@ -50,18 +55,29 @@ interface LanguageTabSwitcherProps {
 }
 
 function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
-    return <div className={$languages.host}>
+    const isSingle = props.highlighted.length === 1 && !props.description
+
+    return <div className={`
+        ${$languages.host}
+        ${isSingle && $languages.host$$single}
+    `}>
         <$Description description={props.description}/>
 
         <TabsPrimitive.List className={$languages.list}>
-            {props.highlighted?.map(({meta}, i) => (
-                <TabsPrimitive.Trigger value={meta!} key={i} className={$languages.button}>
+            {props.highlighted?.map(({meta}, i) => {
+                if (isSingle) {
+                    return null
+                }
+                return <TabsPrimitive.Trigger value={meta!} key={i} className={$languages.button}>
                     {meta}
                 </TabsPrimitive.Trigger>
-            ))}
+            })}
         </TabsPrimitive.List>
 
-        <div className={$languages.copy}>
+        <div className={`
+            ${$languages.copy}
+            ${isSingle && $languages.copy$$single}
+        `}>
             {props.highlighted?.map((codeblock, i) => (
                 <TabsPrimitive.Content value={codeblock.meta!} asChild key={i}>
                     <CodeCopy text={codeblock.value}/>

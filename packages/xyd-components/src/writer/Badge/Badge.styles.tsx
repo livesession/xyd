@@ -12,12 +12,12 @@ export const $badge = {
         text-transform: none;
     `,
     host$$warning: css`
-        color: #000;
-        background-color: #f8d047;
+        color: #434e4e;
+        background-color: #ffffe1
     `,
     host$$info: css`
         color: #fff;
-        background-color: #1FA6F2;
+        background-color: #1971a8;
     `,
     host$$sm: css`
         font-size: 12px;

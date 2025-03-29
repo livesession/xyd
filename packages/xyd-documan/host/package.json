@@ -10,7 +10,7 @@
   "scripts": {},
   "dependencies": {
     "@xyd-js/theme-poetry": "workspace:*",
-    "@xyd-js/react-router-dev": "7.1.1-xyd.3",
+    "@xyd-js/react-router-dev": "7.1.1-xyd.4",
     "@readme/oas-to-snippet": "^26.0.1",
     "@react-router/node": "7.1.1",
     "@react-router/serve": "7.1.1",
@@ -24,7 +24,8 @@
     "unist-builder": "^4.0.0",
     "oas": "^25.0.3",
     "openapi-sampler": "^1.5.1",
-    "json-schema-ref-parser": "^9.0.9"
+    "json-schema-ref-parser": "^9.0.9",
+    "typedoc": "^0.28.1"
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.0",

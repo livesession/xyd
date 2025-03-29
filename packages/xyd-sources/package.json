@@ -1,0 +1,22 @@
+{
+  "name": "@xyd-js/sources",
+  "version": "0.0.1-xyd.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf build",
+    "prebuild": "pnpm clean",
+    "build": "tsup"
+  },
+  "dependencies": {
+    "typedoc": "^0.28.1"
+  },
+  "peerDependencies": {
+    "@xyd-js/uniform": "workspace:*"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0"
+  }
+}

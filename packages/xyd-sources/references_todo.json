@@ -1,0 +1,220 @@
+[
+  {
+    "title": "Class ExampleClass",
+    "canonical": "class-ExampleClass",
+    "description": "---\ntitle: ExampleClass \ngroup: [Source Code, Classes]\n---\nReturns a personalized hello world message.\n",
+    "context": {
+      "fileName": "index.ts",
+      "fileFullPath": "src/index.ts",
+      "line": 32,
+      "col": 13,
+      "signatureText": {
+        "code": "export class ExampleClass {\n}",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export class ExampleClass {\n    /**\n     * Returns a hello world message.\n     */\n    helloWorld(): string {\n        return 'Hello world!';\n    }\n}",
+        "lang": "ts"
+      },
+      "package": "@xyd-sources-examples/package-a"
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Constructor",
+        "properties": []
+      },
+      {
+        "title": "Methods",
+        "properties": [
+          {
+            "name": "helloWorld",
+            "type": "string",
+            "description": "Returns a hello world message.\n"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Function gqlSchemaToReferences",
+    "canonical": "fn-gqlSchemaToReferences",
+    "description": "---\ntitle: gqlSchemaToReferences\nabc: 123\ngroup: [Sourc, Functions]\n---\nConverts a GraphQL schema file to references.\n",
+    "context": {
+      "fileName": "index.ts",
+      "fileFullPath": "src/index.ts",
+      "line": 48,
+      "col": 16,
+      "signatureText": {
+        "code": "export function gqlSchemaToReferences(schemaLocation: string): Promise<[\n]>;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function gqlSchemaToReferences(\n    schemaLocation: string\n): Promise<[]> {\n    if (schemaLocation.endsWith(\".graphql\")) {\n        return Promise.resolve([])\n    }\n\n    return Promise.resolve([])\n}",
+        "lang": "ts"
+      },
+      "package": "@xyd-sources-examples/package-a"
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "<Promise>",
+            "description": "references\n"
+          }
+        ]
+      },
+      {
+        "title": "Parameters",
+        "properties": [
+          {
+            "name": "schemaLocation",
+            "type": "string",
+            "description": "The location of the schema file.\n"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Function helloWorld",
+    "canonical": "fn-helloWorld",
+    "description": "---\ntitle: helloWorld\nabc: 123\ngroup: [Sourc, Functions]\n---\nReturns a hello world message.\n",
+    "context": {
+      "fileName": "index.ts",
+      "fileFullPath": "src/index.ts",
+      "line": 4,
+      "col": 16,
+      "signatureText": {
+        "code": "export function helloWorld(): string;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function helloWorld(): string {\n    return 'Hello world!';\n}",
+        "lang": "ts"
+      },
+      "package": "@xyd-sources-examples/package-a"
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "string",
+            "description": ""
+          }
+        ]
+      },
+      {
+        "title": "Parameters",
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Function helloWorldV2",
+    "canonical": "fn-helloWorldV2",
+    "description": "---\ntitle: helloWorldV2\nabc: 123\ngroup: [Sourc, Functions]\n---\nReturns a personalized hello world message.\n",
+    "context": {
+      "fileName": "index.ts",
+      "fileFullPath": "src/index.ts",
+      "line": 15,
+      "col": 16,
+      "signatureText": {
+        "code": "export function helloWorldV2(name: string, enthusiastic: boolean = false): string;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function helloWorldV2(name: string, enthusiastic: boolean = false): string {\n    return enthusiastic ? `Hello, ${name}!` : `Hello, ${name}`;\n}",
+        "lang": "ts"
+      },
+      "package": "@xyd-sources-examples/package-a"
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "string",
+            "description": "A greeting message string.\n"
+          }
+        ]
+      },
+      {
+        "title": "Parameters",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "Name of the person to greet.\n"
+          },
+          {
+            "name": "enthusiastic",
+            "type": "boolean",
+            "description": "If true, adds an exclamation point to the greeting.\n"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Function helloWorldV3",
+    "canonical": "fn-helloWorldV3",
+    "description": "---\ntitle: helloWorldV3\nabc: 123\ngroup: [Sourc, Functions]\n---\nReturns a personalized hello world message.\n",
+    "context": {
+      "fileName": "index.ts",
+      "fileFullPath": "src/index.ts",
+      "line": 25,
+      "col": 16,
+      "signatureText": {
+        "code": "export function helloWorldV3<T>(name: T): string;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function helloWorldV3<T>(name: T): string {\n    return `Hello, ${name}!`\n}",
+        "lang": "ts"
+      },
+      "package": "@xyd-sources-examples/package-a"
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "string",
+            "description": "A greeting message string.\n"
+          }
+        ]
+      },
+      {
+        "title": "Parameters",
+        "properties": [
+          {
+            "name": "name",
+            "type": "<T>",
+            "description": "Name of the person to greet.\n"
+          }
+        ]
+      }
+    ]
+  }
+]

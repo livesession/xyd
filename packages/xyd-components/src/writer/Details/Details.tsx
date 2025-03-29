@@ -5,24 +5,34 @@ import {$details} from "./Details.styles";
 interface BaseDetailsProps {
     children: React.ReactNode;
     label: string;
+
+    icon?: React.SVGProps<SVGSVGElement>;
+}
+
+interface TertiaryDetailsProps extends BaseDetailsProps {
+    kind: "tertiary";
+    title: string | React.ReactNode;
 }
 
 interface SecondaryDetailsProps extends BaseDetailsProps {
     kind: "secondary";
-    title: string;
+    title: string | React.ReactNode;
 }
 
 interface PrimaryDetailsProps extends BaseDetailsProps {
     kind?: "primary";
 }
 
-export type DetailsProps = PrimaryDetailsProps | SecondaryDetailsProps;
+export type DetailsProps = PrimaryDetailsProps | SecondaryDetailsProps | TertiaryDetailsProps
 
 export function Details(props: DetailsProps) {
-    let title = "";
     const {children, label} = props;
 
-    if (props.kind === "secondary") {
+    let title
+
+    const isDeepKind = ["secondary", "tertiary"].includes(props.kind || "");
+
+    if (isDeepKind && "title" in props) {
         title = props.title;
     }
 
@@ -30,23 +40,29 @@ export function Details(props: DetailsProps) {
 
     return <details className={`
         ${$details.host} 
-        ${kind === "secondary" && $details.host$$secondary}
+        ${isDeepKind && $details.host$$secondary}
    `}>
         <summary className={`
         ${$details.summary} 
-        ${kind === "secondary" && $details.summary$$secondary}
+        ${isDeepKind && $details.summary$$secondary}
+        ${kind === "tertiary" ? $details.summary$$tertiary : ""}
    `}>
             {kind === "primary" && <>
-                <$Icon/>
+                    {props.icon ? props.icon : <$Icon/>}
                 <$Label>
                     {label}
                 </$Label>
             </>}
-            {kind === "secondary" && <>
+            {isDeepKind && <>
                 <div>
                     <div className={$details.summaryDeep}>
-                        <$IconDeep/>
-                        <div className={$details.summaryDeep$text}>
+                        <>
+                            {props.icon ? props.icon : <$IconDeep/>}
+                        </>
+                        <div className={`
+                            ${$details.summaryDeep$text}
+                            ${$details.summaryDeep$text$$tertiary}
+                        `}>
                             {title}
                         </div>
                     </div>
@@ -60,7 +76,8 @@ export function Details(props: DetailsProps) {
 
         <div className={`
             ${$details.content}
-            ${kind === "secondary" && $details.content$$secondary}
+            ${isDeepKind && $details.content$$secondary}
+            ${kind === "tertiary" && $details.content$$tertiary}
         `}>
             {children}
         </div>

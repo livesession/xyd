@@ -1,22 +1,26 @@
 import React from "react"
 
-import {helperContent} from "@xyd-js/components/content"
 import type {
     ITheme
 } from "@xyd-js/framework"
+import {helperContent} from "@xyd-js/components/content"
+import {
+    LayoutPrimary
+} from "@xyd-js/components/layouts";
 import {
     FwNav,
+    FwSubNav,
     FwToc,
     FwNavLinks,
-
     FwSidebarGroups,
-} from "@xyd-js/framework/react"
 
-import {Layout} from "./components/Layouts";
+    useMatchedSubNav
+} from "@xyd-js/framework/react"
 
 import "@xyd-js/ui/index.css";
 import "@xyd-js/components/index.css";
 import '@xyd-js/atlas/index.css';
+import "@xyd-js/atlas/tokens.css"
 
 import './index.css';
 import './override.css';
@@ -31,7 +35,7 @@ export interface ThemeSettings {
     }
     contentNav?: React.ReactNode
     layout?: {
-        kind?: "fullwidth" | "equal"
+        size?: "large"
     }
 }
 
@@ -39,9 +43,12 @@ export interface ThemeProps extends ITheme<ThemeSettings> {
 }
 
 export default function ThemePoetry(props: ThemeProps) {
-    return <Layout
-        header={<Navbar/>}
-        aside={<Sidebar themeSettings={props.themeSettings}/>}
+    const showSubheader = useMatchedSubNav() ? <FwSubNav/> : null
+
+    return <LayoutPrimary
+        subheader={showSubheader}
+        header={<$Navbar/>}
+        aside={<$Sidebar themeSettings={props.themeSettings}/>}
         content={<>
             {/*TODO: optional breadcrumbs*/}
             {/*{props.breadcrumbs ? <FwBreadcrumbs/> : undefined}*/}
@@ -57,19 +64,19 @@ export default function ThemePoetry(props: ThemeProps) {
                 ? null
                 : props.themeSettings?.contentNav ? props.themeSettings.contentNav : <FwToc/>
         }
-        kind={props.themeSettings?.layout?.kind || undefined}
+        layoutSize={props.themeSettings?.layout?.size || undefined}
     />
 }
 
 // TODO: finish search
-function Navbar() {
+function $Navbar() {
     return <>
         <FwNav kind="middle"/>
     </>
 }
 
 // TODO: onePathBehaviour does not work - fix that
-function Sidebar({themeSettings}: { themeSettings?: ThemeSettings }) {
+function $Sidebar({themeSettings}: { themeSettings?: ThemeSettings }) {
     return <FwSidebarGroups
         onePathBehaviour={themeSettings?.sidebar?.onePathBehaviour}
         clientSideRouting={themeSettings?.sidebar?.clientSideRouting}

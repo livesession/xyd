@@ -10,6 +10,7 @@ import {
     Heading,
     Hr,
     Table,
+    TableV2,
     Tabs,
     Steps,
 
@@ -28,7 +29,8 @@ import {
     IconStorybook,
     IconReactRouter,
     IconNextJS,
-    IconAppTemplate
+    IconAppTemplate,
+    IconQuote
 } from '../writer'
 import {CodeSample} from "../coder";
 
@@ -83,10 +85,15 @@ export function stdContent() {
             {props.children}
         </li>,
 
-        table: Table,
-        tr: Table.Tr,
-        th: Table.Th,
-        td: Table.Td,
+        table: TableV2,
+        tr: TableV2.Tr,
+        th: TableV2.Th,
+        td: TableV2.Td,
+        td: (props) => <TableV2.Td {...props} >
+            <TableV2.Cell>
+                {props.children}
+            </TableV2.Cell>
+        </TableV2.Td>,
 
         code: Code,
         pre: props => {
@@ -120,13 +127,14 @@ export function writerContent() {
         GuideCard,
         Steps,
         Tabs,
-        Table,
+        Table: TableV2,
         Badge,
     }
 }
 
 export function directiveContent() {
     return {
+        // TODO: deprecate?
         DirectiveCodeSample: (props) => {
             return <CodeSample
                 {...props}
@@ -161,6 +169,7 @@ export function iconContent() {
         IconReactRouter,
         IconNextJS,
         IconAppTemplate,
+        IconQuote,
     }
 }
 

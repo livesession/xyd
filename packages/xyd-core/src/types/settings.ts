@@ -276,7 +276,10 @@ export interface API {
     // A string or an array of strings of URL(s) or relative path(s) pointing to your GraphQL file.
     graphql?: APIFile
 
-    // TODO: better in the future?
+    // A string or an array of strings of URL(s) or relative path(s) pointing to your source code folder.
+    sources?: APIFile
+
+    // TODO: better in the future? -> move outside of API ?
     match?: {
         graphql?: string
         openapi?: string

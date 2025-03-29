@@ -17,13 +17,13 @@ export const $navbar = {
 
         padding: 8px;
 
-        border: 1px solid var(--atlas-comp-apiref-item-border-color);
+        border: 1px solid var(--XydAtlas-Component-ApiRef-Item__color-border);
         border-radius: 8px;
 
         font-size: 13px;
     `,
     label: css`
-        color: var(--atlas-comp-apiref-item-navbar-color);
+        color: var(--XydAtlas-Component-ApiRef-Item__color-navbar);
 
         margin-right: 4px;
     `,

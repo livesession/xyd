@@ -35,7 +35,6 @@ export default function uniform<T extends UniformPlugin<any>[]>(
         out: {} as { [K in keyof ResultType]: ResultType[K] }
     };
 
-
     const finishCallbacks = new Set();
 
     config.plugins.forEach((plugin) => {

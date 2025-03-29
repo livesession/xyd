@@ -20,6 +20,7 @@ import {
     $mark,
     $lineNumber
 } from "./CodeSample.styles";
+import {CodeLoader} from "@xyd-js/components/coder";
 
 // TODO: try to use codehiki in build time / ASYNC !!! - we need rr server-components
 // TODO: separate highlight
@@ -57,13 +58,12 @@ export function CodeSample(props: CodeSampleProps) {
     }, [props.codeblocks]);
 
     if (highlighted.length === 0) {
-        return <div>Loading</div>;
+        return <CodeLoader/>
     }
 
     if (!highlighted) {
-        return <div>Loading</div>;
+        return <CodeLoader/>
     }
-
 
     return (
         <$$LocalStoredTab

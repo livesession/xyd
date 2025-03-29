@@ -4,11 +4,13 @@ const config: Options = {
     entry: {
         index: 'src/index.ts',
         vite: 'packages/vite/index.ts',
+        md: 'packages/md/index.ts',
     },
     dts: {
         entry: {
             index: 'src/index.ts',
             vite: 'packages/vite/index.ts',
+            md: 'packages/md/index.ts'
         },
         resolve: true, // Resolve external types
     },
