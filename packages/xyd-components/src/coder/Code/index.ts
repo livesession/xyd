@@ -5,8 +5,11 @@ export type {
     CodeProps
 } from "./Code"
 export {
-    Code
+    Code,
 } from "./Code"
+export {
+    CodeLoader,
+} from "./CodeLoader"
 export {
     highlight
 } from "./highlight"

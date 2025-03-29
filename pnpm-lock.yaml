@@ -1002,6 +1002,9 @@ importers:
       '@xyd-js/openapi':
         specifier: workspace:*
         version: link:../xyd-openapi
+      '@xyd-js/sources':
+        specifier: workspace:*
+        version: link:../xyd-sources
       '@xyd-js/uniform':
         specifier: workspace:*
         version: link:../xyd-uniform
@@ -1051,9 +1054,6 @@ importers:
       typedoc:
         specifier: ^0.28.1
         version: 0.28.1(typescript@5.8.2)
-      typedoc-plugin-markdown:
-        specifier: ^4.6.0
-        version: 4.6.0(typedoc@0.28.1(typescript@5.8.2))
     devDependencies:
       rimraf:
         specifier: ^3.0.2
@@ -8127,12 +8127,6 @@ packages:
   typedarray@0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
 
-  typedoc-plugin-markdown@4.6.0:
-    resolution: {integrity: sha512-RG90uC1QqGN9kPBjzEckEf0v9yIYlLoNYKm4OqjwEGFJJGOLUDs5pIEQQDR2tAv1RD7D8GUSakRlcHMTipyaOA==}
-    engines: {node: '>= 18'}
-    peerDependencies:
-      typedoc: 0.28.x
-
   typedoc@0.28.1:
     resolution: {integrity: sha512-Mn2VPNMaxoe/hlBiLriG4U55oyAa3Xo+8HbtEwV7F5WEOPXqtxzGuMZhJYHaqFJpajeQ6ZDUC2c990NAtTbdgw==}
     engines: {node: '>= 18', pnpm: '>= 10'}
@@ -11583,6 +11577,14 @@ snapshots:
       magic-string: 0.30.17
     optionalDependencies:
       vite: 5.4.15(@types/node@20.9.0)(lightningcss@1.29.3)(terser@5.39.0)
+
+  '@vitest/mocker@2.1.9(vite@5.4.15(@types/node@22.13.13)(lightningcss@1.29.3)(terser@5.39.0))':
+    dependencies:
+      '@vitest/spy': 2.1.9
+      estree-walker: 3.0.3
+      magic-string: 0.30.17
+    optionalDependencies:
+      vite: 5.4.15(@types/node@22.13.13)(lightningcss@1.29.3)(terser@5.39.0)
 
   '@vitest/pretty-format@2.0.5':
     dependencies:
@@ -16868,10 +16870,6 @@ snapshots:
 
   typedarray@0.0.6: {}
 
-  typedoc-plugin-markdown@4.6.0(typedoc@0.28.1(typescript@5.8.2)):
-    dependencies:
-      typedoc: 0.28.1(typescript@5.8.2)
-
   typedoc@0.28.1(typescript@5.8.2):
     dependencies:
       '@gerrit0/mini-shiki': 3.2.1
@@ -17243,7 +17241,7 @@ snapshots:
   vitest@2.1.9(@types/node@22.13.13)(happy-dom@15.11.7)(lightningcss@1.29.3)(terser@5.39.0):
     dependencies:
       '@vitest/expect': 2.1.9
-      '@vitest/mocker': 2.1.9(vite@5.4.15(@types/node@20.9.0)(lightningcss@1.29.3)(terser@5.39.0))
+      '@vitest/mocker': 2.1.9(vite@5.4.15(@types/node@22.13.13)(lightningcss@1.29.3)(terser@5.39.0))
       '@vitest/pretty-format': 2.1.9
       '@vitest/runner': 2.1.9
       '@vitest/snapshot': 2.1.9

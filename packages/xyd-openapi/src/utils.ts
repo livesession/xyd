@@ -18,6 +18,7 @@ export function toPascalCase(str: string): string {
         .join('');
 }
 
+// TODO: support from url?
 // readOpenApiSpec reads an OpenAPI spec file and returns the content
 function readOpenApiSpec(filePath: string) {
     const ext = path.extname(filePath).toLowerCase();

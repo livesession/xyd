@@ -2,14 +2,20 @@
   {
     "title": "Class ExampleClass",
     "canonical": "class-ExampleClass",
-    "description": "Returns a personalized hello world message.\n",
+    "description": "---\ntitle: ExampleClass \ngroup: [Source Code, Classes]\n---\nReturns a personalized hello world message.\n",
     "context": {
       "fileName": "index.ts",
       "fileFullPath": "src/index.ts",
       "line": 32,
       "col": 13,
-      "signatureText": "export class ExampleClass {\n}",
-      "sourcecode": "export class ExampleClass {\n    /**\n     * Returns a hello world message.\n     */\n    helloWorld(): string {\n        return 'Hello world!';\n    }\n}",
+      "signatureText": {
+        "code": "export class ExampleClass {\n}",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export class ExampleClass {\n    /**\n     * Returns a hello world message.\n     */\n    helloWorld(): string {\n        return 'Hello world!';\n    }\n}",
+        "lang": "ts"
+      },
       "package": "@xyd-sources-examples/package-a"
     },
     "examples": {
@@ -35,14 +41,20 @@
   {
     "title": "Function gqlSchemaToReferences",
     "canonical": "fn-gqlSchemaToReferences",
-    "description": "Converts a GraphQL schema file to references.\n",
+    "description": "---\ntitle: gqlSchemaToReferences\nabc: 123\ngroup: [Sourc, Functions]\n---\nConverts a GraphQL schema file to references.\n",
     "context": {
       "fileName": "index.ts",
       "fileFullPath": "src/index.ts",
       "line": 48,
       "col": 16,
-      "signatureText": "export function gqlSchemaToReferences(schemaLocation: string): Promise<[\n]>;",
-      "sourcecode": "export function gqlSchemaToReferences(\n    schemaLocation: string\n): Promise<[]> {\n    if (schemaLocation.endsWith(\".graphql\")) {\n        return Promise.resolve([])\n    }\n\n    return Promise.resolve([])\n}",
+      "signatureText": {
+        "code": "export function gqlSchemaToReferences(schemaLocation: string): Promise<[\n]>;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function gqlSchemaToReferences(\n    schemaLocation: string\n): Promise<[]> {\n    if (schemaLocation.endsWith(\".graphql\")) {\n        return Promise.resolve([])\n    }\n\n    return Promise.resolve([])\n}",
+        "lang": "ts"
+      },
       "package": "@xyd-sources-examples/package-a"
     },
     "examples": {
@@ -74,14 +86,20 @@
   {
     "title": "Function helloWorld",
     "canonical": "fn-helloWorld",
-    "description": "Returns a hello world message.\n",
+    "description": "---\ntitle: helloWorld\nabc: 123\ngroup: [Sourc, Functions]\n---\nReturns a hello world message.\n",
     "context": {
       "fileName": "index.ts",
       "fileFullPath": "src/index.ts",
       "line": 4,
       "col": 16,
-      "signatureText": "export function helloWorld(): string;",
-      "sourcecode": "export function helloWorld(): string {\n    return 'Hello world!';\n}",
+      "signatureText": {
+        "code": "export function helloWorld(): string;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function helloWorld(): string {\n    return 'Hello world!';\n}",
+        "lang": "ts"
+      },
       "package": "@xyd-sources-examples/package-a"
     },
     "examples": {
@@ -107,14 +125,20 @@
   {
     "title": "Function helloWorldV2",
     "canonical": "fn-helloWorldV2",
-    "description": "Returns a personalized hello world message.\n",
+    "description": "---\ntitle: helloWorldV2\nabc: 123\ngroup: [Sourc, Functions]\n---\nReturns a personalized hello world message.\n",
     "context": {
       "fileName": "index.ts",
       "fileFullPath": "src/index.ts",
       "line": 15,
       "col": 16,
-      "signatureText": "export function helloWorldV2(name: string, enthusiastic: boolean = false): string;",
-      "sourcecode": "export function helloWorldV2(name: string, enthusiastic: boolean = false): string {\n    return enthusiastic ? `Hello, ${name}!` : `Hello, ${name}`;\n}",
+      "signatureText": {
+        "code": "export function helloWorldV2(name: string, enthusiastic: boolean = false): string;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function helloWorldV2(name: string, enthusiastic: boolean = false): string {\n    return enthusiastic ? `Hello, ${name}!` : `Hello, ${name}`;\n}",
+        "lang": "ts"
+      },
       "package": "@xyd-sources-examples/package-a"
     },
     "examples": {
@@ -151,14 +175,20 @@
   {
     "title": "Function helloWorldV3",
     "canonical": "fn-helloWorldV3",
-    "description": "Returns a personalized hello world message.\n",
+    "description": "---\ntitle: helloWorldV3\nabc: 123\ngroup: [Sourc, Functions]\n---\nReturns a personalized hello world message.\n",
     "context": {
       "fileName": "index.ts",
       "fileFullPath": "src/index.ts",
       "line": 25,
       "col": 16,
-      "signatureText": "export function helloWorldV3<T>(name: T): string;",
-      "sourcecode": "export function helloWorldV3<T>(name: T): string {\n    return `Hello, ${name}!`\n}",
+      "signatureText": {
+        "code": "export function helloWorldV3<T>(name: T): string;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function helloWorldV3<T>(name: T): string {\n    return `Hello, ${name}!`\n}",
+        "lang": "ts"
+      },
       "package": "@xyd-sources-examples/package-a"
     },
     "examples": {

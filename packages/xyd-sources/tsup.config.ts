@@ -2,13 +2,17 @@ import {defineConfig, Options} from 'tsup';
 
 const config: Options = {
     entry: {
-        index: 'index.ts'
+        index: 'src/index.ts',
+        example: 'test-cmd/index.ts'
+
     },
     format: ['esm', 'cjs'], // Output both ESM and CJS formats
     target: 'node16', // Ensure compatibility with Node.js 16
     dts: {
         entry: {
-            index: 'index.ts'
+            index: 'src/index.ts',
+            example: 'test-cmd/index.ts'
+
         },
         resolve: true, // Resolve external types
     },

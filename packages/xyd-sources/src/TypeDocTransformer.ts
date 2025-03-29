@@ -1,4 +1,7 @@
-import type { Reference, Definition } from "@xyd-js/uniform";
+import * as fs from "node:fs";
+import * as path from "node:path";
+
+import type {Reference, Definition} from "@xyd-js/uniform";
 
 import type {
     JSONOutput,
@@ -8,15 +11,13 @@ import type {
     ReflectionSymbolId,
     Comment,
 } from 'typedoc';
-import { ReflectionKind } from "typedoc";
+import {ReflectionKind} from "typedoc";
 
 import {
     MultiSignatureLoader,
     signatureTextByLine,
     signatureSourceCodeByLine
-} from "./src/signatureText";
-import * as fs from "node:fs";
-import * as path from "node:path";
+} from "./SignatureText";
 
 class TypeDocSignatureTextLoader extends MultiSignatureLoader {
     constructor(
@@ -106,7 +107,7 @@ class Transformer {
 
         if (!packageJsonPaths.length) {
             console.warn('(Transformer.createPackagePathMap): No package.json found in rootPath', this.rootPath)
-            return { packageMap: null, moduleRootMap: null }
+            return {packageMap: null, moduleRootMap: null}
         }
 
         for (const packageJsonPath of packageJsonPaths) {
@@ -293,7 +294,16 @@ function jsClassToUniformRef(
     }
 
     if (dec.comment) {
-        ref.description = commentToUniform(dec.comment)
+        const description = commentToUniform(dec.comment)
+        const group = (declarationCtx?.packageName.split('/') || [])
+            .map(name => `"${name}"`)
+            .join(",")
+
+        ref.description = `---
+title: ${dec.name} 
+group: [${group}, Classes]
+---
+${description}`
     }
 
     // handle constructor
@@ -394,7 +404,16 @@ function jsFunctionToUniformRef(
     for (const sign of dec.signatures || []) {
         {
             if (sign.comment) {
-                ref.description = commentToUniform(sign.comment)
+                const description = commentToUniform(sign.comment)
+                const group = (declarationCtx?.packageName.split('/') || [])
+                    .map(name => `"${name}"`)
+                    .join(",")
+
+                ref.description = `---
+title: ${dec.name}
+group: [${group}, Functions]
+---
+${description}`
             }
         }
 
@@ -492,12 +511,19 @@ function declarationUniformContext(
     const fileFullPath = symbolMap.packagePath
 
     return {
+        packageName: symbolMap.packageName,
         fileName: source.fileName,
         fileFullPath,
         line: source.line,
         col: source.character,
-        signatureText: signTxt,
-        sourcecode: sourceCode
+        signatureText: {
+            code: signTxt,
+            lang: "ts",
+        },
+        sourcecode: {
+            code: sourceCode,
+            lang: "ts"
+        }
     }
 }
 

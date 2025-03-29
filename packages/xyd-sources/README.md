@@ -1,3 +1,3 @@
-# @xyd-js/xydsources
+# @xyd-js/sources
 
-Automatic documentation from sources, for xyd.
+Automatic documentation from code sources, for xyd.

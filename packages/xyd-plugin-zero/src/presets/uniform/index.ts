@@ -19,9 +19,13 @@ import {
 } from "@xyd-js/uniform/markdown";
 import {Preset, PresetData} from "../../types";
 
+
+// TODO: REFACTOR PLUGIN-ZERO AND ITS DEPS FOR MORE READABLE CODE AND BETTER API
+
 export interface uniformPresetOptions {
     urlPrefix?: string
     root?: string
+    sourceTheme?: boolean
 }
 
 function flatPages(
@@ -142,7 +146,7 @@ async function uniformResolver(
         throw new Error('urlPrefix not found')
     }
 
-    const apiFilePath = path.join(root, apiFile);
+    const apiFilePath = path.join(root, apiFile); // TODO: support https
     const uniformRefs = await uniformApiResolver(apiFilePath)
     const uniformWithNavigation = uniform(uniformRefs, {
         plugins: [pluginNavigation({
@@ -385,7 +389,7 @@ function vitePluginUniformContent(pluginId: string) {
     }
 }
 
-export function uniformPreset(
+function uniformPreset(
     id: string,
     apiFile: APIFile,
     sidebar: (SidebarMulti | Sidebar)[],
@@ -440,13 +444,19 @@ export function uniformPreset(
             basePath = "../../../xyd-plugin-zero"
         }
 
+        let pageTheme = "src/pages/api-reference.tsx"
+
+        if (options.sourceTheme) {
+            pageTheme = "src/pages/api-reference-source.tsx"
+        }
+
         return {
             preinstall: [
                 preinstall(id, uniformApiResolver, apiFile)
             ],
             routes: routeMatches.map((routeMatch, i) => route(
                     `${routeMatch}/*`,
-                    path.join(basePath, "src/pages/api-reference.tsx"), {
+                    path.join(basePath, pageTheme), {
                         id: `xyd-plugin-zero/${id}-${i}`,
                     }
                 ),
@@ -457,4 +467,55 @@ export function uniformPreset(
         }
     } satisfies Preset<unknown>
 }
+
+
+// TODO: refactor to use class methods + separate functions if needed?
+export abstract class UniformPreset {
+    private _root: string;
+    private _urlPrefix: string;
+    private _sourceTheme: boolean;
+
+    protected constructor(
+        private presetId: string,
+        private apiFile: APIFile,
+        private sidebar: (SidebarMulti | Sidebar)[],
+    ) {
+    }
+
+    protected abstract uniformRefResolver(filePath: string): Promise<Reference[]>
+
+    protected root(root: string): this {
+        this._root = root
+
+        return this
+    }
+
+    protected urlPrefix(urlPrefix: string): this {
+        this._urlPrefix = urlPrefix
+
+        return this
+    }
+
+    protected sourceTheme(v: boolean): this {
+        this._sourceTheme = v
+
+        return this
+    }
+
+    protected newUniformPreset() {
+        return uniformPreset(
+            this.presetId,
+            this.apiFile,
+            this.sidebar,
+            {
+                root: this._root,
+                urlPrefix: this._urlPrefix,
+                sourceTheme: this._sourceTheme,
+            },
+            this.uniformRefResolver,
+        )
+    }
+
+}
+
 

@@ -64,74 +64,6 @@ export function mdCodeGroup() {
     };
 }
 
-const supportedComponentDirectives: { [key: string]: boolean } = {
-    "table": true,
-    "details": true,
-    // "code-group": true, // TODO: replace in the future
-}
-
-// TODO: get from @xyd-js/content/md but curently error when importing a `content` lib: Error [ERR_PACKAGE_PATH_NOT_EXPORTED]: No "exports" main defined in /Users/zdunecki/Code/livesession/xyd/node_modules/.pnpm/estree-util-build-jsx@3.0.1/node_modules/estree-walker/package.json
-function parseProps(props: string) {
-    const parsedProps = JSON.parse(props);
-    const transformedProps: any = {};
-
-    for (const [key, value] of Object.entries(parsedProps)) {
-        if (typeof value === 'string' && value.includes('`')) {
-            const codeContent = value.match(/`([^`]+)`/);
-            if (codeContent) {
-                transformedProps[key] = React.createElement('code', null, codeContent[1]);
-            } else {
-                transformedProps[key] = value;
-            }
-        } else {
-            transformedProps[key] = value;
-        }
-    }
-
-    return transformedProps;
-}
-
-
-export function mdComponentDirective() {
-    return (tree: any) => {
-        visit(tree, 'containerDirective', (node) => {
-            const directiveName = node.name as string;
-            if (!supportedComponentDirectives[directiveName]) {
-                return;
-            }
-
-            const codeblocks = [];
-
-            for (const child of node.children) {
-                if (child.type === 'code') {
-                    const meta = child.meta || '';
-                    const value = child.value || '';
-                    const lang = child.lang || '';
-
-                    codeblocks.push({value, lang, meta});
-                }
-            }
-
-            const directiveProps = JSON.stringify(node.attributes);
-            const transformedProps = parseProps(directiveProps);
-
-            console.log(transformedProps, 333)
-            node.data = {
-                hName: 'DirectiveComponent',
-                hProperties: {
-                    directiveName,
-                    directiveProps: JSON.stringify({}),
-                    codeProps: JSON.stringify({
-                        codeblocks
-                    })
-                },
-            };
-
-            node.children = [];
-        });
-    };
-}
-
 function toPascalCase(str) {
     return str
         .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space before capital letters
@@ -151,21 +83,6 @@ const supportedDirectives = {
 const tableComponents: { [key: string]: boolean } = {
     TableV2: true
 }
-
-/*
-<TableV2>
-    <TableV2.Head>
-        <TableV2.Tr>
-            <TableV2.Th>Type</TableV2.Th>
-            <TableV2.Th>Description</TableV2.Th>
-        </TableV2.Tr>
-    </TableV2.Head>
-    <TableV2.Tr>
-        <TableV2.Td>`Promise<Reference[]>`</TableV2.Td>
-        <TableV2.Td muted>The list of uniform references.</TableV2.Td>
-    </TableV2.Tr>
-</TableV2>
- */
 
 const parseMarkdown = (content: string) => {
     const ast = unified()

@@ -29,6 +29,7 @@ export interface UISidebarItemProps {
     href?: string;
     active?: boolean;
     activeTheme?: "secondary";
+    isParentActive?: boolean;
     onClick?: (v: any) => void
 }
 
@@ -40,13 +41,14 @@ function Link({children, ...props}) {
 }
 
 UISidebar.Item = function SidebarItem({
-                                          children,
-                                          button,
-                                          href,
-                                          active,
-                                          activeTheme,
-                                          onClick
-                                      }: UISidebarItemProps) {
+    children,
+    button,
+    href,
+    active,
+    activeTheme,
+    isParentActive,
+    onClick
+}: UISidebarItemProps) {
     const [firstChild, ...restChilds] = React.Children.toArray(children)
 
     const ButtonOrAnchor = button ? 'button' : Link
@@ -64,6 +66,7 @@ UISidebar.Item = function SidebarItem({
             <div className={`
                 ${$item.link$item}
                 ${active && $item.link$$active}
+                ${isParentActive && $item.link$$parentActive}
                 ${active && activeTheme === "secondary" && $item.link$$activeSecondary}
             `}>
                 {firstChild}

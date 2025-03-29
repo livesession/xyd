@@ -24,6 +24,7 @@ import themeGustoPkg from '../xyd-theme-gusto/package.json';
 import themePoetryPkg from '../xyd-theme-poetry/package.json';
 import uiPkg from '../xyd-ui/package.json';
 import uniformPkg from '../xyd-uniform/package.json';
+import sourcesPk from '../xyd-sources/package.json';
 
 const entry = ["index.ts"];
 
@@ -49,6 +50,7 @@ const deps = {
         ...themePoetryPkg.dependencies,
         ...uiPkg.dependencies,
         ...uniformPkg.dependencies,
+        ...sourcesPk.dependencies,
     },
     dev: {
         ...cliPkg.devDependencies,
@@ -68,6 +70,7 @@ const deps = {
         ...themePoetryPkg.devDependencies,
         ...uiPkg.devDependencies,
         ...uniformPkg.devDependencies,
+        ...sourcesPk.devDependencies,
     }
 }
 

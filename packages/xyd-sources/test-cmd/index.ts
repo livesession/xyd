@@ -1,11 +1,12 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+
 import * as TypeDoc from 'typedoc';
 import type {TypeDocOptions} from "typedoc";
 //@ts-ignore
 import {PluginOptions} from 'typedoc-plugin-markdown'
 
-import {typedocToUniform} from "./transform"
-import * as fs from "node:fs";
-import * as path from "node:path";
+import {typedocToUniform} from "../src/TypeDocTransformer"
 
 async function generateDocs() {
     const options = {
@@ -31,8 +32,11 @@ async function generateDocs() {
         throw new Error('Failed to generate documentation.');
     }
 
+    const jsonOutput = await app.serializer.projectToObject(project, path.resolve("./example"));
+    fs.writeFileSync('docs.json', JSON.stringify(jsonOutput, null, 2));
+
     await app.generateOutputs(project);
-    await app.generateJson(project, 'docs.json');
+    // await app.generateJson(project, 'docs.json');
 
     {
         const projectRaw = fs.readFileSync('docs.json', 'utf-8');

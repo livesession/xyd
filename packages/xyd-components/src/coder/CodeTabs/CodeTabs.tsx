@@ -65,7 +65,7 @@ function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
 
         <TabsPrimitive.List className={$languages.list}>
             {props.highlighted?.map(({meta}, i) => {
-                if (!meta) {
+                if (isSingle) {
                     return null
                 }
                 return <TabsPrimitive.Trigger value={meta!} key={i} className={$languages.button}>

@@ -250,7 +250,7 @@ export const $page = {
     container: css`
         padding: 40px 0;
         width: 100%;
-        max-width: 900px;
+        max-width: 965px;
         margin: 0 auto;
         font-size: 15px;
         line-height: 24px;

@@ -26,7 +26,22 @@ interface loaderData {
     code: string
 }
 
-const contentComponents = getContentComponents()
+const contentComponents = {
+    ...getContentComponents(),
+
+    HomePage: (props) => <HomePage
+        {...props}
+        // TODO: get props from theme about nav (middle etc)
+        // TODO: footer
+        // TODO: style
+        header={<div style={{marginLeft: "var(--xyd-global-page-gutter)"}}>
+            <FwNav kind="middle"/>
+        </div>}
+
+    >
+        {props.children}
+    </HomePage>
+}
 
 const supportedExtensions = {
     ".mdx": true,
@@ -142,7 +157,32 @@ export function MemoMDXComponent(codeComponent: any) {
 
 export default function CustomPage({loaderData, ...rest}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
-    const Component = MemoMDXComponent(content.component)
+    const Content = MemoMDXComponent(content.component)
+
+    if (!Content) {
+        console.error("Content not found")
+        return null
+    }
+
+    let component: React.JSX.Element
+
+    if (content.page) {
+        component = <Content
+            components={{
+                ...contentComponents,
+            }}
+        />
+    } else {
+        component = <Theme
+            themeSettings={content.themeSettings}
+        >
+            <Content
+                components={{
+                    ...contentComponents,
+                }}
+            />
+        </Theme>
+    }
 
     return <Framework
         settings={settings}
@@ -151,25 +191,6 @@ export default function CustomPage({loaderData, ...rest}: { loaderData: loaderDa
         breadcrumbs={loaderData.breadcrumbs || []}
         navlinks={loaderData.navlinks}
     >
-        {content?.page ? <Component components={{
-            ...contentComponents,
-            // TODO: another page components
-            HomePage: (props) => <HomePage
-                {...props}
-                // TODO: get props from theme about nav (middle etc)
-                // TODO: footer
-                // TODO: style
-                header={<div style={{marginLeft: "var(--xyd-global-page-gutter)"}}>
-                    <FwNav kind="middle"/>
-                </div>}
-
-            >
-                {props.children}
-            </HomePage>,
-        }}/> : <Theme
-            themeSettings={content.themeSettings}
-        >
-            {Component ? <Component components={contentComponents}/> : <></>}
-        </Theme>}
+        {component}
     </Framework>
 }

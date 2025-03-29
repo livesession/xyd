@@ -53,6 +53,8 @@ export default defineConfig({
         "@apidevtools/json-schema-ref-parser",
         //
 
+        // neede by @xyd-js/sources
+
         //
         // Externalize Node.js built-in modules
         /^node:.*/,

@@ -74,8 +74,26 @@ export const $item = {
     `,
     link$$active: css`
         background: #fff;
-        color: #7051d4;
+        color: #111827;
         border-radius: 4px;
+        position: relative;
+        
+        &::before {
+            background: #7051d4;
+            border-radius: 0 2px 2px 0;
+            bottom: 7px;
+            content: "";
+            left: 1px;
+            position: absolute;
+            top: 7px;
+            width: 4px;
+            border-radius: 10px;
+        }
+    `,
+    link$$parentActive: css`
+        color: #111827;
+        font-weight: 600;
+        background: transparent;
     `,
     link$$activeSecondary: css`
         background: unset;
@@ -85,7 +103,9 @@ export const $item = {
     link$item: css`
         display: flex;
         width: 100%;
-        padding: 4px 8px;
+        padding: 8px 12px;
+        position: relative;
+        font-size: 15px;
 
         &:hover {
             background: #ececf1;
@@ -97,21 +117,22 @@ export const $item = {
 
 export const $tree = {
     host: css`
-        margin-left: 8px;
+        margin-left: 12px;
     `,
 }
 
 export const $itemHeader = {
     host: css`
         // TODO: calc based on items?
-        padding-left: 10px;
-        margin-bottom: 6px;
-        margin-top: 16px;
-        font-size: 12px;
+        padding-left: 12px;
+        margin-bottom: 8px;
+        margin-top: 24px;
+        font-size: 13px;
         line-height: 16px;
         font-weight: 600;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
         color: #111827;
+        text-transform: uppercase;
     `
 }
 

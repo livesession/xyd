@@ -1,12 +1,16 @@
 import {visit} from 'unist-util-visit';
 
-// This plugin transforms a custom container directive into a JSX node
-// https://github.com/remarkjs/remark-directive is needed to parse the container directive
-
+/**
+ * This plugin transforms a custom container directive into a JSX node
+ * https://github.com/remarkjs/remark-directive is needed to parse the container directive
+ */
 export function mdCodeGroup() {
     return (tree: any) => {
         visit(tree, 'containerDirective', (node) => {
-            if (node.name !== 'code-group') return;
+            // TODO: is `code-group` ok name? -> rename to CodeSample? or use `mdComponentDirective` instead
+            if (node.name !== 'code-group') {
+                return
+            }
 
             const description = node.attributes?.title || '';
             const codeblocks = [];
@@ -22,7 +26,6 @@ export function mdCodeGroup() {
             }
 
             // Add metadata to the node
-            // TODO: is `code-group` ok name?
             node.data = {
                 hName: 'DirectiveCodeSample',
                 hProperties: {

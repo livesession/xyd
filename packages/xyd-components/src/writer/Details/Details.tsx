@@ -11,12 +11,12 @@ interface BaseDetailsProps {
 
 interface TertiaryDetailsProps extends BaseDetailsProps {
     kind: "tertiary";
-    title: string;
+    title: string | React.ReactNode;
 }
 
 interface SecondaryDetailsProps extends BaseDetailsProps {
     kind: "secondary";
-    title: string;
+    title: string | React.ReactNode;
 }
 
 interface PrimaryDetailsProps extends BaseDetailsProps {
@@ -28,7 +28,7 @@ export type DetailsProps = PrimaryDetailsProps | SecondaryDetailsProps | Tertiar
 export function Details(props: DetailsProps) {
     const {children, label} = props;
 
-    let title = "";
+    let title
 
     const isDeepKind = ["secondary", "tertiary"].includes(props.kind || "");
 

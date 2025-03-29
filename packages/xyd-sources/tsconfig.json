@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@xyd-js/uniform": [
+        "../xyd-uniform"
+      ]
+    },
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "node",
@@ -12,8 +17,14 @@
     "declarationMap": true,
     "incremental": true,
     "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
-    "resolveJsonModule": true // Add this line
+    "resolveJsonModule": true
+    // Add this line
   },
-  "include": ["index.ts", "src/**/*.ts", "transform.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

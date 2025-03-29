@@ -10,6 +10,7 @@ import {
     Heading,
     Hr,
     Table,
+    TableV2,
     Tabs,
     Steps,
 
@@ -84,10 +85,15 @@ export function stdContent() {
             {props.children}
         </li>,
 
-        table: Table,
-        tr: Table.Tr,
-        th: Table.Th,
-        td: Table.Td,
+        table: TableV2,
+        tr: TableV2.Tr,
+        th: TableV2.Th,
+        td: TableV2.Td,
+        td: (props) => <TableV2.Td {...props} >
+            <TableV2.Cell>
+                {props.children}
+            </TableV2.Cell>
+        </TableV2.Td>,
 
         code: Code,
         pre: props => {
@@ -121,35 +127,19 @@ export function writerContent() {
         GuideCard,
         Steps,
         Tabs,
-        Table,
+        Table: TableV2,
         Badge,
     }
 }
 
 export function directiveContent() {
     return {
+        // TODO: deprecate?
         DirectiveCodeSample: (props) => {
             return <CodeSample
                 {...props}
                 codeblocks={JSON.parse(props.codeblocks)}
             />
-        },
-        DirectiveComponent: (props) => {
-            switch (props.directiveName) {
-                case "details": {
-                    const componentProps = JSON.parse(props.directiveProps || "{}")
-                    const codeProps = props.directiveProps ? JSON.parse(props.codeProps) : ""
-
-                    return <Details {...componentProps}>
-                        {codeProps && <CodeSample
-                            {...codeProps}
-                        />}
-                    </Details>
-                }
-                default: {
-                    return null
-                }
-            }
         }
     }
 }

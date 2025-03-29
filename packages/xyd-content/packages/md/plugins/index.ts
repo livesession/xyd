@@ -3,12 +3,12 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkDirective from 'remark-directive'
 
-import {remarkMdxToc, RemarkMdxTocOptions} from "./md-toc";
-import {remarkInjectCodeMeta} from "./md-code";
-import {extractThemeSettings} from "./md-themeSettings";
-import {extractPage} from "./md-page";
-import {mdCodeGroup} from "./md-codegroup";
-import {mdComponentDirective} from "./mdComponentDirective";
+import {remarkMdxToc, RemarkMdxTocOptions} from "./mdToc";
+import {remarkInjectCodeMeta} from "./mdCode";
+import {extractThemeSettings} from "./mdThemeSettings";
+import {extractPage} from "./mdPage";
+import {mdCodeGroup} from "./mdCodeGroup";
+import {remarkDirectiveWithMarkdown} from "./mdComponentDirective";
 
 export function defaultPlugins(toc: RemarkMdxTocOptions) {
     return [
@@ -21,6 +21,6 @@ export function defaultPlugins(toc: RemarkMdxTocOptions) {
         extractThemeSettings,
         extractPage,
         mdCodeGroup,
-        mdComponentDirective
+        remarkDirectiveWithMarkdown
     ]
 }
