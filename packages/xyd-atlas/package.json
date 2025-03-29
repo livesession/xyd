@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/atlas",
-  "version": "0.1.0-xyd.9",
+  "version": "0.1.0-xyd.12",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -8,14 +8,19 @@
   "exports": {
     "./package.json": "./package.json",
     "./index.css": "./dist/index.css",
+    "./tokens.css": "./dist/tokens.css",
     ".": {
       "import": "./dist/index.js"
+    },
+    "./atlas-index": {
+      "import": "./dist/atlas-index.js"
     }
   },
   "scripts": {
     "clean": "rimraf build",
     "prebuild": "pnpm clean",
     "build": "rollup -c rollup.config.js",
+    "dev": "rollup -c rollup.config.js --watch",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

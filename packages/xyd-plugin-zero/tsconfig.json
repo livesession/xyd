@@ -1,9 +1,17 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@xyd-js/atlas": [
+        "../xyd-atlas"
+      ],
+      "@xyd-js/core": [
+        "../xyd-core/index.ts"
+      ]
+    },
     "module": "esnext",
     "esModuleInterop": true,
     "moduleResolution": "bundler",
-    "target": "esnext", // Change this to es2020 or esnext
+    "target": "esnext",
     "baseUrl": ".",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,

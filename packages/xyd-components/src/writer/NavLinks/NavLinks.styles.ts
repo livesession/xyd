@@ -9,6 +9,7 @@ export const $navLinks = {
         justify-content: space-between;
         align-items: center;
         border-top-width: 1px;
+        border-color: #ececf1;
     `,
     link: css`
         display: flex;

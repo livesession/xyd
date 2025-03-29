@@ -35,7 +35,7 @@ export const $description = {
     host: css`
         font-size: 14px;
         line-height: 22px;
-        color: var(--atlas-comp-apiref-properties-description-color);
+        color: var(--XydAtlas-Component-ApiRef-Properties__color-description);
     `
 }
 
@@ -64,7 +64,7 @@ export const $propNameCode = {
 
         font-weight: 600;
         font-size: 13px;
-        color: var(--atlas-comp-apiref-properties-prop__name-color);
+        color: var(--XydAtlas-Component-ApiRef-Properties__color-propName);
     `,
 }
 
@@ -77,14 +77,15 @@ export const $propTypeCode = {
         border-radius: 4px;
 
         font-size: 10px;
-        color: var(--atlas-comp-apiref-properties-prop__type-color);
+        color: var(--XydAtlas-Component-ApiRef-Properties__color-propType);
     `,
     link: css`
-        color: var(--atlas-comp-apiref-properties-color--active);
+        color: var(--XydAtlas-Component-ApiRef-Properties__color--active);
         text-decoration: underline;
         
         &:hover {
             text-decoration: none;
+            color: var(--XydAtlas-Sys-Color-Primary--hover);
         }
     `
 }
@@ -112,7 +113,7 @@ export const $subProps = {
         list-style: none;
 
         border: none;
-        border-left: 1px solid var(--atlas-comp-apiref-properties-border-color);
+        border-left: 1px solid var(--XydAtlas-Component-ApiRef-Properties__color-border);
     `,
     li: css`
         padding: 0 16px;
@@ -140,9 +141,9 @@ export const $propToggle = {
         }
 
         &:hover {
-            svg { // in the future it should be deprecated
+            svg {
                 transition: all ease-in .1s;
-                color: var(--atlas-comp-apiref-properties-color--active);
+                color: var(--XydAtlas-Component-ApiRef-Properties__color--active);
             }
         }
     `,
@@ -153,7 +154,7 @@ export const $propToggle = {
 
         &:hover {
             transition: all ease-in .1s;
-            color: var(--atlas-comp-apiref-properties-color--active);
+            color: var(--XydAtlas-Component-ApiRef-Properties__color--active);
         }
     `
 }

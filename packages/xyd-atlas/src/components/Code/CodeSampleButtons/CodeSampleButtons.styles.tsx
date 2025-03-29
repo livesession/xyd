@@ -9,15 +9,13 @@ export const $sample = {
         display: flex;
         align-items: center;
         border-radius: 8px;
-        //background-color: var(--atlas-comp-code-sample_buttons-container-background);
-        background-color: #F3F4F6;
+        background-color: var(--XydAtlas-Component-Code-SampleButtons__color-containerBackground);
     `
 }
 
 export const $arrow = {
     host: css`
         padding: 8px;
-        //background-color: var(--atlas-comp-code-sample_buttons-background--active);
         background-color: #ffffff;
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     `,
@@ -55,19 +53,15 @@ export const $button = {
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 300ms;
 
-        //color: var(--atlas-comp-code-sample_buttons-color);
-        color: #6B7280;
+        color: var(--XydAtlas-Component-Code-SampleButtons__color);
         
         &:hover {
-            //color: var(--atlas-comp-code-sample_buttons-color--active);
-            color: #111827;
+            color: var(--XydAtlas-Component-Code-SampleButtons__color--active);
         }
     `,
     $$active: css`
-        //color: var(--atlas-comp-code-sample_buttons-color--active);
-        //background-color: var(--atlas-comp-code-sample_buttons-background--active);
-        color: #111827;
-        background-color: #ffffff;
+        color: var(--XydAtlas-Component-Code-SampleButtons__color--active);
+        background-color: var(--XydAtlas-Component-Code-SampleButtons__color-background--active);
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     `
 }

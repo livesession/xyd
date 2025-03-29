@@ -3,7 +3,7 @@ import type {Meta} from '@storybook/react';
 import {MemoryRouter} from "react-router";
 
 import {
-    Layout,
+    LayoutPrimary
 } from '@xyd-js/components/layouts';
 
 import getContentComponents from "@xyd-js/components/content";
@@ -18,7 +18,7 @@ import {
     UISidebar
 } from "@xyd-js/ui"
 
-import {LiveSessionPlatformLogo} from "./logo.tsx";
+import {LiveSessionPlatformLogo} from "./logo";
 import Content from "../../content/hello-world.mdx";
 
 export default {
@@ -31,18 +31,19 @@ export default {
 } as Meta;
 
 export const Default = () => {
-    return <Layout
-        header={<DemoNavbar/>}
-        subheader
-        aside={<DemoSidebar/>}
-        content={<DemoContent/>}
-        contentNav={<DemoTOC/>}
+    return <LayoutPrimary
+        header={<$DemoNavbar/>}
+        subheader={<$DemoSubNav/>}
+        aside={<$DemoSidebar/>}
+        content={<$DemoContent/>}
+        contentNav={<$DemoTOC/>}
     />
 }
 
-function DemoNavbar() {
+function $DemoNavbar() {
     return <>
         <Nav
+            onChange={() => {}}
             value="api-reference"
             logo={<LiveSessionPlatformLogo/>}
             kind="middle"
@@ -57,21 +58,24 @@ function DemoNavbar() {
                 GraphQL
             </Nav.Item>
         </Nav>
-        <SubNav title="Apps" value="build">
-            <SubNav.Item value="build" href="/build">
-                Build
-            </SubNav.Item>
-            <SubNav.Item value="design" href="/design">
-                Design
-            </SubNav.Item>
-            <SubNav.Item value="launch" href="/launch">
-                Launch
-            </SubNav.Item>
-        </SubNav>
     </>
 }
 
-function DemoSidebar() {
+function $DemoSubNav() {
+    return <SubNav onChange={() => {}} title="Apps" value="build">
+        <SubNav.Item value="build" href="/build">
+            Build
+        </SubNav.Item>
+        <SubNav.Item value="design" href="/design">
+            Design
+        </SubNav.Item>
+        <SubNav.Item value="launch" href="/launch">
+            Launch
+        </SubNav.Item>
+    </SubNav>
+}
+
+function $DemoSidebar() {
     const [isOpen, setIsOpen] = useState(false)
 
     function onClick() {
@@ -83,7 +87,7 @@ function DemoSidebar() {
         </UISidebar.Item>
     )
 
-    return <UISidebar footerItems={<DemoSidebarFooter/>}>
+    return <UISidebar footerItems={<$DemoSidebarFooter/>}>
         <UISidebar.ItemHeader>
             GET STARTED
         </UISidebar.ItemHeader>
@@ -130,7 +134,7 @@ function DemoSidebar() {
     </UISidebar>
 }
 
-function DemoSidebarFooter() {
+function $DemoSidebarFooter() {
     return <>
         <UISidebar.FooterItem
             href="#"
@@ -208,7 +212,7 @@ function DemoSidebarFooter() {
 }
 
 
-function DemoContent() {
+function $DemoContent() {
     return <>
         <Breadcrumbs
             items={[
@@ -244,7 +248,7 @@ function DemoContent() {
     </>
 }
 
-function DemoTOC() {
+function $DemoTOC() {
     return <Toc defaultValue="quickstart">
         <Toc.Item value="quickstart">
             Quickstart

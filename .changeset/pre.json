@@ -2,7 +2,6 @@
   "mode": "pre",
   "tag": "xyd",
   "initialVersions": {
-    "@xyd-js/documan-host": "0.0.3-changeset.0",
     "@xyd-js/fable-wiki": "0.1.0-xyd.3",
     "@xyd-js/xtokens": "0.1.0-xyd.1",
     "@xyd-js/atlas": "0.1.0-xyd.6",
@@ -23,11 +22,18 @@
     "@xyd-js/theme-poetry": "0.1.0-xyd.15",
     "@xyd-js/themes": "0.0.0",
     "@xyd-js/ui": "0.1.0-xyd.6",
-    "@xyd-js/uniform": "0.1.0-xyd.5"
+    "@xyd-js/uniform": "0.1.0-xyd.5",
+    "@xyd-js/sources": "0.0.0"
   },
   "changesets": [
     "cool-bobcats-cover",
+    "fair-kids-laugh",
+    "free-coins-kneel",
+    "major-coins-fly",
     "quick-banks-win",
-    "small-spiders-lick"
+    "small-spiders-lick",
+    "tangy-places-accept",
+    "tired-moles-post",
+    "yellow-geese-tan"
   ]
 }

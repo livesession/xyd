@@ -5,10 +5,12 @@ import {RouteConfigEntry} from "@react-router/dev/routes";
 import {docsPreset} from "./presets/docs";
 import {graphqlPreset} from "./presets/graphql";
 import {openapiPreset} from "./presets/openapi";
+import {sourcesPreset} from "./presets/sources";
 
 import type {PluginOutput, Plugin} from "./types";
 
 // TODO: better plugin runner
+// TODO: REFACTOR
 export async function pluginZero(): Promise<PluginOutput | null> {
     let settings: Settings | null = null
     const vitePlugins: VitePlugin[] = []
@@ -127,6 +129,42 @@ export async function pluginZero(): Promise<PluginOutput | null> {
 
         oap.routes = oap.routes || []
         routes.push(...oap.routes)
+    }
+
+    if (settings?.api?.sources) {
+        const options = {
+            root: "" // TODO: FINISH
+        }
+
+        const src = sourcesPreset(settings, options)
+        src.preinstall = src.preinstall || []
+
+        let preinstallMerge = {}
+
+        for (const preinstall of src.preinstall) {
+            const resp = await preinstall(options)(settings, {
+                routes: src.routes
+            })
+
+            if (resp && typeof resp === 'object') {
+                preinstallMerge = {
+                    ...preinstallMerge,
+                    ...resp
+                }
+            }
+        }
+
+        src.vitePlugins = src.vitePlugins || []
+        for (const vitePlugin of src.vitePlugins) {
+            const vitePlug = await vitePlugin()({
+                preinstall: preinstallMerge
+            })
+
+            vitePlugins.push(vitePlug)
+        }
+
+        src.routes = src.routes || []
+        routes.push(...src.routes)
     }
 
     return {

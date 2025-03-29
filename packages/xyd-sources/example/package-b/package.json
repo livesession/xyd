@@ -1,0 +1,7 @@
+{
+  "name": "@xyd-sources-examples/package-b",
+  "files": [
+    "./dist"
+  ],
+  "main": "./dist/index.js"
+}

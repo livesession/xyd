@@ -1,13 +1,14 @@
 {
   "name": "@xyd-js/content",
-  "version": "0.1.0-xyd.7",
+  "version": "0.1.0-xyd.10",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
     ".": "./dist/index.js",
-    "./vite": "./dist/vite.js"
+    "./vite": "./dist/vite.js",
+    "./md": "./dist/md.js"
   },
   "scripts": {
     "clean": "rimraf build",

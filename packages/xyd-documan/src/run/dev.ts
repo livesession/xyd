@@ -53,7 +53,7 @@ export async function dev() {
             reactRouter({
                 routes: respPluginZero.routes
             }),
-            ...respPluginZero.vitePlugins
+            ...respPluginZero.vitePlugins,
         ],
     });
 

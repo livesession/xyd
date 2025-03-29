@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/ui",
-  "version": "0.1.0-xyd.9",
+  "version": "0.1.0-xyd.12",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

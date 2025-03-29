@@ -1,8 +1,9 @@
 import {Settings} from "@xyd-js/core";
 import {deferencedOpenAPI, oapSchemaToReferences} from "@xyd-js/openapi";
+import type {Reference} from "@xyd-js/uniform";
 
 import {Preset} from "../../types"
-import {uniformPreset} from "../uniform"
+import {UniformPreset} from "../uniform"
 
 export interface openapiPresetOptions {
     urlPrefix?: string
@@ -13,21 +14,40 @@ function preset(
     settings: Settings,
     options: openapiPresetOptions
 ) {
-    return uniformPreset(
-        "openapi",
-        settings?.api?.openapi || "",
-        settings?.structure?.sidebar || [],
-        {
-            root: options.root,
-            urlPrefix: options.urlPrefix,
-        },
-        async (openApiPath: string) => {
-            const schema = await deferencedOpenAPI(openApiPath)
-
-            return oapSchemaToReferences(schema)
-        },
-    )(settings)
+    return OpenAPIUniformPreset.new(settings, options)
 }
 
 export const openapiPreset = preset satisfies Preset<unknown>
+
+class OpenAPIUniformPreset extends UniformPreset {
+    private constructor(
+        settings: Settings,
+    ) {
+        super(
+            "openapi",
+            settings.api?.openapi || "",
+            settings?.structure?.sidebar || [],
+        )
+    }
+
+    static new(
+        settings: Settings,
+        options: openapiPresetOptions
+    ) {
+        return new OpenAPIUniformPreset(settings)
+            .root(options.root || "")
+            .urlPrefix(options.urlPrefix || "")
+            .newUniformPreset()(settings)
+    }
+
+    protected override async uniformRefResolver(filePath: string): Promise<Reference[]> {
+        if (!filePath) {
+            return []
+        }
+
+        const schema = await deferencedOpenAPI(filePath)
+        return oapSchemaToReferences(schema)
+    }
+
+}
 

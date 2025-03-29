@@ -3,6 +3,9 @@
 # Cleanup pnpm
 pnpm store prune
 
+# Clear Nx cache
+nx reset
+
 # Define the directories to clean
 root_directories=("node_modules" "pnpm-lock.yaml" "dist" "cli")
 package_directories=("packages/*/node_modules" "packages/*/pnpm-lock.yaml" "packages/*/dist" "packages/*/.cli")

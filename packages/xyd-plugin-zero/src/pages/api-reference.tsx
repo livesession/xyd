@@ -249,6 +249,14 @@ function mdxContent(code: string) {
     }
 }
 
+// TODO: below is a concept only
+// const themeSettings = new ThemeSettings()
+//     .toc.hide()
+//     .sidebar({
+//         clientSideRouting: true
+//     })
+//     .layout.size("large")
+
 // TODO: in the future more smoother loader - first fast server render then move to ideal position of client and then replace and 3 items at start
 export default function APIReference({loaderData}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
@@ -267,9 +275,11 @@ export default function APIReference({loaderData}: { loaderData: loaderData }) {
         <Theme
             themeSettings={{
                 hideToc: true,
-                bigArticle: true,
                 sidebar: {
                     clientSideRouting: true
+                },
+                layout: {
+                    size: "large"
                 }
             }}
         >

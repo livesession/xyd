@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/components",
-  "version": "0.1.0-xyd.4",
+  "version": "0.1.0-xyd.7",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -37,9 +37,10 @@
     }
   },
   "scripts": {
-    "clean": "rimraf build",
+    "build": "rollup -c rollup.config.js",
+    "dev": "rollup -c rollup.config.js --watch",
     "prebuild": "pnpm clean",
-    "build": "rollup -c rollup.config.js"
+    "clean": "rimraf build"
   },
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.0",

@@ -45,13 +45,11 @@ export async function build() {
         };
 
         if (process.env.XYD_DEV_MODE) {
-            packageJsonContent.dependencies = {
-                ...packageJsonContent.dependencies,
-                "@xyd-js/content": "workspace:*",
-                "@xyd-js/components": "workspace:*",
-                "@xyd-js/framework": "workspace:*",
-                "@xyd-js/theme-poetry": "workspace:*",
-            }
+            Object.keys(packageJsonContent.dependencies).forEach((key) => {
+                if (key.startsWith("@xyd-js/")) {
+                    packageJsonContent.dependencies[key] = "workspace:*";
+                }
+            })
         }
 
         // Ensure the build directory exists

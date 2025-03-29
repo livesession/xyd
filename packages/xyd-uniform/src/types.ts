@@ -90,7 +90,7 @@ export interface CodeBlockTab {
 
     // code in the tab e.g "console.log('Hello World')"
     code: string
-    
+
     // language of the code e.g "js"
     language: string;
 
@@ -98,7 +98,8 @@ export interface CodeBlockTab {
     context?: ExampleContext;
 }
 
-export interface Reference {
+// TODO: type, and category also as generic?
+export interface Reference<C = ReferenceContext> {
     title: string;
     description: string;
     canonical: string;
@@ -108,14 +109,13 @@ export interface Reference {
 
     category?: ReferenceCategory; // TODO: do we need that?
     type?: ReferenceType; // TODO: do we need that?
-    context?: ReferenceContext;
+    context?: C;
 }
 
 export interface Definition {
     title: string;
 
     properties: DefinitionProperty[];
-
 
     type?: string;
 

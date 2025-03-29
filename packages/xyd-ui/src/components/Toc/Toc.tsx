@@ -17,8 +17,11 @@ const Context = React.createContext({
 export function Toc({children, defaultValue}: TocProps) {
     const [activeTrackHeight, setActiveTrackHeight] = useState(0)
     const [activeTrackTop, setActiveTrackTop] = useState(0)
-
     const [value, setValue] = useState(defaultValue || "")
+
+    function onChange(v: string) {
+        setValue(v)
+    }
 
     // TODO: more reactish implt?
     function handleScroll() {
@@ -37,11 +40,6 @@ export function Toc({children, defaultValue}: TocProps) {
         const {offsetTop} = activeElement.parentElement as HTMLElement;
         setActiveTrackTop(offsetTop);
     }
-
-    function onChange(v: string) {
-        setValue(v)
-    }
-
 
     // TODO: more reactish
     useEffect(() => {

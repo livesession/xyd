@@ -1,5 +1,29 @@
 # @xyd-js/content
 
+## 0.1.0-xyd.10
+
+### Patch Changes
+
+- refactor, tweaks and ui changes
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.9
+
+## 0.1.0-xyd.9
+
+### Patch Changes
+
+- ui tweaks
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.8
+
+## 0.1.0-xyd.8
+
+### Patch Changes
+
+- ui tweaks, and some code refactor
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.7
+
 ## 0.1.0-xyd.7
 
 ### Patch Changes

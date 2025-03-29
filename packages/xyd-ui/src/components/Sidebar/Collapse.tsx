@@ -18,6 +18,45 @@ export function UICollapse({
     const animationRef = useRef<number | null>(null);
     const initialOpen = useRef(isOpen);
     const initialRender = useRef(true);
+    const observerRef = useRef<MutationObserver | null>(null);
+
+    const measureAndUpdateDimensions = () => {
+        const container = containerRef.current;
+        const inner = innerRef.current;
+        if (!container || !inner) return;
+
+        // Temporarily make all nested content visible for measurement
+        const nestedCollapses = inner.querySelectorAll('[class*="collapse"]');
+        const originalStyles: Array<{ element: HTMLElement; height: string; overflow: string }> = [];
+
+        nestedCollapses.forEach((collapse) => {
+            if (collapse instanceof HTMLElement) {
+                originalStyles.push({
+                    element: collapse,
+                    height: collapse.style.height,
+                    overflow: collapse.style.overflow
+                });
+                collapse.style.height = 'auto';
+                collapse.style.overflow = 'visible';
+            }
+        });
+
+        if (horizontal) {
+            const width = inner.scrollWidth;
+            container.style.width = `${width}px`;
+            inner.style.width = `${width}px`;
+        } else {
+            const height = inner.scrollHeight;
+            container.style.height = `${height}px`;
+            inner.style.height = `${height}px`;
+        }
+
+        // Restore original styles
+        originalStyles.forEach(({element, height, overflow}) => {
+            element.style.height = height;
+            element.style.overflow = overflow;
+        });
+    };
 
     useEffect(() => {
         const container = containerRef.current;
@@ -28,39 +67,66 @@ export function UICollapse({
         }
         if (initialRender.current || !container || !inner) return;
 
+        // Clean up previous observer
+        if (observerRef.current) {
+            observerRef.current.disconnect();
+        }
+
         if (isOpen) {
             // Opening animation
-            if (horizontal) {
-                inner.style.width = `${inner.scrollWidth}px`;
-                container.style.width = `${inner.scrollWidth}px`;
-            } else {
-                inner.style.height = `${inner.scrollHeight}px`;
-                container.style.height = `${inner.scrollHeight}px`;
-            }
+            measureAndUpdateDimensions();
+
+            // Set up mutation observer to watch for content changes
+            observerRef.current = new MutationObserver((mutations) => {
+                // Check if the mutation affects height
+                const shouldUpdate = mutations.some(mutation => {
+                    return mutation.type === 'childList' ||
+                           mutation.type === 'attributes' ||
+                           (mutation.type === 'characterData' && mutation.target.parentElement?.closest('[class*="collapse"]'));
+                });
+
+                if (shouldUpdate) {
+                    measureAndUpdateDimensions();
+                }
+            });
+
+            observerRef.current.observe(inner, {
+                childList: true,
+                subtree: true,
+                characterData: true,
+                attributes: true
+            });
 
             animationRef.current = window.setTimeout(() => {
                 container.style.removeProperty(horizontal ? "width" : "height");
+                inner.style.removeProperty(horizontal ? "width" : "height");
+                if (observerRef.current) {
+                    observerRef.current.disconnect();
+                }
             }, 300);
         } else {
             // Closing animation
             if (horizontal) {
-                const width = container.scrollWidth; // Cache current width
-                container.style.width = `${width}px`; // Set to fixed width first
-
-                // Force reflow for Firefox
-                container.offsetWidth;
-
+                const width = container.scrollWidth;
+                container.style.width = `${width}px`;
+                container.offsetWidth; // Force reflow
                 container.style.width = "0px";
             } else {
-                const height = container.scrollHeight; // Cache current height
-                container.style.height = `${height}px`; // Set to fixed height first
-
-                // Force reflow for Firefox
-                container.offsetHeight;
-
+                const height = container.scrollHeight;
+                container.style.height = `${height}px`;
+                container.offsetHeight; // Force reflow
                 container.style.height = "0px";
             }
         }
+
+        return () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+            if (animationRef.current) {
+                clearTimeout(animationRef.current);
+            }
+        };
     }, [horizontal, isOpen]);
 
     useEffect(() => {
