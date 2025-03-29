@@ -33,6 +33,17 @@ class SourceUniformPreset extends UniformPreset {
         )
     }
 
+    static new(
+        settings: Settings,
+        options: sourcesPresetsOptions
+    ) {
+        return new SourceUniformPreset(settings)
+            .root(options.root || "")
+            .urlPrefix(options.urlPrefix || "")
+            .sourceTheme(true)
+            .newUniformPreset()(settings)
+    }
+
     // TODO: options to specify only specific packages?
     protected override async uniformRefResolver(filePath: string): Promise<Reference[]> {
         if (!filePath) {
@@ -49,15 +60,6 @@ class SourceUniformPreset extends UniformPreset {
         return ref || []
     }
 
-    static new(
-        settings: Settings,
-        options: sourcesPresetsOptions
-    ) {
-        return new SourceUniformPreset(settings)
-            .root(options.root || "")
-            .urlPrefix(options.urlPrefix || "")
-            .sourceTheme(true)
-            .newUniformPreset()(settings)
-    }
+
 }
 

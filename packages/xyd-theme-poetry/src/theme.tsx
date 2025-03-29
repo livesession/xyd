@@ -20,6 +20,7 @@ import {
 import "@xyd-js/ui/index.css";
 import "@xyd-js/components/index.css";
 import '@xyd-js/atlas/index.css';
+import "@xyd-js/atlas/tokens.css"
 
 import './index.css';
 import './override.css';

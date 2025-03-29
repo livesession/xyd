@@ -7,7 +7,7 @@ export const $sample = {
         min-width: 0;
         max-width: 512px;
 
-        border: 1px solid var(--atlas-comp-code-sample-border-color);
+        border: 1px solid var(--XydAtlas-Component-Code-Sample__color-border);
         border-radius: 16px;
     `,
 }
@@ -46,18 +46,18 @@ export const $languages = {
         padding: 6px;
 
         font-size: 14px;
-        color: var(--atlas-comp-code-sample-color);
+        color: var(--XydAtlas-Component-Code-Sample__color);
 
         &[data-state="active"] {
-            color: var(--atlas-comp-code-sample-color--active);
-            border-bottom: 1px solid var(--atlas-comp-code-sample-color--active);
+            color: var(--XydAtlas-Component-Code-Sample__color--active);
+            border-bottom: 1px solid var(--XydAtlas-Component-Code-Sample__color--active);
             border-bottom-left-radius: 0px;
             border-bottom-right-radius: 0px;
         }
 
         &:hover {
             transition: ease-in 0.1s;
-            background: var(--atlas-comp-code-sample-background);
+            background: var(--XydAtlas-Component-Code-Sample__color-background);
         }
     `,
     description: css`
@@ -66,7 +66,7 @@ export const $languages = {
         gap: 4px;
 
         font-size: 14px;
-        color: var(--atlas-comp-code-sample-color);
+        color: var(--XydAtlas-Component-Code-Sample__color);
 
         margin-left: 4px;
         margin-right: 4px;
@@ -95,7 +95,7 @@ export const $code = {
         margin: 0;
         padding: 8px 16px;
 
-        border-top: 1px solid var(--atlas-comp-code-sample-border-color);
+        border-top: 1px solid var(--XydAtlas-Component-Code-Sample__color-border);
         border-bottom-left-radius: 10px;
         border-bottom-right-radius: 10px;
 
@@ -119,8 +119,8 @@ export const $mark = {
         flex: 1 1 0%;
     `,
     $$annotated: css`
-        border-color: var(--atlas-comp-code-sample-mark-border--active);
-        background-color: var(--atlas-comp-code-sample-mark-background--active);
+        border-color: var(--XydAtlas-Component-Code-Sample__color-markBorder--active);
+        background-color: var(--XydAtlas-Component-Code-Sample__color-markBackground--active);
     `
 }
 

@@ -30,14 +30,6 @@ class GraphQLUniformPreset extends UniformPreset {
         )
     }
 
-    protected override async uniformRefResolver(filePath: string): Promise<Reference[]> {
-        if (!filePath) {
-            return []
-        }
-
-        return await gqlSchemaToReferences(filePath)
-    }
-
     static new(
         settings: Settings,
         options: graphqlPluginOptions
@@ -46,6 +38,14 @@ class GraphQLUniformPreset extends UniformPreset {
             .root(options.root || "")
             .urlPrefix(options.urlPrefix || "")
             .newUniformPreset()(settings)
+    }
+
+    protected override async uniformRefResolver(filePath: string): Promise<Reference[]> {
+        if (!filePath) {
+            return []
+        }
+
+        return await gqlSchemaToReferences(filePath)
     }
 }
 

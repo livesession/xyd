@@ -30,15 +30,6 @@ class OpenAPIUniformPreset extends UniformPreset {
         )
     }
 
-    protected override async uniformRefResolver(filePath: string): Promise<Reference[]> {
-        if (!filePath) {
-            return []
-        }
-
-        const schema = await deferencedOpenAPI(filePath)
-        return oapSchemaToReferences(schema)
-    }
-
     static new(
         settings: Settings,
         options: openapiPresetOptions
@@ -48,5 +39,15 @@ class OpenAPIUniformPreset extends UniformPreset {
             .urlPrefix(options.urlPrefix || "")
             .newUniformPreset()(settings)
     }
+
+    protected override async uniformRefResolver(filePath: string): Promise<Reference[]> {
+        if (!filePath) {
+            return []
+        }
+
+        const schema = await deferencedOpenAPI(filePath)
+        return oapSchemaToReferences(schema)
+    }
+
 }
 
