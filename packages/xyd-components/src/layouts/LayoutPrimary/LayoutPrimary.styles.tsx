@@ -1,14 +1,14 @@
 import {css} from "@linaria/core";
 
 const globalPageGutter = '8px';
-export const globalHeaderHeight = '46px';
+export const globalHeaderHeight = '50px';
 const globalHeaderWarningHeight = "0px";
 const contentTopSpace = "12px";
 
-const globalHeaderHeightWithSub = '90px';
+const globalHeaderHeightWithSub = '94px';
 
 const cubicMove = "cubic-bezier(.65, 0, .35, 1)";
-const sidebarWidth = "300px";
+const sidebarWidth = "276px";
 
 const tabletBreakpoint = '1024px';
 const mobileBreakpoint = '768px';
@@ -281,7 +281,7 @@ export const LayoutPrimaryPageScroll = css`
 `;
 
 export const LayoutPrimaryPageContainer = css`
-    max-width: 950px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 ${globalPageGutter};
 `;
@@ -318,7 +318,7 @@ export const LayoutPrimaryArticleContent = css`
 
 export const LayoutPrimaryArticleNav = css`
     flex: none;
-    width: 240px;
+    width: 256px;
     position: sticky;
     top: 0;
     height: fit-content;

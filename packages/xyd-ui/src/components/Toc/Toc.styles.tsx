@@ -16,7 +16,7 @@ export const TocUl = css`
 export const TocLi = css`
     position: relative;
     line-height: 1.5;
-    margin: 0 0 10px;
+    margin: 0 0 12px;
     padding: 0;
 `;
 
@@ -30,7 +30,7 @@ export const TocLink = css`
 `;
 
 export const TocLinkActive = css`
-    font-weight: 500;
+    font-weight: 600;
     color: #353740;
 `;
 

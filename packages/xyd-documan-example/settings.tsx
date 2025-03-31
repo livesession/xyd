@@ -144,11 +144,11 @@ export default {
                     "name": "API",
                     "items": [
                         {
-                            "name": "Browser",
+                            "name": "BrowserJS",
                             "url": "/docs/api/browser"
                         },
                         {
-                            "name": "REST",
+                            "name": "Rest API",
                             "url": "/docs/api/rest"
                         },
                         {

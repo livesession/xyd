@@ -2,8 +2,7 @@ import {css} from "@linaria/core";
 
 export const HeadingHost = css`
     line-height: 40px;
-    font-weight: 300;
-    color: #202123;
+    font-weight: 600;
 
     position: relative;
     display: inline-block;

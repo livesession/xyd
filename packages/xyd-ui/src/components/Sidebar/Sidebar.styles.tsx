@@ -1,9 +1,10 @@
 import {css} from "@linaria/core";
+import colors from "@livesession/design-system-colors"
 
 export const SidebarHost = css`
-    background: #f9f9f9;
+    background: ${colors.dark8};
     height: 100%;
-    border-radius: 0.5rem;
+    border-radius: 4px;
     display: flex;
     flex-direction: column;
 `;
@@ -12,7 +13,7 @@ export const SidebarUl = css`
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
-    padding: 1rem;
+    padding: 8px;
 
     // TODO: get height of top
     //height: calc(100vh - 54px);
@@ -68,22 +69,22 @@ export const ItemHost = css`
 export const ItemLink = css`
     display: flex;
     width: 100%;
-    padding: 2px;
     font-weight: 500;
 `;
 
 export const ItemLinkActive = css`
-    background: #fff;
-    color: #111827;
+    background: ${colors.dark16};
     border-radius: 4px;
     position: relative;
+    font-weight: 600;
+    color: ${colors.dark100};
     
     &::before {
         background: #7051d4;
         border-radius: 0 2px 2px 0;
         bottom: 7px;
         content: "";
-        left: 1px;
+        left: 5px;
         position: absolute;
         top: 7px;
         width: 4px;
@@ -92,23 +93,21 @@ export const ItemLinkActive = css`
 `;
 
 export const ItemLinkParentActive = css`
-    color: #111827;
     font-weight: 600;
     background: transparent;
 `;
 
 export const ItemLinkActiveSecondary = css`
     background: unset;
-    color: #111827;
     font-weight: 500;
 `;
 
 export const ItemLinkItem = css`
     display: flex;
     width: 100%;
-    padding: 8px 12px;
+    padding: 8px 12px 8px 16px;
     position: relative;
-    font-size: 15px;
+    font-size: 14px;
 
     &:hover {
         background: #ececf1;

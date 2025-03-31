@@ -1,4 +1,5 @@
 import {css} from "@linaria/core";
+import colors from "@livesession/design-system-colors"
 
 export const GuideHost = css``;
 
@@ -8,15 +9,15 @@ export const GuideHostSecondary = css`
     display: flex;
     position: relative;
     overflow: hidden;
-    border: .5px solid #ececf1;
-    background: linear-gradient(238deg, rgba(247, 247, 248, .5) 0%, rgba(247, 247, 248, 1) 100%);
+    border: 1px solid ${colors.dark16};
+    background: ${colors.dark8};
     border-radius: 8px;
-    padding: 16px 20px 20px;
+    padding: 24px;
     z-index: 0;
     transition: box-shadow .2s ease-in-out, background-image .2s ease;
 
     &:hover {
-        background: linear-gradient(238deg, rgba(255, 255, 255, .5) 0%, rgba(250, 250, 250, 1) 100%);
+        background: ${colors.white};
     }
 `;
 
@@ -53,15 +54,11 @@ export const GuideItemSecondary = css`
 export const GuideIcon = css`
     line-height: 0px;
     font-size: 24px;
-    border-radius: 8px;
-    width: 48px;
-    height: 48px;
+    height: 32px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #353740;
-    border: 1px solid #ececf1;
-    background: linear-gradient(238deg, rgba(255, 255, 255, .5) 0%, rgba(250, 250, 250, 1) 100%);
+    color: #000;
     transition: background .2s ease;
     box-sizing: border-box;
     flex-shrink: 0;
@@ -76,8 +73,8 @@ export const GuideRight = css`
 
 export const GuideTitle = css`
     display: flex;
-    color: #202123;
-    font-weight: 400;
+    color: #000;
+    font-weight: 600;
     align-items: center;
     transition: color .15s;
 `;
@@ -96,7 +93,7 @@ export const GuideBody = css`
     font-size: 14px;
     line-height: 20px;
 
-    color: #6e6e80;
+    color: ${colors.dark80};
     white-space: normal;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -118,5 +115,5 @@ export const GuideListHost = css`
     display: grid;
     grid-template-columns: 1fr 1fr;
     justify-content: center;
-    gap: 30px;
+    gap: 24px;
 `;
