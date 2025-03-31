@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as cn from "./Code.styles.tsx";
+import * as cn from "./Code.styles";
 import {Loader} from "../../ui";
 
 export function CodeLoader() {

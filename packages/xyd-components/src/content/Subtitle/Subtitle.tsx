@@ -1,14 +1,5 @@
 import React from "react"
-import {css} from "@linaria/core";
-
-const cn = {
-    Host: css`
-        margin-top: -18px;
-        font-size: 18px;
-        color: #6e6e80;
-        font-weight: 300;
-    `
-}
+import * as cn from "./Subtitle.styles";
 
 export interface SubtitleProps {
     children: React.ReactNode

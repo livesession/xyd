@@ -91,6 +91,4 @@ export abstract class BaseTheme extends BaseThemeSettings {
 
         return <FwToc/>
     }
-
-
 }

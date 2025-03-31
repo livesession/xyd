@@ -4,8 +4,8 @@ import {InnerLine, Pre} from "codehike/code";
 import {Theme} from "@code-hike/lighter";
 
 import {CodeTheme, type CodeThemeBlockProps} from "../CodeTheme";
-import * as cn from "./Code.styles.tsx";
-import {CodeLoader} from "./CodeLoader.tsx";
+import * as cn from "./Code.styles";
+import {CodeLoader} from "./CodeLoader";
 
 export interface CodeProps {
     codeblocks: CodeThemeBlockProps[];

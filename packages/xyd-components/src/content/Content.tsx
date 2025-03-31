@@ -88,8 +88,7 @@ export function stdContent() {
         table: TableV2,
         tr: TableV2.Tr,
         th: TableV2.Th,
-        td: TableV2.Td,
-        td: (props) => <TableV2.Td {...props} >
+        td: (props) => <TableV2.Td {...props}>
             <TableV2.Cell>
                 {props.children}
             </TableV2.Cell>

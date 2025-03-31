@@ -1,5 +1,3 @@
-import React from "react"
-
 import {
     BaseTheme,
     BaseThemeSettings,
@@ -9,14 +7,11 @@ import {
     type ThemeProps,
 } from "@xyd-js/themes"
 
-import "@xyd-js/components/index.css"; // TODO: ui and components should be impoted via base theme?
-import "@xyd-js/ui/index.css"; // TODO: ui and components should be impoted via base theme?
-import '@xyd-js/atlas/index.css';
-import "@xyd-js/atlas/tokens.css"
+import "@xyd-js/themes/index.css"
 
 import './index.css';
-import './vars.css';
 import './override.css';
+import './vars.css';
 
 class ThemePoetry extends BaseTheme {
     static new(props: ThemeProps<BaseThemeSettings>) {

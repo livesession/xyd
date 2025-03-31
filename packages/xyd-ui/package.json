@@ -17,9 +17,10 @@
     "package.json"
   ],
   "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "dev": "rollup -c rollup.config.js --watch",
     "clean": "rimraf build",
-    "prebuild": "pnpm clean",
-    "build": "rollup -c rollup.config.js"
+    "prebuild": "pnpm clean"
   },
   "dependencies": {
     "@linaria/atomic": "^6.2.0",

@@ -7,7 +7,7 @@ import {
 import {
     CodeCopy,
 } from "../CodeCopy";
-import * as cn from "./CodeTabs.styles.tsx"; // TODO: style by highlighted?
+import * as cn from "./CodeTabs.styles"; // TODO: style by highlighted?
 
 export interface CodeTabsProps {
     description: string;

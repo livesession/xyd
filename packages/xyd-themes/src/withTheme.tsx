@@ -1,8 +1,7 @@
 import React from "react";
 
-import {BaseThemeSettings} from "./settings";
 import {type ThemeProps} from "./types";
-import {BaseTheme} from "./BaseTheme";
+import {BaseThemeSettings} from "./settings";
 
 type ThemeClass<T extends BaseThemeSettings> = {
     new (): BaseThemeSettings;

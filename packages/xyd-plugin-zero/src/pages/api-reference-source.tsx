@@ -248,25 +248,6 @@ function mdxContent(code: string) {
     }
 }
 
-// TODO: below is a concept only
-// class MyThemeSettings extends BaseThemeSettings {
-//     private constructor() {
-//         super();
-//
-//         this.toc.hide(true)
-//         this.sidebar.clientSideRouting(true)
-//         this.layout.size("large")
-//     }
-//
-//     override abc() {
-//
-//     }
-//
-//     static new() {
-//         return new MyThemeSettings()
-//     }
-// }
-
 // TODO: in the future more smoother loader - first fast server render then move to ideal position of client and then replace and 3 items at start
 export default function APIReference({loaderData}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react"
 
-import * as cn from "./LayoutPrimary.styles.tsx"
+import * as cn from "./LayoutPrimary.styles"
 
 export interface LayoutPrimaryProps {
     header: React.ReactNode;

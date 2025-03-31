@@ -1,5 +1,5 @@
 import React from "react";
-import * as cn from "./Loader.styles.tsx";
+import * as cn from "./Loader.styles";
 
 export interface LoaderProps {
   size?: "small" | "medium" | "large";

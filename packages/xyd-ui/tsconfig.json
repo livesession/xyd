@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "esnext",
     "esModuleInterop": true,
-    "moduleResolution": "bundler", // Update this line
+    "moduleResolution": "bundler",
     "target": "ES6",
     "lib": [
       "dom",
@@ -12,7 +12,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
-    "noEmit": true,
+    "noEmit": false,
     "incremental": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -23,7 +23,6 @@
       }
     ],
     "strictNullChecks": true,
-    "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "paths": {
       "*": ["*", "*.ts"]

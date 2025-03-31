@@ -59,7 +59,5 @@ class SourceUniformPreset extends UniformPreset {
 
         return ref || []
     }
-
-
 }
 

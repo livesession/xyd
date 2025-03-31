@@ -5,8 +5,7 @@ import * as cn from "./Details.styles";
 interface BaseDetailsProps {
     children: React.ReactNode;
     label: string;
-
-    icon?: React.SVGProps<SVGSVGElement>;
+    icon?: React.ReactElement;
 }
 
 interface TertiaryDetailsProps extends BaseDetailsProps {
@@ -47,18 +46,18 @@ export function Details(props: DetailsProps) {
         ${isDeepKind && cn.DetailsSummarySecondary}
         ${kind === "tertiary" ? cn.DetailsSummaryTertiary : ""}
    `}>
-            {kind === "primary" && <>
-                    {props.icon ? props.icon : <Icon/>}
-                <Label>
-                    {label}
-                </Label>
-            </>}
-            {isDeepKind && <>
+            {kind === "primary" && (
+                <>
+                    {props.icon || <Icon/>}
+                    <Label>
+                        {label}
+                    </Label>
+                </>
+            )}
+            {isDeepKind && (
                 <div>
                     <div className={cn.DetailsSummaryDeep}>
-                        <>
-                            {props.icon ? props.icon : <IconDeep/>}
-                        </>
+                        {props.icon || <IconDeep/>}
                         <div className={`
                             ${cn.DetailsSummaryDeepText}
                             ${cn.DetailsSummaryDeepTextTertiary}
@@ -70,8 +69,8 @@ export function Details(props: DetailsProps) {
                         {label}
                     </Label>
                 </div>
-                <Icon/>
-            </>}
+            )}
+            {isDeepKind && <Icon/>}
         </summary>
 
         <div className={`

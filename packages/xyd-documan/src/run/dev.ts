@@ -27,8 +27,7 @@ export async function dev() {
             fs: {
                 allow: [
                     allowCwd,
-                    process.env.XYD_CLI ? path.join(__dirname, "../../") : "",
-                    // path.join(__dirname, "../node_modules") // Ensure node_modules from xyd-documan is included
+                    process.env.XYD_CLI ? __dirname : path.join(__dirname, "../host"),
                 ]
             }
         },
