@@ -1,8 +1,6 @@
 import type {Preview} from "@storybook/react";
 
-import "@xyd-js/atlas/index.css"
-import "@xyd-js/atlas/tokens.css"
-import "@xyd-js/fable-wiki/theme.css" // TODO: remove in the future but now it imports fonts, and other xyd-js components css
+import "@xyd-js/theme-poetry/index.css" // TODO: in the future configurable themes via UI?
 
 import './styles.css'
 

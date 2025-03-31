@@ -1088,6 +1088,9 @@ importers:
       '@xyd-js/fable-wiki':
         specifier: workspace:*
         version: link:../fable-wiki
+      '@xyd-js/theme-poetry':
+        specifier: workspace:*
+        version: link:../xyd-theme-poetry
       '@xyd-js/ui':
         specifier: workspace:*
         version: link:../xyd-ui

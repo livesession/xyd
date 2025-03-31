@@ -1,5 +1,15 @@
 ## Commands
 ### Dev
+Install packages
+```
+pnpm i
+```
+
+### Dev
+Clear
+```
+./clear.sh
+```
 
 Start packages development mode
 ```
