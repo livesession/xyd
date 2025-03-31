@@ -5,21 +5,18 @@ import {Reference} from "@xyd-js/uniform";
 import {MDXReference} from "@/utils/mdx";
 import {ApiRefItem} from "@/components/ApiRef";
 
-import {
-    $atlas
-} from "@/components/Atlas/Atlas.styles";
+import * as cn from "@/components/Atlas/Atlas.styles";
 
 export interface AtlasProps {
     references: MDXReference<Reference[]> | []
 }
 
 export function Atlas(props: AtlasProps) {
-    return <div className={$atlas.host}>
+    return <div className={cn.AtlasHost}>
         {
             props.references?.map((reference, i) => <div key={i}>
                     <ApiRefItem
                         reference={{
-
                             ...reference
                         }}
                     />

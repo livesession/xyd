@@ -1,7 +1,7 @@
 import React from "react"
 import * as RadixTabs from "@radix-ui/react-tabs";
 
-import {$subNav} from "./SubNav.styles";
+import * as cn from "./SubNav.styles";
 
 export interface SubNavProps {
     children: React.ReactNode
@@ -12,12 +12,12 @@ export interface SubNavProps {
 
 export function SubNav({children, title, value, onChange}: SubNavProps) {
     return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
-        <nav className={$subNav.host}>
-            <div className={$subNav.prefix}>
+        <nav className={cn.SubNavHost}>
+            <div className={cn.SubNavPrefix}>
                 {title}
             </div>
             <RadixTabs.List asChild>
-                <ul className={$subNav.ul}>
+                <ul className={cn.SubNavUl}>
                     {children}
                 </ul>
             </RadixTabs.List>
@@ -33,8 +33,8 @@ export interface SubNavItemProps {
 
 SubNav.Item = function SubNavItem({children, value, href}: SubNavItemProps) {
     return <RadixTabs.Trigger asChild value={value}>
-        <li className={$subNav.li}>
-            <a href={href} className={`${$subNav.link}`}>
+        <li className={cn.SubNavLi}>
+            <a href={href} className={cn.SubNavLink}>
                 {children}
             </a>
         </li>

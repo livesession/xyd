@@ -24,6 +24,7 @@
   "dependencies": {
     "@xyd-js/xtokens": "workspace:*",
     "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/themes": "workspace:*",
     "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0"
   },

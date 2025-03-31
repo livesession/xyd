@@ -1,7 +1,7 @@
 import React from "react"
 import {ArrowLeftIcon, ArrowRightIcon} from '@radix-ui/react-icons'
 
-import {$navLinks} from "./NavLinks.styles";
+import * as cn from "./NavLinks.styles";
 
 function Anchor({children, ...rest}) {
     return <a {...rest}>
@@ -22,14 +22,14 @@ export interface NavLinksProps {
 
 export function NavLinks(props: NavLinksProps) {
     return (
-        <div className={$navLinks.host}>
+        <div className={cn.NavLinksHost}>
             {props.prev ? (
                 <Anchor
                     href={props.prev.href}
                     title={props.prev.title}
-                    className={$navLinks.link}
+                    className={cn.NavLinksLink}
                 >
-                    <ArrowLeftIcon className={$navLinks.icon}/>
+                    <ArrowLeftIcon className={cn.NavLinksIcon}/>
                     {props.prev.title}
                 </Anchor>
             ) : <div/>}
@@ -37,10 +37,10 @@ export function NavLinks(props: NavLinksProps) {
                 <Anchor
                     href={props.next.href}
                     title={props.next.title}
-                    className={$navLinks.link}
+                    className={cn.NavLinksLink}
                 >
                     {props.next.title}
-                    <ArrowRightIcon className={$navLinks.icon}/>
+                    <ArrowRightIcon className={cn.NavLinksIcon}/>
                 </Anchor>
             )}
         </div>

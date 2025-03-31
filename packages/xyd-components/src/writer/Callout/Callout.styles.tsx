@@ -1,50 +1,46 @@
 import {css} from "@linaria/core";
 
-export const $callout = {
-    host: css`
-        display: inline-flex;
-        align-items: center;
+export const CalloutHost = css`
+    display: inline-flex;
+    align-items: center;
 
-        position: relative;
-        width: 100%;
-        min-width: 275px;
-        padding: 8px 12px;
+    position: relative;
+    width: 100%;
+    min-width: 275px;
+    padding: 8px 12px;
 
-        border-radius: 8px;
+    border-radius: 8px;
 
-        text-align: center;
+    text-align: center;
 
-        border: 1px solid #ececf1;
-    `,
-    $$neutral: css`
-        background-color: #f7f7f8;
+    border: 1px solid #ececf1;
+`;
 
-        border-color: #ececf1;
-    `
-}
+export const CalloutNeutral = css`
+    background-color: #f7f7f8;
 
-export const $icon = {
-    host: css`
-        display: inline-flex;
-        margin-right: 14px;
-        flex: 0 0 auto;
-        align-self: flex-start;
+    border-color: #ececf1;
+`;
 
-        color: #6e6e80;
-        font-size: 20px;
-        margin-top: 2px;
-    `
-}
+export const CalloutIcon = css`
+    display: inline-flex;
+    margin-right: 14px;
+    flex: 0 0 auto;
+    align-self: flex-start;
 
-export const $message = {
-    host: css`
-        color: #353740;
-        text-align: left;
+    color: #6e6e80;
+    font-size: 20px;
+    margin-top: 2px;
+`;
 
-        flex: 1 1 auto;
-    `,
-    body: css`
-        font-size: 14px;
-        line-height: 20px;
-    `
-}
+export const CalloutMessage = css`
+    color: #353740;
+    text-align: left;
+
+    flex: 1 1 auto;
+`;
+
+export const CalloutMessageBody = css`
+    font-size: 14px;
+    line-height: 20px;
+`;

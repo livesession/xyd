@@ -1,13 +1,13 @@
 import React from "react"
 
-import {$table} from "./Table.styles";
+import * as cn from "./Table.styles";
 
 export interface TableProps {
     children: React.ReactNode;
 }
 
 export function Table({children}: TableProps) {
-    return <table className={$table.host}>
+    return <table className={cn.TableHost}>
         {children}
     </table>
 }
@@ -17,7 +17,7 @@ export interface TableThProps {
 }
 
 Table.Th = function TableTh({children}: TableThProps) {
-    return <th className={$table.th}>
+    return <th className={cn.TableTh}>
         {children}
     </th>
 }
@@ -27,7 +27,7 @@ export interface TableTrProps {
 }
 
 Table.Tr = function TableTr({children}: TableTrProps) {
-    return <tr className={$table.tr}>
+    return <tr className={cn.TableTr}>
         {children}
     </tr>
 
@@ -38,7 +38,7 @@ export interface TableTdProps {
 }
 
 Table.Td = function TableTd({children}: TableTdProps) {
-    return <td className={$table.td}>
+    return <td className={cn.TableTd}>
         {children}
     </td>
 

@@ -1,3 +1,3 @@
 export {
     mapSettingsToProps
-} from "./settings-to-props"
+} from "./mapSettingsToProps"

@@ -2,7 +2,7 @@ import React, {Fragment} from 'react'
 import type {ReactElement} from 'react'
 import {ArrowRightIcon} from '@radix-ui/react-icons'
 
-import {$breadcrumbs} from './Breadcrumbs.styles'
+import * as cn from './Breadcrumbs.styles'
 
 function Anchor({children, ...rest}) {
     return <a {...rest}>
@@ -19,16 +19,16 @@ export interface BreadcrumbsProps {
 
 export function Breadcrumbs(props: BreadcrumbsProps): ReactElement {
     return (
-        <div className={$breadcrumbs.host}>
+        <div className={cn.BreadcrumbsHost}>
             {props.items.map((item, index) => {
                 const lastActive = index === props.items.length - 1
 
                 return (
                     <Fragment key={item.href + item.title}>
-                        {index > 0 && <ArrowRightIcon className={$breadcrumbs.icon}/>}
+                        {index > 0 && <ArrowRightIcon className={cn.BreadcrumbsIcon}/>}
                         <div className={`
-                            ${$breadcrumbs.item}
-                            ${lastActive && $breadcrumbs.item$$active}
+                            ${cn.BreadcrumbsItem}
+                            ${lastActive && cn.BreadcrumbsItemActive}
                         `}
                              title={item.title}
                         >

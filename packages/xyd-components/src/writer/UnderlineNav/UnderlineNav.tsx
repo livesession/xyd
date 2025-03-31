@@ -1,7 +1,7 @@
 import React from "react"
 import * as RadixTabs from "@radix-ui/react-tabs";
 
-import {$nav} from "./UnderlineNav.styles"
+import * as cn from "./UnderlineNav.styles"
 
 export interface TabsProps {
     children: React.ReactNode
@@ -11,9 +11,9 @@ export interface TabsProps {
 
 export function UnderlineNav({children, value, onChange}: TabsProps) {
     return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
-        <nav className={$nav.host}>
+        <nav className={cn.UnderlineNavHost}>
             <RadixTabs.List asChild>
-                <ul className={$nav.ul}>
+                <ul className={cn.UnderlineNavUl}>
                     {children}
                 </ul>
             </RadixTabs.List>
@@ -29,8 +29,8 @@ export interface UnderlineNavItemProps {
 
 UnderlineNav.Item = function UnderlineNavItem({children, value, href}: UnderlineNavItemProps) {
     return <RadixTabs.Trigger asChild value={value}>
-        <li className={$nav.item}>
-            <a href={href} className={`${$nav.itemLink}`}>
+        <li className={cn.UnderlineNavItem}>
+            <a href={href} className={`${cn.UnderlineNavItemLink}`}>
                 {children}
             </a>
         </li>

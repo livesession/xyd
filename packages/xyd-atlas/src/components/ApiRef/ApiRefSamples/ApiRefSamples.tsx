@@ -5,17 +5,14 @@ import {MDXReference} from "@/utils/mdx"
 import {CodeExampleButtons, CodeSample} from "@/components/Code";
 import type {MDXCodeSampleBlock} from "@/components/Code/CodeSample/CodeSample";
 
-import {
-    $container,
-    $group
-} from "./ApiRefSamples.styles";
+import * as cn from "./ApiRefSamples.styles";
 
 export interface ApiRefSamplesProps {
     examples: MDXReference<ExampleRoot>
 }
 
 export function ApiRefSamples({examples}: ApiRefSamplesProps) {
-    return <div className={$container.host}>
+    return <div className={cn.ApiRefSamplesContainerHost}>
         {
             examples.groups?.map(({description, examples}, i) => {
                 const [activeExample, setActiveExample] = useState<MDXReference<Example> | null>(examples?.[0])
@@ -24,7 +21,7 @@ export function ApiRefSamples({examples}: ApiRefSamplesProps) {
                     return tab.code as unknown as MDXCodeSampleBlock // TODO: because atlas use mdx uniform reference - we need to unify it !!!
                 })
 
-                return <div key={i} className={$group.host}>
+                return <div key={i} className={cn.ApiRefSamplesGroupHost}>
                     {
                         examples?.length > 1
                             ? <CodeExampleButtons

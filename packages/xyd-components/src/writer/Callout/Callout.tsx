@@ -1,6 +1,6 @@
 import React from "react"
 
-import {$callout, $icon, $message} from "./Callout.styles";
+import * as cn from "./Callout.styles";
 
 export interface CalloutProps {
     children: React.ReactNode;
@@ -24,12 +24,12 @@ function InfoIcon() {
 }
 
 export function Callout({children}: CalloutProps) {
-    return <div className={`${$callout.host} ${$callout.$$neutral}`}>
-        <div className={$icon.host}>
+    return <div className={`${cn.CalloutHost} ${cn.CalloutNeutral}`}>
+        <div className={cn.CalloutIcon}>
             <InfoIcon/>
         </div>
-        <div className={$message.host}>
-            <div className={$message.body}>
+        <div className={cn.CalloutMessage}>
+            <div className={cn.CalloutMessageBody}>
                 {children}
             </div>
         </div>

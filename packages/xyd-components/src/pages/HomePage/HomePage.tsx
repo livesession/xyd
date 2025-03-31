@@ -1,5 +1,5 @@
 import React from 'react'
-import {css} from "@linaria/core";
+import * as cn from "./HomePage.styles";
 
 import {
     GuideCard,
@@ -8,23 +8,6 @@ import {Button, CTABanner} from "../../brand"
 import {HomeView} from "../../views"
 
 import {IHomePageHero, IHomePageFeature} from "./types";
-
-const $cards = {
-    host: css`
-        display: grid;
-        grid-template-columns: repeat(2, 500px);
-        justify-content: center;
-        gap: 30px;
-
-        @media (max-width: 1200px) {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        @media (max-width: 768px) {
-            grid-template-columns: 1fr;
-        }
-    `,
-}
 
 export interface HomePageProps {
     header: React.ReactNode
@@ -50,11 +33,14 @@ export function HomePage(props: HomePageProps) {
 }
 
 function $Hero(props: HomePageProps) {
+    const subtitle = typeof props.hero?.subtitle === 'string' 
+        ? props.hero.subtitle 
+        : props.hero?.subtitle?.toString() || "";
+
     return <CTABanner>
         <CTABanner.Heading
             title={props.hero?.text || ""}
-            headingEffect={props.hero?.textEffect}
-            subtitle={props.hero?.subtitle}
+            subtitle={subtitle}
         />
         {props?.hero?.actions && <CTABanner.ButtonGroup>
             {props?.hero?.actions.map((action, index) => (
@@ -72,7 +58,7 @@ function $Cards(props: HomePageProps) {
     // TODO: cards gridTemplateColumns based on elements
     return <div
         className={`
-            ${$cards.host}
+            ${cn.HomePageCardsHost}
             xyd_page-comp-homepage-cards
         `}>
         {props.features?.map((feat, index) => (

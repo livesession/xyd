@@ -1,50 +1,47 @@
 import {css} from "@linaria/core";
 
-export const $mark = {
-    host: css`
-        display: flex;
-        border-left-width: 4px;
-        border-color: transparent;
-        margin: 4px 0;
-    `,
-    line: css`
-        flex: 1 1 0%;
-    `,
-    $$annotated: css`
-        border-color: #60A5FA;
-        background-color: #EEF2FF;
-    `
-}
+export const MarkHost = css`
+    display: flex;
+    border-left-width: 4px;
+    border-color: transparent;
+    margin: 4px 0;
+`;
 
-export const $lineNumber = {
-    host: css`
-        margin: 0 12px 0px 4px;
-        //text-align: right;
-        user-select: none;
-        opacity: 0.5;
-    `
-}
+export const MarkLine = css`
+    flex: 1 1 0%;
+`;
 
-export const $code = {
-    host: css`
-        max-height: 400px;
-        background: linear-gradient(45deg, rgb(247, 247, 248) 0%, rgb(247, 247, 248) 100%) !important;
+export const MarkAnnotated = css`
+    border-color: #60A5FA;
+    background-color: #EEF2FF;
+`;
 
-        margin: 0;
-        padding: 8px 16px;
+export const LineNumberHost = css`
+    margin: 0 12px 0px 4px;
+    //text-align: right;
+    user-select: none;
+    opacity: 0.5;
+`;
 
-        border-top: 1px solid rgb(236, 236, 241);
-        border-bottom-left-radius: 10px;
-        border-bottom-right-radius: 10px;
+export const CodeHost = css`
+    max-height: 400px;
+    background: linear-gradient(45deg, rgb(247, 247, 248) 0%, rgb(247, 247, 248) 100%) !important;
 
-        font-size: 12px;
-        line-height: 20px;
-        white-space: pre-wrap;
-        word-break: break-all;
+    margin: 0;
+    padding: 8px 16px;
 
-        overflow-y: scroll;
-    `,
-    host$$full: css`
-        max-height: 100%;   
-    `
-}
+    border-top: 1px solid rgb(236, 236, 241);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+
+    font-size: 12px;
+    line-height: 20px;
+    white-space: pre-wrap;
+    word-break: break-all;
+
+    overflow-y: scroll;
+`;
+
+export const CodeHostFull = css`
+    max-height: 100%;   
+`;

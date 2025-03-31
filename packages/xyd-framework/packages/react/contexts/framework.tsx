@@ -3,7 +3,7 @@ import React, {createContext, useContext} from "react";
 import {Settings} from "@xyd-js/core";
 import type {ITOC, IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
-import {FwSidebarGroupProps} from "../components/sidebar";
+import {FwSidebarGroupProps} from "../components/Sidebar";
 
 export interface IFramework {
     settings: Settings

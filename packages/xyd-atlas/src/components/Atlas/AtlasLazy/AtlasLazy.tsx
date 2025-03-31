@@ -4,9 +4,7 @@ import {Reference} from "@xyd-js/uniform";
 
 import {MDXReference} from "@/utils/mdx";
 import {ApiRefItem} from "@/components/ApiRef";
-import {
-    $item
-} from "./AtlasLazy.styles";
+import * as cn from "./AtlasLazy.styles";
 
 export interface AtlasLazyProps {
     references: MDXReference<Reference>[]
@@ -21,7 +19,7 @@ export function AtlasLazy(props: AtlasLazyProps) {
             key={i}
             // TODO: slug should be passed from reference or somrthing
             // ref={`api-reference/${reference.title}` === slug ? targetRef : null} // Attach ref to the 30th item
-            className={`${$item.host} ${i === 0 && $item.$$first}`}
+            className={`${cn.AtlasLazyItemHost} ${i === 0 && cn.AtlasLazyItemFirst}`}
             // TODO: slug prefix props
             data-slug={`${props.urlPrefix}/${reference.canonical?.title}`}
         >

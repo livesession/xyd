@@ -1,13 +1,13 @@
 import React from "react"
 
-import {$pre} from "./Pre.styles"
+import * as cn from "./Pre.styles"
 
 export interface PreProps {
     children: React.ReactNode
 }
 
 export function Pre({children}: PreProps) {
-    return <pre className={$pre.host}>
+    return <pre className={cn.PreHost}>
         {children}
     </pre>
 }

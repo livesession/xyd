@@ -9,9 +9,9 @@ declare module 'virtual:xyd-settings' {
 }
 
 declare module 'virtual:xyd-theme' {
-    import type {ITheme} from "@xyd-js/framework";
+    import type {ThemeProps} from "@xyd-js/themes";
 
     // TODO: fix any
-    const Theme: React.ComponentType<ITheme<any>>;
+    const Theme: React.ComponentType<ThemeProps<any>>;
     export default Theme;
 }

@@ -13,13 +13,7 @@ import {
 } from "@/components/Code";
 import {theme as defaultTheme} from "@/components/Code/default-theme" // TODO: support multiple themes
 import {withLocalStored} from "@/components/Code/CodeSample/withLocalStored";
-import {
-    $sample,
-    $languages,
-    $code,
-    $mark,
-    $lineNumber
-} from "./CodeSample.styles";
+import * as cn from "./CodeSample.styles";
 import {CodeLoader} from "@xyd-js/components/coder";
 
 // TODO: try to use codehiki in build time / ASYNC !!! - we need rr server-components
@@ -67,23 +61,23 @@ export function CodeSample(props: CodeSampleProps) {
 
     return (
         <$$LocalStoredTab
-            className={$sample.host}
+            className={cn.CodeSampleHost}
             style={highlighted[0]?.style}
             localStorageKey={`preferredLanguage[${name}]`}
             defaultValue={highlighted[0]?.meta}
         >
-            <div className={$languages.host}>
+            <div className={cn.CodeSampleLanguagesHost}>
                 <$Description description={props.description}/>
 
-                <TabsPrimitive.List className={$languages.list}>
+                <TabsPrimitive.List className={cn.CodeSampleLanguagesList}>
                     {props.codeblocks?.map(({meta}, i) => (
-                        <TabsPrimitive.Trigger value={meta!} key={i} className={$languages.button}>
+                        <TabsPrimitive.Trigger value={meta!} key={i} className={cn.CodeSampleLanguagesButton}>
                             {meta}
                         </TabsPrimitive.Trigger>
                     ))}
                 </TabsPrimitive.List>
 
-                <div className={$languages.copy}>
+                <div className={cn.CodeSampleLanguagesCopy}>
                     {props.codeblocks?.map((codeblock, i) => (
                         <TabsPrimitive.Content value={codeblock.meta!} asChild key={i}>
                             <CodeCopy text={codeblock.value}/>
@@ -95,7 +89,7 @@ export function CodeSample(props: CodeSampleProps) {
             {highlighted?.map((codeblock, i) => (
                 <TabsPrimitive.Content value={codeblock.meta} key={i}>
                     <Pre
-                        className={$code.host}
+                        className={cn.CodeSampleCodeHost}
                         style={codeblock?.style || codeblock?.style}
                         code={codeblock}
                         handlers={[mark, lineNumber]}
@@ -107,8 +101,8 @@ export function CodeSample(props: CodeSampleProps) {
 }
 
 function $Description(props: { description: string }) {
-    return <div className={$languages.description}>
-        <div className={$languages.description$item}>
+    return <div className={cn.CodeSampleLanguagesDescription}>
+        <div className={cn.CodeSampleLanguagesDescriptionItem}>
             {props.description}
         </div>
     </div>
@@ -118,10 +112,10 @@ const mark: AnnotationHandler = {
     name: "Mark",
     Line: ({annotation, ...props}) => {
         return (
-            <div className={`${$mark.host} ${annotation && $mark.$$annotated}`}>
+            <div className={`${cn.CodeSampleMarkHost} ${annotation && cn.CodeSampleMarkAnnotated}`}>
                 <InnerLine
                     merge={props}
-                    className={$mark.line}
+                    className={cn.CodeSampleMarkLine}
                 />
             </div>
         )
@@ -137,7 +131,7 @@ const lineNumber: AnnotationHandler = {
             <>
         <span
             style={{minWidth: `${width}ch`}}
-            className={$lineNumber.host}
+            className={cn.CodeSampleLineNumberHost}
         >
           {props.lineNumber}
         </span>

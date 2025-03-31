@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "paths": {
+        "@xyd-js/themes": ["../xyd-themes/src"],
+    },
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",

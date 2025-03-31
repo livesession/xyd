@@ -1,70 +1,59 @@
 import {css} from "@linaria/core";
 
-export const $title = {
-    host: css`
-        font-size: 30px;
-        font-weight: 400;
-    `,
-    link: css`
-    `,
-}
+export const ApiRefItemTitleHost = css`
+    font-size: 30px;
+    font-weight: 400;
+`;
 
-export const $navbar = {
-    host: css`
-    `,
-    container: css`
-        background: linear-gradient(45deg, rgb(247, 247, 248) 0%, rgb(247, 247, 248) 100%);
+export const ApiRefItemTitleLink = css`
+`;
 
-        padding: 8px;
+export const ApiRefItemNavbarHost = css`
+`;
 
-        border: 1px solid var(--XydAtlas-Component-ApiRef-Item__color-border);
-        border-radius: 8px;
+export const ApiRefItemNavbarContainer = css`
+    background: linear-gradient(45deg, rgb(247, 247, 248) 0%, rgb(247, 247, 248) 100%);
+    padding: 8px;
+    border: 1px solid var(--XydAtlas-Component-ApiRef-Item__color-border);
+    border-radius: 8px;
+    font-size: 13px;
+`;
 
-        font-size: 13px;
-    `,
-    label: css`
-        color: var(--XydAtlas-Component-ApiRef-Item__color-navbar);
+export const ApiRefItemNavbarLabel = css`
+    color: var(--XydAtlas-Component-ApiRef-Item__color-navbar);
+    margin-right: 4px;
+`;
 
-        margin-right: 4px;
-    `,
-}
+export const ApiRefItemHost = css`
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 25px;
+`;
 
-export const $refItem = {
-    host: css`
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
+export const ApiRefItemGrid = css`
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: normal;
+    gap: 100px;
+`;
 
-        padding-bottom: 25px;
-    `,
-    grid: css`
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        align-items: normal;
-        gap: 100px;
-    `,
-}
+export const ApiRefItemPropertiesHost = css`
+`;
 
-export const $properties = {
-    host: css`
+export const ApiRefItemPropertiesItem = css`
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-bottom: 25px;
+`;
 
-    `,
-    item: css`
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
+export const ApiRefItemSubtitleHost = css`
+    font-size: 15px;
+    font-weight: 600;
+`;
 
-        margin-bottom: 25px;
-    `,
-}
-
-export const $subtitle = {
-    host: css`
-        font-size: 15px;
-        font-weight: 600;
-    `,
-    link: css`
-        text-decoration: none;
-    `,
-}
+export const ApiRefItemSubtitleLink = css`
+    text-decoration: none;
+`;
 

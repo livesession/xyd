@@ -1,15 +1,43 @@
-@import "vars.css";
+/*@font-face {*/
+/*    font-family: 'Mona Sans';*/
+/*    src: url('../public/fonts/MonaSans/Mona-Sans.woff2') format('woff2 supports variations'),*/
+/*    url('../public/fonts/MonaSans/Mona-Sans.woff2') format('woff2-variations');*/
+/*    font-weight: 200 900;*/
+/*    font-stretch: 75% 125%;*/
+/*}*/
 
 @font-face {
-    font-family: 'Mona Sans';
-    src: url('../public/fonts/MonaSans/Mona-Sans.woff2') format('woff2 supports variations'),
-    url('../public/fonts/MonaSans/Mona-Sans.woff2') format('woff2-variations');
-    font-weight: 200 900;
-    font-stretch: 75% 125%;
+    font-family: 'Fustat';
+    src: url('../public/fonts/Fustat/fustat-regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
 }
 
+@font-face {
+    font-family: 'Fustat';
+    src: url('../public/fonts/Fustat/fustat-ext-500.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Fustat';
+    src: url('../public/fonts/Fustat/fustat-ext-600.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Fustat';
+    src: url('../public/fonts/Fustat/fustat-ext-700.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+
 html {
-    font-family: 'Mona Sans', serif;
+    /*font-family: 'Mona Sans', serif;*/
+    font-family: 'Fustat', sans-serif;
 }
 
 body {

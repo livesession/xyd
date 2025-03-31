@@ -86,6 +86,9 @@ importers:
       remark-mdx-frontmatter:
         specifier: ^5.0.0
         version: 5.1.0
+      typedoc:
+        specifier: ^0.28.1
+        version: 0.28.1(typescript@5.8.2)
       unist-builder:
         specifier: ^4.0.0
         version: 4.0.0
@@ -1005,6 +1008,9 @@ importers:
       '@xyd-js/sources':
         specifier: workspace:*
         version: link:../xyd-sources
+      '@xyd-js/themes':
+        specifier: workspace:*
+        version: link:../xyd-themes
       '@xyd-js/uniform':
         specifier: workspace:*
         version: link:../xyd-uniform
@@ -1190,6 +1196,9 @@ importers:
       '@xyd-js/framework':
         specifier: workspace:*
         version: link:../xyd-framework
+      '@xyd-js/themes':
+        specifier: workspace:*
+        version: link:../xyd-themes
       '@xyd-js/xtokens':
         specifier: workspace:*
         version: link:../xtokens
@@ -1267,7 +1276,27 @@ importers:
         specifier: ^8.3.0
         version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.1)
 
-  packages/xyd-themes: {}
+  packages/xyd-themes:
+    dependencies:
+      '@xyd-js/components':
+        specifier: workspace:*
+        version: link:../xyd-components
+      '@xyd-js/framework':
+        specifier: workspace:*
+        version: link:../xyd-framework
+      react:
+        specifier: ^19.0.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.1.0(react@19.1.0)
+    devDependencies:
+      tsup:
+        specifier: ^8.3.0
+        version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.3)(typescript@5.6.2)(yaml@2.7.1)
+      typescript:
+        specifier: 5.6.2
+        version: 5.6.2
 
   packages/xyd-ui:
     dependencies:
@@ -7971,8 +8000,8 @@ packages:
     resolution: {integrity: sha512-n1cw8k1k0x4pgA2+9XrOkFydTerNcJ1zWCO5Nn9scWHTD+5tp8dghT2x1uduQePZTZgd3Tupf+x9BxJjeJi77Q==}
     engines: {node: '>=14.0.0'}
 
-  tm-grammars@1.23.6:
-    resolution: {integrity: sha512-Br5J6lpxDnA2f5pjDRTMdmtaV5ylOOyzM9OBHrloB15g6FarlIkqU/3aoBT7he/CqsB5y8k21DKuIal7aEq/iA==}
+  tm-grammars@1.23.7:
+    resolution: {integrity: sha512-jrtCF2+/hNKsmoqrwYoir4mB8qZDMN9w9ho6QQx9U9Edqy32Dktpyw8hS+OEUBsSTypdQUtSYNQEdAKpIuQXhQ==}
 
   tmp@0.0.33:
     resolution: {integrity: sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw==}
@@ -9579,7 +9608,7 @@ snapshots:
   '@code-hike/lighter@1.0.3':
     dependencies:
       ansi-sequence-parser: 1.1.1
-      tm-grammars: 1.23.6
+      tm-grammars: 1.23.7
 
   '@emnapi/core@1.4.0':
     dependencies:
@@ -11579,6 +11608,14 @@ snapshots:
       magic-string: 0.30.17
     optionalDependencies:
       vite: 5.4.15(@types/node@20.9.0)(lightningcss@1.29.3)(terser@5.39.0)
+
+  '@vitest/mocker@2.1.9(vite@5.4.15(@types/node@22.13.14)(lightningcss@1.29.3)(terser@5.39.0))':
+    dependencies:
+      '@vitest/spy': 2.1.9
+      estree-walker: 3.0.3
+      magic-string: 0.30.17
+    optionalDependencies:
+      vite: 5.4.15(@types/node@22.13.14)(lightningcss@1.29.3)(terser@5.39.0)
 
   '@vitest/pretty-format@2.0.5':
     dependencies:
@@ -16678,7 +16715,7 @@ snapshots:
 
   tinyspy@3.0.2: {}
 
-  tm-grammars@1.23.6: {}
+  tm-grammars@1.23.7: {}
 
   tmp@0.0.33:
     dependencies:
@@ -17235,7 +17272,7 @@ snapshots:
   vitest@2.1.9(@types/node@22.13.14)(happy-dom@15.11.7)(lightningcss@1.29.3)(terser@5.39.0):
     dependencies:
       '@vitest/expect': 2.1.9
-      '@vitest/mocker': 2.1.9(vite@5.4.15(@types/node@20.9.0)(lightningcss@1.29.3)(terser@5.39.0))
+      '@vitest/mocker': 2.1.9(vite@5.4.15(@types/node@22.13.14)(lightningcss@1.29.3)(terser@5.39.0))
       '@vitest/pretty-format': 2.1.9
       '@vitest/runner': 2.1.9
       '@vitest/snapshot': 2.1.9

@@ -1,13 +1,6 @@
 import React, {forwardRef} from 'react'
 import type {ComponentProps, ReactElement} from 'react'
-
-import {css} from "@linaria/core";
-
-const $anchor = {
-    host: css`
-        color: #7051d4;
-    `,
-};
+import * as cn from "./Anchor.styles";
 
 export type AnchorProps = Omit<ComponentProps<'a'>, 'ref'> & {
     newWindow?: boolean
@@ -24,11 +17,10 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(function (
         return (
             <a
                 ref={forwardedRef}
-                to={href}
                 href={href}
                 target="_blank"
                 rel="noreferrer"
-                className={$anchor.host}
+                className={cn.AnchorHost}
             >
                 {children}
             </a>
@@ -39,9 +31,8 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(function (
         return (
             <a
                 ref={forwardedRef}
-                to={href}
                 href={href}
-                className={$anchor.host}
+                className={cn.AnchorHost}
             >
                 {children}
             </a>
@@ -51,9 +42,8 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(function (
     return (
         <a
             ref={forwardedRef}
-            to={href}
             href={href}
-            className={$anchor.host}
+            className={cn.AnchorHost}
         >
             {children}
         </a>
