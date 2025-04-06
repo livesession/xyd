@@ -50,7 +50,7 @@ export const SubNavLi = css`
     position: relative;
 
     &[data-state="active"] {
-        font-weight: 500;
+        font-weight: 600;
 
         a {
             color: #202223;

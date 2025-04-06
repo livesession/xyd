@@ -46,8 +46,8 @@ export const ItemHost = css`
     font-size: 14px; /* 0.875rem */
     position: relative;
     white-space: nowrap;
-    color: #4b5563; /* Gray-600 */
-    padding: 6px 16px;
+    color: #000;
+    padding: 8px 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,7 +74,7 @@ export const ItemTitle1 = css`
 
 export const ItemTitle2 = css`
     visibility: hidden;
-    font-weight: 500;
+    font-weight: 600;
 `;
 
 export const LogoHost = css`

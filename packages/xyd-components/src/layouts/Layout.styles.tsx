@@ -1,11 +1,11 @@
 import {css} from "@linaria/core";
 
 const globalPageGutter = '8px';
-export const globalHeaderHeight = '46px';
+export const globalHeaderHeight = '40px';
 const globalHeaderWarningHeight = "0px";
 const contentTopSpace = "12px";
 
-const globalHeaderHeightWithSub = '90px';
+const globalHeaderHeightWithSub = '94px';
 
 const cubicMove = "cubic-bezier(.65, 0, .35, 1)";
 const sidebarWidth = "210px";
