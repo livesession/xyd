@@ -1,0 +1,13 @@
+@media (min-width: 1024px) {
+    .BuiltInStandardsGrid {
+        display: grid;
+        gap: 32px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Position the third item in the second column */
+    .BuiltInStandardsGrid > :nth-child(3) {
+        grid-row-start: 1;
+        grid-column-start: 2;
+    }
+}

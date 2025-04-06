@@ -1,0 +1,449 @@
+body {
+    font-size: 100%;
+}
+
+/*! CSS Used from: https://infisical.com/_next/static/css/ffc1f7dd1b795015.css */
+*,
+:after,
+:before {
+    box-sizing: border-box;
+    border: 0 solid #e5e7eb;
+}
+
+:after,
+:before {
+    --tw-content: "";
+}
+
+a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+b {
+    font-weight: bolder;
+}
+
+:disabled {
+    cursor: default;
+}
+
+img,
+svg {
+    display: block;
+    vertical-align: middle;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+*,
+:after,
+:before {
+    --tw-border-spacing-x: 0;
+    --tw-border-spacing-y: 0;
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-rotate: 0;
+    --tw-skew-x: 0;
+    --tw-skew-y: 0;
+    --tw-scale-x: 1;
+    --tw-scale-y: 1;
+    --tw-scroll-snap-strictness: proximity;
+    --tw-ring-offset-width: 0px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: rgba(59, 130, 246, .5);
+    --tw-ring-offset-shadow: 0 0 #0000;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-shadow: 0 0 #0000;
+    --tw-shadow-colored: 0 0 #0000;
+}
+
+::selection {
+    background: #ddf49b;
+    opacity: .5;
+    color: #101401;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.relative {
+    position: relative;
+}
+
+.-left-1 {
+    left: -.25rem;
+}
+
+.bottom-0 {
+    bottom: 0;
+}
+
+.left-0 {
+    left: 0;
+}
+
+.z-10 {
+    z-index: 10;
+}
+
+.my-12 {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+}
+
+.mb-0\.5 {
+    margin-bottom: .125rem;
+}
+
+.mb-1 {
+    margin-bottom: .25rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.ml-1 {
+    margin-left: .25rem;
+}
+
+.mt-2 {
+    margin-top: .5rem;
+}
+
+.mt-8 {
+    margin-top: 2rem;
+}
+
+.block {
+    display: block;
+}
+
+.inline {
+    display: inline;
+}
+
+.flex {
+    display: flex;
+}
+
+.hidden {
+    display: none;
+}
+
+.h-2\/5 {
+    height: 40%;
+}
+
+.h-full {
+    height: 100%;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.w-max {
+    width: -moz-max-content;
+    width: max-content;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-start {
+    align-items: flex-start;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.border-b {
+    border-bottom-width: 1px;
+}
+
+.border-r {
+    border-right-width: 1px;
+}
+
+.border-\[\#EBEAEA\] {
+    --tw-border-opacity: 1;
+    border-color: rgb(235 234 234/var(--tw-border-opacity));
+}
+
+.bg-bunker-50 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(243 244 244/var(--tw-bg-opacity));
+}
+
+.bg-primary {
+    --tw-bg-opacity: 1;
+    background-color: rgb(231 242 86/var(--tw-bg-opacity));
+}
+
+.bg-\[linear-gradient\(to_right\2c \#EBEAEA_1px\2c transparent_1px\)\2c linear-gradient\(to_bottom\2c \#E5E7EB_1px\2c transparent_1px\)\] {
+    background-image: linear-gradient(90deg, #ebeaea 1px, transparent 0), linear-gradient(180deg, #e5e7eb 1px, transparent 0);
+}
+
+.bg-\[size\:16px_16px\] {
+    background-size: 16px 16px;
+}
+
+.p-6 {
+    padding: 1.5rem;
+}
+
+.px-0 {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.px-1 {
+    padding-left: .25rem;
+    padding-right: .25rem;
+}
+
+.px-1\.5 {
+    padding-left: .375rem;
+    padding-right: .375rem;
+}
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.pb-4 {
+    padding-bottom: 1rem;
+}
+
+.pb-6 {
+    padding-bottom: 1.5rem;
+}
+
+.pl-1 {
+    padding-left: .25rem;
+}
+
+.pl-2 {
+    padding-left: .5rem;
+}
+
+.pl-3 {
+    padding-left: .75rem;
+}
+
+.pr-10 {
+    padding-right: 2.5rem;
+}
+
+.pt-4 {
+    padding-top: 1rem;
+}
+
+.pt-6 {
+    padding-top: 1.5rem;
+}
+
+.pt-8 {
+    padding-top: 2rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-3xl {
+    font-size: 1.875rem;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+}
+
+.text-sm {
+    font-size: .875rem;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.leading-10 {
+    line-height: 2.5rem;
+}
+
+.text-mineshaft-500 {
+    --tw-text-opacity: 1;
+    color: rgb(50 52 57/var(--tw-text-opacity));
+}
+
+.opacity-0 {
+    opacity: 0;
+}
+
+.duration-100 {
+    transition-duration: .1s;
+}
+
+.group:hover .group-hover\:font-bold {
+    font-weight: 700;
+}
+
+.group:hover .group-hover\:font-medium {
+    font-weight: 500;
+}
+
+.group:hover .group-hover\:text-black {
+    --tw-text-opacity: 1;
+    color: rgb(0 0 0/var(--tw-text-opacity));
+}
+
+.group:hover .group-hover\:opacity-100 {
+    opacity: 1;
+}
+
+@media (min-width:640px) {
+    .sm\:my-40 {
+        margin-top: 10rem;
+        margin-bottom: 10rem;
+    }
+}
+
+@media (min-width:768px) {
+    .md\:mt-6 {
+        margin-top: 1.5rem;
+    }
+
+    .md\:block {
+        display: block;
+    }
+
+    .md\:hidden {
+        display: none;
+    }
+
+    .md\:scale-100 {
+        --tw-scale-x: 1;
+        --tw-scale-y: 1;
+        transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+    }
+
+    .md\:pb-8 {
+        padding-bottom: 2rem;
+    }
+
+    .md\:pl-12 {
+        padding-left: 3rem;
+    }
+
+    .md\:pr-16 {
+        padding-right: 4rem;
+    }
+
+    .md\:pt-6 {
+        padding-top: 1.5rem;
+    }
+
+    .md\:text-4xl {
+        font-size: 2.25rem;
+    }
+
+    .md\:text-lg {
+        font-size: 1.125rem;
+    }
+
+    .md\:text-xl {
+        font-size: 1.25rem;
+    }
+
+    .md\:leading-12 {
+        line-height: 3rem;
+    }
+}
+
+@media (min-width:1024px) {
+    .lg\:block {
+        display: block;
+    }
+
+    .lg\:hidden {
+        display: none;
+    }
+
+    .lg\:h-96 {
+        height: 24rem;
+    }
+
+    .lg\:w-2\/5 {
+        width: 40%;
+    }
+
+    .lg\:w-7\/12 {
+        width: 58.333333%;
+    }
+
+    .lg\:flex-row {
+        flex-direction: row;
+    }
+
+    .lg\:items-center {
+        align-items: center;
+    }
+
+    .lg\:pt-8 {
+        padding-top: 2rem;
+    }
+}
+
+@media (min-width:1280px) {
+    .xl\:text-5xl {
+        font-size: 3rem;
+    }
+
+    .xl\:leading-14 {
+        line-height: 3.5rem;
+    }
+}
+
+@media (min-width:1536px) {
+    .\32xl\:text-2xl {
+        font-size: 1.5rem;
+    }
+}
+
+svg:not(:host).svg-inline--fa,
+svg:not(:root).svg-inline--fa {
+    overflow: visible;
+    box-sizing: content-box;
+}
+
+.svg-inline--fa {
+    display: var(--fa-display, inline-block);
+    height: 1em;
+    overflow: visible;
+    vertical-align: -.125em;
+}

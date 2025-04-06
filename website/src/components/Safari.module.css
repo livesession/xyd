@@ -1,0 +1,19 @@
+.safariContainer {
+  fill: #E5E5E5;
+}
+
+.darkSafariContainer {
+  fill: #404040;
+}
+
+.safariContent {
+  fill: white;
+}
+
+.darkSafariContent {
+  fill: #262626;
+}
+
+.luminosityBlend {
+  mix-blend-mode: luminosity;
+} 

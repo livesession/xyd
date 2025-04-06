@@ -1,0 +1,46 @@
+{
+  "name": "website",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@code-hike/lighter": "^1.0.0",
+    "@lit/react": "^1.0.7",
+    "@primer/octicons-react": "^19.15.1",
+    "@primer/react-brand": "^0.49.0",
+    "@xyd-js/components": "0.1.0-xyd.3",
+    "codehike": "^1.0.5",
+    "framer-motion": "^12.6.3",
+    "gsap": "^3.12.4",
+    "jotai": "^2.12.2",
+    "jotai-scope": "^0.7.3",
+    "lit": "^3.2.1",
+    "lucide-react": "^0.447.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@tailwindcss/postcss": "^4.1.1",
+    "@types/gsap": "^3.0.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.1",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.2.0"
+  }
+}

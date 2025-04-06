@@ -1,10 +1,7 @@
 import {
     BaseTheme,
-    BaseThemeSettings,
 
     withTheme,
-
-    type ThemeProps,
 } from "@xyd-js/themes"
 
 import "@xyd-js/themes/index.css"
@@ -14,13 +11,14 @@ import './override.css';
 import './vars.css';
 
 class ThemePoetry extends BaseTheme {
-    static new(props: ThemeProps<BaseThemeSettings>) {
-        const theme = new ThemePoetry();
-        theme.sidebar.clientSideRouting(true);
-        theme.mergeSettings(props);
+    constructor() {
+        super();
 
-        return theme.render(props);
+        this.sidebar.clientSideRouting(true);
+
+        this.
     }
 }
 
-export default withTheme(ThemePoetry)
+export default withTheme(new ThemePoetry())
+

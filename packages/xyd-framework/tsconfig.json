@@ -7,10 +7,18 @@
     "compilerOptions": {
       "baseUrl": ".",
       "paths": {
-        "@/components/*": ["@/components/*"],
-        "@/lib/utils/*": ["@/lib/utils/*"],
-        "@/components/ui/*": ["@/components/ui/*"],
-        "@/components/magicui/*": ["@/components/magicui/*"]
+        "@xyd-js/ui": [
+          "../xyd-ui"
+        ],
+        "@xyd-js/content": [
+          "../xyd-content"
+        ],
+        "@xyd-js/components": [
+          "../xyd-components"
+        ],
+        "@xyd-js/core": [
+          "../xyd-core"
+        ]
       }
     },
     "lib": [

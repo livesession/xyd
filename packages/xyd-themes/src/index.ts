@@ -11,5 +11,5 @@ export type {
 } from "./types"
 
 export {
-    withTheme
+    withTheme,
 } from "./withTheme"

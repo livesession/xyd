@@ -1,0 +1,92 @@
+.logoWrapper {
+  margin-top: 0.5rem;
+  position: relative;
+  width: 100%;
+}
+
+.logoContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.logoItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.languageLogo {
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+}
+
+.languageLogo:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px var(--base-color-scale-purple-5));
+}
+
+.comingSoon {
+  opacity: 0.3;
+  filter: grayscale(100%);
+}
+
+.comingSoon:hover {
+  opacity: 0.4;
+  transform: none;
+  filter: grayscale(100%);
+  cursor: help;
+}
+
+.tooltip {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 20, 21, 0.95);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border: 1px solid var(--base-color-scale-purple-7);
+}
+
+.tooltipArrow {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: rgba(20, 20, 21, 0.95);
+  border-right: 1px solid var(--base-color-scale-purple-7);
+  border-bottom: 1px solid var(--base-color-scale-purple-7);
+}
+
+.comingSoon:hover + .tooltip {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .logoContainer {
+    gap: 0.5rem;
+  }
+  
+  .languageLogo {
+    width: 16px;
+    height: 16px;
+  }
+} 
