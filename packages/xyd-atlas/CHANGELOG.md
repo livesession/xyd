@@ -1,5 +1,12 @@
 # @xyd-js/atlas
 
+## 0.1.0-xyd.13
+
+### Patch Changes
+
+- refactor, ui tweaks
+  - @xyd-js/uniform@0.1.0-xyd.12
+
 ## 0.1.0-xyd.12
 
 ### Patch Changes

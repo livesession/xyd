@@ -1,5 +1,13 @@
 # @xyd-js/fable-wiki
 
+## 0.1.0-xyd.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.8
+  - @xyd-js/framework@0.1.0-xyd.28
+
 ## 0.1.0-xyd.10
 
 ### Patch Changes

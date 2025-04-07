@@ -1,5 +1,11 @@
 # @xyd-js/cli
 
+## 0.1.0-xyd.31
+
+### Patch Changes
+
+- refactor, ui tweaks
+
 ## 0.1.0-xyd.30
 
 ### Patch Changes

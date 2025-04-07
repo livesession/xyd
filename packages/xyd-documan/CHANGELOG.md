@@ -1,5 +1,14 @@
 # @xyd-js/documan
 
+## 0.1.0-xyd.26
+
+### Patch Changes
+
+- refactor, ui tweaks
+- Updated dependencies
+  - @xyd-js/content@0.1.0-xyd.11
+  - @xyd-js/plugin-zero@0.1.0-xyd.19
+
 ## 0.1.0-xyd.25
 
 ### Patch Changes
