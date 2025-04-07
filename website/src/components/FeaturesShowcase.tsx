@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Terminal3 } from './Terminal3';
+import { useState } from 'react';
 import cn from './FeaturesShowcase.module.css';
-import { Grid, Heading, Link, River, RiverBreakout, Section, SectionIntro, Stack, Text, Timeline } from '@primer/react-brand';
+import { Grid, Section, SectionIntro, Text } from '@primer/react-brand';
 import { Terminal2 } from './Terminal2';
 
 const componentsLibraryCode = `import {
@@ -50,10 +49,10 @@ import './vars.css';
 class MyTheme extends BaseTheme {
     constructor() {
         super();
-        this.toc.hide() // you can use diffrent options, e.g hide toc
+        this.toc.hide()
     }
     override Navbar() {
-        return <MyAwesomeNavbar /> // you can override any ui
+        return <MyAwesomeNavbar />
     }
 }
 
@@ -119,7 +118,7 @@ const features = [
 
 function FeaturesShowcase() {
     const [activeFeature, setActiveFeature] = useState(features[0].id);
-  
+
     return (
         <Section>
             <SectionIntro align="center">

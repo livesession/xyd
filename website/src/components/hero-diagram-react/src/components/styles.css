@@ -33,7 +33,7 @@
 .blue-indicator {
     position: absolute;
     top: 387px;
-    left: 680px;
+    left: 650px;
     opacity: 0.2;
     transition: opacity 1s ease-in-out;
 
@@ -44,12 +44,53 @@
 }
 
 .blue-glow {
-    background-color: #41d1ff;
-    width: 100px;
+    background-color: #41D1FF;
+    width: 120px;
     aspect-ratio: 2;
     position: absolute;
-    top: 415px;
-    left: 655px;
+    top: 511px;
+    left: 617px;
+    height: 70px;
+    z-index: -1;
+    filter: blur(40px);
+    opacity: 0;
+    transition: all 3s ease-out;
+    will-change: opacity;
+    display: none;
+
+    @media (min-width: 768px) {
+        display: block;
+        filter: blur(60px);
+    }
+
+    &.active {
+        transition: all 0.2s ease-in-out;
+        opacity: 0.8;
+    }
+}
+
+/* TechstackIndicator*/
+.techstack-indicator {
+    position: absolute;
+    top: 375px;
+    left: 811px;
+    opacity: 0.2;
+    transition: opacity 1s ease-in-out;
+
+    &.active {
+        transition: opacity 0.2s ease-in-out;
+        opacity: 0.6;
+    }
+}
+
+.techstack-glow {
+    background-color: #41d1ff;
+    width: 120px;
+    aspect-ratio: 2;
+    position: absolute;
+    top: 511px;
+    left: 875px;
+    height: 70px;
     z-index: -1;
     filter: blur(40px);
     opacity: 0;
@@ -92,8 +133,10 @@
 /* pink idicaator*/
 .pink-indicator {
     position: absolute;
-    top: 202px;
-    left: 840px;
+    /* top: 202px; */
+    /* left: 840px; */
+    top: 160px;
+    left: 800px;
     opacity: 0.2;
     transition: opacity 1s ease-in-out;
 
@@ -105,11 +148,12 @@
 
 .pink-glow {
     background-color: #bd34fe;
-    width: 100px;
+    width: 120px;
     aspect-ratio: 2;
     position: absolute;
-    top: 202px;
-    left: 905px;
+    top: 174px;
+    left: 936px;
+    height: 70px;
     z-index: -1;
     filter: blur(40px);
     opacity: 0;
@@ -134,19 +178,41 @@
     pointer-events: none;
     position: relative;
     width: 1630px;
-    margin-left: -150px;
+    margin-left: -180px;
     overflow: hidden;
+    padding-bottom: 100px;
     /* margin: -100px auto 0; */
 
     @media (max-width: 1630px) {
-        left: 50%;
+        left: 65%;
         transform: translate3d(-50%, 0, 0);
     }
 
     @media (max-width: 768px) {
-        left: 50%;
+        left: 65%;
         transform: translate3d(-50%, 0, 0) scale(0.9);
     }
+
+    @media (max-width: 750px) {
+        left: 70%;
+        transform: translate3d(-50%, 0, 0) scale(0.9);
+    }
+
+    @media (max-width: 720px) {
+        left: 75%;
+        transform: translate3d(-50%, 0, 0) scale(0.9);
+    }
+
+    @media (max-width: 650px) {
+        left: 80%;
+        transform: translate3d(-50%, 0, 0) scale(0.9);
+    }
+
+    @media (max-width: 600px) {
+        left: 85%;
+        transform: translate3d(-50%, 0, 0) scale(0.9);
+    }
+
 }
 
 .vite-chip {
@@ -485,4 +551,14 @@
                 rgba(0, 0, 0, 0) 90%
         );
     }
+}
+
+/* Background Lines */
+.background-lines {
+  z-index: 0;
+  mix-blend-mode: screen;
+}
+
+.background-lines circle {
+  will-change: transform;
 }

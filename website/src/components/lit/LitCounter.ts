@@ -19,14 +19,6 @@ export class LitCounter extends LitElement {
         this._count = 0;
     }
 
-    private increment() {
-        this._count++;
-    }
-
-    private decrement() {
-        this._count--;
-    }
-
     render() {
         return html`
             <body>

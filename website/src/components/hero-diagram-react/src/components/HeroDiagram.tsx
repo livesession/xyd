@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { MotionPathPlugin } from 'gsap/dist/MotionPathPlugin'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
@@ -7,8 +7,11 @@ import { SvgOutputs } from './svg-elements/SvgOutputs'
 import { SvgBlueIndicator } from './svg-elements/SvgBlueIndicator'
 import { SvgPinkIndicator } from './svg-elements/SvgPinkIndicator'
 import { SvgNodeProps } from './common/SvgNode'
+import { SvgTechstackIndicator } from './svg-elements/SvgTechstackIndicator'
 
 import './styles.css'
+
+// TODO: in the future animated light on input lines?
 
 // Register both plugins with GSAP
 gsap.registerPlugin(MotionPathPlugin, ScrollTrigger)
@@ -27,151 +30,125 @@ const inputPaths = [
 // Define the file set "combinations" that can be shown on the input side
 const inputFileSets = [
   [
-    { label: 'graphql', color: '#61dafb' },
-    { label: 'openapi', color: '#cc6699' },
-    { label: 'typedoc', color: '#ff3e00' },
+    { label: 'GraphQL', color: '#E10098' },
+    { label: 'OpenAPI', color: '#93d500' },
+    { label: 'TypeDoc', color: '#9601fe' },
   ],
   [
-    { label: 'go', color: '#3178c6' },
-    { label: 'node', color: '#cc6699' },
-    { label: 'python', color: '#42b883' },
+    { label: 'Go', color: '#00ACD7' },
+    { label: 'Node', color: '#83cd29' },
+    { label: 'Python', color: '#3571a3' },
   ],
   [
-    { label: 'storybook', color: '#f7df1e' },
-    { label: 'npm', color: '#264de4' },
-    { label: 'github', color: '#e34c26' },
+    { label: 'Storybook', color: '#FF4785' },
+    { label: 'NPM', color: '#CB3837' },
+    { label: 'GitHub', color: '#24292f' },
   ],
   [
-    { label: 'llm.txt', color: '#3178c6' },
-    { label: 'openai', color: '#1d365d' },
-    { label: 'anthropic', color: '#ff5d01' },
+    { label: 'llms.txt', color: '#FFBE0E' },
+    { label: 'MCP', color: '#000' },
+    { label: 'Agents SDK', color: '#74aa9c' },
   ]
 ]
 
-interface State {
-  blueIndicator: boolean
-  pinkIndicator: boolean
-  illuminateLogo: boolean
-  isUwu: boolean
-  isChromiumBrowser: boolean
-  inputLines: SvgNodeProps[]
-  outputLines: SvgNodeProps[]
-}
+const HeroDiagram: React.FC = () => {
+  const scrollTriggerInstance = useRef<ScrollTrigger | null>(null)
+  const inputSetInterval = useRef<NodeJS.Timeout | null>(null)
+  const lastInputSetIndex = useRef<number>(-1)
+  const timeline = useRef<gsap.core.Timeline | null>(null)
+  const isAnimating = useRef<boolean>(false)
+  const previousInputLineIndexes = useRef<number[]>([])
 
-export default class HeroDiagram extends React.Component<{}, State> {
-  private timeline: gsap.core.Timeline | null = null
-  private scrollTriggerInstance: ScrollTrigger | null = null
-
-  constructor(props: {}) {
-    super(props)
-    this.state = {
-      blueIndicator: false,
-      pinkIndicator: false,
-      illuminateLogo: false,
-      isUwu: window.location.search.includes('?uwu'),
-      isChromiumBrowser: 'chrome' in window,
-      inputLines: inputPaths.map((path) => ({
+  const [state, setState] = useState({
+    blueIndicator: false,
+    pinkIndicator: false,
+    techstackIndicator: false,
+    illuminateLogo: false,
+    isChromiumBrowser: 'chrome' in window,
+    inputLines: inputPaths.map((path) => ({
+      position: 0,
+      visible: false,
+      labelVisible: false,
+      label: '',
+      dotColor: '',
+      glowColor: '',
+      path,
+    })),
+    outputLines: [
+      {
         position: 0,
         visible: false,
         labelVisible: false,
-        label: '',
-        dotColor: undefined,
-        glowColor: undefined,
-        path,
-      })),
-      outputLines: [
-        {
-          position: 0,
-          visible: false,
-          labelVisible: false,
-          label: 'sdks',
-          path: 'M843.463 1.3315L245.316 5.47507L0.633077 4.69725',
-          dotColor: '#d499ff',
-          glowColor: '#BD34FE'
-        },
-        {
-          position: 0,
-          visible: false,
-          labelVisible: false,
-          label: 'docs',
-          path: 'M843.463 1.3315L245.316 5.47507L0.633077 4.69725',
-          dotColor: '#d499ff',
-          glowColor: '#BD34FE'
-        },
-        // {
-        //   position: 0,
-        //   visible: false,
-        //   labelVisible: false,
-        //   label: '.js',
-        //   path: 'M843.463 1.3315L245.316 5.47507L0.633077 4.69725',
-        //   dotColor: '#d499ff',
-        //   glowColor: '#BD34FE'
-        // },
-      ],
-    }
-  }
-
-  componentDidMount() {
-    // Register plugins at component level to ensure they're available
-    // gsap.registerPlugin(MotionPathPlugin, ScrollTrigger)
-
-    // Create a single timeline that persists
-    this.timeline = gsap.timeline({
-      repeat: -1, // Infinite repeat
-    })
-
-    // Start the animation
-    this.animateDiagram()
-
-    this.scrollTriggerInstance = ScrollTrigger.create({
-      trigger: '#hero-diagram',
-      start: 'center 100%',
-      once: true,
-      onEnter: () => {
-        if (this.timeline) {
-          this.timeline.play()
-        }
+        label: 'sdks',
+        path: 'M843.463 1.3315L245.316 5.47507L0.633077 4.69725',
+        dotColor: '#da3633',
+        glowColor: '#da3633'
       },
+      {
+        position: 0,
+        visible: false,
+        labelVisible: false,
+        label: 'docs',
+        path: 'M843.463 1.3315L245.316 5.47507L0.633077 4.69725',
+        dotColor: '#8957e5',
+        glowColor: '#8957e5'
+      },
+    ],
+  })
+
+  const prepareInputs = () => {
+    let newIndex // TODO: round-robin
+    do {
+      newIndex = Math.floor(Math.random() * inputFileSets.length)
+    } while (newIndex === lastInputSetIndex.current)
+    lastInputSetIndex.current = newIndex
+
+    const inputFileSet = inputFileSets[newIndex]
+    const maxFiles = inputFileSet.length
+    const availablePaths = inputPaths.length
+    const numLinesToShow = Math.min(maxFiles, 3) // Show up to 3 lines, but no more than available files
+
+    // Generate random unique indexes
+    let inputLineIndexes = Array.from({ length: availablePaths }, (_, i) => i)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, numLinesToShow)
+      .sort((a, b) => a - b) // Sort to maintain visual order
+
+    console.log("inputLineIndexes", inputLineIndexes)
+    let newInputLines = [...state.inputLines]
+
+    // Reset all lines to initial state
+    newInputLines.forEach(line => {
+      line.visible = false
+      line.labelVisible = false
+      line.position = 0
     })
-  }
 
-  componentWillUnmount() {
-    this.scrollTriggerInstance?.kill()
-    this.timeline?.kill()
-  }
-
-  private prepareInputs = () => {
-    // Randomly select a set of input file "nodes"
-    const inputFileSet =
-      inputFileSets[Math.floor(Math.random() * inputFileSets.length)]
-
-    // Choose 3 unique lines for the input file nodes to slide along
-    const inputLineIndexes = new Set()
-    while (inputLineIndexes.size < inputFileSet.length) {
-      const index = Math.floor(Math.random() * this.state.inputLines.length)
-      inputLineIndexes.add(index)
-    }
-
-    // Assign each line its appropriate node label and colors
-    const newInputLines = [...this.state.inputLines]
-    const inputs = [...inputLineIndexes]
-    inputs.forEach((lineIndex, fileIndex) => {
-      if (fileIndex < inputFileSet.length) {
-        const line = newInputLines[lineIndex as number]
-        line.label = inputFileSet[fileIndex].label
-        line.dotColor = inputFileSet[fileIndex].color
-        line.glowColor = inputFileSet[fileIndex].color
-        line.path = inputPaths[lineIndex as number]
+    // Then set up new lines
+    inputLineIndexes.forEach((lineIndex, fileIndex) => {
+      if (fileIndex >= inputFileSet.length) {
+        return
       }
+
+      const line = newInputLines[lineIndex]
+      line.label = inputFileSet[fileIndex].label
+      line.dotColor = inputFileSet[fileIndex].color
+      line.glowColor = inputFileSet[fileIndex].color
+      line.path = inputPaths[lineIndex]
     })
-    this.setState({ inputLines: newInputLines })
-    return inputs
+
+    console.log("previousInputLineIndexes", previousInputLineIndexes)
+    // Update previous indexes for next run
+    previousInputLineIndexes.current = inputLineIndexes
+
+    setState(prev => ({ ...prev, inputLines: newInputLines }))
+    return inputLineIndexes
   }
 
-  private animateSingleInputDesktop = (inputLine: SvgNodeProps) => {
+  const animateSingleInputDesktop = (inputLine: SvgNodeProps) => {
     const timeline = gsap.timeline()
 
-    // Reset the line
+    // Ensure line starts hidden
     timeline.set(
       inputLine,
       {
@@ -182,7 +159,7 @@ export default class HeroDiagram extends React.Component<{}, State> {
       0
     )
 
-    // Animate the dot in
+    // Animate the line
     timeline.to(
       inputLine,
       {
@@ -190,14 +167,13 @@ export default class HeroDiagram extends React.Component<{}, State> {
         duration: 1,
         ease: 'expo.out',
         onUpdate: () => {
-          // Force a re-render on each frame
-          this.forceUpdate()
+          setState(prev => ({ ...prev }))
         }
       },
       0
     )
 
-    // Show the dot
+    // Show the line
     timeline.set(
       inputLine,
       {
@@ -206,7 +182,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       0
     )
 
-    // Show the label
     timeline.set(
       inputLine,
       {
@@ -215,7 +190,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       0.2
     )
 
-    // Animate the dot out
     timeline.to(
       inputLine,
       {
@@ -223,14 +197,13 @@ export default class HeroDiagram extends React.Component<{}, State> {
         duration: 1.2,
         ease: 'power3.in',
         onUpdate: () => {
-          // Force a re-render on each frame
-          this.forceUpdate()
+          setState(prev => ({ ...prev }))
         }
       },
       1.2
     )
 
-    // Hide the label
+    // Hide the line at the end
     timeline.set(
       inputLine,
       {
@@ -239,7 +212,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       1.6
     )
 
-    // Hide the dot
     timeline.set(
       inputLine,
       {
@@ -251,13 +223,12 @@ export default class HeroDiagram extends React.Component<{}, State> {
     return timeline
   }
 
-  private animateSingleOutputDesktop = (
+  const animateSingleOutputDesktop = (
     outputLine: SvgNodeProps,
     index: number
   ) => {
     const timeline = gsap.timeline()
 
-    // Reset the line
     timeline.set(
       outputLine,
       {
@@ -268,7 +239,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       0
     )
 
-    // Animate the dot in
     timeline.to(
       outputLine,
       {
@@ -276,14 +246,12 @@ export default class HeroDiagram extends React.Component<{}, State> {
         duration: 1.5,
         ease: 'expo.out',
         onUpdate: () => {
-          // Force a re-render on each frame
-          this.forceUpdate()
+          setState(prev => ({ ...prev }))
         }
       },
       0
     )
 
-    // Show the dot
     timeline.set(
       outputLine,
       {
@@ -292,7 +260,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       0
     )
 
-    // Show the label
     timeline.set(
       outputLine,
       {
@@ -301,7 +268,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       0.4
     )
 
-    // Animate the dot out
     timeline.to(
       outputLine,
       {
@@ -309,14 +275,12 @@ export default class HeroDiagram extends React.Component<{}, State> {
         duration: 1.5,
         ease: 'power3.in',
         onUpdate: () => {
-          // Force a re-render on each frame
-          this.forceUpdate()
+          setState(prev => ({ ...prev }))
         }
       },
       2
     )
 
-    // Hide the label
     timeline.set(
       outputLine,
       {
@@ -325,7 +289,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       2.5
     )
 
-    // Hide the dot
     timeline.set(
       outputLine,
       {
@@ -337,10 +300,9 @@ export default class HeroDiagram extends React.Component<{}, State> {
     return timeline
   }
 
-  private animateSingleInputMobile = (inputLine: SvgNodeProps) => {
+  const animateSingleInputMobile = (inputLine: SvgNodeProps) => {
     const timeline = gsap.timeline()
 
-    // Reset the line
     timeline.set(
       inputLine,
       {
@@ -351,7 +313,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       0
     )
 
-    // Animate the dot in
     timeline.to(
       inputLine,
       {
@@ -359,14 +320,12 @@ export default class HeroDiagram extends React.Component<{}, State> {
         duration: 1.8,
         ease: 'power2.out',
         onUpdate: () => {
-          // Force a re-render on each frame
-          this.forceUpdate()
+          setState(prev => ({ ...prev }))
         }
       },
       0
     )
 
-    // Show the dot
     timeline.set(
       inputLine,
       {
@@ -375,7 +334,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       0
     )
 
-    // Hide the dot
     timeline.set(
       inputLine,
       {
@@ -387,10 +345,9 @@ export default class HeroDiagram extends React.Component<{}, State> {
     return timeline
   }
 
-  private animateSingleOutputMobile = (outputLine: SvgNodeProps) => {
+  const animateSingleOutputMobile = (outputLine: SvgNodeProps) => {
     const timeline = gsap.timeline()
 
-    // Reset the line
     timeline.set(
       outputLine,
       {
@@ -401,7 +358,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       0
     )
 
-    // Animate the dot in
     timeline.to(
       outputLine,
       {
@@ -409,14 +365,12 @@ export default class HeroDiagram extends React.Component<{}, State> {
         duration: 2,
         ease: 'power1.inOut',
         onUpdate: () => {
-          // Force a re-render on each frame
-          this.forceUpdate()
+          setState(prev => ({ ...prev }))
         }
       },
       0.3
     )
 
-    // Show the dot
     timeline.set(
       outputLine,
       {
@@ -425,7 +379,6 @@ export default class HeroDiagram extends React.Component<{}, State> {
       0.75
     )
 
-    // Hide the dot
     timeline.set(
       outputLine,
       {
@@ -437,91 +390,153 @@ export default class HeroDiagram extends React.Component<{}, State> {
     return timeline
   }
 
-  private animateDiagram = () => {
-    // Determine if we're showing the desktop or mobile variation of the animation
+  const animateDiagram = () => {
+    if (!timeline.current || isAnimating.current) return
+    isAnimating.current = true
+
     const isMobile = window.innerWidth < 768
 
-    if (!this.timeline) return
+    // Kill any existing animations first
+    if (timeline.current) {
+      timeline.current.kill()
+    }
+    timeline.current = gsap.timeline({
+      repeat: -1,
+      onRepeat: () => {
+        isAnimating.current = false
+        animateDiagram()
+      }
+    })
 
-    // Clear existing animations
-    this.timeline.clear()
+    const inputLineIndexes = prepareInputs()
 
-    // Animate the input nodes/lines
-    const inputLineIndexes = this.prepareInputs()
+    // First, ensure all lines are hidden
+    state.inputLines.forEach(line => {
+      line.visible = false
+      line.labelVisible = false
+      line.position = 0
+    })
+
     inputLineIndexes.forEach((lineIndex, fileIndex) => {
-      const inputLine = this.state.inputLines[lineIndex as number]
+      const inputLine = state.inputLines[lineIndex as number]
       const inputTimeline = isMobile
-        ? this.animateSingleInputMobile(inputLine)
-        : this.animateSingleInputDesktop(inputLine)
+        ? animateSingleInputMobile(inputLine)
+        : animateSingleInputDesktop(inputLine)
 
-      this.timeline?.add(inputTimeline, fileIndex * (isMobile ? 0.4 : 0.2))
+      timeline.current?.add(inputTimeline, fileIndex * (isMobile ? 0.4 : 0.2))
     })
 
-    // Illuminate the logo and colored indicators
-    this.timeline.add(() => this.setState({ blueIndicator: true }), isMobile ? '>-2' : '>-0.2')
-    this.timeline.add(() => this.setState({ illuminateLogo: true }), '<-0.3')
-    this.timeline.add(() => this.setState({ pinkIndicator: true }), '<+0.3')
+    timeline.current?.add(() => setState(prev => ({ ...prev, blueIndicator: true })), isMobile ? '>-2' : '>-0.2')
+    timeline.current?.add(() => setState(prev => ({ ...prev, illuminateLogo: true })), '<-0.3')
+    timeline.current?.add(() => setState(prev => ({ ...prev, pinkIndicator: true })), '<+0.3')
+    timeline.current?.add(() => setState(prev => ({ ...prev, techstackIndicator: true })), '<+0.3')
 
-    // Animate the output nodes/lines
-    this.timeline.addLabel('showOutput', '<')
-    this.state.outputLines.forEach((outputLine, index) => {
+    timeline.current?.addLabel('showOutput', '<')
+    state.outputLines.forEach((outputLine, index) => {
       const outputTimeline = isMobile
-        ? this.animateSingleOutputMobile(outputLine)
-        : this.animateSingleOutputDesktop(outputLine, index)
+        ? animateSingleOutputMobile(outputLine)
+        : animateSingleOutputDesktop(outputLine, index)
 
-      this.timeline?.add(outputTimeline, 'showOutput+=' + (isMobile ? 0.3 : 0.1) * index)
+      timeline.current?.add(outputTimeline, 'showOutput+=' + (isMobile ? 0.3 : 0.1) * index)
     })
 
-    // Desktop only reset
     if (!isMobile) {
-      // Disable the colored indicators
-      this.timeline.add(() => this.setState({ blueIndicator: false }), '>-1')
-      this.timeline.add(() => this.setState({ pinkIndicator: false }), '<')
+      timeline.current?.add(() => setState(prev => ({ ...prev, blueIndicator: false })), '>-1')
+      timeline.current?.add(() => setState(prev => ({ ...prev, pinkIndicator: false })), '<')
+      timeline.current?.add(() => setState(prev => ({ ...prev, techstackIndicator: false })), '<')
     }
 
-    // Play the timeline
-    this.timeline.play()
+    timeline.current?.play()
   }
 
-  render() {
-    const { blueIndicator, pinkIndicator, illuminateLogo, isUwu, isChromiumBrowser, inputLines, outputLines } = this.state
+  useEffect(() => {
+    timeline.current = gsap.timeline({
+      repeat: -1,
+      onRepeat: () => {
+        isAnimating.current = false
+        animateDiagram()
+      }
+    })
 
-    return (
-      <>
-        <div className="hero__diagram" id="hero-diagram">
-          {/* Input Lines */}
-          <SvgInputs inputLines={inputLines} />
+    animateDiagram()
 
-          {/* Output Line */}
-          <SvgOutputs outputLines={outputLines.map(line => ({ current: line }))} />
+    inputSetInterval.current = setInterval(() => {
+      if (!isAnimating.current) {
+        animateDiagram()
+      }
+    }, 5000)
 
-          {/* Blue Indicator */}
-          <SvgBlueIndicator active={blueIndicator} />
+    scrollTriggerInstance.current = ScrollTrigger.create({
+      trigger: '#hero-diagram',
+      start: 'center 100%',
+      once: true,
+      onEnter: () => {
+        if (timeline.current) {
+          timeline.current.play()
+        }
+      },
+    })
 
-          {/* Pink Indicator */}
-          <SvgPinkIndicator active={pinkIndicator} />
+    return () => {
+      if (inputSetInterval.current) {
+        clearInterval(inputSetInterval.current)
+      }
+      if (timeline.current) {
+        timeline.current.kill()
+      }
+      if (scrollTriggerInstance.current) {
+        scrollTriggerInstance.current.kill()
+      }
+    }
+  }, [])
 
-          {/* Vite Chip */}
-          <div className={`vite-chip ${illuminateLogo ? 'active' : ''}`}>
-            <div className="vite-chip__background">
-              <div className="vite-chip__border" />
-              <div
-                className={`vite-chip__edge ${isChromiumBrowser ? 'edge--animated' : ''
-                  }`}
-              />
-            </div>
-            <div className="vite-chip__filter" />
-            <img
-              src={isUwu ? '/logo-uwu.png' : '/logo.svg'}
-              alt={isUwu ? 'Vite Kawaii Logo by @icarusgkx' : 'Vite Logo'}
-              className={`vite-chip__logo ${isUwu ? 'uwu' : ''}`}
+  const {
+    blueIndicator,
+    pinkIndicator,
+    illuminateLogo,
+    isChromiumBrowser,
+    inputLines,
+    outputLines
+  } = state
+
+  return (
+    <>
+      <div className="hero__diagram" id="hero-diagram">
+        {/* Input Lines */}
+        <SvgInputs inputLines={inputLines} />
+
+        {/* Output Line */}
+        <SvgOutputs outputLines={outputLines.map(line => ({ current: line }))} />
+
+        {/* Blue Indicator */}
+        <SvgBlueIndicator active={blueIndicator} />
+
+        {/* Pink Indicator */}
+        <SvgPinkIndicator active={pinkIndicator} />
+
+        {/* Techstack Indicator */}
+        <SvgTechstackIndicator active={pinkIndicator} />
+
+        <div className={`vite-chip ${illuminateLogo ? 'active' : ''}`}>
+          <div className="vite-chip__background">
+            <div className="vite-chip__border" />
+            <div
+              className={`vite-chip__edge ${isChromiumBrowser ? 'edge--animated' : ''}`}
             />
           </div>
+          <div className="vite-chip__filter" />
+          <img
+            src="/logo.svg"
+            alt="xyd Logo"
+            className={`vite-chip__logo`}
+          />
         </div>
+      </div>
 
-        {/* Background */}
-        <div className={`hero__background ${illuminateLogo ? 'active' : ''}`} />
-      </>
-    )
-  }
+      {/* Background */}
+      <div className={`hero__background ${illuminateLogo ? 'active' : ''}`} />
+    </>
+  )
 }
+
+export default HeroDiagram

@@ -1,18 +1,13 @@
-import React from 'react';
 import { Text } from '@primer/react-brand';
 import {
     DatabaseIcon,
     CodeIcon,
-    PackageIcon,
     GearIcon,
-    ToolsIcon,
-    CloudIcon,
     ServerIcon,
     MarkGithubIcon,
     MarkdownIcon,
 } from '@primer/octicons-react';
 import styles from './Ecosystem.module.css';
-import { LanguageLogos } from './LanguageLogos';
 
 export function Ecosystem() {
     return (
@@ -39,14 +34,14 @@ export function Ecosystem() {
                                 <div className={styles.leftContent}>
                                     <DatabaseIcon className={styles.icon} />
                                     <Text>
-                                        API & Reference 
+                                        API & Reference
                                     </Text>
                                 </div>
                             </div>
                             <div className={styles.rightContent}>
-                                <img src="/public/graphql-filled.svg" alt="GraphQL" />
-                                <img src="/public/openapi-filled.svg" alt="OpenAPI" />
-                                <img src="/public/typedoc-filled.svg" alt="Typedoc" />
+                                <img src="/graphql-filled.svg" alt="GraphQL" />
+                                <img src="/openapi-filled.svg" alt="OpenAPI" />
+                                <img src="/typedoc-filled.svg" alt="Typedoc" />
                             </div>
                         </div>
                     </div>

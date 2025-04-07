@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@code-hike/lighter": "^1.0.0",
+    "@cosmocss/land": "0.0.0-alpha.0",
     "@lit/react": "^1.0.7",
     "@primer/octicons-react": "^19.15.1",
     "@primer/react-brand": "^0.49.0",

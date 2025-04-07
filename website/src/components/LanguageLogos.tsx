@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './LanguageLogos.module.css';
 
 interface LanguageLogo {
@@ -52,11 +51,11 @@ export function LanguageLogos() {
   return (
     <div className={styles.logoWrapper}>
       <div className={styles.logoContainer}>
-        {logos.map((logo, index) => (
+        {logos.map((logo) => (
           <div key={logo.alt} className={styles.logoItem}>
-            <img 
-              src={logo.src} 
-              alt={logo.alt} 
+            <img
+              src={logo.src}
+              alt={logo.alt}
               className={`${styles.languageLogo} ${logo.comingSoon ? styles.comingSoon : ''}`}
             />
             {logo.comingSoon && (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Terminal as TerminalIcon, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -32,14 +32,14 @@ export function Terminal() {
   const [currentStep, setCurrentStep] = useState(0);
   const [visibleSteps, setVisibleSteps] = useState<Step[]>([]);
   const contentRef = useRef<HTMLDivElement>(null);
-  const spinnerInterval = useRef<number>();
-  const typingInterval = useRef<number>();
+  const spinnerInterval = useRef<number | undefined>(undefined);
+  const typingInterval = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     if (!showServerMessage) {
       return;
     }
-    
+
     const resetTimer = setTimeout(() => {
       setIsResetting(true);
     }, 2000);
@@ -69,7 +69,7 @@ export function Terminal() {
       return () => clearTimeout(resetDelay);
     }
   }, [isResetting]);
-  
+
   useEffect(() => {
     if (contentRef.current && activeTab === 'terminal') {
       contentRef.current.scrollTop = contentRef.current.scrollHeight;
@@ -129,9 +129,9 @@ export function Terminal() {
 
     if (currentStepData.isCommand) {
       typeText(currentStepData.text, () => {
-        const updatedStep = { ...currentStepData, status: 'complete' };
+        const updatedStep: Step = { ...currentStepData, status: 'complete' as const };
         setVisibleSteps(prev => [...prev, updatedStep]);
-        
+
         if (currentStep === 0) {
           setCurrentStep(prev => prev + 1);
         } else {
@@ -143,14 +143,14 @@ export function Terminal() {
         setSpinnerFrame(prev => (prev + 1) % spinnerFrames.length);
       }, 80);
 
-      const updatedStep = { ...currentStepData, status: 'pending' };
+      const updatedStep: Step = { ...currentStepData, status: 'pending' as const };
       setVisibleSteps(prev => [...prev, updatedStep]);
 
       setTimeout(() => {
         window.clearInterval(spinnerInterval.current);
-        setVisibleSteps(prev => 
-          prev.map((step, idx) => 
-            idx === prev.length - 1 ? { ...step, status: 'complete' } : step
+        setVisibleSteps(prev =>
+          prev.map((step, idx) =>
+            idx === prev.length - 1 ? { ...step, status: 'complete' as const } : step
           )
         );
         setCurrentStep(prev => prev + 1);
@@ -188,7 +188,7 @@ export function Terminal() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={styles.wrapper}

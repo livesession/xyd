@@ -42,18 +42,3 @@ export function SvgOutputs({ outputLines }: SvgOutputsProps) {
     </svg>
   )
 }
-
-// // Add the CSS styles
-// const styles = `
-// .output-line {
-//   position: absolute;
-//   top: 300px;
-//   left: 785px;
-//   transform: translate3d(0, 0, 0);
-// }
-// `
-
-// // Add the styles to the document
-// const styleSheet = document.createElement('style')
-// styleSheet.innerText = styles
-// document.head.appendChild(styleSheet)

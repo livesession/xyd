@@ -1,43 +1,42 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 import {
-    Box,
     Hero,
     Section,
     Stack,
     SectionIntro,
-    Card, ThemeProvider,
-    SubNav, SubdomainNavBar,
+    ThemeProvider,
+    SubNav,
     Grid,
     Button,
     CTABanner,
     Text,
-    Pillar, IDE, River, Heading,
+    Pillar, River, Heading,
     RiverBreakout,
     Timeline,
     Link,
 } from "@primer/react-brand";
+import {
+    SubdomainNavBar,
+    MinimalFooter
+} from "@cosmocss/land"
 
 import {
     MarkGithubIcon,
-    ZapIcon,
     CodeIcon,
     PackageIcon,
-    SearchIcon
 } from "@primer/octicons-react";
 
 import { Safari } from './components/Safari';
 import { CardsElement } from "./components/lit/CardsWrapper";
 import FeaturesShowcase from './components/FeaturesShowcase';
-import { Ecosystem } from './components/Ecosystem';
 import HeroDiagram from './components/hero-diagram-react/src/components/HeroDiagram';
+import { Terminal3 } from './components/Terminal3';
 
 import navcn from './styles/SubNav.module.css';
 import cn from './App.module.css'
 import typocn from "./styles/Typography.module.css";
-import { Terminal } from './components/Terminal';
-import { Terminal2 } from './components/Terminal2';
-import { Terminal3 } from './components/Terminal3';
+import { LiveSessionLogo } from './components/LiveSessionLogo';
 
 function IconNPM() {
     return <svg
@@ -100,82 +99,7 @@ function Logo({ ...props }) {
             fill="white"
         />
     </svg>
-    return <svg
-        width={93}
-        height={105}
-        viewBox="0 0 93 105"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        {...props}
-    >
-        <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M30.3345 104.159C32.8547 104.159 37.8677 104.017 44.797 101.092C52.8715 97.6832 68.9371 91.4955 80.5258 85.1396C88.631 80.6942 92.1835 74.8148 92.1835 66.8971C92.184 55.9083 83.4955 47 72.7781 47H27.8738C12.4795 47 0 59.7954 0 75.5795C0 91.3635 11.6845 104.159 30.3345 104.159Z"
-            fill="white"
-        />
-        <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M55.7019 19.1453C55.7019 26.8824 51.159 33.8582 44.1893 36.8242L30.048 42.8414C15.744 48.9284 1.05545e-05 38.1504 1.19427e-05 22.2715C1.30182e-05 9.96864 9.72866 -0.00335907 21.7277 1.97502e-06L37.0383 0.00431545C47.3467 0.00671635 55.7019 8.57568 55.7019 19.1453Z"
-            fill="white"
-        />
-        <path
-            d="M76.0685 2C67.1943 2 60 9.37616 60 18.475V20.6091C60 29.708 67.194 37.0837 76.0681 37.0837C84.9423 37.0837 92.1366 29.708 92.1366 20.6091V18.475C92.1366 9.37616 84.9427 2 76.0685 2Z"
-            fill="white"
-        />
-    </svg>
 
-    return <svg
-        width={89}
-        height={97}
-        viewBox="0 0 89 97"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        {...props}
-    >
-        <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M23.1355 96.1589C25.6556 96.1589 33.7571 95.5251 41.1355 94C51.2571 91.9078 67.6355 85.5 76.7426 77.1396C82.886 71.5 88.4004 66.8148 88.4004 58.8971C88.4009 47.9083 79.7124 39 68.9949 39C53.6006 39 7.0541 44.9205 1.63548 61.5C-3.78314 78.0795 4.48547 96.1589 23.1355 96.1589Z"
-            fill="white"
-        />
-        <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M51 17.6134C51 24.7315 46.8406 31.1492 40.4592 33.8778L27.5116 39.4136C14.415 45.0136 -2.35118e-06 35.0979 -1.07408e-06 20.4895C-8.45802e-08 9.17103 8.90743 -0.00308948 19.8936 2.63907e-06L33.9118 0.00397098C43.3501 0.00617978 51 7.88953 51 17.6134Z"
-            fill="white"
-        />
-        <path
-            d="M72.0685 0C63.1943 0 56 7.37616 56 16.475V18.6091C56 27.708 63.194 35.0837 72.0681 35.0837C80.9423 35.0837 88.1366 27.708 88.1366 18.6091V16.475C88.1366 7.37616 80.9427 0 72.0685 0Z"
-            fill="white"
-        />
-    </svg>
-    return <svg
-        width={93}
-        height={97}
-        viewBox="0 0 93 97"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        {...props}
-    >
-        <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M30.3345 96.1589C32.8547 96.1589 37.8677 96.0168 44.797 93.0922C52.8715 89.6832 68.9371 83.4955 80.5258 77.1396C88.631 72.6942 92.1835 66.8148 92.1835 58.8971C92.184 47.9083 83.4955 39 72.7781 39C57.3838 39 0 51.7954 0 67.5795C0 83.3635 11.6845 96.1589 30.3345 96.1589Z"
-            fill="white"
-        />
-        <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M55.7019 19.1453C55.7019 26.8824 51.159 33.8582 44.1893 36.8242L30.048 42.8414C15.744 48.9284 1.05545e-05 38.1504 1.19427e-05 22.2715C1.30182e-05 9.96864 9.72866 -0.00335907 21.7277 1.97502e-06L37.0383 0.00431545C47.3467 0.00671635 55.7019 8.57568 55.7019 19.1453Z"
-            fill="white"
-        />
-        <path
-            d="M76.0685 0C67.1943 0 60 7.37616 60 16.475V18.6091C60 27.708 67.194 35.0837 76.0681 35.0837C84.9423 35.0837 92.1366 27.708 92.1366 18.6091V16.475C92.1366 7.37616 84.9427 0 76.0685 0Z"
-            fill="white"
-        />
-    </svg>
 }
 function App() {
     const [activeSection, setActiveSection] = useState('home');
@@ -235,15 +159,22 @@ function App() {
 
     return (
         <>
-            <div id="home">
-                <SubdomainNavBar title="xyd" fixed={false}>
+            <div id="home" style={{
+                position: "relative",
+                overflowX: "hidden",
+            }}>
+                <div className={cn.heroBackground} />
+                <SubdomainNavBar
+                    logoHref="https://livesession.io"
+                    logo={<LiveSessionLogo fill="#fff" />}
+                    // @ts-ignore
+                    title={<code>xyd</code>}
+                    fixed={false}
+                >
                     <SubdomainNavBar.Link href="#">Guide</SubdomainNavBar.Link>
                     <SubdomainNavBar.Link href="#">Reference</SubdomainNavBar.Link>
-                    <SubdomainNavBar.Link href="#">Articles</SubdomainNavBar.Link>
-                    <SubdomainNavBar.Link href="#">Events</SubdomainNavBar.Link>
-                    <SubdomainNavBar.Link href="#">Video</SubdomainNavBar.Link>
-                    <SubdomainNavBar.Link href="#">Social</SubdomainNavBar.Link>
                     <SubdomainNavBar.SecondaryAction
+                        // @ts-ignore
                         target="_blank"
                         href="https://github.com/livesession/xyd"
                         trailingVisual={<MarkGithubIcon />}
@@ -280,30 +211,33 @@ function App() {
                             </Hero.SecondaryAction>
                         </Hero>
                     </Grid.Column>
-                    <Grid.Column>
+                    <Grid.Column style={{ marginBottom: 100 }}>
                         <Safari
-                            imageSrc="/public/docs-hero.png"
-                            url="docs.your-company.dev" mode="simple" />
+                            imageSrc="/docs-hero.png"
+                            url="docs.your-company.dev" mode="simple"
+                        />
                     </Grid.Column>
                 </Grid>
             </div>
 
-            <Section backgroundColor="subtle">
-                <SectionIntro align="center">
-                    <SectionIntro.Heading size="2">
-                        Redefining developer experience
-                    </SectionIntro.Heading>
-                    <SectionIntro.Description>
-                        <code>xyd</code> makes docs development great again by streamlining the entire documentation process,
-                        from writing and reviewing to publishing and maintaining
-                    </SectionIntro.Description>
-                    {/*<Box padding="spacious">*/}
-                    {/*    <LitCounterWrapper start={0}/>*/}
-                    {/*</Box>*/}
-                </SectionIntro>
-            </Section>
+            <div id="main-section-intro">
+                <Section backgroundColor="subtle">
+                    <SectionIntro align="center">
+                        <SectionIntro.Heading size="2">
+                            Redefining developer experience
+                        </SectionIntro.Heading>
+                        <SectionIntro.Description>
+                            <code>xyd</code> makes docs development great again by streamlining the entire documentation process,
+                            from writing and reviewing to publishing and maintaining
+                        </SectionIntro.Description>
+                        {/*<Box padding="spacious">*/}
+                        {/*    <LitCounterWrapper start={0}/>*/}
+                        {/*</Box>*/}
+                    </SectionIntro>
+                </Section>
+            </div>
 
-            <div className={navcn.SubNavContainer}>
+            <div id="sub-nav" className={navcn.SubNavContainer}>
                 <SubNav className={navcn.SubNav}>
                     <SubNav.Link href="#home" aria-current={activeSection === 'home' ? 'page' : undefined}>| Home | </SubNav.Link>
 
@@ -311,11 +245,6 @@ function App() {
                     <SubNav.Link href="#built-in-standards" aria-current={activeSection === 'built-in-standards' ? 'page' : undefined}>Built-in Standards</SubNav.Link>
                     <SubNav.Link href="#customization" aria-current={activeSection === 'customization' ? 'page' : undefined}>Customization</SubNav.Link>
                     <SubNav.Link href="#ecosystem" aria-current={activeSection === 'ecosystem' ? 'page' : undefined}>Ecosystem</SubNav.Link>
-                    {/* <SubNav.Action as="button" onClick={() => {
-                        window.location.href = "https://docs.xyd.dev";
-                    }} hasArrow={true}>
-                        Get started
-                    </SubNav.Action> */}
                 </SubNav>
             </div>
 
@@ -337,17 +266,6 @@ function App() {
                             quickly set up your documentation site and start writing
                         </SectionIntro.Description>
                     </SectionIntro>
-
-
-
-                    {/*<Grid>*/}
-                    {/*    <Grid.Column span={6}>*/}
-                    {/*        <Terminal2/>*/}
-                    {/*    </Grid.Column>*/}
-                    {/*    <Grid.Column span={6}>*/}
-                    {/*        <Terminal3/>*/}
-                    {/*    </Grid.Column>*/}
-                    {/*</Grid>*/}
                 </Section>
 
                 <Grid>
@@ -413,38 +331,38 @@ function App() {
                                 {
                                     name: 'React Router',
                                     href: 'https://reactrouter.com',
-                                    outlineImage: '/public/react-router-outline.svg',
-                                    filledImage: '/public/react-router-filled.svg',
+                                    outlineImage: '/react-router-outline.svg',
+                                    filledImage: '/react-router-filled.svg',
                                 },
                                 {
                                     name: 'Vite',
                                     href: 'https://vite.dev',
-                                    outlineImage: '/public/vite-outline.svg',
-                                    filledImage: '/public/vite-filled.svg',
+                                    outlineImage: '/vite-outline.svg',
+                                    filledImage: '/vite-filled.svg',
                                 },
                                 {
                                     name: 'MDX',
                                     href: 'https://mdxjs.com',
-                                    outlineImage: '/public/mdx-outline.svg',
-                                    filledImage: '/public/mdx-filled.svg',
+                                    outlineImage: '/mdx-outline.svg',
+                                    filledImage: '/mdx-filled.svg',
                                 },
                                 {
                                     name: 'Storybook',
                                     href: 'https://storybook.js.org',
-                                    outlineImage: '/public/storybook-outline.svg',
-                                    filledImage: '/public/storybook-filled.svg',
+                                    outlineImage: '/storybook-outline.svg',
+                                    filledImage: '/storybook-filled.svg',
                                 },
                                 {
                                     name: 'NPM',
                                     href: 'https://www.npmjs.com/',
-                                    outlineImage: '/public/npm-outline.svg',
-                                    filledImage: '/public/npm-filled.svg',
+                                    outlineImage: '/npm-outline.svg',
+                                    filledImage: '/npm-filled.svg',
                                 },
                                 {
                                     name: 'Github',
                                     href: 'https://github.com',
-                                    outlineImage: '/public/github-outline.svg',
-                                    filledImage: '/public/github-filled.svg',
+                                    outlineImage: '/github-outline.svg',
+                                    filledImage: '/github-filled.svg',
                                 }
                             ]} />
                         </div>
@@ -470,20 +388,20 @@ function App() {
                                 {
                                     name: 'GraphQL',
                                     href: 'https://graphql.org/',
-                                    outlineImage: '/public/graphql-outline.svg',
-                                    filledImage: '/public/graphql-filled.svg',
+                                    outlineImage: '/graphql-outline.svg',
+                                    filledImage: '/graphql-filled.svg',
                                 },
                                 {
                                     name: 'OpenAPI',
                                     href: 'https://www.openapis.org/',
-                                    outlineImage: '/public/openapi-outline.svg',
-                                    filledImage: '/public/openapi-filled.svg',
+                                    outlineImage: '/openapi-outline.svg',
+                                    filledImage: '/openapi-filled.svg',
                                 },
                                 {
                                     name: 'Typedoc',
                                     href: 'https://typedoc.org',
-                                    outlineImage: '/public/typedoc-outline.svg',
-                                    filledImage: '/public/typedoc-filled.svg',
+                                    outlineImage: '/typedoc-outline.svg',
+                                    filledImage: '/typedoc-filled.svg',
                                 },
                             ]} />
                         </div>
@@ -495,18 +413,23 @@ function App() {
                 <FeaturesShowcase />
             </div>
 
-            <div id="ecosystem">
-                <Section>
+            <div id="ecosystem" style={{
+                position: "relative",
+            }}>
+                <Section style={{
+                    overflow: "hidden",
+
+                }}>
                     <SectionIntro align="center">
                         <SectionIntro.Label color="blue-purple">
-                            Connected Documentation System
+                            Ecosystem
                         </SectionIntro.Label>
                         <SectionIntro.Heading size="2">
-                            Your Documentation Hub
+                            Omnichannel Docs
                         </SectionIntro.Heading>
                         <SectionIntro.Description>
-                            <code>xyd</code> seamlessly connects your favorite tools and frameworks into a unified documentation system.
-                            From content creation to API documentation, everything works together in perfect harmony.
+                            <code>xyd</code> seamlessly connects your favorite tools and frameworks into a unified documentation system -
+                            from content creation to API documentation, everything works together in <br />perfect harmony
                         </SectionIntro.Description>
                     </SectionIntro>
 
@@ -518,13 +441,13 @@ function App() {
                             trailingComponent={() => (
                                 <Timeline>
                                     <Timeline.Item>
-                                        <b>Seamless Integration</b> of MDX, React, and modern frameworks for content creation.
+                                        <b>Tech Stack</b> that allows you to use your favorite tools and frameworks.
                                     </Timeline.Item>
                                     <Timeline.Item>
-                                        <b>Connected API Docs</b> that automatically sync with your GraphQL, OpenAPI, and TypeDoc specifications.
+                                        <b>Plugin Oriented</b> architecture that allows you to extend the platform with ease.
                                     </Timeline.Item>
                                     <Timeline.Item>
-                                        <b>Unified Workflow</b> that brings together writing, reviewing, and publishing in one cohesive system.
+                                        <b>AI Ready</b> with built-in support for AI tools.
                                     </Timeline.Item>
                                 </Timeline>
                             )}
@@ -543,7 +466,7 @@ function App() {
                 <Section>
                     <ThemeProvider colorMode="dark" className="custom-colors">
                         <style>{designTokenOverrides}</style>
-                        <CTABanner hasBackground={true} align="center">
+                        <CTABanner hasBackground={true} hasShadow={false} hasBorder={false} align="center">
                             <CTABanner.Heading>
                                 Join the future <br />
                                 of docs
@@ -561,82 +484,20 @@ function App() {
                     </ThemeProvider>
                 </Section>
             </div>
+
+            <div id="footer">
+                <MinimalFooter
+                    logo={<LiveSessionLogo fill="#fff" />}
+                    logoHref="https://livesession.io"
+                    socialLinks={[]} // TODO: github in the future (need changes @cosmocss/land)
+                    copyrightStatement={<>
+                        Released under the MIT License. <br />
+                        © 2025 LiveSession. All rights reserved.
+                    </>}
+                />
+            </div>
         </>
     )
 }
 
 export default App
-
-function Abc() {
-    return <Section backgroundColor="subtle">
-        <Stack
-            direction="horizontal"
-            alignItems="center"
-            justifyContent="center"
-            gap="normal"
-        >
-            <Box>
-                <Card
-                    href="https://github.com"
-                    fullWidth
-                    hasBorder
-                    disableAnimation
-                >
-                    <Card.Icon icon={ZapIcon} color="lime" hasBackground />
-                    <Card.Image
-                        src="https://webcontainers.io/img/svelte-screen-light.png"
-                        alt="placeholder, blank area with an gray background color"
-                    />
-                    <Card.Heading>Code search & code view</Card.Heading>
-                    <Card.Description>
-                        Enables you to rapidly search, navigate, and understand code, right from
-                        GitHub.com.
-                    </Card.Description>
-                </Card>
-
-            </Box>
-
-            <Box>
-                <Card
-                    href="https://github.com"
-                    fullWidth
-                    hasBorder
-                    disableAnimation
-                >
-                    <Card.Icon icon={ZapIcon} color="lime" hasBackground />
-                    <Card.Image
-                        src="https://webcontainers.io/img/svelte-screen-light.png"
-                        alt="placeholder, blank area with an gray background color"
-                    />
-                    <Card.Heading>Code search & code view</Card.Heading>
-                    <Card.Description>
-                        Enables you to rapidly search, navigate, and understand code, right from
-                        GitHub.com.
-                    </Card.Description>
-                </Card>
-
-            </Box>
-
-            <Box>
-                <Card
-                    href="https://github.com"
-                    fullWidth
-                    hasBorder
-                    disableAnimation
-                >
-                    <Card.Icon icon={ZapIcon} color="lime" hasBackground />
-                    <Card.Image
-                        src="https://webcontainers.io/img/svelte-screen-light.png"
-                        alt="placeholder, blank area with an gray background color"
-                    />
-                    <Card.Heading>Code search & code view</Card.Heading>
-                    <Card.Description>
-                        Enables you to rapidly search, navigate, and understand code, right from
-                        GitHub.com.
-                    </Card.Description>
-                </Card>
-            </Box>
-        </Stack>
-    </Section>
-}
-
