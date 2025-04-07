@@ -15,8 +15,6 @@ class ThemePoetry extends BaseTheme {
         super();
 
         this.sidebar.clientSideRouting(true);
-
-        this.
     }
 }
 

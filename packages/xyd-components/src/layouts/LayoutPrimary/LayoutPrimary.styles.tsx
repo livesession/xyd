@@ -8,7 +8,7 @@ const contentTopSpace = "12px";
 const globalHeaderHeightWithSub = '94px';
 
 const cubicMove = "cubic-bezier(.65, 0, .35, 1)";
-const sidebarWidth = "276px";
+const sidebarWidth = "250px";
 
 const tabletBreakpoint = '1024px';
 const mobileBreakpoint = '768px';
@@ -281,7 +281,7 @@ export const LayoutPrimaryPageScroll = css`
 `;
 
 export const LayoutPrimaryPageContainer = css`
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 0 ${globalPageGutter};
 `;
