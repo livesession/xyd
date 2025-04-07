@@ -1,0 +1,529 @@
+/* SVGNode */
+.SvgPath {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+}
+
+.Label {
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+    display: none;
+    will-change: opacity;
+
+    @media (min-width: 1180px) {
+        display: block;
+    }
+
+    &.Label__visible {
+        opacity: 1;
+    }
+}
+
+.CircleDot {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    --dot-color: white;
+
+    @media (min-width: 768px) {
+        filter: drop-shadow(0 0 3px var(--dot-color));
+    }
+}
+
+
+/* BlueIndicator*/
+.BlueIndicator {
+    position: absolute;
+    top: 387px;
+    left: 650px;
+    opacity: 0.2;
+    transition: opacity 1s ease-in-out;
+
+    &.BlueIndicator__active {
+        transition: opacity 0.2s ease-in-out;
+        opacity: 0.6;
+    }
+}
+
+.BlueGlow {
+    background-color: #41D1FF;
+    width: 120px;
+    aspect-ratio: 2;
+    position: absolute;
+    top: 511px;
+    left: 617px;
+    height: 70px;
+    z-index: -1;
+    filter: blur(40px);
+    opacity: 0;
+    transition: all 3s ease-out;
+    will-change: opacity;
+    display: none;
+
+    @media (min-width: 768px) {
+        display: block;
+        filter: blur(60px);
+    }
+
+    &.BlueGlow__active {
+        transition: all 0.2s ease-in-out;
+        opacity: 0.8;
+    }
+}
+
+/* TechstackIndicator*/
+.TechstackIndicator {
+    position: absolute;
+    top: 375px;
+    left: 811px;
+    opacity: 0.2;
+    transition: opacity 1s ease-in-out;
+
+    &.TechstackIndicator__active {
+        transition: opacity 0.2s ease-in-out;
+        opacity: 0.6;
+    }
+}
+
+.TechstackGlow {
+    background-color: #41d1ff;
+    width: 120px;
+    aspect-ratio: 2;
+    position: absolute;
+    top: 511px;
+    left: 875px;
+    height: 70px;
+    z-index: -1;
+    filter: blur(40px);
+    opacity: 0;
+    transition: all 3s ease-out;
+    will-change: opacity;
+    display: none;
+
+    @media (min-width: 768px) {
+        display: block;
+        filter: blur(60px);
+    }
+
+    &.TechstackGlow__active {
+        transition: all 0.2s ease-in-out;
+        opacity: 0.8;
+    }
+}
+
+
+/*Inputs*/
+.InputLines {
+    transform: translate3d(0, 0, 0);
+
+    &:global(.CircleDot) {
+        display: none;
+
+        @media (min-width: 768px) {
+            display: block;
+        }
+    }
+}
+
+
+/*outputs*/
+.OutputLine {
+    position: absolute;
+    top: 300px;
+    left: 785px;
+    transform: translate3d(0, 0, 0);
+}
+
+/* pink indicator*/
+.PinkIndicator {
+    position: absolute;
+    top: 160px;
+    left: 800px;
+    opacity: 0.2;
+    transition: opacity 1s ease-in-out;
+
+    &.PinkIndicator__active {
+        transition: opacity 0.2s ease-in-out;
+        opacity: 0.6;
+    }
+}
+
+.PinkGlow {
+    background-color: #bd34fe;
+    width: 120px;
+    aspect-ratio: 2;
+    position: absolute;
+    top: 174px;
+    left: 936px;
+    height: 70px;
+    z-index: -1;
+    filter: blur(40px);
+    opacity: 0;
+    transition: all 3s ease-out;
+    will-change: opacity;
+    display: none;
+
+    @media (min-width: 768px) {
+        display: block;
+        filter: blur(60px);
+    }
+
+    &.PinkGlow__active {
+        transition: all 0.2s ease-in-out;
+        opacity: 0.8;
+    }
+}
+
+
+/*HeroDiagram*/
+.HeroDiagram {
+    pointer-events: none;
+    position: relative;
+    width: 1630px;
+    margin-left: -180px;
+    overflow: hidden;
+    padding-bottom: 100px;
+
+    @media (max-width: 1630px) {
+        left: 65%;
+        transform: translate3d(-50%, 0, 0);
+    }
+
+    @media (max-width: 768px) {
+        left: 65%;
+        transform: translate3d(-50%, 0, 0) scale(0.9);
+    }
+
+    @media (max-width: 750px) {
+        left: 70%;
+        transform: translate3d(-50%, 0, 0) scale(0.9);
+    }
+
+    @media (max-width: 720px) {
+        left: 75%;
+        transform: translate3d(-50%, 0, 0) scale(0.9);
+    }
+
+    @media (max-width: 650px) {
+        left: 80%;
+        transform: translate3d(-50%, 0, 0) scale(0.9);
+    }
+
+    @media (max-width: 600px) {
+        left: 85%;
+        transform: translate3d(-50%, 0, 0) scale(0.9);
+    }
+}
+
+.ViteChip {
+    width: 134px;
+    height: 134px;
+    position: absolute;
+    left: 750px;
+    top: 260px;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.6s ease-out;
+    transform: translate3d(0, 0, 0) scale(0.85);
+
+    .ViteChip_Filter {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transform: translate3d(0, 0, 0) scale(1);
+        transition: transform 0.3s ease-in-out;
+        background: linear-gradient(130deg,
+        rgba(61, 61, 61, 0.3) 0%,
+        rgba(61, 61, 61, 0) 40%),
+        linear-gradient(130deg,
+                rgba(42, 33, 63, 0) 60%,
+                rgba(61, 61, 61, 0.3) 100%),
+        linear-gradient(to bottom, rgba(16, 14, 26, 0.3) 60%, rgba(12, 12, 12, 0));
+        border-radius: 10px;
+        display: none;
+
+        @media (min-width: 768px) {
+            display: block;
+        }
+
+        &:before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 5;
+            background: linear-gradient(130deg,
+            rgba(61, 61, 61, 0) 45%,
+            rgba(154, 152, 222, 0.3) 50%,
+            rgba(61, 61, 61, 0) 60%);
+            background-size: 500%;
+            background-position-x: 100%;
+            filter: blur(8px);
+            border-radius: 100px;
+            mix-blend-mode: color-dodge;
+            display: none;
+        }
+
+        &:after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 5;
+            background: linear-gradient(-130deg,
+            rgba(42, 33, 63, 0) 40%,
+            rgba(154, 152, 222, 0.2) 50%,
+            rgba(42, 33, 63, 0) 60%);
+            background-size: 400%;
+            background-position-x: 100%;
+            filter: blur(10px);
+            border-radius: 100px;
+            mix-blend-mode: color-dodge;
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            &:before,
+            &:after {
+                display: block;
+            }
+        }
+    }
+
+    .ViteChip_Edge {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid;
+        border-image-slice: 1;
+        border-image-source: linear-gradient(to bottom right,
+        rgba(0, 0, 0, 0) 60%,
+        rgba(255, 255, 255, 0.15) 65%,
+        rgba(0, 0, 0, 0) 90%);
+        opacity: 0;
+        will-change: opacity, border;
+        transition: all 1s ease-in-out;
+
+        @media (min-width: 768px) {
+            border-image-source: linear-gradient(
+                    to bottom right,
+                    rgba(0, 0, 0, 0) 50%,
+                    rgba(255, 255, 255, 0.15) 60%,
+                    rgba(0, 0, 0, 0) 90%
+            );
+        }
+    }
+
+    .ViteChip_Border {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        border-radius: 10px;
+        border: 0 solid rgba(89, 82, 108, 0.3);
+        opacity: 0.8;
+        background: rgba(40, 40, 40, 0.3);
+
+
+        @media (min-width: 768px) {
+            top: 2px;
+            right: 2px;
+            left: 2px;
+            bottom: 2px;
+        }
+    }
+
+    .ViteChip_Logo {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        width: 65px;
+        opacity: 0.2;
+        filter: grayscale(100%);
+        transition: all 0.2s ease;
+        z-index: 3;
+    }
+
+    &.ViteChip__active {
+        box-shadow: 0 30px 35px -10px rgba(0, 0, 0, 0.6);
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    &.ViteChip__active .ViteChip_Edge {
+        opacity: 1;
+    }
+
+    &.ViteChip__active .ViteChip_Edge.ViteChip_Edge__animated {
+        @media (min-width: 768px) {
+            animation: rotateGradient 8s linear infinite;
+        }
+    }
+
+    &.ViteChip__active .ViteChip_Filter {
+        transform: translate3d(0, 0, 0) scale(0.97);
+
+        &:before {
+            animation: shimmer 8s infinite linear;
+        }
+
+        &:after {
+            animation: shimmer 6s infinite linear;
+        }
+    }
+
+    &.ViteChip__active .ViteChip_Border {
+        border-width: 5px;
+        transition: all 1s ease;
+    }
+
+    &.ViteChip__active .ViteChip_Logo {
+        opacity: 1;
+        filter: grayscale(0);
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+
+@keyframes shimmer {
+    to {
+        background-position-x: 0;
+    }
+}
+
+.HeroBackground {
+    position: absolute;
+    top: -30%;
+    left: 0;
+    right: 0;
+    bottom: -60%;
+    width: 100%;
+    z-index: -1;
+    opacity: 0.4;
+    transition: opacity 1s ease;
+    background: url('/noise.png'),
+    radial-gradient(circle at right center,
+            rgb(86, 50, 119) 0%,
+            rgba(74, 55, 140, 1) 30%,
+            rgb(65, 114, 194) 55%,
+            rgba(50, 81, 115, 0.5) 100%);
+    mask-image: radial-gradient(ellipse 300% 30% at center center,
+    rgba(0, 0, 0, 1) 20%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0) 100%);
+
+    @media (min-width: 768px) {
+        opacity: 0.1;
+    }
+
+    background: url('/noise.png'),
+    radial-gradient(
+            circle at right center,
+            rgb(86, 50, 119) 0%,
+            rgba(74, 55, 140, 1) 30%,
+            rgb(65, 114, 194) 55%,
+            rgba(50, 81, 115, 0.5) 100%
+    );
+    mask-image: radial-gradient(
+            ellipse 300% 30% at center center,
+            rgba(0, 0, 0, 1) 20%,
+            rgba(0, 0, 0, 0.5) 50%,
+            rgba(0, 0, 0, 0) 100%
+    );
+
+    @media (min-width: 1024px) {
+        background: url('/noise.png'),
+        radial-gradient(
+                circle at right center,
+                rgba(75, 41, 105, 0.5) 0%,
+                rgb(86, 50, 119) 25%,
+                rgba(74, 55, 140, 1) 40%,
+                rgb(64, 102, 168) 65%,
+                rgba(50, 81, 115, 0.5) 100%
+        );
+        mask-image: radial-gradient(
+                ellipse 150% 30% at center center,
+                rgba(0, 0, 0, 1) 20%,
+                rgba(0, 0, 0, 0.5) 50%,
+                rgba(0, 0, 0, 0) 100%
+        );
+    }
+
+    @media (min-width: 1500px) {
+        background: url('/noise.png'),
+        radial-gradient(
+                circle at right center,
+                rgba(75, 41, 105, 0.5) 0%,
+                rgb(86, 50, 119) 25%,
+                rgba(74, 55, 140, 1) 45%,
+                rgb(64, 102, 168) 65%,
+                rgba(50, 81, 115, 0.5) 100%
+        );
+        mask-image: radial-gradient(
+                ellipse 80% 40% at center center,
+                rgba(0, 0, 0, 1) 20%,
+                rgba(0, 0, 0, 0.5) 50%,
+                rgba(0, 0, 0, 0) 100%
+        );
+    }
+
+    @media (min-width: 1800px) {
+        background: url('/noise.png'),
+        radial-gradient(
+                circle at right center,
+                rgba(75, 41, 105, 0.5) 0%,
+                rgb(86, 50, 119) 25%,
+                rgba(74, 55, 140, 1) 50%,
+                rgb(64, 102, 168) 70%,
+                rgba(50, 81, 115, 0.5) 100%
+        );
+        mask-image: radial-gradient(
+                ellipse 80% 40% at center center,
+                rgba(0, 0, 0, 1) 20%,
+                rgba(0, 0, 0, 0.5) 50%,
+                rgba(0, 0, 0, 0) 100%
+        );
+    }
+
+    &.HeroBackground__active {
+        opacity: 1;
+    }
+}
+
+
+@keyframes rotateGradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.BackgroundLines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.BackgroundLines circle {
+    fill: none;
+    stroke: rgba(41, 209, 255, 0.1);
+    stroke-width: 1;
+}
