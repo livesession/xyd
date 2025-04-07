@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import type {ReactElement, ReactNode} from "react";
-import {$collapse} from "./Collapse.styles";
+import * as cn from "./Collapse.styles";
 
 export interface UICollapseProps {
     children: ReactNode;
@@ -136,12 +136,12 @@ export function UICollapse({
     return (
         <div
             ref={containerRef}
-            className={`${$collapse.container}`}
+            className={cn.CollapseContainer}
             style={initialOpen.current || horizontal ? undefined : {height: 0}}
         >
             <div
                 ref={innerRef}
-                className={`${$collapse.base} ${isOpen ? $collapse.open : ""}`}
+                className={`${cn.CollapseBase} ${isOpen ? cn.CollapseOpen : ""}`}
             >
                 {children}
             </div>

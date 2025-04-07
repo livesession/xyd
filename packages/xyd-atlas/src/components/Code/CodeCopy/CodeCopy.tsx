@@ -1,9 +1,7 @@
 import React, {useState} from "react"
 import {Copy, CopyCheck, CheckCheck} from "lucide-react"
 
-import {
-    $copy
-} from "./CodeCopy.style"
+import * as cn from "./CodeCopy.styles"
 
 export interface CodeCopyProps {
     text: string
@@ -24,7 +22,7 @@ export function CodeCopy({text}: CodeCopyProps) {
         <button
             aria-label="Copy to clipboard"
             onClick={onClick}
-            className={$copy.host}
+            className={cn.CodeCopyHost}
         >
             {copied ? <CheckCheck size={16}/> : <Copy size={16}/>}
         </button>

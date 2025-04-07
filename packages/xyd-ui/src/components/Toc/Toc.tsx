@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from "react"
 
-import {$toc, $scroller} from "./Toc.styles";
+import * as cn from "./Toc.styles";
 
 export interface TocProps {
     children: React.ReactNode;
@@ -25,7 +25,7 @@ export function Toc({children, defaultValue}: TocProps) {
 
     // TODO: more reactish implt?
     function handleScroll() {
-        const activeElement = document.querySelector(`.${$toc.link$$active}`);
+        const activeElement = document.querySelector(`.${cn.TocLinkActive}`);
         if (!activeElement) {
             return;
         }
@@ -85,18 +85,18 @@ export function Toc({children, defaultValue}: TocProps) {
         value: value,
         onChange
     }}>
-        <div className={$toc.host}>
-            <div className={$scroller.host}>
+        <div className={cn.TocHost}>
+            <div className={cn.ScrollerHost}>
                 <div
                     style={{
                         // @ts-ignore
                         "--active-track-height": `${activeTrackHeight}px`,
                         "--active-track-top": `${activeTrackTop}px`,
                     }}
-                    className={$scroller.scroll}
+                    className={cn.ScrollerScroll}
                 />
             </div>
-            <ul className={$toc.ul}>
+            <ul className={cn.TocUl}>
                 {children}
             </ul>
         </div>
@@ -120,9 +120,9 @@ Toc.Item = function TocItem({
     const href = "#" + value
     const active = rootValue === value;
 
-    return <li className={$toc.li}>
+    return <li className={cn.TocLi}>
         <a
-            className={`${$toc.link} ${active && $toc.link$$active}`}
+            className={`${cn.TocLink} ${active && cn.TocLinkActive}`}
             href={href}
             onClick={(e) => {
                 // TODO: use react-router but for some reason does not work

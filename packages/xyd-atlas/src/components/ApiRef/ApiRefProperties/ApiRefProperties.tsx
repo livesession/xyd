@@ -2,40 +2,31 @@ import React, {useState} from "react";
 import {DefinitionProperty} from "@xyd-js/uniform";
 
 import {MDXReference, mdxValue} from "@/utils/mdx"
-import {
-    $ul,
-    $li,
-    $description,
-    $dl,
-    $propNameCode,
-    $propTypeCode,
-    $subProps,
-    $propToggle,
-} from "./ApiRefProperties.styles";
+import * as cn from "./ApiRefProperties.styles";
 
 export interface ApiRefPropertiesProps {
     properties: MDXReference<DefinitionProperty[]>
 }
 
 export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
-    return <ul className={$ul.host}>
+    return <ul className={cn.ApiRefPropertiesUlHost}>
         {
             properties?.map((property, i) => (
-                <li className={$li.host} key={i}>
-                    <dl className={$dl.host}>
-                        <$PropName name="name" value={mdxValue(property.name)}/>
-                        <$PropType
+                <li className={cn.ApiRefPropertiesLiHost} key={i}>
+                    <dl className={cn.ApiRefPropertiesDlHost}>
+                        <PropName name="name" value={mdxValue(property.name)}/>
+                        <PropType
                             name="type"
                             value={mdxValue(property.type)}
                             href={propertyTypeHref(property)}
                         />
                     </dl>
-                    <div className={$description.host}>
+                    <div className={cn.ApiRefPropertiesDescriptionHost}>
                         {property.children}
                     </div>
                     {
                         property.properties ?
-                            <$SubProperties
+                            <SubProperties
                                 properties={property.properties as MDXReference<DefinitionProperty>[]}
                             /> : null
                     }
@@ -45,21 +36,21 @@ export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
     </ul>
 }
 
-function $PropName({name, value}: { name: string, value: string }) {
+function PropName({name, value}: { name: string, value: string }) {
     return <>
         <dd>
-            <code className={$propNameCode.host}>{value}</code>
+            <code className={cn.ApiRefPropertiesPropNameCodeHost}>{value}</code>
         </dd>
     </>
 }
 
-function $PropType({name, value, href}: { name: string, value: string, href?: string }) {
+function PropType({name, value, href}: { name: string, value: string, href?: string }) {
     return <>
         <dd>
-            <code className={$propTypeCode.host}>
+            <code className={cn.ApiRefPropertiesPropTypeCodeHost}>
                 {
                     href
-                        ? <a className={$propTypeCode.link} href={href}>{value}</a>
+                        ? <a className={cn.ApiRefPropertiesPropTypeCodeLink} href={href}>{value}</a>
                         : value
                 }
             </code>
@@ -67,37 +58,37 @@ function $PropType({name, value, href}: { name: string, value: string, href?: st
     </>
 }
 
-function $SubProperties({properties}: { properties: MDXReference<DefinitionProperty>[] }) {
+function SubProperties({properties}: { properties: MDXReference<DefinitionProperty>[] }) {
     const [expanded, setExpanded] = useState(false)
 
     return <>
-        <$PropToggle
+        <PropToggle
             onClick={() => setExpanded(!expanded)}
             isExpanded={expanded}
         />
 
         <div
-            className={`${$subProps.host} ${expanded && $subProps.host$$expanded}`}
+            className={`${cn.ApiRefPropertiesSubPropsHost} ${expanded && cn.ApiRefPropertiesSubPropsHostExpanded}`}
         >
-            <div className={$subProps.box}>
-                <ul role="list" className={$subProps.ul}>
+            <div className={cn.ApiRefPropertiesSubPropsBox}>
+                <ul role="list" className={cn.ApiRefPropertiesSubPropsUl}>
                     {
                         properties?.map((prop, i) => {
-                            return <li className={$subProps.li} key={i}>
-                                <dl className={$dl.host}>
-                                    <$PropName name="name" value={mdxValue(prop.name)}/>
-                                    <$PropType
+                            return <li className={cn.ApiRefPropertiesSubPropsLi} key={i}>
+                                <dl className={cn.ApiRefPropertiesDlHost}>
+                                    <PropName name="name" value={mdxValue(prop.name)}/>
+                                    <PropType
                                         name="type"
                                         value={mdxValue(prop.type)}
                                         href={propertyTypeHref(prop)}
                                     />
                                 </dl>
-                                <div className={$description.host}>
+                                <div className={cn.ApiRefPropertiesDescriptionHost}>
                                     {prop.children}
                                 </div>
                                 {
                                     prop.properties ?
-                                        <$SubProperties
+                                        <SubProperties
                                             properties={prop.properties as MDXReference<DefinitionProperty>[]}/> : null
                                 }
                             </li>
@@ -109,19 +100,18 @@ function $SubProperties({properties}: { properties: MDXReference<DefinitionPrope
     </>
 }
 
-
 interface PropsToggleProps {
     isExpanded: boolean
     onClick: () => void
 }
 
-function $PropToggle(props: PropsToggleProps) {
+function PropToggle(props: PropsToggleProps) {
     return (
         <button
             aria-expanded={props.isExpanded}
             aria-controls="chat/object-usage_table"
             onClick={props.onClick}
-            className={$propToggle.host}
+            className={cn.ApiRefPropertiesPropToggleHost}
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -140,7 +130,7 @@ function $PropToggle(props: PropsToggleProps) {
                     clipRule="evenodd"
                 />
             </svg>
-            <span className={$propToggle.link}>{props.isExpanded ? 'Hide properties' : 'Show properties'}</span>
+            <span className={cn.ApiRefPropertiesPropToggleLink}>{props.isExpanded ? 'Hide properties' : 'Show properties'}</span>
         </button>
     )
 }

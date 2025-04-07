@@ -1,5 +1,5 @@
 import React from "react";
-import {$loader} from "./Loader.styles.tsx";
+import * as cn from "./Loader.styles";
 
 export interface LoaderProps {
   size?: "small" | "medium" | "large";
@@ -10,16 +10,16 @@ export function Loader({ size = "medium", className }: LoaderProps) {
   return (
     <div 
       className={`
-        ${$loader.host}
-        ${size === "small" && $loader.$$small}
-        ${size === "large" && $loader.$$large}
+        ${cn.LoaderHost}
+        ${size === "small" && cn.LoaderSmall}
+        ${size === "large" && cn.LoaderLarge}
         ${className}
       `}
     >
-      <div className={$loader.dots}>
-        <div className={$loader.dot} />
-        <div className={$loader.dot} />
-        <div className={$loader.dot} />
+      <div className={cn.LoaderDots}>
+        <div className={cn.LoaderDot} />
+        <div className={cn.LoaderDot} />
+        <div className={cn.LoaderDot} />
       </div>
     </div>
   );

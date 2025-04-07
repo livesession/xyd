@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/storybook",
-  "version": "0.0.1-xyd.6",
+  "version": "0.0.1-xyd.10",
   "type": "module",
   "scripts": {
     "dev": "storybook dev -p 6006",
@@ -15,6 +15,7 @@
     "@xyd-js/content": "workspace:*",
     "@xyd-js/fable-wiki": "workspace:*",
     "@xyd-js/ui": "workspace:*",
+    "@xyd-js/theme-poetry": "workspace:*",
     "acorn": "^8.14.1",
     "acorn-jsx": "^5.3.2",
     "react": "^19.0.0",

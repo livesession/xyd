@@ -1,7 +1,5 @@
 import {css} from "@linaria/core";
 
-export const $anchor = {
-    host: css`
+export const AnchorHost = css`
 
-    `,
-};
+`;

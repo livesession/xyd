@@ -12,6 +12,7 @@ import {recmaCodeHike, remarkCodeHike} from "codehike/mdx";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
 import {PageFrontMatter} from "@xyd-js/core";
+import {BaseThemeSettings} from "@xyd-js/themes";
 import getContentComponents from "@xyd-js/components/content";
 import {mapSettingsToProps} from "@xyd-js/framework/hydration";
 import {Framework, type FwSidebarGroupProps} from "@xyd-js/framework/react";
@@ -73,7 +74,7 @@ const codeHikeOptions = {
     // },
 };
 
-const compiledBySlug =  {}
+const compiledBySlug = {}
 
 // TODO: map every file and merge them or load via client-side ?
 async function compileBySlug(slug: string) {
@@ -249,13 +250,14 @@ function mdxContent(code: string) {
     }
 }
 
-// TODO: below is a concept only
-// const themeSettings = new ThemeSettings()
-//     .toc.hide()
-//     .sidebar({
-//         clientSideRouting: true
-//     })
-//     .layout.size("large")
+// TODO: get settings from md files??
+function themeSettings(
+    this: BaseThemeSettings,
+) {
+    return this
+        .layout.size("large")
+        .toc.hide()
+}
 
 // TODO: in the future more smoother loader - first fast server render then move to ideal position of client and then replace and 3 items at start
 export default function APIReference({loaderData}: { loaderData: loaderData }) {
@@ -272,17 +274,7 @@ export default function APIReference({loaderData}: { loaderData: loaderData }) {
         breadcrumbs={loaderData.breadcrumbs || []}
         navlinks={loaderData.navlinks}
     >
-        <Theme
-            themeSettings={{
-                hideToc: true,
-                sidebar: {
-                    clientSideRouting: true
-                },
-                layout: {
-                    size: "large"
-                }
-            }}
-        >
+        <Theme settings={themeSettings}>
             <AtlasLazy
                 references={memoizedServerComponent?.references || []}
                 slug={loaderData.slug.startsWith("/") ? loaderData.slug : `/${loaderData.slug}`}

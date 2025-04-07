@@ -9,4 +9,4 @@ export {
 
 export type {
     FwSidebarGroupProps
-} from "./components/sidebar/sidebar"
+} from "./components/Sidebar/Sidebar"

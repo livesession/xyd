@@ -1,5 +1,49 @@
 # @xyd-js/theme-poetry
 
+## 0.1.0-xyd.27
+
+### Patch Changes
+
+- version
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.16
+  - @xyd-js/components@0.1.0-xyd.11
+  - @xyd-js/framework@0.1.0-xyd.32
+  - @xyd-js/themes@0.1.1-xyd.3
+
+## 0.1.0-xyd.26
+
+### Patch Changes
+
+- fix again
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.15
+  - @xyd-js/components@0.1.0-xyd.10
+  - @xyd-js/framework@0.1.0-xyd.30
+  - @xyd-js/themes@0.1.1-xyd.2
+
+## 0.1.0-xyd.25
+
+### Patch Changes
+
+- fix for theme
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.14
+  - @xyd-js/components@0.1.0-xyd.9
+  - @xyd-js/framework@0.1.0-xyd.29
+  - @xyd-js/themes@0.1.1-xyd.1
+
+## 0.1.0-xyd.24
+
+### Patch Changes
+
+- refactor, ui tweaks
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.13
+  - @xyd-js/components@0.1.0-xyd.8
+  - @xyd-js/framework@0.1.0-xyd.28
+  - @xyd-js/themes@0.1.1-xyd.0
+
 ## 0.1.0-xyd.23
 
 ### Patch Changes

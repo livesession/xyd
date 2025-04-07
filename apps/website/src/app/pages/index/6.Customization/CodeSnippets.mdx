@@ -1,0 +1,95 @@
+```tsx !componentsLibrary
+import {
+    GuideCard,
+    IconSessionReplay
+} from "@xyd-js/components/dist/writer"
+
+ <GuideCard
+    icon={<IconSessionReplay/>}
+    title="Session Replay"
+    kind="secondary"
+>
+    Visualize user interactions in your
+    product with detailed session replays.
+</GuideCard>
+
+```
+
+```tsx !pageRendering
+import {useLoaderData} from "react-router";
+
+import {fetchContent} from "./myFavoriteCMS"
+import {Article} from "./Article"
+
+export async function loader({request}) {
+    return await fetchContent(request)
+}
+
+export default function MyCustomPge() {
+    const content = useLoaderData()
+
+    return <Article content={content}/>
+}
+```
+
+```tsx !themeAPI
+import {
+    BaseTheme,
+    withTheme
+} from "@xyd-js/themes"
+import "@xyd-js/themes/index.css"
+
+import { MyAwesomeNavbar } from "./MyAwesomeNavbar"
+
+import './index.css';
+import './override.css';
+import './vars.css';
+
+class MyTheme extends BaseTheme {
+    constructor() {
+        super();
+        this.toc.hide()
+    }
+    override Navbar() {
+        return <MyAwesomeNavbar />
+    }
+}
+
+export default withTheme(new MyTheme())
+```
+
+```tsx !composableArchitecture
+import {useLoaderData} from "react-router";
+
+import {serverLoader} from "@xyd-js/framework"
+import {
+    FrameworkProvider,
+    useCompileContent
+} from "@xyd-js/framework/react"
+
+import {fetchContent} from "./myFavoriteCMS"
+import {MyTheme} from "./MyTheme"
+
+import "./my-theme.css"
+
+export async function loader({request}) {
+    const frameworkProps = await serverLoader()
+    const content = await fetchContent(request)
+
+    return {
+        content,
+        frameworkProps,
+    }
+}
+
+export default function MyCustomPage() {
+    const {frameworkProps, content} = useLoaderData()
+    const Content = useCompileContent(content)
+
+    return <FrameworkProvider {...frameworkProps}>
+        <MyTheme>
+            <Content/>
+        </MyTheme>
+    </FrameworkProvider>
+}
+```

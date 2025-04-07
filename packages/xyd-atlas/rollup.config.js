@@ -62,7 +62,7 @@ export default [
                     // Get the full path after 'src/components/'
                     const pathParts = file.split('/');
                     const componentsIndex = pathParts.indexOf('components');
-                    if (componentsIndex === -1) return `XydAtlas-Component-${title}_${hash}`;
+                    if (componentsIndex === -1) return `XydAtlas-Component-${title}`;
                     
                     // Get everything after 'components' directory
                     const componentPath = pathParts
@@ -73,7 +73,7 @@ export default [
                     // Use the title as the style name (it's already the variable name)
                     const styleName = title.replace(/^\$/, ''); // Remove $ prefix if present
                     
-                    return `XydAtlas-Component-${componentPath}__${styleName}_${hash}`;
+                    return `XydAtlas-Component-${componentPath}__${styleName}`;
                 }
             }),
             css({

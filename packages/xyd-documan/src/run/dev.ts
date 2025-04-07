@@ -1,5 +1,7 @@
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import fs from "node:fs";
+
 import {createServer, searchForWorkspaceRoot} from "vite";
 
 import {reactRouter} from "@xyd-js/react-router-dev/vite";
@@ -27,8 +29,7 @@ export async function dev() {
             fs: {
                 allow: [
                     allowCwd,
-                    process.env.XYD_CLI ? path.join(__dirname, "../../") : "",
-                    // path.join(__dirname, "../node_modules") // Ensure node_modules from xyd-documan is included
+                    process.env.XYD_CLI ? __dirname : path.join(__dirname, "../host"),
                 ]
             }
         },
@@ -54,7 +55,32 @@ export async function dev() {
                 routes: respPluginZero.routes
             }),
             ...respPluginZero.vitePlugins,
-        ],
+        ]
+    });
+
+    // Set up manual file watcher for markdown files TODO: better way? + HMR only for specific components instead or reload a pag
+    const watcher = fs.watch(allowCwd, { recursive: true }, (eventType, filename) => {
+        if (!filename) {
+            console.log("[xyd:dev] Received empty filename");
+            return;
+        }
+        
+        const filePath = path.join(allowCwd, filename);
+        
+        if (filePath.endsWith('.md') || filePath.endsWith('.mdx')) {
+            const relativePath = path.relative(allowCwd, filePath);
+            const urlPath = '/' + relativePath.replace(/\\/g, '/');
+            
+            preview.ws.send({
+                type: 'full-reload',
+                path: urlPath
+            });
+        }
+    });
+
+    // Log any watcher errors
+    watcher.on('error', (error) => {
+        console.error("[xyd:dev] File watcher error:", error);
     });
 
     await preview.listen(port);
@@ -62,4 +88,8 @@ export async function dev() {
     preview.printUrls();
     preview.bindCLIShortcuts({print: true});
 
+    // Clean up watcher when server is closed
+    preview.httpServer?.once('close', () => {
+        watcher.close();
+    });
 }

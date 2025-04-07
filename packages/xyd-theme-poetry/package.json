@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-poetry",
-  "version": "0.1.0-xyd.23",
+  "version": "0.1.0-xyd.27",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -24,6 +24,7 @@
   "dependencies": {
     "@xyd-js/xtokens": "workspace:*",
     "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/themes": "workspace:*",
     "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0"
   },

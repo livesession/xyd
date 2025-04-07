@@ -2,12 +2,7 @@ import React, {useState, useRef, useEffect} from 'react'
 import * as RadixTabs from "@radix-ui/react-tabs"
 import {ChevronLeft, ChevronRight} from "lucide-react"
 
-import {
-    $sample,
-    $arrow,
-    $scroller,
-    $button
-} from "./Tabs.styles";
+import * as cn from "./Tabs.styles";
 
 export interface TabsProps {
     children: React.ReactNode;
@@ -45,23 +40,23 @@ export function Tabs({children, items, tabIndex}: TabsProps) {
 
     return (
         <RadixTabs.Root asChild value={value} onValueChange={setActiveTab}>
-            <div className={$sample.host}>
-                <div className={$sample.buttons}>
+            <div className={cn.TabsSampleHost}>
+                <div className={cn.TabsSampleButtons}>
                     {showLeftArrow && (
                         <button
                             onClick={() => scroll('left')}
-                            className={$arrow.host}
+                            className={cn.TabsArrowHost}
                         >
-                            <ChevronLeft className={$arrow.icon}/>
+                            <ChevronLeft className={cn.TabsArrowIcon}/>
                         </button>
                     )}
 
                     <div
                         ref={scrollContainerRef}
                         onScroll={handleScroll}
-                        className={$scroller.host}
+                        className={cn.TabsScrollerHost}
                     >
-                        <div className={$scroller.container}>
+                        <div className={cn.TabsScrollerContainer}>
                             <RadixTabs.List>
                                 {items.map((item, index) => <TabsItem key={index} value={item}>
                                         {item}
@@ -74,14 +69,14 @@ export function Tabs({children, items, tabIndex}: TabsProps) {
                     {showRightArrow && (
                         <button
                             onClick={() => scroll('right')}
-                            className={$arrow.host}
+                            className={cn.TabsArrowHost}
                         >
-                            <ChevronRight className={$arrow.icon}/>
+                            <ChevronRight className={cn.TabsArrowIcon}/>
                         </button>
                     )}
                 </div>
 
-                <div className={$sample.content}>
+                <div className={cn.TabsSampleContent}>
                     {children}
                 </div>
             </div>
@@ -91,7 +86,7 @@ export function Tabs({children, items, tabIndex}: TabsProps) {
 
 function TabsItem({children, value}) {
     return <RadixTabs.Trigger asChild value={value}>
-        <button className={`${$button.host}`}>
+        <button className={`${cn.TabsButtonHost}`}>
             {children}
         </button>
     </RadixTabs.Trigger>

@@ -1,44 +1,20 @@
-import React, {} from 'react';
-import type {Meta} from '@storybook/react';
+import React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { Badge } from '@xyd-js/components/writer';
 
-import {Badge} from "@xyd-js/components/writer";
+const meta: Meta<typeof Badge> = {
+    title: 'Writer/Badge',
+    component: Badge,
+    tags: ['autodocs'],
+};
 
-export default {
-    title: 'Components/Writer/Badge',
-} as Meta;
+export default meta;
+type Story = StoryObj<typeof Badge>;
 
-export const Default = () => {
-    return <div style={{
-        padding: "100px",
-        paddingTop: "0px",
-        margin: "0 auto",
-    }}>
-        <Badge kind="">
-            Default
-        </Badge>
-    </div>
-}
-
-export const Warning = () => {
-    return <div style={{
-        padding: "100px",
-        paddingTop: "0px",
-        margin: "0 auto",
-    }}>
-        <Badge kind="warning">
-            Warning
-        </Badge>
-    </div>
-}
-
-export const Info = () => {
-    return <div style={{
-        padding: "100px",
-        paddingTop: "0px",
-        margin: "0 auto",
-    }}>
-        <Badge kind="info">
-            Warning
-        </Badge>
-    </div>
-}
+// Basic usage
+export const Default: Story = {
+    args: {
+        children: 'Default Badge',
+        kind: 'warning',
+    },
+};

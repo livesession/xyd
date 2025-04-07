@@ -1,16 +1,15 @@
 import React from "react"
 
-import {$steps} from "./Steps.styles";
+import * as cn from "./Steps.styles";
 
 export interface StepsProps {
     children: React.ReactNode;
 }
 
 export function Steps({children}: StepsProps) {
-    return <ol className={$steps.host}>
+    return <ol className={cn.StepsHost}>
         {children}
     </ol>
-
 }
 
 export interface StepsItemProps {
@@ -18,7 +17,7 @@ export interface StepsItemProps {
 }
 
 Steps.Item = function StepsItem({children}: StepsItemProps) {
-    return <li className={$steps.li}>
+    return <li className={cn.StepsLi}>
         {children}
     </li>
 }

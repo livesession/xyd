@@ -1,5 +1,35 @@
 # @xyd-js/atlas
 
+## 0.1.0-xyd.16
+
+### Patch Changes
+
+- version
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.11
+  - @xyd-js/uniform@0.1.0-xyd.15
+
+## 0.1.0-xyd.15
+
+### Patch Changes
+
+- fix again
+  - @xyd-js/uniform@0.1.0-xyd.14
+
+## 0.1.0-xyd.14
+
+### Patch Changes
+
+- fix for theme
+  - @xyd-js/uniform@0.1.0-xyd.13
+
+## 0.1.0-xyd.13
+
+### Patch Changes
+
+- refactor, ui tweaks
+  - @xyd-js/uniform@0.1.0-xyd.12
+
 ## 0.1.0-xyd.12
 
 ### Patch Changes

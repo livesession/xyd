@@ -1,5 +1,29 @@
 # @xyd-js/core
 
+## 0.1.0-xyd.13
+
+### Patch Changes
+
+- version
+
+## 0.1.0-xyd.12
+
+### Patch Changes
+
+- fix again
+
+## 0.1.0-xyd.11
+
+### Patch Changes
+
+- fix for theme
+
+## 0.1.0-xyd.10
+
+### Patch Changes
+
+- refactor, ui tweaks
+
 ## 0.1.0-xyd.9
 
 ### Patch Changes

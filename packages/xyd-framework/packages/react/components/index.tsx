@@ -1,13 +1,12 @@
 import React, {isValidElement} from "react";
 import {useLocation} from "react-router";
 
-import {Toc, SubNav, UISidebar} from "@xyd-js/ui"
 import type {ITOC} from "@xyd-js/ui";
 import {Breadcrumbs, NavLinks} from "@xyd-js/components/writer";
+import {Toc, SubNav, UISidebar, Nav} from "@xyd-js/ui"
 
 import {useBreadcrumbs, useNavLinks, useSettings, useSidebarGroups, useToC} from "../contexts";
-import {FwSidebarItemGroup, FwSidebarGroupContext, FwSidebarItemProps} from "./sidebar";
-import {Nav} from "@xyd-js/ui";
+import {FwSidebarItemGroup, FwSidebarGroupContext, FwSidebarItemProps} from "./Sidebar";
 
 import {manualHydration} from "../utils/manualHydration";
 import {useMatchedSubNav} from "../hooks";

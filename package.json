@@ -7,12 +7,13 @@
   "packageManager": "pnpm@9.10.0",
   "scripts": {
     "dev": "pnpm lerna watch -- lerna run build",
+    "dev:styles": "pnpm --filter \"@xyd-js/components\" --filter \"@xyd-js/ui\" --parallel dev",
     "build": "./build.sh",
-    "watch": "pnpm build && pnpm run --filter=\"./packages/**/*\" --parallel build --watch",
     "build:gql": "pnpm run --filter=\"./packages/xyd-gql\" build",
     "build:uniform": "pnpm run --filter=\"./packages/xyd-uniform\" build",
     "build:atlas-storybook": "pnpm run --filter=\"./packages/xyd-atlas\" build-storybook",
-    "watch_old": "pnpm -r watch",
+    "build:packages": "pnpm run --filter=\"./packages/*\" build",
+    "build:website": "pnpm run --filter=\"./apps/website\" build",
     "clean": "./clear.sh",
     "prepare": "husky"
   },

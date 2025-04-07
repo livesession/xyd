@@ -1,5 +1,29 @@
 # @xyd-js/ui
 
+## 0.1.0-xyd.16
+
+### Patch Changes
+
+- version
+
+## 0.1.0-xyd.15
+
+### Patch Changes
+
+- fix again
+
+## 0.1.0-xyd.14
+
+### Patch Changes
+
+- fix for theme
+
+## 0.1.0-xyd.13
+
+### Patch Changes
+
+- refactor, ui tweaks
+
 ## 0.1.0-xyd.12
 
 ### Patch Changes
