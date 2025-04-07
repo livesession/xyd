@@ -1,5 +1,16 @@
 # @xyd-js/theme-poetry
 
+## 0.1.0-xyd.27
+
+### Patch Changes
+
+- version
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.16
+  - @xyd-js/components@0.1.0-xyd.11
+  - @xyd-js/framework@0.1.0-xyd.32
+  - @xyd-js/themes@0.1.1-xyd.3
+
 ## 0.1.0-xyd.26
 
 ### Patch Changes

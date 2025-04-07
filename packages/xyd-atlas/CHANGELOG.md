@@ -1,5 +1,14 @@
 # @xyd-js/atlas
 
+## 0.1.0-xyd.16
+
+### Patch Changes
+
+- version
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.11
+  - @xyd-js/uniform@0.1.0-xyd.15
+
 ## 0.1.0-xyd.15
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @xyd-js/components
 
+## 0.1.0-xyd.11
+
+### Patch Changes
+
+- version
+
 ## 0.1.0-xyd.10
 
 ### Patch Changes

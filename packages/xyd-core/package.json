@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/core",
-  "version": "0.1.0-xyd.12",
+  "version": "0.1.0-xyd.13",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {

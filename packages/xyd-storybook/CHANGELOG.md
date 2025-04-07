@@ -1,5 +1,17 @@
 # @xyd-js/storybook
 
+## 0.0.1-xyd.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.16
+  - @xyd-js/components@0.1.0-xyd.11
+  - @xyd-js/content@0.1.0-xyd.14
+  - @xyd-js/theme-poetry@0.1.0-xyd.27
+  - @xyd-js/ui@0.1.0-xyd.16
+  - @xyd-js/fable-wiki@0.1.0-xyd.14
+
 ## 0.0.1-xyd.9
 
 ### Patch Changes

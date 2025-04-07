@@ -1,5 +1,14 @@
 # @xyd-js/documan
 
+## 0.1.0-xyd.29
+
+### Patch Changes
+
+- version
+- Updated dependencies
+  - @xyd-js/content@0.1.0-xyd.14
+  - @xyd-js/plugin-zero@0.1.0-xyd.22
+
 ## 0.1.0-xyd.28
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @xyd-js/openapi
 
+## 0.1.0-xyd.11
+
+### Patch Changes
+
+- version
+- Updated dependencies
+  - @xyd-js/uniform@0.1.0-xyd.15
+
 ## 0.1.0-xyd.10
 
 ### Patch Changes

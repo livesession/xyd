@@ -1,5 +1,16 @@
 # @xyd-js/framework
 
+## 0.1.0-xyd.32
+
+### Patch Changes
+
+- version
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.11
+  - @xyd-js/content@0.1.0-xyd.14
+  - @xyd-js/core@0.1.0-xyd.13
+  - @xyd-js/ui@0.1.0-xyd.16
+
 ## 0.1.0-xyd.30
 
 ### Patch Changes
