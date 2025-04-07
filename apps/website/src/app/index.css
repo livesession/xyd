@@ -1,0 +1,3 @@
+html[data-color-mode="dark"] body {
+    background-color: rgba(13, 17, 23, 1);
+}

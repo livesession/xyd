@@ -23,17 +23,21 @@
     "@xyd-js/themes": "0.0.0",
     "@xyd-js/ui": "0.1.0-xyd.6",
     "@xyd-js/uniform": "0.1.0-xyd.5",
-    "@xyd-js/sources": "0.0.0"
+    "@xyd-js/sources": "0.0.0",
+    "@xyd-js/documan-host": "0.0.0"
   },
   "changesets": [
     "cool-bobcats-cover",
     "fair-kids-laugh",
+    "fancy-spiders-hug",
     "free-coins-kneel",
     "major-coins-fly",
     "quick-banks-win",
     "small-spiders-lick",
     "tangy-places-accept",
     "tired-moles-post",
+    "true-tips-leave",
+    "wide-camels-fix",
     "yellow-geese-tan"
   ]
 }

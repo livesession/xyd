@@ -1,13 +1,13 @@
 import React from "react"
 
-import {$code} from "./Code.styles";
+import * as cn from "./Code.styles";
 
 export interface CodeProps {
     children: React.ReactNode;
 }
 
 export function Code({children}: CodeProps) {
-    return <code className={$code.host}>
+    return <code className={cn.CodeHost}>
         {children}
     </code>
 }

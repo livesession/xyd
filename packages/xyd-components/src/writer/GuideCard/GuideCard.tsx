@@ -1,6 +1,6 @@
 import React from "react"
 
-import {$guide, $list} from "./GuideCard.styles";
+import * as cn from "./GuideCard.styles";
 
 export interface GuideCardProps {
     children: React.ReactNode;
@@ -21,32 +21,32 @@ export function GuideCard({
 
                           }: GuideCardProps) {
     return <div className={`
-        ${$guide.host}
-        ${kind === "secondary" && $guide.host$$secondary}
-        ${kind === "secondary" && size == "md" && $guide.host$$secondary$$md}
+        ${cn.GuideHost}
+        ${kind === "secondary" && cn.GuideHostSecondary}
+        ${kind === "secondary" && size == "md" && cn.GuideHostSecondaryMd}
     `}>
-        <a className={$guide.link} href={href}>
+        <a className={cn.GuideLink} href={href}>
             <div className={`
-                ${$guide.item}
-                ${kind === "secondary" && $guide.item$$secondary}
+                ${cn.GuideItem}
+                ${kind === "secondary" && cn.GuideItemSecondary}
             `}>
-                {icon && <div className={$guide.icon}>
+                {icon && <div className={cn.GuideIcon}>
                     {icon}
                 </div>}
-                <div className={$guide.right}>
-                    <div className={$guide.title}>
+                <div className={cn.GuideRight}>
+                    <div className={cn.GuideTitle}>
                         <div className={`
-                            ${$guide.title} 
-                            ${$guide.titleBody}
-                            ${size == "md" && $guide.titleBody$$md}
+                            ${cn.GuideTitle} 
+                            ${cn.GuideTitleBody}
+                            ${size == "md" && cn.GuideTitleBodyMd}
                         `}>
                             {title}
                         </div>
-                        <$Pointer/>
+                        <Pointer/>
                     </div>
                     <div className={`
-                        ${$guide.body}
-                        ${size == "md" && $guide.body$$md}
+                        ${cn.GuideBody}
+                        ${size == "md" && cn.GuideBodyMd}
                     `}>
                         {children}
                     </div>
@@ -57,13 +57,13 @@ export function GuideCard({
 }
 
 GuideCard.List = function GuideCardList({children}: { children: React.ReactNode }) {
-    return <div className={$list.host}>
+    return <div className={cn.GuideListHost}>
         {children}
     </div>
 }
 
-function $Pointer() {
-    return <div data-pointer="true" className={$guide.pointer}>
+function Pointer() {
+    return <div data-pointer="true" className={cn.GuidePointer}>
         <svg
             xmlns="http://www.w3.org/2000/svg"
             width={24}

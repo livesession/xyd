@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/uniform",
-  "version": "0.1.0-xyd.11",
+  "version": "0.1.0-xyd.14",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",

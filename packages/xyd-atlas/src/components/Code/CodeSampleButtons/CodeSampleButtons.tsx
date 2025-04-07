@@ -5,18 +5,11 @@ import {Example} from "@xyd-js/uniform";
 
 import {MDXReference, mdxValue} from "@/utils/mdx";
 
-import {
-    $sample,
-    $arrow,
-    $scroller,
-    $button
-} from "./CodeSampleButtons.styles";
+import * as cn from "./CodeSampleButtons.styles";
 
 export interface CodeExampleButtonsProps {
     examples: MDXReference<Example[]>
-
     activeExample: MDXReference<Example> | null
-
     onClick: (example: MDXReference<Example>) => void
 }
 
@@ -47,40 +40,40 @@ export function CodeExampleButtons({examples, activeExample, onClick}: CodeExamp
     }
 
     return (
-        <div className={$sample.host}>
-            <div className={$sample.container}>
+        <div className={cn.CodeSampleButtonsHost}>
+            <div className={cn.CodeSampleButtonsContainer}>
                 {showLeftArrow && (
                     <button
                         onClick={() => scroll('left')}
-                        className={$arrow.host}
+                        className={cn.CodeSampleButtonsArrowHost}
                     >
-                        <ChevronLeft className={$arrow.icon}/>
+                        <ChevronLeft className={cn.CodeSampleButtonsArrowIcon}/>
                     </button>
                 )}
                 <div
                     ref={scrollContainerRef}
                     onScroll={handleScroll}
-                    className={$scroller.host}
+                    className={cn.CodeSampleButtonsScrollerHost}
                 >
-                    <div className={$scroller.container}>
+                    <div className={cn.CodeSampleButtonsScrollerContainer}>
                         {examples?.map((example) => (
-                            <$SampleButton
+                            <SampleButton
                                 key={example.codeblock.title}
                                 onClick={() => onClick(example)}
                                 example={example}
                                 activeExample={activeExample}
                             >
                                 {mdxValue(example.codeblock.title || null)}
-                            </$SampleButton>
+                            </SampleButton>
                         ))}
                     </div>
                 </div>
                 {showRightArrow && (
                     <button
                         onClick={() => scroll('right')}
-                        className={$arrow.host}
+                        className={cn.CodeSampleButtonsArrowHost}
                     >
-                        <ChevronRight className={$arrow.icon}/>
+                        <ChevronRight className={cn.CodeSampleButtonsArrowIcon}/>
                     </button>
                 )}
             </div>
@@ -88,7 +81,7 @@ export function CodeExampleButtons({examples, activeExample, onClick}: CodeExamp
     )
 }
 
-function $SampleButton({onClick, children, activeExample, example}: {
+function SampleButton({onClick, children, activeExample, example}: {
     onClick: () => void,
     children: React.ReactNode,
     example: MDXReference<Example>,
@@ -99,7 +92,7 @@ function $SampleButton({onClick, children, activeExample, example}: {
 
     return <button
         onClick={onClick}
-        className={`${$button.host} ${markExampleAsActive && $button.$$active}`}
+        className={`${cn.CodeSampleButtonsButtonHost} ${markExampleAsActive && cn.CodeSampleButtonsButtonActive}`}
     >
         {children}
     </button>

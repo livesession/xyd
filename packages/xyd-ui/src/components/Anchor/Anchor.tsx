@@ -1,7 +1,7 @@
 import React, {forwardRef} from 'react'
 import type {ComponentProps, ReactElement} from 'react'
 
-import {$anchor} from "./Anchor.styles";
+import * as cn from "./Anchor.styles";
 
 export type UIAnchorProps = Omit<ComponentProps<'a'>, 'ref'> & {
     newWindow?: boolean
@@ -23,7 +23,7 @@ export const UIAnchor = forwardRef<HTMLAnchorElement, UIAnchorProps>(function (
                 to={href}
                 target="_blank"
                 rel="noreferrer"
-                className={$anchor.host}
+                className={cn.AnchorHost}
             >
                 {children}
                 <span> (opens in a new tab)</span>
@@ -36,7 +36,7 @@ export const UIAnchor = forwardRef<HTMLAnchorElement, UIAnchorProps>(function (
             <Link
                 ref={forwardedRef}
                 to={href}
-                className={$anchor.host}
+                className={cn.AnchorHost}
             >
                 {children}
             </Link>
@@ -47,7 +47,7 @@ export const UIAnchor = forwardRef<HTMLAnchorElement, UIAnchorProps>(function (
         <Link
             ref={forwardedRef}
             to={href}
-            className={$anchor.host}
+            className={cn.AnchorHost}
         >
             {children}
         </Link>

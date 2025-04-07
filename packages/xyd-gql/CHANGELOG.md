@@ -1,5 +1,29 @@
 # @xyd-js/gql
 
+## 0.1.0-xyd.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.12
+  - @xyd-js/uniform@0.1.0-xyd.14
+
+## 0.1.0-xyd.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.11
+  - @xyd-js/uniform@0.1.0-xyd.13
+
+## 0.1.0-xyd.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.10
+  - @xyd-js/uniform@0.1.0-xyd.12
+
 ## 0.1.0-xyd.9
 
 ### Patch Changes

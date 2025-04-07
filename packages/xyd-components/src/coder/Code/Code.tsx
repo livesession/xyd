@@ -4,8 +4,8 @@ import {InnerLine, Pre} from "codehike/code";
 import {Theme} from "@code-hike/lighter";
 
 import {CodeTheme, type CodeThemeBlockProps} from "../CodeTheme";
-import {$lineNumber, $mark, $code} from "./Code.styles.tsx";
-import {CodeLoader} from "./CodeLoader.tsx";
+import * as cn from "./Code.styles";
+import {CodeLoader} from "./CodeLoader";
 
 export interface CodeProps {
     codeblocks: CodeThemeBlockProps[];
@@ -30,7 +30,7 @@ Code.LineNumber = function LineNumber(props: any) {
         <>
         <span
             style={{minWidth: `${props.width}ch`}}
-            className={$lineNumber.host}
+            className={cn.LineNumberHost}
         >
           {props.lineNumber}
         </span>
@@ -41,17 +41,17 @@ Code.LineNumber = function LineNumber(props: any) {
 
 // TODO: fix any
 Code.Mark = function Mark(props: any) {
-    return <div className={`${$mark.host} ${props.annotation && $mark.$$annotated}`}>
+    return <div className={`${cn.MarkHost} ${props.annotation && cn.MarkAnnotated}`}>
         <InnerLine
             merge={props}
-            className={$mark.line}
+            className={cn.MarkLine}
         />
     </div>
 }
 
 // TODO: fix any
 Code.Bg = function CodeLine(props: any) {
-    return <span className={`${props.annotation && $mark.$$annotated}`}>
+    return <span className={`${props.annotation && cn.MarkAnnotated}`}>
         {props.children}
     </span>
 }
@@ -65,8 +65,8 @@ Code.Pre = function CodePre(props: {
 ) {
     return <Pre
         className={`
-            ${$code.host}
-            ${props?.size === "full" && $code.host$$full}
+            ${cn.CodeHost}
+            ${props?.size === "full" && cn.CodeHostFull}
             ${props.className}
         `}
         style={props.codeblock?.style || props.codeblock?.style}

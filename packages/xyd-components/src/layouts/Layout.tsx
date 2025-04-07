@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react"
 
-import {$layout, $page, $article, globalHeaderHeight} from "./Layout.styles"
+import * as cn from "./Layout.styles"
 
 export interface LayoutProps {
     header: React.ReactNode;
@@ -21,7 +21,7 @@ export function Layout(props: LayoutProps) {
             return
         }
 
-        const checkpoint = parseInt(globalHeaderHeight, 10) / 2
+        const checkpoint = parseInt(cn.globalHeaderHeight, 10) / 2
         const diff = scrollTop - controlScrollPos
         const reversePosDiff = Math.abs(scrollTop - controlScrollPos)
 
@@ -61,44 +61,42 @@ export function Layout(props: LayoutProps) {
             return
         }
 
-        document.querySelector(`.${$page.scroll}`)?.addEventListener("scroll", onScroll)
-        document.querySelector(`.${$page.scroll}`)?.addEventListener("scrollend", onScrollFinish)
+        document.querySelector(`.${cn.PageScroll}`)?.addEventListener("scroll", onScroll)
+        document.querySelector(`.${cn.PageScroll}`)?.addEventListener("scrollend", onScrollFinish)
 
         return () => {
-            document.querySelector(`.${$page.scroll}`)?.removeEventListener("scroll", onScroll)
-            document.querySelector(`.${$page.scroll}`)?.removeEventListener("scrollend", onScrollFinish)
+            document.querySelector(`.${cn.PageScroll}`)?.removeEventListener("scroll", onScroll)
+            document.querySelector(`.${cn.PageScroll}`)?.removeEventListener("scrollend", onScrollFinish)
         }
     }, []);
 
-    return <div className={$layout.host}>
+    return <div className={cn.LayoutHost}>
         <Layout.Header className={`
-            ${props.subheader && $layout.header$$sub}
-            ${hideMainHeader && $layout.header$$hideMain}
+            ${props.subheader && cn.LayoutHeaderSub}
+            ${hideMainHeader && cn.LayoutHeaderHideMain}
         `}>
             {props.header}
         </Layout.Header>
         <main className={`
-            ${$layout.main}
-            ${!hideMainHeader && props.subheader && $layout.main$$sub}
+            ${cn.LayoutMain}
+            ${!hideMainHeader && props.subheader && cn.LayoutMainSub}
         `}>
-            <aside className={$layout.sidebar}>
+            <aside className={cn.LayoutSidebar}>
                 {props.aside}
             </aside>
-            <div className={$page.host}>
-                <div className={$page.scroll}>
-                    <div className={$page.container}>
+            <div className={cn.PageHost}>
+                <div className={cn.PageScroll}>
+                    <div className={cn.PageContainer}>
                         <div className={`
-                            ${$page.articleContainer}
-                            ${props.kind == "fullwidth" && $page.articleContainer$$fullWidth}
+                            ${cn.PageArticleContainer}
+                            ${props.kind == "fullwidth" && cn.PageArticleContainerFullWidth}
                         `}>
-                            <article className={$article.host}>
-                                <section className={$article.content}>
+                            <article className={cn.ArticleHost}>
+                                <section className={cn.ArticleContent}>
                                     {props.content}
                                 </section>
                                 {
-                                    props.contentNav && <nav className={`
-                                    ${$article.nav}
-                                `}>
+                                    props.contentNav && <nav className={cn.ArticleNav}>
                                         {props.contentNav}
                                     </nav>
                                 }
@@ -113,7 +111,7 @@ export function Layout(props: LayoutProps) {
 
 Layout.Header = function LayoutHeader({className, children}: { className?: string, children: React.ReactNode }) {
     return <header className={`
-            ${$layout.header}
+            ${cn.LayoutHeader}
             ${className}
         `}>
         {children}

@@ -1,30 +1,61 @@
 import React from "react"
-
-import {$badge} from "./Badge.styles";
+import * as cn from "./Badge.styles";
 
 export interface BadgeProps {
-    children: React.ReactNode;
+    className?: string;
+    children?: React.ReactNode;
 
     size?: "sm"
     kind?: "warning" | "info"
 }
 
 export function Badge({
+                          className,
                           children,
                           size = "sm",
                           kind = "warning"
                       }: BadgeProps) {
     return <div className={`
-        ${$badge.host}
+        ${cn.BadgeHost}
         
-        ${size === "sm" && $badge.host$$sm}
+        ${size === "sm" && cn.BadgeHostSm}
         
-        ${kind === "warning" && $badge.host$$warning}
+        ${kind === "warning" && cn.BadgeHostWarning}
         
-        ${kind === "info" && $badge.host$$info}
+        ${kind === "info" && cn.BadgeHostInfo}
+        
+        ${className || ''}
     `}>
-        <span className={$badge.item}>
+        <span className={cn.BadgeItem}>
             {children}
         </span>
     </div>
 }
+
+// TODO: below is a concept only
+// Export styles for useStyle hook
+// Badge.styles = cn;
+// export type BadgeStyles = typeof cn;
+
+// Example usage:
+/*
+import { useStyle } from '@xyd/components/utils';
+import { Badge, BadgeStyles } from '@xyd/components/writer';
+
+const styled = useStyle<BadgeStyles>(Badge);
+
+styled.BadgeHost`
+    background-color: red;
+`;
+*/
+
+// usage
+
+// import {Content} from "@xyd-js/components/writer"
+// const styled = useStyle(Badge)
+
+// styled.BadgeHostInfo`
+//     background-color: red;
+// `
+
+// export default styled

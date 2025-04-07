@@ -1,5 +1,26 @@
 # @xyd-js/uniform
 
+## 0.1.0-xyd.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.12
+
+## 0.1.0-xyd.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.11
+
+## 0.1.0-xyd.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.10
+
 ## 0.1.0-xyd.11
 
 ### Patch Changes

@@ -3,7 +3,7 @@ import React, {} from "react"
 import {Badge} from "@xyd-js/components/writer"
 import {UISidebar} from "@xyd-js/ui";
 
-import {useGroup} from "./sidebar-group";
+import {useGroup} from "./SidebarGroup";
 
 // TODO: custom hooks for active onclick handler etc?
 

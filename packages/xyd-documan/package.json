@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/documan",
-  "version": "0.1.0-xyd.25",
+  "version": "0.1.0-xyd.28",
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
@@ -21,10 +21,10 @@
   "dependencies": {
     "@xyd-js/content": "workspace:*",
     "@xyd-js/plugin-zero": "workspace:*",
-    "@xyd-js/react-router-dev": "7.1.1-xyd.4",
+    "@react-router/dev": "7.1.1",
     "@react-router/node": "7.1.1",
     "@react-router/serve": "7.1.1",
-    "@react-router/dev": "7.1.1",
+    "@xyd-js/react-router-dev": "7.1.1-xyd.4",
     "codehike": "^1.0.3",
     "compression": "^1.7.5",
     "express": "^4.21.2",

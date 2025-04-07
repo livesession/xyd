@@ -248,34 +248,6 @@ function mdxContent(code: string) {
     }
 }
 
-// TODO: below is a concept only
-// class MyThemeSettings extends BaseThemeSettings {
-//     private constructor() {
-//         super();
-//
-//         this.toc.hide(true)
-//         this.sidebar.clientSideRouting(true)
-//         this.layout.size("large")
-//     }
-//
-//     override abc() {
-//
-//     }
-//
-//     static new() {
-//         return new MyThemeSettings()
-//     }
-// }
-
-
-// TODO: below is a concept only
-// const themeSettings = new ThemeSettings()
-//     .toc.hide()
-//     .sidebar({
-//         clientSideRouting: true
-//     })
-//     .layout.size("large")
-
 // TODO: in the future more smoother loader - first fast server render then move to ideal position of client and then replace and 3 items at start
 export default function APIReference({loaderData}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
@@ -285,25 +257,13 @@ export default function APIReference({loaderData}: { loaderData: loaderData }) {
 
     const memoizedServerComponent = MemoMDXComponent(serverComponent)
 
-    console.log("memoizedServerComponent", memoizedServerComponent)
-
     return <Framework
         settings={settings}
         sidebarGroups={loaderData.sidebarGroups || []}
         breadcrumbs={loaderData.breadcrumbs || []}
         navlinks={loaderData.navlinks}
     >
-        <Theme
-            themeSettings={{
-                hideToc: true,
-                sidebar: {
-                    clientSideRouting: true
-                },
-                layout: {
-                    size: "large"
-                }
-            }}
-        >
+        <Theme>
             <AtlasIndex
                 data={memoizedServerComponent?.references[0]}
             />

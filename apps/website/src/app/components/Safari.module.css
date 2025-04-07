@@ -1,0 +1,36 @@
+.safariContainer {
+  fill: #E5E5E5;
+}
+
+.darkSafariContainer {
+  fill: #404040;
+}
+
+.safariContent {
+  fill: white;
+}
+
+.darkSafariContent {
+  fill: #262626;
+}
+
+.luminosityBlend {
+  mix-blend-mode: luminosity;
+}
+
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.safariWrapper {
+  animation: slideUpFade 0.8s ease-out forwards;
+  opacity: 0;
+}

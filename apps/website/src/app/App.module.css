@@ -1,0 +1,138 @@
+@media (min-width: 1024px) {
+    .BuiltInStandardsGrid {
+        display: grid;
+        gap: 32px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Position the third item in the second column */
+    .BuiltInStandardsGrid> :nth-child(3) {
+        grid-row-start: 1;
+        grid-column-start: 2;
+    }
+}
+
+@keyframes fadeInBackground {
+    0% {
+        opacity: 0;
+        transform: scale(0.1);
+        filter: brightness(0.9);
+    }
+
+    100% {
+        opacity: 0.85;
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+@keyframes pulseGlow {
+    0% {
+        transform: scale(1);
+        filter: brightness(0.95);
+    }
+
+    50% {
+        transform: scale(1.01);
+        filter: brightness(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+        filter: brightness(0.95);
+    }
+}
+
+@keyframes floatingGlow {
+    0% {
+        opacity: 0.4;
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: translateY(-1px) scale(1.005);
+    }
+
+    100% {
+        opacity: 0.4;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes simpleFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 0.85;
+        transform: scale(1);
+    }
+}
+
+.heroBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: -1;
+    opacity: 0;
+    transform-origin: center;
+    background: url('/noise.png'),
+        radial-gradient(circle at center,
+            rgba(147, 51, 234, 0.45) 0%,
+            rgba(88, 28, 135, 0.7) 25%,
+            rgba(67, 56, 202, 0.6) 45%,
+            rgba(59, 130, 246, 0.4) 65%,
+            rgba(49, 46, 129, 0.3) 85%,
+            rgba(17, 24, 39, 0.1) 100%);
+    maskImage: radial-gradient(circle at center,
+            rgba(0, 0, 0, 1) 30%,
+            rgba(0, 0, 0, 0.9) 45%,
+            rgba(0, 0, 0, 0.4) 70%,
+            rgba(0, 0, 0, 0) 90%);
+    WebkitMaskImage: radial-gradient(circle at center,
+            rgba(0, 0, 0, 1) 30%,
+            rgba(0, 0, 0, 0.9) 45%,
+            rgba(0, 0, 0, 0.4) 70%,
+            rgba(0, 0, 0, 0) 90%);
+    animation: simpleFadeIn 1s ease-out forwards;
+    mix-blend-mode: plus-lighter;
+    overflow: hidden;
+}
+
+.heroBackground::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    right: -10%;
+    bottom: -10%;
+    transform-origin: center;
+    background: radial-gradient(circle at center,
+            rgba(147, 51, 234, 0.1) 0%,
+            rgba(88, 28, 135, 0.08) 40%,
+            transparent 80%);
+    filter: blur(20px);
+    mix-blend-mode: plus-lighter;
+}
+
+.heroBackground::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform-origin: center;
+    background: radial-gradient(circle at center,
+            rgba(139, 92, 246, 0.1) 0%,
+            rgba(59, 130, 246, 0.08) 40%,
+            transparent 80%);
+    filter: blur(15px);
+    mix-blend-mode: plus-lighter;
+}

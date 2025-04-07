@@ -1,5 +1,38 @@
 # @xyd-js/framework
 
+## 0.1.0-xyd.30
+
+### Patch Changes
+
+- fix again
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.10
+  - @xyd-js/content@0.1.0-xyd.13
+  - @xyd-js/core@0.1.0-xyd.12
+  - @xyd-js/ui@0.1.0-xyd.15
+
+## 0.1.0-xyd.29
+
+### Patch Changes
+
+- fix for theme
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.9
+  - @xyd-js/content@0.1.0-xyd.12
+  - @xyd-js/core@0.1.0-xyd.11
+  - @xyd-js/ui@0.1.0-xyd.14
+
+## 0.1.0-xyd.28
+
+### Patch Changes
+
+- refactor, ui tweaks
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.8
+  - @xyd-js/content@0.1.0-xyd.11
+  - @xyd-js/core@0.1.0-xyd.10
+  - @xyd-js/ui@0.1.0-xyd.13
+
 ## 0.1.0-xyd.27
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/components",
-  "version": "0.1.0-xyd.7",
+  "version": "0.1.0-xyd.10",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -43,22 +43,23 @@
     "clean": "rimraf build"
   },
   "dependencies": {
+    "@livesession/design-system-colors": "0.0.6-alpha-refactor-and-typo.0",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-tabs": "^1.1.1",
-    "lucide-react": "^0.447.0",
-    "codehike": "^1.0.3"
+    "codehike": "^1.0.3",
+    "lucide-react": "^0.447.0"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "@code-hike/lighter": "^1.0.1"
+    "@code-hike/lighter": "^1.0.1",
+    "react": "^19.0.0"
   },
   "devDependencies": {
-    "@linaria/atomic": "^6.2.0",
-    "@linaria/core": "^6.2.0",
-    "@babel/preset-typescript": "^7.26.0",
-    "@babel/preset-react": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-flow": "^7.25.9",
+    "@babel/preset-react": "^7.26.0",
+    "@babel/preset-typescript": "^7.26.0",
+    "@linaria/atomic": "^6.2.0",
+    "@linaria/core": "^6.2.0",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.1",
@@ -69,12 +70,12 @@
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
     "postcss-import": "^16.1.0",
+    "rimraf": "^3.0.2",
     "rollup": "^4.27.4",
     "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-terser": "^7.0.2",
-    "tsup": "^8.3.0",
-    "rimraf": "^3.0.2"
+    "tsup": "^8.3.0"
   }
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import {AnnotationHandler} from "codehike/code";
 
-import {Code} from "./Code.tsx";
+import {Code} from "./Code";
 
 const markAnnotation: AnnotationHandler = {
     name: "mark",

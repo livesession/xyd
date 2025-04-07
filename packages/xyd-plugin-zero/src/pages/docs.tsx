@@ -173,9 +173,7 @@ export default function CustomPage({loaderData, ...rest}: { loaderData: loaderDa
             }}
         />
     } else {
-        component = <Theme
-            themeSettings={content.themeSettings}
-        >
+        component = <Theme>
             <Content
                 components={{
                     ...contentComponents,

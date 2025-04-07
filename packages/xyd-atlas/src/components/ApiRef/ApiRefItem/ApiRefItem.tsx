@@ -7,13 +7,7 @@ import {
     ApiRefProperties,
     ApiRefSamples
 } from "@/components/ApiRef";
-import {
-    $navbar,
-    $refItem,
-    $properties,
-    $subtitle,
-    $title
-} from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
+import * as cn from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
 
 export interface ApiRefItemProps {
     reference: MDXReference<Reference>
@@ -31,7 +25,7 @@ export function ApiRefItem({reference}: ApiRefItemProps) {
                 break;
             }
             // TODO: finish subitlte from ref
-            topNavbar = <$Navbar
+            topNavbar = <Navbar
                 label={ctx.method.title}
                 subtitle={`${decodeURIComponent(ctx.path.title)}`}
             />
@@ -39,27 +33,27 @@ export function ApiRefItem({reference}: ApiRefItemProps) {
         }
     }
 
-    return <div className={$refItem.host}>
-        <$Title title={reference.title || ""}/>
+    return <div className={cn.ApiRefItemHost}>
+        <Title title={reference.title || ""}/>
 
         {topNavbar}
 
         {reference.description.children}
 
-        <div className={$refItem.grid}>
-            <$Properties reference={reference}/>
+        <div className={cn.ApiRefItemGrid}>
+            <Properties reference={reference}/>
             {reference.examples && <ApiRefSamples examples={reference.examples}/>}
         </div>
 
     </div>
 }
 
-function $Properties({reference}: ApiRefItemProps) {
-    return <div className={$properties.host}>
+function Properties({reference}: ApiRefItemProps) {
+    return <div className={cn.ApiRefItemPropertiesHost}>
         {reference?.definitions?.map((definition, i) => <div key={i}>
             {
-                definition.properties?.length && <div key={i} className={$properties.item}>
-                    <$Subtitle title={definition.title.title}/>
+                definition.properties?.length && <div key={i} className={cn.ApiRefItemPropertiesItem}>
+                    <Subtitle title={definition.title.title}/>
 
                     <ApiRefProperties properties={definition.properties}/>
                 </div>
@@ -68,11 +62,11 @@ function $Properties({reference}: ApiRefItemProps) {
     </div>
 }
 
-function $Navbar({label, subtitle}: { label: string, subtitle: string }) {
+function Navbar({label, subtitle}: { label: string, subtitle: string }) {
     return <>
-        <div className={$navbar.host}>
-            <span className={$navbar.container}>
-                <span className={$navbar.label}>
+        <div className={cn.ApiRefItemNavbarHost}>
+            <span className={cn.ApiRefItemNavbarContainer}>
+                <span className={cn.ApiRefItemNavbarLabel}>
                    {label.toUpperCase()}
                 </span>
                 <span>
@@ -83,21 +77,20 @@ function $Navbar({label, subtitle}: { label: string, subtitle: string }) {
     </>
 }
 
-
-function $Title({title}: { title: string }) {
+function Title({title}: { title: string }) {
     return <>
-        <h1 className={$title.host}>
-            <a className={$title.link}>
+        <h1 className={cn.ApiRefItemTitleHost}>
+            <a className={cn.ApiRefItemTitleLink}>
                 {title}
             </a>
         </h1>
     </>
 }
 
-function $Subtitle({title}: { title: string }) {
+function Subtitle({title}: { title: string }) {
     return <>
-        <h1 className={$subtitle.host}>
-            <a className={$subtitle.link}>
+        <h1 className={cn.ApiRefItemSubtitleHost}>
+            <a className={cn.ApiRefItemSubtitleLink}>
                 {title}
             </a>
         </h1>

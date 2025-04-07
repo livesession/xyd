@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
 
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
@@ -66,6 +66,25 @@ export default [
                         '@babel/preset-react'
                     ],
                 },
+                classNameSlug: (hash, title, {file}) => {
+                    // Get the full path after 'src/components/'
+                    const pathParts = file.split('/');
+                    const componentsIndex = pathParts.indexOf('src');
+                    if (componentsIndex === -1) return `XydComponents-Component-${title}`;
+
+                    // Get everything after 'components' directory
+                    const componentPath = pathParts
+                        .slice(componentsIndex + 1)
+                        .filter(part => !part.endsWith('.styles.tsx')) // Remove styles.tsx
+                        .join('-');
+
+                    // Use the title as the style name (it's already the variable name)
+                    const styleName = title.replace(/^\$/, ''); // Remove $ prefix if present
+
+                    // TODO: in the future hash + system to override styles for specific components if hash
+                    return `XydComponents-Component-${componentPath}__${styleName}`;
+                    // return `XydComponents-Component-${componentPath}__${styleName}_${hash}`;
+                }
             }),
             postcss({
                 extract: true,

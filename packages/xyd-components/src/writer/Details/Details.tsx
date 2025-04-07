@@ -1,12 +1,11 @@
 import React from "react"
 
-import {$details} from "./Details.styles";
+import * as cn from "./Details.styles";
 
 interface BaseDetailsProps {
     children: React.ReactNode;
     label: string;
-
-    icon?: React.SVGProps<SVGSVGElement>;
+    icon?: React.ReactElement;
 }
 
 interface TertiaryDetailsProps extends BaseDetailsProps {
@@ -39,53 +38,53 @@ export function Details(props: DetailsProps) {
     const kind = props.kind || "primary";
 
     return <details className={`
-        ${$details.host} 
-        ${isDeepKind && $details.host$$secondary}
+        ${cn.DetailsHost} 
+        ${isDeepKind && cn.DetailsHostSecondary}
    `}>
         <summary className={`
-        ${$details.summary} 
-        ${isDeepKind && $details.summary$$secondary}
-        ${kind === "tertiary" ? $details.summary$$tertiary : ""}
+        ${cn.DetailsSummary} 
+        ${isDeepKind && cn.DetailsSummarySecondary}
+        ${kind === "tertiary" ? cn.DetailsSummaryTertiary : ""}
    `}>
-            {kind === "primary" && <>
-                    {props.icon ? props.icon : <$Icon/>}
-                <$Label>
-                    {label}
-                </$Label>
-            </>}
-            {isDeepKind && <>
+            {kind === "primary" && (
+                <>
+                    {props.icon || <Icon/>}
+                    <Label>
+                        {label}
+                    </Label>
+                </>
+            )}
+            {isDeepKind && (
                 <div>
-                    <div className={$details.summaryDeep}>
-                        <>
-                            {props.icon ? props.icon : <$IconDeep/>}
-                        </>
+                    <div className={cn.DetailsSummaryDeep}>
+                        {props.icon || <IconDeep/>}
                         <div className={`
-                            ${$details.summaryDeep$text}
-                            ${$details.summaryDeep$text$$tertiary}
+                            ${cn.DetailsSummaryDeepText}
+                            ${cn.DetailsSummaryDeepTextTertiary}
                         `}>
                             {title}
                         </div>
                     </div>
-                    <$Label>
+                    <Label>
                         {label}
-                    </$Label>
+                    </Label>
                 </div>
-                <$Icon/>
-            </>}
+            )}
+            {isDeepKind && <Icon/>}
         </summary>
 
         <div className={`
-            ${$details.content}
-            ${isDeepKind && $details.content$$secondary}
-            ${kind === "tertiary" && $details.content$$tertiary}
+            ${cn.DetailsContent}
+            ${isDeepKind && cn.DetailsContentSecondary}
+            ${kind === "tertiary" && cn.DetailsContentTertiary}
         `}>
             {children}
         </div>
     </details>
 }
 
-function $Icon() {
-    return <div className={$details.icon}>
+function Icon() {
+    return <div className={cn.DetailsIcon}>
         <svg
             // TODO: bad solution
             data-icon="true"
@@ -104,7 +103,7 @@ function $Icon() {
     </div>
 }
 
-function $IconDeep() {
+function IconDeep() {
     return <svg
         width="1em"
         height="1em"
@@ -130,10 +129,10 @@ function $IconDeep() {
     </svg>
 }
 
-function $Label({children}: {
+function Label({children}: {
     children?: React.ReactNode
 }) {
-    return <div className={$details.label}>
+    return <div className={cn.DetailsLabel}>
         {children}
     </div>
 }

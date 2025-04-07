@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from "react"
 
-import {$layout, $page, $article, globalHeaderHeight} from "./LayoutPrimary.styles.tsx"
+import * as cn from "./LayoutPrimary.styles"
 
 export interface LayoutPrimaryProps {
     header: React.ReactNode;
     aside: React.ReactNode;
     content: React.ReactNode;
-    contentNav: React.ReactNode;
+    contentNav?: React.ReactNode;
 
     subheader?: React.ReactNode;
     layoutSize?: "large"
@@ -18,23 +18,26 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
 
     const {hideMainHeader} = props.subheader ? useSubHeader() : {hideMainHeader: false}
 
-    return <div className={$layout.host}>
+    return <div className={cn.LayoutPrimaryHost}>
         <header className={` 
-            ${$layout.header}
-            ${props.subheader && $layout.header$$sub}
-            ${hideMainHeader && $layout.header$$hideMain}
+            ${cn.LayoutPrimaryHeader}
+            ${props.subheader && cn.LayoutPrimaryHeaderSub}
+            ${hideMainHeader && cn.LayoutPrimaryHeaderHideMain}
         `}>
-            <div className={$layout.primaryHeaderContent}>
+            <div className={cn.LayoutPrimaryHeaderContent}>
                 {props.header}
                 <button
-                    className={$layout.hamburgerButton}
+                    className={cn.LayoutPrimaryHamburgerButton}
                     onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
                     aria-label="Toggle navigation menu"
                 >
-                    <div className={$layout.hamburgerIcon}>
-                        <span className={`${$layout.hamburgerLine} ${isMobileNavOpen ? $layout.hamburgerLine$$open : ''}`}/>
-                        <span className={`${$layout.hamburgerLine} ${isMobileNavOpen ? $layout.hamburgerLine$$open : ''}`}/>
-                        <span className={`${$layout.hamburgerLine} ${isMobileNavOpen ? $layout.hamburgerLine$$open : ''}`}/>
+                    <div className={cn.LayoutPrimaryHamburgerIcon}>
+                        <span
+                            className={`${cn.LayoutPrimaryHamburgerLine} ${isMobileNavOpen ? cn.LayoutPrimaryHamburgerLineOpen : ''}`}/>
+                        <span
+                            className={`${cn.LayoutPrimaryHamburgerLine} ${isMobileNavOpen ? cn.LayoutPrimaryHamburgerLineOpen : ''}`}/>
+                        <span
+                            className={`${cn.LayoutPrimaryHamburgerLine} ${isMobileNavOpen ? cn.LayoutPrimaryHamburgerLineOpen : ''}`}/>
                     </div>
                 </button>
             </div>
@@ -43,55 +46,49 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
 
         {/* Mobile Drawer Sidebar */}
         <div
-            className={`${$layout.overlay} ${isMobileNavOpen ? $layout.overlay$$visible : ''}`}
+            className={`${cn.LayoutPrimaryOverlay} ${isMobileNavOpen ? cn.LayoutPrimaryOverlayVisible : ''}`}
             onClick={() => setIsMobileNavOpen(false)}
         />
         <aside className={`
-            ${$layout.mobileSidebar}
-            ${isMobileNavOpen ? $layout.mobileSidebar$$open : ''}
+            ${cn.LayoutPrimaryMobileSidebar}
+            ${isMobileNavOpen ? cn.LayoutPrimaryMobileSidebarOpen : ''}
         `}>
-            <div className={$layout.sidebarContent}>
+            <div className={cn.LayoutPrimarySidebarContent}>
                 {props.aside}
             </div>
             <button
-                className={$layout.closeButton}
+                className={cn.LayoutPrimaryCloseButton}
                 onClick={() => setIsMobileNavOpen(false)}
                 aria-label="Close navigation menu"
             >
-                <div className={$layout.closeIcon}/>
+                <div className={cn.LayoutPrimaryCloseIcon}/>
             </button>
         </aside>
 
         <main className={`
-            ${$layout.main}
-            ${!hideMainHeader && props.subheader && $layout.main$$sub}
+            ${cn.LayoutPrimaryMain}
+            ${!hideMainHeader && props.subheader && cn.LayoutPrimaryMainSub}
         `}>
             {/* Desktop Static Sidebar */}
-            <aside className={$layout.staticSidebar}>
+            <aside className={cn.LayoutPrimaryStaticSidebar}>
                 {props.aside}
             </aside>
 
-            <div className={$page.host}>
-                <div className={$page.scroll}>
+            <div className={cn.LayoutPrimaryPageHost}>
+                <div className={cn.LayoutPrimaryPageScroll}>
                     <div className={`
-                        ${$page.container}
-                        ${props.layoutSize == "large" && $page.container$$large}
+                        ${cn.LayoutPrimaryPageContainer}
+                        ${props.layoutSize == "large" && cn.LayoutPrimaryPageContainerLarge}
                     `}>
-                        <div className={`
-                            ${$page.articleContainer}
-                        `}>
-                            <article className={$article.host}>
-                                <section className={$article.content}>
+                        <div className={cn.LayoutPrimaryPageArticleContainer}>
+                            <article className={cn.LayoutPrimaryArticleHost}>
+                                <section className={cn.LayoutPrimaryArticleContent}>
                                     {props.content}
                                 </section>
-                                {
-                                    props.contentNav && <nav className={`
-                                    ${$article.nav}
-                                `}>
-                                        {props.contentNav}
-                                    </nav>
-                                }
                             </article>
+                            {props.contentNav && <nav className={cn.LayoutPrimaryArticleNav}>
+                                {props.contentNav}
+                            </nav>}
                         </div>
                     </div>
                 </div>
@@ -111,7 +108,7 @@ function useSubHeader() {
             return
         }
 
-        const checkpoint = parseInt(globalHeaderHeight, 10) / 2
+        const checkpoint = parseInt(cn.globalHeaderHeight, 10) / 2
         const diff = scrollTop - controlScrollPos
         const reversePosDiff = Math.abs(scrollTop - controlScrollPos)
 
@@ -145,12 +142,12 @@ function useSubHeader() {
     // TODO: by ref?
     // TODO: MOVE SOMEWHERE ELSE BECAUSE IT DECREASE PERFORMANCE (RERENDER)
     useEffect(() => {
-        document.querySelector(`.${$page.scroll}`)?.addEventListener("scroll", onScroll)
-        document.querySelector(`.${$page.scroll}`)?.addEventListener("scrollend", onScrollFinish)
+        document.querySelector(`.${cn.LayoutPrimaryPageScroll}`)?.addEventListener("scroll", onScroll)
+        document.querySelector(`.${cn.LayoutPrimaryPageScroll}`)?.addEventListener("scrollend", onScrollFinish)
 
         return () => {
-            document.querySelector(`.${$page.scroll}`)?.removeEventListener("scroll", onScroll)
-            document.querySelector(`.${$page.scroll}`)?.removeEventListener("scrollend", onScrollFinish)
+            document.querySelector(`.${cn.LayoutPrimaryPageScroll}`)?.removeEventListener("scroll", onScroll)
+            document.querySelector(`.${cn.LayoutPrimaryPageScroll}`)?.removeEventListener("scrollend", onScrollFinish)
         }
     }, []);
 

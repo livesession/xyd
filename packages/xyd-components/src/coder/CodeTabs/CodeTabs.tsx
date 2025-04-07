@@ -7,10 +7,7 @@ import {
 import {
     CodeCopy,
 } from "../CodeCopy";
-import {
-    $sample,
-    $languages,
-} from "./CodeTabs.styles.tsx"; // TODO: style by highlighted?
+import * as cn from "./CodeTabs.styles"; // TODO: style by highlighted?
 
 export interface CodeTabsProps {
     description: string;
@@ -24,7 +21,7 @@ export function withCodeTabs(PreComponent) {
 
         return (
             <TabsPrimitive.Root
-                className={$sample.host}
+                className={cn.CodeTabsHost}
                 style={props.highlighted[0]?.style}
                 defaultValue={props.highlighted[0]?.meta}
             >
@@ -39,7 +36,7 @@ export function withCodeTabs(PreComponent) {
                             style={codeblock?.style || codeblock?.style}
                             codeblock={codeblock}
                             className={`
-                                ${isSingle && $sample.pre$$single}
+                                ${isSingle && cn.CodeTabsPreSingle}
                             `}
                         />
                     </TabsPrimitive.Content>
@@ -58,25 +55,25 @@ function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
     const isSingle = props.highlighted.length === 1 && !props.description
 
     return <div className={`
-        ${$languages.host}
-        ${isSingle && $languages.host$$single}
+        ${cn.CodeTabsLanguagesHost}
+        ${isSingle && cn.CodeTabsLanguagesHostSingle}
     `}>
         <$Description description={props.description}/>
 
-        <TabsPrimitive.List className={$languages.list}>
+        <TabsPrimitive.List className={cn.CodeTabsLanguagesList}>
             {props.highlighted?.map(({meta}, i) => {
                 if (isSingle) {
                     return null
                 }
-                return <TabsPrimitive.Trigger value={meta!} key={i} className={$languages.button}>
+                return <TabsPrimitive.Trigger value={meta!} key={i} className={cn.CodeTabsLanguagesButton}>
                     {meta}
                 </TabsPrimitive.Trigger>
             })}
         </TabsPrimitive.List>
 
         <div className={`
-            ${$languages.copy}
-            ${isSingle && $languages.copy$$single}
+            ${cn.CodeTabsLanguagesCopy}
+            ${isSingle && cn.CodeTabsLanguagesCopySingle}
         `}>
             {props.highlighted?.map((codeblock, i) => (
                 <TabsPrimitive.Content value={codeblock.meta!} asChild key={i}>
@@ -88,8 +85,8 @@ function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
 }
 
 function $Description(props: { description: string }) {
-    return <div className={$languages.description}>
-        <div className={$languages.description$item}>
+    return <div className={cn.CodeTabsLanguagesDescription}>
+        <div className={cn.CodeTabsLanguagesDescriptionItem}>
             {props.description}
         </div>
     </div>
