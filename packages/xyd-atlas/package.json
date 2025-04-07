@@ -32,7 +32,8 @@
     "lucide-react": "^0.447.0"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "@xyd-js/components": "workspace:*  "
   },
   "devDependencies": {
     "@xyd-js/gql": "workspace:*",
