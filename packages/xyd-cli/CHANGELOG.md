@@ -1,5 +1,11 @@
 # @xyd-js/cli
 
+## 0.1.0-xyd.33
+
+### Patch Changes
+
+- fix again
+
 ## 0.1.0-xyd.32
 
 ### Patch Changes
