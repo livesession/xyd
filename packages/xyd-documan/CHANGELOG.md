@@ -1,5 +1,14 @@
 # @xyd-js/documan
 
+## 0.1.0-xyd.27
+
+### Patch Changes
+
+- fix for theme
+- Updated dependencies
+  - @xyd-js/content@0.1.0-xyd.12
+  - @xyd-js/plugin-zero@0.1.0-xyd.20
+
 ## 0.1.0-xyd.26
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @xyd-js/framework
 
+## 0.1.0-xyd.29
+
+### Patch Changes
+
+- fix for theme
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.9
+  - @xyd-js/content@0.1.0-xyd.12
+  - @xyd-js/core@0.1.0-xyd.11
+  - @xyd-js/ui@0.1.0-xyd.14
+
 ## 0.1.0-xyd.28
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @xyd-js/components
 
+## 0.1.0-xyd.9
+
+### Patch Changes
+
+- fix for theme
+
 ## 0.1.0-xyd.8
 
 ### Patch Changes

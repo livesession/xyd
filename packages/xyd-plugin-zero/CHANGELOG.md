@@ -1,5 +1,22 @@
 # @xyd-js/plugin-zero
 
+## 0.1.0-xyd.20
+
+### Patch Changes
+
+- fix for theme
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.14
+  - @xyd-js/components@0.1.0-xyd.9
+  - @xyd-js/content@0.1.0-xyd.12
+  - @xyd-js/core@0.1.0-xyd.11
+  - @xyd-js/framework@0.1.0-xyd.29
+  - @xyd-js/themes@0.1.1-xyd.1
+  - @xyd-js/gql@0.1.0-xyd.11
+  - @xyd-js/uniform@0.1.0-xyd.13
+  - @xyd-js/openapi@0.1.0-xyd.9
+  - @xyd-js/sources@0.1.1-xyd.1
+
 ## 0.1.0-xyd.19
 
 ### Patch Changes
