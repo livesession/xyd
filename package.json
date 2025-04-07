@@ -12,6 +12,8 @@
     "build:gql": "pnpm run --filter=\"./packages/xyd-gql\" build",
     "build:uniform": "pnpm run --filter=\"./packages/xyd-uniform\" build",
     "build:atlas-storybook": "pnpm run --filter=\"./packages/xyd-atlas\" build-storybook",
+    "build:packages": "pnpm run --filter=\"./packages/*\" build",
+    "build:website": "pnpm run --filter=\"./apps/website\" build",
     "clean": "./clear.sh",
     "prepare": "husky"
   },

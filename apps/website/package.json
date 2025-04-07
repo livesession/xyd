@@ -1,6 +1,5 @@
 {
-  "name": "website",
-  "private": true,
+  "name": "@xyd-js/website",
   "version": "0.0.0",
   "scripts": {
     "dev": "next dev",

@@ -3,7 +3,7 @@
 import {SubdomainNavBar} from "@cosmocss/land";
 import {MarkGithubIcon} from "@primer/octicons-react";
 
-import {IconLiveSession} from "@/app/components";
+import {IconLiveSession} from "@/app/components/index";
 
 export function Header() {
     return <SubdomainNavBar
