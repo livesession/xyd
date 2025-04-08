@@ -13,6 +13,8 @@ import {
     TableV2,
     Tabs,
     Steps,
+    List,
+    ListOl,
 
     IconCode,
     IconCustomEvent,
@@ -71,19 +73,18 @@ export function stdContent() {
         p: props => <p {...props} />,
 
         ul: props => (
-            <ul{...props}>
+            <List{...props}>
                 {props.children}
-            </ul>
+            </List>
         ),
         ol: props => (
-            <ol{...props}
-            >
+            <ListOl{...props}>
                 {props.children}
-            </ol>
+            </ListOl>
         ),
-        li: props => <li {...props} >
+        li: props => <List.Item {...props} >
             {props.children}
-        </li>,
+        </List.Item>,
 
         table: TableV2,
         tr: TableV2.Tr,

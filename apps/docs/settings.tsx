@@ -68,19 +68,39 @@ export default {
                 "match": "docs",
                 "items": [
                     {
-                        "group": "Introduction",
+                        "group": "Get Started",
                         "pages": [
-                            "docs/what-is-xyd",
-                            "docs/getting-started",
+                            "docs/introduction",
+                            "docs/quickstart",
+                            "docs/deploy",
+                            "docs/settings",
+                            "docs/routing",
+                            "docs/themes",
                         ],
                     },
                     {
-                        "group": "Components",
+                        "group": "Writing Content",
                         "pages": [
-                            "docs/components/guide-cards",
-                            "docs/components/callout",
-                            "docs/components/steps",
-                            "docs/components/code-sample",
+                            "docs/writing-quickstart",
+                            "docs/markdown-extensions",
+
+                        ],
+                    },
+                    {
+                        "group": "Customization",
+                        "pages": [
+
+                        ],
+                    },
+                    {
+                        "group": "Writing APIs",
+                        "pages": [
+
+                        ],
+                    },
+                    {
+                        "group": "Advanced",
+                        "pages": [
 
                         ],
                     },

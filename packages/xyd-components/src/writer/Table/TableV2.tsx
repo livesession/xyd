@@ -9,8 +9,8 @@ export interface TableV2Props {
 
 export function TableV2({children, className}: TableV2Props) {
     return (
-        <div className={cn.TableV2.Host}>
-            <table className={`${cn.TableV2.Table} ${className || ''}`}>
+        <div className={cn.Host}>
+            <table className={`${cn.Table} ${className || ''}`}>
                 {children}
             </table>
         </div>
@@ -22,7 +22,7 @@ export interface TableHeadProps {
 }
 
 TableV2.Head = function TableHead({children}: TableHeadProps) {
-    return <thead className={cn.TableV2.Thead}>
+    return <thead className={cn.Thead}>
         {children}
     </thead>
 }
@@ -33,7 +33,7 @@ export interface TableThProps {
 }
 
 TableV2.Th = function TableTh({children, numeric}: TableThProps) {
-    return <th className={`${cn.TableV2.Th} ${numeric ? 'numeric' : ''}`}>
+    return <th className={`${cn.Th} ${numeric ? 'numeric' : ''}`}>
         {children}
     </th>
 }
@@ -43,7 +43,7 @@ export interface TableTrProps {
 }
 
 TableV2.Tr = function TableTr({children}: TableTrProps) {
-    return <tr className={cn.TableV2.Tr}>
+    return <tr className={cn.Tr}>
         {children}
     </tr>
 }
@@ -55,7 +55,7 @@ export interface TableTdProps {
 }
 
 TableV2.Td = function TableTd({children, numeric, muted}: TableTdProps) {
-    return <td className={`${cn.TableV2.Td} ${numeric ? 'numeric' : ''} ${muted ? 'muted' : ''}`}>
+    return <td className={`${cn.Td} ${numeric ? 'numeric' : ''} ${muted ? 'muted' : ''}`}>
         {children}
     </td>
 }
@@ -65,8 +65,8 @@ export interface TableCellProps {
 }
 
 TableV2.Cell = function TableCell({children}: TableCellProps) {
-    return <div className={cn.TableV2.Cell}>
-        <div className={cn.TableV2.CellContent}>
+    return <div className={cn.Cell}>
+        <div className={cn.CellContent}>
             {children}
         </div>
     </div>
@@ -77,7 +77,7 @@ export interface TableModelCellProps {
 }
 
 TableV2.ModelCell = function TableModelCell({children}: TableModelCellProps) {
-    return <div className={cn.TableV2.ModelCell}>
+    return <div className={cn.ModelCell}>
         {children}
     </div>
 } 

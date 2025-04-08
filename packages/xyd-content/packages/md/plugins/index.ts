@@ -20,7 +20,7 @@ export function defaultPlugins(toc: RemarkMdxTocOptions) {
         remarkInjectCodeMeta,
         extractThemeSettings,
         extractPage,
-        mdCodeGroup,
+        mdCodeGroup, // TODO: to delete (use remarkDirectiveWithMarkdown)
         remarkDirectiveWithMarkdown
     ]
 }

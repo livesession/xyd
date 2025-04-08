@@ -1,0 +1,239 @@
+---
+title: Routing
+---
+
+# Routing
+:::subtitle
+Learn how to navigate your docs
+:::
+
+##  File-Convention Routing
+
+<code>xyd</code> uses file-convention routing by default, which means the generated HTML pages
+are mapped from the directory structure of the source Markdown files. 
+ 
+For example, given the following directory structure:
+
+```
+.
+├ docs
+│  └─ index.md
+│  └─ quickstart.md
+|
+├─ index.md
+├─ faq.md
+|
+└─ settings.json
+```
+
+The generated HTML pages will be:
+```
+index.md                  --> /index.html (accessible as /)
+faq.md                    --> /faq.html
+docs/index.md            -->  /docs/index.html (accessible as /docs/)
+quickstart.md             --> /quickstart.html
+```
+
+:::callout
+File-convention routing is powerful because you don't need any configuration but also has some limitations. 
+<br/>
+If you need more control over the routing, you can use the [`settings`](#) file to customize the routing.
+:::
+
+## Settings-Based Routing
+
+You can customize the routing by adding a routes in `settings.json|settings.tsx` file to your project.
+
+The `navigation` property controls the hierarchy of your documentation. It's grouped into multiple properties:
+
+* [`sidebar`](#sidebar) - Main navigation, usually displayed on the left side of the page.
+* [`header`](#header) - Sub navigation, usually displayed on the top of the page.
+* [`anchors`](#anchors) - Fixed navigation, helpful for displaying a static navigation/links.
+
+:::callout
+Dividing a `navigation` into multiple properties helps you to organize your documentation better.
+:::
+
+### Sidebar
+If you don't want any hierarchy, you can just define pages within your navigation field.
+
+Each entry of the pages array must be a path to a file that exists within your repo.
+
+:::callout
+Note you do not need to append .mdx to the file paths.
+:::
+
+```json
+{
+  "navigation": {
+    "sidebar": [
+      "overview",
+      "quickstart",
+      "guides/introduction"
+    ]
+  }
+}
+```
+Using this approach we got something funcitonal to [`File-Convention Routing`](/#file-convention-routing) but also have the ability to customize the sidebar more.
+
+#### Groups in Sidebar
+Groups allow you to group your pages. Groups can also be nested within each other.
+
+```json
+{
+  "sidebar": [
+    {
+        {
+            "group": "Getting Started",
+            "pages": [
+                "overview",
+                "quickstart",
+                "guides/introduction"
+            ]
+        },
+        // ... other groups
+    }
+  ]
+}
+```
+
+#### Routing in Sidebar
+You can also do more advanced routing in the sidebar, like matching based on the current route.
+
+```json
+{
+    "sidebar": [
+        {
+            "match": "docs",
+            "items": [
+                {
+                    "group": "Getting Started",
+                    "pages": [
+                        "docs/introduction",
+                       "docs/components"
+                    ]
+                },
+                {
+                    "group": "Guides",
+                    "pages": [
+                        "docs/guides/introduction",
+                        "docs/guides/components"
+                    ]
+                }
+            ],
+        },
+        {
+            "match": "docs/api",
+            "items": [
+                {
+                    "group": "API",
+                    "pages": [
+                        "docs/api/introduction",
+                        "docs/api/error-handling",
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+:::callout
+This approuch gives you more control over the routing and allows you to create more complex navigation structures.
+:::
+
+### Header
+
+The header navigation allows you to create a top-level navigation bar with dropdown menus. 
+You can also define a sub header for a specific route.
+
+```json
+{
+  "navigation": {
+    "header": [
+      {
+        "name": "Documentation",
+        "url": "/docs"
+      },
+      {
+        "name": "API Reference",
+        "url": "/docs/api"
+      },
+      {
+        "sub": {
+          "match": "/docs/api",
+          "name": "API",
+          "items": [
+            {
+              "name": "Getting Started",
+              "url": "/docs/api"
+            },
+            {
+              "name": "Authentication",
+              "url": "/docs/api/auth"
+            },
+          ]
+        }
+      },
+      {
+        "sub": {
+          "match": "/docs/guides",
+          "name": "Guides",
+          "items": [
+            {
+              "name": "Quick Start",
+              "url": "/docs/guides/quickstart"
+            },
+            {
+              "name": "Tutorials",
+              "url": "/docs/guides/tutorials"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+:::callout
+The `match` property in sub header determines when the dropdown should be visible based on the current route.
+:::
+
+### Anchors
+
+Anchors provide a way to add fixed navigation elements, typically at the bottom of the page. They're useful for displaying important external links or resources.
+
+```json
+{
+  "navigation": {
+    "anchors": {
+      "bottom": [
+        {
+          "icon": "icon-book",
+          "name": "Documentation",
+          "url": "https://docs.example.com"
+        },
+        {
+          "icon": "icon-users",
+          "name": "Community",
+          "url": "https://community.example.com"
+        },
+        {
+          "icon": "icon-code",
+          "name": "GitHub",
+          "url": "https://github.com/example"
+        },
+        {
+          "icon": "icon-chat",
+          "name": "Support",
+          "url": "https://support.example.com"
+        }
+      ]
+    }
+  }
+}
+```
+
+:::callout
+Anchors support icons and can be positioned at different parts of the page using the `bottom` property.
+:::

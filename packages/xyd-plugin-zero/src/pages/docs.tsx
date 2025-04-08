@@ -81,6 +81,17 @@ export async function loader({request}: { request: any }) {
     }
 
     if (error?.code === "ENOENT") {
+        error = null
+
+        try {
+            code = await compileBySlug(slug, false)
+        } catch (e) {
+            error = e
+        }
+    }
+  
+
+    if (error?.code === "ENOENT") {
         try {
             // TODO: better index algorithm
             code = await compileBySlug(slug + "/index", true)

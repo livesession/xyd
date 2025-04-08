@@ -1,0 +1,1 @@
+1. cannot use multiple attributes for markdown directives in .mdx files  

@@ -1,8 +1,8 @@
-import {Plugin, unified} from "unified";
+import { Plugin, unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkMdx from "remark-mdx";
-import {visit} from "unist-util-visit";
-import {Node as UnistNode} from "unist";
+import { visit } from "unist-util-visit";
+import { Node as UnistNode } from "unist";
 
 function toPascalCase(str: string) {
     return str
@@ -18,16 +18,27 @@ const supportedDirectives: { [key: string]: boolean } = {
     Details: true,
     details: true,
 
+    Callout: true,
+    callout: true,
+
     Table: true,
     table: true,
 
     Subtitle: true,
     subtitle: true,
+
+    Steps: true,
+    steps: true,
 }
 
 const tableComponents: { [key: string]: boolean } = {
     Table: true,
     table: true
+}
+
+const stepsComponents: { [key: string]: boolean } = {
+    Steps: true,
+    steps: true
 }
 
 const parseMarkdown = (content: string) => {
@@ -46,9 +57,40 @@ export const remarkDirectiveWithMarkdown: Plugin = () => {
             }
 
             const isTable = tableComponents[node.name];
+            const isSteps = stepsComponents[node.name];
             const attributes = [];
 
-            // TODO: MORE GENERIC CUZ IT HAS IMPL DETAILS OF TABLE
+            if (isSteps) {
+                const steps = node.children.map((child: any) => {
+                    if (child.type !== "list") {
+                        return child
+                    }
+
+                    return child.children.map((item: any) => {
+                        if (item.type !== "listItem") {
+                            return
+                        }
+
+                        return {
+                            type: 'mdxJsxFlowElement',
+                            name: 'Steps.Item',
+                            attributes: [],
+                            children: item.children
+                        };
+                    }).flat();
+                }).flat();
+
+                const jsxNode = {
+                    type: 'mdxJsxFlowElement',
+                    name: 'Steps',
+                    attributes: [],
+                    children: steps
+                };
+
+                Object.assign(node, jsxNode);
+                return;
+            }
+
             if (isTable) {
                 // TODO: support tsx tables like: [<>`Promise<Reference[]>`</>] ?
                 const tableData = JSON.parse(node.children[0].value);
@@ -108,7 +150,6 @@ export const remarkDirectiveWithMarkdown: Plugin = () => {
                         });
                     } else {
                         jsxProps.push(`${key}={${value}}`)
-
                     }
                 }
 
@@ -122,6 +163,7 @@ export const remarkDirectiveWithMarkdown: Plugin = () => {
                 if (ast && ast.children[0] && ast.children[0].attributes) {
                     for (const attr of ast.children[0].attributes) {
                         // TODO: support markdown also e.g Hello `World` - currently it mus be: Hello <code>World</code>
+
                         attributes.push(attr);
                     }
                 }

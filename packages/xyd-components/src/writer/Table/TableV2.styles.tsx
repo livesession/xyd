@@ -11,7 +11,7 @@ const colors = {
     }
 }
 
-const TableV2 = {
+export default {
     Host: css`
         width: 100%;
         overflow-x: auto;
@@ -41,19 +41,20 @@ const TableV2 = {
         vertical-align: middle;
         border-bottom: 1px solid ${colors.gray[100]};
         white-space: nowrap;
+        border-right: 1px solid ${colors.gray[100]};
 
         &:first-child {
-            width: 24rem;
-            max-width: 40%;
-            border-right: 1px solid ${colors.gray[100]};
+            /* width: 24rem; */
+            /* max-width: 40%; */
+            /* border-right: 1px solid ${colors.gray[100]}; */
 
-            @media (max-width: 768px) {
+            /* @media (max-width: 768px) {
                 width: auto;
                 min-width: 12rem;
-            }
+            } */
         }
 
-        &.numeric {
+        &.TdNumeric {
             text-align: right;
             font-weight: 400;
             min-width: 5rem;
@@ -72,16 +73,17 @@ const TableV2 = {
         padding: 0.5rem 1rem;
         vertical-align: middle;
         border-top: 1px solid ${colors.gray[100]};
+        border-right: 1px solid ${colors.gray[100]};
 
         &:first-child {
-            border-right: 1px solid ${colors.gray[100]};
+            /* border-right: 1px solid ${colors.gray[100]}; */
         }
 
-        &.numeric {
+        &.TdNumeric {
             text-align: right;
         }
 
-        &.muted {
+        &.TdMuted {
             color: ${colors.gray[600]};
         }
 
@@ -112,6 +114,3 @@ const TableV2 = {
     `
 } 
 
-export default {
-    TableV2
-}

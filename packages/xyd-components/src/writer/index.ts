@@ -18,6 +18,8 @@ export * from "./Hr"
 
 export * from "./Icon"
 
+export * from "./List"
+
 export * from "./NavLinks"
 
 export * from "./Pre"
