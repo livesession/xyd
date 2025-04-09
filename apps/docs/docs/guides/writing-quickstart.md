@@ -2,9 +2,9 @@
 title: Writing quickstart
 ---
 
-# Writing quickstart
+# Writing Quickstart
 :::subtitle
-Write content and navigation metadata using markdown
+Learn how to write content and navigation metadata 
 :::
 
 ## Introduction
@@ -23,7 +23,16 @@ title: My title
 
 > Writing metadata in frontmatter is required for navigation and optionaly for other features like SEO.
 
-## Metadata specification
+## Metadata Specification
+
+### Title
+The title field is used for the page title and for the sidebar navigation item.
+
+```mdx
+---
+title: Writing quickstart
+---
+```
 
 ### Description
 The description field is used for SEO purposes and will be displayed in search engine results. It should be a concise summary of the page content.
@@ -81,4 +90,19 @@ title: My title
 layout: center
 ---
 ```
+
+## Content 
+To write a content for your page, you can use the [MDX](https://mdxjs.com/) or [Markdown](https://www.markdownguide.org/) syntax.
+You can also leverage built in [components](/docs/api/components), [extensions](/docs/markdown-extensions) and [special symbols](#) to enhance your content.
+
+```mdx
+# Quickstart
+
+This is a quickstart guide for the `xyd` project.
+
+:::callout
+    Tip: You can use the React `<Callout>` component to render a callout too
+:::
+```
+
 

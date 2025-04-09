@@ -1,0 +1,119 @@
+/*  TODO: refactor vars */
+:root {
+    --video-player-mini-width: 202px;
+    --video-player-mini-height: 113px;
+    --video-player-expanded-height: 100px;
+    --video-player-z-index: 1000;
+    --video-play-radius: 4px;
+    --video-play-shadow-medium: 0 7px 14px 0 rgba(60, 66, 87, 0.08), 0 3px 6px 0 rgba(0, 0, 0, 0.12);
+    --video-play-color-white: rgb(255, 255, 255);
+    --video-play-duration: 0.3s;
+
+    --video-play-font-lineHeight-20: 20px;
+    --video-play-font-weight-regular: 400;
+    --video-play-font-size-14: 14px;
+    --video-play-color-text-white: rgb(255, 255, 255);
+}
+
+.VideoPlayerHost {
+    z-index: var(--video-player-z-index);
+    width: var(--video-player-mini-width);
+    height: var(--video-player-mini-height);
+    overflow: visible;
+}
+
+.VideoPlayerShape {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    box-shadow: var(--video-play-shadow-medium);
+    border-radius: var(--video-play-radius);
+    box-sizing: border-box;
+    background-color: var(--video-play-color-white);
+}
+
+.VideoPlayerFrame {
+    position: relative;
+    width: 100%;
+    height: var(--video-player-mini-height);
+
+    background-color: var(--video-play-color-white);
+    overflow: hidden;
+    border-radius: var(--video-play-radius);
+    box-sizing: border-box;
+}
+
+.VideoPlayerControls {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+}
+
+.VideoPlayerCover {
+    background-color: transparent;
+    backdrop-filter: brightness(60%) blur(10px);
+    -webkit-backdrop-filter: brightness(60%) blur(10px);
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transition: backdrop-filter .1s ease-in-out, -webkit-backdrop-filter .1s ease-in-out, opacity .1s ease-in-out, background-color .1s ease-in-out;
+
+    overflow: hidden;
+
+    border-radius: var(--video-play-radius);
+    box-sizing: border-box;
+}
+
+.VideoPlayerButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.VideoPlayerButtonIcon {
+    color: var(--video-play-color-text-white);
+    display: flex;
+    box-sizing: border-box;
+
+    svg {
+        fill: currentColor;
+    }
+}
+
+.VideoPlayerButtonDescriptionHost {
+    box-sizing: border-box;
+    margin-top: 8px;
+}
+
+.VideoPlayerButtonDescription {
+    text-align: center;
+    color: var(--video-play-color-text-white);
+    display: block;
+    font-size: var(--video-play-font-size-14);
+    font-weight: var(--video-play-font-weight-regular);
+    line-height: var(--video-play-font-lineHeight-20);
+    white-space: normal;
+}
+
+/* TODO: fix its a mockup */
+.VideoPlayerThumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(https://xyd-land.netlify.app/docs-hero.png);
+    background-size: cover;
+    background-position: center;
+}

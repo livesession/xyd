@@ -8,15 +8,16 @@ Configure your documentation using the configuration file
 :::
 
 The settings file is the central configuration hub for your documentation.
-You can use either `settings.json` for a simple configuration or `settings.tsx` if you prefer a more dynamic React-based approach.
+You can use either `settings.json` for a simple configuration or `settings.ts|x` if you prefer a more dynamic TypeScript/React based approach.
+
 :::callout
-    React-based configuration is useful if you'd like to use jsx to customize the configuration.
+TypeScript/React based configuration is useful if you'd like to use more control over the configuration.
 :::
 
 This configuration file controls the look and feel of your documentation, including navigation structure, integrations, analytics tracking, and custom behaviors.
 
 :::callout
-    Source code of `settings` is available [here](https://github.com/livesession/xyd/blob/master/packages/xyd-core/src/types/settings.ts)
+Source code of `settings` is available [here](https://github.com/livesession/xyd/blob/master/packages/xyd-core/src/types/settings.ts)
 :::
 
 ## Properties
@@ -59,45 +60,49 @@ This configuration file controls the look and feel of your documentation, includ
 ```
 :::
 
-<Details kind="tertiary" title={<>show more</>} label={<>Structure subtypes</>}>
-#### Sidebar (`sidebar`)
-:::table
-```md
-[
-    ["Name","Type", "Description"],
+:::details{kind="tertiary" title="show more" label="Structure subtypes"}
+
+* 
+    #### Sidebar (`sidebar`)
+    :::table
+    ```md
     [
-        "group",
-        "string",
-        "The name of the group."
-    ],
-    [
+        ["Name","Type", "Description"],
+        [
+            "group",
+            "string",
+            "The name of the group."
+        ],
+        [
+        ]
     ]
-]
-```
+    ```
+    :::
+
+* 
+    #### Header (`headers`)
+    :::table
+    ```md
+    [
+        ["Name","Type", "Description"],
+        [
+            "group",
+            "string",
+            "The name of the group."
+        ],
+        [
+        ]
+    ]
+    ```
+    :::
+
 :::
 
-<br/>
 
-#### Header (`headers`)
-:::table
-```md
-[
-    ["Name","Type", "Description"],
-    [
-        "group",
-        "string",
-        "The name of the group."
-    ],
-    [
-    ]
-]
-```
-:::
+## Settings.json
+This is the simplest way to configure your documentation, you don't need to write any code.
 
-</Details>
-
-
-## Validation
+### JSON Schema Validation
 The `settings.json` file is validated against a JSON schema to ensure proper configuration. You can reference the schema by including:
 
 ```json
@@ -106,7 +111,7 @@ The `settings.json` file is validated against a JSON schema to ensure proper con
 }
 ```
 
-if you use React approuch you can do:
+if you use TS/React approuch you can do:
 ```tsx
 import { Settings } from 'xyd-js';
 
@@ -114,3 +119,9 @@ export default {
     // ... your settings configuration here
 } satisfies Settings
 ```
+
+## Code-Based Settings
+If you feel that the JSON configuration is not enough, you can use the TypeScript/React based configuration
+to have more control and use APIs that are not available in the JSON configuration.
+
+For example, you could define a custom components, adds custom markdown plugins or other customization stuff.

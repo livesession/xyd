@@ -15,7 +15,8 @@ import {
     Steps,
     List,
     ListOl,
-
+    UnderlineNav,
+    
     IconCode,
     IconCustomEvent,
     IconFunnels,
@@ -129,6 +130,7 @@ export function writerContent() {
         Tabs,
         Table: TableV2,
         Badge,
+        UnderlineNav,
     }
 }
 

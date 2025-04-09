@@ -54,7 +54,7 @@ export default {
     "structure": {
         "header": [
             {
-                "name": "Docs",
+                "name": "Guides",
                 "url": "/docs"
             },
             {
@@ -70,30 +70,32 @@ export default {
                     {
                         "group": "Get Started",
                         "pages": [
-                            "docs/introduction",
-                            "docs/quickstart",
-                            "docs/deploy",
-                            "docs/settings",
-                            "docs/routing",
-                            "docs/themes",
+                            "docs/guides/introduction",
+                            "docs/guides/quickstart",
+                            "docs/guides/deploy",
+                            "docs/guides/settings",
+                            "docs/guides/routing",
+                            "docs/guides/themes",
                         ],
                     },
                     {
                         "group": "Writing Content",
                         "pages": [
-                            "docs/writing-quickstart",
-                            "docs/markdown-extensions",
+                            "docs/guides/writing-quickstart",
+                            "docs/guides/special-symbols",
+                            "docs/guides/markdown-extensions",
+                            "docs/guides/developer-content",
 
                         ],
                     },
                     {
-                        "group": "Customization",
+                        "group": "Writing APIs and SDKs",
                         "pages": [
 
                         ],
                     },
                     {
-                        "group": "Writing APIs",
+                        "group": "Customization",
                         "pages": [
 
                         ],
@@ -114,8 +116,8 @@ export default {
                     {
                         "group": "GET STARTED",
                         "pages": [
-                            "docs/what-is-xyd",
-                            "docs/getting-started",
+                            "docs/guides/what-is-xyd",
+                            "docs/guides/getting-started",
                         ],
                     },
                 ]

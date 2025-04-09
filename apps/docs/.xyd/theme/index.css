@@ -1,0 +1,25 @@
+/*  TODO: ITS TEMPORARY SOLUTION */
+
+.XydComponents-Component-layouts-LayoutPrimary__LayoutPrimaryStaticSidebar {
+    position: fixed;
+    top: 0;
+    z-index: 1;
+}
+
+.XydComponents-Component-layouts-LayoutPrimary__LayoutPrimaryHeader {
+    margin-left: 16rem;
+}
+
+.XydUi-Component-Nav__LogoHost {
+    display: none;
+}
+
+.XydUi-Component-Nav__ListHost {
+    justify-content: flex-start;
+}
+
+.XydComponents-Component-layouts-LayoutPrimary__LayoutPrimaryPageHost {
+    position: absolute;
+    left: 260px;
+    right: 0;
+}

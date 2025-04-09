@@ -42,7 +42,7 @@ If you need more control over the routing, you can use the [`settings`](#) file 
 
 ## Settings-Based Routing
 
-You can customize the routing by adding a routes in `settings.json|settings.tsx` file to your project.
+You can customize the routing by adding a routes in `settings.json|settings.ts|x` file to your project.
 
 The `navigation` property controls the hierarchy of your documentation. It's grouped into multiple properties:
 
@@ -56,7 +56,6 @@ Dividing a `navigation` into multiple properties helps you to organize your docu
 
 ### Sidebar
 If you don't want any hierarchy, you can just define pages within your navigation field.
-
 Each entry of the pages array must be a path to a file that exists within your repo.
 
 :::callout
@@ -74,7 +73,7 @@ Note you do not need to append .mdx to the file paths.
   }
 }
 ```
-Using this approach we got something funcitonal to [`File-Convention Routing`](/#file-convention-routing) but also have the ability to customize the sidebar more.
+Using this approach we got something functional to [`File-Convention Routing`](/#file-convention-routing) but also have the ability to customize the sidebar more.
 
 #### Groups in Sidebar
 Groups allow you to group your pages. Groups can also be nested within each other.
@@ -96,6 +95,10 @@ Groups allow you to group your pages. Groups can also be nested within each othe
   ]
 }
 ```
+
+:::callout
+`group` property shows the name as the separator in the sidebar.
+:::
 
 #### Routing in Sidebar
 You can also do more advanced routing in the sidebar, like matching based on the current route.
@@ -143,7 +146,7 @@ This approuch gives you more control over the routing and allows you to create m
 
 ### Header
 
-The header navigation allows you to create a top-level navigation bar with dropdown menus. 
+The header navigation allows you to create a top-level navigation bar. 
 You can also define a sub header for a specific route.
 
 ```json
@@ -196,7 +199,7 @@ You can also define a sub header for a specific route.
 ```
 
 :::callout
-The `match` property in sub header determines when the dropdown should be visible based on the current route.
+The `match` property in sub header determines when the sub menu should be visible based on the current route.
 :::
 
 ### Anchors
@@ -236,4 +239,14 @@ Anchors provide a way to add fixed navigation elements, typically at the bottom 
 
 :::callout
 Anchors support icons and can be positioned at different parts of the page using the `bottom` property.
+:::
+
+## Samples
+:::guide-card{title="File-Convention Routing" icon="<IconCode/>" href="https://github.com/xyd-js/xyd-samples/tree/main/file-convention-routing"}
+Explore our sample project to get started with file-convention routing.
+:::
+
+
+:::guide-card{title="Settings-Based Routing" icon="<IconCode/>" href="https://github.com/xyd-js/xyd-samples/tree/main/settings-based-routing"}
+Explore our sample project to get started with settings-based routing.
 :::

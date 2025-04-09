@@ -29,6 +29,9 @@ const supportedDirectives: { [key: string]: boolean } = {
 
     Steps: true,
     steps: true,
+
+    GuideCard: true,
+    "guide-card": true,
 }
 
 const tableComponents: { [key: string]: boolean } = {

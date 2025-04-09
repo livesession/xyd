@@ -32,3 +32,5 @@ export * from "./Tabs"
 
 export * from "./UnderlineNav"
 
+export * from "./VideoGuide"
+

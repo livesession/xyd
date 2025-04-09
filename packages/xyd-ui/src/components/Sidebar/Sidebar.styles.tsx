@@ -130,6 +130,6 @@ export const ItemHeaderHost = css`
     font-weight: 600;
     letter-spacing: 0.5px;
     color: #111827;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
 `;
 

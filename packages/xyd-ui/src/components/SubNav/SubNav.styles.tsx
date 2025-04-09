@@ -21,7 +21,7 @@ export const SubNavPrefix = css`
     padding-left: 0.50rem;
     padding-right: 1.50rem;
     position: relative;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
 
     &:after {
         background: #d2d5d8;

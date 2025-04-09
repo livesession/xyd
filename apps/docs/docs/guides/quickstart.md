@@ -3,16 +3,25 @@ title: Getting started
 ---
 
 # Quickstart
-<Subtitle>
-    Start building modern documentation in record time
-</Subtitle>
+:::subtitle
+Start building modern documentation in record time
+:::
 
 Follow the instructions below to learn how to deploy,
 update and supercharge your documentation with <code>xyd</code>.
 
-<Callout>
-    **Prerequisite:** Please install Node.js (version 19 or higher) before proceeding.
-</Callout>
+:::callout
+**Prerequisite:** Please install Node.js (version 19 or higher) before proceeding.
+:::
+
+<!-- <UnderlineNav value={activeTab}>
+    <UnderlineNav.Item value="cli" href="#cli">
+        CLI
+    </UnderlineNav.Item>
+    <UnderlineNav.Item value="code" href="#code">
+        Code
+    </UnderlineNav.Item>
+</UnderlineNav>  -->
 
 **Step 1:** Install the <code>xyd</code> CLI:
 :::code-group{title="xyd installation"}
@@ -29,7 +38,7 @@ pnpm add -g xyd-js
 ```
 :::
 
-**Step 2:** Navigate to the docs directory (where the settings.json file is located) and execute the following command:
+**Step 2:** Navigate to the docs directory (where the settings file is located) and execute the following command:
 ```bash
 xyd
 ```
