@@ -3,8 +3,8 @@ import React from "react" // TODO: !!! currently is needed but we should add it 
 
 // TODO: FIX marginLeft
 export default {
-    "styling": {
-        "name": 'xyd',
+    "theme": {
+        "name": "poetry",
         "logo": <svg
             viewBox="0 0 182 178"
             fill="none"
@@ -48,10 +48,12 @@ export default {
             <circle cx={160} cy={23} r={22} fill="#5D6A7D"/>
             <circle cx={160} cy={23} r={22} stroke="#5D6A7D"/>
         </svg>,
-        "theme": "poetry"
+        "markdown": {
+            "syntaxHighlight": "dark-plus"
+        }
     },
 
-    "structure": {
+    "navigation": {
         "header": [
             {
                 "name": "Guides",
@@ -65,7 +67,7 @@ export default {
         "sidebar": [
             // docs
             {
-                "match": "docs",
+                "route": "docs",
                 "items": [
                     {
                         "group": "Get Started",
@@ -89,21 +91,30 @@ export default {
                         ],
                     },
                     {
-                        "group": "Writing APIs and SDKs",
+                        "group": "API Documentation",
                         "pages": [
+                            "docs/guides/openapi",
+                            "docs/guides/graphql",
 
+                        ],
+                    },
+                    {
+                        "group": "SDK Generation",
+                        "pages": [
                         ],
                     },
                     {
                         "group": "Customization",
                         "pages": [
-
+                            "docs/guides/customization-introduction",
+                            "docs/guides/extending-default-theme",
+                            "docs/guides/custom-theme",
                         ],
                     },
                     {
-                        "group": "Advanced",
+                        "group": "Advanced Topics",
                         "pages": [
-
+                            
                         ],
                     },
                 ]
@@ -111,7 +122,7 @@ export default {
 
             // reference
             {
-                "match": "docs/reference",
+                "route": "docs/reference",
                 "items": [
                     {
                         "group": "GET STARTED",

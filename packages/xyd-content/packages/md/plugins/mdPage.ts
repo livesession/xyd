@@ -6,6 +6,7 @@ declare global {
     var page: boolean | null | undefined
 }
 
+// TODO: to delete
 /**
  * This plugin extracts the `page` variable from the markdown file.
  * This variable(`page`) is used to determine if theme should be dropped out.

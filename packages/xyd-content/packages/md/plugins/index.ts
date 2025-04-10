@@ -3,12 +3,12 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkDirective from 'remark-directive'
 
-import {remarkMdxToc, RemarkMdxTocOptions} from "./mdToc";
-import {remarkInjectCodeMeta} from "./mdCode";
-import {extractThemeSettings} from "./mdThemeSettings";
-import {extractPage} from "./mdPage";
-import {mdCodeGroup} from "./mdCodeGroup";
-import {remarkDirectiveWithMarkdown} from "./mdComponentDirective";
+import { mdComponentDirective } from "./component-directives";
+import { mdFunctionImportCode } from "./functions"
+import { remarkMdxToc, RemarkMdxTocOptions } from "./mdToc";
+import { remarkInjectCodeMeta } from "./mdCode";
+import { extractThemeSettings } from "./mdThemeSettings";
+import { extractPage } from "./mdPage";
 
 export function defaultPlugins(toc: RemarkMdxTocOptions) {
     return [
@@ -20,7 +20,15 @@ export function defaultPlugins(toc: RemarkMdxTocOptions) {
         remarkInjectCodeMeta,
         extractThemeSettings,
         extractPage,
-        mdCodeGroup, // TODO: to delete (use remarkDirectiveWithMarkdown)
-        remarkDirectiveWithMarkdown
+
+        mdComponentDirective,
+
+        ...functionPlugins()
+    ]
+}
+
+function functionPlugins() {
+    return [
+        mdFunctionImportCode
     ]
 }

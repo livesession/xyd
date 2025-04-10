@@ -15,9 +15,9 @@ export function useMatchedSubNav() {
     const settings = useSettings()
     const location = useLocation()
 
-    const matchedSubnav = settings.structure?.header
+    const matchedSubnav = settings.navigation?.header
         ?.filter(item => item.sub)
-        ?.find(item => normalizeHref(location.pathname).startsWith(normalizeHref(item.sub?.match || "")))
+        ?.find(item => normalizeHref(location.pathname).startsWith(normalizeHref(item.sub?.route || "")))
 
     if (!matchedSubnav) {
         return null

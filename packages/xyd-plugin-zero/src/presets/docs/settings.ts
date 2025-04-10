@@ -1,17 +1,34 @@
 import fs from 'fs/promises';
 import path from 'node:path';
 
-import {createServer} from 'vite';
+import { createServer } from 'vite';
 
-import {Settings} from "@xyd-js/core";
+import { Settings } from "@xyd-js/core";
 
 const extensions = ['tsx', 'jsx', 'js', 'ts', 'json'];
 
-// readSettings load's xyd settings from the current working directory
-// settings can be a React or json file
+/**
+ * Reads `xyd` settings from the current working directory.
+ * 
+ * This function searches for a file named 'xyd' with one of the supported extensions
+ * (tsx, jsx, js, ts, json) in the current working directory. If found, it loads the
+ * settings from that file.
+ * 
+ * For React-based settings files (tsx, jsx, js, ts), it uses Vite's SSR module loading
+ * to evaluate the file and extract the default export. For JSON files, it simply
+ * parses the JSON content.
+ * 
+ * @returns A Promise that resolves to:
+ *   - The Settings object if a valid settings file was found and loaded
+ *   - A string if the settings file contains a string value
+ *   - null if no settings file was found or an error occurred
+ * 
+ * @throws May throw errors if file reading or parsing fails
+ */
 export async function readSettings(): Promise<Settings | string | null> {
     const dirPath = process.cwd();
-    const baseFileName = 'settings';
+    const baseFileName = 'xyd';
+    
     let settingsFilePath = '';
     let reactSettings = false;
 
@@ -26,7 +43,7 @@ export async function readSettings(): Promise<Settings | string | null> {
             settingsFilePath = path.join(dirPath, settingsFile);
             reactSettings = path.extname(settingsFile) !== '.json';
         } else {
-            console.error('No settings file found');
+            console.error(`No settings file found.\nFile must be named 'xyd' with one of the following extensions: ${extensions.join(', ')}`);
             return null;
         }
     } catch (error) {

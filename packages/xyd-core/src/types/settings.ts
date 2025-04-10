@@ -1,10 +1,11 @@
 import React from "react";
 
-export interface Settings {
-    // styling configurations for the documentation
-    styling?: Styling
+import type {Theme as SyntaxHighlight} from "@code-hike/lighter";
 
-    structure?: Structure
+export interface Settings {
+    theme?: Theme | ThemeResolver
+
+    navigation?: Navigation
 
     api?: API
 
@@ -15,10 +16,13 @@ export interface Settings {
     seo?: SEO
 }
 
-// ------ START  setting for styling START ------
-export interface Styling {
-    // Name of your company or project. Used for the global title.
-    name: string;
+// ------ START setting for theme START ------
+export interface Theme {
+    // A preset theme configuration that changes the look and feel of the project. A theme is a set of default styling configurations. Examples: cosmo, gusto, poetry, picasso
+    name: ThemePresetName | string
+
+    // The path to the theme file. This is a custom theme that overrides the default styling configurations.
+    markdown?: Markdown
 
     // Path to logo image or object with path to “light” and “dark” mode logo images, and where the logo links to. SVG format is recommended.
     // It does not pixelate and the file size is generally smaller.
@@ -30,14 +34,8 @@ export interface Styling {
     // Hex color codes for your global theme
     colors?: Colors
 
-    // A preset theme configuration that changes the look and feel of the project. A theme is a set of default styling configurations. Examples: gusto, poetry, plato, picasso
-    theme?: ThemeType
-
     // The global layout style of the documentation.
     layout?: LayoutType
-
-    // Set a decorative background.
-    background?: Background
 
     // Set a custom background image to be displayed behind every page.
     backgroundImage?: string
@@ -45,20 +43,17 @@ export interface Styling {
     // Custom fonts. Apply globally or set different fonts for headings and the body text.
     font?: FontDetailsType | { headings?: FontDetailsType, body?: FontDetailsType }
 
-    // Customize the dark mode toggle.
-    modeToggle?: ModeToggle
-
-    // Customize the styling of components within the sidebar.
-    sidebar?: StyleSidebar
-
-    // Styling configurations for the topbar.
-    topbar?: Topbar
-
     // The location of the search bar entry.
     search?: SearchType
+}
 
-    // The style of the rounded edges.
-    rounded?: Rounded
+// TODO: in the future (typescript)
+export interface ThemeResolver extends Theme {
+
+}
+
+export interface Markdown {
+    syntaxHighlight: SyntaxHighlight
 }
 
 export interface Logo {
@@ -90,12 +85,6 @@ export interface Colors {
     }
 }
 
-export interface Background {
-    // The style of the decorative background.
-    style?: "gradient" | "grid" | "windows"
-}
-
-
 export interface FontDetailsType {
     // The font family name. Custom fonts and all Google Fonts are supported. e.g. “Open Sans”, “Playfair Display”
     family: string
@@ -111,36 +100,17 @@ export interface FontDetailsType {
 
 }
 
-export interface ModeToggle {
-    // Set if you always want to show light or dark mode for new users. When not set, we default to the same mode as the user’s operating system.
-    default?: "light" | "dark"
-
-    // Set to true to hide the dark/light mode toggle. You can combine isHidden with default to force your docs to only use light or dark mode.
-    isHidden?: boolean
-}
-
-export interface StyleSidebar {
-    // The styling of the sidebar item.
-    items: "container" | "card" | "border" | "undecorated"
-}
-
-export interface Topbar {
-    // Styling configurations for the topbar.
-    style: "default" | "gradient"
-}
-
-export type ThemeType = "gusto" | "poetry" | "plato" | "picasso"
+export type ThemePresetName = "gusto" | "poetry" | "picasso" | "cosmo"
 
 export type LayoutType = "app" | "default"
 
 export type SearchType = "side" | "top"
 
-export type Rounded = "default" | "sharp"
-// ------ END  setting for styling END ------
+// ------ END  setting for theme END ------
 
 
-// ------ START  setting for structure START ------
-export interface Structure {
+// ------ START  setting for navigation START ------
+export interface Navigation {
     // Definition of sidebar - an array of groups with all the pages within that group
     sidebar: (SidebarMulti | Sidebar) []
 
@@ -167,8 +137,8 @@ export interface Structure {
 }
 
 export interface SidebarMulti {
-    // routing match
-    match: string
+    // route
+    route: string
 
     // sidebar items
     items: Sidebar[]
@@ -190,8 +160,10 @@ export interface Sidebar {
 }
 
 export interface SubHeader {
-    match: string
+    route: string
+
     name: string
+
     items: Header[]
 }
 
@@ -280,9 +252,12 @@ export interface API {
     sources?: APIFile
 
     // TODO: better in the future? -> move outside of API ?
-    match?: {
+    route?: {
         graphql?: string
+
         openapi?: string
+
+        sources?: string
     }
 }
 
@@ -308,8 +283,6 @@ export interface APIInfo {
     playground?: APIPlayground
 
     request?: APIInfoRequest
-
-    paramFields?: ApiParamFields
 }
 
 export interface APIAuth {
@@ -330,21 +303,6 @@ export interface APIInfoRequest {
         */
         languages?: string[]
     }
-}
-
-export interface ApiParamFields {
-    /*
-    The default expanded state of expandable options in the API playground.
-
-    "all" - every expandable component is expanded
-
-    "topLevel" - every top-level expandable component is expanded
-
-    "topLevelOneOfs" - every top-level oneOf type is expanded
-
-    "none" - every expandable component is closed (default behavior)
-    */
-    expanded: "all" | "topLevel" | "topLevelOneOfs" | "none"
 }
 
 // ------ END  setting for API END ------

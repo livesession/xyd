@@ -10,7 +10,7 @@ Customize the appearance of your documentation
 Choose from our pre-built themes to match your brand's unique style.
 
 ## Setup
-You can configure the theme in the [`settings`](/#settings-json) file.
+You can configure the theme in the [`settings`](/#settings-json) file:
 
 ```json
 {

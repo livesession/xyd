@@ -30,6 +30,8 @@ export * from "./Table"
 
 export * from "./Tabs"
 
+export * from "./TocCard"
+
 export * from "./UnderlineNav"
 
 export * from "./VideoGuide"

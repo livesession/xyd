@@ -1,6 +1,10 @@
 import React from 'react'
 
 import {
+    Settings
+} from "@xyd-js/core"
+
+import {
     Badge,
     Blockquote,
     Callout,
@@ -16,7 +20,7 @@ import {
     List,
     ListOl,
     UnderlineNav,
-    
+
     IconCode,
     IconCustomEvent,
     IconFunnels,
@@ -52,18 +56,19 @@ const Link = ({href = '', className = "", ...props}) => (
 )
 
 // TODO: options?
-export default function content() {
+export default function content(settings?: Settings) {
     return {
-        ...stdContent(),
+        ...stdContent(settings),
         ...writerContent(),
         ...helperContent(),
         ...iconContent(),
         ...coderContent(),
-        ...directiveContent(),
+
+        ...directiveContent(settings),
     }
 }
 
-export function stdContent() {
+export function stdContent(settings?: Settings) {
     return {
         h1: (props) => <div><Heading id={props.children} {...props}/></div>,
         h2: props => <div><Heading id={props.children} size={2} {...props} /></div>,
@@ -101,6 +106,7 @@ export function stdContent() {
             const lang = (props?.children?.props?.className || "").replace("language-", "") // TODO: better solution
 
             return <CodeSample
+                theme={settings?.theme?.markdown?.syntaxHighlight || undefined}
                 name={lang}
                 description={props?.children?.props?.meta}
                 codeblocks={[
@@ -131,18 +137,6 @@ export function writerContent() {
         Table: TableV2,
         Badge,
         UnderlineNav,
-    }
-}
-
-export function directiveContent() {
-    return {
-        // TODO: deprecate?
-        DirectiveCodeSample: (props) => {
-            return <CodeSample
-                {...props}
-                codeblocks={JSON.parse(props.codeblocks)}
-            />
-        }
     }
 }
 
@@ -178,5 +172,18 @@ export function iconContent() {
 export function coderContent() {
     return {
         CodeSample,
+    }
+}
+
+function directiveContent(settings?: Settings) {
+    return {
+        // TODO: deprecate? - but currently needed for directive cuz we do JSON.parse here
+        DirectiveCodeGroup: (props) => {
+            return <CodeSample
+                {...props}
+                theme={settings?.theme?.markdown?.syntaxHighlight || undefined}
+                codeblocks={JSON.parse(props.codeblocks)}
+            />
+        }
     }
 }

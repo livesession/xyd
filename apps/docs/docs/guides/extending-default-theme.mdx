@@ -1,0 +1,36 @@
+---
+title: Extending the default theme
+---
+
+# Extending the default theme
+:::subtitle
+Learn how to extend the default theme to match your brand.
+:::
+
+VitePress' default theme is optimized for documentation, and can be customized. Consult the Default Theme Config Overview for a comprehensive list of options.
+
+However, there are a number of cases where configuration alone won't be enough. For example:
+
+You need to tweak the CSS styling;
+You need to modify the Vue app instance, for example to register global components;
+You need to inject custom content into the theme via layout slots.
+These advanced customizations will require using a custom theme that "extends" the default theme.
+
+```
+.
+├─ docs                # project root
+│  ├─ .xyd
+│  │  └─ theme
+│  │     ├─ index.ts   # theme entry
+│  │     └─ index.css  # theme styles
+│  │  
+│  └─ index.md
+└─ xyd.json            # settings file
+```
+
+## Customizing CSS
+
+## Customizing fonts
+
+## Customizing other styles
+

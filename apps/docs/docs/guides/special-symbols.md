@@ -93,5 +93,5 @@ By combining these features, you can create interactive and dynamic documentatio
 Some possibitlies from special symbols are availalbe in MDX due to it's nature, e.g importing files.
 
 The main difference between symbols and MDX is a simple, more markdown like
-grammar and [text-based context](#) instead of component-like.
+grammar and text-based hierarchy instead of component-like.
 :::

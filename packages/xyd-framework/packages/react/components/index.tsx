@@ -14,7 +14,7 @@ import {useMatchedSubNav} from "../hooks";
 function FwNavLogo() {
     const settings = useSettings()
 
-    const logo = isValidElement(settings?.styling?.logo) ? settings?.styling?.logo : manualHydration(settings?.styling?.logo)
+    const logo = isValidElement(settings?.theme?.logo) ? settings?.theme?.logo : manualHydration(settings?.theme?.logo)
 
     // TODO: configurable url?
     return <a href="/">
@@ -28,7 +28,7 @@ function FwNav({kind}: { kind?: "middle" }) {
 
     const settings = useSettings()
 
-    const headers = matchedSubnav ? matchedSubnav?.items : settings?.structure?.header
+    const headers = matchedSubnav ? matchedSubnav?.items : settings?.navigation?.header
     const active = headers?.find(item => location.pathname.startsWith(item.url || ""))
 
     return <Nav
@@ -39,7 +39,7 @@ function FwNav({kind}: { kind?: "middle" }) {
         }}
     >
         {
-            settings?.structure?.header?.map((item, index) => {
+            settings?.navigation?.header?.map((item, index) => {
                 if (item.sub) {
                     return null
                 }
@@ -109,7 +109,7 @@ function FwSidebarGroups(props: FwSidebarGroupsProps) {
 
     const settings = useSettings()
 
-    const footerItems = settings.structure?.anchors?.bottom?.map(anchor => {
+    const footerItems = settings.navigation?.anchors?.bottom?.map(anchor => {
         let icon
 
         // TODO: refactor this !!!

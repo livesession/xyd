@@ -13,35 +13,36 @@ function toPascalCase(str: string) {
         .join("");
 }
 
+type MarkdownComponentDirectiveMap = { [key: string]: boolean | string }
 
-const supportedDirectives: { [key: string]: boolean } = {
-    Details: true,
+const supportedDirectives: MarkdownComponentDirectiveMap = {
     details: true,
 
-    Callout: true,
     callout: true,
 
-    Table: true,
     table: true,
 
-    Subtitle: true,
     subtitle: true,
 
-    Steps: true,
     steps: true,
 
-    GuideCard: true,
-    "guide-card": true,
+    "guide-card": "GuideCard",
+
+    "code-group": "DirectiveCodeGroup",
 }
 
-const tableComponents: { [key: string]: boolean } = {
+const tableComponents: MarkdownComponentDirectiveMap = {
     Table: true,
     table: true
 }
 
-const stepsComponents: { [key: string]: boolean } = {
+const stepsComponents: MarkdownComponentDirectiveMap = {
     Steps: true,
     steps: true
+}
+
+const codeComponents: MarkdownComponentDirectiveMap = {
+    "code-group": "DirectiveCodeGroup",
 }
 
 const parseMarkdown = (content: string) => {
@@ -52,12 +53,14 @@ const parseMarkdown = (content: string) => {
     return ast.children;
 };
 
-export const remarkDirectiveWithMarkdown: Plugin = () => {
+export const mdComponentDirective: Plugin = () => {
     return (tree: UnistNode) => {
         visit(tree, 'containerDirective', (node: any) => {
             if (!supportedDirectives[node.name]) {
                 return;
             }
+
+            const componentName = getComponentName(node.name);
 
             const isTable = tableComponents[node.name];
             const isSteps = stepsComponents[node.name];
@@ -76,7 +79,7 @@ export const remarkDirectiveWithMarkdown: Plugin = () => {
 
                         return {
                             type: 'mdxJsxFlowElement',
-                            name: 'Steps.Item',
+                            name: `${componentName}.Item`,
                             attributes: [],
                             children: item.children
                         };
@@ -85,7 +88,7 @@ export const remarkDirectiveWithMarkdown: Plugin = () => {
 
                 const jsxNode = {
                     type: 'mdxJsxFlowElement',
-                    name: 'Steps',
+                    name: componentName,
                     attributes: [],
                     children: steps
                 };
@@ -101,21 +104,21 @@ export const remarkDirectiveWithMarkdown: Plugin = () => {
 
                 const jsxNode = {
                     type: 'mdxJsxFlowElement',
-                    name: 'Table',
+                    name: componentName,
                     attributes: [],
                     children: [
                         {
                             type: 'mdxJsxFlowElement',
-                            name: 'Table.Head',
+                            name: `${componentName}.Head`,
                             attributes: [],
                             children: [
                                 {
                                     type: 'mdxJsxFlowElement',
-                                    name: 'Table.Tr',
+                                    name: `${componentName}.Tr`,
                                     attributes: [],
                                     children: header.map((cell: string) => ({
                                         type: 'mdxJsxFlowElement',
-                                        name: 'Table.Th',
+                                        name: `${componentName}.Th`,
                                         attributes: [],
                                         children: parseMarkdown(cell)
                                     }))
@@ -125,11 +128,11 @@ export const remarkDirectiveWithMarkdown: Plugin = () => {
                         // TODO: Table.Cell ?
                         ...rows.map((row: string[]) => ({
                             type: 'mdxJsxFlowElement',
-                            name: 'Table.Tr',
+                            name: `${componentName}.Tr`,
                             attributes: [],
                             children: row.map((cell: string) => ({
                                 type: 'mdxJsxFlowElement',
-                                name: 'Table.Td',
+                                name: `${componentName}.Td`,
                                 attributes: [],
                                 children: parseMarkdown(cell)
                             }))
@@ -139,6 +142,34 @@ export const remarkDirectiveWithMarkdown: Plugin = () => {
 
                 Object.assign(node, jsxNode);
                 return;
+            }
+
+            if (codeComponents[node.name]) {
+                const description = node.attributes?.title || '';
+                const codeblocks = [];
+
+                for (const child of node.children) {
+                    if (child.type === 'code') {
+                        const meta = child.meta || '';
+                        const value = child.value || '';
+                        const lang = child.lang || '';
+
+                        codeblocks.push({ value, lang, meta });
+                    }
+                }
+
+                // Add metadata to the node
+                node.data = {
+                    hName: componentName,
+                    hProperties: {
+                        description,
+                        codeblocks: JSON.stringify(codeblocks),
+                    },
+                };
+    
+                node.children = [];
+
+                return
             }
 
             if (node.attributes) {
@@ -174,7 +205,7 @@ export const remarkDirectiveWithMarkdown: Plugin = () => {
 
             const jsxNode = {
                 type: 'mdxJsxFlowElement',
-                name: toPascalCase(node.name),
+                name: componentName,
                 attributes: attributes,
                 children: node.children
             };
@@ -184,3 +215,16 @@ export const remarkDirectiveWithMarkdown: Plugin = () => {
     }
 }
 
+function getComponentName(name: string) {
+    let componntName = ""
+
+    const directive = supportedDirectives[name]
+
+    if (typeof directive === "string") {
+        componntName = directive
+    } else {
+        componntName = toPascalCase(name)
+    }
+
+    return componntName
+}

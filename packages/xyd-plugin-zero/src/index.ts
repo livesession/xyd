@@ -58,7 +58,7 @@ export async function pluginZero(): Promise<PluginOutput | null> {
     }
 
     if (!settings) {
-        throw new Error("settings not found")
+        return null
     }
 
     // graphql preset setup

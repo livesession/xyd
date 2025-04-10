@@ -29,7 +29,7 @@ class SourceUniformPreset extends UniformPreset {
         super(
             "sources",
             settings.api?.sources || "",
-            settings?.structure?.sidebar || [],
+            settings?.navigation?.sidebar || [],
         )
     }
 

@@ -63,6 +63,7 @@ Code.Pre = function CodePre(props: {
                                 className?: string,
                             }
 ) {
+    // TODO: support import { getThemeColors } from "@code-hike/lighter";
     return <Pre
         className={`
             ${cn.CodeHost}

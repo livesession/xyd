@@ -103,7 +103,7 @@ export function vitePluginThemeCSS() {
                         basePath = import.meta.url.split("xyd/packages")[0] += "xyd/"
                     }
 
-                    switch (preinstall.settings.styling?.theme) {
+                    switch (preinstall.settings.theme?.name) {
                         // TODO: support another themes + custom themes
                         case "gusto": {
                             const gustoCss = basePath += "node_modules/@xyd-js/theme-gusto/dist/index.css"
@@ -175,17 +175,32 @@ export function vitePluginTheme() {
             },
             async load(id) {
                 if (id === 'virtual:xyd-theme') {
-                    switch (preinstall.settings.styling?.theme) {
+                    switch (preinstall.settings.theme?.name) {
                         // TODO: support another themes + custom themes
                         case "gusto": {
-                            return `import Theme from '@xyd-js/theme-gusto'; export default Theme;`;
+                            return `
+                                import Theme from '@xyd-js/theme-gusto'; 
+                                import { withTheme } from "@xyd-js/themes"
+
+                                export default withTheme(new Theme());
+                            `;
                         }
                         case "poetry": {
-                            return `import Theme from '@xyd-js/theme-poetry'; export default Theme;`;
+                            return `
+                                import Theme from '@xyd-js/theme-poetry'; 
+                                import { withTheme } from "@xyd-js/themes"
+
+                                export default withTheme(new Theme());
+                            `;
                         }
                         default: {
                             // TODO: in the future custom theme loader
-                            return `import Theme from '@xyd-js/fable-wiki/theme'; export default Theme;`;
+                            return `
+                                import Theme from '@xyd-js/fable-wiki/theme'; 
+                                import { withTheme } from "@xyd-js/themes"
+
+                                export default withTheme(new Theme());
+                            `;
                         }
                     }
                 }

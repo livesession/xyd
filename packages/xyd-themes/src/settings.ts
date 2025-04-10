@@ -43,8 +43,9 @@ export abstract class BaseThemeSettings {
         }
     };
 
+   
     protected layout: {
-        size: (value: string) => BaseThemeSettings;
+        size: (value: string) => BaseThemeSettings; // TODO: refactor to `mode`
         getSize: () => string;
     } = {
         size: (value: string) => {

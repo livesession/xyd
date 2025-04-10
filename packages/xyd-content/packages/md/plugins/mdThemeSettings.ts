@@ -10,6 +10,7 @@ declare global {
     var themeSettings: ThemeSettings | undefined;
 }
 
+// TODO: to delete
 /**
  * This plugin adds the `themeSettings` variable to the global scope.
  * This variable is used to determine the theme settings for the current page.

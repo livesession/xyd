@@ -34,7 +34,7 @@ function flatPages(
     resp: string[] = [],
 ) {
     sidebar.map(async side => {
-        if ("match" in side) {
+        if ("route" in side) {
             side.items.map(item => {
                 return flatPages([item], groups, resp)
             })
@@ -66,7 +66,7 @@ function flatGroups(
     resp: { [key: string]: string } = {}
 ) {
     sidebar.map(async side => {
-        if ("match" in side) {
+        if ("route" in side) {
             side.items.map(item => {
                 return flatGroups([item], resp)
             })
@@ -127,12 +127,12 @@ async function uniformResolver(
 
     if (matchRoute && sidebar) {
         sidebar.forEach((sidebar) => {
-            if ("match" in sidebar) {
-                if (sidebar.match === matchRoute) {
+            if ("route" in sidebar) {
+                if (sidebar.route === matchRoute) {
                     if (urlPrefix) {
                         throw new Error('multiple sidebars found for apiFile match')
                     }
-                    urlPrefix = sidebar.match
+                    urlPrefix = sidebar.route
                 }
             }
         })
@@ -180,8 +180,8 @@ async function uniformResolver(
     if (sidebar && matchRoute) {
         // TODO: DRY
         sidebar.forEach((sidebar) => {
-            if ("match" in sidebar) {
-                if (sidebar.match === matchRoute) {
+            if ("route" in sidebar) {
+                if (sidebar.route === matchRoute) {
                     uniformSidebars.push(sidebar)
                 }
             }
@@ -292,25 +292,25 @@ function preinstall(
             // TODO: support NOT ROUTE MATCH
 
             if (typeof apiFile === "string") {
-                const routeMatch = settings.api?.match?.[id] || ""
+                const routeMatch = settings.api?.route?.[id] || ""
 
                 const resolved = await uniformResolver(
                     root,
                     routeMatch,
                     apiFile,
                     uniformApiResolver,
-                    settings?.structure?.sidebar,
+                    settings?.navigation?.sidebar,
                     options
                 )
 
                 if (resolved.sidebar) {
-                    settings.structure = {
-                        ...settings?.structure,
-                        sidebar: !settings.structure?.sidebar
+                    settings.navigation = {
+                        ...settings?.navigation,
+                        sidebar: !settings.navigation?.sidebar
                             ? resolved.sidebar
                             : [
                                 ...resolved.sidebar,
-                                ...!settings.structure?.sidebar || [],
+                                ...!settings.navigation?.sidebar || [],
                             ]
                     }
                 }
@@ -322,7 +322,7 @@ function preinstall(
             } else {
                 for (const openapiKey in apiFile) {
                     const uniform = apiFile?.[openapiKey]
-                    const routeMatch = settings.api?.match?.[id]?.[openapiKey] || ""
+                    const routeMatch = settings.api?.route?.[id]?.[openapiKey] || ""
 
                     if (!routeMatch) {
                         throw new Error(`route match not found for ${openapiKey}`)
@@ -336,17 +336,17 @@ function preinstall(
                         routeMatch,
                         uniform,
                         uniformApiResolver,
-                        settings?.structure?.sidebar
+                        settings?.navigation?.sidebar
                     )
 
                     if (resolved.sidebar) {
-                        settings.structure = {
-                            ...settings?.structure,
-                            sidebar: !settings.structure?.sidebar
+                        settings.navigation = {
+                            ...settings?.navigation,
+                            sidebar: !settings.navigation?.sidebar
                                 ? resolved.sidebar
                                 : [
                                     ...resolved.sidebar,
-                                    ...!settings.structure?.sidebar || [],
+                                    ...!settings.navigation?.sidebar || [],
                                 ]
                         }
                     }
@@ -401,11 +401,11 @@ function uniformPreset(
 
         if (apiFile) {
             sidebar.forEach((sidebar) => {
-                if ("match" in sidebar) {
+                if ("route" in sidebar) {
                     if (typeof apiFile === "string") {
-                        const routeMatch = settings?.api?.match?.[id]
+                        const routeMatch = settings?.api?.route?.[id]
 
-                        if (sidebar.match === routeMatch) {
+                        if (sidebar.route === routeMatch) {
                             routeMatches.push(routeMatch)
                         }
 
@@ -415,8 +415,8 @@ function uniformPreset(
                     if (typeof apiFile === "object" && !Array.isArray(apiFile)) {
                         for (const routeMatchKey in apiFile) {
                             // TODO: is 'id' a good idea here?
-                            const routeMatch = settings?.api?.match?.[id]?.[routeMatchKey]
-                            if (sidebar.match === routeMatch) {
+                            const routeMatch = settings?.api?.route?.[id]?.[routeMatchKey]
+                            if (sidebar.route === routeMatch) {
                                 routeMatches.push(routeMatch)
                             }
                         }

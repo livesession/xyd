@@ -26,7 +26,7 @@ class OpenAPIUniformPreset extends UniformPreset {
         super(
             "openapi",
             settings.api?.openapi || "",
-            settings?.structure?.sidebar || [],
+            settings?.navigation?.sidebar || [],
         )
     }
 

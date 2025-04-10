@@ -13,15 +13,15 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
 
     let multiSidebarMatch: SidebarMulti | null = null
 
-    settings?.structure?.sidebar.filter(sidebar => {
-        if ("match" in sidebar) {
-            const sideMatch = normalizeHref(sidebar.match)
+    settings?.navigation?.sidebar.filter(sidebar => {
+        if ("route" in sidebar) {
+            const sideMatch = normalizeHref(sidebar.route)
             const normalizeSlug = normalizeHref(slug)
 
             // TODO: startWith is not enough e.g `/docs/apps/buildISSUE` if `/docs/apps/build`
             if (normalizeSlug.startsWith(sideMatch)) {
                 if (multiSidebarMatch) {
-                    const findByMatchLvl = multiSidebarMatch.match.split("/").length
+                    const findByMatchLvl = multiSidebarMatch.route.split("/").length
                     const urlMatchLvl = sideMatch.split("/").length
 
                     if (urlMatchLvl > findByMatchLvl) {
@@ -36,7 +36,7 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
         }
 
         // TODO: better algorithm
-        const ok = filterNavigationByLevels(settings?.structure?.header || [], slug)(sidebar)
+        const ok = filterNavigationByLevels(settings?.navigation?.header || [], slug)(sidebar)
 
         if (ok) {
             sidebarItems.push(sidebar)
@@ -164,7 +164,7 @@ export async function mapSettingsToProps(
 
     const groups = filteredNav.map((nav) => {
         // TODO: finish
-        if ("match" in nav) {
+        if ("route" in nav) {
             return {
                 group: "",
                 items: [],

@@ -25,9 +25,9 @@ interface loaderData {
     slug: string
     code: string
 }
-
+// withTheme(new ThemePoetry())
 const contentComponents = {
-    ...getContentComponents(),
+    ...getContentComponents(settings),
 
     HomePage: (props) => <HomePage
         {...props}

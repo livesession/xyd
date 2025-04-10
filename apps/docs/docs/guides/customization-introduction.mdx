@@ -1,0 +1,51 @@
+---
+title: Introduction
+---
+
+# Customization Introduction
+:::subtitle
+Learn the fundamentals of documentation customization
+:::
+
+Customizing your documentation allows you to create a unique and branded experience for your users. There are three main approaches to customization:
+
+1. Use built-in themes - choose from a variety of [pre-built themes](/docs/guides/themes) 
+and tweak using available [theme settings](/docs/guides/theme-settings)
+2. Extend the default theme via code - build upon the existing design while adding your own enhancements using code
+3. Create a custom theme - develop a completely new theme from scratch
+
+## Theme Structure
+To customize your documentation, you'll need to create a theme entry file in the `.xyd/theme` directory:
+
+```
+.
+├─ docs                # project root
+│  ├─ .xyd
+│  │  └─ theme
+│  │     ├─ index.ts   # theme entry
+│  │     └─ index.css  # theme styles (optional)
+│  │  
+│  └─ index.md
+└─ xyd.json            # settings file
+```
+
+When <code>xyd</code> detects the presence of a theme entry file, it will automatically use your custom theme
+instead of the default one. This allows you to take full control of your documentation's appearance and behavior.
+
+For more advanced customizations, you can [extend the default theme](/docs/guides/extending-default-theme)
+or [create a custom theme](/docs/guides/custom-theme) from scratch.
+
+## Theme Interface
+
+
+```ts
+import { BaseTheme, type ThemeSettings } from "xyd-js/themes";
+
+export default class MyTheme extends BaseTheme {
+    constructor(themeSettings: ThemeSettings) {
+        super();
+
+        // Customize the theme settings here
+    }
+}
+```

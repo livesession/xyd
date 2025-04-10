@@ -1,0 +1,49 @@
+.TocBottomHost {
+    margin-top: 16px;
+    max-width: 250px;
+}
+
+.TocBottomContainer {
+    margin-bottom: 12px;
+}
+
+.TocBottomDescription {
+    font-size: 12px;
+    color: #6e6e80;
+    letter-spacing: 0;
+}
+
+.TocBottomLink {
+    display: block;
+    border: 1px solid #ececf1;
+    border-radius: 6px;
+    padding: 8px 16px 12px;
+    text-decoration: none;
+    transition: border-color .15s ease;
+    line-height: 1.4;
+
+    &:hover {
+        border-color: #c5c5d2;
+    }
+}
+
+.TocBottomLinkTitleContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.TocBottomLinkTitle {
+    font-size: 14px;
+    font-weight: 400;
+    color: #353740;
+    ;
+    margin-bottom: 2px;
+}
+
+.TocBottomLinkIcon {
+    width: 1em;
+    height: 1em;
+    object-fit: contain;
+    color: #24292f;
+}

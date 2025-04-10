@@ -50,6 +50,7 @@
     "lucide-react": "^0.447.0"
   },
   "peerDependencies": {
+    "@xyd-js/core": "workspace:*",
     "@code-hike/lighter": "^1.0.1",
     "react": "^19.0.0"
   },

@@ -115,3 +115,9 @@ yarn global add xyd-js
 pnpm add -g xyd-js
 ```
 :::
+
+@importCode "~/docs/components.mdx"
+
+@importCode "./abc.ts"
+
+@importCode "https://raw.githubusercontent.com/livesession/xyd/refs/heads/master/packages/xyd-core/src/types/settings.ts"

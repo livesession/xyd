@@ -25,7 +25,9 @@
     "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
-      "*": ["*", "*.ts"]
+      "@xyd-js/core": [
+        "../xyd-core/index.ts"
+      ],
     }
   },
   "include": [

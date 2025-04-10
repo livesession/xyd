@@ -26,7 +26,7 @@ class GraphQLUniformPreset extends UniformPreset {
         super(
             "graphql",
             settings.api?.graphql || "",
-            settings?.structure?.sidebar || [],
+            settings?.navigation?.sidebar || [],
         )
     }
 

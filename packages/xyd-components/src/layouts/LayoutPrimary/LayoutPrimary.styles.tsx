@@ -66,7 +66,7 @@ export const LayoutPrimaryHeaderHideMain = css`
 export const LayoutPrimaryHamburgerButton = css`
     display: none;
 
-    @media (max-width: 768px) {
+    @media (max-width: ${tabletBreakpoint}) {
         display: flex;
         align-items: center;
         justify-content: center;
