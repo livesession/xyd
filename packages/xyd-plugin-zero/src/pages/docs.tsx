@@ -7,9 +7,10 @@ import {PageFrontMatter} from "@xyd-js/core"
 import {compileBySlug} from "@xyd-js/content"
 import {mapSettingsToProps} from "@xyd-js/framework/hydration";
 import {Framework, FwNav, type FwSidebarGroupProps} from "@xyd-js/framework/react";
-import getContentComponents from "@xyd-js/components/content";
-import {HomePage} from "@xyd-js/components/pages";
 import type {IBreadcrumb, INavLinks} from "@xyd-js/ui";
+import {HomePage} from "@xyd-js/components/pages";
+import { Atlas } from "@xyd-js/atlas";
+import getContentComponents from "@xyd-js/components/content";
 
 import settings from 'virtual:xyd-settings';
 import Theme from "virtual:xyd-theme";
@@ -40,7 +41,9 @@ const contentComponents = {
 
     >
         {props.children}
-    </HomePage>
+    </HomePage>,
+
+    Atlas: (props) => <Atlas {...props} />
 }
 
 const supportedExtensions = {

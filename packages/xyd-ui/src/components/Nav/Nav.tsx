@@ -6,7 +6,7 @@ import * as cn from "./Nav.styles";
 export interface NavProps {
     children: React.ReactNode
     value: string
-    onChange: (value: string) => void
+    onChange?: (value: string) => void
     logo?: React.ReactNode;
     kind?: "middle"
 }

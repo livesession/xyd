@@ -7,7 +7,7 @@ export interface SubNavProps {
     children: React.ReactNode
     title: string
     value: string
-    onChange: (value: string) => void
+    onChange?: (value: string) => void
 }
 
 export function SubNav({children, title, value, onChange}: SubNavProps) {

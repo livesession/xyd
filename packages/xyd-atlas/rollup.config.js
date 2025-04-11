@@ -39,7 +39,6 @@ export default [
     {
         input: {
             index: 'index.ts',
-            ["atlas-index"]: 'packages/atlas-index/index.ts'
         },
         output: [
             {
@@ -105,14 +104,5 @@ export default [
         },
         plugins: [dts()],
         external
-    },
-    {
-        input: 'packages/atlas-index/index.ts',
-        output: {
-            file: 'dist/atlas-index.d.ts',
-            format: 'es',
-        },
-        plugins: [dts()],
-        external
-    },
+    }
 ];

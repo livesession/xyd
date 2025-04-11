@@ -12,10 +12,6 @@ const meta: Meta<typeof VideoGuide> = {
 export default meta;
 type Story = StoryObj<typeof VideoGuide>;
 
-export const Default: Story = {
-    render: () => <VideoGuide />,
-};
-
 export const Miniature: Story = {
     render: () => <VideoGuide.Miniature />,
 }; 

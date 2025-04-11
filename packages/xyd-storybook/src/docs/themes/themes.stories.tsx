@@ -19,7 +19,7 @@ import {
 } from "@xyd-js/ui"
 
 import {LiveSessionPlatformLogo} from "./logo";
-import Content from "../../content/hello-world.mdx";
+import Content from "../../__fixtures__/hello-world.mdx";
 
 export default {
     title: 'Themes/Default',

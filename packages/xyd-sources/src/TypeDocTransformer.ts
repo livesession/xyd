@@ -211,12 +211,36 @@ export function typedocToUniform(
             }
 
             case ReflectionKind.Function:
-            case ReflectionKind.Class: {
+            case ReflectionKind.Class:
+            case ReflectionKind.Interface: {
                 if (!(child satisfies DeclarationReflection)) {
-                    throw new Error('(typedocToUniform): Function reflection expected to be a DeclarationReflection');
+                    throw new Error('(typedocToUniform): Function/Class/Interface reflection expected to be a DeclarationReflection');
                 }
 
                 const ref = typedocGroupToUniform.call(
+                    transformer,
+                    child as DeclarationReflection
+                )
+
+                if (!ref) {
+                    break
+                }
+
+                ref.context = {
+                    ...ref.context,
+                    package: project.name,
+                }
+                references.push(ref)
+
+                break
+            }
+
+            case ReflectionKind.TypeAlias: {
+                if (!(child satisfies DeclarationReflection)) {
+                    throw new Error('(typedocToUniform): Type alias reflection expected to be a DeclarationReflection');
+                }
+
+                const ref = jsTypeAliasToUniformRef.call(
                     transformer,
                     child as DeclarationReflection
                 )
@@ -257,6 +281,11 @@ function typedocGroupToUniform(
         }
         case ReflectionKind.Function: {
             ref = jsFunctionToUniformRef.call(this, group)
+
+            break
+        }
+        case ReflectionKind.Interface: {
+            ref = jsInterfaceToUniformRef.call(this, group)
 
             break
         }
@@ -471,6 +500,171 @@ ${description}`
     return ref
 }
 
+function jsInterfaceToUniformRef(
+    this: Transformer,
+    dec: DeclarationReflection
+) {
+    const definitions: Definition[] = []
+
+    const ref: Reference = {
+        title: `Interface ${dec.name}`,
+        canonical: `interface-${dec.name}`,
+        description: '',
+        context: {},
+        examples: {
+            groups: []
+        },
+        definitions
+    }
+
+    const declarationCtx = declarationUniformContext.call(this, dec)
+    if (declarationCtx) {
+        ref.context = {
+            ...ref.context,
+            ...declarationCtx
+        }
+    }
+
+    if (dec.comment) {
+        const description = commentToUniform(dec.comment)
+        const group = (declarationCtx?.packageName.split('/') || [])
+            .map(name => `"${name}"`)
+            .join(",")
+
+        ref.description = `---
+title: ${dec.name} 
+group: [${group}, Interfaces]
+---
+${description}`
+    }
+
+    // handle properties
+    {
+        const properties = dec.children?.filter(child =>
+            child.kind === ReflectionKind.Property
+        ) || []
+
+        if (properties.length > 0) {
+            const propertiesDef: Definition = {
+                title: 'Properties',
+                properties: []
+            }
+
+            for (const prop of properties) {
+                if (!prop.type) {
+                    console.warn('(jsInterfaceToUniformRef): Property type not found', prop.name)
+                    continue
+                }
+
+                let description = ""
+                if (prop.comment) {
+                    description = commentToUniform(prop.comment)
+                }
+
+                propertiesDef.properties.push({
+                    name: prop.name,
+                    type: someTypeToUniformType(prop.type),
+                    description
+                })
+            }
+
+            definitions.push(propertiesDef)
+        }
+    }
+
+    // handle methods
+    {
+        const methods = dec.children?.filter(child =>
+            child.kind === ReflectionKind.Method
+        ) || []
+
+        if (methods.length > 0) {
+            const methodsDef: Definition = {
+                title: 'Methods',
+                properties: []
+            }
+
+            for (const method of methods) {
+                if (!method.signatures?.[0]) continue
+
+                const methodSign = method.signatures[0]
+                let methodDesc = ""
+                if (methodSign.comment) {
+                    methodDesc = commentToUniform(methodSign.comment)
+                }
+
+                methodsDef.properties.push({
+                    name: method.name,
+                    type: methodSign.type ? someTypeToUniformType(methodSign.type) : "void",
+                    description: methodDesc
+                })
+            }
+
+            definitions.push(methodsDef)
+        }
+    }
+
+    return ref
+}
+
+function jsTypeAliasToUniformRef(
+    this: Transformer,
+    dec: DeclarationReflection
+) {
+    const definitions: Definition[] = []
+
+    const ref: Reference = {
+        title: `Type ${dec.name}`,
+        canonical: `type-${dec.name}`,
+        description: '',
+        context: {},
+        examples: {
+            groups: []
+        },
+        definitions
+    }
+
+    const declarationCtx = declarationUniformContext.call(this, dec)
+    if (declarationCtx) {
+        ref.context = {
+            ...ref.context,
+            ...declarationCtx
+        }
+    }
+
+    if (dec.comment) {
+        const description = commentToUniform(dec.comment)
+        const group = (declarationCtx?.packageName.split('/') || [])
+            .map(name => `"${name}"`)
+            .join(",")
+
+        ref.description = `---
+title: ${dec.name} 
+group: [${group}, Types]
+---
+${description}`
+    }
+
+    // handle type definition
+    {
+        if (dec.type) {
+            const typeDef: Definition = {
+                title: 'Type Definition',
+                properties: []
+            }
+
+            typeDef.properties.push({
+                name: "",
+                type: someTypeToUniformType(dec.type),
+                description: ""
+            })
+
+            definitions.push(typeDef)
+        }
+    }
+
+    return ref
+}
 
 function declarationUniformContext(
     this: Transformer,
@@ -529,7 +723,7 @@ function declarationUniformContext(
 
 function someTypeToUniformType(someType: SomeType) {
     if (!("name" in someType)) {
-        console.warn('SomeType does not have name property', someType)
+        console.warn('SomeType does not have name property', someType.type)
         return ""
     }
 

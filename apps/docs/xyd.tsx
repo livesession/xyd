@@ -114,7 +114,7 @@ export default {
                     {
                         "group": "Advanced Topics",
                         "pages": [
-                            
+                            "docs/guides/sdk-federation"
                         ],
                     },
                 ]

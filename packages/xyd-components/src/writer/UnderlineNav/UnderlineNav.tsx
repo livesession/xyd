@@ -1,24 +1,59 @@
-import React from "react"
+import React, { useState, useRef, useEffect, createContext, useContext } from "react"
 import * as RadixTabs from "@radix-ui/react-tabs";
 
 import * as cn from "./UnderlineNav.styles"
 
+const UnderlineContext = createContext<{
+    direction: 'forward' | 'backward'
+}>({
+    direction: 'forward'
+});
+
 export interface TabsProps {
     children: React.ReactNode
-    value: string
-    onChange: (value: string) => void
+    value?: string
+    onChange?: (value: string) => void
+    slide?: boolean
 }
 
-export function UnderlineNav({children, value, onChange}: TabsProps) {
-    return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
-        <nav className={cn.UnderlineNavHost}>
-            <RadixTabs.List asChild>
-                <ul className={cn.UnderlineNavUl}>
-                    {children}
-                </ul>
-            </RadixTabs.List>
-        </nav>
-    </RadixTabs.Root>
+export function UnderlineNav({ children, value: controlledValue, onChange, slide = true }: TabsProps) {
+    const childrenArray = React.Children.toArray(children);
+    const navItems = childrenArray.filter(
+        child => React.isValidElement(child) &&
+            (child.type === UnderlineNav.Item)
+    );
+    const otherChildren = childrenArray.filter(
+        child => !React.isValidElement(child) ||
+            (child.type !== UnderlineNav.Item)
+    );
+
+    const [direction, value, handleValueChange] = useValueChange(
+        controlledValue,
+        onChange,
+        navItems
+    );
+
+    return (
+        <UnderlineContext.Provider value={{ direction }}>
+            <RadixTabs.Root value={value} onValueChange={handleValueChange}>
+                <div>
+                    <nav className={cn.UnderlineNavHost}>
+                        <RadixTabs.List asChild>
+                            <ul className={cn.UnderlineNavUl}>
+                                {navItems}
+                            </ul>
+                        </RadixTabs.List>
+                    </nav>
+                    <div
+                        className={cn.UnderlineNavContentHost}
+                        data-slide={slide ? "true" : "false"}
+                    >
+                        {otherChildren}
+                    </div>
+                </div>
+            </RadixTabs.Root>
+        </UnderlineContext.Provider>
+    );
 }
 
 export interface UnderlineNavItemProps {
@@ -27,12 +62,95 @@ export interface UnderlineNavItemProps {
     href?: string
 }
 
-UnderlineNav.Item = function UnderlineNavItem({children, value, href}: UnderlineNavItemProps) {
-    return <RadixTabs.Trigger asChild value={value}>
-        <li className={cn.UnderlineNavItem}>
-            <a href={href} className={`${cn.UnderlineNavItemLink}`}>
+UnderlineNav.Item = function UnderlineNavItem({ children, value, href }: UnderlineNavItemProps) {
+    // TODO: add href
+    return (
+        <RadixTabs.Trigger asChild value={value}>
+            <li className={cn.UnderlineNavItem}>
+                <a className={cn.UnderlineNavItemLink}>
+                    {children}
+                </a>
+            </li>
+        </RadixTabs.Trigger>
+    );
+}
+
+export interface UnderlineNavContentProps {
+    children: React.ReactNode
+    value: string
+}
+
+UnderlineNav.Content = function UnderlineNavContent({
+    children,
+    value
+}: UnderlineNavContentProps) {
+    const { direction } = useContext(UnderlineContext);
+
+    return (
+        <RadixTabs.Content
+
+            className={cn.UnderlineNavContent}
+            data-direction={direction}
+
+            value={value}
+            forceMount={true}
+
+        >
+            <div className={cn.UnderlineNavContentInner}>
                 {children}
-            </a>
-        </li>
-    </RadixTabs.Trigger>
+            </div>
+        </RadixTabs.Content>
+    );
+}
+
+// Custom hook to handle value changes and direction
+function useValueChange(
+    controlledValue: string | undefined,
+    onChange: ((value: string) => void) | undefined,
+    navItems: React.ReactNode[]
+) {
+    // Determine if we're in controlled or uncontrolled mode
+    const isControlled = controlledValue !== undefined && onChange !== undefined;
+
+    // For uncontrolled mode, use internal state
+    const [internalValue, setInternalValue] = useState(
+        navItems.length > 0 && React.isValidElement(navItems[0]) ?
+            navItems[0].props.value : ''
+    );
+
+    // Use either controlled or internal value
+    const value = isControlled ? controlledValue : internalValue;
+
+    // Track previous value to determine navigation direction
+    const prevValueRef = useRef(value);
+    const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
+
+    // Handle value change and determine direction
+    const handleValueChange = (newValue: string) => {
+        // Find indices of current and new values
+        const currentIndex = navItems.findIndex(
+            item => React.isValidElement(item) && item.props.value === prevValueRef.current
+        );
+        const newIndex = navItems.findIndex(
+            item => React.isValidElement(item) && item.props.value === newValue
+        );
+
+        // Set direction based on indices
+        setDirection(newIndex > currentIndex ? 'forward' : 'backward');
+
+        // Update previous value
+        prevValueRef.current = newValue;
+
+        // Update internal state if uncontrolled
+        if (!isControlled) {
+            setInternalValue(newValue);
+        }
+
+        // Call the original onChange if provided
+        if (onChange) {
+            onChange(newValue);
+        }
+    };
+
+    return [direction, value, handleValueChange] as const;
 }

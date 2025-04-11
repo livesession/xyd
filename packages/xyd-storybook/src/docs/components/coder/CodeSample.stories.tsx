@@ -4,7 +4,7 @@ import {MemoryRouter} from "react-router";
 
 import getContentComponents from "@xyd-js/components/content";
 
-import Content from "../../../content/code-sample.mdx";
+import Content from "../../../__fixtures__/code-sample.mdx";
 
 export default {
     title: 'Components/Coder/CodeSample',

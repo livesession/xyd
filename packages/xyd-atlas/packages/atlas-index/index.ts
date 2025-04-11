@@ -1,3 +1,0 @@
-export {
-    AtlasIndex
-} from "./AtlasIndex"

@@ -30,8 +30,8 @@ The generated HTML pages will be:
 ```
 index.md                  --> /index.html (accessible as /)
 faq.md                    --> /faq.html
-docs/index.md            -->  /docs/index.html (accessible as /docs/)
-quickstart.md             --> /quickstart.html
+docs/index.md             --> /docs/index.html (accessible as /docs/)
+docs/quickstart.md        --> /docs/quickstart.html 
 ```
 
 :::callout
@@ -59,7 +59,7 @@ If you don't want any hierarchy, you can just define pages within your navigatio
 Each entry of the pages array must be a path to a file that exists within your repo.
 
 :::callout
-Note you do not need to append .mdx to the file paths.
+Note you do not need to append `.mdx` to the file paths.
 :::
 
 ```json
@@ -83,11 +83,11 @@ Groups allow you to group your pages. Groups can also be nested within each othe
   "sidebar": [
     {
         {
-            "group": "Getting Started",
+            "group": "Get Started",
             "pages": [
-                "overview",
-                "quickstart",
-                "guides/introduction"
+                "docs/guides/introduction",
+                "docs/guides/getting-started",
+                "docs/guides/deploy"
             ]
         },
         // ... other groups
@@ -107,7 +107,7 @@ You can also do more advanced routing in the sidebar, like matching based on the
 {
     "sidebar": [
         {
-            "match": "docs",
+            "route": "docs",
             "items": [
                 {
                     "group": "Getting Started",
@@ -126,7 +126,7 @@ You can also do more advanced routing in the sidebar, like matching based on the
             ],
         },
         {
-            "match": "docs/api",
+            "route": "docs/api",
             "items": [
                 {
                     "group": "API",
@@ -163,7 +163,7 @@ You can also define a sub header for a specific route.
       },
       {
         "sub": {
-          "match": "/docs/api",
+          "route": "/docs/api",
           "name": "API",
           "items": [
             {
@@ -179,7 +179,7 @@ You can also define a sub header for a specific route.
       },
       {
         "sub": {
-          "match": "/docs/guides",
+          "route": "/docs/guides",
           "name": "Guides",
           "items": [
             {
@@ -199,7 +199,7 @@ You can also define a sub header for a specific route.
 ```
 
 :::callout
-The `match` property in sub header determines when the sub menu should be visible based on the current route.
+The `route` property in sub header determines when the sub menu should be visible based on the current route.
 :::
 
 ### Anchors

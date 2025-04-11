@@ -1,6 +1,6 @@
 // import React from "react";
 
-// import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
+import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
 
 /**
  * Main settings interface for the application
@@ -45,7 +45,7 @@ export interface Theme {
      * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to. 
      * SVG format is recommended as it does not pixelate and the file size is generally smaller.
      */
-    logo?: string | Logo 
+    logo?: string | Logo | React.JSX.Element
 
     /** Path to the favicon image. For example: /path/to/favicon.svg */
     favicon?: string;
@@ -78,7 +78,7 @@ export interface ThemeResolver extends Theme {
  */
 export interface Markdown {
     /** Syntax highlighting configuration */
-    syntaxHighlight: string
+    syntaxHighlight: SyntaxHighlight
 }
 
 /**
@@ -278,7 +278,7 @@ export interface CallToAction {
  */
 export interface Anchor {
     /** The Font Awesome or JSX icon used to feature the anchor */
-    icon?: string 
+    icon?: string | React.JSX.Element
 
     /** The name of the anchor label */
     name?: string

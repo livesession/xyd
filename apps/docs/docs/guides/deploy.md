@@ -18,7 +18,6 @@ You must follow the following steps to deploy your `xyd` docs:
 
 :::nav
 1. [CLI](tab=cli)
-
     :::steps
     1. Run this command to build the docs:
         <br/>
@@ -43,50 +42,19 @@ You must follow the following steps to deploy your `xyd` docs:
 
 2. [Code](tab=code)
     :::steps
-    1. Run this command to build the docs:
+    1. Find you best code
         <br/>
-        ```bash
-        $ xyd build
+        ```ts
+        console.log(5)
         ```
 
-    2. Once built, preview it locally by running:
+    2. Check if it works
         <br/>
         ```bash
         $ xyd start
         ```
-
-    3. You can also configure the port of the server by passing --port as an argument.
-        <br/>
-        ```bash
-        $ xyd start --port 3000
-        ```
-        <br/>
-        Now you can visit [`http://localhost:3000`](http://localhost:3000)` to see the preview.
     :::
 :::
-
-:::steps
-1. Run this command to build the docs:
-    <br/>
-    ```bash
-    $ xyd build
-    ```
-
-2. Once built, preview it locally by running:
-    <br/>
-    ```bash
-    $ xyd start
-    ```
-
-3. You can also configure the port of the server by passing --port as an argument.
-    <br/>
-    ```bash
-    $ xyd start --port 3000
-    ```
-    <br/>
-    Now you can visit [`http://localhost:3000`](http://localhost:3000)` to see the preview.
-:::
-
 
 ## Deployment Providers
 #### Netlify / Vercel / Cloudflare Pages

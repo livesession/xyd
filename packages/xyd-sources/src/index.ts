@@ -1,14 +1,16 @@
 import * as TypeDoc from 'typedoc';
-import type {TypeDocOptions} from "typedoc";
+import type { TypeDocOptions } from "typedoc";
 
+import type { Reference, ReferenceContext } from "@xyd-js/uniform";
 import {
     typedocToUniform
 } from "./TypeDocTransformer"
 
+// TODO: SUPPORT GET FROM URL + VIRTUAL FS (OR NO FS JUST SET NEEDED OPTIONS VIA CODE)
 export async function sourcesToUniform(
     root: string,
     entryPoints: string[],
-) {
+): Promise<Reference<ReferenceContext>[] | undefined> {
     // TODO: support another strategies
     // TODO: support entry points from github?
     const options = {

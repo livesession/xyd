@@ -4,22 +4,20 @@
     "esModuleInterop": true,
     "moduleResolution": "bundler",
     "target": "ES6",
-    "compilerOptions": {
-      "baseUrl": ".",
-      "paths": {
-        "@xyd-js/ui": [
-          "../xyd-ui"
-        ],
-        "@xyd-js/content": [
-          "../xyd-content"
-        ],
-        "@xyd-js/components": [
-          "../xyd-components"
-        ],
-        "@xyd-js/core": [
-          "../xyd-core"
-        ]
-      }
+    "baseUrl": ".",
+    "paths": {
+      "@xyd-js/ui": [
+        "../xyd-ui"
+      ],
+      "@xyd-js/content": [
+        "../xyd-content"
+      ],
+      "@xyd-js/components": [
+        "../xyd-components"
+      ],
+      "@xyd-js/core": [
+        "../xyd-core"
+      ]
     },
     "lib": [
       "dom",

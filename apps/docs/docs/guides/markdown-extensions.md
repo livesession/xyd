@@ -168,6 +168,20 @@ For creating steps you can use such us syntax:
 :::
 ~~~
 
+### Navigation
+For creating tabbed navigation interfaces, you can use the following syntax:
+~~~
+:::nav
+1. [CLI](tab=cli)
+    Content for the CLI tab
+
+2. [Code](tab=code)
+    Content for the Code tab
+:::
+~~~
+
+This creates a navigation component with two tabs: "CLI" and "Code", each with its own content. The content for each tab follows the tab definition.
+
 :::guide-card{icon="<IconCode/>" title="Component Directives" href="https://github.com/xyd-js/xyd-samples/tree/main/component-directives"}
 Explore samples with component directives
 :::

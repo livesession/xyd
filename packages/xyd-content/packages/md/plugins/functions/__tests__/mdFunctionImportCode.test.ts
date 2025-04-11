@@ -1,10 +1,12 @@
 import path from 'node:path';
 import fs from 'node:fs';
 
-import {describe, it, expect} from 'vitest';
+import { describe, it, expect } from 'vitest';
 
-import {mdFunctionImportCode, parseImportPath, processContent, detectLanguage} from '../mdFunctionImportCode';
-import {createMockTree, createMockFile, createMockFetch, restoreFetch} from './testHelpers';
+import { mdFunctionImportCode } from '../mdFunctionImportCode';
+import { parseImportPath, processContent, detectLanguage } from '../utils';
+
+import { createMockTree, createMockFile, createMockFetch, restoreFetch, createMockTreeAlternativeSyntax } from './testHelpers';
 
 // Get the absolute path to the fixtures directory
 const fixturesDir = path.resolve(__dirname, '../__fixtures__');
@@ -25,8 +27,20 @@ describe('mdFunctionImportCode', () => {
             expect(result).toEqual({
                 filePath: 'path/to/file.ts',
                 regions: [
-                    {name: 'region1'},
-                    {name: 'region2'}
+                    { name: 'region1' },
+                    { name: 'region2' }
+                ],
+                lineRanges: []
+            });
+        });
+
+
+        it('relative parent folder', () => {
+            const result = parseImportPath('../relative/parents#Theme');
+            expect(result).toEqual({
+                filePath: '../relative/parents',
+                regions: [
+                    { name: 'Theme' }
                 ],
                 lineRanges: []
             });
@@ -38,10 +52,10 @@ describe('mdFunctionImportCode', () => {
                 filePath: 'path/to/file.ts',
                 regions: [],
                 lineRanges: [
-                    {start: 1, end: 1},
-                    {start: 2, end: 4},
-                    {start: 8},
-                    {end: 10}
+                    { start: 1, end: 1 },
+                    { start: 2, end: 4 },
+                    { start: 8 },
+                    { end: 10 }
                 ]
             });
         });
@@ -51,10 +65,10 @@ describe('mdFunctionImportCode', () => {
             expect(result).toEqual({
                 filePath: 'path/to/file.ts',
                 regions: [
-                    {name: 'region1'}
+                    { name: 'region1' }
                 ],
                 lineRanges: [
-                    {start: 1, end: 5}
+                    { start: 1, end: 5 }
                 ]
             });
         });
@@ -62,15 +76,15 @@ describe('mdFunctionImportCode', () => {
 
     describe('processContent', () => {
         const sampleContent = `line1
-#region test
+// #region test
 line2
 line3
-#endregion test
+// #endregion test
 line4
 line5
-#region another
+// #region another
 line6
-#endregion another
+// #endregion another
 line7
 line8
 line9
@@ -82,36 +96,35 @@ line9
         });
 
         it('should extract content from specified regions', () => {
-            const result = processContent(sampleContent, [{name: 'test'}], []);
+            const result = processContent(sampleContent, [{ name: 'test' }], []);
             expect(result).toBe('line2\nline3');
         });
 
         it('should extract content from multiple regions', () => {
-            const result = processContent(sampleContent, [{name: 'test'}, {name: 'another'}], []);
+            const result = processContent(sampleContent, [{ name: 'test' }, { name: 'another' }], []);
             expect(result).toBe('line2\nline3\nline6');
         });
 
         it('should extract content based on line ranges', () => {
-            console.log("THIS FAILS")
-            const result = processContent(sampleContent, [], [{start: 3, end: 4}]);
+            const result = processContent(sampleContent, [], [{ start: 3, end: 4 }]);
             expect(result).toBe('line2\nline3');
         });
 
         it('should handle multiple line ranges', () => {
             const result = processContent(sampleContent, [], [
-                {start: 1, end: 1},
-                {start: 7, end: 7}
+                { start: 1, end: 1 },
+                { start: 7, end: 7 }
             ]);
             expect(result).toBe('line1\nline5');
         });
 
         it('should handle open-ended ranges', () => {
-            const result = processContent(sampleContent, [], [{start: 11}]);
+            const result = processContent(sampleContent, [], [{ start: 11 }]);
             expect(result).toBe('line7\nline8\nline9\n');
         });
 
         it('should handle ranges from start', () => {
-            const result = processContent(sampleContent, [], [{end: 1}]);
+            const result = processContent(sampleContent, [], [{ end: 1 }]);
             expect(result).toBe('line1');
         });
     });
@@ -172,7 +185,7 @@ line9
 
         it('should handle custom resolveFrom option', async () => {
             const customFixturesDir = path.resolve(__dirname, '../__fixtures__');
-            const transformer = mdFunctionImportCode({resolveFrom: customFixturesDir});
+            const transformer = mdFunctionImportCode({ resolveFrom: customFixturesDir });
             const tree = createMockTree('test.ts');
             const file = createMockFile('/some/other/directory');
 
@@ -260,6 +273,18 @@ line9
             console.log('Tree after transformation:', JSON.stringify(tree, null, 2));
 
             expect(tree.children[0].type).toBe('code');
+        });
+
+        it('should handle alternative syntax like @importCode("test.ts")', async () => {
+            const transformer = mdFunctionImportCode();
+            const tree = createMockTreeAlternativeSyntax('test.ts');
+            const file = createMockFile();
+
+            await transformer(tree, file);
+
+            expect(tree.children[0].type).toBe('code');
+            expect((tree.children[0] as any).lang).toBe('typescript');
+            expect((tree.children[0] as any).value).toContain('export function testFunction');
         });
     });
 }); 

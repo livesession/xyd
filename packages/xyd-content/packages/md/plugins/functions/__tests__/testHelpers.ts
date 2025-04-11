@@ -1,10 +1,8 @@
 import path from 'node:path';
 import { VFile } from 'vfile';
 
-/**
- * Creates a mock AST tree with an @include statement
- */
-export function createMockTree(includePath: string) {
+
+export function createMockTree(importPath: string) {
     return {
         type: 'root',
         children: [
@@ -13,7 +11,7 @@ export function createMockTree(includePath: string) {
                 children: [
                     {
                         type: 'text',
-                        value: `@include "${includePath}"`
+                        value: `@importCode "${importPath}"`
                     }
                 ]
             }
@@ -21,9 +19,24 @@ export function createMockTree(includePath: string) {
     };
 }
 
-/**
- * Creates a VFile for testing
- */
+export function createMockTreeAlternativeSyntax(importPath: string) {
+    return {
+        type: 'root',
+        children: [
+            {
+                type: 'paragraph',
+                children: [
+                    {
+                        type: 'text',
+                        value: `@importCode("${importPath}")`
+                    }
+                ]
+            }
+        ]
+    };
+}
+
+
 export function createMockFile(dirname?: string) {
     return new VFile({
         path: 'test.md',
@@ -32,9 +45,7 @@ export function createMockFile(dirname?: string) {
     });
 }
 
-/**
- * Creates a mock fetch function for testing external URLs
- */
+
 export function createMockFetch(mockResponses: Record<string, string>) {
     const originalFetch = global.fetch;
 
@@ -54,9 +65,7 @@ export function createMockFetch(mockResponses: Record<string, string>) {
     return originalFetch;
 }
 
-/**
- * Restores the original fetch function
- */
+
 export function restoreFetch(originalFetch: typeof global.fetch) {
     global.fetch = originalFetch;
 } 
