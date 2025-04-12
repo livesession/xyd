@@ -9,8 +9,10 @@ import {
     IconQuote
 } from "@xyd-js/components/writer";
 
-import {CommonAtlasProps} from "@/components/Atlas/types";
-import {MDXReferenceWrapper, mdxValue} from "@/utils/mdx";
+import { CommonAtlasProps } from "@/components/Atlas/types";
+import { MDXReferenceWrapper, mdxValue } from "@/utils/mdx";
+import { CodeSample } from "@xyd-js/components/coder";
+import { useSyntaxHighlight } from "./AtlasContext";
 
 // TODO: interface should be imported from somewhere
 interface CodeSourceContext {
@@ -19,19 +21,13 @@ interface CodeSourceContext {
     sourcecode: string;
 }
 
-export function AtlasSecondary({references, mdx}: CommonAtlasProps<CodeSourceContext>) {
-    if (references && typeof references === "string") {
+export function AtlasSecondary({ references, mdx }: CommonAtlasProps<CodeSourceContext>) {
+    if (references && typeof references === "string") { // TODO: DO IT BETTER
         try {
             references = JSON.parse(references)
         } catch (error) {
             console.error("Error parsing references", error)
         }
-    }
-
-    if (!references || !references?.map) {
-        return <div>
-            Hello World
-        </div>
     }
 
     // TODO: DO IT BETTER
@@ -52,17 +48,20 @@ export function AtlasSecondary({references, mdx}: CommonAtlasProps<CodeSourceCon
         return v?.children || v
     }
 
+    const syntaxHighlight = useSyntaxHighlight()
+
+    console.log(references, "references")
     return <>
         {
-            references.map((reference, i) => {
+            references?.map((reference, i) => {
                 return <>
                     <Heading size={1}>
                         {parseValue(reference.title)}
                     </Heading>
 
-                    <p>
+                    {/* <p>
                         {parseChild(reference.description)}
-                    </p>
+                    </p> */}
 
                     {
                         parseValue(reference.context?.fileName) && <Details
@@ -71,7 +70,19 @@ export function AtlasSecondary({references, mdx}: CommonAtlasProps<CodeSourceCon
                             title={<>
                                 Source code in <Code>{parseValue(reference.context.fileFullPath)}</Code>
                             </>}
-                            icon={<IconQuote/>}>
+                            icon={<IconQuote />}>
+                            <CodeSample
+                                name={reference.context.fileName}
+                                description={reference.context.sourcecode.description}
+                                theme={syntaxHighlight || undefined}
+                                codeblocks={[
+                                    {
+                                        lang: reference.context.sourcecode.lang,
+                                        meta: "",
+                                        value: reference.context.sourcecode.code
+                                    }
+                                ]}
+                            />
                             {/* {parseChild(reference.context.sourcecode)} */}
                         </Details>
                     }
@@ -85,6 +96,7 @@ export function AtlasSecondary({references, mdx}: CommonAtlasProps<CodeSourceCon
                                 <TableV2 key={index}>
                                     <TableV2.Head>
                                         <TableV2.Tr>
+                                            <TableV2.Th>Name</TableV2.Th>
                                             <TableV2.Th>Type</TableV2.Th>
                                             <TableV2.Th>Description</TableV2.Th>
                                         </TableV2.Tr>
@@ -93,7 +105,10 @@ export function AtlasSecondary({references, mdx}: CommonAtlasProps<CodeSourceCon
                                     {definition.properties?.map((property, propIndex) => (
                                         <TableV2.Tr key={propIndex}>
                                             <TableV2.Td>
-                                                <Code>{parseValue(property.name) || parseValue(property.type)}</Code>
+                                                <Code>{parseValue(property.name)}</Code>
+                                            </TableV2.Td>
+                                            <TableV2.Td>
+                                                <Code>{parseValue(property.type)}</Code>
                                             </TableV2.Td>
                                             <TableV2.Td muted>
                                                 {parseChild(property.description)}

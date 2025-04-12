@@ -19,6 +19,23 @@ import {
     signatureSourceCodeByLine
 } from "./SignatureText";
 
+// Custom type for the context returned by declarationUniformContext
+interface TypeDocReferenceContext {
+    packageName: string;
+    fileName: string;
+    fileFullPath: string;
+    line: number;
+    col: number;
+    signatureText: {
+        code: string;
+        lang: string;
+    };
+    sourcecode: {
+        code: string;
+        lang: string;
+    };
+}
+
 class TypeDocSignatureTextLoader extends MultiSignatureLoader {
     constructor(
         private project: JSONOutput.ProjectReflection,
@@ -263,6 +280,26 @@ export function typedocToUniform(
             }
         }
     }
+
+    // Sort references by file path and line number to preserve the original order in the source files
+    references.sort((a, b) => {
+        // First sort by file path
+        const contextA = a.context as TypeDocReferenceContext | undefined;
+        const contextB = b.context as TypeDocReferenceContext | undefined;
+        
+        const filePathA = contextA?.fileFullPath || '';
+        const filePathB = contextB?.fileFullPath || '';
+        
+        if (filePathA !== filePathB) {
+            return filePathA.localeCompare(filePathB);
+        }
+        
+        // Then sort by line number
+        const lineA = contextA?.line || 0;
+        const lineB = contextB?.line || 0;
+        
+        return lineA - lineB;
+    });
 
     return references
 }
@@ -669,7 +706,7 @@ ${description}`
 function declarationUniformContext(
     this: Transformer,
     dec: DeclarationReflection,
-) {
+): TypeDocReferenceContext | undefined {
     if (!dec.sources || !dec.sources.length) {
         return
     }

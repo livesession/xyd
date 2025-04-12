@@ -1,15 +1,15 @@
 import path from "node:path";
 
 import React from "react";
-import {redirect} from "react-router";
+import { redirect } from "react-router";
 
-import {PageFrontMatter} from "@xyd-js/core"
-import {compileBySlug} from "@xyd-js/content"
-import {mapSettingsToProps} from "@xyd-js/framework/hydration";
-import {Framework, FwNav, type FwSidebarGroupProps} from "@xyd-js/framework/react";
-import type {IBreadcrumb, INavLinks} from "@xyd-js/ui";
-import {HomePage} from "@xyd-js/components/pages";
-import { Atlas } from "@xyd-js/atlas";
+import { PageFrontMatter } from "@xyd-js/core"
+import { compileBySlug } from "@xyd-js/content"
+import { mapSettingsToProps } from "@xyd-js/framework/hydration";
+import { Framework, FwNav, type FwSidebarGroupProps } from "@xyd-js/framework/react";
+import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
+import { HomePage } from "@xyd-js/components/pages";
+import { Atlas, AtlasContext } from "@xyd-js/atlas";
 import getContentComponents from "@xyd-js/components/content";
 
 import settings from 'virtual:xyd-settings';
@@ -26,7 +26,7 @@ interface loaderData {
     slug: string
     code: string
 }
-// withTheme(new ThemePoetry())
+
 const contentComponents = {
     ...getContentComponents(settings),
 
@@ -35,8 +35,8 @@ const contentComponents = {
         // TODO: get props from theme about nav (middle etc)
         // TODO: footer
         // TODO: style
-        header={<div style={{marginLeft: "var(--xyd-global-page-gutter)"}}>
-            <FwNav kind="middle"/>
+        header={<div style={{ marginLeft: "var(--xyd-global-page-gutter)" }}>
+            <FwNav kind="middle" />
         </div>}
 
     >
@@ -57,7 +57,7 @@ function getPathname(url: string) {
     return parsedUrl.pathname.replace(/^\//, '');
 }
 
-export async function loader({request}: { request: any }) {
+export async function loader({ request }: { request: any }) {
     const slug = getPathname(request.url || "index") || "index"
     const ext = path.extname(slug)
 
@@ -92,7 +92,7 @@ export async function loader({request}: { request: any }) {
             error = e
         }
     }
-  
+
 
     if (error?.code === "ENOENT") {
         try {
@@ -169,7 +169,7 @@ export function MemoMDXComponent(codeComponent: any) {
     )
 }
 
-export default function CustomPage({loaderData, ...rest}: { loaderData: loaderData }) {
+export default function CustomPage({ loaderData, ...rest }: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
     const Content = MemoMDXComponent(content.component)
 
@@ -196,13 +196,17 @@ export default function CustomPage({loaderData, ...rest}: { loaderData: loaderDa
         </Theme>
     }
 
-    return <Framework
-        settings={settings}
-        sidebarGroups={loaderData.sidebarGroups || []}
-        toc={content.toc || []}
-        breadcrumbs={loaderData.breadcrumbs || []}
-        navlinks={loaderData.navlinks}
-    >
-        {component}
-    </Framework>
+    return <AtlasContext.Provider value={{
+        syntaxHighlight: settings?.theme?.markdown?.syntaxHighlight || null
+    }}>
+        <Framework
+            settings={settings}
+            sidebarGroups={loaderData.sidebarGroups || []}
+            toc={content.toc || []}
+            breadcrumbs={loaderData.breadcrumbs || []}
+            navlinks={loaderData.navlinks}
+        >
+            {component}
+        </Framework>
+    </AtlasContext.Provider>
 }

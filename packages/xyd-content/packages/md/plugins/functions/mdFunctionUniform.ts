@@ -9,11 +9,10 @@ import {FunctionName} from "./types";
 import {
     FunctionOptions,
     parseFunctionCall,
-    downloadContent
 } from './utils';
 
-// Import the sourcesToUniform function
-import { sourcesToUniform } from '@xyd-js/sources';
+// Import the processUniformFunctionCall function
+import { processUniformFunctionCall } from './uniformProcessor';
 
 export function mdFunctionUniform(options: FunctionOptions = {}) {
     return async function transformer(tree: any, file: VFile) {
@@ -25,46 +24,26 @@ export function mdFunctionUniform(options: FunctionOptions = {}) {
             const result = parseFunctionCall(node, FunctionName.Uniform);
             if (!result) return;
 
-            const filePath = result[1];
+            const importPath = result[1];
 
             // Create a promise for this node
             const promise = (async () => {
                 try {
-                    const content = await downloadContent(
-                        filePath,
+                    // Process the uniform function call
+                    const references = await processUniformFunctionCall(
+                        importPath,
                         file,
-                        options.resolveFrom,
-                    )
-
-                    if (isProgrammingSource(filePath)) {
-                        // Create temporary folder structure
-                        const tempDir = await createTempFolderStructure(content);
-                        
-                        try {
-                            // Get the path to the package directory
-                            const packageDir = path.join(tempDir, 'packages', 'package');
-                            
-                            // Process the content using sourcesToUniform
-                            const references = await sourcesToUniform(
-                                tempDir,
-                                [packageDir]
-                            );
-                            
-                            node.type = 'code';
-                            node.lang = 'json';
-                            node.value = JSON.stringify(references, null, 2);
-                            node.children = undefined;
-                        } finally {
-                            // Clean up the temporary directory when done
-                            cleanupTempFolder(tempDir);
-                        }
-                    } else {
-                        // TODO: openapi + graphql
-                        throw new Error(`Unsupported file type: ${filePath}`);
+                        options.resolveFrom
+                    );
+                    
+                    if (references) {
+                        node.type = 'code';
+                        node.lang = 'json';
+                        node.value = JSON.stringify(references, null, 2);
+                        node.children = undefined;
                     }
-
                 } catch (error) {
-                    console.error(`Error processing uniform file: ${filePath}`, error);
+                    console.error(`Error processing uniform function call: ${importPath}`, error);
                     // Keep the node as is if there's an error
                 }
             })();

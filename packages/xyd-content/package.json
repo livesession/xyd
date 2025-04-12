@@ -22,9 +22,9 @@
     "@mdx-js/mdx": "^3.1.0",
     "@mdx-js/rollup": "^3.0.1",
     "@xyd-js/core": "workspace:*",
-    "@xyd-js/sources": "workspace:*",
     "@xyd-js/gql": "workspace:*",
     "@xyd-js/openapi": "workspace:*",
+    "@xyd-js/sources": "workspace:*",
     "estree-util-is-identifier-name": "^3.0.0",
     "estree-util-value-to-estree": "^3.1.2",
     "gray-matter": "^4.0.3",
@@ -41,7 +41,7 @@
     "vfile": "^6.0.3"
   },
   "devDependencies": {
-    "@types/node": "^22.7.8",
+    "@types/node": "^22.14.1",
     "@vitest/coverage-v8": "^1.3.1",
     "rimraf": "^3.0.2",
     "tsup": "^8.3.0",

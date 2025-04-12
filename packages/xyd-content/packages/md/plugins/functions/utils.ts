@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import {VFile} from 'vfile';
+import { VFile } from 'vfile';
 
 /**
  * Common options for all function plugins
@@ -102,7 +102,7 @@ export function parseImportPath(importPath: string): {
         filePath = filePath.replace(/#[^\{]+/, '');
 
         for (const name of regionNames) {
-            regions.push({name: name.trim()});
+            regions.push({ name: name.trim() });
         }
     }
 
@@ -119,24 +119,24 @@ export function parseImportPath(importPath: string): {
             if (part.includes('-')) {
                 // Range like "2-4"
                 const [start, end] = part.split('-').map(num => parseInt(num, 10));
-                lineRanges.push({start, end});
+                lineRanges.push({ start, end });
             } else if (part.endsWith(':')) {
                 // Range like "8:"
                 const start = parseInt(part.replace(':', ''), 10);
-                lineRanges.push({start});
+                lineRanges.push({ start });
             } else if (part.startsWith(':')) {
                 // Range like ":10"
                 const end = parseInt(part.replace(':', ''), 10);
-                lineRanges.push({end});
+                lineRanges.push({ end });
             } else {
                 // Single line like "1"
                 const line = parseInt(part, 10);
-                lineRanges.push({start: line, end: line});
+                lineRanges.push({ start: line, end: line });
             }
         }
     }
 
-    return {filePath, regions, lineRanges};
+    return { filePath, regions, lineRanges };
 }
 
 /**
@@ -302,4 +302,8 @@ export async function downloadContent(
     }
 
     return content;
+}
+
+export function functionMatch(value: string, functionName: string): boolean {
+    return value.startsWith(functionName); // TODO: better function matching like args etc
 }

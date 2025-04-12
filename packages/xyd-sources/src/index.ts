@@ -9,16 +9,14 @@ import {
 // TODO: SUPPORT GET FROM URL + VIRTUAL FS (OR NO FS JUST SET NEEDED OPTIONS VIA CODE)
 export async function sourcesToUniform(
     root: string,
-    entryPoints: string[],
+    entryPoints: string[]
 ): Promise<Reference<ReferenceContext>[] | undefined> {
     // TODO: support another strategies
     // TODO: support entry points from github?
     const options = {
         entryPoints,
-        plugin: [],
-        readme: "none",
-        disableSources: "true",
         entryPointStrategy: TypeDoc.EntryPointStrategy.Packages,
+        tsconfig: "/Users/zdunecki/Code/livesession/xyd/packages/xyd-core/tsconfig-est.json",
     } satisfies Partial<TypeDocOptions>;
 
     const app = await TypeDoc.Application.bootstrapWithPlugins(options);
