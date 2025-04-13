@@ -1,4 +1,5 @@
 import React from "react"
+import {useLinkClickHandler} from "react-router"
 
 import * as cn from "./Sidebar.styles";
 import {UICollapse} from "./Collapse";
@@ -53,12 +54,19 @@ UISidebar.Item = function SidebarItem({
 
     const ButtonOrAnchor = button ? 'button' : Link
 
+    const handler = useLinkClickHandler(href || "", {
+        viewTransition: true,
+    })
+
     return <li
         className={cn.ItemHost}
     >
         <ButtonOrAnchor
             href={button ? undefined : href}
-            onClick={button ? onClick : undefined}
+            onClick={(e) => {
+                onClick?.(e)
+                handler(e)
+            }}
             className={cn.ItemLink}
         >
             <div className={`

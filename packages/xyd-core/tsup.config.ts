@@ -16,6 +16,7 @@ const config: Options = {
         options.external = ['node:fs/promises']; // Mark 'node:fs/promises' as external
         options.loader = {'.js': 'jsx'}; // Ensure proper handling of .js files
     },
+    tsconfig: 'tsconfig.tsup.json',
     ignoreWatch: ['node_modules', 'dist', '.git', 'build'] // Exclude unnecessary directories
 }
 

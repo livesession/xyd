@@ -49,7 +49,8 @@ export async function dev() {
             ...(xydContentVitePlugins({
                 toc: {
                     minDepth: 2,
-                }
+                },
+                settings: respPluginZero.settings,
             }) as Plugin[]),
             reactRouter({
                 routes: respPluginZero.routes

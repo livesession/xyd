@@ -258,9 +258,6 @@ line9
             const transformer = mdFunctionImportCode();
             const tree = createMockTree('test.ts');
 
-            // Log the tree structure to see what we're working with
-            console.log('Tree structure:', JSON.stringify(tree, null, 2));
-
             const file = createMockFile();
 
             // Create a promise that resolves when the transformer is done
@@ -268,9 +265,6 @@ line9
 
             // Wait for the promise to resolve
             await transformPromise;
-
-            // Check if the tree was modified
-            console.log('Tree after transformation:', JSON.stringify(tree, null, 2));
 
             expect(tree.children[0].type).toBe('code');
         });

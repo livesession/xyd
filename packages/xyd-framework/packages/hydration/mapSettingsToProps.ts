@@ -168,6 +168,7 @@ export async function mapSettingsToProps(
             return {
                 group: "",
                 items: [],
+                groupIndex: 0,
             } as FwSidebarGroupProps
         }
 

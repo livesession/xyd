@@ -50,7 +50,6 @@ export function AtlasSecondary({ references, mdx }: CommonAtlasProps<CodeSourceC
 
     const syntaxHighlight = useSyntaxHighlight()
 
-    console.log(references, "references")
     return <>
         {
             references?.map((reference, i) => {

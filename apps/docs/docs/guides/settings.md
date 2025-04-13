@@ -20,7 +20,7 @@ This configuration file controls the look and feel of your documentation, includ
 Source code of `settings` is available [here](https://github.com/livesession/xyd/blob/master/packages/xyd-core/src/types/settings.ts)
 :::
 
-:::atlas{kind="secondary" references="@uniform('../../../../packages/xyd-core/src/types/settingsdemo.ts')" collapse=1 depth=3}
+:::atlas{kind="secondary" references="@uniform('../../../../packages/xyd-core/src/types/settings.ts')" collapse=1 depth=3}
 :::
 
 ## Properties

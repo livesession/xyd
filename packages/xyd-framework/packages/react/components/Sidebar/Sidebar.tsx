@@ -9,6 +9,8 @@ import {useGroup} from "./SidebarGroup";
 
 export interface FwSidebarGroupProps {
     group: string
+    
+    groupIndex: number
 
     items: FwSidebarItemProps[]
 }
@@ -20,6 +22,8 @@ export function FwSidebarItemGroup(props: FwSidebarGroupProps) {
         </UISidebar.ItemHeader>
 
         {props.items.map((item, index) => <FwSidebarItem
+            groupIndex={props.groupIndex}
+            itemIndex={index}
             key={index + item.href}
             title={item.title}
             href={item.href}
@@ -43,6 +47,8 @@ export interface FwSidebarItemProps {
 
     // internal
     readonly level?: number
+    readonly groupIndex?: number
+    readonly itemIndex?: number
     // internal
 }
 
@@ -79,7 +85,7 @@ function mdxExport(code: string, components: any) {
 }
 
 function FwSidebarItem(props: FwSidebarItemProps) {
-    const {active, onClick} = useGroup()
+    const {active} = useGroup()
     const [isActive, setActive] = active(props)
 
     let Title: any
@@ -133,6 +139,8 @@ function FwSidebarItem(props: FwSidebarItemProps) {
                 <>
                     {
                         props.items?.map((item, index) => <FwSidebarItem
+                            groupIndex={props.groupIndex}
+                            itemIndex={index}
                             key={index + item.href}
                             title={item.title}
                             href={item.href}

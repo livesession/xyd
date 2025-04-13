@@ -8,14 +8,17 @@ import * as cn from "./Code.styles";
 import {CodeLoader} from "./CodeLoader";
 
 export interface CodeProps {
-    codeblocks: CodeThemeBlockProps[];
+    codeblocks?: CodeThemeBlockProps[];
     theme?: Theme
     children: React.ReactNode
 }
 
 export function Code(props: CodeProps) {
     return <Suspense fallback={<CodeLoader/>}>
-        <CodeTheme codeblocks={props.codeblocks} theme={props.theme}>
+        <CodeTheme
+            codeblocks={props.codeblocks}
+            theme={props.theme}
+        >
             {props.children}
         </CodeTheme>
     </Suspense>

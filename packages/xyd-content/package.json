@@ -40,6 +40,9 @@
     "unist-util-visit": "^5.0.0",
     "vfile": "^6.0.3"
   },
+  "peerDependencies": {
+    "@xyd-js/components": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^22.14.1",
     "@vitest/coverage-v8": "^1.3.1",

@@ -4,6 +4,10 @@ import remarkMdx from "remark-mdx";
 import { visit } from "unist-util-visit";
 import { VFile } from "vfile";
 import { Node as UnistNode } from "unist";
+import { highlight } from "codehike/code"
+
+import { Settings } from "@xyd-js/core";
+
 
 import { FunctionName } from "../functions/types";
 import { MarkdownComponentDirectiveMap } from "./types";
@@ -11,7 +15,6 @@ import { functionMatch, parseFunctionCall } from "../functions/utils";
 import { processUniformFunctionCall } from "../functions/uniformProcessor";
 
 import { getComponentName } from "./utils";
-
 
 // TODO: in the future custom component: `this.registerComponent(MyComponent, "my-component")` ? but core should move to `symbolx`?
 const supportedDirectives: MarkdownComponentDirectiveMap = {
@@ -61,19 +64,24 @@ const parseMarkdown = (content: string) => {
     return ast.children;
 };
 
-export const mdComponentDirective: Plugin = () => {
-    return async (tree: UnistNode, file: VFile) => {
-        const promises: Promise<void>[] = [];
+// TODO: BETTER SETTINGS MANAGEMENT FOR MD 
 
-        visit(tree, 'containerDirective', recreateComponent(file, promises));
-
-        await Promise.all(promises);
+export function mdComponentDirective(settings?: Settings): Plugin {
+    return function() {
+        return  async (tree: UnistNode, file: VFile) => {
+            const promises: Promise<void>[] = [];
+    
+            visit(tree, 'containerDirective', recreateComponent(file, promises, settings));
+    
+            await Promise.all(promises);
+        }
     }
 }
 
 function recreateComponent(
     file: VFile,
-    promises: Promise<void>[]
+    promises: Promise<void>[],
+    settings?: Settings
 ) {
     return function (node: any) {
         if (!supportedDirectives[node.name]) {
@@ -105,7 +113,7 @@ function recreateComponent(
         }
 
         if (isCodeLike) {
-            mdCode(node);
+            mdCode(node, promises, settings);
             return
         }
 
@@ -297,32 +305,47 @@ function mdTable(node: any) {
     return;
 }
 
-function mdCode(node: any) {
+// TODO: server side highlight?
+function mdCode(node: any, promises: Promise<any>[], settings?: Settings) {
     const componentName = getComponentName(node.name, supportedDirectives);
 
     const description = node.attributes?.title || '';
-    const codeblocks = [];
+    const codeblocks: any[] = [];
+
+    function rewriteNode() {
+        // Add metadata to the node
+        node.data = {
+            hName: componentName,
+            hProperties: {
+                description,
+                codeblocks: JSON.stringify(codeblocks),
+            },
+        };
+
+        node.children = [];
+    }
 
     for (const child of node.children) {
         if (child.type === 'code') {
+
             const meta = child.meta || '';
             const value = child.value || '';
             const lang = child.lang || '';
 
-            codeblocks.push({ value, lang, meta });
+            const promise = (async () => {
+                const highlighted = await highlight({
+                    value: value,
+                    lang,
+                    meta: meta || lang || ""
+                }, settings?.theme?.markdown?.syntaxHighlight || "github-dark") // TODO: theme
+
+                codeblocks.push({ value, lang, meta, highlighted: highlighted });
+                rewriteNode()
+            })()
+
+            promises.push(promise)
         }
     }
-
-    // Add metadata to the node
-    node.data = {
-        hName: componentName,
-        hProperties: {
-            description,
-            codeblocks: JSON.stringify(codeblocks),
-        },
-    };
-
-    node.children = [];
 
     return
 }

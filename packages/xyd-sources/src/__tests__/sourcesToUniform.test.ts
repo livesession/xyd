@@ -42,11 +42,6 @@ export class TestClass {
         
             // Save references to a file for inspection
             console.log(`References saved to: ${outputFilePath}`);
-
-            // console.log(222222222, references)
-            //   expect(references).toBeDefined();
-            //   expect(references?.length).toBe(1);
-            //   expect(references?.[0].name).toBe('TestClass');
         });
     });
 }); 

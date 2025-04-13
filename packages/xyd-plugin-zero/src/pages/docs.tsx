@@ -5,6 +5,7 @@ import { redirect } from "react-router";
 
 import { PageFrontMatter } from "@xyd-js/core"
 import { compileBySlug } from "@xyd-js/content"
+import { markdownPlugins } from "@xyd-js/content/md"
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 import { Framework, FwNav, type FwSidebarGroupProps } from "@xyd-js/framework/react";
 import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
@@ -26,6 +27,10 @@ interface loaderData {
     slug: string
     code: string
 }
+
+const mdPlugins = markdownPlugins({
+    minDepth: 2, // TODO: configurable
+}, settings)
 
 const contentComponents = {
     ...getContentComponents(settings),
@@ -78,7 +83,7 @@ export async function loader({ request }: { request: any }) {
     let error: any
 
     try {
-        code = await compileBySlug(slug, true)
+        code = await compileBySlug(slug, true, mdPlugins)
     } catch (e) {
         error = e
     }
@@ -87,7 +92,7 @@ export async function loader({ request }: { request: any }) {
         error = null
 
         try {
-            code = await compileBySlug(slug, false)
+            code = await compileBySlug(slug, false, mdPlugins)
         } catch (e) {
             error = e
         }
@@ -97,7 +102,7 @@ export async function loader({ request }: { request: any }) {
     if (error?.code === "ENOENT") {
         try {
             // TODO: better index algorithm
-            code = await compileBySlug(slug + "/index", true)
+            code = await compileBySlug(slug + "/index", true, mdPlugins)
         } catch (e) {
             error = e
         }
@@ -136,11 +141,63 @@ export async function loader({ request }: { request: any }) {
 
 // TODO: move to content?
 function mdxExport(code: string) {
+    // Create a wrapper around React.createElement that adds keys to elements in lists
+    const createElementWithKeys = (type: any, props: any, ...args: any[]) => {
+        // Process children to add keys to all elements
+        const processChildren = (childrenArray: any[]): any[] => {
+            return childrenArray.map((child, index) => {
+                // If the child is a React element and doesn't have a key, add one
+                if (React.isValidElement(child) && !child.key) {
+                    return React.cloneElement(child, { key: `mdx-${index}` });
+                }
+                // If the child is an array, process it recursively
+                if (Array.isArray(child)) {
+                    return processChildren(child);
+                }
+                return child;
+            });
+        };
+
+        // Handle both cases: children as separate args or as props.children
+        let processedChildren;
+        
+        // If children are passed as separate arguments
+        if (args.length > 0) {
+            // If the first argument is an array, process it
+            if (Array.isArray(args[0])) {
+                processedChildren = processChildren(args[0]);
+            } else {
+                // Otherwise, process all arguments as a single array
+                processedChildren = processChildren(args);
+            }
+        } 
+        // If children are in props
+        else if (props && props.children) {
+            if (Array.isArray(props.children)) {
+                processedChildren = processChildren(props.children);
+            } else if (React.isValidElement(props.children) && !props.children.key) {
+                // Single child without key
+                processedChildren = React.cloneElement(props.children, { key: 'mdx-child' });
+            } else {
+                // Single child with key or non-React element
+                processedChildren = props.children;
+            }
+        } else {
+            processedChildren = [];
+        }
+
+        // Create the element with processed children
+        return React.createElement(type, {
+            ...props,
+            children: processedChildren
+        });
+    };
+
     const scope = {
         Fragment: React.Fragment,
-        jsxs: React.createElement,
-        jsx: React.createElement,
-        jsxDEV: React.createElement,
+        jsxs: createElementWithKeys,
+        jsx: createElementWithKeys,
+        jsxDEV: createElementWithKeys,
     }
     const fn = new Function(...Object.keys(scope), code)
     return fn(scope)

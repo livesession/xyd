@@ -87,7 +87,6 @@ export default {
                             "docs/guides/special-symbols",
                             "docs/guides/markdown-extensions",
                             "docs/guides/developer-content",
-
                         ],
                     },
                     {
@@ -114,7 +113,16 @@ export default {
                     {
                         "group": "Advanced Topics",
                         "pages": [
-                            "docs/guides/sdk-federation"
+                            "docs/guides/sdk-federation",
+                            {
+                                "group": "Example",
+                                "pages": [
+                                    "docs/guides/example-nested",
+                                    "docs/guides/example-nested2",
+                                    "docs/guides/example-nested3",
+
+                                ],
+                            }
                         ],
                     },
                 ]

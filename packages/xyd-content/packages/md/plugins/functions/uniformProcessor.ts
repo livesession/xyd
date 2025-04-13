@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
 import { VFile } from 'vfile';
-import { sourcesToUniform } from '@xyd-js/sources';
+import { sourcesToUniform, type TypeDocReferenceContext } from '@xyd-js/sources';
 import { downloadContent, parseImportPath } from './utils';
 
 /**
@@ -163,25 +163,20 @@ export async function processUniformFile(
                 const relativeFilePath = path.relative(packageDir, resolvedFilePath);
                 const absoluteFilePath = path.join(packageDir, relativeFilePath);
                 
-                console.log(relativeFilePath, "relativeFilePath", "packageDir", packageDir, "absoluteFilePath", absoluteFilePath);
-                
-                // Create a temporary directory structure that mirrors the original
-                // const tempDir = await createMirroredTempFolderStructure(
-                //     packageDir,
-                //     relativeFilePath,
-                //     absoluteFilePath
-                // );
-
-                // const tempDir = "/Users/zdunecki/Code/livesession/xyd/example"
-
                 try {
+                    // return []
                     // Process the content using sourcesToUniform
                     const references = await sourcesToUniform(
                         packageDir,
                         [packageDir]
-                    );
+                    ) || []
 
-                    return references || null;
+                    // TODO: in the future via xyd-source? some issues with 
+                    return references.filter(ref => {
+                        const ctx  = ref?.context as TypeDocReferenceContext
+
+                        return ctx?.fileFullPath === relativeFilePath
+                    }) 
                 } finally {
                     // Clean up the temporary directory when done
                     // cleanupTempFolder(tempDir);
@@ -269,7 +264,6 @@ export async function createMirroredTempFolderStructure(
         JSON.stringify(modifiedPackageJson, null, 2)
     );
 
-    console.log("modifiedPackageJson", modifiedPackageJson)
     // Copy and modify tsconfig.json
     const originalTsconfigPath = path.join(packageDir, 'tsconfig.json');
     const originalTsconfig = JSON.parse(fs.readFileSync(originalTsconfigPath, 'utf8'));
@@ -285,7 +279,6 @@ export async function createMirroredTempFolderStructure(
         JSON.stringify(modifiedTsconfig, null, 2)
     );
     
-console.log("modifiedTsconfig", modifiedTsconfig)
     return tempDir;
 }
 

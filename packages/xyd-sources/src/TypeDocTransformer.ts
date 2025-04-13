@@ -20,7 +20,7 @@ import {
 } from "./SignatureText";
 
 // Custom type for the context returned by declarationUniformContext
-interface TypeDocReferenceContext {
+export interface TypeDocReferenceContext {
     packageName: string;
     fileName: string;
     fileFullPath: string;

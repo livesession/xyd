@@ -76,7 +76,8 @@ export async function build() {
                 ...(xydContentVitePlugins({
                     toc: {
                         minDepth: 2,
-                    }
+                    },
+                    settings: resp.settings,
                 }) as Plugin[]),
                 reactRouter({
                     outDir: buildDir,
@@ -100,7 +101,8 @@ export async function build() {
                 ...(xydContentVitePlugins({
                     toc: {
                         minDepth: 2,
-                    }
+                    },
+                    settings: resp.settings,
                 }) as Plugin[]),
                 reactRouter({
                     outDir: buildDir,

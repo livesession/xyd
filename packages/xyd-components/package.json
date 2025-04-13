@@ -51,10 +51,12 @@
   },
   "peerDependencies": {
     "@xyd-js/core": "workspace:*",
-    "@code-hike/lighter": "^1.0.1",
+    "@code-hike/lighter": "file:/Users/zdunecki/Code/zdunecki/codehike-lighter/lib",
     "react": "^19.0.0"
   },
   "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-flow": "^7.25.9",
     "@babel/preset-react": "^7.26.0",

@@ -65,3 +65,9 @@
     background: #f5f5f5;
 }
 
+.XydComponents-Component-writer-UnderlineNav__UnderlineNavItem[data-state=active] a {
+    border-bottom-color: #3b82f6;
+}
+.XydComponents-Component-writer-UnderlineNav__UnderlineNavItemLink:hover {
+    color: #3b82f6;
+}

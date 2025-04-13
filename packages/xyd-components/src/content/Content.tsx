@@ -1,5 +1,7 @@
 import React from 'react'
 
+import {HighlightedCode} from 'codehike/code';
+
 import {
     Settings
 } from "@xyd-js/core"
@@ -70,40 +72,78 @@ export default function content(settings?: Settings) {
 
 export function stdContent(settings?: Settings) {
     return {
-        h1: (props) => <div><Heading id={props.children} {...props}/></div>,
-        h2: props => <div><Heading id={props.children} size={2} {...props} /></div>,
-        h3: props => <div><Heading id={props.children} size={3} {...props} /></div>,
-        h4: props => <div><Heading id={props.children} size={4} {...props} /></div>,
-        h5: props => <div><Heading id={props.children} size={5} {...props} /></div>,
-        h6: props => <div><Heading id={props.children} size={6} {...props} /></div>,
-        p: props => <p {...props} />,
+        h1: (props) => {
+            return <div><Heading id={props.children} {...props}/></div>
+        },
+        h2: props => {
+            return <div><Heading id={props.children} size={2} {...props} /></div>
+        },
+        h3: props => {
+            return <div><Heading id={props.children} size={3} {...props} /></div>
+        },
+        h4: props => {
+            return <div><Heading id={props.children} size={4} {...props} /></div>
+        },
+        h5: props => {
+            return <div><Heading id={props.children} size={5} {...props} /></div>
+        },
+        p: props => {
+            return <p {...props} />
+        },
 
-        ul: props => (
-            <List{...props}>
+        ul: props => {
+            return <List {...props}>
                 {props.children}
             </List>
-        ),
-        ol: props => (
-            <ListOl{...props}>
+        },
+        ol: props => {
+            return <ListOl {...props}>
                 {props.children}
             </ListOl>
-        ),
-        li: props => <List.Item {...props} >
-            {props.children}
-        </List.Item>,
-
-        table: TableV2,
-        tr: TableV2.Tr,
-        th: TableV2.Th,
-        td: (props) => <TableV2.Td {...props}>
-            <TableV2.Cell>
+        },
+        li: props => {
+            return <List.Item {...props} >
                 {props.children}
-            </TableV2.Cell>
-        </TableV2.Td>,
+            </List.Item>
+        },
 
-        code: Code,
+        table: (props) => {
+            return <TableV2 {...props} />
+        },
+        tr: (props) => {
+            return <TableV2.Tr {...props} />
+        },
+        th: (props) => {
+            return <TableV2.Th {...props} />
+        },
+        td: (props) => {
+            return <TableV2.Td {...props}>
+                <TableV2.Cell>
+                    {props.children}
+                </TableV2.Cell>
+            </TableV2.Td>
+        },
+
+        code: (props) => {
+            return <Code {...props} />
+        },
         pre: props => {
-            const lang = (props?.children?.props?.className || "").replace("language-", "") // TODO: better solution
+            let highlighted: HighlightedCode | undefined = undefined
+
+            if (props.highlighted) {
+                // if ssr highlighted code
+
+                try {
+                    const serverHighlight: HighlightedCode = JSON.parse(props.highlighted)
+
+                    if (serverHighlight) {
+                        highlighted = serverHighlight
+                    }
+                } catch (e) {
+                    console.error("Error parsing highlighted code", e)
+                }
+            }
+            const lang = (props?.children?.props?.className || "").replace("language-", "")
 
             return <CodeSample
                 theme={settings?.theme?.markdown?.syntaxHighlight || undefined}
@@ -114,16 +154,24 @@ export function stdContent(settings?: Settings) {
                         value: props?.children?.props?.children,
                         lang: lang,
                         meta: lang,
+                        highlighted
                     }
                 ]}
                 size="full" // TODO: in the future configurable
             />
         },
-        details: Details,
-        blockquote: Blockquote,
-
-        hr: Hr,
-        a: Link,
+        details: (props) => {
+            return <Details {...props} />
+        },
+        blockquote: (props) => {
+            return <Blockquote {...props} />
+        },
+        hr: (props) => {
+            return <Hr {...props} />
+        },
+        a: (props) => {
+            return <Link {...props} />
+        },
     }
 }
 
@@ -147,6 +195,7 @@ export function helperContent() {
     }
 }
 
+// TODO: better system for icons + should work with .md like icon="session-replay" etc.
 export function iconContent() {
     return {
         IconSessionReplay,
@@ -171,7 +220,7 @@ export function iconContent() {
 
 export function coderContent() {
     return {
-        CodeSample,
+        CodeSample, // TODO: server side highlight?
     }
 }
 

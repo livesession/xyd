@@ -19,6 +19,10 @@ export function withCodeTabs(PreComponent) {
     return function CodeTabs(props: CodeTabsProps) {
         const isSingle = props.highlighted.length === 1 && !props.description
 
+        if (props.highlighted.length === 0) { // TODO: suspense?
+            return null
+        }
+
         return (
             <TabsPrimitive.Root
                 className={cn.CodeTabsHost}

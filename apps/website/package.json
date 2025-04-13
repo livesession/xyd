@@ -8,7 +8,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@code-hike/lighter": "^1.0.0",
+    "@code-hike/lighter": "file:/Users/zdunecki/Code/zdunecki/codehike-lighter/lib",
     "@cosmocss/land": "0.0.0-alpha.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
@@ -29,8 +29,8 @@
   "devDependencies": {
     "@eslint/js": "^8.56.0",
     "@types/gsap": "^3.0.0",
-    "@types/react": "^18.2.57",
-    "@types/react-dom": "^18.2.19",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",

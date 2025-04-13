@@ -6,7 +6,7 @@
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
-    "./reset.css": "./dist/tokens.css",
+    "./reset.css": "./dist/reset.css",
     "./index.css": "./dist/index.css",
     ".": {
       "import": "./dist/index.js"

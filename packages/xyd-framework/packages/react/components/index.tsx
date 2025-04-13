@@ -150,11 +150,16 @@ function FwSidebarGroups(props: FwSidebarGroupsProps) {
 
     const location = useLocation()
     const initialActiveItems: any[] = []
-    groups.forEach(group => {
+    groups.forEach((group, groupIndex) => {
         const activeLevels = recursiveSearch(group.items, location.pathname) || []
 
-        activeLevels.reduce((acc, index) => {
-            initialActiveItems.push(acc[index])
+        activeLevels.reduce((acc, index, level) => {
+            initialActiveItems.push({
+                ...acc[index],
+                groupIndex: groupIndex,
+                itemIndex: index,
+                level: level,
+            })
             acc[index].active = true
             return acc[index].items
         }, group.items)
@@ -172,6 +177,7 @@ function FwSidebarGroups(props: FwSidebarGroupsProps) {
                 groups?.map((group, index) => <FwSidebarItemGroup
                     key={index + group.group}
                     {...group}
+                    groupIndex={index}
                 />)
             }
         </UISidebar>

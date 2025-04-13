@@ -1,0 +1,1 @@
+1. if we have uniform with type that is hidden by tree-shaking then its not exported

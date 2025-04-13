@@ -1,69 +1,51 @@
-import React, {createContext, useContext, useEffect, useState} from "react";
-import {useLocation, useNavigation, useNavigate} from "react-router";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useLocation, useNavigation, useNavigate } from "react-router";
 
-import {FwSidebarGroupProps, FwSidebarItemProps} from "./Sidebar";
-import {UIContext} from "../../contexts/ui";
-import {useSidebarGroups} from "../../contexts";
+import { FwSidebarGroupProps, FwSidebarItemProps } from "./Sidebar";
+import { UIContext } from "../../contexts/ui";
+import { useSidebarGroups } from "../../contexts";
 
 
 export interface FwGroupContext {
     active: (item: FwSidebarItemProps) => [boolean, () => void],
-    onClick?: (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, item: FwSidebarItemProps) => void,
 }
 
 type GroupBehaviour = (item: FwSidebarItemProps) => [boolean, () => void]
 
-const groupContext = createContext<FwGroupContext>({
+const GroupContext = createContext<FwGroupContext>({
     active: () => [false, () => {
     }],
-    onClick: () => null // TODO: should be deprecated?
 })
 
 export function FwSidebarGroupContext({
-                                          children,
-                                          onePathBehaviour,
-                                          clientSideRouting,
-                                          initialActiveItems,
-                                      }:
-                                      {
-                                          children: React.ReactNode,
-                                          onePathBehaviour?: boolean,
-                                          clientSideRouting?: boolean // TODO: scrollRouting?,
-                                          initialActiveItems: any[]
-                                      }) {
+    children,
+    onePathBehaviour,
+    initialActiveItems,
+}:
+    {
+        children: React.ReactNode,
+        onePathBehaviour?: boolean,
+        clientSideRouting?: boolean // TODO: scrollRouting?,
+        initialActiveItems: any[]
+    }) {
 
     let groupBehaviour: GroupBehaviour
 
     if (onePathBehaviour) {
-        groupBehaviour = useOnePathBehaviour(initialActiveItems)
+        throw new Error("One path behaviour is not implemente yet")
     } else {
         groupBehaviour = useDefaultBehaviour(initialActiveItems)
     }
-    const location = useLocation()
 
-    const [href, setHref] = useState(location.pathname)
-
-    return <UIContext.Provider value={{
-        href: href,
-        setHref: (value) => {
-            setHref(value)
-        }
+    return <GroupContext value={{
+        active: groupBehaviour,
     }}>
-        <groupContext.Provider value={{
-            active: groupBehaviour,
-            onClick: clientSideRouting ? (event, item) => {
-                setHref(item.href)
-                scrollToDataSlug(event, item)
-                // navigate(item.href)
-            } : undefined
-        }}>
-            {children}
-        </groupContext.Provider>
-    </UIContext.Provider>
+        {children}
+    </GroupContext>
 }
 
 export function useGroup() {
-    return useContext(groupContext)
+    return useContext(GroupContext)
 }
 
 
@@ -72,7 +54,7 @@ export function useGroup() {
 
 function getLastValue(set) {
     let value;
-    for (value of set) ;
+    for (value of set);
     return value;
 }
 
@@ -122,9 +104,21 @@ function calcActive(groups: FwSidebarGroupProps[], url: any) {
     return initialActiveItems
 }
 
+// TOOD: issues if same page url on initialitems
+// TODO: the time of chaning is not perfectly the same with react-router 
 function useDefaultBehaviour(initialActiveItems: any[]) {
     const groups = useSidebarGroups()
-    const [weakSet] = useState(() => new Set<string>(initialActiveItems.map((item) => stringify(item))));
+    const [activeItems] = useState(() => {
+        const map = new Map<string, string>();
+        initialActiveItems.forEach(item => {
+            const key = `${item.groupIndex}-${item.level}`;
+            map.set(key, stringify(item));
+        });
+        return map;
+    });
+    const [currentGroupIndex, setCurrentGroupIndex] = useState<number | null>(() => {
+        return initialActiveItems[0]?.groupIndex ?? null;
+    });
     const [, setForceUpdate] = useState(0);
 
     useEffect(() => {
@@ -134,107 +128,61 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
             if (!url) {
                 return
             }
-            // TODO: better data structures
             const active = calcActive(groups, url)
-            weakSet.clear()
+            activeItems.clear()
             active.forEach((item) => {
-                addItem(item)
+                const key = `${item.groupIndex}-${item.level}`;
+                activeItems.set(key, stringify(item));
+                if (item.groupIndex !== undefined) {
+                    setCurrentGroupIndex(item.groupIndex);
+                }
             })
+            forceUpdate();
         });
     }, [])
 
     const forceUpdate = () => setForceUpdate((prev) => prev + 1);
 
     const addItem = (item: FwSidebarItemProps) => {
-        weakSet.add(stringify(item));
+        // If switching groups, clear all items
+        if (item.groupIndex !== undefined && item.groupIndex !== currentGroupIndex) {
+            activeItems.clear();
+            setCurrentGroupIndex(item.groupIndex);
+        }
+
+        const key = `${item.groupIndex}-${item.level}`;
+        activeItems.set(key, stringify(item));
         forceUpdate();
     };
 
     const deleteItem = (item: FwSidebarItemProps) => {
-        weakSet.delete(stringify(item));
+        const key = `${item.groupIndex}-${item.level}`;
+        activeItems.delete(key);
         forceUpdate();
     };
 
     const hasItem = (item: FwSidebarItemProps) => {
-        return weakSet.has(stringify(item));
+        const key = `${item.groupIndex}-${item.level}`;
+        const activeItem = activeItems.get(key);
+        return activeItem === stringify(item);
     };
 
     return (item: FwSidebarItemProps): [boolean, () => void] => [
         hasItem(item) || false,
         () => {
-            if (hasItem(item)) {
-                deleteItem(item);
-            } else {
+            if (!hasItem(item)) {
                 addItem(item);
-            }
-        }
-    ]
-}
 
-function useOnePathBehaviour(initialActiveItems: any[]) {
-    const [weakSet] = useState(() => new Set<string>(initialActiveItems.map((item) => stringify(item))));
-    const [lastLevel, setLastLevel] = useState<false | number | undefined>(false);
-    const [, setForceUpdate] = useState(0);
-
-    const forceUpdate = () => setForceUpdate((prev) => prev + 1);
-
-    const addItem = (item: FwSidebarItemProps) => {
-        weakSet.add(stringify(item));
-        forceUpdate();
-    };
-
-    const deleteItem = (item: FwSidebarItemProps) => {
-        weakSet.delete(stringify(item));
-        forceUpdate();
-    };
-
-    const hasItem = (item: FwSidebarItemProps) => {
-        return weakSet.has(stringify(item));
-    };
-
-    const clear = () => {
-        weakSet.clear();
-        forceUpdate();
-    };
-
-    return (item: FwSidebarItemProps): [boolean, () => void] => [
-        hasItem(item),
-        () => {
-            setLastLevel(item.level)
-            if (hasItem(item) && item.level == 0) {
-                setLastLevel(false)
-                clear()
                 return
             }
 
-            if (hasItem(item)) {
-                setLastLevel(false)
-                deleteItem(item);
+            if (!item.level) {
                 return
             }
 
-
-            if (((item.level || 0) > (lastLevel || 0)) || lastLevel == false) {
-                addItem(item)
-            } else {
-                const v = getLastValue(weakSet)
-                deleteItem(JSON.parse(v))
-                addItem(item)
-            }
+            deleteItem(item);
         }
     ]
-}
-
-function scrollToDataSlug(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, item: FwSidebarItemProps) {
-    event.preventDefault()
-
-    // TODO: find another solution because data-slug is added by 'atlas'
-
-    const dataSlug = document.querySelector(`[data-slug="${item.href}"]`)
-
-    if (dataSlug) {
-        dataSlug.scrollIntoView({block: "start", inline: "nearest"})
-    }
 }
 
 
