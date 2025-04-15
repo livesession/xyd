@@ -1,6 +1,5 @@
 import React from "react";
 import {Theme} from "@code-hike/lighter";
-import {HighlightedCode} from "codehike/code";
 
 import type {CodeThemeBlockProps} from "../CodeTheme";
 
@@ -13,9 +12,6 @@ import {
 } from "../CodeTabs";
 import {useCodeTheme} from "../CodeTheme";
 
-interface CodeSamplePropsConfigProps {
-
-}
 export interface CodeSampleProps {
     name: string;
     description: string;

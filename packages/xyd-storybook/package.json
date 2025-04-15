@@ -13,7 +13,6 @@
     "@xyd-js/atlas": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/content": "workspace:*",
-    "@xyd-js/fable-wiki": "workspace:*",
     "@xyd-js/ui": "workspace:*",
     "@xyd-js/theme-poetry": "workspace:*",
     "acorn": "^8.14.1",

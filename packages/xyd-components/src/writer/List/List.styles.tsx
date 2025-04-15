@@ -27,12 +27,12 @@ export default {
             top: calc(.875em - .1875em);
             left: .5em;
             border-radius: 50%;
-            background-color: rgb(80, 84, 83);
+            background-color: var(--xyd-list-item-bgcolor);
         }
 
         ol &::marker {
             padding-inline-start: .375em;
-            color: #6b7280;
+            color: var(--xyd-list-marker-color);
         }
     `
 }

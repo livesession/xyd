@@ -15,47 +15,14 @@ export function Badge({
                           size = "sm",
                           kind = "warning"
                       }: BadgeProps) {
-    return <div className={`
-        ${cn.BadgeHost}
-        
-        ${size === "sm" && cn.BadgeHostSm}
-        
-        ${kind === "warning" && cn.BadgeHostWarning}
-        
-        ${kind === "info" && cn.BadgeHostInfo}
-        
-        ${className || ''}
-    `}>
-        <span className={cn.BadgeItem}>
+    return <div 
+        data-element="xyd-badge"
+        className={`${cn.BadgeHost} ${className || ''}`}
+        data-size={size}
+        data-kind={kind}
+    >
+        <span data-part="child">
             {children}
         </span>
     </div>
 }
-
-// TODO: below is a concept only
-// Export styles for useStyle hook
-// Badge.styles = cn;
-// export type BadgeStyles = typeof cn;
-
-// Example usage:
-/*
-import { useStyle } from '@xyd/components/utils';
-import { Badge, BadgeStyles } from '@xyd/components/writer';
-
-const styled = useStyle<BadgeStyles>(Badge);
-
-styled.BadgeHost`
-    background-color: red;
-`;
-*/
-
-// usage
-
-// import {Content} from "@xyd-js/components/writer"
-// const styled = useStyle(Badge)
-
-// styled.BadgeHostInfo`
-//     background-color: red;
-// `
-
-// export default styled

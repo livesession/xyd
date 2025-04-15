@@ -11,26 +11,28 @@ function Anchor({children, ...rest}) {
 }
 
 export interface BreadcrumbsProps {
+    className?: string;
     items: {
         title: string
         href?: string
     }[]
 }
 
-export function Breadcrumbs(props: BreadcrumbsProps): ReactElement {
+export function Breadcrumbs({className, items}: BreadcrumbsProps): ReactElement {
     return (
-        <div className={cn.BreadcrumbsHost}>
-            {props.items.map((item, index) => {
-                const lastActive = index === props.items.length - 1
+        <div 
+            data-element="xyd-breadcrumbs"
+            className={`${cn.BreadcrumbsHost} ${className || ''}`}
+        >
+            {items.map((item, index) => {
+                const lastActive = index === items.length - 1
 
                 return (
                     <Fragment key={item.href + item.title}>
-                        {index > 0 && <ArrowRightIcon className={cn.BreadcrumbsIcon}/>}
-                        <div className={`
-                            ${cn.BreadcrumbsItem}
-                            ${lastActive && cn.BreadcrumbsItemActive}
-                        `}
-                             title={item.title}
+                        {index > 0 && <ArrowRightIcon data-part="icon"/>}
+                        <div 
+                            data-part="item"
+                            data-active={lastActive ? "true" : "false"}
                         >
                             {item.href && !lastActive ? (
                                 <Anchor href={item.href}>{item.title}</Anchor>

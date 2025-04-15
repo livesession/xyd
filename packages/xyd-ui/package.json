@@ -25,7 +25,6 @@
   "dependencies": {
     "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0",
-    "@livesession/design-system-colors": "0.0.6-alpha-refactor-and-typo.0",
     "@radix-ui/react-tabs": "^1.1.1"
   },
   "peerDependencies": {

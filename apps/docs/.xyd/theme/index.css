@@ -1,4 +1,12 @@
-/*  TODO: ITS TEMPORARY SOLUTION */
+:root {
+    --blue80: #3b82f6;
+    --gray-64: #f5f5f5;
+}
+
+:root {
+    --color-primary: var(--blue80);
+    --color-gray--secondary: var(--gray-64);
+}
 
 .XydComponents-Component-layouts-LayoutPrimary__LayoutPrimaryStaticSidebar {
     position: fixed;
@@ -16,14 +24,6 @@
     }
 }
 
-.XydUi-Component-Nav__LogoHost {
-    display: none;
-}
-
-.XydUi-Component-Nav__ListHost {
-    justify-content: flex-start;
-}
-
 .XydComponents-Component-layouts-LayoutPrimary__LayoutPrimaryPageHost {
     position: absolute;
     left: 260px;
@@ -36,6 +36,32 @@
     }
 }
 
+/* Nav */
+[data-element="xyd-nav"] {
+    [data-part="logo"] {
+        display: none;
+    }
+
+    [data-part="list"] {
+        justify-content: flex-start;
+    }
+}
+
+/* Sidebar */
+:root {
+    --xyd-sidebar-bgcolor: var(--color-gray--secondary);
+    --xyd-sidebar-item-bgcolor--active-mark: var(--color-primary);
+}
+
+/* UnderlineNav */
+:root {
+    --xyd-underlinenav-color--active: var(--color-primary);
+}
+
+/* Progressbar */
+:root {
+    --xyd-progressbar-bgcolor--active: var(--color-primary);
+}
 
 /*  */
 .XydComponents-Component-coder-Code__CodeHost,
@@ -51,23 +77,6 @@
     font-weight: bold;
 }
 
-
 .XydComponents-Component-content-Anchor__AnchorHost {
-    color: #3b82f6;
-}
-
-.XydUi-Component-Sidebar__ItemLinkActive:before {
-    background: #3b82f6;
-}
-
-
-.XydUi-Component-Sidebar__SidebarHost {
-    background: #f5f5f5;
-}
-
-.XydComponents-Component-writer-UnderlineNav__UnderlineNavItem[data-state=active] a {
-    border-bottom-color: #3b82f6;
-}
-.XydComponents-Component-writer-UnderlineNav__UnderlineNavItemLink:hover {
     color: #3b82f6;
 }

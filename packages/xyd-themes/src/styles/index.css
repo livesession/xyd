@@ -2,3 +2,5 @@
 @import "@xyd-js/components/dist/index.css";
 @import "@xyd-js/atlas/dist/tokens.css";
 @import "@xyd-js/atlas/dist/index.css";
+
+@import "./tokens.css";

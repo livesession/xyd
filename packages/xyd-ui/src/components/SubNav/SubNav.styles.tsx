@@ -1,8 +1,8 @@
-import {css} from "@linaria/core";
+import { css } from "@linaria/core";
 
 export const SubNavHost = css`
     align-items: center;
-    background-color: #f6f6f7;
+    background-color: var(--xyd-subnav-bgcolor);
     border-radius: 0.50rem;
     display: flex;
     flex-direction: row;
@@ -11,35 +11,33 @@ export const SubNavHost = css`
     height: 44px;
     margin-top: 3px;
     padding: 0 0.25rem;
-`;
 
-export const SubNavPrefix = css`
-    color: #44474a;
-    //font: var(--font-sans-font-nav-category-base);
-    font-size: 12px;
-    font-weight: 600;
-    padding-left: 0.50rem;
-    padding-right: 1.50rem;
-    position: relative;
-    /* text-transform: uppercase; */
+    [data-part="prefix"] {
+        color: var(--xyd-subnav-prefix-color);
+        font-size: 12px;
+        font-weight: 600;
+        padding-left: 0.50rem;
+        padding-right: 1.50rem;
+        position: relative;
 
-    &:after {
-        background: #d2d5d8;
-        border-radius: 1px;
-        content: " ";
-        height: 0.75rem;
-        position: absolute;
-        right: 0.50rem;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 2px;
+        &:after {
+            background: var(--xyd-subnav-prefix-marker-color);
+            border-radius: 1px;
+            content: " ";
+            height: 0.75rem;
+            position: absolute;
+            right: 0.50rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+        }
     }
-`;
 
-export const SubNavUl = css`
-    display: flex;
-    flex-direction: row;
-    height: 100%;
+    [data-part="list"] {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+    }
 `;
 
 export const SubNavLi = css`
@@ -53,11 +51,11 @@ export const SubNavLi = css`
         font-weight: 600;
 
         a {
-            color: #202223;
+            color: var(--xyd-subnav-item-color--active);
         }
 
         a:after {
-            background-color: #7051d4;
+            background-color: var(--xyd-subnav-item-color--active-mark);
             border-radius: 1px;
             bottom: 0;
             content: " ";
@@ -67,17 +65,16 @@ export const SubNavLi = css`
             width: 100%;
         }
     }
-`;
 
-export const SubNavLink = css`
-    color: #4b5563;
-    //font: var(--font-sans-font-nav-item-active-base);
-    line-height: 2.75rem;
-    display: block;
-    height: 100%;
-    padding: 0 0.50rem;
+    [data-part="link"] {
+        color: var(--xyd-subnav-item-color);
+        line-height: 2.75rem;
+        display: block;
+        height: 100%;
+        padding: 0 0.50rem;
 
-    &:hover {
-        color: #202223;
+        &:hover {
+            color: var(--xyd-subnav-item-color--active);
+        }
     }
 `;

@@ -100,20 +100,21 @@ export function AtlasSecondary({ references, mdx }: CommonAtlasProps<CodeSourceC
                                             <TableV2.Th>Description</TableV2.Th>
                                         </TableV2.Tr>
                                     </TableV2.Head>
-
-                                    {definition.properties?.map((property, propIndex) => (
-                                        <TableV2.Tr key={propIndex}>
-                                            <TableV2.Td>
-                                                <Code>{parseValue(property.name)}</Code>
-                                            </TableV2.Td>
-                                            <TableV2.Td>
-                                                <Code>{parseValue(property.type)}</Code>
-                                            </TableV2.Td>
-                                            <TableV2.Td muted>
-                                                {parseChild(property.description)}
-                                            </TableV2.Td>
-                                        </TableV2.Tr>
-                                    ))}
+                                    <TableV2.Body>
+                                        {definition.properties?.map((property, propIndex) => (
+                                            <TableV2.Tr key={propIndex}>
+                                                <TableV2.Td>
+                                                    <Code>{parseValue(property.name)}</Code>
+                                                </TableV2.Td>
+                                                <TableV2.Td>
+                                                    <Code>{parseValue(property.type)}</Code>
+                                                </TableV2.Td>
+                                                <TableV2.Td muted>
+                                                    {parseChild(property.description)}
+                                                </TableV2.Td>
+                                            </TableV2.Tr>
+                                        ))}
+                                    </TableV2.Body>
                                 </TableV2>
                             </>
                         })

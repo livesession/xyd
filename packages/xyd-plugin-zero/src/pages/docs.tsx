@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import React from "react";
-import { redirect } from "react-router";
+import { redirect, ScrollRestoration } from "react-router";
 
 import { PageFrontMatter } from "@xyd-js/core"
 import { compileBySlug } from "@xyd-js/content"
@@ -264,6 +264,7 @@ export default function CustomPage({ loaderData, ...rest }: { loaderData: loader
             navlinks={loaderData.navlinks}
         >
             {component}
+            <ScrollRestoration />
         </Framework>
     </AtlasContext.Provider>
 }

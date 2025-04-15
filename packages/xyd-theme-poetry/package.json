@@ -22,7 +22,6 @@
     "build": "rollup -c rollup.config.js"
   },
   "dependencies": {
-    "@xyd-js/xtokens": "workspace:*",
     "@xyd-js/atlas": "workspace:*",
     "@xyd-js/themes": "workspace:*",
     "@linaria/atomic": "^6.2.0",

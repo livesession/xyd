@@ -2,12 +2,5 @@
 
 export {
     LayoutPrimary,
-    type LayoutPrimaryProps
 } from "./LayoutPrimary";
-
-export {
-    Layout
-} from "./Layout";
-
-export type {LayoutProps} from "./Layout";
 

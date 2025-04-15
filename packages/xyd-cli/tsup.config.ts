@@ -8,8 +8,6 @@ import {join} from 'path';
 import {defineConfig} from 'tsup';
 
 import cliPkg from './package.json';
-import fableWikiPkg from '../fable-wiki/package.json';
-import xtokensPkg from '../xtokens/package.json';
 import atlasPkg from '../xyd-atlas/package.json';
 import componentsPkg from '../xyd-components/package.json';
 import contentPkg from '../xyd-content/package.json';
@@ -34,8 +32,6 @@ const __dirname = path.dirname(__filename);
 const deps = {
     normal: {
         ...cliPkg.dependencies,
-        ...fableWikiPkg.dependencies,
-        ...xtokensPkg.dependencies,
         ...atlasPkg.dependencies,
         ...componentsPkg.dependencies,
         ...contentPkg.dependencies,
@@ -54,8 +50,6 @@ const deps = {
     },
     dev: {
         ...cliPkg.devDependencies,
-        ...fableWikiPkg.devDependencies,
-        ...xtokensPkg.devDependencies,
         ...atlasPkg.devDependencies,
         ...componentsPkg.devDependencies,
         ...contentPkg.devDependencies,
@@ -81,8 +75,6 @@ const external = [
     // below should be added somewhere
     "@react-router/express"
 ].filter((dep) => [
-    fableWikiPkg.name,
-    xtokensPkg.name,
     atlasPkg.name,
     componentsPkg.name,
     contentPkg.name,

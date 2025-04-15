@@ -1,9 +1,10 @@
-import React, {createContext, useContext} from "react";
+import React, { createContext, useContext } from "react";
 
-import {Settings} from "@xyd-js/core";
-import type {ITOC, IBreadcrumb, INavLinks} from "@xyd-js/ui";
+import { Settings } from "@xyd-js/core";
+import { type ITOC, type IBreadcrumb, type INavLinks, ProgressBar } from "@xyd-js/ui";
 
-import {FwSidebarGroupProps} from "../components/Sidebar";
+import { FwSidebarGroupProps } from "../components/Sidebar";
+import { useNavigation } from "react-router";
 
 export interface IFramework {
     settings: Settings
@@ -35,6 +36,8 @@ export interface FrameworkProps {
 }
 
 export function Framework(props: FrameworkProps) {
+    const navigation = useNavigation()
+
     return <FrameworkContext.Provider value={{
         settings: props.settings,
         sidebarGroups: props.sidebarGroups,
@@ -42,6 +45,9 @@ export function Framework(props: FrameworkProps) {
         breadcrumbs: props.breadcrumbs,
         navlinks: props.navlinks,
     }}>
+        {/* TODO: in the futre in another place? */}
+        <ProgressBar isActive={navigation.state === 'loading'} /> 
+
         {props.children}
     </FrameworkContext.Provider>
 }

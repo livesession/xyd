@@ -1,0 +1,139 @@
+:root {
+    /* ////////////// COMPONENTS ////////////// */
+    /* Code */
+    --xyd-code-background: linear-gradient(45deg, #f7f7f8 0%, #f7f7f8 100%);
+    --xyd-code-border-color: #ececf1;
+    --xyd-code-mark-border-color: #60A5FA;
+    --xyd-code-mark-bgcolor: #EEF2FF;
+    --xyd-code-copy-color: #e3e3eb;
+
+    /* Code Tabs */
+    --xyd-code-tabs-border-color: #ececf1;
+    --xyd-code-tabs-bgcolor: linear-gradient(45deg, #f7f7f8 0%, #f7f7f8 100%);
+    --xyd-code-tabs-color: #353740;
+    --xyd-code-tabs-color--active: #7051d4;
+    --xyd-code-tabs-color--hover: #e3e3eb;
+
+
+    /* Badge */
+    --xyd-badge-color--warning: #434e4e;
+    --xyd-badge-bgcolor--warning: #ffffe1;
+    --xyd-badge-color--info: #fff;
+    --xyd-badge-bgcolor--info: #1971a8;
+
+    /* Details */
+    --xyd-details-border-color: #ececf1;
+    --xyd-details-bgcolor--secondary: #f7f7f8;
+    --xyd-details-summary-color: #6e6e80;
+    --xyd-details-summary-color--active: #434e4e;
+    --xyd-details-summary-code-bgcolor:#fff;
+    --xyd-details-content-bgcolor: #fff;
+
+    /* GuideCard */
+    --xyd-guidecard-border-color--secondary: #ececf1;
+    --xyd-guidecard-bgcolor--secondary: #f8f8f8;
+    --xyd-guidecard-bgcolor--secondary-active: #fff;
+    --xyd-guidecard-icon-color: #000;
+    --xyd-guidecard-title-color: #000;
+    --xyd-guidecard-color: #5C5C5C;
+
+    /* Heading */
+    --xyd-heading-color: #000;
+    --xyd-heading-icon-color: #7051d4;
+
+    /* Hr */
+    --xyd-hr-border-color: rgba(229, 229, 229, 0.7);
+
+    /* List */
+    --xyd-list-marker-color: #6b7280;
+    --xyd-list-item-bgcolor: #505453;
+
+    /* NavLinks */
+    --xyd-navlinks-border-color: #d7d7d7;
+
+    /* Pre */
+    --xyd-pre-bgcolor: #f6f8fa;
+
+    /* Steps */
+    --xyd-steps-marker-bgcolor: #ececf1;
+    --xyd-steps-marker-color: #353740;
+
+    /* Table */
+    --xyd-table-border-color: #ececf1;
+    --xyd-table-bgcolor: #F7F7F8;
+
+    /* Tabs */
+    --xyd-tabs-bgcolor: #F3F4F6;
+    --xyd-tabs-arrow-bgcolor: #fff;
+    --xyd-tabs-color: #6B7280;
+    --xyd-tabs-color--active: #111827;
+    --xyd-tabs-bgcolor--active: #fff;
+    --xyd-tabs-shadow-color--active: rgba(0, 0, 0, 0.05);
+
+    /* TocCard */
+    --xyd-toccard-border-color: #ececf1;
+    --xyd-toccard-border-color--active: #c5c5d2;
+    --xyd-toccard-color: #6e6e80;
+    --xyd-toccard-title-color: #353740;
+    --xyd-toccard-icon-color: #24292f;
+
+    /* UnderlineNav */
+    --xyd-underlinenav-bgcolor: #fff;
+    --xyd-underlinenav-border-color: hsl(212, 15%, calc(96% - 12% * 1));
+    --xyd-underlinenav-list-color: hsl(212, 15%, calc(96% - 12% * 4));
+    --xyd-underlinenav-color--active: #7051d4;
+
+    /* VideoGuide Miniature*/
+    --xyd-videoguide-miniature-mini-width: 202px;
+    --xyd-videoguide-miniature-mini-height: 113px;
+    --xyd-videoguide-miniature-expanded-height: 100px;
+    --xyd-videoguide-miniature-z-index: 1000;
+    --xyd-videoguide-miniature-radius: 4px;
+    --xyd-videoguide-miniature-shadow: 0 7px 14px 0 rgba(60, 66, 87, 0.08), 0 3px 6px 0 rgba(0, 0, 0, 0.12);
+    --xyd-videoguide-miniature-bgcolor: #fff;
+    --xyd-videoguide-miniature-duration: 0.3s;
+    --xyd-videoguide-miniature-color: #fff;
+    --xyd-videoguide-miniature-font-lineHeight: 20px;
+    --xyd-videoguide-miniature-font-weight: 400;
+    --xyd-videoguide-miniature-font-size: 14px;
+    /* //////////////////////////////////////// */
+
+    /* /////////////// UI /////////////// */
+    /* Nav */
+    --xyd-nav-height: 50px;
+    --xyd-nav-shadow-bgcolor: #fff;
+    --xyd-nav-item-color: #000;
+    --xyd-nav-item-color--active: #1f2937;
+    --xyd-nav-item-bgcolor--active: #f9f9f9;
+
+    /* ProgressBar */
+    --xyd-progressbar-bgcolor: #fafbfb;
+    --xyd-progressbar-bgcolor--active: #7051d4;
+
+    /* Sidebar */
+    --xyd-sidebar-bgcolor: #f8f8f8;
+    --xyd-sidebar-divider-color: #ededed;
+    --xyd-sidebar-divider-shadow-color: #ededed;
+
+    --xyd-sidebar-item-color--active: #111827;
+    --xyd-sidebar-item-bgcolor--active: #ebebeb;
+    --xyd-sidebar-item-bgcolor--active-hover: #ececf1;
+    --xyd-sidebar-item-bgcolor--active-mark: #7051d4;
+    --xyd-sidebar-item-color: #6e6e80;
+    --xyd-sidebar-item-header-color: #111827;
+
+    /* SubNav */
+    --xyd-subnav-bgcolor: #f6f6f7;
+    --xyd-subnav-prefix-color: #44474a;
+    --xyd-subnav-prefix-marker-color: #d2d5d8;
+    --xyd-subnav-item-color: #4b5563;
+    --xyd-subnav-item-color--active: #202223;
+    --xyd-subnav-item-color--active-mark: #7051d4;
+
+    /* Toc */
+    --xyd-toc-bgcolor: #ececf1;
+    --xyd-toc-scroll-bgcolor: #353740;
+    --xyd-toc-item-color: #6e6e80;
+    --xyd-toc-item-color--active: #353740;
+    /* //////////////////////////////////////// */
+}

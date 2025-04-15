@@ -22,8 +22,8 @@ export const StepsLi = css`
         counter-increment: ordered-listitem;
         content: counter(ordered-listitem);
 
-        background: #ececf1;
-        color: #353740;
+        background: var(--xyd-steps-marker-bgcolor);
+        color: var(--xyd-steps-marker-color);
         font-size: 12px;
         line-height: 24px;
         font-weight: 500;

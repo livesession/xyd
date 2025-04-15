@@ -1,6 +1,6 @@
 import { css } from "@linaria/core";
 
-export const CollapseContainer = css`
+export const CollapseHost = css`
     transform: translateZ(0);
     overflow: hidden;
     transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -10,18 +10,18 @@ export const CollapseContainer = css`
     @media (prefers-reduced-motion: reduce) {
         transition: none;
     }
-`;
 
-export const CollapseBase = css`
-    opacity: 0;
-    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: opacity;
+    [data-part="child"] {
+        opacity: 0;
+        transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: opacity;
 
-    @media (prefers-reduced-motion: reduce) {
-        transition: none;
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
     }
-`;
 
-export const CollapseOpen = css`
-    opacity: 1;
+    &[data-open="true"] [data-part="child"] {
+        opacity: 1;
+    }
 `;

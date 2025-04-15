@@ -1,114 +1,108 @@
-import {css} from "@linaria/core";
-import colors from "@livesession/design-system-colors"
+import { css } from "@linaria/core";
 
-export const GuideHost = css``;
+export const GuideHost = css`
+    &[data-kind="secondary"] {
+        display: flex;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--xyd-guidecard-border-color--secondary);
+        background: var(--xyd-guidecard-bgcolor--secondary);
+        border-radius: 8px;
+        padding: 24px;
+        z-index: 0;
+        transition: box-shadow .2s ease-in-out, background-image .2s ease;
 
-export const GuideHostSecondary = css`
-    //flex-grow: 1;
-    //width: 100%;
-    display: flex;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid ${colors.dark16};
-    background: ${colors.dark8};
-    border-radius: 8px;
-    padding: 24px;
-    z-index: 0;
-    transition: box-shadow .2s ease-in-out, background-image .2s ease;
+        &:hover {
+            background: var(--xyd-guidecard-bgcolor--secondary-hover);
+        }
 
-    &:hover {
-        background: ${colors.white};
-    }
-`;
-
-export const GuideHostSecondaryMd = css`
-    padding: 21px 25px 25px;
-`;
-
-export const GuideLink = css`
-    width: 100%;
-    height: 100%;
-`;
-
-export const GuideItem = css`
-    border-radius: 8px;
-    display: flex;
-
-    align-items: flex-start;
-    cursor: pointer;
-    transition: opacity .15s;
-
-    &:hover {
-        [data-pointer="true"] {
-            opacity: 1;
-            transform: translate(0);
+        &[data-size="md"] {
+            padding: 21px 25px 25px;
         }
     }
-`;
 
-export const GuideItemSecondary = css`
-    width: 100%;
-    height: 100%;
-`;
+    [data-part="link"] {
+        width: 100%;
+        height: 100%;
+    }
 
-export const GuideIcon = css`
-    line-height: 0px;
-    font-size: 24px;
-    height: 32px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #000;
-    transition: background .2s ease;
-    box-sizing: border-box;
-    flex-shrink: 0;
-`;
+    [data-part="item"] {
+        border-radius: 8px;
+        display: flex;
 
-export const GuideRight = css`
-    padding-left: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-`;
+        align-items: flex-start;
+        cursor: pointer;
+        transition: opacity .15s;
 
-export const GuideTitle = css`
-    display: flex;
-    color: #000;
-    font-weight: 600;
-    align-items: center;
-    transition: color .15s;
-`;
+        &:hover {
+            [data-part="pointer"] {
+                opacity: 1;
+                transform: translate(0);
+            }
+        }
+    }
+    &[data-kind="secondary"] [data-part="item"] {
+        width: 100%;
+        height: 100%;
+    }
 
-export const GuideTitleBody = css`
-    font-size: 16px;
-    line-height: 20px;
-`;
+    [data-part="icon"] {
+        line-height: 0px;
+        font-size: 24px;
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--xyd-guidecard-icon-color);
+        transition: background .2s ease;
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
 
-export const GuideTitleBodyMd = css`
-    font-size: 18px;
-`;
+    [data-part="right"] {
+        padding-left: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
 
-export const GuideBody = css`
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
+    [data-part="title"] {
+        display: flex;
+        color: var(--xyd-guidecard-title-color);
+        align-items: center;
+        font-weight: 600;
+        transition: color .15s;
+    }
 
-    color: ${colors.dark80};
-    white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-`;
+    [data-part="title-body"] {
+        font-size: 16px;
+        line-height: 20px;
+    }
+    &[data-size="md"] [data-part="title-body"] {
+        font-size: 18px;
+    }
 
-export const GuideBodyMd = css`
-    font-size: 16px;
-`;
+    [data-part="body"] {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 20px;
 
-export const GuidePointer = css`
-    opacity: 0;
-    transform: translate(-4px);
-    display: flex;
-    justify-content: center;
-    transition: opacity .15s ease-in-out, transform .15s ease-in-out;
+        color: var(--xyd-guidecard-color);
+        white-space: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    &[data-size="md"] [data-part="body"] {
+        font-size: 16px;
+    }
+
+    [data-part="pointer"] {
+        opacity: 0;
+        transform: translate(-4px);
+        display: flex;
+        justify-content: center;
+        transition: opacity .15s ease-in-out, transform .15s ease-in-out;
+    }
 `;
 
 export const GuideListHost = css`

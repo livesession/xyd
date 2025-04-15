@@ -114,8 +114,8 @@ export function vitePluginThemeCSS() {
                             return poetryCss.replace("file://", "")
                         }
                         default: {
-                            const fableCss = basePath += "node_modules/@xyd-js/fable-wiki/dist/theme.css"
-                            return fableCss.replace("file://", "")
+                            const poetryCss = basePath += "node_modules/@xyd-js/poetry/dist/theme.css"
+                            return poetryCss.replace("file://", "")
                         }
                     }
                 }
@@ -196,7 +196,7 @@ export function vitePluginTheme() {
                         default: {
                             // TODO: in the future custom theme loader
                             return `
-                                import Theme from '@xyd-js/fable-wiki/theme'; 
+                                import Theme from '@xyd-js/poetry/theme'; 
                                 import { withTheme } from "@xyd-js/themes"
 
                                 export default withTheme(new Theme());

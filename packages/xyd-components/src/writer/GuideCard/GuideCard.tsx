@@ -9,45 +9,37 @@ export interface GuideCardProps {
     icon?: React.ReactNode;
     kind?: "secondary"
     size?: "sm" | "md"
+    className?: string
 }
 
 export function GuideCard({
-                              children,
-                              href,
-                              icon,
-                              title,
-                              kind,
-                              size,
-
-                          }: GuideCardProps) {
-    return <div className={`
-        ${cn.GuideHost}
-        ${kind === "secondary" && cn.GuideHostSecondary}
-        ${kind === "secondary" && size == "md" && cn.GuideHostSecondaryMd}
-    `}>
-        <a className={cn.GuideLink} href={href}>
-            <div className={`
-                ${cn.GuideItem}
-                ${kind === "secondary" && cn.GuideItemSecondary}
-            `}>
-                {icon && <div className={cn.GuideIcon}>
+    children,
+    href,
+    icon,
+    title,
+    kind,
+    size,
+    className,
+}: GuideCardProps) {
+    return <div
+        className={`${cn.GuideHost} ${className || ""}`}
+        data-element="xyd-guidecard"
+        data-kind={kind}
+        data-size={size}
+    >
+        <a data-part="link" className={cn.GuideLink} href={href}>
+            <div data-part="item">
+                {icon && <div data-part="icon">
                     {icon}
                 </div>}
-                <div className={cn.GuideRight}>
-                    <div className={cn.GuideTitle}>
-                        <div className={`
-                            ${cn.GuideTitle} 
-                            ${cn.GuideTitleBody}
-                            ${size == "md" && cn.GuideTitleBodyMd}
-                        `}>
+                <div data-part="right">
+                    <div data-part="title" className={cn.GuideTitle}>
+                        <div data-part="title-body">
                             {title}
                         </div>
-                        <Pointer/>
+                        <$Pointer />
                     </div>
-                    <div className={`
-                        ${cn.GuideBody}
-                        ${size == "md" && cn.GuideBodyMd}
-                    `}>
+                    <div data-part="body">
                         {children}
                     </div>
                 </div>
@@ -56,14 +48,14 @@ export function GuideCard({
     </div>
 }
 
-GuideCard.List = function GuideCardList({children}: { children: React.ReactNode }) {
-    return <div className={cn.GuideListHost}>
+GuideCard.List = function GuideCardList({ children }: { children: React.ReactNode }) {
+    return <div data-element="xyd-guidecard-list" className={cn.GuideListHost}>
         {children}
     </div>
 }
 
-function Pointer() {
-    return <div data-pointer="true" className={cn.GuidePointer}>
+function $Pointer() {
+    return <div data-part="pointer">
         <svg
             xmlns="http://www.w3.org/2000/svg"
             width={24}

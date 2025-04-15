@@ -1,10 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useLocation, useNavigation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 
 import { FwSidebarGroupProps, FwSidebarItemProps } from "./Sidebar";
-import { UIContext } from "../../contexts/ui";
-import { useSidebarGroups } from "../../contexts";
-
 
 export interface FwGroupContext {
     active: (item: FwSidebarItemProps) => [boolean, () => void],
@@ -107,7 +104,7 @@ function calcActive(groups: FwSidebarGroupProps[], url: any) {
 // TOOD: issues if same page url on initialitems
 // TODO: the time of chaning is not perfectly the same with react-router 
 function useDefaultBehaviour(initialActiveItems: any[]) {
-    const groups = useSidebarGroups()
+    const location = useLocation()
     const [activeItems] = useState(() => {
         const map = new Map<string, string>();
         initialActiveItems.forEach(item => {
@@ -120,26 +117,6 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
         return initialActiveItems[0]?.groupIndex ?? null;
     });
     const [, setForceUpdate] = useState(0);
-
-    useEffect(() => {
-        window.addEventListener('xyd.history.pushState', (event: CustomEvent) => {
-            const url = event.detail?.url
-
-            if (!url) {
-                return
-            }
-            const active = calcActive(groups, url)
-            activeItems.clear()
-            active.forEach((item) => {
-                const key = `${item.groupIndex}-${item.level}`;
-                activeItems.set(key, stringify(item));
-                if (item.groupIndex !== undefined) {
-                    setCurrentGroupIndex(item.groupIndex);
-                }
-            })
-            forceUpdate();
-        });
-    }, [])
 
     const forceUpdate = () => setForceUpdate((prev) => prev + 1);
 
@@ -166,6 +143,10 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
         const activeItem = activeItems.get(key);
         return activeItem === stringify(item);
     };
+
+    useEffect(() => {
+
+    }, [location.pathname])
 
     return (item: FwSidebarItemProps): [boolean, () => void] => [
         hasItem(item) || false,

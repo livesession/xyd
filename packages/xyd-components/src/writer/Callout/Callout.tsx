@@ -3,10 +3,27 @@ import React from "react"
 import * as cn from "./Callout.styles";
 
 export interface CalloutProps {
+    className?: string;
     children: React.ReactNode;
 }
 
-function InfoIcon() {
+export function Callout({className, children}: CalloutProps) {
+    return <div 
+        data-element="xyd-callout"
+        className={`${cn.CalloutHost} ${className || ''}`}
+    >
+        <div data-part="icon">
+            <$IconInfo/>
+        </div>
+        <div data-part="message">
+            <div data-part="message-body">
+                {children}
+            </div>
+        </div>
+    </div>
+}
+
+function $IconInfo() {
     return <svg
         xmlns="http://www.w3.org/2000/svg"
         width="1em"
@@ -21,17 +38,4 @@ function InfoIcon() {
             clipRule="evenodd"
         />
     </svg>
-}
-
-export function Callout({children}: CalloutProps) {
-    return <div className={`${cn.CalloutHost} ${cn.CalloutNeutral}`}>
-        <div className={cn.CalloutIcon}>
-            <InfoIcon/>
-        </div>
-        <div className={cn.CalloutMessage}>
-            <div className={cn.CalloutMessageBody}>
-                {children}
-            </div>
-        </div>
-    </div>
 }

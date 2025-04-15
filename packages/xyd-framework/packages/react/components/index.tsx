@@ -1,5 +1,5 @@
 import React, {isValidElement} from "react";
-import {useLocation} from "react-router";
+import {Link, useLocation} from "react-router";
 
 import type {ITOC} from "@xyd-js/ui";
 import {Breadcrumbs, NavLinks} from "@xyd-js/components/writer";
@@ -46,7 +46,7 @@ function FwNav({kind}: { kind?: "middle" }) {
                 return <Nav.Item
                     key={index + (item.url || "") + item.name}
                     href={item?.url || ""}
-                    value={item.url}
+                    value={item.url || ""}
                 >
                     {item.name}
                 </Nav.Item>
@@ -250,6 +250,7 @@ function FwNavLinks() {
         return <NavLinks
             prev={navlinks.prev}
             next={navlinks.next}
+            as={$Link}
         />
     }
 
@@ -323,6 +324,12 @@ function IconSDK() {
             clipRule="evenodd"
         />
     </svg>
+}
+
+function $Link({ children, ...rest }) {
+    return <Link {...rest} to={rest.href} viewTransition>
+        {children}
+    </Link>
 }
 
 export {

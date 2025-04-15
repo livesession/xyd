@@ -14,9 +14,16 @@ export interface TabsProps {
     value?: string
     onChange?: (value: string) => void
     slide?: boolean
+    className?: string
 }
 
-export function UnderlineNav({ children, value: controlledValue, onChange, slide = true }: TabsProps) {
+export function UnderlineNav({
+    children,
+    value: controlledValue,
+    onChange,
+    slide = true,
+    className
+}: TabsProps) {
     const childrenArray = React.Children.toArray(children);
     const navItems = childrenArray.filter(
         child => React.isValidElement(child) &&
@@ -36,16 +43,19 @@ export function UnderlineNav({ children, value: controlledValue, onChange, slide
     return (
         <UnderlineContext.Provider value={{ direction }}>
             <RadixTabs.Root value={value} onValueChange={handleValueChange}>
-                <div>
-                    <nav className={cn.UnderlineNavHost}>
+                <div
+                    data-element="xyd-underlinenav"
+                    className={`${cn.UnderlineNavHost} ${className || ""}`}
+                >
+                    <nav data-part="nav">
                         <RadixTabs.List asChild>
-                            <ul className={cn.UnderlineNavUl}>
+                            <ul data-part="list">
                                 {navItems}
                             </ul>
                         </RadixTabs.List>
                     </nav>
                     <div
-                        className={cn.UnderlineNavContentHost}
+                        data-part="content"
                         data-slide={slide ? "true" : "false"}
                     >
                         {otherChildren}
@@ -60,16 +70,19 @@ export interface UnderlineNavItemProps {
     children: React.ReactNode
     value: string
     href?: string
+    as?: React.ElementType
 }
 
-UnderlineNav.Item = function UnderlineNavItem({ children, value, href }: UnderlineNavItemProps) {
+UnderlineNav.Item = function UnderlineNavItem({ children, value, href, as }: UnderlineNavItemProps) {
+    const Link = as || $Link;
+
     // TODO: add href
     return (
         <RadixTabs.Trigger asChild value={value}>
-            <li className={cn.UnderlineNavItem}>
-                <a className={cn.UnderlineNavItemLink}>
+            <li data-part="item">
+                <Link data-part="link" href={href}>
                     {children}
-                </a>
+                </Link>
             </li>
         </RadixTabs.Trigger>
     );
@@ -88,15 +101,13 @@ UnderlineNav.Content = function UnderlineNavContent({
 
     return (
         <RadixTabs.Content
-
+            data-element="xyd-underlinenav-content"
             className={cn.UnderlineNavContent}
             data-direction={direction}
-
             value={value}
             forceMount={true}
-
         >
-            <div className={cn.UnderlineNavContentInner}>
+            <div data-part="child">
                 {children}
             </div>
         </RadixTabs.Content>
@@ -153,4 +164,8 @@ function useValueChange(
     };
 
     return [direction, value, handleValueChange] as const;
+}
+
+function $Link({ ...props }) {
+    return <a {...props}>{props.children}</a>
 }

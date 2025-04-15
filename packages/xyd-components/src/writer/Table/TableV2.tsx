@@ -9,8 +9,8 @@ export interface TableV2Props {
 
 export function TableV2({children, className}: TableV2Props) {
     return (
-        <div className={cn.Host}>
-            <table className={`${cn.Table} ${className || ''}`}>
+        <div data-element="xyd-table" className={cn.Host}>
+            <table data-part="table" className={`${cn.Table} ${className || ''}`}>
                 {children}
             </table>
         </div>
@@ -22,7 +22,7 @@ export interface TableHeadProps {
 }
 
 TableV2.Head = function TableHead({children}: TableHeadProps) {
-    return <thead className={cn.Thead}>
+    return <thead data-element="xyd-table-head" className={cn.Thead}>
         {children}
     </thead>
 }
@@ -33,7 +33,7 @@ export interface TableThProps {
 }
 
 TableV2.Th = function TableTh({children, numeric}: TableThProps) {
-    return <th className={`${cn.Th} ${numeric ? 'numeric' : ''}`}>
+    return <th data-element="xyd-table-th" className={`${cn.Th} ${numeric ? 'numeric' : ''}`}>
         {children}
     </th>
 }
@@ -43,9 +43,19 @@ export interface TableTrProps {
 }
 
 TableV2.Tr = function TableTr({children}: TableTrProps) {
-    return <tr className={cn.Tr}>
+    return <tr data-element="xyd-table-tr" className={cn.Tr}>
         {children}
     </tr>
+}
+
+export interface TableBodyProps {
+    children: React.ReactNode;
+}
+
+TableV2.Body = function TableBody({children}: TableBodyProps) {
+    return <tbody data-element="xyd-table-body" className={cn.Tbody}>
+        {children}
+    </tbody>
 }
 
 export interface TableTdProps {
@@ -55,7 +65,7 @@ export interface TableTdProps {
 }
 
 TableV2.Td = function TableTd({children, numeric, muted}: TableTdProps) {
-    return <td className={`${cn.Td} ${numeric ? 'numeric' : ''} ${muted ? 'muted' : ''}`}>
+    return <td data-element="xyd-table-td" className={`${cn.Td} ${numeric ? 'numeric' : ''} ${muted ? 'muted' : ''}`}>
         {children}
     </td>
 }
@@ -65,8 +75,8 @@ export interface TableCellProps {
 }
 
 TableV2.Cell = function TableCell({children}: TableCellProps) {
-    return <div className={cn.Cell}>
-        <div className={cn.CellContent}>
+    return <div data-element="xyd-table-cell" className={cn.Cell}>
+        <div data-part="content" className={cn.CellContent}>
             {children}
         </div>
     </div>
@@ -75,9 +85,3 @@ TableV2.Cell = function TableCell({children}: TableCellProps) {
 export interface TableModelCellProps {
     children: React.ReactNode;
 }
-
-TableV2.ModelCell = function TableModelCell({children}: TableModelCellProps) {
-    return <div className={cn.ModelCell}>
-        {children}
-    </div>
-} 

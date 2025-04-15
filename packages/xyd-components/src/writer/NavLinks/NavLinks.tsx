@@ -1,13 +1,7 @@
 import React from "react"
-import {ArrowLeftIcon, ArrowRightIcon} from '@radix-ui/react-icons'
+import { ArrowLeftIcon, ArrowRightIcon } from '@radix-ui/react-icons'
 
 import * as cn from "./NavLinks.styles";
-
-function Anchor({children, ...rest}) {
-    return <a {...rest}>
-        {children}
-    </a>
-}
 
 export interface NavLinksProps {
     prev?: {
@@ -18,31 +12,49 @@ export interface NavLinksProps {
         title: string
         href: string
     }
+
+    as?: React.ElementType
+
+    className?: string
 }
 
-export function NavLinks(props: NavLinksProps) {
+export function NavLinks(
+    props: NavLinksProps
+) {
+    const Link = props.as || $Anchor
+
     return (
-        <div className={cn.NavLinksHost}>
+        <div
+            data-element="xyd-navlinks"
+            className={`${cn.NavLinksHost} ${props.className || ""}`}
+        >
             {props.prev ? (
-                <Anchor
+                <Link
                     href={props.prev.href}
                     title={props.prev.title}
-                    className={cn.NavLinksLink}
+                    data-part="link"
                 >
-                    <ArrowLeftIcon className={cn.NavLinksIcon}/>
+                    <ArrowLeftIcon data-part="icon" />
                     {props.prev.title}
-                </Anchor>
-            ) : <div/>}
+                </Link>
+            ) : <div />}
             {props.next && (
-                <Anchor
+                <Link
                     href={props.next.href}
                     title={props.next.title}
-                    className={cn.NavLinksLink}
+                    data-part="link"
                 >
                     {props.next.title}
-                    <ArrowRightIcon className={cn.NavLinksIcon}/>
-                </Anchor>
+                    <ArrowRightIcon data-part="icon" />
+                </Link>
             )}
         </div>
     )
+}
+
+
+function $Anchor({ children, ...rest }) {
+    return <a {...rest}>
+        {children}
+    </a>
 }

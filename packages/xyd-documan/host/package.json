@@ -7,8 +7,12 @@
   "bin": {
     "xyd": "bin.js"
   },
-  "scripts": {},
+  "scripts": {
+    "reveal": "react-router reveal"
+  },
   "dependencies": {
+    "@lit-labs/ssr-react": "^0.3.2",
+    "@lit/react": "^1.0.7",
     "@xyd-js/theme-poetry": "workspace:*",
     "@xyd-js/react-router-dev": "7.1.1-xyd.4",
     "@readme/oas-to-snippet": "^26.0.1",

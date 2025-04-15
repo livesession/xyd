@@ -9,6 +9,7 @@ export function VideoGuide() {
 interface VideoGuideMiniatureProps {
     videoSrc?: string;
     description?: string;
+    className?: string;
 }
 
 VideoGuide.Miniature = function VideoGuideMiniature(props: VideoGuideMiniatureProps) {
@@ -17,30 +18,33 @@ VideoGuide.Miniature = function VideoGuideMiniature(props: VideoGuideMiniaturePr
         description = "Watch the video guide"
     } = props;
 
-    return <div className={cn.VideoPlayerHost}>
-        <div className={cn.VideoPlayerShape}>
-            <div className={cn.VideoPlayerFrame}>
+    return <div
+        data-element="xyd-videoguide-miniature"
+        className={`${cn.VideoPlayerHost} ${props.className || ""}`}
+    >
+        <div data-part="shape" >
+            <div data-part="frame" >
                 <iframe
                     width="100%"
                     height="100%"
                     allow="autoplay; fullscreen"
                     src={videoSrc}
                 />
-                <div className={cn.VideoPlayerThumbnail} />
+                <div data-part="thumbnail" />
             </div>
 
-            <div className={cn.VideoPlayerCover}>
-                <div className={cn.VideoPlayerControls}>
-                    <button className={cn.VideoPlayerButton} type="button">
+            <div data-part="cover">
+                <div data-part="controls">
+                    <button data-part="button" type="button">
                         <div
                             aria-hidden="true"
-                            className={cn.VideoPlayerButtonIcon}
+                            data-part="icon"
                         >
                             <$PlayIcon />
                         </div>
 
-                        <div className={cn.VideoPlayerButtonDescriptionHost}>
-                            <span className={cn.VideoPlayerButtonDescription}>
+                        <div data-part="description-container" >
+                            <span data-part="description" >
                                 {description}
                             </span>
                         </div>

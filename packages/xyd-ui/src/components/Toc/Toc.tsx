@@ -1,10 +1,11 @@
-import React, {useState, useEffect, useContext} from "react"
+import React, { useState, useEffect, useContext } from "react"
 
 import * as cn from "./Toc.styles";
 
 export interface TocProps {
     children: React.ReactNode;
     defaultValue?: string
+    className?: string
 }
 
 const Context = React.createContext({
@@ -14,7 +15,7 @@ const Context = React.createContext({
 })
 
 // TODO: based on scroller?
-export function Toc({children, defaultValue}: TocProps) {
+export function Toc({ children, defaultValue, className }: TocProps) {
     const [activeTrackHeight, setActiveTrackHeight] = useState(0)
     const [activeTrackTop, setActiveTrackTop] = useState(0)
     const [value, setValue] = useState(defaultValue || "")
@@ -25,19 +26,15 @@ export function Toc({children, defaultValue}: TocProps) {
 
     // TODO: more reactish implt?
     function handleScroll() {
-        const activeElement = document.querySelector(`.${cn.TocLinkActive}`);
+        const activeElement = document.querySelector(`[data-element="xyd-toc-item"][data-active="true"]`);
         if (!activeElement) {
             return;
         }
 
-        const {offsetHeight} = activeElement as HTMLElement;
+        const { offsetHeight } = activeElement as HTMLElement;
         setActiveTrackHeight(offsetHeight);
 
-        if (!activeElement?.parentElement) {
-            return
-        }
-
-        const {offsetTop} = activeElement.parentElement as HTMLElement;
+        const { offsetTop } = activeElement as HTMLElement;
         setActiveTrackTop(offsetTop);
     }
 
@@ -65,7 +62,7 @@ export function Toc({children, defaultValue}: TocProps) {
                     }
                 });
             },
-            {threshold: 0.3}
+            { threshold: 0.3 }
         );
 
         document.querySelectorAll("h2").forEach(ref => {
@@ -85,18 +82,18 @@ export function Toc({children, defaultValue}: TocProps) {
         value: value,
         onChange
     }}>
-        <div className={cn.TocHost}>
-            <div className={cn.ScrollerHost}>
+        <div data-element="xyd-toc" className={`${cn.TocHost} ${className || ""}`}>
+            <div data-part="scroller">
                 <div
+                    data-part="scroll"
                     style={{
                         // @ts-ignore
-                        "--active-track-height": `${activeTrackHeight}px`,
-                        "--active-track-top": `${activeTrackTop}px`,
+                        "--xyd-toc-active-track-height": `${activeTrackHeight}px`,
+                        "--xyd-toc-active-track-top": `${activeTrackTop}px`,
                     }}
-                    className={cn.ScrollerScroll}
                 />
             </div>
-            <ul className={cn.TocUl}>
+            <ul data-part="list">
                 {children}
             </ul>
         </div>
@@ -106,12 +103,14 @@ export function Toc({children, defaultValue}: TocProps) {
 export interface TocItemProps {
     children: React.ReactNode;
     value: string;
+    className?: string
 }
 
 Toc.Item = function TocItem({
-                                children,
-                                value = "#",
-                            }: TocItemProps) {
+    children,
+    value = "#",
+    className
+}: TocItemProps) {
     const {
         value: rootValue,
         onChange
@@ -120,9 +119,13 @@ Toc.Item = function TocItem({
     const href = "#" + value
     const active = rootValue === value;
 
-    return <li className={cn.TocLi}>
+    return <li
+        data-element="xyd-toc-item" 
+        className={`${cn.TocLi} ${className || ""}`}
+        data-active={active}
+    >
         <a
-            className={`${cn.TocLink} ${active && cn.TocLinkActive}`}
+            data-part="link"
             href={href}
             onClick={(e) => {
                 // TODO: use react-router but for some reason does not work
@@ -148,3 +151,4 @@ Toc.Item = function TocItem({
         </a>
     </li>
 }
+

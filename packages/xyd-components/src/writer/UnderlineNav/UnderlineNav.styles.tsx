@@ -1,54 +1,54 @@
 import { css } from "@linaria/core"
 
 export const UnderlineNavHost = css`
-    align-items: center;
-    display: flex;
-    height: 42px;
-    background-color: #fff;
-    border-bottom: 1px solid hsl(212, 15%, calc(96% - 12% * 1));
-    z-index: 99;
-`;
+    [data-part="nav"] {
+        align-items: center;
+        display: flex;
+        height: 42px;
+        background-color: var(--xyd-underlinenav-bgcolor);
+        border-bottom: 1px solid var(--xyd-underlinenav-border-color);
+        z-index: 99;
+    }
 
-export const UnderlineNavUl = css`
-    display: flex;
-    gap: 10px;
-    height: 100%;
-    color: hsl(212, 15%, calc(96% - 12% * 4));
-    list-style: none;
-    padding: 0;
-    white-space: nowrap;
-`;
+    [data-part="list"] {
+        display: flex;
+        gap: 10px;
+        height: 100%;
+        color: var(--xyd-underlinenav-list-color);
+        list-style: none;
+        padding: 0;
+        white-space: nowrap;
+    }
 
-export const UnderlineNavItem = css`
-    height: 100%;
-    position: relative;
+    [data-part="item"] {
+        height: 100%;
+        position: relative;
 
-    &[data-state="active"] {
-        a {
-            border-bottom-color: rgb(112, 81, 212);
+        &[data-state="active"] {
+            a {
+                border-bottom-color: var(--xyd-underlinenav-color--active);
+            }
         }
     }
-`;
 
-export const UnderlineNavItemLink = css`
-    display: inline-flex;
-    border-bottom: 3px solid transparent;
-    text-decoration: none;
-    height: 100%;
-    padding: 10px;
-    transition: all 0.3s ease;
+    [data-part="link"] {
+        display: inline-flex;
+        border-bottom: 3px solid transparent;
+        text-decoration: none;
+        height: 100%;
+        padding: 10px;
+        transition: all 0.3s ease;
 
-    &:hover {
-        color: rgb(112, 81, 212);
+        &:hover {
+            color: var(--xyd-underlinenav-color--active);
+        }
     }
-`;
 
-export const UnderlineNavItemLinkActive = css`
-`;
-
-export const UnderlineNavContentHost = css`
-    position: relative;
-    overflow: hidden;
+    [data-part="content"] {
+        position: relative;
+        overflow: hidden;
+    }
+    
 `;
 
 export const UnderlineNavContent = css`
@@ -127,9 +127,9 @@ export const UnderlineNavContent = css`
             transform: translateX(75px);
         }
     }
-`;
 
-export const UnderlineNavContentInner = css`
-    padding: 20px;
-    transition: all 0.3s ease;
+    [data-part="child"] {
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
 `;

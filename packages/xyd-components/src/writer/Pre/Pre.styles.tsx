@@ -6,6 +6,6 @@ export const PreHost = css`
     padding: 16px;
     border: 0;
 
-    background-color: rgb(246, 248, 250);
+    background-color: var(--xyd-pre-bgcolor);
     overflow: auto;
 `;

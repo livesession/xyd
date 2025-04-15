@@ -15,7 +15,6 @@ import {
     GuideCard,
     Heading,
     Hr,
-    Table,
     TableV2,
     Tabs,
     Steps,

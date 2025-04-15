@@ -19,6 +19,8 @@
     "watch": "tsup --watch"
   },
   "dependencies": {
+    "@lit-labs/ssr-react": "^0.3.2",
+    "@lit/react": "^1.0.7",
     "@xyd-js/content": "workspace:*",
     "@xyd-js/plugin-zero": "workspace:*",
     "@react-router/dev": "7.1.1",

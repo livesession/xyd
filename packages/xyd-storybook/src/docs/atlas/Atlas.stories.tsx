@@ -1,20 +1,20 @@
-import React, {useState, useEffect} from 'react';
-import type {Meta} from '@storybook/react';
+import React, { useState, useEffect } from 'react';
+import type { Meta } from '@storybook/react';
+import { MemoryRouter } from "react-router";
 
-import {Reference} from '@xyd-js/uniform';
-import {Atlas} from "@xyd-js/atlas";
+import { Reference } from '@xyd-js/uniform';
+import { Atlas } from "@xyd-js/atlas";
 
-import {uniformToReferences} from "./uniform-to-references";
-import {MDXReference} from "../../utils/mdx";
-import {exampleSourceUniform} from "../../__fixtures__/example-source-uniform";
-import {DocsTemplateDecorator} from "../../decorators/DocsTemplate";
-
+import { uniformToReferences } from "./uniform-to-references";
+import { MDXReference } from "../../utils/mdx";
+import { exampleSourceUniform } from "../../__fixtures__/example-source-uniform";
+import { DocsTemplateDecorator } from "../../decorators/DocsTemplate";
 export default {
     title: 'Atlas/Atlas',
     component: Atlas,
     decorators: [
-        DocsTemplateDecorator({toc: false}),
-    ]
+        DocsTemplateDecorator({ toc: false }),
+    ],
 } as Meta;
 
 const Template = (args: any) => {
@@ -32,7 +32,7 @@ const Template = (args: any) => {
     }, [])
 
     return <>
-        <Atlas references={references}/>
+        <Atlas references={references} />
     </>
 }
 
@@ -42,7 +42,7 @@ Primary.args = {};
 
 const TemplateSecondary = () => {
     return <>
-        <Atlas kind="secondary" references={[exampleSourceUniform]}/>
+        <Atlas kind="secondary" references={[exampleSourceUniform]} />
     </>
 }
 

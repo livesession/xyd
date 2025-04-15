@@ -1,49 +1,46 @@
-.TocBottomHost {
+.TocCardHost {
     margin-top: 16px;
     max-width: 250px;
-}
 
-.TocBottomContainer {
-    margin-bottom: 12px;
-}
-
-.TocBottomDescription {
-    font-size: 12px;
-    color: #6e6e80;
-    letter-spacing: 0;
-}
-
-.TocBottomLink {
-    display: block;
-    border: 1px solid #ececf1;
-    border-radius: 6px;
-    padding: 8px 16px 12px;
-    text-decoration: none;
-    transition: border-color .15s ease;
-    line-height: 1.4;
-
-    &:hover {
-        border-color: #c5c5d2;
+    [data-part="container"] {
+        margin-bottom: 12px;
     }
-}
 
-.TocBottomLinkTitleContainer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
+    [data-part="description"] {
+        font-size: 12px;
+        color: var(--xyd-toccard-color);
+        letter-spacing: 0;
+    }
 
-.TocBottomLinkTitle {
-    font-size: 14px;
-    font-weight: 400;
-    color: #353740;
-    ;
-    margin-bottom: 2px;
-}
+    [data-part="link"] {
+        display: block;
+        border: 1px solid var(--xyd-toccard-border-color);
+        border-radius: 6px;
+        padding: 8px 16px 12px;
+        text-decoration: none;
 
-.TocBottomLinkIcon {
-    width: 1em;
-    height: 1em;
-    object-fit: contain;
-    color: #24292f;
+        &:hover {
+            border-color: var(--xyd-toccard-border-color--active);
+        }
+    }
+
+    [data-part="title-container"] {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    [data-part="title"] {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--xyd-toccard-title-color);
+        margin-bottom: 2px;
+    }
+
+    [data-part="link-icon"] {
+        width: 1em;
+        height: 1em;
+        object-fit: contain;
+        color: var(--xyd-toccard-icon-color);
+    }
 }

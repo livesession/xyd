@@ -1,6 +1,6 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import * as RadixTabs from "@radix-ui/react-tabs"
-import {ChevronLeft, ChevronRight} from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import * as cn from "./Tabs.styles";
 
@@ -8,9 +8,10 @@ export interface TabsProps {
     children: React.ReactNode;
     items: string[];
     tabIndex?: number;
+    className?: string;
 }
 
-export function Tabs({children, items, tabIndex}: TabsProps) {
+export function Tabs({ children, items, tabIndex, className }: TabsProps) {
     const [showLeftArrow, setShowLeftArrow] = useState(false)
     const [showRightArrow, setShowRightArrow] = useState(false)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -19,7 +20,7 @@ export function Tabs({children, items, tabIndex}: TabsProps) {
 
     const handleScroll = () => {
         if (scrollContainerRef.current) {
-            const {scrollLeft, scrollWidth, clientWidth} = scrollContainerRef.current
+            const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
             setShowLeftArrow(scrollLeft > 0)
             setShowRightArrow(scrollLeft < scrollWidth - clientWidth)
         }
@@ -34,33 +35,38 @@ export function Tabs({children, items, tabIndex}: TabsProps) {
     const scroll = (direction: 'left' | 'right') => {
         if (scrollContainerRef.current) {
             const scrollAmount = direction === 'left' ? -200 : 200
-            scrollContainerRef.current.scrollBy({left: scrollAmount, behavior: 'smooth'})
+            scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
         }
     }
 
     return (
         <RadixTabs.Root asChild value={value} onValueChange={setActiveTab}>
-            <div className={cn.TabsSampleHost}>
-                <div className={cn.TabsSampleButtons}>
+            <div
+                data-element="xyd-tabs"
+                className={`${cn.TabsSampleHost} ${className || ""}`}
+            >
+                <div data-part="buttons">
                     {showLeftArrow && (
                         <button
                             onClick={() => scroll('left')}
-                            className={cn.TabsArrowHost}
+                            data-part="arrow"
                         >
-                            <ChevronLeft className={cn.TabsArrowIcon}/>
+                            <ChevronLeft data-part="arrow-icon" />
                         </button>
                     )}
 
                     <div
                         ref={scrollContainerRef}
                         onScroll={handleScroll}
-                        className={cn.TabsScrollerHost}
+                        data-part="scroller"
                     >
-                        <div className={cn.TabsScrollerContainer}>
+                        <div
+                            data-part="scroller-container"
+                        >
                             <RadixTabs.List>
-                                {items.map((item, index) => <TabsItem key={index} value={item}>
-                                        {item}
-                                    </TabsItem>
+                                {items.map((item, index) => <$TabsItem key={index} value={item}>
+                                    {item}
+                                </$TabsItem>
                                 )}
                             </RadixTabs.List>
                         </div>
@@ -69,14 +75,14 @@ export function Tabs({children, items, tabIndex}: TabsProps) {
                     {showRightArrow && (
                         <button
                             onClick={() => scroll('right')}
-                            className={cn.TabsArrowHost}
+                            data-part="arrow"
                         >
-                            <ChevronRight className={cn.TabsArrowIcon}/>
+                            <ChevronRight data-part="arrow-icon" />
                         </button>
                     )}
                 </div>
 
-                <div className={cn.TabsSampleContent}>
+                <div data-part="content">
                     {children}
                 </div>
             </div>
@@ -84,15 +90,15 @@ export function Tabs({children, items, tabIndex}: TabsProps) {
     )
 }
 
-function TabsItem({children, value}) {
+function $TabsItem({ children, value }) {
     return <RadixTabs.Trigger asChild value={value}>
-        <button className={`${cn.TabsButtonHost}`}>
+        <button data-part="button">
             {children}
         </button>
     </RadixTabs.Trigger>
 }
 
-Tabs.Content = function TabsContent({children, value}) {
+Tabs.Content = function TabsContent({ children, value }) {
     return <RadixTabs.Content asChild value={value}>
         {children}
     </RadixTabs.Content>

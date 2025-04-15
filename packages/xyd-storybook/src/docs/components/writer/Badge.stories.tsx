@@ -3,9 +3,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Badge } from '@xyd-js/components/writer';
 
 const meta: Meta<typeof Badge> = {
-    title: 'Writer/Badge',
+    title: 'Components/Writer/Badge',
     component: Badge,
-    tags: ['autodocs'],
 };
 
 export default meta;

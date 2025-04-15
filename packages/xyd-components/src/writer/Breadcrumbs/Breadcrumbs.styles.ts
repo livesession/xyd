@@ -9,21 +9,21 @@ export const BreadcrumbsHost = css`
     font-size: 0.875rem;
     line-height: 1.25rem;
     color: #6B7280;
-`;
-
-export const BreadcrumbsIcon = css`
-    shrink: 0;
-    width: 0.875rem;
-`;
-
-export const BreadcrumbsItem = css`
-    white-space: nowrap;
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
-`;
-
-export const BreadcrumbsItemActive = css`
-    color: #000;
-    font-weight: bold;
+    
+    [data-part="icon"] {
+        shrink: 0;
+        width: 0.875rem;
+    }
+    
+    [data-part="item"] {
+        white-space: nowrap;
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 300ms;
+    }
+    
+    [data-part="item"][data-active="true"] {
+        color: #000;
+        font-weight: bold;
+    }
 `;

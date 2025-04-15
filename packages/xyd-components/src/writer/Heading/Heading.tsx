@@ -1,4 +1,4 @@
-import React, {useRef} from "react"
+import React, {} from "react"
 
 import * as cn from "./Heading.styles";
 
@@ -8,40 +8,32 @@ export interface HeadingProps {
     as?: "div" | "span"
     id?: string
     onClick?: () => void
+    className?: string
 }
 
-export function Heading({children, size = 1, as, id, onClick}: HeadingProps) {
+export function Heading({children, size = 1, as, id, onClick, className}: HeadingProps) {
     let HeadingComponent = as ? as : `h${size}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 
-    const obRef = useRef<HTMLAnchorElement>(null)
-
     return <HeadingComponent
-        className={`
-            ${cn.HeadingHost}
-            ${size === 1 && cn.HeadingH1}
-            ${size === 2 && cn.HeadingH2}
-            ${size === 3 && cn.HeadingH3}
-            ${size === 4 && cn.HeadingH4}
-            ${size === 5 && cn.HeadingH5}
-            ${size === 6 && cn.HeadingH6}
-            xyd_comp-comp-heading
-        `}
+        data-element="xyd-heading"
+        className={` ${cn.HeadingHost}  ${className || ''}`}
+        data-size={size}
         onClick={onClick}
     >
         {children}
 
-        {id && <Anchor/>}
+        {id && <$Anchor/>}
     </HeadingComponent>
 }
 
-function Anchor() {
+function $Anchor() {
     return <svg
+        data-part="icon"
         xmlns="http://www.w3.org/2000/svg"
         width={15}
         height={15}
         fill="currentColor"
         viewBox="0 0 24 24"
-        className={cn.HeadingLink}
         role="presentation"
     >
         <path

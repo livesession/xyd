@@ -14,6 +14,6 @@ export const CodeCopyHost = css`
 
     &:hover {
         transition: ease-in 0.1s;
-        background: #e3e3eb;
+        background: var(--xyd-code-copy-color);
     }
 `; 

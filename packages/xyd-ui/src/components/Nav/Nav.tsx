@@ -9,28 +9,27 @@ export interface NavProps {
     onChange?: (value: string) => void
     logo?: React.ReactNode;
     kind?: "middle"
+    className?: string;
 }
 
-export function Nav({children, value, onChange, logo, kind}: NavProps) {
+export function Nav({ children, value, onChange, logo, kind, className }: NavProps) {
     return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
-        <div className={cn.NavHost}>
-            <div className={cn.NavShadow}/>
-            <nav className={`
-                ${cn.Nav}
-                ${kind === "middle" && cn.NavMiddle}
-            `}>
-                <div className={`
-                    ${cn.LogoHost}
-                    xyd_ui-comp-nav-logo
-                `}>
+        <div
+            data-element="xyd-nav"
+            className={`${cn.NavHost} ${className || ""}`}
+            data-kind={kind}
+        >
+            <div data-part="shadow" />
+            <nav data-part="nav">
+                <div data-part="logo">
                     {logo}
                 </div>
                 <RadixTabs.List asChild>
-                    <div className={cn.ListHost}>
+                    <div data-part="list">
                         {children}
                     </div>
                 </RadixTabs.List>
-                {kind === "middle" && <div/>}
+                {kind === "middle" && <div />}
             </nav>
         </div>
     </RadixTabs.Root>
@@ -40,17 +39,24 @@ export interface NavItemProps {
     children: React.ReactNode;
     href: string;
     value: string;
+    as?: React.ElementType;
 }
 
-Nav.Item = function NavItem({children, value, href}) {
+Nav.Item = function NavItem({ children, value, href , as }: NavItemProps) {
+    const Link = as || $Link;
+
     return <RadixTabs.Trigger asChild value={value}>
-        <a
+        <Link
+            data-element="xyd-nav-item"
             href={href}
             className={cn.ItemHost}
         >
-            <span className={cn.ItemTitle1}>{children}</span>
-            <span className={cn.ItemTitle2}>{children}</span>
-        </a>
+            <span data-part="title1">{children}</span>
+            <span data-part="title2">{children}</span>
+        </Link>
     </RadixTabs.Trigger>
 };
 
+function $Link({ children, ...props }) {
+    return <a {...props}>{children}</a>
+}

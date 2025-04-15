@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from "react"
+import * as React from 'react'
+import { useEffect, useState } from "react"
 
 import * as cn from "./LayoutPrimary.styles"
 
@@ -7,37 +8,38 @@ export interface LayoutPrimaryProps {
     aside: React.ReactNode;
     content: React.ReactNode;
     contentNav?: React.ReactNode;
-
     subheader?: React.ReactNode;
+
     layoutSize?: "large"
+
+    className?: string;
 }
 
 // TODO: move scroller to xyd-foo
 export function LayoutPrimary(props: LayoutPrimaryProps) {
     const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 
-    const {hideMainHeader} = props.subheader ? useSubHeader() : {hideMainHeader: false}
+    const { hideMainHeader } = props.subheader ? useSubHeader() : { hideMainHeader: false }
 
-    return <div className={cn.LayoutPrimaryHost}>
-        <header className={` 
-            ${cn.LayoutPrimaryHeader}
-            ${props.subheader && cn.LayoutPrimaryHeaderSub}
-            ${hideMainHeader && cn.LayoutPrimaryHeaderHideMain}
-        `}>
-            <div className={cn.LayoutPrimaryHeaderContent}>
+    return <xyd-layout-primary
+        className={`${cn.LayoutPrimaryHost} ${props.className || ""}`}
+    >
+        <header
+            data-part="header"
+            data-subheader={!!props.subheader}
+            data-hidden={hideMainHeader}
+        >
+            <div data-part="header-content">
                 {props.header}
                 <button
-                    className={cn.LayoutPrimaryHamburgerButton}
-                    onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+                    data-part="hamburger-button"
                     aria-label="Toggle navigation menu"
+                    onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
                 >
-                    <div className={cn.LayoutPrimaryHamburgerIcon}>
-                        <span
-                            className={`${cn.LayoutPrimaryHamburgerLine} ${isMobileNavOpen ? cn.LayoutPrimaryHamburgerLineOpen : ''}`}/>
-                        <span
-                            className={`${cn.LayoutPrimaryHamburgerLine} ${isMobileNavOpen ? cn.LayoutPrimaryHamburgerLineOpen : ''}`}/>
-                        <span
-                            className={`${cn.LayoutPrimaryHamburgerLine} ${isMobileNavOpen ? cn.LayoutPrimaryHamburgerLineOpen : ''}`}/>
+                    <div data-part="hamburger-icon">
+                        <$HamburgerLine active={isMobileNavOpen} />
+                        <$HamburgerLine active={isMobileNavOpen} />
+                        <$HamburgerLine active={isMobileNavOpen} />
                     </div>
                 </button>
             </div>
@@ -46,47 +48,45 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
 
         {/* Mobile Drawer Sidebar */}
         <div
-            className={`${cn.LayoutPrimaryOverlay} ${isMobileNavOpen ? cn.LayoutPrimaryOverlayVisible : ''}`}
+            data-part="mobile-overlay"
+            data-active={isMobileNavOpen}
             onClick={() => setIsMobileNavOpen(false)}
         />
-        <aside className={`
-            ${cn.LayoutPrimaryMobileSidebar}
-            ${isMobileNavOpen ? cn.LayoutPrimaryMobileSidebarOpen : ''}
-        `}>
-            <div className={cn.LayoutPrimarySidebarContent}>
+        <aside
+            data-part="mobile-sidebar"
+            data-active={isMobileNavOpen}
+        >
+            <div data-part="mobile-sidebar-aside">
                 {props.aside}
             </div>
             <button
-                className={cn.LayoutPrimaryCloseButton}
-                onClick={() => setIsMobileNavOpen(false)}
+                data-part="mobile-sidebar-close-button"
                 aria-label="Close navigation menu"
+                onClick={() => setIsMobileNavOpen(false)}
             >
-                <div className={cn.LayoutPrimaryCloseIcon}/>
+                <div data-part="mobile-sidebar-close-icon" />
             </button>
         </aside>
 
-        <main className={`
-            ${cn.LayoutPrimaryMain}
-            ${!hideMainHeader && props.subheader && cn.LayoutPrimaryMainSub}
-        `}>
+        <main data-part="main">
             {/* Desktop Static Sidebar */}
-            <aside className={cn.LayoutPrimaryStaticSidebar}>
+            <aside data-part="sidebar">
                 {props.aside}
             </aside>
 
-            <div className={cn.LayoutPrimaryPageHost}>
-                <div className={cn.LayoutPrimaryPageScroll}>
-                    <div className={`
-                        ${cn.LayoutPrimaryPageContainer}
-                        ${props.layoutSize == "large" && cn.LayoutPrimaryPageContainerLarge}
-                    `}>
-                        <div className={cn.LayoutPrimaryPageArticleContainer}>
-                            <article className={cn.LayoutPrimaryArticleHost}>
-                                <section className={cn.LayoutPrimaryArticleContent}>
+            <div data-part="page">
+                <div data-part="page-scroll">
+                    <div
+                        data-part="page-container"
+                        data-size={props.layoutSize}
+                    >
+                        <div data-part="page-article-container">
+                            <article data-part="page-article">
+                                <section data-part="page-article-content">
                                     {props.content}
                                 </section>
                             </article>
-                            {props.contentNav && <nav className={cn.LayoutPrimaryArticleNav}>
+                            {props.contentNav && <nav data-part="page-article-nav">
                                 {props.contentNav}
                             </nav>}
                         </div>
@@ -94,7 +94,14 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
                 </div>
             </div>
         </main>
-    </div>
+    </xyd-layout-primary>
+}
+
+function $HamburgerLine({ active }: { active: boolean }) {
+    return <span
+        data-part="hamburger-line"
+        data-active={active}
+    />
 }
 
 // TODO: move to `xyd-foo` or somewhere else
