@@ -41,27 +41,26 @@ export function Tabs({ children, items, tabIndex, className }: TabsProps) {
 
     return (
         <RadixTabs.Root asChild value={value} onValueChange={setActiveTab}>
-            <div
-                data-element="xyd-tabs"
+            <xyd-tabs
                 className={`${cn.TabsSampleHost} ${className || ""}`}
             >
-                <div data-part="buttons">
+                <div part="buttons">
                     {showLeftArrow && (
                         <button
                             onClick={() => scroll('left')}
-                            data-part="arrow"
+                            part="arrow"
                         >
-                            <ChevronLeft data-part="arrow-icon" />
+                            <ChevronLeft part="arrow-icon" />
                         </button>
                     )}
 
                     <div
                         ref={scrollContainerRef}
                         onScroll={handleScroll}
-                        data-part="scroller"
+                        part="scroller"
                     >
                         <div
-                            data-part="scroller-container"
+                            part="scroller-container"
                         >
                             <RadixTabs.List>
                                 {items.map((item, index) => <$TabsItem key={index} value={item}>
@@ -75,24 +74,24 @@ export function Tabs({ children, items, tabIndex, className }: TabsProps) {
                     {showRightArrow && (
                         <button
                             onClick={() => scroll('right')}
-                            data-part="arrow"
+                            part="arrow"
                         >
-                            <ChevronRight data-part="arrow-icon" />
+                            <ChevronRight part="arrow-icon" />
                         </button>
                     )}
                 </div>
 
-                <div data-part="content">
+                <div part="content">
                     {children}
                 </div>
-            </div>
+            </xyd-tabs>
         </RadixTabs.Root>
     )
 }
 
 function $TabsItem({ children, value }) {
     return <RadixTabs.Trigger asChild value={value}>
-        <button data-part="button">
+        <button part="button">
             {children}
         </button>
     </RadixTabs.Trigger>

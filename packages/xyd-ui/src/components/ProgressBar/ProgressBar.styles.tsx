@@ -19,14 +19,14 @@ export const ProgressBarHost = css`
         transition-delay: .3s;
     }
 
-    [data-part="item"] {
+    [part="item"] {
         height: 100%;
         transition: all .5s ease-in-out;
         transition-delay: .1s;
         background-color: var(--xyd-progressbar-bgcolor--active);
     }
 
-    &[data-loading="true"] [data-part="item"] {
+    &[data-loading="true"] [part="item"] {
         width: 100%;
     }
 `;

@@ -21,12 +21,12 @@ export const GuideHost = css`
         }
     }
 
-    [data-part="link"] {
+    [part="link"] {
         width: 100%;
         height: 100%;
     }
 
-    [data-part="item"] {
+    [part="item"] {
         border-radius: 8px;
         display: flex;
 
@@ -35,18 +35,18 @@ export const GuideHost = css`
         transition: opacity .15s;
 
         &:hover {
-            [data-part="pointer"] {
+            [part="pointer"] {
                 opacity: 1;
                 transform: translate(0);
             }
         }
     }
-    &[data-kind="secondary"] [data-part="item"] {
+    &[data-kind="secondary"] [part="item"] {
         width: 100%;
         height: 100%;
     }
 
-    [data-part="icon"] {
+    [part="icon"] {
         line-height: 0px;
         font-size: 24px;
         height: 32px;
@@ -59,14 +59,14 @@ export const GuideHost = css`
         flex-shrink: 0;
     }
 
-    [data-part="right"] {
+    [part="right"] {
         padding-left: 16px;
         display: flex;
         flex-direction: column;
         gap: 4px;
     }
 
-    [data-part="title"] {
+    [part="title"] {
         display: flex;
         color: var(--xyd-guidecard-title-color);
         align-items: center;
@@ -74,15 +74,15 @@ export const GuideHost = css`
         transition: color .15s;
     }
 
-    [data-part="title-body"] {
+    [part="title-body"] {
         font-size: 16px;
         line-height: 20px;
     }
-    &[data-size="md"] [data-part="title-body"] {
+    &[data-size="md"] [part="title-body"] {
         font-size: 18px;
     }
 
-    [data-part="body"] {
+    [part="body"] {
         font-weight: 400;
         font-size: 14px;
         line-height: 20px;
@@ -92,11 +92,11 @@ export const GuideHost = css`
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    &[data-size="md"] [data-part="body"] {
+    &[data-size="md"] [part="body"] {
         font-size: 16px;
     }
 
-    [data-part="pointer"] {
+    [part="pointer"] {
         opacity: 0;
         transform: translate(-4px);
         display: flex;

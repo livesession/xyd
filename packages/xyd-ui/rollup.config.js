@@ -44,23 +44,23 @@ export default [
                         '@babel/preset-react'
                     ],
                 },
-                classNameSlug: (hash, title, {file}) => {
-                    // Get the full path after 'src/components/'
-                    const pathParts = file.split('/');
-                    const componentsIndex = pathParts.indexOf('components');
-                    if (componentsIndex === -1) return `XydUi-Component-${title}`;
+                // classNameSlug: (hash, title, {file}) => {
+                //     // Get the full path after 'src/components/'
+                //     const pathParts = file.split('/');
+                //     const componentsIndex = pathParts.indexOf('components');
+                //     if (componentsIndex === -1) return `XydUi-Component-${title}`;
 
-                    // Get everything after 'components' directory
-                    const componentPath = pathParts
-                        .slice(componentsIndex + 1)
-                        .filter(part => !part.endsWith('.styles.tsx')) // Remove styles.tsx
-                        .join('-');
+                //     // Get everything after 'components' directory
+                //     const componentPath = pathParts
+                //         .slice(componentsIndex + 1)
+                //         .filter(part => !part.endsWith('.styles.tsx')) // Remove styles.tsx
+                //         .join('-');
 
-                    // Use the title as the style name (it's already the variable name)
-                    const styleName = title.replace(/^\$/, ''); // Remove $ prefix if present
+                //     // Use the title as the style name (it's already the variable name)
+                //     const styleName = title.replace(/^\$/, ''); // Remove $ prefix if present
 
-                    return `XydUi-Component-${componentPath}__${styleName}`;
-                }
+                //     return `XydUi-Component-${componentPath}__${styleName}`;
+                // }
             }),
             postcss({
                 extract: true,

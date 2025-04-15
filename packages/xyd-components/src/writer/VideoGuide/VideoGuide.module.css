@@ -5,7 +5,7 @@
     height: var(--xyd-videoguide-miniature-mini-height);
     overflow: visible;
 
-    [data-part="shape"] {
+    [part="shape"] {
         position: relative;
         display: flex;
         align-items: center;
@@ -17,7 +17,7 @@
         background-color: var(--xyd-videoguide-miniature-bgcolor);
     }
 
-    [data-part="frame"] {
+    [part="frame"] {
         position: relative;
         width: 100%;
         height: var(--xyd-videoguide-miniature-mini-height);
@@ -28,7 +28,7 @@
         box-sizing: border-box;
     }
 
-    [data-part="thumbnail"] {
+    [part="thumbnail"] {
         position: absolute;
         top: 0;
         left: 0;
@@ -39,7 +39,7 @@
         background-position: center;
     }
 
-    [data-part="cover"] {
+    [part="cover"] {
         background-color: transparent;
         backdrop-filter: brightness(60%) blur(10px);
         -webkit-backdrop-filter: brightness(60%) blur(10px);
@@ -57,7 +57,7 @@
         box-sizing: border-box;
     }
 
-    [data-part="controls"] {
+    [part="controls"] {
         position: absolute;
         top: 0;
         bottom: 0;
@@ -66,7 +66,7 @@
         box-sizing: border-box;
     }
 
-    [data-part="button"] {
+    [part="button"] {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -75,7 +75,7 @@
         height: 100%;
     }
 
-    [data-part="icon"] {
+    [part="icon"] {
         color: var(--xyd-videoguide-miniature-color);
         display: flex;
         box-sizing: border-box;
@@ -85,17 +85,17 @@
         }
     }
 
-    [data-part="description"] {
+    [part="description"] {
         box-sizing: border-box;
         margin-top: 8px;
     }
 
-    [data-part="description-container"] {
+    [part="description-container"] {
         box-sizing: border-box;
         margin-top: 8px;
     }
 
-    [data-part="description"] {
+    [part="description"] {
         text-align: center;
         color: var(--xyd-videoguide-miniature-color);
         display: block;

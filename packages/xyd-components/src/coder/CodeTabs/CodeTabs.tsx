@@ -25,28 +25,29 @@ export function withCodeTabs(PreComponent) {
         }
 
         return (
-            <TabsPrimitive.Root
-                data-element="xyd-code-tabs"
-                data-single={isSingle}
-                className={`${cn.CodeTabsHost} ${props.className || ""}`}
-                style={props.highlighted[0]?.style}
-                defaultValue={props.highlighted[0]?.meta}
-            >
-                <$LanguageTabSwitcher
-                    description={props.description}
-                    highlighted={props.highlighted}
-                />
+            <xyd-codetabs>
+                <TabsPrimitive.Root
+                    part="root"
+                    data-single={String(isSingle)}
+                    className={`${cn.CodeTabsHost} ${props.className || ""}`}
+                    style={props.highlighted[0]?.style}
+                    defaultValue={props.highlighted[0]?.meta}
+                >
+                    <$LanguageTabSwitcher
+                        description={props.description}
+                        highlighted={props.highlighted}
+                    />
 
-                {props.highlighted?.map((codeblock, i) => (
-                    <TabsPrimitive.Content value={codeblock.meta} key={i}>
-                        <PreComponent
-                            data-part="pre"
-                            style={codeblock?.style || codeblock?.style}
-                            codeblock={codeblock}
-                        />
-                    </TabsPrimitive.Content>
-                ))}
-            </TabsPrimitive.Root>
+                    {props.highlighted?.map((codeblock, i) => (
+                        <TabsPrimitive.Content value={codeblock.meta} key={i}>
+                            <PreComponent
+                                style={codeblock?.style || codeblock?.style}
+                                codeblock={codeblock}
+                            />
+                        </TabsPrimitive.Content>
+                    ))}
+                </TabsPrimitive.Root>
+            </xyd-codetabs>
         )
     }
 }
@@ -59,25 +60,24 @@ interface LanguageTabSwitcherProps {
 function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
     const isSingle = props.highlighted.length === 1 && !props.description
 
-    return <div
-        data-element="xyd-code-tabs-languages"
-        data-single={isSingle}
+    return <xyd-codetabs-languages
+        data-single={String(isSingle)}
         className={`
         ${cn.CodeTabsLanguagesHost}
     `}>
-        <div data-part="description">
-            <div data-part="description-item">
+        <div part="description">
+            <div part="description-item">
                 {props.description}
             </div>
         </div>
 
-        <TabsPrimitive.List data-part="languages-list">
+        <TabsPrimitive.List part="languages-list">
             {props.highlighted?.map(({ meta }, i) => {
                 if (isSingle) {
                     return null
                 }
                 return <TabsPrimitive.Trigger
-                    data-part="language-trigger"
+                    part="language-trigger"
                     value={meta!}
                     key={i}
                 >
@@ -86,12 +86,12 @@ function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
             })}
         </TabsPrimitive.List>
 
-        <div data-part="copy">
+        <div part="copy">
             {props.highlighted?.map((codeblock, i) => (
                 <TabsPrimitive.Content value={codeblock.meta!} asChild key={i}>
                     <CodeCopy text={codeblock.value} />
                 </TabsPrimitive.Content>
             ))}
         </div>
-    </div>
+    </xyd-codetabs-languages>
 }

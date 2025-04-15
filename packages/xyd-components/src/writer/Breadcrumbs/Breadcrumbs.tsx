@@ -20,8 +20,7 @@ export interface BreadcrumbsProps {
 
 export function Breadcrumbs({className, items}: BreadcrumbsProps): ReactElement {
     return (
-        <div 
-            data-element="xyd-breadcrumbs"
+        <xyd-breadcrumbs
             className={`${cn.BreadcrumbsHost} ${className || ''}`}
         >
             {items.map((item, index) => {
@@ -29,9 +28,9 @@ export function Breadcrumbs({className, items}: BreadcrumbsProps): ReactElement 
 
                 return (
                     <Fragment key={item.href + item.title}>
-                        {index > 0 && <ArrowRightIcon data-part="icon"/>}
+                        {index > 0 && <ArrowRightIcon part="icon"/>}
                         <div 
-                            data-part="item"
+                            part="item"
                             data-active={lastActive ? "true" : "false"}
                         >
                             {item.href && !lastActive ? (
@@ -43,6 +42,6 @@ export function Breadcrumbs({className, items}: BreadcrumbsProps): ReactElement 
                     </Fragment>
                 )
             })}
-        </div>
+        </xyd-breadcrumbs>
     )
 }

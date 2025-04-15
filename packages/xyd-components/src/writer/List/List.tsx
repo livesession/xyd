@@ -7,15 +7,19 @@ export interface ListProps {
 }
 
 export function List({ children }: ListProps) {
-    return <ul data-element="xyd-list" className={cn.List}>
-        {children}
-    </ul>
+    return <xyd-list>
+        <ul className={cn.List}>
+            {children}
+        </ul>
+    </xyd-list>
 }
 
 export function ListOl({ children }: ListProps) {
-    return <ol data-element="xyd-list" className={cn.List}>
-        {children}
-    </ol>
+    return <xyd-list>
+        <ol className={cn.List}>
+            {children}
+        </ol>
+    </xyd-list>
 }
 
 export interface ListItemProps {
@@ -23,7 +27,9 @@ export interface ListItemProps {
 }
 
 function ListItem({ children }: ListItemProps) {
-    return <li data-element="xyd-list-item" className={cn.Item}>{children}</li>
+    return <xyd-list-item>
+        <li className={cn.Item}>{children}</li>
+    </xyd-list-item>
 }
 
 List.Item = ListItem;

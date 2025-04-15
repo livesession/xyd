@@ -40,7 +40,7 @@ const contentComponents = {
         // TODO: get props from theme about nav (middle etc)
         // TODO: footer
         // TODO: style
-        header={<div style={{ marginLeft: "var(--xyd-global-page-gutter)" }}>
+        header={<div style={{ marginLeft: "var(--xyd-page-gutter)" }}>
             <FwNav kind="middle" />
         </div>}
 
@@ -160,7 +160,7 @@ function mdxExport(code: string) {
 
         // Handle both cases: children as separate args or as props.children
         let processedChildren;
-        
+
         // If children are passed as separate arguments
         if (args.length > 0) {
             // If the first argument is an array, process it
@@ -170,7 +170,7 @@ function mdxExport(code: string) {
                 // Otherwise, process all arguments as a single array
                 processedChildren = processChildren(args);
             }
-        } 
+        }
         // If children are in props
         else if (props && props.children) {
             if (Array.isArray(props.children)) {

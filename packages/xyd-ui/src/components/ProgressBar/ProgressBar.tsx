@@ -9,15 +9,14 @@ export interface ProgressBarProps {
 
 export function ProgressBar({ className, isActive = false }: ProgressBarProps) {
   return (
-    <div
-      data-element="xyd-progressbar"
-      data-active={isActive}
+    <xyd-progressbar
+      data-active={String(isActive)}
       role="progressbar"
       aria-hidden="true"
       aria-label="loading bar"
       className={`${cn.ProgressBarHost} ${className || ""}`}
     >
-      <div data-part="item" />
-    </div>
+      <div part="item" />
+    </xyd-progressbar>
   );
 }

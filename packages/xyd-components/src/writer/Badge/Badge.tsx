@@ -15,14 +15,13 @@ export function Badge({
                           size = "sm",
                           kind = "warning"
                       }: BadgeProps) {
-    return <div 
-        data-element="xyd-badge"
+    return <xyd-badge
         className={`${cn.BadgeHost} ${className || ''}`}
         data-size={size}
         data-kind={kind}
     >
-        <span data-part="child">
+        <span part="child">
             {children}
         </span>
-    </div>
+    </xyd-badge>
 }

@@ -2,7 +2,7 @@ import * as React from "react"
 
 import {
     Heading,
-    TableV2,
+    Table,
     Details,
     Code,
 
@@ -92,30 +92,30 @@ export function AtlasSecondary({ references, mdx }: CommonAtlasProps<CodeSourceC
                                 <Heading size={2}>
                                     {parseValue(definition.title)}
                                 </Heading>
-                                <TableV2 key={index}>
-                                    <TableV2.Head>
-                                        <TableV2.Tr>
-                                            <TableV2.Th>Name</TableV2.Th>
-                                            <TableV2.Th>Type</TableV2.Th>
-                                            <TableV2.Th>Description</TableV2.Th>
-                                        </TableV2.Tr>
-                                    </TableV2.Head>
-                                    <TableV2.Body>
+                                <Table key={index}>
+                                    <Table.Head>
+                                        <Table.Tr>
+                                            <Table.Th>Name</Table.Th>
+                                            <Table.Th>Type</Table.Th>
+                                            <Table.Th>Description</Table.Th>
+                                        </Table.Tr>
+                                    </Table.Head>
+                                    <Table.Body>
                                         {definition.properties?.map((property, propIndex) => (
-                                            <TableV2.Tr key={propIndex}>
-                                                <TableV2.Td>
+                                            <Table.Tr key={propIndex}>
+                                                <Table.Td>
                                                     <Code>{parseValue(property.name)}</Code>
-                                                </TableV2.Td>
-                                                <TableV2.Td>
+                                                </Table.Td>
+                                                <Table.Td>
                                                     <Code>{parseValue(property.type)}</Code>
-                                                </TableV2.Td>
-                                                <TableV2.Td muted>
+                                                </Table.Td>
+                                                <Table.Td muted>
                                                     {parseChild(property.description)}
-                                                </TableV2.Td>
-                                            </TableV2.Tr>
+                                                </Table.Td>
+                                            </Table.Tr>
                                         ))}
-                                    </TableV2.Body>
-                                </TableV2>
+                                    </Table.Body>
+                                </Table>
                             </>
                         })
                     }

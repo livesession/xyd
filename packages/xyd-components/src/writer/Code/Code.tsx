@@ -7,13 +7,12 @@ export interface CodeProps {
     children: React.ReactNode;
 }
 
-export function Code({className, children}: CodeProps) {
-    return <code 
-        data-element="xyd-code"
-        className={`${cn.CodeHost} ${className || ''}`}
-    >
-        <span data-part="content">
-            {children}
-        </span>
-    </code>
+export function Code({ className, children }: CodeProps) {
+    return <xyd-code>
+        <code className={`${cn.CodeHost} ${className || ''}`}>
+            <span part="content">
+                {children}
+            </span>
+        </code>
+    </xyd-code>
 }

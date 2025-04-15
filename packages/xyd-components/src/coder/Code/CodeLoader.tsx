@@ -4,7 +4,7 @@ import * as cn from "./Code.styles";
 import {Loader} from "../../kit";
 
 export function CodeLoader() {
-    return <div className={cn.CodeHost}>
+    return <xyd-code-loader className={cn.CodeHost}>
         <Loader/>
-    </div>
+    </xyd-code-loader>
 }

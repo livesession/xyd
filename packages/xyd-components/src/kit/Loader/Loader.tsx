@@ -8,16 +8,15 @@ export interface LoaderProps {
 
 export function Loader({size = "medium", className}: LoaderProps) {
     return (
-        <div
-            data-element="xyd-loader"
+        <xyd-loader
             data-size={size}
             className={` ${cn.LoaderHost} ${className || ""} `}
         >
-            <div data-part="dots">
-                <div data-part="dot"/>
-                <div data-part="dot"/>
-                <div data-part="dot"/>
+            <div part="dots">
+                <div part="dot"/>
+                <div part="dot"/>
+                <div part="dot"/>
             </div>
-        </div>
+        </xyd-loader>
     );
 } 

@@ -1,7 +1,7 @@
 import { css } from "@linaria/core"
 
 export const UnderlineNavHost = css`
-    [data-part="nav"] {
+    [part="nav"] {
         align-items: center;
         display: flex;
         height: 42px;
@@ -10,7 +10,7 @@ export const UnderlineNavHost = css`
         z-index: 99;
     }
 
-    [data-part="list"] {
+    [part="list"] {
         display: flex;
         gap: 10px;
         height: 100%;
@@ -20,7 +20,7 @@ export const UnderlineNavHost = css`
         white-space: nowrap;
     }
 
-    [data-part="item"] {
+    [part="item"] {
         height: 100%;
         position: relative;
 
@@ -31,7 +31,7 @@ export const UnderlineNavHost = css`
         }
     }
 
-    [data-part="link"] {
+    [part="link"] {
         display: inline-flex;
         border-bottom: 3px solid transparent;
         text-decoration: none;
@@ -44,7 +44,7 @@ export const UnderlineNavHost = css`
         }
     }
 
-    [data-part="content"] {
+    [part="content"] {
         position: relative;
         overflow: hidden;
     }
@@ -128,7 +128,7 @@ export const UnderlineNavContent = css`
         }
     }
 
-    [data-part="child"] {
+    [part="child"] {
         padding: 20px;
         transition: all 0.3s ease;
     }

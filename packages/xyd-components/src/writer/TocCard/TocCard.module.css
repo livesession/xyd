@@ -2,17 +2,17 @@
     margin-top: 16px;
     max-width: 250px;
 
-    [data-part="container"] {
+    [part="container"] {
         margin-bottom: 12px;
     }
 
-    [data-part="description"] {
+    [part="description"] {
         font-size: 12px;
         color: var(--xyd-toccard-color);
         letter-spacing: 0;
     }
 
-    [data-part="link"] {
+    [part="link"] {
         display: block;
         border: 1px solid var(--xyd-toccard-border-color);
         border-radius: 6px;
@@ -24,20 +24,20 @@
         }
     }
 
-    [data-part="title-container"] {
+    [part="title-container"] {
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
 
-    [data-part="title"] {
+    [part="title"] {
         font-size: 14px;
         font-weight: 400;
         color: var(--xyd-toccard-title-color);
         margin-bottom: 2px;
     }
 
-    [data-part="link-icon"] {
+    [part="link-icon"] {
         width: 1em;
         height: 1em;
         object-fit: contain;

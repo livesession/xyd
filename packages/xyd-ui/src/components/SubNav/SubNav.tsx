@@ -13,19 +13,16 @@ export interface SubNavProps {
 
 export function SubNav({ children, title, value, onChange, className }: SubNavProps) {
     return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
-        <nav
-            data-element="xyd-subnav"
-            className={`${cn.SubNavHost} ${className || ""}`}
-        >
-            <div data-part="prefix">
+        <xyd-subnav className={`${cn.SubNavHost} ${className || ""}`}>
+            <div part="prefix">
                 {title}
             </div>
             <RadixTabs.List asChild>
-                <ul data-part="list">
+                <ul part="list">
                     {children}
                 </ul>
             </RadixTabs.List>
-        </nav>
+        </xyd-subnav>
     </RadixTabs.Root>
 }
 
@@ -40,11 +37,13 @@ SubNav.Item = function SubNavItem({ children, value, href, as }: SubNavItemProps
     const Link = as || $Link;
 
     return <RadixTabs.Trigger asChild value={value}>
-        <li data-element="xyd-subnav-item" className={cn.SubNavLi}>
-            <Link data-part="link" href={href}>
-                {children}
-            </Link>
-        </li>
+        <xyd-subnav-item>
+            <li className={cn.SubNavLi}>
+                <Link part="link" href={href}>
+                    {children}
+                </Link>
+            </li>
+        </xyd-subnav-item>
     </RadixTabs.Trigger>
 }
 

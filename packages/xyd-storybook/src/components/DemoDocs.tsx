@@ -34,7 +34,7 @@ export function DemoNavbar() {
 }
 
 export function DemoSubNav() {
-    return <SubNav title="Apps" value="build">
+    return <SubNav title="APPS" value="build">
         <SubNav.Item value="build" href="/build">
             Build
         </SubNav.Item>

@@ -14,24 +14,23 @@ export interface NavProps {
 
 export function Nav({ children, value, onChange, logo, kind, className }: NavProps) {
     return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
-        <div
-            data-element="xyd-nav"
+        <xyd-nav
             className={`${cn.NavHost} ${className || ""}`}
             data-kind={kind}
         >
-            <div data-part="shadow" />
-            <nav data-part="nav">
-                <div data-part="logo">
+            <div part="shadow" />
+            <nav part="nav">
+                <div part="logo">
                     {logo}
                 </div>
                 <RadixTabs.List asChild>
-                    <div data-part="list">
+                    <div part="list">
                         {children}
                     </div>
                 </RadixTabs.List>
                 {kind === "middle" && <div />}
             </nav>
-        </div>
+        </xyd-nav>
     </RadixTabs.Root>
 }
 
@@ -42,18 +41,16 @@ export interface NavItemProps {
     as?: React.ElementType;
 }
 
-Nav.Item = function NavItem({ children, value, href , as }: NavItemProps) {
+Nav.Item = function NavItem({ children, value, href, as }: NavItemProps) {
     const Link = as || $Link;
 
     return <RadixTabs.Trigger asChild value={value}>
-        <Link
-            data-element="xyd-nav-item"
-            href={href}
-            className={cn.ItemHost}
-        >
-            <span data-part="title1">{children}</span>
-            <span data-part="title2">{children}</span>
-        </Link>
+        <xyd-nav-item className={cn.ItemHost}>
+            <Link href={href}>
+                <span part="title1">{children}</span>
+                <span part="title2">{children}</span>
+            </Link>
+        </xyd-nav-item>
     </RadixTabs.Trigger>
 };
 

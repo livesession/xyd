@@ -14,12 +14,12 @@ export const LoaderHost = css`
         height: 12px;
     }
 
-    [data-part="dots"] {
+    [part="dots"] {
         display: flex;
         gap: 4px;
     }
 
-    [data-part="dot"] {
+    [part="dot"] {
         width: 8px;
         height: 8px;
         background-color: currentColor;

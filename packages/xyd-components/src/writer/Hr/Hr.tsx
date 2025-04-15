@@ -7,7 +7,9 @@ export interface HrProps {
 }
 
 export function Hr({children}: HrProps) {
-    return <hr data-element="xyd-hr" className={cn.HrHost}>
-        {children}
-    </hr>
+    return <xyd-hr>
+        <hr part="hr" className={cn.HrHost}>
+            {children}
+        </hr>
+    </xyd-hr>
 }

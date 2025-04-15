@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useState, useEffect, useContext, useRef, useCallback } from "react"
 
 import * as cn from "./Toc.styles";
 
@@ -11,7 +11,9 @@ export interface TocProps {
 const Context = React.createContext({
     value: "",
     onChange: (v: string) => {
-    }
+    },
+    registerActiveItem: (ref: React.RefObject<HTMLLIElement | null>, value: string) => {},
+    unregisterActiveItem: (value: string) => {}
 })
 
 // TODO: based on scroller?
@@ -19,23 +21,30 @@ export function Toc({ children, defaultValue, className }: TocProps) {
     const [activeTrackHeight, setActiveTrackHeight] = useState(0)
     const [activeTrackTop, setActiveTrackTop] = useState(0)
     const [value, setValue] = useState(defaultValue || "")
+    const activeItemsRef = useRef<Map<string, React.RefObject<HTMLLIElement | null>>>(new Map())
 
     function onChange(v: string) {
         setValue(v)
     }
 
-    // TODO: more reactish implt?
+    const registerActiveItem = useCallback((ref: React.RefObject<HTMLLIElement | null>, itemValue: string) => {
+        activeItemsRef.current.set(itemValue, ref)
+    }, [])
+
+    const unregisterActiveItem = useCallback((itemValue: string) => {
+        activeItemsRef.current.delete(itemValue)
+    }, [])
+
+    // More React-like implementation using refs
     function handleScroll() {
-        const activeElement = document.querySelector(`[data-element="xyd-toc-item"][data-active="true"]`);
-        if (!activeElement) {
-            return;
+        const activeItemRef = activeItemsRef.current.get(value)
+        if (!activeItemRef || !activeItemRef.current) {
+            return
         }
 
-        const { offsetHeight } = activeElement as HTMLElement;
-        setActiveTrackHeight(offsetHeight);
-
-        const { offsetTop } = activeElement as HTMLElement;
-        setActiveTrackTop(offsetTop);
+        const activeElement = activeItemRef.current
+        setActiveTrackHeight(activeElement.offsetHeight)
+        setActiveTrackTop(activeElement.offsetTop)
     }
 
     // TODO: more reactish
@@ -80,12 +89,14 @@ export function Toc({ children, defaultValue, className }: TocProps) {
 
     return <Context.Provider value={{
         value: value,
-        onChange
+        onChange,
+        registerActiveItem,
+        unregisterActiveItem
     }}>
-        <div data-element="xyd-toc" className={`${cn.TocHost} ${className || ""}`}>
-            <div data-part="scroller">
+        <xyd-toc className={`${cn.TocHost} ${className || ""}`}>
+            <div part="scroller">
                 <div
-                    data-part="scroll"
+                    part="scroll"
                     style={{
                         // @ts-ignore
                         "--xyd-toc-active-track-height": `${activeTrackHeight}px`,
@@ -93,10 +104,10 @@ export function Toc({ children, defaultValue, className }: TocProps) {
                     }}
                 />
             </div>
-            <ul data-part="list">
+            <ul part="list">
                 {children}
             </ul>
-        </div>
+        </xyd-toc>
     </Context.Provider>
 }
 
@@ -113,42 +124,57 @@ Toc.Item = function TocItem({
 }: TocItemProps) {
     const {
         value: rootValue,
-        onChange
+        onChange,
+        registerActiveItem,
+        unregisterActiveItem
     } = useContext(Context);
 
+    const itemRef = useRef<HTMLLIElement>(null)
     const href = "#" + value
     const active = rootValue === value;
 
-    return <li
-        data-element="xyd-toc-item" 
-        className={`${cn.TocLi} ${className || ""}`}
-        data-active={active}
-    >
-        <a
-            data-part="link"
-            href={href}
-            onClick={(e) => {
-                // TODO: use react-router but for some reason does not work
-                e.preventDefault()
-                onChange(value)
+    useEffect(() => {
+        if (active && itemRef.current) {
+            registerActiveItem(itemRef, value)
+        }
 
-                let found = false
+        return () => {
+            unregisterActiveItem(value)
+        }
+    }, [active, value, registerActiveItem, unregisterActiveItem])
 
-                // TODO: below is only a temporary solution
-                document.querySelectorAll("h2").forEach(e => {
-                    if (found) {
-                        return
-                    }
-
-                    if (e.innerText === value) {
-                        found = true
-                        e.scrollIntoView()
-                    }
-                })
-            }}
+    return <xyd-toc-item>
+        <li
+            ref={itemRef}
+            className={`${cn.TocLi} ${className || ""}`}
+            data-active={String(active)}
         >
-            {children}
-        </a>
-    </li>
+            <a
+                part="link"
+                href={href}
+                onClick={(e) => {
+                    // TODO: use react-router but for some reason does not work
+                    e.preventDefault()
+                    onChange(value)
+
+                    let found = false
+
+                    // TODO: below is only a temporary solution
+                    document.querySelectorAll("h2").forEach(e => {
+                        if (found) {
+                            return
+                        }
+
+                        if (e.innerText === value) {
+                            found = true
+                            e.scrollIntoView()
+                        }
+                    })
+                }}
+            >
+                {children}
+            </a>
+        </li>
+    </xyd-toc-item>
 }
 

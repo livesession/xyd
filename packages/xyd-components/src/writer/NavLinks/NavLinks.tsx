@@ -24,17 +24,16 @@ export function NavLinks(
     const Link = props.as || $Anchor
 
     return (
-        <div
-            data-element="xyd-navlinks"
+        <xyd-navlinks
             className={`${cn.NavLinksHost} ${props.className || ""}`}
         >
             {props.prev ? (
                 <Link
                     href={props.prev.href}
                     title={props.prev.title}
-                    data-part="link"
+                    part="link"
                 >
-                    <ArrowLeftIcon data-part="icon" />
+                    <ArrowLeftIcon part="icon" />
                     {props.prev.title}
                 </Link>
             ) : <div />}
@@ -42,13 +41,13 @@ export function NavLinks(
                 <Link
                     href={props.next.href}
                     title={props.next.title}
-                    data-part="link"
+                    part="link"
                 >
                     {props.next.title}
-                    <ArrowRightIcon data-part="icon" />
+                    <ArrowRightIcon part="icon" />
                 </Link>
             )}
-        </div>
+        </xyd-navlinks>
     )
 }
 

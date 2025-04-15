@@ -8,19 +8,18 @@ export interface CalloutProps {
 }
 
 export function Callout({className, children}: CalloutProps) {
-    return <div 
-        data-element="xyd-callout"
+    return <xyd-callout
         className={`${cn.CalloutHost} ${className || ''}`}
     >
-        <div data-part="icon">
+        <div part="icon">
             <$IconInfo/>
         </div>
-        <div data-part="message">
-            <div data-part="message-body">
+        <div part="message">
+            <div part="message-body">
                 {children}
             </div>
         </div>
-    </div>
+    </xyd-callout>
 }
 
 function $IconInfo() {

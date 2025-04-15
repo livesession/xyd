@@ -1,23 +1,39 @@
 import React from "react"
 
-import * as cn from "./Table.styles";
+import cn from "./Table.styles";
 
 export interface TableProps {
     children: React.ReactNode;
+    className?: string;
 }
 
-export function Table({children}: TableProps) {
-    return <table className={cn.TableHost}>
+export function Table({ children, className }: TableProps) {
+    return (
+        <xyd-table className={`${cn.Host} ${className || ''}`}>
+            <table part="table">
+                {children}
+            </table>
+        </xyd-table>
+    );
+}
+
+export interface TableHeadProps {
+    children: React.ReactNode;
+}
+
+Table.Head = function TableHead({ children }: TableHeadProps) {
+    return <thead className={cn.Thead}>
         {children}
-    </table>
+    </thead>
 }
 
 export interface TableThProps {
     children: React.ReactNode;
+    numeric?: boolean;
 }
 
-Table.Th = function TableTh({children}: TableThProps) {
-    return <th className={cn.TableTh}>
+Table.Th = function TableTh({ children, numeric }: TableThProps) {
+    return <th className={`${cn.Th} ${numeric ? 'numeric' : ''}`}>
         {children}
     </th>
 }
@@ -26,20 +42,46 @@ export interface TableTrProps {
     children: React.ReactNode;
 }
 
-Table.Tr = function TableTr({children}: TableTrProps) {
-    return <tr className={cn.TableTr}>
+Table.Tr = function TableTr({ children }: TableTrProps) {
+    return <tr className={cn.Tr}>
         {children}
     </tr>
+}
 
+export interface TableBodyProps {
+    children: React.ReactNode;
+}
+
+Table.Body = function TableBody({ children }: TableBodyProps) {
+    return <tbody className={cn.Tbody}>
+        {children}
+    </tbody>
 }
 
 export interface TableTdProps {
     children: React.ReactNode;
+    numeric?: boolean;
+    muted?: boolean;
 }
 
-Table.Td = function TableTd({children}: TableTdProps) {
-    return <td className={cn.TableTd}>
+Table.Td = function TableTd({ children, numeric, muted }: TableTdProps) {
+    return <td className={`${cn.Td} ${numeric ? 'numeric' : ''} ${muted ? 'muted' : ''}`}>
         {children}
     </td>
+}
 
+export interface TableCellProps {
+    children: React.ReactNode;
+}
+
+Table.Cell = function TableCell({ children }: TableCellProps) {
+    return <xyd-table-cell className={cn.Cell}>
+        <div part="content">
+            {children}
+        </div>
+    </xyd-table-cell>
+}
+
+export interface TableModelCellProps {
+    children: React.ReactNode;
 }

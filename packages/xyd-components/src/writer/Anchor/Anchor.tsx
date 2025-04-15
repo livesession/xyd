@@ -3,30 +3,30 @@ import type {ComponentProps, ReactElement} from 'react'
 
 import * as cn from "./Anchor.styles";
 
-export type UIAnchorProps = Omit<ComponentProps<'a'>, 'ref'> & {
+export type AnchorProps = Omit<ComponentProps<'a'>, 'ref'> & {
     newWindow?: boolean
+    as?: React.ElementType
 }
 
-function Link(props: any) {
-    return <div>Link</div>
-}
+// TODO: where react-router?
 
-export const UIAnchor = forwardRef<HTMLAnchorElement, UIAnchorProps>(function (
-    {href = '', children, newWindow},
+export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(function (
+    {href = '', children, newWindow, as},
     // ref is used in <NavbarMenu />
     forwardedRef
 ): ReactElement {
+    const Link = as || $Anchor
+
     if (newWindow) {
         return (
             <Link
                 ref={forwardedRef}
-                to={href}
+                href={href}
                 target="_blank"
                 rel="noreferrer"
                 className={cn.AnchorHost}
             >
                 {children}
-                <span> (opens in a new tab)</span>
             </Link>
         )
     }
@@ -54,4 +54,10 @@ export const UIAnchor = forwardRef<HTMLAnchorElement, UIAnchorProps>(function (
     )
 })
 
-UIAnchor.displayName = 'UIAnchor'
+Anchor.displayName = 'Anchor'
+
+function $Anchor({ children, ...rest }) {
+    return <a {...rest}>
+        {children}
+    </a>
+}

@@ -136,19 +136,18 @@ export function UICollapse({
     }, []);
 
     return (
-        <div
-            data-element="xyd-collapse"
-            data-open={isOpen}
+        <xyd-collapse
+            data-open={String(isOpen)}
             className={`${cn.CollapseHost} ${className || ""}`}
             ref={containerRef}
             style={initialOpen.current || horizontal ? undefined : { height: 0 }}
         >
             <div
-                data-part="child"
+                part="child"
                 ref={innerRef}
             >
                 {children}
             </div>
-        </div>
+        </xyd-collapse>
     );
 }

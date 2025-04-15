@@ -5,8 +5,9 @@ const cubizEnter = 'cubic-bezier(.19, 1, .22, 1)';
 export const TocHost = css`
     position: relative;
     padding-left: 16px;
+    display: block;
 
-    [data-part="scroller"] {
+    [part="scroller"] {
         position: absolute;
         top: 0;
         bottom: 0;
@@ -15,7 +16,7 @@ export const TocHost = css`
         background-color: var(--xyd-toc-bgcolor);
     }
 
-    [data-part="scroll"] {
+    [part="scroll"] {
         position: absolute;
         top: 0;
         left: 0;
@@ -26,7 +27,7 @@ export const TocHost = css`
         transition: height .4s ${cubizEnter}, transform .4s ${cubizEnter};
     }
 
-    [data-part="list"] {
+    [part="list"] {
         margin: 0;
         padding: 0;
         list-style: none;
@@ -39,7 +40,7 @@ export const TocLi = css`
     margin: 0 0 12px;
     padding: 0;
 
-    [data-part="link"] {
+    [part="link"] {
         display: inline-block;
         font-size: 14px;
         color: var(--xyd-toc-item-color);
@@ -48,7 +49,7 @@ export const TocLi = css`
         transition: color .15s ease;
     }
 
-    &[data-active="true"] [data-part="link"] {
+    &[data-active="true"] [part="link"] {
         color: var(--xyd-toc-item-color--active);
         font-weight: 600;
     }

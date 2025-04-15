@@ -8,10 +8,11 @@ export interface PreProps {
 }
 
 export function Pre({ children, className }: PreProps) {
-    return <pre
-        data-element="xyd-pre"
+    return <xyd-pre
         className={`${cn.PreHost} ${className || ""}`}
     >
-        {children}
-    </pre>
+        <pre>
+            {children}
+        </pre>
+    </xyd-pre>
 }

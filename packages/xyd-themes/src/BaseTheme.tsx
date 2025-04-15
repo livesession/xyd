@@ -1,19 +1,16 @@
 import * as React from 'react'
 
 import { TocCard, VideoGuide } from '@xyd-js/components/writer';
+import { ContentDecorator } from "@xyd-js/components/content";
 import {
     LayoutPrimary
 } from "@xyd-js/components/layouts";
-import {
-    helperContent
-} from "@xyd-js/components/content"
 import {
     FwNav,
     FwNavLinks,
     FwToc,
     FwSubNav,
     FwSidebarGroups,
-
     useMatchedSubNav
 } from "@xyd-js/framework/react";
 
@@ -23,10 +20,6 @@ import { ThemeProps } from "./types";
 interface BaseThemeRenderProps {
     children: React.ReactNode;
 }
-
-const {
-    Content: HelperContent
-} = helperContent()
 
 export abstract class BaseTheme extends BaseThemeSettings {
     protected render(props: BaseThemeRenderProps): React.JSX.Element {
@@ -75,9 +68,9 @@ export abstract class BaseTheme extends BaseThemeSettings {
             {/*TODO: optional breadcrumbs*/}
             {/*{props.breadcrumbs ? <FwBreadcrumbs/> : undefined}*/}
 
-            <HelperContent>
+            <ContentDecorator>
                 {children}
-            </HelperContent>
+            </ContentDecorator>
 
             <FwNavLinks />
         </>

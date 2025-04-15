@@ -11,7 +11,7 @@ export const CodeHost = css`
     line-height: 1.6em;
     background: linear-gradient(45deg, #f7f7f8 0%, rgba(247, 247, 248, 1) 100%);
     
-    & [data-part="content"] {
+    & [part="content"] {
         position: relative;
     }
 `;

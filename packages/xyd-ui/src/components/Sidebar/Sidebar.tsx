@@ -12,21 +12,20 @@ export interface UISidebarProps {
 
 export function UISidebar({ children, footerItems, className }: UISidebarProps) {
     // TODO: in the future theming api?
-    return <div
-        data-element="xyd-sidebar"
+    return <xyd-sidebar
         className={`${cn.SidebarHost} ${className || ""}`}
     >
-        <ul data-part="list">
+        <ul part="list">
             {children}
         </ul>
         {
-            footerItems && <div data-part="footer">
+            footerItems && <div part="footer">
                 <ul>
                     {footerItems}
                 </ul>
             </div>
         }
-    </div>
+    </xyd-sidebar>
 }
 
 export interface UISidebarItemProps {
@@ -55,30 +54,32 @@ UISidebar.Item = function SidebarItem({
     const ButtonOrAnchor = button ? 'button' : Link
 
     const handler = useLinkClickHandler(href || "", {
-        viewTransition: true,
     })
 
-    return <li
-        data-element="xyd-sidebar-item"
-        className={cn.ItemHost}
-        data-active={active}
-        data-parent-active={isParentActive}
-        data-theme={activeTheme}
-    >
-        <ButtonOrAnchor
-            data-part="link"
-            href={button ? undefined : href}
-            onClick={(e) => {
-                handler(e)
-                onClick?.(e)
-            }}
+    return <xyd-sidebar-item>
+        <li
+            className={cn.ItemHost}
+            data-theme={activeTheme}
         >
-            <div data-part="first-item">
-                {firstChild}
-            </div>
-        </ButtonOrAnchor>
-        {restChilds}
-    </li>
+            <ButtonOrAnchor
+                part="link"
+                href={button ? undefined : href}
+                onClick={(e) => {
+                    handler(e)
+                    onClick?.(e)
+                }}
+            >
+                <div
+                    data-parent-active={isParentActive}
+                    data-active={active}
+                    part="first-item"
+                >
+                    {firstChild}
+                </div>
+            </ButtonOrAnchor>
+            {restChilds}
+        </li>
+    </xyd-sidebar-item>
 }
 
 export interface UISidebarItemHeaderProps {
@@ -86,9 +87,11 @@ export interface UISidebarItemHeaderProps {
 }
 
 UISidebar.ItemHeader = function SidebarItemHeader({ children }: UISidebarItemHeaderProps) {
-    return <li data-element="xyd-sidebar-item-header" className={cn.ItemHeaderHost}>
-        {children}
-    </li>
+    return <xyd-sidebar-item-header>
+        <li className={cn.ItemHeaderHost}>
+            {children}
+        </li>
+    </xyd-sidebar-item-header>
 }
 
 export interface UISidebarSubTreeProps {
@@ -97,11 +100,13 @@ export interface UISidebarSubTreeProps {
 }
 
 UISidebar.SubTree = function SidebarSubItem({ children, isOpen }: UISidebarSubTreeProps) {
-    return <ul data-element="xyd-sidebar-subtree" className={cn.TreeHost}>
-        <UICollapse isOpen={isOpen || false}>
-            {children}
-        </UICollapse>
-    </ul>
+    return <xyd-sidebar-subtree>
+        <ul className={cn.TreeHost}>
+            <UICollapse isOpen={isOpen || false}>
+                {children}
+            </UICollapse>
+        </ul>
+    </xyd-sidebar-subtree>
 }
 
 export interface SidebarFooterItemProps {
@@ -114,17 +119,15 @@ export interface SidebarFooterItemProps {
 UISidebar.FooterItem = function SidebarFooterItem({ children, href, icon, as }: SidebarFooterItemProps) {
     const Link = as || $Link;
 
-    return <li
-        data-element="xyd-sidebar-footer-item"
-        className={cn.FooterItemHost}
-    >
-        <Link data-part="item" href={href}>
-            {icon}
-            {children}
-        </Link>
-    </li>
+    return <xyd-sidebar-footer-item>
+        <li className={cn.FooterItemHost}>
+            <Link part="item" href={href}>
+                {icon}
+                {children}
+            </Link>
+        </li>
+    </xyd-sidebar-footer-item>
 }
-
 
 function $Link({ children, ...props }) {
     return <a {...props}>

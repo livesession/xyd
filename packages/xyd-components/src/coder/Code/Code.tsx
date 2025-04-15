@@ -30,44 +30,39 @@ Code.LineNumber = function CodeLineNumber(props: any) {
         return null
     }
     return (
-        <div
-            data-element="xyd-code-linenumber"
+        <xyd-code-linenumber
             className={cn.LineNumberHost}
             style={{ minWidth: `${props.width}ch` }}
         >
-            <span
-                data-part="line-number"
-            >
+            <span part="line-number">
                 {props.lineNumber}
             </span>
             <InnerLine merge={props} />
-        </div>
+        </xyd-code-linenumber>
     )
 }
 
 // TODO: fix any
 Code.Mark = function CodeMark(props: any) {
-    return <div
-        data-element="xyd-code-mark"
-        data-annotated={!!props.annotation}
+    return <xyd-code-mark
+        data-annotated={String(!!props.annotation)}
         className={`${cn.MarkHost}`}
     >
         <InnerLine
-            data-part="line"
+            part="line"
             merge={props}
         />
-    </div>
+    </xyd-code-mark>
 }
 
 // TODO: fix any
 Code.Bg = function CodeLine(props: any) {
-    return <span
-        data-element="xyd-code-bg"
-        data-annotated={!!props.annotation}
-        className={`${cn.Bg}`}
+    return <xyd-code-bg
+        data-annotated={String(!!props.annotation)}
+        className={`${cn.BgHost}`}
     >
         {props.children}
-    </span>
+    </xyd-code-bg>
 }
 
 Code.Pre = function CodePre(props: {
@@ -82,17 +77,17 @@ Code.Pre = function CodePre(props: {
         className,
         codeblock,
         handlers,
-        ...rest
     } = props;
 
     // TODO: support import { getThemeColors } from "@code-hike/lighter";
-    return <Pre
-        data-element="xyd-code-pre"
-        data-size={size}
-        style={codeblock?.style || codeblock?.style}
-        className={`${cn.CodeHost} ${className || ""}`}
-        code={codeblock}
-        handlers={handlers}
-        {...rest}
-    />
+    return <xyd-code-pre>
+        <Pre
+            part="pre"
+            data-size={size}
+            style={codeblock?.style || codeblock?.style}
+            className={`${cn.CodeHost} ${className || ""}`}
+            code={codeblock}
+            handlers={handlers}
+        />
+    </xyd-code-pre>
 }

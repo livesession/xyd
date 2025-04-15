@@ -21,41 +21,40 @@ export function GuideCard({
     size,
     className,
 }: GuideCardProps) {
-    return <div
+    return <xyd-guidecard
         className={`${cn.GuideHost} ${className || ""}`}
-        data-element="xyd-guidecard"
         data-kind={kind}
         data-size={size}
     >
-        <a data-part="link" className={cn.GuideLink} href={href}>
-            <div data-part="item">
-                {icon && <div data-part="icon">
+        <a part="link" href={href}>
+            <div part="item">
+                {icon && <div part="icon">
                     {icon}
                 </div>}
-                <div data-part="right">
-                    <div data-part="title" className={cn.GuideTitle}>
-                        <div data-part="title-body">
+                <div part="right">
+                    <div part="title">
+                        <div part="title-body">
                             {title}
                         </div>
                         <$Pointer />
                     </div>
-                    <div data-part="body">
+                    <div part="body">
                         {children}
                     </div>
                 </div>
             </div>
         </a>
-    </div>
+    </xyd-guidecard>
 }
 
 GuideCard.List = function GuideCardList({ children }: { children: React.ReactNode }) {
-    return <div data-element="xyd-guidecard-list" className={cn.GuideListHost}>
+    return <xyd-guidecard-list className={cn.GuideListHost}>
         {children}
-    </div>
+    </xyd-guidecard-list>
 }
 
 function $Pointer() {
-    return <div data-part="pointer">
+    return <div part="pointer">
         <svg
             xmlns="http://www.w3.org/2000/svg"
             width={24}

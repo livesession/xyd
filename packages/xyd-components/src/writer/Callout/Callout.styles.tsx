@@ -12,7 +12,7 @@ export const CalloutHost = css`
     border: 1px solid #ececf1;
     background-color: #f7f7f8;
     
-    [data-part="icon"] {
+    [part="icon"] {
         display: inline-flex;
         margin-right: 14px;
         flex: 0 0 auto;
@@ -22,13 +22,13 @@ export const CalloutHost = css`
         margin-top: 2px;
     }
     
-    [data-part="message"] {
+    [part="message"] {
         color: #353740;
         text-align: left;
         flex: 1 1 auto;
     }
     
-    [data-part="message-body"] {
+    [part="message-body"] {
         font-size: 14px;
         line-height: 20px;
     }

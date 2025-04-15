@@ -13,34 +13,33 @@ interface TocCardProps {
 export function TocCard({ title, description, href, className, as }: TocCardProps) {
     const Link = as || $Link;
 
-    return <div
-        data-element="xyd-toccard"
+    return <xyd-toccard
         className={`${cn.TocCardHost} ${className || ""}`}
     >
-        <div data-part="container">
+        <div part="container">
             <Link
-                data-part="link"
+                part="link"
                 href={href}
                 target="_blank"
                 rel="noreferrer"
             >
-                <div data-part="title-container">
-                    <div data-part="title">{title}</div>
+                <div part="title-container">
+                    <div part="title">{title}</div>
                     <img
                         // TODO in the future build-time src and ssr also?
-                        data-part="link-icon"
+                        part="link-icon"
                         src="https://github.com/favicon.ico"
                         alt={`${title} favicon`}
                     />
                 </div>
-                <div data-part="description">
+                <div part="description">
                     {description}
                 </div>
             </Link>
         </div>
-    </div>
+    </xyd-toccard>
 }
 
-function $Link({ children, href, ...props }: React.ComponentProps<typeof Link>) {
-    return <a {...props}>{children}</a>
+function $Link({ children, href, ...props }: React.ComponentProps<'a'>) {
+    return <a href={href} {...props}>{children}</a>
 }

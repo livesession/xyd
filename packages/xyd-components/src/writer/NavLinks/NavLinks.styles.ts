@@ -10,7 +10,7 @@ export const NavLinksHost = css`
     border-top-width: 1px;
     border-color: var(--xyd-navlinks-border-color);
 
-    [data-part="link"] {
+    [part="link"] {
         display: flex;
         gap: 8px;
         align-items: center;
@@ -23,7 +23,7 @@ export const NavLinksHost = css`
         max-width: 50%;
     }
 
-    [data-part="icon"] {
+    [part="icon"] {
         display: inline;
         height: 1.25rem;
         flex-shrink: 0;

@@ -8,32 +8,31 @@ export const SidebarHost = css`
     display: flex;
     flex-direction: column;
 
-    [data-part="list"] {
+    [part="list"] {
         overflow-y: auto;
         overflow-x: hidden;
         height: 100%;
         padding: 8px;
     }
 
-    [data-part="footer"] {
+    [part="footer"] {
         padding: 1rem;
         box-shadow: 0 -2px 10px var(--xyd-sidebar-divider-shadow-color);
         border-top: 1px solid var(--xyd-sidebar-divider-color);
     }
 `;
 
-
 export const ItemHost = css`
     color:var(--xyd-sidebar-item-color);
     font-size: 14px;
 
-    [data-part="link"] {
+    [part="link"] {
         display: flex;
         width: 100%;
         font-weight: 500;
     }
 
-    [data-part="first-item"] {
+    [part="first-item"] {
         display: flex;
         width: 100%;
         padding: 8px 12px 8px 16px;
@@ -46,7 +45,7 @@ export const ItemHost = css`
             border-radius: 4px;
         }
     }
-    &[data-active="true"] [data-part="first-item" ] {
+    [part="first-item" ][data-active="true"] {
         background: var(--xyd-sidebar-item-bgcolor--active);
         border-radius: 4px;
         position: relative;
@@ -65,11 +64,11 @@ export const ItemHost = css`
             border-radius: 10px;
         }
     }
-    &[data-parent-active="true"] [data-part="first-item"] {
+    [part="first-item"][data-parent-active="true"] {
         font-weight: 600;
         background: transparent;
     } 
-    &[data-active="true"] [data-theme="secondary"] [data-part="first-item"] {
+    &[data-theme="secondary"] [part="first-item"][data-active="true"] {
         background: unset;
         font-weight: 500;
     }
@@ -96,7 +95,7 @@ export const FooterItemHost = css`
     padding: 2px;
     color: var(--xyd-sidebar-item-color);
 
-    [data-part="item"] {
+    [part="item"] {
         display: flex;
         align-items: center;
         width: 100%;

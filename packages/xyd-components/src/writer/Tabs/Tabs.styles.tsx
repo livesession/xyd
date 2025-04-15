@@ -4,28 +4,28 @@ export const TabsSampleHost = css`
     position: relative;
     max-width: 100%;
 
-    [data-part="buttons"] {
+    [part="buttons"] {
         display: flex;
         align-items: center;
     }
 
-    [data-part="arrow"] {
+    [part="arrow"] {
         padding: 8px;
         background-color: var(--xyd-tabs-arrow-bgcolor);
         box-shadow: 0 1px 2px 0 var(--xyd-tabs-shadow-color--active);
     }
 
-    [data-part="arrow-icon"] {
+    [part="arrow-icon"] {
         width: 16px;
         height: 16px;
     }
 
-    [data-part="scroller"] {
+    [part="scroller"] {
         overflow-x: auto;
         flex-grow: 1;
     }
 
-    [data-part="scroller-container"] {
+    [part="scroller-container"] {
         display: inline-flex;
         gap: 4px;
 
@@ -36,7 +36,7 @@ export const TabsSampleHost = css`
         margin-left: 4px;
     }
 
-    [data-part="button"] {
+    [part="button"] {
         padding: 0.5rem 1rem;
 
         border-radius: 0.375rem;
@@ -62,7 +62,7 @@ export const TabsSampleHost = css`
         }
     }
 
-    [data-part="content"] {
+    [part="content"] {
         margin-top: 16px;
     }
 `;

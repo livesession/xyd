@@ -9,11 +9,11 @@ export const DetailsHost = css`
         border-radius: 8px;
     }
 
-    &[open] [data-part="summary"] svg[data-icon="true"] { 
+    &[open] [part="summary"] svg[data-icon="true"] { 
         transform: rotate(90deg);
     }
 
-    [data-part="summary"] {
+    [part="summary"] {
         padding: 16px 14px 16px 0;
         font-size: 18px;
         cursor: pointer;
@@ -32,12 +32,12 @@ export const DetailsHost = css`
         }
     }
 
-    &[data-kind="tertiary"] [data-part="summary"]{
+    &[data-kind="tertiary"] [part="summary"]{
         padding: 10px 24px;
     }
     &[data-kind="secondary"],
     &[data-kind="tertiary"] {
-        [data-part="summary"] {
+        [part="summary"] {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -46,13 +46,13 @@ export const DetailsHost = css`
         }
     }
 
-    [data-part="summary-deep"] {
+    [part="summary-deep"] {
         display: flex;
         align-items: center;
         margin-bottom: 8px;
     }
 
-    [data-part="summary-deep-text"] {
+    [part="summary-deep-text"] {
         color: var(--xyd-details-summary-color);
         text-transform: none;
         font-size: 12px;
@@ -66,15 +66,15 @@ export const DetailsHost = css`
         }
     }
 
-    [data-part="summary-deep-label"] {
+    [part="summary-deep-label"] {
         flex: 1 1 auto;
     }
 
-    // TODO: after migration to web-components should be removed cuz 'data-part="content"' can be also in another element as child
-    &[data-element="xyd-details"] > [data-part="content"] { 
+    // TODO: after migration to web-components should be removed cuz 'part="content"' can be also in another element as child
+    xyd-details > & > [part="content"] { 
         padding: 0 24px 20px;
     }
-    &[data-element="xyd-details"][data-kind="tertiary"] > [data-part="content"] {
+    xyd-details > &[data-kind="tertiary"] > [part="content"] {
         background-color: var(--xyd-details-content-bgcolor);
         padding-top: 20px;
 
@@ -83,7 +83,7 @@ export const DetailsHost = css`
         }
     }
 
-    [data-part="icon"] {
+    [part="icon"] {
         flex: 0 0 auto;
         font-size: 16px;
         display: flex;

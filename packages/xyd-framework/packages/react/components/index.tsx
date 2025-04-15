@@ -327,7 +327,7 @@ function IconSDK() {
 }
 
 function $Link({ children, ...rest }) {
-    return <Link {...rest} to={rest.href} viewTransition>
+    return <Link {...rest} to={rest.href}>
         {children}
     </Link>
 }

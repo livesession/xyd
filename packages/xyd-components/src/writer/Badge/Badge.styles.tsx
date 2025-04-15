@@ -30,7 +30,7 @@ export const BadgeHost = css`
     }
 
 
-    [data-part="child"] {
+    [part="child"] {
         position: relative;
     }
 `;

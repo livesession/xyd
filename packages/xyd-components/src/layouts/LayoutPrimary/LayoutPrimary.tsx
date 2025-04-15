@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import * as cn from "./LayoutPrimary.styles"
 
@@ -17,26 +17,25 @@ export interface LayoutPrimaryProps {
 
 // TODO: move scroller to xyd-foo
 export function LayoutPrimary(props: LayoutPrimaryProps) {
+    const scrollRef = useRef<HTMLDivElement>(null)
     const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 
-    const { hideMainHeader } = props.subheader ? useSubHeader() : { hideMainHeader: false }
+    const { hideMainHeader } = props.subheader ? useSubHeader(scrollRef) : { hideMainHeader: false }
 
     return <xyd-layout-primary
         className={`${cn.LayoutPrimaryHost} ${props.className || ""}`}
+        data-subheader={String(!!props.subheader)}
+        data-hide-subheader={String(hideMainHeader)} 
     >
-        <header
-            data-part="header"
-            data-subheader={!!props.subheader}
-            data-hidden={hideMainHeader}
-        >
-            <div data-part="header-content">
+        <header part="header">
+            <div part="header-content">
                 {props.header}
                 <button
-                    data-part="hamburger-button"
+                    part="hamburger-button"
                     aria-label="Toggle navigation menu"
                     onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
                 >
-                    <div data-part="hamburger-icon">
+                    <div part="hamburger-icon">
                         <$HamburgerLine active={isMobileNavOpen} />
                         <$HamburgerLine active={isMobileNavOpen} />
                         <$HamburgerLine active={isMobileNavOpen} />
@@ -46,47 +45,45 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
             {props.subheader}
         </header>
 
-        {/* Mobile Drawer Sidebar */}
         <div
-            data-part="mobile-overlay"
+            part="mobile-overlay"
             data-active={isMobileNavOpen}
             onClick={() => setIsMobileNavOpen(false)}
         />
         <aside
-            data-part="mobile-sidebar"
+            part="mobile-sidebar"
             data-active={isMobileNavOpen}
         >
-            <div data-part="mobile-sidebar-aside">
+            <div part="mobile-sidebar-aside">
                 {props.aside}
             </div>
             <button
-                data-part="mobile-sidebar-close-button"
+                part="mobile-sidebar-close-button"
                 aria-label="Close navigation menu"
                 onClick={() => setIsMobileNavOpen(false)}
             >
-                <div data-part="mobile-sidebar-close-icon" />
+                <div part="mobile-sidebar-close-icon" />
             </button>
         </aside>
 
-        <main data-part="main">
-            {/* Desktop Static Sidebar */}
-            <aside data-part="sidebar">
+        <main part="main">
+            <aside part="sidebar">
                 {props.aside}
             </aside>
 
-            <div data-part="page">
-                <div data-part="page-scroll">
+            <div part="page">
+                <div part="page-scroll" ref={scrollRef}>
                     <div
-                        data-part="page-container"
+                        part="page-container"
                         data-size={props.layoutSize}
                     >
-                        <div data-part="page-article-container">
-                            <article data-part="page-article">
-                                <section data-part="page-article-content">
+                        <div part="page-article-container">
+                            <article part="page-article">
+                                <section part="page-article-content">
                                     {props.content}
                                 </section>
                             </article>
-                            {props.contentNav && <nav data-part="page-article-nav">
+                            {props.contentNav && <nav part="page-article-nav">
                                 {props.contentNav}
                             </nav>}
                         </div>
@@ -99,13 +96,13 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
 
 function $HamburgerLine({ active }: { active: boolean }) {
     return <span
-        data-part="hamburger-line"
+        part="hamburger-line"
         data-active={active}
     />
 }
 
 // TODO: move to `xyd-foo` or somewhere else
-function useSubHeader() {
+function useSubHeader(ref?: React.RefObject<HTMLDivElement | null>) {
     const [hideMainHeader, setHideMainHeader] = useState(false)
     const [scrollTop, setScrollTop] = useState(0)
     const [controlScrollPos, setControlScrollPos] = useState(0)
@@ -115,7 +112,14 @@ function useSubHeader() {
             return
         }
 
-        const checkpoint = parseInt(cn.globalHeaderHeight, 10) / 2
+        // Get the header height from CSS variable
+        const headerHeight = parseInt(
+            getComputedStyle(document.documentElement)
+                .getPropertyValue('--xyd-header-height')
+                .trim() || '0',
+            10
+        );
+        const checkpoint = headerHeight / 2;
         const diff = scrollTop - controlScrollPos
         const reversePosDiff = Math.abs(scrollTop - controlScrollPos)
 
@@ -146,15 +150,18 @@ function useSubHeader() {
         setControlScrollPos(e.target?.scrollTop)
     }
 
-    // TODO: by ref?
     // TODO: MOVE SOMEWHERE ELSE BECAUSE IT DECREASE PERFORMANCE (RERENDER)
     useEffect(() => {
-        document.querySelector(`.${cn.LayoutPrimaryPageScroll}`)?.addEventListener("scroll", onScroll)
-        document.querySelector(`.${cn.LayoutPrimaryPageScroll}`)?.addEventListener("scrollend", onScrollFinish)
+        if (!ref?.current) {
+            return
+        }
+
+        ref.current.addEventListener("scroll", onScroll)
+        ref.current.addEventListener("scrollend", onScrollFinish)
 
         return () => {
-            document.querySelector(`.${cn.LayoutPrimaryPageScroll}`)?.removeEventListener("scroll", onScroll)
-            document.querySelector(`.${cn.LayoutPrimaryPageScroll}`)?.removeEventListener("scrollend", onScrollFinish)
+            ref.current?.removeEventListener("scroll", onScroll)
+            ref.current?.removeEventListener("scrollend", onScrollFinish)
         }
     }, []);
 

@@ -43,24 +43,21 @@ export function UnderlineNav({
     return (
         <UnderlineContext.Provider value={{ direction }}>
             <RadixTabs.Root value={value} onValueChange={handleValueChange}>
-                <div
-                    data-element="xyd-underlinenav"
-                    className={`${cn.UnderlineNavHost} ${className || ""}`}
-                >
-                    <nav data-part="nav">
+                <xyd-underlinenav className={`${cn.UnderlineNavHost} ${className || ""}`} >
+                    <nav part="nav">
                         <RadixTabs.List asChild>
-                            <ul data-part="list">
+                            <ul part="list">
                                 {navItems}
                             </ul>
                         </RadixTabs.List>
                     </nav>
                     <div
-                        data-part="content"
+                        part="content"
                         data-slide={slide ? "true" : "false"}
                     >
                         {otherChildren}
                     </div>
-                </div>
+                </xyd-underlinenav>
             </RadixTabs.Root>
         </UnderlineContext.Provider>
     );
@@ -79,8 +76,8 @@ UnderlineNav.Item = function UnderlineNavItem({ children, value, href, as }: Und
     // TODO: add href
     return (
         <RadixTabs.Trigger asChild value={value}>
-            <li data-part="item">
-                <Link data-part="link" href={href}>
+            <li part="item">
+                <Link part="link" href={href}>
                     {children}
                 </Link>
             </li>
@@ -101,15 +98,18 @@ UnderlineNav.Content = function UnderlineNavContent({
 
     return (
         <RadixTabs.Content
-            data-element="xyd-underlinenav-content"
-            className={cn.UnderlineNavContent}
-            data-direction={direction}
             value={value}
             forceMount={true}
+            asChild
         >
-            <div data-part="child">
-                {children}
-            </div>
+            <xyd-underlinenav-content
+                className={cn.UnderlineNavContent}
+                data-direction={direction}
+            >
+                <div part="child">
+                    {children}
+                </div>
+            </xyd-underlinenav-content>
         </RadixTabs.Content>
     );
 }

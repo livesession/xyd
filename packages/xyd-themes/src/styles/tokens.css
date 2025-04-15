@@ -1,4 +1,53 @@
 :root {
+     /* ////////////// LAYOUT ////////////// */
+     --xyd-page-body-bgcolor: #fff;
+     --xyd-layout-header-bgcolor: #fff;
+     --xyd-page-body-color: #000;
+     --xyd-page-body-color--secondary: #666;
+     --xyd-page-gutter: 8px;
+     --xyd-content-space: 12px;
+     --xyd-sidebar-width: 250px;
+     --xyd-layout-sidebar-bgcolor: #fff;
+     --xyd-header-total-height: calc(var(--xyd-nav-height) + var(--xyd-subnav-height));
+     --xyd-header-warning-height: 0px;
+     /* //////////////////////////////////////// */
+
+      /* ////////////// FONTS ////////////// */
+      /* Font Sizes */
+      --xyd-font-size-xsmall: 12px;
+      --xyd-font-size-small: 14px;
+      --xyd-font-size-medium: 16px;
+      --xyd-font-size-large: 18px;
+      --xyd-font-size-xlarge: 21px;
+      --xyd-font-size-xxlarge: 25px;
+      
+      /* Line Heights */
+      --xyd-line-height-xsmall: 16px;
+      --xyd-line-height-small: 19px;
+      --xyd-line-height-medium: 25px;
+      --xyd-line-height-large: 28px;
+      --xyd-line-height-xlarge: 34px;
+      --xyd-line-height-xxlarge: 38px;
+      
+      /* Text Colors */
+      --xyd-text-color-default: #000;
+      --xyd-text-color-ghost: #666;
+      --xyd-text-color-success: #28a745;
+      --xyd-text-color-warn: #ffc107;
+      --xyd-text-color-error: #dc3545;
+      --xyd-text-color-primary: #7051d4;
+      --xyd-text-color-secondary: #6c757d;
+      /* //////////////////////////////////////// */
+
+     /* ////////////// MEDIA QUERIES ////////////// */
+     --xyd-mobile-breakpoint: 768px;
+     --xyd-tablet-breakpoint: 1024px;
+     /* //////////////////////////////////////// */
+
+     /* /////////////// TRANSITIONS ////////////// */
+     --xyd-cubic-bezier: cubic-bezier(.65, 0, .35, 1);
+     /* //////////////////////////////////////// */
+
     /* ////////////// COMPONENTS ////////////// */
     /* Code */
     --xyd-code-background: linear-gradient(45deg, #f7f7f8 0%, #f7f7f8 100%);
@@ -8,11 +57,11 @@
     --xyd-code-copy-color: #e3e3eb;
 
     /* Code Tabs */
-    --xyd-code-tabs-border-color: #ececf1;
-    --xyd-code-tabs-bgcolor: linear-gradient(45deg, #f7f7f8 0%, #f7f7f8 100%);
-    --xyd-code-tabs-color: #353740;
-    --xyd-code-tabs-color--active: #7051d4;
-    --xyd-code-tabs-color--hover: #e3e3eb;
+    --xyd-codetabs-border-color: #ececf1;
+    --xyd-codetabs-bgcolor: linear-gradient(45deg, #f7f7f8 0%, #f7f7f8 100%);
+    --xyd-codetabs-color: #353740;
+    --xyd-codetabs-color--active: #7051d4;
+    --xyd-codetabs-color--hover: #e3e3eb;
 
 
     /* Badge */
@@ -39,7 +88,20 @@
 
     /* Heading */
     --xyd-heading-color: #000;
+    --xyd-heading-color--muted: #6e6e80;
     --xyd-heading-icon-color: #7051d4;
+
+    /* Text */
+    --xyd-text-color: #000;
+    --xyd-text-color--muted: #6e6e80;
+    --xyd-text-color--success: #28a745;
+    --xyd-text-color--warn: #ffc107;
+    --xyd-text-color--error: #dc3545;
+    --xyd-text-color--primary: #7051d4;
+    --xyd-text-color--secondary: #6c757d;
+
+    /* Anchor */
+    --xyd-anchor-color: #7051d4;
 
     /* Hr */
     --xyd-hr-border-color: rgba(229, 229, 229, 0.7);
@@ -123,6 +185,7 @@
     --xyd-sidebar-item-header-color: #111827;
 
     /* SubNav */
+    --xyd-subnav-height: 44px;
     --xyd-subnav-bgcolor: #f6f6f7;
     --xyd-subnav-prefix-color: #44474a;
     --xyd-subnav-prefix-marker-color: #d2d5d8;

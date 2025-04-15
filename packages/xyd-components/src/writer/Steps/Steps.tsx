@@ -8,12 +8,11 @@ export interface StepsProps {
 }
 
 export function Steps({ children, className }: StepsProps) {
-    return <ol
-        data-element="xyd-steps"
-        className={`${cn.StepsHost} ${className || ""}`}
-    >
-        {children}
-    </ol>
+    return <xyd-steps>
+        <ol className={`${cn.StepsHost} ${className || ""}`}>
+            {children}
+        </ol>
+    </xyd-steps>
 }
 
 export interface StepsItemProps {
@@ -22,10 +21,9 @@ export interface StepsItemProps {
 }
 
 Steps.Item = function StepsItem({ children, className }: StepsItemProps) {
-    return <li
-        data-element="xyd-steps-item"
-        className={`${cn.StepsLi} ${className || ""}`}
-    >
-        {children}
-    </li>
+    return <xyd-steps-item>
+        <li className={`${cn.StepsLi} ${className || ""}`}>
+            {children}
+        </li>
+    </xyd-steps-item>
 }

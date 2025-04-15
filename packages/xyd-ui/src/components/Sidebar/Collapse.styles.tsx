@@ -1,6 +1,7 @@
 import { css } from "@linaria/core";
 
 export const CollapseHost = css`
+    display: block;
     transform: translateZ(0);
     overflow: hidden;
     transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -11,7 +12,7 @@ export const CollapseHost = css`
         transition: none;
     }
 
-    [data-part="child"] {
+    [part="child"] {
         opacity: 0;
         transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
         will-change: opacity;
@@ -21,7 +22,7 @@ export const CollapseHost = css`
         }
     }
 
-    &[data-open="true"] [data-part="child"] {
+    &[data-open="true"] [part="child"] {
         opacity: 1;
     }
 `;

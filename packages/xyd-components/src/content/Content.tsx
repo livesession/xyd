@@ -1,12 +1,13 @@
 import React from 'react'
 
-import {HighlightedCode} from 'codehike/code';
+import { HighlightedCode } from 'codehike/code';
 
 import {
     Settings
 } from "@xyd-js/core"
 
 import {
+    Anchor,
     Badge,
     Blockquote,
     Callout,
@@ -15,12 +16,13 @@ import {
     GuideCard,
     Heading,
     Hr,
-    TableV2,
+    Table,
     Tabs,
     Steps,
     List,
     ListOl,
     UnderlineNav,
+    Text,
 
     IconCode,
     IconCustomEvent,
@@ -40,56 +42,60 @@ import {
     IconAppTemplate,
     IconQuote
 } from '../writer'
-import {CodeSample} from "../coder";
+import { CodeSample } from "../coder";
 
-import {Content as ContentComponent} from "./Content/index";
-import {Subtitle} from "./Subtitle";
-import {Anchor} from "./Anchor";
+import cn from "./ContentDecoator.styles";
+class Content {
+    constructor(protected settings?: Settings) {
 
-const EXTERNAL_HREF_REGEX = /https?:\/\//
-
-const Link = ({href = '', className = "", ...props}) => (
-    <Anchor
-        href={href}
-        newWindow={EXTERNAL_HREF_REGEX.test(href)}
-        {...props}
-    />
-)
-
-// TODO: options?
-export default function content(settings?: Settings) {
-    return {
-        ...stdContent(settings),
-        ...writerContent(),
-        ...helperContent(),
-        ...iconContent(),
-        ...coderContent(),
-
-        ...directiveContent(settings),
     }
 }
 
-export function stdContent(settings?: Settings) {
+export function ContentDecorator({children}: {children: React.ReactNode}) {
+    return <xyd-content-decorator className={cn.ContentDecoratorHost}>
+        {children}
+    </xyd-content-decorator>
+}
+
+// TODO: options?
+export default function content(settings?: Settings) {
+    const content = new Content(settings)
+
+    // TODO: automatically bind content to all functions?
+    return {
+        ...stdContent.call(content),
+        ...writerContent(),
+        ...iconContent(),
+        ...coderContent(),
+
+        ...directiveContent.call(content),
+    }
+}
+
+export function stdContent(
+    this: Content,
+) {
+    const $$Pre = $Pre.bind(this)
+
     return {
         h1: (props) => {
-            return <div><Heading id={props.children} {...props}/></div>
+            return <Heading id={props.children} {...props} />
         },
         h2: props => {
-            return <div><Heading id={props.children} size={2} {...props} /></div>
+            return <Heading id={props.children} size={2} {...props} />
         },
         h3: props => {
-            return <div><Heading id={props.children} size={3} {...props} /></div>
+            return <Heading id={props.children} size={3} {...props} />
         },
         h4: props => {
-            return <div><Heading id={props.children} size={4} {...props} /></div>
+            return <Heading id={props.children} size={4} {...props} />
         },
         h5: props => {
-            return <div><Heading id={props.children} size={5} {...props} /></div>
+            return <Heading id={props.children} size={5} {...props} />
         },
         p: props => {
-            return <p {...props} />
+            return <Text {...props} />
         },
-
         ul: props => {
             return <List {...props}>
                 {props.children}
@@ -107,58 +113,26 @@ export function stdContent(settings?: Settings) {
         },
 
         table: (props) => {
-            return <TableV2 {...props} />
+            return <Table {...props} />
         },
         tr: (props) => {
-            return <TableV2.Tr {...props} />
+            return <Table.Tr {...props} />
         },
         th: (props) => {
-            return <TableV2.Th {...props} />
+            return <Table.Th {...props} />
         },
         td: (props) => {
-            return <TableV2.Td {...props}>
-                <TableV2.Cell>
+            return <Table.Td {...props}>
+                <Table.Cell>
                     {props.children}
-                </TableV2.Cell>
-            </TableV2.Td>
+                </Table.Cell>
+            </Table.Td>
         },
 
         code: (props) => {
             return <Code {...props} />
         },
-        pre: props => {
-            let highlighted: HighlightedCode | undefined = undefined
-
-            if (props.highlighted) {
-                // if ssr highlighted code
-
-                try {
-                    const serverHighlight: HighlightedCode = JSON.parse(props.highlighted)
-
-                    if (serverHighlight) {
-                        highlighted = serverHighlight
-                    }
-                } catch (e) {
-                    console.error("Error parsing highlighted code", e)
-                }
-            }
-            const lang = (props?.children?.props?.className || "").replace("language-", "")
-
-            return <CodeSample
-                theme={settings?.theme?.markdown?.syntaxHighlight || undefined}
-                name={lang}
-                description={props?.children?.props?.meta}
-                codeblocks={[
-                    {
-                        value: props?.children?.props?.children,
-                        lang: lang,
-                        meta: lang,
-                        highlighted
-                    }
-                ]}
-                size="full" // TODO: in the future configurable
-            />
-        },
+        pre: $$Pre,
         details: (props) => {
             return <Details {...props} />
         },
@@ -169,7 +143,7 @@ export function stdContent(settings?: Settings) {
             return <Hr {...props} />
         },
         a: (props) => {
-            return <Link {...props} />
+            return <$Link {...props} />
         },
     }
 }
@@ -181,16 +155,17 @@ export function writerContent() {
         GuideCard,
         Steps,
         Tabs,
-        Table: TableV2,
+        Table,
         Badge,
         UnderlineNav,
-    }
-}
 
-export function helperContent() {
-    return {
-        Content: ContentComponent,
-        Subtitle
+        Subtitle(props) {
+            const paragraph = props?.children?.props?.children
+
+            return <Heading size={5} kind="muted" {...props}>
+                {paragraph}
+            </Heading>
+        }
     }
 }
 
@@ -223,15 +198,64 @@ export function coderContent() {
     }
 }
 
-function directiveContent(settings?: Settings) {
+function directiveContent(
+    this: Content,
+) {
     return {
         // TODO: deprecate? - but currently needed for directive cuz we do JSON.parse here
         DirectiveCodeGroup: (props) => {
             return <CodeSample
                 {...props}
-                theme={settings?.theme?.markdown?.syntaxHighlight || undefined}
+                theme={this.settings?.theme?.markdown?.syntaxHighlight || undefined}
                 codeblocks={JSON.parse(props.codeblocks)}
             />
         }
     }
 }
+
+
+function $Pre(
+    this: Content,
+    props: any
+) {
+    let highlighted: HighlightedCode | undefined = undefined
+
+    if (props.highlighted) {
+        // if ssr highlighted code
+        try {
+            const serverHighlight: HighlightedCode = JSON.parse(props.highlighted)
+
+            if (serverHighlight) {
+                highlighted = serverHighlight
+            }
+        } catch (e) {
+            console.error("Error parsing highlighted code", e)
+        }
+    }
+    const lang = (props?.children?.props?.className || "").replace("language-", "")
+
+    return <CodeSample
+        theme={this.settings?.theme?.markdown?.syntaxHighlight || undefined}
+        name={lang}
+        description={props?.children?.props?.meta}
+        codeblocks={[
+            {
+                value: props?.children?.props?.children,
+                lang: lang,
+                meta: lang,
+                highlighted
+            }
+        ]}
+        size="full" // TODO: in the future configurable
+    />
+}
+
+const EXTERNAL_HREF_REGEX = /https?:\/\//
+
+const $Link = ({ href = '', className = "", ...props }) => (
+    <Anchor
+        href={href}
+        newWindow={EXTERNAL_HREF_REGEX.test(href)}
+        {...props}
+    />
+)

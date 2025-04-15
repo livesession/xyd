@@ -26,7 +26,10 @@
     "baseUrl": ".",
     "paths": {
       "*": ["*", "*.ts"]
-    }
+    },
+    "typeRoots": [
+      "./types.d.ts"
+    ]
   },
   "include": [
     "next-env.d.ts",

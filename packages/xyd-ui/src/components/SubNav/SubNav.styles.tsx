@@ -8,11 +8,11 @@ export const SubNavHost = css`
     flex-direction: row;
 
     width: 100%;
-    height: 44px;
+    height: var(--xyd-subnav-height);
     margin-top: 3px;
     padding: 0 0.25rem;
 
-    [data-part="prefix"] {
+    [part="prefix"] {
         color: var(--xyd-subnav-prefix-color);
         font-size: 12px;
         font-weight: 600;
@@ -33,7 +33,7 @@ export const SubNavHost = css`
         }
     }
 
-    [data-part="list"] {
+    [part="list"] {
         display: flex;
         flex-direction: row;
         height: 100%;
@@ -47,7 +47,7 @@ export const SubNavLi = css`
     align-items: center;
     position: relative;
 
-    &[data-state="active"] {
+    [data-state="active"] > & {
         font-weight: 600;
 
         a {
@@ -66,7 +66,7 @@ export const SubNavLi = css`
         }
     }
 
-    [data-part="link"] {
+    [part="link"] {
         color: var(--xyd-subnav-item-color);
         line-height: 2.75rem;
         display: block;

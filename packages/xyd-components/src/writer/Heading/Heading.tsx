@@ -1,4 +1,4 @@
-import React, {} from "react"
+import React, { } from "react"
 
 import * as cn from "./Heading.styles";
 
@@ -7,28 +7,40 @@ export interface HeadingProps {
     size: 1 | 2 | 3 | 4 | 5 | 6
     as?: "div" | "span"
     id?: string
+    kind?: "muted"
     onClick?: () => void
     className?: string
 }
 
-export function Heading({children, size = 1, as, id, onClick, className}: HeadingProps) {
+export function Heading({ 
+    children,
+    size = 1,
+    as,
+    id,
+    onClick,
+    className,
+    kind
+}: HeadingProps) {
     let HeadingComponent = as ? as : `h${size}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 
-    return <HeadingComponent
-        data-element="xyd-heading"
-        className={` ${cn.HeadingHost}  ${className || ''}`}
-        data-size={size}
-        onClick={onClick}
-    >
-        {children}
+    return <xyd-heading>
+        <HeadingComponent
+            part="heading"
+            className={` ${cn.HeadingHost}  ${className || ''}`}
+            data-size={size}
+            data-kind={kind}
+            onClick={onClick}
+        >
+            {children}
 
-        {id && <$Anchor/>}
-    </HeadingComponent>
+            {id && <$Anchor />}
+        </HeadingComponent>
+    </xyd-heading>
 }
 
 function $Anchor() {
     return <svg
-        data-part="icon"
+        part="icon"
         xmlns="http://www.w3.org/2000/svg"
         width={15}
         height={15}
