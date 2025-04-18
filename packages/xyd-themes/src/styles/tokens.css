@@ -4,12 +4,22 @@
      --xyd-layout-header-bgcolor: #fff;
      --xyd-page-body-color: #000;
      --xyd-page-body-color--secondary: #666;
+
      --xyd-page-gutter: 8px;
      --xyd-content-space: 12px;
+
      --xyd-sidebar-width: 250px;
+     --xyd-sidebar-width--mobile: 250px;
      --xyd-layout-sidebar-bgcolor: #fff;
+
      --xyd-header-total-height: calc(var(--xyd-nav-height) + var(--xyd-subnav-height));
      --xyd-header-warning-height: 0px;
+
+     --xyd-layout-width-small: 800px;
+     --xyd-layout-width-medium: 1000px;
+     --xyd-layout-width-large: 1200px;
+     --xyd-layout-nav-width-medium: 256px;
+     --xyd-layout-nav-width-small: 200px;
      /* //////////////////////////////////////// */
 
       /* ////////////// FONTS ////////////// */
@@ -20,7 +30,8 @@
       --xyd-font-size-large: 18px;
       --xyd-font-size-xlarge: 21px;
       --xyd-font-size-xxlarge: 25px;
-      
+      --xyd-font-size-2xl: 30px;
+
       /* Line Heights */
       --xyd-line-height-xsmall: 16px;
       --xyd-line-height-small: 19px;
@@ -28,7 +39,7 @@
       --xyd-line-height-large: 28px;
       --xyd-line-height-xlarge: 34px;
       --xyd-line-height-xxlarge: 38px;
-      
+      --xyd-line-height-2xl: 45px;
       /* Text Colors */
       --xyd-text-color-default: #000;
       --xyd-text-color-ghost: #666;
@@ -49,12 +60,22 @@
      /* //////////////////////////////////////// */
 
     /* ////////////// COMPONENTS ////////////// */
-    /* Code */
-    --xyd-code-background: linear-gradient(45deg, #f7f7f8 0%, #f7f7f8 100%);
+    /* Callout */
+    --xyd-callout-bgcolor: #f7f7f8;
+    --xyd-callout-border-color: #ececf1;
+    --xyd-callout-icon-color: #6e6e80;
+    --xyd-callout-message-color: #353740;
+
+    /* Coder */
+    --xyd-code-bgcolor: linear-gradient(45deg, #f7f7f8 0%, rgba(247, 247, 248, 1) 100%);
     --xyd-code-border-color: #ececf1;
-    --xyd-code-mark-border-color: #60A5FA;
-    --xyd-code-mark-bgcolor: #EEF2FF;
-    --xyd-code-copy-color: #e3e3eb;
+
+    /* Coder Code */
+    --xyd-coder-code-background: linear-gradient(45deg, #f7f7f8 0%, #f7f7f8 100%);
+    --xyd-coder-code-border-color: #ececf1;
+    --xyd-coder-code-mark-border-color: #60A5FA;
+    --xyd-coder-code-mark-bgcolor: #EEF2FF;
+    --xyd-coder-code-copy-color: #e3e3eb;
 
     /* Code Tabs */
     --xyd-codetabs-border-color: #ececf1;
@@ -70,6 +91,9 @@
     --xyd-badge-color--info: #fff;
     --xyd-badge-bgcolor--info: #1971a8;
 
+    /* Breadcrumbs */
+    --xyd-breadcrumbs-color: #6B7280;
+    --xyd-breadcrumbs-color--active: #000;
     /* Details */
     --xyd-details-border-color: #ececf1;
     --xyd-details-bgcolor--secondary: #f7f7f8;
@@ -155,9 +179,6 @@
     --xyd-videoguide-miniature-bgcolor: #fff;
     --xyd-videoguide-miniature-duration: 0.3s;
     --xyd-videoguide-miniature-color: #fff;
-    --xyd-videoguide-miniature-font-lineHeight: 20px;
-    --xyd-videoguide-miniature-font-weight: 400;
-    --xyd-videoguide-miniature-font-size: 14px;
     /* //////////////////////////////////////// */
 
     /* /////////////// UI /////////////// */

@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@xyd-js/core": ["../xyd-core/index.ts"],
+    },
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "node",
@@ -11,7 +14,7 @@
     "declaration": true,
     "declarationMap": true,
     "incremental": true,
-    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
   },
   "include": ["examples/basic-example/**/*.ts", "src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

@@ -28,8 +28,6 @@ export const ApiRefPropertiesLiHost = css`
 `;
 
 export const ApiRefPropertiesDescriptionHost = css`
-    font-size: 14px;
-    line-height: 22px;
     color: var(--XydAtlas-Component-ApiRef-Properties__color-description);
 `;
 
@@ -52,7 +50,6 @@ export const ApiRefPropertiesPropNameCodeHost = css`
     display: inline-flex;
     padding: 4px 0;
     font-weight: 600;
-    font-size: 13px;
     color: var(--XydAtlas-Component-ApiRef-Properties__color-propName);
 `;
 
@@ -60,7 +57,6 @@ export const ApiRefPropertiesPropTypeCodeHost = css`
     display: inline-flex;
     padding: 4px 0;
     border-radius: 4px;
-    font-size: 10px;
     color: var(--XydAtlas-Component-ApiRef-Properties__color-propType);
 `;
 
@@ -119,10 +115,8 @@ export const ApiRefPropertiesPropToggleHost = css`
     cursor: pointer;
     color: inherit;
 
-    font-size: 13px;
-
     svg {
-        font-size: 13px;
+        font-size: var(--xyd-font-size-small);
     }
 
     &:hover {

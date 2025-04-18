@@ -25,11 +25,11 @@ export function withCodeTabs(PreComponent) {
         }
 
         return (
-            <xyd-codetabs>
+            <xyd-codetabs className={`${cn.CodeTabsHost} ${props.className || ""}`}>
                 <TabsPrimitive.Root
                     part="root"
                     data-single={String(isSingle)}
-                    className={`${cn.CodeTabsHost} ${props.className || ""}`}
+                    className={`${cn.CodeTabsRoot}`}
                     style={props.highlighted[0]?.style}
                     defaultValue={props.highlighted[0]?.meta}
                 >

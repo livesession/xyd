@@ -21,8 +21,8 @@ export const MarkHost = css`
         margin: 4px 0;
 
         &[data-annotated="true"] {
-            border-color: var(--xyd-code-mark-border-color);
-            background-color: var(--xyd-code-mark-bgcolor);
+            border-color: var(--xyd-coder-code-mark-border-color);
+            background-color: var(--xyd-coder-code-mark-bgcolor);
         }
 
         [part="line"] {
@@ -34,8 +34,8 @@ export const MarkHost = css`
 export const BgHost = css`
     @layer defaults {
         &[data-annotated="true"] {
-            border-color: var(--xyd-code-mark-border-color);
-            background-color: var(--xyd-code-mark-bgcolor);
+            border-color: var(--xyd-coder-code-mark-border-color);
+            background-color: var(--xyd-coder-code-mark-bgcolor);
         }
     }
 `
@@ -43,17 +43,15 @@ export const BgHost = css`
 export const CodeHost = css`
     @layer defaults {
         max-height: 400px;
-        background: var(--xyd-code-background); // cuz can be overwritten by style - better solution in the future?
+        background: var(--xyd-coder-code-background); // cuz can be overwritten by style - better solution in the future?
 
         margin: 0;
         padding: 8px 16px;
 
-        border-top: 1px solid var(--xyd-code-border-color);
+        border-top: 1px solid var(--xyd-coder-code-border-color);
         border-bottom-left-radius: 10px;
         border-bottom-right-radius: 10px;
 
-        font-size: 12px;
-        line-height: 20px;
         white-space: pre-wrap;
         word-break: break-all;
 

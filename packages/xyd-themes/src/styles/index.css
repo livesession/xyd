@@ -1,8 +1,24 @@
+@layer reset, defaults, components, themes, overrides;
+
 @import "@xyd-js/ui/dist/index.css";
 @import "@xyd-js/components/dist/index.css";
 @import "@xyd-js/atlas/dist/tokens.css";
 @import "@xyd-js/atlas/dist/index.css";
 
 @import "./tokens.css";
+@import "./reset.css";
 
-@layer reset, defaults, components, overrides; 
+@layer defaults {
+    body {
+        font-size: var(--xyd-font-size-small);
+        line-height: var(--xyd-line-height-small);
+    }
+}
+
+@layer components {
+    xyd-layout-primary [part="page-article-nav"] {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+}

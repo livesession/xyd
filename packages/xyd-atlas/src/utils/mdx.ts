@@ -12,9 +12,13 @@ export type MDXReference<T> = T extends object
     : MDXReferenceWrapper<T>;
 
 // TODO: unify xyd reference props with react
-export function mdxValue<T>(val: MDXReferenceWrapper<T> | null): string {
+export function uniformValue<T>(val: MDXReferenceWrapper<T> | string | null): string {
     if (!val) {
         return ""
+    }
+
+    if (typeof val === "string") {
+        return val
     }
 
     if (val.title) {
@@ -28,4 +32,17 @@ export function mdxValue<T>(val: MDXReferenceWrapper<T> | null): string {
         !<key> string
     */
     return val as unknown as string
+}
+
+
+export function uniformChild<V extends MDXReferenceWrapper<V>>(v: V) {
+    if (v.children) {
+        return v.children
+    }
+
+    if (typeof v === "object") {
+        return null
+    }
+
+    return v
 }

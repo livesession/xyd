@@ -25,7 +25,8 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
     return <xyd-layout-primary
         className={`${cn.LayoutPrimaryHost} ${props.className || ""}`}
         data-subheader={String(!!props.subheader)}
-        data-hide-subheader={String(hideMainHeader)} 
+        data-hide-subheader={String(hideMainHeader)}
+        data-layout={props.layoutSize}
     >
         <header part="header">
             <div part="header-content">
@@ -73,10 +74,7 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
 
             <div part="page">
                 <div part="page-scroll" ref={scrollRef}>
-                    <div
-                        part="page-container"
-                        data-size={props.layoutSize}
-                    >
+                    <div part="page-container">
                         <div part="page-article-container">
                             <article part="page-article">
                                 <section part="page-article-content">

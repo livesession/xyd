@@ -9,11 +9,9 @@ export interface TableProps {
 
 export function Table({ children, className }: TableProps) {
     return (
-        <xyd-table className={`${cn.Host} ${className || ''}`}>
-            <table part="table">
-                {children}
-            </table>
-        </xyd-table>
+        <table className={`${cn.Host} ${className || ''}`}>
+            {children}
+        </table>
     );
 }
 
@@ -76,7 +74,7 @@ export interface TableCellProps {
 
 Table.Cell = function TableCell({ children }: TableCellProps) {
     return <xyd-table-cell className={cn.Cell}>
-        <div part="content">
+        <div part="child">
             {children}
         </div>
     </xyd-table-cell>

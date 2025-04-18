@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { VFile } from 'vfile';
 
+import { Settings } from '@xyd-js/core';
+
 /**
  * Common options for all function plugins
  */
@@ -306,4 +308,43 @@ export async function downloadContent(
 
 export function functionMatch(value: string, functionName: string): boolean {
     return value.startsWith(functionName); // TODO: better function matching like args etc
+}
+
+/**
+ * Resolves a path alias if the given path is an alias defined in the settings.
+ * @param inputPath The path to resolve
+ * @param settings The settings object containing path aliases
+ * @param baseDir Optional base directory to resolve the final path from
+ * @returns The resolved path or the original path if no alias is found
+ */
+export function resolvePathAlias(inputPath: string, settings?: Settings, baseDir?: string): string {
+  if (!settings?.config?.paths) {
+    return inputPath;
+  }
+
+  // Find the longest matching alias
+  let resolvedPath = inputPath;
+  let longestMatch = '';
+
+  for (const [alias, aliasPaths] of Object.entries(settings.config.paths)) {
+    // Convert alias pattern to regex, replacing * with .*
+    const aliasPattern = alias.replace(/\*/g, '.*');
+    const aliasRegex = new RegExp(`^${aliasPattern}`);
+    
+    if (aliasRegex.test(inputPath) && alias.length > longestMatch.length) {
+      longestMatch = alias;
+      // Replace the alias with the first path from the array
+      const aliasPath = aliasPaths[0];
+      // Replace * in the alias path with the matched part from the input path
+      const matchedPart = inputPath.slice(alias.indexOf('*'));
+      resolvedPath = aliasPath.replace(/\*/g, matchedPart);
+    }
+  }
+
+  // If we found a match and have a base directory, resolve the path relative to it
+  if (longestMatch && baseDir) {
+    resolvedPath = path.resolve(baseDir, resolvedPath);
+  }
+
+  return resolvedPath;
 }

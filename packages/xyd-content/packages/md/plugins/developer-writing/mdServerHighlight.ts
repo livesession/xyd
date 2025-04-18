@@ -3,7 +3,7 @@ import { highlight } from "codehike/code"
 
 import { Settings } from "@xyd-js/core";
 
-export function mdServerHighlight(settings?: Settings) { // TODO: this plugin must be rehype - refactr
+export function mdServerHighlight(settings?: Settings) { 
     return function () {
         return async (tree: any) => {
             const promises: Promise<any>[] = []

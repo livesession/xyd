@@ -11,27 +11,39 @@ import {
     FwToc,
     FwSubNav,
     FwSidebarGroups,
-    useMatchedSubNav
+
+    useMatchedSubNav,
 } from "@xyd-js/framework/react";
 
-import { BaseThemeSettings } from "./settings";
+import { Theme } from "./Theme";
 import { ThemeProps } from "./types";
 
 interface BaseThemeRenderProps {
     children: React.ReactNode;
 }
 
-export abstract class BaseTheme extends BaseThemeSettings {
+export abstract class BaseTheme extends Theme {
+    public abcd: string
+
+    constructor() {
+        super()
+    }
+
     protected render(props: BaseThemeRenderProps): React.JSX.Element {
         const {
             Navbar: $Navbar,
             Sidebar: $Sidebar,
             Content: $Content,
         } = this
-
         const $ContentNav = this.ContentNav.bind(this)
-        const subheader = useMatchedSubNav() ? <FwSubNav /> : null
-        const contentNav = this.toc.isHidden() ? undefined : <$ContentNav />
+
+        const hideToc = this.useHideToc()
+        const layoutSize = this.useLayoutSize()
+
+        const matchedSubNav = useMatchedSubNav()
+
+        const subheader = matchedSubNav ? <FwSubNav /> : null
+        let contentNav = hideToc ? undefined : <$ContentNav />
 
         return <LayoutPrimary
             header={<$Navbar />}
@@ -39,12 +51,12 @@ export abstract class BaseTheme extends BaseThemeSettings {
             aside={<$Sidebar />}
             content={<$Content>{props.children}</$Content>}
             contentNav={contentNav}
-            layoutSize={this?.layout.getSize() as "large" || undefined}
+            layoutSize={layoutSize}
         />
     }
 
     // TODO: it should be protected and passed via withTheme?
-    protected mergeSettings(props: ThemeProps<BaseThemeSettings>) {
+    protected mergeSettings(props: ThemeProps<Theme>) {
         if (props.settings) {
             Object.assign(this, props.settings);
         }
@@ -57,10 +69,7 @@ export abstract class BaseTheme extends BaseThemeSettings {
     }
 
     protected Sidebar() {
-        return <FwSidebarGroups
-            // onePathBehaviour={this?.sidebar?.onePathBehaviour} TODO: finish
-            clientSideRouting={this?.sidebar?.getClientSideRouting()}
-        />
+        return <FwSidebarGroups />
     }
 
     protected Content({ children }: { children: React.ReactNode }) {
@@ -77,12 +86,6 @@ export abstract class BaseTheme extends BaseThemeSettings {
     }
 
     protected ContentNav() {
-        const toc = this?.toc?.get()
-
-        if (toc) {
-            return toc
-        }
-
         const { TocTop, TocBottom } = this
 
         return <>
@@ -95,7 +98,6 @@ export abstract class BaseTheme extends BaseThemeSettings {
             <TocBottom />
         </>
     }
-
 
     protected TocTop() {
         return <div>

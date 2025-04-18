@@ -3,7 +3,7 @@ import { css } from "@linaria/core";
 export const HeadingHost = css`
     @layer defaults {
         color: var(--xyd-heading-color);
-        line-height: 40px;
+        line-height: var(--xyd-line-height-xlarge);
         font-weight: 600;
 
         position: relative;
@@ -25,51 +25,33 @@ export const HeadingHost = css`
         }
 
         &[data-size="1"] {
-            font-size: 36px;
-
-            code {
-                font-size: 30px;
-            }
+            font-size: var(--xyd-font-size-2xl);
+            line-height: var(--xyd-line-height-2xl);
         }
 
         &[data-size="2"] {
-            font-size: 30px;
-
-            code {
-                font-size: 24px;
-            }
+            font-size: var(--xyd-font-size-xxlarge);
+            line-height: var(--xyd-line-height-xxlarge);
         }
 
         &[data-size="3"] {
-            font-size: 26px;
-
-            code {
-                font-size: 22px;
-            }
+            font-size: var(--xyd-font-size-xlarge);
+            line-height: var(--xyd-line-height-xlarge);
         }
 
         &[data-size="4"] {
-            font-size: 22px;
-
-            code {
-                font-size: 18px;
-            }
+            font-size: var(--xyd-font-size-large);
+            line-height: var(--xyd-line-height-large);
         }
 
         &[data-size="5"] {
-            font-size: 18px;
-
-            code {
-                font-size: 14px;
-            }
+            font-size: var(--xyd-font-size-medium);
+            line-height: var(--xyd-line-height-medium);
         }
 
         &[data-size="6"] {
-            font-size: 16px;
-
-            code {
-                font-size: 12px;
-            }
+            font-size: var(--xyd-font-size-small);
+            line-height: var(--xyd-line-height-small);
         }
 
         [part="icon"] {

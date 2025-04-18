@@ -1,16 +1,16 @@
 import React from "react";
 
 import {type ThemeProps} from "./types";
-import {BaseThemeSettings} from "./settings";
+import {Theme} from "./Theme";
 import {BaseTheme} from "./BaseTheme";
 
-export function withTheme<T extends BaseThemeSettings>(theme: BaseTheme) {
+export function withTheme<T extends Theme>(theme: BaseTheme) {
     return function WithThemeComponent(props: ThemeProps<T>) {
         return withThemeComponent.call(theme, props);
     };
 }
 
-function withThemeComponent<T extends BaseThemeSettings>(
+function withThemeComponent<T extends Theme>(
     this: BaseTheme,
     props: ThemeProps<T>
 ) {

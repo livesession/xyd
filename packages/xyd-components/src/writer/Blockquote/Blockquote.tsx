@@ -8,11 +8,9 @@ export interface BlockquoteProps {
 }
 
 export function Blockquote({ className, children }: BlockquoteProps) {
-    return <xyd-blockquote>
-        <blockquote
-            className={`${cn.BlockquoteHost} ${className || ''}`}
-        >
-            {children}
-        </blockquote>
-    </xyd-blockquote>
+    return <blockquote
+        className={`${cn.BlockquoteHost} ${className || ''}`}
+    >
+        {children}
+    </blockquote>
 }

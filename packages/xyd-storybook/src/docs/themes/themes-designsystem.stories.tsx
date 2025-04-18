@@ -7,14 +7,15 @@ import {
     Table,
     UnderlineNav,
 } from '@xyd-js/components/writer';
-import getContentComponents from "@xyd-js/components/content";
+import {ReactContent} from "@xyd-js/components/content";
 
+const reactContent = new ReactContent()
 const {
     h1: H1,
     h3: H3,
     h4: H4,
     p: Text,
-} = getContentComponents();
+} = reactContent.components()
 
 export default {
     title: 'Themes',

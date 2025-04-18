@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {DefinitionProperty} from "@xyd-js/uniform";
 
-import {MDXReference, mdxValue} from "@/utils/mdx"
+import {type MDXReference, uniformValue, uniformChild} from "@/utils/mdx"
 import * as cn from "./ApiRefProperties.styles";
 
 export interface ApiRefPropertiesProps {
@@ -14,15 +14,15 @@ export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
             properties?.map((property, i) => (
                 <li className={cn.ApiRefPropertiesLiHost} key={i}>
                     <dl className={cn.ApiRefPropertiesDlHost}>
-                        <PropName name="name" value={mdxValue(property.name)}/>
+                        <PropName name="name" value={uniformValue(property.name)}/>
                         <PropType
                             name="type"
-                            value={mdxValue(property.type)}
+                            value={uniformValue(property.type)}
                             href={propertyTypeHref(property)}
                         />
                     </dl>
                     <div className={cn.ApiRefPropertiesDescriptionHost}>
-                        {property.children}
+                        {uniformChild(property.description) || uniformChild(property)}
                     </div>
                     {
                         property.properties ?
@@ -76,15 +76,15 @@ function SubProperties({properties}: { properties: MDXReference<DefinitionProper
                         properties?.map((prop, i) => {
                             return <li className={cn.ApiRefPropertiesSubPropsLi} key={i}>
                                 <dl className={cn.ApiRefPropertiesDlHost}>
-                                    <PropName name="name" value={mdxValue(prop.name)}/>
+                                    <PropName name="name" value={uniformValue(prop.name)}/>
                                     <PropType
                                         name="type"
-                                        value={mdxValue(prop.type)}
+                                        value={uniformValue(prop.type)}
                                         href={propertyTypeHref(prop)}
                                     />
                                 </dl>
                                 <div className={cn.ApiRefPropertiesDescriptionHost}>
-                                    {prop.children}
+                                    {uniformChild(prop.description) || uniformChild(prop)}
                                 </div>
                                 {
                                     prop.properties ?
@@ -142,6 +142,6 @@ function propertyTypeHref(property: MDXReference<DefinitionProperty>) {
 
     // TODO: FINISH SLUG
     return property.context?.graphqlTypeShort?.title
-        ? `/docs/api/graphql/${property.context?.graphqlTypeShort?.title}-${mdxValue(property.context?.graphqlTypeFlat?.title)}`
+        ? `/docs/api/graphql/${property.context?.graphqlTypeShort?.title}-${uniformValue(property.context?.graphqlTypeFlat?.title)}`
         : undefined
 }

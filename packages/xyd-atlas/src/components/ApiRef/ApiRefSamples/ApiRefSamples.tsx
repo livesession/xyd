@@ -1,9 +1,12 @@
-import {Example, ExampleRoot} from "@xyd-js/uniform";
-import React, {useState} from "react";
+import React, { useState } from "react";
 
-import {MDXReference} from "@/utils/mdx"
-import {CodeExampleButtons, CodeSample} from "@/components/Code";
-import type {MDXCodeSampleBlock} from "@/components/Code/CodeSample/CodeSample";
+import { Example, ExampleRoot } from "@xyd-js/uniform";
+import { CodeSample } from "@xyd-js/components/coder";
+
+import { MDXReference } from "@/utils/mdx"
+import { CodeExampleButtons } from "@/components/Code";
+import type { MDXCodeSampleBlock } from "@/components/Code/CodeSample/CodeSample";
+import { useSyntaxHighlight } from "@/components/Atlas/AtlasContext";
 
 import * as cn from "./ApiRefSamples.styles";
 
@@ -11,10 +14,12 @@ export interface ApiRefSamplesProps {
     examples: MDXReference<ExampleRoot>
 }
 
-export function ApiRefSamples({examples}: ApiRefSamplesProps) {
+export function ApiRefSamples({ examples }: ApiRefSamplesProps) {
+    const syntaxHighlight = useSyntaxHighlight()
+
     return <div className={cn.ApiRefSamplesContainerHost}>
         {
-            examples.groups?.map(({description, examples}, i) => {
+            examples.groups?.map(({ description, examples }, i) => {
                 const [activeExample, setActiveExample] = useState<MDXReference<Example> | null>(examples?.[0])
 
                 const codeblocks = activeExample?.codeblock?.tabs?.map(tab => {
@@ -37,6 +42,7 @@ export function ApiRefSamples({examples}: ApiRefSamplesProps) {
                         name={String(i)}
                         description={description?.title || ""}
                         codeblocks={codeblocks || []}
+                        theme={syntaxHighlight || undefined}
                     />
                 </div>
             })

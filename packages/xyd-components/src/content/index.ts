@@ -1,5 +1,13 @@
-export * from "./Content"
+export * from "./ReactContent"
 
-export {default as MDX} from "./Content"
+export {
+    ReactContent,
 
-export {ContentDecorator} from "./Content"
+    stdContent,
+    writerContent,
+    iconContent,
+    coderContent,
+    directiveContent,
+} from "./ReactContent"
+
+export { ContentDecorator } from "./ContentDecorator"

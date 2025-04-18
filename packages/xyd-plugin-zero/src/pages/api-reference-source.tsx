@@ -1,6 +1,5 @@
 import path from "path";
 import {promises as fs} from "fs";
-
 import React, {} from "react";
 import {redirect} from "react-router";
 import remarkFrontmatter from "remark-frontmatter";
@@ -11,11 +10,11 @@ import {visit} from "unist-util-visit";
 import {recmaCodeHike, remarkCodeHike} from "codehike/mdx";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
-import {PageFrontMatter} from "@xyd-js/core";
-import getContentComponents from "@xyd-js/components/content";
+import {MetadataMap} from "@xyd-js/core";
+import {ReactContent} from "@xyd-js/components/content";
 import {mapSettingsToProps} from "@xyd-js/framework/hydration";
-import {Framework, type FwSidebarGroupProps} from "@xyd-js/framework/react";
-import {AtlasIndex} from "@xyd-js/atlas/atlas-index";
+import {Framework, type FwSidebarGroupProps, FwLink} from "@xyd-js/framework/react";
+import {Atlas} from "@xyd-js/atlas";
 import type {IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
 import Theme from "virtual:xyd-theme" // TODO: for some reasons this cannot be hydrated by react-router
@@ -28,12 +27,15 @@ interface loaderData {
     sidebarGroups: FwSidebarGroupProps[]
     breadcrumbs: IBreadcrumb[],
     navlinks?: INavLinks,
-    toc: PageFrontMatter
+    toc: MetadataMap
     slug: string
     code: string
 }
 
-const contentComponents = getContentComponents()
+const reactContent = new ReactContent(settings, {
+    Link: FwLink
+})
+const contentComponents = reactContent.components()
 
 // since unist does not support heading level > 6, we need to normalize them
 function normalizeCustomHeadings() {
@@ -132,7 +134,7 @@ async function compile(content: string): Promise<string> {
 
 interface loaderData {
     sidebarGroups: FwSidebarGroupProps[]
-    toc: PageFrontMatter
+    toc: MetadataMap
     slug: string
     code: string
 }
@@ -249,7 +251,7 @@ function mdxContent(code: string) {
 }
 
 // TODO: in the future more smoother loader - first fast server render then move to ideal position of client and then replace and 3 items at start
-export default function APIReference({loaderData}: { loaderData: loaderData }) {
+export default function APIReferenceSourcePage({loaderData}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
     const serverComponent = content ? parse(content.component, {
         components: contentComponents
@@ -264,8 +266,9 @@ export default function APIReference({loaderData}: { loaderData: loaderData }) {
         navlinks={loaderData.navlinks}
     >
         <Theme>
-            <AtlasIndex
-                data={memoizedServerComponent?.references[0]}
+            <Atlas
+                kind="secondary"
+                references={memoizedServerComponent?.references[0]}
             />
         </Theme>
     </Framework>

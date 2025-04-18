@@ -20,7 +20,7 @@
 }
 
 .SubNav li > a {
-    display: inline-block !important
+    display: inline-block;
 }
 
 @media (min-width: 1012px) {

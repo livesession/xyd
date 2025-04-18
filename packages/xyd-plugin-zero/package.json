@@ -35,6 +35,7 @@
     "@xyd-js/uniform": "workspace:*",
     "@xyd-js/sources": "workspace:*",
     "@xyd-js/themes": "workspace:*",
+    "@xyd-js/context": "workspace:*",
     "@react-router/dev": "7.1.1",
     "@react-router/node": "7.1.1",
     "@react-router/serve": "7.1.1",

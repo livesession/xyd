@@ -5,8 +5,6 @@ import { PluggableList } from "unified";
 import { VFile } from "vfile";
 import { compile as mdxCompile } from "@mdx-js/mdx";
 
-
-
 interface FsCompileOptions {
     remarkPlugins: PluggableList;
     rehypePlugins: PluggableList;

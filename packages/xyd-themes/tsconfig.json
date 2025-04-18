@@ -1,5 +1,13 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@xyd-js/framework/react": [
+        "../xyd-framework/packages/react/index.ts"
+      ],
+      "@xyd-js/context": [
+        "../xyd-context/src/index.ts"
+      ]
+    },
     "module": "esnext",
     "esModuleInterop": true,
     "moduleResolution": "bundler",

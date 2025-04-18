@@ -1,0 +1,1 @@
+export { mdMeta } from "./mdMeta";

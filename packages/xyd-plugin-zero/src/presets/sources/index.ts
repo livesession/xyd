@@ -3,7 +3,7 @@ import fs from "fs/promises";
 
 import type {Reference} from "@xyd-js/uniform";
 import {Settings} from "@xyd-js/core";
-import {sourcesToUniform} from "@xyd-js/sources"
+import {sourcesToUniform} from "@xyd-js/sources/ts"
 
 import {Preset} from "../../types"
 import {UniformPreset} from "../uniform"

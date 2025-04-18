@@ -1,6 +1,10 @@
 import { css } from "@linaria/core";
 
 export const CodeTabsHost = css`
+    display: block;
+`
+
+export const CodeTabsRoot = css`
     @layer defaults {
         overflow: hidden;
         min-width: 0;
@@ -36,7 +40,6 @@ export const CodeTabsLanguagesHost = css`
             align-items: center;
             gap: 4px;
 
-            font-size: 14px;
             color: var(--xyd-codetabs-color);
             
             margin-left: 4px;
@@ -76,7 +79,6 @@ export const CodeTabsLanguagesHost = css`
             border-radius: 6px;
             padding: 6px;
 
-            font-size: 14px;
             color: var(--xyd-codetabs-color);
             
             &[data-state="active"] {

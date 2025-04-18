@@ -102,6 +102,8 @@ function FwSidebarItem(props: FwSidebarItemProps) {
     }
 
     const handleClick = () => {
+        console.log("handleClick", props.href)
+        return
         // Only allow activation if item has an href
         if (props.href) {
             setActive()

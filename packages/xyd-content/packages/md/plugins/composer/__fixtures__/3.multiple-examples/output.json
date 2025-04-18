@@ -1,0 +1,122 @@
+{
+  "examples": [
+    {
+      "value": "function GuideCard() {\n  return <div> Guide Card </div>\n}",
+      "lang": "jsx",
+      "meta": "Card Group Sample",
+      "code": "function GuideCard() {\n  return <div> Guide Card </div>\n}",
+      "tokens": [
+        [
+          "function",
+          "#FF7B72"
+        ],
+        " ",
+        [
+          "GuideCard",
+          "#D2A8FF"
+        ],
+        [
+          "() {",
+          "#C9D1D9"
+        ],
+        "\n  ",
+        [
+          "return",
+          "#FF7B72"
+        ],
+        " ",
+        [
+          "<",
+          "#C9D1D9"
+        ],
+        [
+          "div",
+          "#7EE787"
+        ],
+        [
+          "> Guide Card </",
+          "#C9D1D9"
+        ],
+        [
+          "div",
+          "#7EE787"
+        ],
+        [
+          ">",
+          "#C9D1D9"
+        ],
+        "\n",
+        [
+          "}",
+          "#C9D1D9"
+        ]
+      ],
+      "annotations": [],
+      "themeName": "github-dark",
+      "style": {
+        "color": "#c9d1d9",
+        "background": "#0d1117",
+        "colorScheme": "dark"
+      }
+    },
+    {
+      "value": "function GuideCardV2() {\n  return <div> Guide Card V2 </div>\n}",
+      "lang": "tsx",
+      "meta": "Card Group V2 Sample",
+      "code": "function GuideCardV2() {\n  return <div> Guide Card V2 </div>\n}",
+      "tokens": [
+        [
+          "function",
+          "#FF7B72"
+        ],
+        " ",
+        [
+          "GuideCardV2",
+          "#D2A8FF"
+        ],
+        [
+          "() {",
+          "#C9D1D9"
+        ],
+        "\n  ",
+        [
+          "return",
+          "#FF7B72"
+        ],
+        " ",
+        [
+          "<",
+          "#C9D1D9"
+        ],
+        [
+          "div",
+          "#7EE787"
+        ],
+        [
+          "> Guide Card V2 </",
+          "#C9D1D9"
+        ],
+        [
+          "div",
+          "#7EE787"
+        ],
+        [
+          ">",
+          "#C9D1D9"
+        ],
+        "\n",
+        [
+          "}",
+          "#C9D1D9"
+        ]
+      ],
+      "annotations": [],
+      "themeName": "github-dark",
+      "style": {
+        "color": "#c9d1d9",
+        "background": "#0d1117",
+        "colorScheme": "dark"
+      }
+    }
+  ]
+}

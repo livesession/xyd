@@ -52,7 +52,6 @@ export const NavHost = css`
 
 export const ItemHost = css`
     @layer defaults {
-        font-size: 14px;
         position: relative;
         white-space: nowrap;
         color: var(--xyd-nav-item-color);

@@ -1,7 +1,7 @@
 import path from "path";
 import {promises as fs} from "fs";
 
-import React, {} from "react";
+import React from "react";
 import {redirect} from "react-router";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
@@ -11,11 +11,11 @@ import {visit} from "unist-util-visit";
 import {recmaCodeHike, remarkCodeHike} from "codehike/mdx";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
-import {PageFrontMatter} from "@xyd-js/core";
+import {MetadataMap} from "@xyd-js/core";
 import {BaseThemeSettings} from "@xyd-js/themes";
-import getContentComponents from "@xyd-js/components/content";
+import {ReactContent} from "@xyd-js/components/content";
 import {mapSettingsToProps} from "@xyd-js/framework/hydration";
-import {Framework, type FwSidebarGroupProps} from "@xyd-js/framework/react";
+import {Framework, type FwSidebarGroupProps, FwLink} from "@xyd-js/framework/react";
 import {AtlasLazy} from "@xyd-js/atlas";
 import type {IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
@@ -29,13 +29,15 @@ interface loaderData {
     sidebarGroups: FwSidebarGroupProps[]
     breadcrumbs: IBreadcrumb[],
     navlinks?: INavLinks,
-    toc: PageFrontMatter
+    toc: MetadataMap
     slug: string
     code: string
 }
 
-const contentComponents = getContentComponents()
-const ComponentContent = contentComponents.Content
+const reactContent = new ReactContent(settings, {
+    Link: FwLink
+})
+const contentComponents = reactContent.components()
 
 // since unist does not support heading level > 6, we need to normalize them
 function normalizeCustomHeadings() {
@@ -134,7 +136,7 @@ async function compile(content: string): Promise<string> {
 
 interface loaderData {
     sidebarGroups: FwSidebarGroupProps[]
-    toc: PageFrontMatter
+    toc: MetadataMap
     slug: string
     code: string
 }
@@ -260,7 +262,7 @@ function themeSettings(
 }
 
 // TODO: in the future more smoother loader - first fast server render then move to ideal position of client and then replace and 3 items at start
-export default function APIReference({loaderData}: { loaderData: loaderData }) {
+export default function APIReferencePage({loaderData}: { loaderData: loaderData }) {
     const content = mdxContent(loaderData.code)
     const serverComponent = content ? parse(content.component, {
         components: contentComponents

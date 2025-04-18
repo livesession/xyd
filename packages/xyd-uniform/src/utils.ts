@@ -1,6 +1,6 @@
 import path from 'path';
 import matter from 'gray-matter';
-import {Sidebar, FrontMatter, PageFrontMatter} from "@xyd-js/core";
+import {Sidebar, Metadata, MetadataMap} from "@xyd-js/core";
 
 import {Reference} from "./types";
 import uniform from "./index";
@@ -26,10 +26,10 @@ export function pluginNavigation(options: pluginNavigationOptions) {
     }
 
     return function pluginNavigationInner(cb: (cb: () => {
-        pageFrontMatter: PageFrontMatter
+        pageFrontMatter: MetadataMap
         sidebar: Sidebar[]
     }) => void) {
-        const pageFrontMatter: PageFrontMatter = {}
+        const pageFrontMatter: MetadataMap = {}
         const groupMaps: GroupMap = {}
 
         cb(() => {
@@ -43,7 +43,7 @@ export function pluginNavigation(options: pluginNavigationOptions) {
             const content = matter(ref.description || "") // TODO: pluginMatter before?
 
             if (content.data) {
-                const data = content.data as FrontMatter
+                const data = content.data as Metadata
 
                 const pagePath = path.join(options.urlPrefix, ref.canonical)
 

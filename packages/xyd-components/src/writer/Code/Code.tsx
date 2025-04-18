@@ -8,11 +8,9 @@ export interface CodeProps {
 }
 
 export function Code({ className, children }: CodeProps) {
-    return <xyd-code>
-        <code className={`${cn.CodeHost} ${className || ''}`}>
-            <span part="content">
-                {children}
-            </span>
-        </code>
-    </xyd-code>
+    return <code className={`${cn.CodeHost} ${className || ''}`}>
+        <span part="content">
+            {children}
+        </span>
+    </code>
 }

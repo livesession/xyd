@@ -1,0 +1,1 @@
+export { remarkOutputVars as outputVars } from './remarkOutputVars'

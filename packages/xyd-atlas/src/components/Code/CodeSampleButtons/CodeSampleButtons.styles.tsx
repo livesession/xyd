@@ -38,9 +38,6 @@ export const CodeSampleButtonsScrollerContainer = css`
 export const CodeSampleButtonsButtonHost = css`
     padding: 0.5rem 1rem;
     border-radius: 0.375rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    font-weight: 500;
     white-space: nowrap;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

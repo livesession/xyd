@@ -1,6 +1,7 @@
 import React from "react";
 
 import {ApiRefItem} from "@/components/ApiRef";
+import {MDXReferenceWrapper} from "@/utils/mdx";
 
 import {CommonAtlasProps} from "./types";
 

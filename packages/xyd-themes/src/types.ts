@@ -1,8 +1,8 @@
 import * as React from "react";
 
-import {BaseThemeSettings} from "./settings";
+import {Theme} from "./Theme";
 
-interface ThemeProps<T extends BaseThemeSettings> {
+interface ThemeProps<T extends Theme> {
     children: React.ReactNode;
 
     settings?: T;

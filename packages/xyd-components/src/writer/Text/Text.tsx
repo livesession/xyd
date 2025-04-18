@@ -25,7 +25,7 @@ export function Text({
     onClick
 }: TextProps) {
     return (
-        <xyd-text
+        <p
             className={`${cn.TextHost} ${className || ''}`}
             data-size={size}
             data-kind={kind}
@@ -34,7 +34,7 @@ export function Text({
             id={id}
         >
             {children}
-        </xyd-text>
+        </p>
     )
 }
 

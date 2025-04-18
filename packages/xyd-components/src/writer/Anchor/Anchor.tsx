@@ -1,5 +1,5 @@
-import React, {forwardRef} from 'react'
-import type {ComponentProps, ReactElement} from 'react'
+import React, { forwardRef } from 'react'
+import type { ComponentProps, ReactElement } from 'react'
 
 import * as cn from "./Anchor.styles";
 
@@ -8,10 +8,8 @@ export type AnchorProps = Omit<ComponentProps<'a'>, 'ref'> & {
     as?: React.ElementType
 }
 
-// TODO: where react-router?
-
 export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(function (
-    {href = '', children, newWindow, as},
+    { href = '', children, newWindow, as, ...props },
     // ref is used in <NavbarMenu />
     forwardedRef
 ): ReactElement {
@@ -22,9 +20,11 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(function (
             <Link
                 ref={forwardedRef}
                 href={href}
+                to={href}
                 target="_blank"
                 rel="noreferrer"
                 className={cn.AnchorHost}
+                {...props}
             >
                 {children}
             </Link>
@@ -35,8 +35,10 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(function (
         return (
             <Link
                 ref={forwardedRef}
+                href={href}
                 to={href}
                 className={cn.AnchorHost}
+                {...props}
             >
                 {children}
             </Link>
@@ -46,8 +48,10 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(function (
     return (
         <Link
             ref={forwardedRef}
+            href={href}
             to={href}
             className={cn.AnchorHost}
+            {...props}
         >
             {children}
         </Link>

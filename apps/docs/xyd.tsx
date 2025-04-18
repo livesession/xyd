@@ -45,8 +45,8 @@ export default {
                 d="M138.803 133H21.1972C9.49029 133 0 142.797 0 154.883V156.117C0 168.203 9.49029 178 21.1972 178H138.803C150.51 178 160 168.203 160 156.117V154.883C160 142.797 150.51 133 138.803 133Z"
                 stroke="#5D6A7D"
             />
-            <circle cx={160} cy={23} r={22} fill="#5D6A7D"/>
-            <circle cx={160} cy={23} r={22} stroke="#5D6A7D"/>
+            <circle cx={160} cy={23} r={22} fill="#5D6A7D" />
+            <circle cx={160} cy={23} r={22} stroke="#5D6A7D" />
         </svg>,
         "markdown": {
             "syntaxHighlight": "dark-plus"
@@ -58,6 +58,10 @@ export default {
             {
                 "name": "Guides",
                 "url": "/docs"
+            },
+            {
+                "name": "Components",
+                "url": "/docs/components"
             },
             {
                 "name": "Reference",
@@ -128,6 +132,19 @@ export default {
                 ]
             },
 
+            // components
+            {
+                "route": "docs/components",
+                "items": [
+                    {
+                        "group": "Components",
+                        "pages": [
+                            "docs/components/guide-card",
+                        ]
+                    }
+                ]
+            },
+
             // reference
             {
                 "route": "docs/reference",
@@ -142,5 +159,11 @@ export default {
                 ]
             },
         ],
+    },
+
+    "config": {
+        "paths": {
+            "@components/*": ["../../packages/xyd-components/src/*"],
+        }
     }
 }

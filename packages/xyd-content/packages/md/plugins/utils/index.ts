@@ -1,0 +1,3 @@
+export {
+    componentLike
+} from "./componentLike"

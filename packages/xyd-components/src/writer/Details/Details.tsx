@@ -38,43 +38,41 @@ export function Details(props: DetailsProps) {
 
     const kind = props.kind || "primary";
 
-    return <xyd-details>
-        <details
-            part="details"
-            className={`${cn.DetailsHost} ${props.className || ""}`}
-            data-kind={props.kind}
-        >
-            <summary part="summary">
-                {kind === "primary" && (
-                    <>
-                        {props.icon || <$Icon />}
-                        <div part="summary-deep-label">
-                            {label}
-                        </div>
-                    </>
-                )}
+    return <details
+        part="details"
+        className={`${cn.DetailsHost} ${props.className || ""}`}
+        data-kind={props.kind}
+    >
+        <summary part="summary">
+            {kind === "primary" && (
+                <>
+                    {props.icon || <$Icon />}
+                    <div part="summary-deep-label">
+                        {label}
+                    </div>
+                </>
+            )}
 
-                {isDeepKind && (
-                    <>
-                        <div part="summary-deep">
-                            {props.icon || <$IconDeep />}
-                            <div part="summary-deep-text">
-                                {title}
-                            </div>
+            {isDeepKind && (
+                <>
+                    <div part="summary-deep">
+                        {props.icon || <$IconDeep />}
+                        <div part="summary-deep-text">
+                            {title}
                         </div>
-                        <div part="summary-deep-label">
-                            {label}
-                        </div>
-                    </>
-                )}
-                {isDeepKind && <$Icon />}
-            </summary>
+                    </div>
+                    <div part="summary-deep-label">
+                        {label}
+                    </div>
+                </>
+            )}
+            {isDeepKind && <$Icon />}
+        </summary>
 
-            <div part="content">
-                {children}
-            </div>
-        </details>
-    </xyd-details>
+        <div part="content">
+            {children}
+        </div>
+    </details>
 }
 
 function $Icon() {

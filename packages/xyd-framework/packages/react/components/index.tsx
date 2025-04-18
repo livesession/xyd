@@ -2,7 +2,7 @@ import React, {isValidElement} from "react";
 import {Link, useLocation} from "react-router";
 
 import type {ITOC} from "@xyd-js/ui";
-import {Breadcrumbs, NavLinks} from "@xyd-js/components/writer";
+import {Breadcrumbs, NavLinks, Anchor} from "@xyd-js/components/writer";
 import {Toc, SubNav, UISidebar, Nav} from "@xyd-js/ui"
 
 import {useBreadcrumbs, useNavLinks, useSettings, useSidebarGroups, useToC} from "../contexts";
@@ -22,7 +22,7 @@ function FwNavLogo() {
     </a>
 }
 
-function FwNav({kind}: { kind?: "middle" }) {
+export function FwNav({kind}: { kind?: "middle" }) {
     const matchedSubnav = useMatchedSubNav()
     const location = useLocation()
 
@@ -55,7 +55,7 @@ function FwNav({kind}: { kind?: "middle" }) {
     </Nav>
 }
 
-function FwSubNav() {
+export function FwSubNav() {
     const matchedSubnav = useMatchedSubNav()
     const location = useLocation()
 
@@ -82,31 +82,12 @@ function FwSubNav() {
 }
 
 export interface FwSidebarGroupsProps {
-    onePathBehaviour?: boolean
-    clientSideRouting?: boolean
 }
 
-function recursiveSearch(items: FwSidebarItemProps[], href: string, levels: any[] = []) {
-    for (let i = 0; i < items.length; i++) {
-        const item = items[i]
+export function FwSidebarGroups(props: FwSidebarGroupsProps) {
+    const location = useLocation()
 
-        if (item.href === href) {
-            return [...levels, i]
-        }
-
-        if (item.items) {
-            const result = recursiveSearch(item.items, href, [...levels, i])
-            if (result) {
-                return result
-            }
-        }
-    }
-    return null
-}
-
-function FwSidebarGroups(props: FwSidebarGroupsProps) {
     const groups = useSidebarGroups()
-
     const settings = useSettings()
 
     const footerItems = settings.navigation?.anchors?.bottom?.map(anchor => {
@@ -148,7 +129,6 @@ function FwSidebarGroups(props: FwSidebarGroupsProps) {
         </UISidebar.FooterItem>
     })
 
-    const location = useLocation()
     const initialActiveItems: any[] = []
     groups.forEach((group, groupIndex) => {
         const activeLevels = recursiveSearch(group.items, location.pathname) || []
@@ -166,10 +146,8 @@ function FwSidebarGroups(props: FwSidebarGroupsProps) {
 
         return group
     })
-
+    
     return <FwSidebarGroupContext
-        onePathBehaviour={props.onePathBehaviour}
-        clientSideRouting={props.clientSideRouting}
         initialActiveItems={initialActiveItems}
     >
         <UISidebar footerItems={footerItems && footerItems}>
@@ -189,7 +167,7 @@ type FlatTOC = {
     value: string
 }
 
-function FwToc() {
+export function FwToc() {
     const toc = useToC()
 
     if (!toc) {
@@ -235,7 +213,7 @@ function FwToc() {
     </Toc>
 }
 
-function FwBreadcrumbs() {
+export function FwBreadcrumbs() {
     const breadcrumbs = useBreadcrumbs()
 
     return <Breadcrumbs
@@ -243,18 +221,24 @@ function FwBreadcrumbs() {
     />
 }
 
-function FwNavLinks() {
+export function FwNavLinks() {
     const navlinks = useNavLinks()
 
     if (navlinks?.prev || navlinks?.next) {
         return <NavLinks
             prev={navlinks.prev}
             next={navlinks.next}
-            as={$Link}
+            as={FwLink}
         />
     }
 
     return null
+}
+
+export function FwLink({ children, ...rest }) {
+    return <Anchor {...rest} as={Link}>
+        {children}
+    </Anchor>
 }
 
 // TODO: issues with below svgs inside settigns - REFACTOR THIS
@@ -326,19 +310,21 @@ function IconSDK() {
     </svg>
 }
 
-function $Link({ children, ...rest }) {
-    return <Link {...rest} to={rest.href}>
-        {children}
-    </Link>
+function recursiveSearch(items: FwSidebarItemProps[], href: string, levels: any[] = []) {
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+
+        if (item.href === href) {
+            return [...levels, i]
+        }
+
+        if (item.items) {
+            const result = recursiveSearch(item.items, href, [...levels, i])
+            if (result) {
+                return result
+            }
+        }
+    }
+    return null
 }
 
-export {
-    FwNav,
-    FwSubNav,
-
-    FwBreadcrumbs,
-    FwToc,
-    FwNavLinks,
-
-    FwSidebarGroups,
-}

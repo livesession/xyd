@@ -12,7 +12,7 @@ export interface HeadingProps {
     className?: string
 }
 
-export function Heading({ 
+export function Heading({
     children,
     size = 1,
     as,
@@ -23,19 +23,16 @@ export function Heading({
 }: HeadingProps) {
     let HeadingComponent = as ? as : `h${size}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 
-    return <xyd-heading>
-        <HeadingComponent
-            part="heading"
-            className={` ${cn.HeadingHost}  ${className || ''}`}
-            data-size={size}
-            data-kind={kind}
-            onClick={onClick}
-        >
-            {children}
+    return <HeadingComponent
+        className={` ${cn.HeadingHost}  ${className || ''}`}
+        data-size={size}
+        data-kind={kind}
+        onClick={onClick}
+    >
+        {children}
 
-            {id && <$Anchor />}
-        </HeadingComponent>
-    </xyd-heading>
+        {id && <$Anchor />}
+    </HeadingComponent>
 }
 
 function $Anchor() {

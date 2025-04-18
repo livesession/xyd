@@ -3,8 +3,8 @@ export {
 } from "./BaseTheme"
 
 export {
-    BaseThemeSettings
-} from "./settings"
+    Theme
+} from "./Theme"
 
 export type {
     ThemeProps

@@ -23,6 +23,9 @@ export interface Settings {
 
     /** SEO configuration */
     seo?: SEO
+
+    /** Config configuration */
+    config?: Config
 }
 
 // ------ START setting for theme START ------
@@ -278,7 +281,7 @@ export interface CallToAction {
  */
 export interface Anchor {
     /** The Font Awesome or JSX icon used to feature the anchor */
-    icon?: string 
+    icon?: string
 
     /** The name of the anchor label */
     name?: string
@@ -338,10 +341,12 @@ export interface Search {
 
 
 // ------ START  setting for API START ------
+type APIFileAlias = { [id: string]: string }
+
 /**
  * API file type - can be a string, array of strings, or a map of strings
  */
-export type APIFile = string | string[] | { [id: string]: string }
+export type APIFile = string | string[] | APIFileAlias
 
 /**
  * API configuration interface
@@ -494,3 +499,35 @@ export interface SEO {
 }
 
 // ------ END  setting for redirects END ------
+
+// ------ START  setting for config START ------
+type ConfigPaths = { [key: string]: string[] }
+/**
+ * Config configuration
+ */
+export interface Config {
+    /** 
+     * Path aliases for imports. Avoid long relative paths by creating shortcuts.
+     * 
+     * ```json
+     * {
+     *   "paths": {
+     *     "@my-package/*": ["../my-package/src/*"],
+     *     "@livesession-go/*": ["https://github.com/livesession/livesession-go/*"]
+     *   }
+     * }
+     * ```
+     * 
+     * Usage:
+     * ```typescript
+     * // Instead of
+     * @importCode("../../../my-package/src/components/Badge.tsx")
+     * 
+     * // Use
+     * @importCode("@my-package/src/components/Badge.tsx")
+     * ```
+     */
+    paths?: ConfigPaths
+}
+
+// ------ END  setting for config END ------

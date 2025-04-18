@@ -2,7 +2,7 @@ import React, {} from 'react';
 import type {Meta} from '@storybook/react';
 
 import {
-    TableV2
+    Table
 } from '@xyd-js/components/writer';
 
 export default {
@@ -15,36 +15,36 @@ export const Default = () => {
         paddingTop: "0px",
         margin: "0 auto",
     }}>
-        <TableV2>
-        <TableV2.Head>
-            <TableV2.Tr>
-                <TableV2.Th>Model</TableV2.Th>
-                <TableV2.Th numeric>Training</TableV2.Th>
-                <TableV2.Th numeric>Input</TableV2.Th>
-                <TableV2.Th numeric>Cached input</TableV2.Th>
-                <TableV2.Th numeric>Output</TableV2.Th>
-            </TableV2.Tr>
-        </TableV2.Head>
-        <TableV2.Body>
-            <TableV2.Tr>
-                <TableV2.Td>
-                    <TableV2.Cell>gpt-4o-2024-08-06</TableV2.Cell>
-                </TableV2.Td>
-                <TableV2.Td numeric>
-                    <TableV2.Cell>$25.00</TableV2.Cell>
-                </TableV2.Td>
-                <TableV2.Td numeric>
-                    <TableV2.Cell>$3.75</TableV2.Cell>
-                </TableV2.Td>
-                <TableV2.Td numeric muted>
-                    <TableV2.Cell>$1.875</TableV2.Cell>
-                </TableV2.Td>
-                <TableV2.Td numeric>
-                    <TableV2.Cell>$15.00</TableV2.Cell>
-                </TableV2.Td>
-            </TableV2.Tr>
-        </TableV2.Body>
-    </TableV2>
+        <Table>
+        <Table.Head>
+            <Table.Tr>
+                <Table.Th>Model</Table.Th>
+                <Table.Th numeric>Training</Table.Th>
+                <Table.Th numeric>Input</Table.Th>
+                <Table.Th numeric>Cached input</Table.Th>
+                <Table.Th numeric>Output</Table.Th>
+            </Table.Tr>
+        </Table.Head>
+        <Table.Body>
+            <Table.Tr>
+                <Table.Td>
+                    <Table.Cell>gpt-4o-2024-08-06</Table.Cell>
+                </Table.Td>
+                <Table.Td numeric>
+                    <Table.Cell>$25.00</Table.Cell>
+                </Table.Td>
+                <Table.Td numeric>
+                    <Table.Cell>$3.75</Table.Cell>
+                </Table.Td>
+                <Table.Td numeric muted>
+                    <Table.Cell>$1.875</Table.Cell>
+                </Table.Td>
+                <Table.Td numeric>
+                    <Table.Cell>$15.00</Table.Cell>
+                </Table.Td>
+            </Table.Tr>
+        </Table.Body>
+    </Table>
     </div>
 }
 

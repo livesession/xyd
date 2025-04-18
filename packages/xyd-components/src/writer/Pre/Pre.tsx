@@ -8,11 +8,7 @@ export interface PreProps {
 }
 
 export function Pre({ children, className }: PreProps) {
-    return <xyd-pre
-        className={`${cn.PreHost} ${className || ""}`}
-    >
-        <pre>
-            {children}
-        </pre>
-    </xyd-pre>
+    return <pre className={`${cn.PreHost} ${className || ""}`}>
+        {children}
+    </pre>
 }

@@ -33,7 +33,6 @@
     align-items: center;
     justify-content: center;
     margin: 0;
-    font-size: 12.5px;
     font-weight: 600;
     text-align: center;
     transition: ease .1s;
@@ -68,7 +67,6 @@ button.Selected {
     align-items: center;
     justify-content: center;
     margin: 0;
-    font-size: 12.5px;
     font-weight: 600;
     text-align: center;
     opacity: .32;

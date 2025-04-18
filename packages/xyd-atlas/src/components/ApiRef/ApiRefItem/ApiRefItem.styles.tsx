@@ -1,7 +1,6 @@
 import {css} from "@linaria/core";
 
 export const ApiRefItemTitleHost = css`
-    font-size: 30px;
     font-weight: 400;
 `;
 
@@ -16,7 +15,6 @@ export const ApiRefItemNavbarContainer = css`
     padding: 8px;
     border: 1px solid var(--XydAtlas-Component-ApiRef-Item__color-border);
     border-radius: 8px;
-    font-size: 13px;
 `;
 
 export const ApiRefItemNavbarLabel = css`
@@ -49,7 +47,6 @@ export const ApiRefItemPropertiesItem = css`
 `;
 
 export const ApiRefItemSubtitleHost = css`
-    font-size: 15px;
     font-weight: 600;
 `;
 

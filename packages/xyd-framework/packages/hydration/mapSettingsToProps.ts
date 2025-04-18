@@ -1,6 +1,6 @@
 // server-only
 
-import {Sidebar, PageFrontMatter, Settings, SidebarMulti} from "@xyd-js/core";
+import {Sidebar, MetadataMap, Settings, SidebarMulti} from "@xyd-js/core";
 import {filterNavigationByLevels, pageFrontMatters} from "@xyd-js/content";
 import {IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
@@ -8,78 +8,7 @@ import {FwSidebarGroupProps} from "../react";
 
 // TODO: framework vs content responsibility
 
-function filterNavigation(settings: Settings, slug: string): Sidebar[] {
-    const sidebarItems: Sidebar[] = []
-
-    let multiSidebarMatch: SidebarMulti | null = null
-
-    settings?.navigation?.sidebar.filter(sidebar => {
-        if ("route" in sidebar) {
-            const sideMatch = normalizeHref(sidebar.route)
-            const normalizeSlug = normalizeHref(slug)
-
-            // TODO: startWith is not enough e.g `/docs/apps/buildISSUE` if `/docs/apps/build`
-            if (normalizeSlug.startsWith(sideMatch)) {
-                if (multiSidebarMatch) {
-                    const findByMatchLvl = multiSidebarMatch.route.split("/").length
-                    const urlMatchLvl = sideMatch.split("/").length
-
-                    if (urlMatchLvl > findByMatchLvl) {
-                        multiSidebarMatch = sidebar
-                    }
-                } else {
-                    multiSidebarMatch = sidebar
-                }
-            }
-
-            return
-        }
-
-        // TODO: better algorithm
-        const ok = filterNavigationByLevels(settings?.navigation?.header || [], slug)(sidebar)
-
-        if (ok) {
-            sidebarItems.push(sidebar)
-        }
-    })
-
-    if (multiSidebarMatch != null) {
-        const side = multiSidebarMatch as SidebarMulti
-        sidebarItems.push(...side.items)
-    }
-
-    return sidebarItems
-}
-
-// TODO: rename this because it's no longer 'navigation' because it returns breadcrumbs, sidebar and nextlinks props
-// TODO: breadcrumbs and frontmatters as content plugins?
-// TODO: idea - calculate breadcrumbs and navlinks near server-side component?
-
-function normalizeHrefCheck(first: string, second: string) {
-    if (first.startsWith("/")) {
-        first = first.slice(1)
-    }
-
-    if (second.startsWith("/")) {
-        second = second.slice(1)
-    }
-
-    return first === second
-}
-
-function normalizeHref(href: string) {
-    if (href.startsWith("/")) {
-        return href
-    }
-
-    return `/${href}`
-}
-
-function safePageLink(page: string): string {
-    return page?.startsWith("/") ? page : `/${page}`
-}
-
-// mapSettingsToProps maps @xyd-js/core settings into @xyd-js/ui props
+// mapSettingsToProps maps @xyd-js/core settings into xyd props
 export async function mapSettingsToProps(
     settings: Settings,
     slug: string
@@ -188,12 +117,83 @@ export async function mapSettingsToProps(
     }
 }
 
+function filterNavigation(settings: Settings, slug: string): Sidebar[] {
+    const sidebarItems: Sidebar[] = []
+
+    let multiSidebarMatch: SidebarMulti | null = null
+
+    settings?.navigation?.sidebar.filter(sidebar => {
+        if ("route" in sidebar) {
+            const sideMatch = normalizeHref(sidebar.route)
+            const normalizeSlug = normalizeHref(slug)
+
+            // TODO: startWith is not enough e.g `/docs/apps/buildISSUE` if `/docs/apps/build`
+            if (normalizeSlug.startsWith(sideMatch)) {
+                if (multiSidebarMatch) {
+                    const findByMatchLvl = multiSidebarMatch.route.split("/").length
+                    const urlMatchLvl = sideMatch.split("/").length
+
+                    if (urlMatchLvl > findByMatchLvl) {
+                        multiSidebarMatch = sidebar
+                    }
+                } else {
+                    multiSidebarMatch = sidebar
+                }
+            }
+
+            return
+        }
+
+        // TODO: better algorithm
+        const ok = filterNavigationByLevels(settings?.navigation?.header || [], slug)(sidebar)
+
+        if (ok) {
+            sidebarItems.push(sidebar)
+        }
+    })
+
+    if (multiSidebarMatch != null) {
+        const side = multiSidebarMatch as SidebarMulti
+        sidebarItems.push(...side.items)
+    }
+
+    return sidebarItems
+}
+
+// TODO: rename this because it's no longer 'navigation' because it returns breadcrumbs, sidebar and nextlinks props
+// TODO: breadcrumbs and frontmatters as content plugins?
+// TODO: idea - calculate breadcrumbs and navlinks near server-side component?
+
+function normalizeHrefCheck(first: string, second: string) {
+    if (first.startsWith("/")) {
+        first = first.slice(1)
+    }
+
+    if (second.startsWith("/")) {
+        second = second.slice(1)
+    }
+
+    return first === second
+}
+
+function normalizeHref(href: string) {
+    if (href.startsWith("/")) {
+        return href
+    }
+
+    return `/${href}`
+}
+
+function safePageLink(page: string): string {
+    return page?.startsWith("/") ? page : `/${page}`
+}
+
 // TODO: support next-prev for different 'groups' levels
 function mapNavToLinks(
     page: string | Sidebar,
     currentNav: Sidebar,
     nav: Sidebar[],
-    frontmatters: PageFrontMatter
+    frontmatters: MetadataMap
 ): INavLinks | undefined {
     if (!currentNav.group) {
         console.error("current nav need group to calculate navlinks")

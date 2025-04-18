@@ -1,10 +1,10 @@
-import React, { createContext, useContext } from "react";
+import React, {createContext, useContext} from "react";
 
-import { Settings } from "@xyd-js/core";
-import { type ITOC, type IBreadcrumb, type INavLinks, ProgressBar } from "@xyd-js/ui";
+import {Metadata, Settings} from "@xyd-js/core";
+import {type ITOC, type IBreadcrumb, type INavLinks, ProgressBar} from "@xyd-js/ui";
 
-import { FwSidebarGroupProps } from "../components/Sidebar";
-import { useNavigation } from "react-router";
+import {FwSidebarGroupProps} from "../components/Sidebar";
+import {useNavigation} from "react-router";
 
 export interface IFramework {
     settings: Settings
@@ -16,6 +16,8 @@ export interface IFramework {
     breadcrumbs?: IBreadcrumb[]
 
     navlinks?: INavLinks
+
+    metadata?: Metadata
 }
 
 // TODO: page context + app context?
@@ -30,6 +32,8 @@ export interface FrameworkProps {
 
     settings: Settings,
     sidebarGroups: FwSidebarGroupProps[],
+    metadata: Metadata
+
     toc?: ITOC[],
     breadcrumbs?: IBreadcrumb[],
     navlinks?: INavLinks
@@ -41,12 +45,14 @@ export function Framework(props: FrameworkProps) {
     return <FrameworkContext.Provider value={{
         settings: props.settings,
         sidebarGroups: props.sidebarGroups,
+        metadata: props.metadata,
+
         toc: props.toc,
         breadcrumbs: props.breadcrumbs,
         navlinks: props.navlinks,
     }}>
         {/* TODO: in the futre in another place? */}
-        <ProgressBar isActive={navigation.state === 'loading'} /> 
+        <ProgressBar isActive={navigation.state === 'loading'}/>
 
         {props.children}
     </FrameworkContext.Provider>
@@ -80,4 +86,10 @@ export function useNavLinks() {
     const ctx = useContext(FrameworkContext)
 
     return ctx.navlinks
+}
+
+export function useMetadata() {
+    const ctx = useContext(FrameworkContext)
+
+    return ctx.metadata
 }

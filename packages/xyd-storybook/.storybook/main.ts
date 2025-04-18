@@ -77,11 +77,11 @@ function toPascalCase(str) {
 const supportedDirectives = {
     Details: true,
     details: true,
-    TableV2: true
+    Table: true
 }
 
 const tableComponents: { [key: string]: boolean } = {
-    TableV2: true
+    Table: true
 }
 
 const parseMarkdown = (content: string) => {
@@ -110,21 +110,21 @@ export function remarkDirectiveWithMarkdown() {
 
                 const jsxNode = {
                     type: 'mdxJsxFlowElement',
-                    name: 'TableV2',
+                    name: 'Table',
                     attributes: [],
                     children: [
                         {
                             type: 'mdxJsxFlowElement',
-                            name: 'TableV2.Head',
+                            name: 'Table.Head',
                             attributes: [],
                             children: [
                                 {
                                     type: 'mdxJsxFlowElement',
-                                    name: 'TableV2.Tr',
+                                    name: 'Table.Tr',
                                     attributes: [],
                                     children: header.map((cell: string) => ({
                                         type: 'mdxJsxFlowElement',
-                                        name: 'TableV2.Th',
+                                        name: 'Table.Th',
                                         attributes: [],
                                         children: parseMarkdown(cell)
                                     }))
@@ -133,11 +133,11 @@ export function remarkDirectiveWithMarkdown() {
                         },
                         ...rows.map((row: string[]) => ({
                             type: 'mdxJsxFlowElement',
-                            name: 'TableV2.Tr',
+                            name: 'Table.Tr',
                             attributes: [],
                             children: row.map((cell: string) => ({
                                 type: 'mdxJsxFlowElement',
-                                name: 'TableV2.Td',
+                                name: 'Table.Td',
                                 attributes: [],
                                 children: parseMarkdown(cell)
                             }))

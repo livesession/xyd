@@ -1,4 +1,4 @@
-import { css } from "@linaria/core";
+import {css} from "@linaria/core";
 
 // TODO: in the futre better media queries
 const tabletBreakpoint = '1024px';
@@ -23,14 +23,16 @@ export const LayoutPrimaryHost = css`
             z-index: 20;
             background: var(--xyd-layout-header-bgcolor);
 
-            @media (max-width: 768px) {
+            @media (max-width: ${mobileBreakpoint}) {
                 padding: 0;
             }
         }
+
         &[data-hide-subheader="true"] [part="header"] {
             transform: translateY(calc(-1 * var(--xyd-nav-height) + 3px));
         }
-        &[data-subheader="true"] [part="header"]  {
+
+        &[data-subheader="true"] [part="header"] {
             flex-direction: column;
             height: var(--xyd-header-total-height);
             transition: transform 200ms;
@@ -77,9 +79,11 @@ export const LayoutPrimaryHost = css`
                 &:first-child {
                     transform: translateY(11px) rotate(45deg);
                 }
+
                 &:nth-child(2) {
                     opacity: 0;
                 }
+
                 &:last-child {
                     transform: translateY(-11px) rotate(-45deg);
                 }
@@ -100,6 +104,7 @@ export const LayoutPrimaryHost = css`
                 padding-top: calc(var(--xyd-nav-height) + var(--xyd-header-warning-height) + var(--xyd-page-gutter));
             }
         }
+
         &[data-subheader="true"][data-hide-subheader="false"] [part="main"] {
             top: calc(var(--xyd-header-total-height) + var(--xyd-header-warning-height));
 
@@ -108,19 +113,19 @@ export const LayoutPrimaryHost = css`
             }
         }
 
-            [part="sidebar"] {
-                flex: none;
-                width: var(--xyd-sidebar-width);
-                background: var(--xyd-layout-sidebar-bgcolor);
-                display: flex;
-                flex-direction: column;
-                position: relative;
-                height: 100%;
-                
-                @media (max-width: ${tabletBreakpoint}) {
-                    display: none;
-                }
+        [part="sidebar"] {
+            flex: none;
+            width: var(--xyd-sidebar-width);
+            background: var(--xyd-layout-sidebar-bgcolor);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            height: 100%;
+
+            @media (max-width: ${tabletBreakpoint}) {
+                display: none;
             }
+        }
 
         [part="mobile-sidebar"] {
             display: none;
@@ -131,7 +136,7 @@ export const LayoutPrimaryHost = css`
                 top: 0;
                 bottom: 0;
                 left: 0;
-                width: var(--xyd-sidebar-width);
+                width: var(--xyd-sidebar-width--mobile);
                 background: var(--xyd-layout-sidebar-bgcolor);
                 flex-direction: column;
                 z-index: 50;
@@ -244,13 +249,13 @@ export const LayoutPrimaryHost = css`
         }
 
         [part="page-container"] {
-            max-width: 1000px;
+            max-width: var(--xyd-layout-width-medium);
             margin: 0 auto;
             padding: 0 var(--xyd-page-gutter);
+        }
 
-            &[data-size="large"] {
-                max-width: 1200px;
-            }
+        &[data-layout="large"] [part="page-container"] {
+            max-width: var(--xyd-layout-width-large);
         }
 
         [part="page-article-container"] {
@@ -268,7 +273,7 @@ export const LayoutPrimaryHost = css`
                 padding: 24px 0;
                 gap: 24px;
             }
-        
+
         }
 
         [part="page-article"] {
@@ -282,7 +287,7 @@ export const LayoutPrimaryHost = css`
 
         [part="page-article-nav"] {
             flex: none;
-            width: 256px;
+            width: var(--xyd-layout-nav-width-medium);
             position: sticky;
             top: 0;
             height: fit-content;
@@ -292,7 +297,7 @@ export const LayoutPrimaryHost = css`
             padding-top: var(--xyd-content-space);
 
             @media (max-width: ${tabletBreakpoint}) {
-                width: 200px;
+                width: var(--xyd-layout-nav-width-small);
                 padding-right: 16px;
             }
 

@@ -9,13 +9,13 @@ import matter from 'gray-matter';
 import {VFile} from "vfile";
 import {compile as mdxCompile} from "@mdx-js/mdx";
 
-import {FrontMatter, Sidebar, PageFrontMatter, Header} from "@xyd-js/core";
+import {Metadata, Sidebar, MetadataMap, Header} from "@xyd-js/core";
 
 // TODO: better algorithm + data structures - since it's on build time it's not a big deal nevertheless it should be changed in the future
 
 // pageFrontMatters gets frontmatters for given navigation
-export async function pageFrontMatters(navigation: Sidebar[]): Promise<PageFrontMatter> {
-    const frontmatters: PageFrontMatter = {}
+export async function pageFrontMatters(navigation: Sidebar[]): Promise<MetadataMap> {
+    const frontmatters: MetadataMap = {}
 
     const promises: Promise<any>[] = []
 
@@ -107,7 +107,7 @@ function mdxExport(code: string) {
     return fn(scope)
 }
 
-async function getFrontmatter(filePath: string): Promise<FrontMatter> {
+async function getFrontmatter(filePath: string): Promise<Metadata> {
     const body = await fs.readFile(filePath, "utf-8");
 
     const vfile = new VFile({
@@ -134,7 +134,7 @@ async function getFrontmatter(filePath: string): Promise<FrontMatter> {
         frontmatter
     } = mdxExport(code)
 
-    const matter: FrontMatter = frontmatter
+    const matter: Metadata = frontmatter
 
     let title = ""
     if (typeof matter.title === "string" ) {
@@ -152,7 +152,7 @@ async function getFrontmatter(filePath: string): Promise<FrontMatter> {
     return matter
 }
 
-async function job(page: string, frontmatters: PageFrontMatter) {
+async function job(page: string, frontmatters: MetadataMap) {
     // TODO: it can be cwd because on build time it has entire path?
     let filePath = path.join(process.cwd(), `${page}.mdx`) // TODO: support md toos
     try {

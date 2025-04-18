@@ -50,7 +50,7 @@
     --xyd-heading-icon-color: var(--color-primary);
 }
 
-@layer overrides {
+@layer themes {
     /* Layout */
     xyd-layout-primary {
         [part="header"] {

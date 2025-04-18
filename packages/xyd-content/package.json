@@ -25,6 +25,7 @@
     "@xyd-js/gql": "workspace:*",
     "@xyd-js/openapi": "workspace:*",
     "@xyd-js/sources": "workspace:*",
+    "@xyd-js/context": "workspace:*",
     "estree-util-is-identifier-name": "^3.0.0",
     "estree-util-value-to-estree": "^3.1.2",
     "gray-matter": "^4.0.3",

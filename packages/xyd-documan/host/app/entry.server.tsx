@@ -1,5 +1,4 @@
 import { PassThrough } from "node:stream";
-import '@lit-labs/ssr-react/enable-lit-ssr.js';
 
 import type { AppLoadContext, EntryContext } from "react-router";
 import { createReadableStreamFromReadable } from "@react-router/node";

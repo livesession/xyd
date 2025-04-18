@@ -182,7 +182,9 @@ export function vitePluginTheme() {
                                 import Theme from '@xyd-js/theme-gusto'; 
                                 import { withTheme } from "@xyd-js/themes"
 
-                                export default withTheme(new Theme());
+                                export default Theme
+                                
+                                // export default withTheme(new Theme());
                             `;
                         }
                         case "poetry": {
@@ -190,7 +192,9 @@ export function vitePluginTheme() {
                                 import Theme from '@xyd-js/theme-poetry'; 
                                 import { withTheme } from "@xyd-js/themes"
 
-                                export default withTheme(new Theme());
+                                export default Theme
+
+                                // export default withTheme(new Theme());
                             `;
                         }
                         default: {
@@ -199,7 +203,9 @@ export function vitePluginTheme() {
                                 import Theme from '@xyd-js/poetry/theme'; 
                                 import { withTheme } from "@xyd-js/themes"
 
-                                export default withTheme(new Theme());
+                                export default Theme
+
+                                // export default withTheme(new Theme());
                             `;
                         }
                     }

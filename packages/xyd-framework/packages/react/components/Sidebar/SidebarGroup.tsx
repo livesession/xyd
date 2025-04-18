@@ -1,38 +1,25 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-import { FwSidebarGroupProps, FwSidebarItemProps } from "./Sidebar";
+import { FwSidebarItemProps } from "./Sidebar";
 
 export interface FwGroupContext {
     active: (item: FwSidebarItemProps) => [boolean, () => void],
 }
-
-type GroupBehaviour = (item: FwSidebarItemProps) => [boolean, () => void]
 
 const GroupContext = createContext<FwGroupContext>({
     active: () => [false, () => {
     }],
 })
 
-export function FwSidebarGroupContext({
-    children,
-    onePathBehaviour,
-    initialActiveItems,
-}:
-    {
-        children: React.ReactNode,
-        onePathBehaviour?: boolean,
-        clientSideRouting?: boolean // TODO: scrollRouting?,
-        initialActiveItems: any[]
-    }) {
+interface FwSidebarGroupContextProps {
+    children: React.ReactNode,
+    initialActiveItems: any[]
+}
 
-    let groupBehaviour: GroupBehaviour
+export function FwSidebarGroupContext(props: FwSidebarGroupContextProps) {
+    const { children, initialActiveItems } = props
 
-    if (onePathBehaviour) {
-        throw new Error("One path behaviour is not implemente yet")
-    } else {
-        groupBehaviour = useDefaultBehaviour(initialActiveItems)
-    }
+    const groupBehaviour = useDefaultBehaviour(initialActiveItems) // TODO: support different behaviours?
 
     return <GroupContext value={{
         active: groupBehaviour,
@@ -49,12 +36,6 @@ export function useGroup() {
 // TODO: !!! better algorithm (JSON.stringify is not good) !!!!!
 // TODO: !!!! use array structure instad! !!!
 
-function getLastValue(set) {
-    let value;
-    for (value of set);
-    return value;
-}
-
 function stringify(item: FwSidebarItemProps) {
     return JSON.stringify({
         title: item.title,
@@ -63,62 +44,39 @@ function stringify(item: FwSidebarItemProps) {
     })
 }
 
-function recursiveSearch(items: FwSidebarItemProps[], href: string, levels: any[] = []) {
-    for (let i = 0; i < items.length; i++) {
-        const item = items[i]
-
-        if (item.href === href) {
-            return [...levels, i]
-        }
-
-        if (item.items) {
-            const result = recursiveSearch(item.items, href, [...levels, i])
-            if (result) {
-                return result
-            }
-        }
-    }
-    return null
-}
-
-function calcActive(groups: FwSidebarGroupProps[], url: any) {
-    const initialActiveItems: any[] = []
-
-    groups.forEach(group => {
-        const activeLevels = recursiveSearch(group.items, url) || []
-
-        activeLevels.reduce((acc, index) => {
-            initialActiveItems.push({
-                ...acc[index],
-                active: true
-            })
-            return acc[index].items
-        }, group.items)
-
-        return group
-    })
-
-    return initialActiveItems
+// Helper function to create a map from initialActiveItems
+function createItemsMap(items: any[]): Map<string, string> {
+    const map = new Map<string, string>();
+    items.forEach(item => {
+        const key = `${item.groupIndex}-${item.level}`;
+        map.set(key, stringify(item));
+    });
+    return map;
 }
 
 // TOOD: issues if same page url on initialitems
 // TODO: the time of chaning is not perfectly the same with react-router 
+// TODO: better data structure + algorithm
 function useDefaultBehaviour(initialActiveItems: any[]) {
-    const location = useLocation()
-    const [activeItems] = useState(() => {
-        const map = new Map<string, string>();
-        initialActiveItems.forEach(item => {
-            const key = `${item.groupIndex}-${item.level}`;
-            map.set(key, stringify(item));
-        });
-        return map;
-    });
+    const [activeItems, setActiveItems] = useState(() => createItemsMap(initialActiveItems));
+    
     const [currentGroupIndex, setCurrentGroupIndex] = useState<number | null>(() => {
         return initialActiveItems[0]?.groupIndex ?? null;
     });
     const [, setForceUpdate] = useState(0);
 
     const forceUpdate = () => setForceUpdate((prev) => prev + 1);
+
+    // Update activeItems and currentGroupIndex when initialActiveItems changes
+    useEffect(() => {
+        setActiveItems(createItemsMap(initialActiveItems));
+        
+        if (initialActiveItems.length > 0) {
+            setCurrentGroupIndex(initialActiveItems[0]?.groupIndex ?? null);
+        }
+        
+        forceUpdate();
+    }, [initialActiveItems]);
 
     const addItem = (item: FwSidebarItemProps) => {
         // If switching groups, clear all items
@@ -144,21 +102,16 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
         return activeItem === stringify(item);
     };
 
-    useEffect(() => {
-
-    }, [location.pathname])
-
     return (item: FwSidebarItemProps): [boolean, () => void] => [
         hasItem(item) || false,
         () => {
             if (!hasItem(item)) {
                 addItem(item);
-
-                return
+                return;
             }
 
             if (!item.level) {
-                return
+                return;
             }
 
             deleteItem(item);

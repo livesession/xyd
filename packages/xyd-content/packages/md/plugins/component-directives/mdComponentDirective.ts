@@ -28,13 +28,17 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
 
     steps: true,
 
-    "guide-card": "GuideCard",
+    "guide-card": "GuideCard", 
 
-    "code-group": "DirectiveCodeGroup",
+    "code-group": "DirectiveCodeGroup", 
 
     nav: "UnderlineNav",
 
-    atlas: true
+    atlas: true,
+
+    badge: true,
+
+    grid: "GridDecorator"
 }
 
 const tableComponents: MarkdownComponentDirectiveMap = {
@@ -122,7 +126,8 @@ function recreateComponent(
                 node,
                 attributes,
                 promises,
-                file
+                file,
+                settings,
             );
         }
 
@@ -305,7 +310,6 @@ function mdTable(node: any) {
     return;
 }
 
-// TODO: server side highlight?
 function mdCode(node: any, promises: Promise<any>[], settings?: Settings) {
     const componentName = getComponentName(node.name, supportedDirectives);
 
@@ -313,8 +317,10 @@ function mdCode(node: any, promises: Promise<any>[], settings?: Settings) {
     const codeblocks: any[] = [];
 
     function rewriteNode() {
+        console.log(node, 8888)
         // Add metadata to the node
         node.data = {
+            ...node.data,
             hName: componentName,
             hProperties: {
                 description,
@@ -355,7 +361,8 @@ function componentProps(
     node: any,
     attributes: any[],
     promises: Promise<void>[],
-    file: VFile
+    file: VFile,
+    settings?: Settings,
 ) {
 
     const jsxProps = []
@@ -365,7 +372,7 @@ function componentProps(
 
         if (stringNonJsxProp) {
             if (functionMatch(value as string, FunctionName.Uniform)) {
-                const promise = mdUniformAttribute(key, value as string, attributes, file);
+                const promise = mdUniformAttribute(key, value as string, attributes, file, settings);
 
                 if (promise) {
                     promises.push(promise)
@@ -394,7 +401,8 @@ function mdUniformAttribute(
     attrKey: string,   // like `references`
     attrValue: string, // like `@uniform("index.ts")`
     attributes: any,
-    file: VFile
+    file: VFile,
+    settings?: Settings
 ) {
 
     const result = parseFunctionCall({
@@ -418,7 +426,8 @@ function mdUniformAttribute(
             const references = await processUniformFunctionCall(
                 importPath,
                 file,
-                ""
+                "",
+                settings,
             );
 
             if (references && references.length > 0) {

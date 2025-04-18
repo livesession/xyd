@@ -19,7 +19,19 @@ export function Atlas<T>(props: AtlasProps<T>) {
         AtlasComponent = AtlasPrimary;
     }
 
+    let references = props.references
+    {
+        // TODO: find better solution - if we pass from md then its string
+        if (references && typeof references === "string") { // TODO: DO IT BETTER
+            try {
+                references = JSON.parse(references)
+            } catch (error) {
+                console.error("Error parsing references", error)
+            }
+        }
+    }
+
     return <div className={cn.AtlasHost}>
-        <AtlasComponent references={props.references} />
+        <AtlasComponent references={references}/>
     </div>
 }

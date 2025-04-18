@@ -3,7 +3,7 @@ import {ChevronLeft, ChevronRight} from "lucide-react"
 
 import {Example} from "@xyd-js/uniform";
 
-import {MDXReference, mdxValue} from "@/utils/mdx";
+import {MDXReference, uniformValue} from "@/utils/mdx";
 
 import * as cn from "./CodeSampleButtons.styles";
 
@@ -63,7 +63,7 @@ export function CodeExampleButtons({examples, activeExample, onClick}: CodeExamp
                                 example={example}
                                 activeExample={activeExample}
                             >
-                                {mdxValue(example.codeblock.title || null)}
+                                {uniformValue(example.codeblock.title || null)}
                             </SampleButton>
                         ))}
                     </div>
