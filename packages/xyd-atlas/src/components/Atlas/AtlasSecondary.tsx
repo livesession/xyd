@@ -9,7 +9,7 @@ import {
     IconQuote
 } from "@xyd-js/components/writer";
 
-import {CommonAtlasProps} from "@/components/Atlas/types";
+import {MDXCommonAtlasProps} from "@/components/Atlas/types";
 import {uniformValue, uniformChild} from "@/utils/mdx";
 import {CodeSample} from "@xyd-js/components/coder";
 import {useSyntaxHighlight} from "./AtlasContext";
@@ -21,7 +21,7 @@ interface CodeSourceContext {
     sourcecode: string;
 }
 
-export function AtlasSecondary({references}: CommonAtlasProps<CodeSourceContext>) {
+export function AtlasSecondary({references}: MDXCommonAtlasProps<CodeSourceContext>) {
     const syntaxHighlight = useSyntaxHighlight()
 
     return <>

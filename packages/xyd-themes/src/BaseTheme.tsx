@@ -45,6 +45,7 @@ export abstract class BaseTheme extends Theme {
         const subheader = matchedSubNav ? <FwSubNav /> : null
         let contentNav = hideToc ? undefined : <$ContentNav />
 
+        
         return <LayoutPrimary
             header={<$Navbar />}
             subheader={subheader}

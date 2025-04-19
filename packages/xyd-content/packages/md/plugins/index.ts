@@ -49,14 +49,14 @@ function remarkPlugins(
         outputVars,
         mdComponentDirective(settings),
         mdComposer(settings),
-        mdMeta(settings),
         ...remarkFunctionPlugins(settings),
+        mdMeta(settings),
     ]
 }
 
 function remarkFunctionPlugins(settings?: Settings) {
     return [
-        mdFunctionImportCode,
+        mdFunctionImportCode(settings),
         mdFunctionUniform(settings)
     ]
 }

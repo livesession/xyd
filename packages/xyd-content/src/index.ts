@@ -9,3 +9,4 @@ export {
     filterNavigationByLevels
 } from "./navigation"
 
+export type { VarCode } from "./types"

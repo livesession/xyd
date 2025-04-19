@@ -2,16 +2,36 @@ import React from "react"
 
 import * as cn from "./GuideCard.styles";
 
+/**
+ * Props for the GuideCard component
+ */
 export interface GuideCardProps {
+    /** Content to be displayed in the card body */
     children: React.ReactNode;
+
+    /** URL the card links to */
     href: string
+
+    /** Title displayed at the top of the card */
     title: string;
+
+    /** Optional icon displayed to the left of the content */
     icon?: React.ReactNode;
+
+    /** Visual style variant of the card */
     kind?: "secondary"
+
+    /** Size variant of the card */
     size?: "sm" | "md"
+
+    /** Additional CSS class names to apply to the card */
     className?: string
 }
 
+/**
+ * A card component that displays content with a title and optional icon.
+ * The entire card is clickable and links to the specified URL.
+ */
 export function GuideCard({
     children,
     href,
@@ -47,12 +67,19 @@ export function GuideCard({
     </xyd-guidecard>
 }
 
+/**
+ * A container component for grouping multiple GuideCard components.
+ * Provides consistent spacing and layout for a list of guide cards.
+ */
 GuideCard.List = function GuideCardList({ children }: { children: React.ReactNode }) {
     return <xyd-guidecard-list className={cn.GuideListHost}>
         {children}
     </xyd-guidecard-list>
 }
 
+/**
+ * Internal component that renders the arrow pointer icon.
+ */
 function $Pointer() {
     return <div part="pointer">
         <svg

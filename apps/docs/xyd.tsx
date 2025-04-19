@@ -140,6 +140,7 @@ export default {
                         "group": "Components",
                         "pages": [
                             "docs/components/guide-card",
+                            "docs/components/guide-example",
                         ]
                     }
                 ]

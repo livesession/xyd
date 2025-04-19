@@ -22,7 +22,7 @@ import "virtual:xyd-theme-override/index.css"
 import { withTheme } from "@xyd-js/themes";
 
 const theme = new Theme()
-const themeComponents =  theme.components()
+const themeComponents = theme.components()
 
 const ThemeComponent = withTheme(theme)
 
@@ -250,37 +250,6 @@ export default function DocsPage({ loaderData, ...rest }: { loaderData: loaderDa
     const content = mdxContent(loaderData.code)
     const Content = MemoMDXComponent(content.component)
 
-    // console.log(content, 999)
-    // const Content2 = new Function(loaderData.abcCode)
-
-    const code2 = `
-    const {jsxDEVs: jsxDEV} = arguments[0];
-
-return function AtlasInner() {
-  return /* @__PURE__ */jsxDEV("div", {
-    children: /* @__PURE__ */jsxDEV("h1", {
-      children: "abc"
-    }, void 0, false, {
-      fileName: "/Users/zdunecki/Code/livesession/xyd/packages/xyd-plugin-zero/src/pages/docs.tsx",
-      lineNumber: 327,
-      columnNumber: 9
-    }, this)
-  }, void 0, false, {
-    fileName: "/Users/zdunecki/Code/livesession/xyd/packages/xyd-plugin-zero/src/pages/docs.tsx",
-    lineNumber: 326,
-    columnNumber: 12
-  }, this);
-} 
-
-
-`
-
-    const scope = {
-        jsxDEVs: createElementWithKeys,
-    }
-    const fn = new Function(...Object.keys(scope), code2)
-    const p =  fn(scope)
-
     // console.log(p, 222)
     if (!Content) {
         console.error("Content not found")
@@ -301,22 +270,12 @@ return function AtlasInner() {
                 components={{
                     ...contentComponents,
                     ...themeComponents,
-                    // Atlas: abc?.component,
-                    // Atlas: (props) => {
-                    //     return <div>
-                    //         Modified
-                    //     </div>
-                    // },
-                    // Atlas: w
                 }}
             />
         </ThemeComponent>
     }
 
-
-
-    // console.log(AtlasInner.toString(), 999)
-
+    // TODO: move `AtlasContext` to framework?
     return <AtlasContext
         value={{
             syntaxHighlight: settings?.theme?.markdown?.syntaxHighlight || null
@@ -334,12 +293,4 @@ return function AtlasInner() {
             <ScrollRestoration />
         </Framework>
     </AtlasContext>
-}
-
-function AtlasInner() {
-    return <div>
-        <h1>
-            abc
-        </h1>
-    </div>
 }

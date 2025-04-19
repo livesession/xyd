@@ -21,89 +21,113 @@ export interface ExampleCode {
 // Main plugin function
 export function mdComposer(settings?: Settings): Plugin {
     return () => async (tree: UnistNode, file: SymbolxVfile<any>) => {
-        const promises: Promise<any>[] = []
         const varQueue: Record<string, any> = {}
 
-        // The current queue can contain either HighlightedCode objects or arrays
-        let currentQueue: (HighlightedCode | any[])[] = []
-        let currentVarName: string = ""
+        // Create a context object to store the current state for each variable
+        const contexts: Record<string, {
+            queue: (HighlightedCode | any[])[];
+            promises: Promise<any>[];
+        }> = {}
 
         visit(tree, "outputVars", (node: any) => {
-            currentVarName = node.name
-            varQueue[currentVarName] = []
-            currentQueue = varQueue[currentVarName]
+            const varName = node.name
+            varQueue[varName] = []
+            contexts[varName] = {
+                queue: varQueue[varName],
+                promises: []
+            }
 
-            throughNodes(node)
+            throughNodes(node, contexts[varName])
         })
 
         visit(tree, 'containerDirective', (node: any) => {
-            // TODO: in the future more generic? (code-group name), maybe like node.codeGroup = true?
             if (node.name !== "code-group") {
                 return
             }
 
-            console.log(58585585, node)
+            // Find the most recently created context
+            const lastVarName = Object.keys(contexts).pop()
+            if (!lastVarName) return
 
+            const context = contexts[lastVarName]
             const group = [node.attributes.title]
-            currentQueue.push(group)
+            context.queue.push(group)
+
+            if (node.data?.hName === "DirectiveCodeGroup") {
+                const codeblocksJSON = node.data.hProperties.codeblocks
+
+                if (codeblocksJSON) {
+                    const codeblocks = JSON.parse(codeblocksJSON)
+
+                    if (!codeblocks || !codeblocks.length) {
+                        return
+                    }
+
+                    for (const codeblock of codeblocks) {
+                        group.push(codeblock)
+                    }
+                }
+
+                return
+            }
 
             for (const child of node.children) {
                 if (child.type !== 'code') {
                     continue
                 }
 
-                highlightCode(child, group)
+                highlightCode(child, group, context)
             }
         });
 
-        async function highlightCode(node: any, group?: any[]) {
+        async function highlightCode(node: any, group?: any[], context?: typeof contexts[string]) {
             const highlighted = await highlight({
                 value: node.value,
                 lang: node.lang,
                 meta: node.meta,
             }, settings?.theme?.markdown?.syntaxHighlight || "github-dark")
 
-            if (group) {
-                // Add the highlighted code to the current group
+            if (group && context) {
                 group.push(highlighted)
-
                 return
             }
 
-            // Add the highlighted code directly to the queue
-            currentQueue.push(highlighted)
+            if (context) {
+                context.queue.push(highlighted)
+            }
         }
 
-        function nodeCode(node: any) {
-            promises.push(highlightCode(node))
+        function nodeCode(node: any, context: typeof contexts[string]) {
+            context.promises.push(highlightCode(node, undefined, context))
         }
 
-        function nodeList(node: any) {
+        function nodeList(node: any, context: typeof contexts[string]) {
             for (const item of node.children) {
                 if (item.type != "listItem") {
                     continue
                 }
 
-                throughNodes(item)
+                throughNodes(item, context)
             }
         }
 
-        function throughNodes(node: any) {
+        function throughNodes(node: any, context: typeof contexts[string]) {
             for (const child of node.children) {
                 switch (child.type) {
                     case "code": {
-                        nodeCode(child)
+                        nodeCode(child, context)
                         break
                     }
                     case "list": {
-                        nodeList(child)
+                        nodeList(child, context)
                         break
                     }
                 }
             }
         }
 
-        await Promise.all(promises)
+        // Wait for all promises from all contexts to resolve
+        await Promise.all(Object.values(contexts).flatMap(ctx => ctx.promises))
 
         // Process the results to create the final output structure
         const outputVars = {}

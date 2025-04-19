@@ -23,7 +23,7 @@ export function ApiRefSamples({ examples }: ApiRefSamplesProps) {
                 const [activeExample, setActiveExample] = useState<MDXReference<Example> | null>(examples?.[0])
 
                 const codeblocks = activeExample?.codeblock?.tabs?.map(tab => {
-                    return tab.code as unknown as MDXCodeSampleBlock // TODO: because atlas use mdx uniform reference - we need to unify it !!!
+                    return tab as any // TODO: !!! FIX !!!
                 })
 
                 return <div key={i} className={cn.ApiRefSamplesGroupHost}>

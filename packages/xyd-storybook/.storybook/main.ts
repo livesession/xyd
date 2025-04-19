@@ -31,7 +31,6 @@ function remarkInjectMeta() { // TODO: move to @xyd-js/content
     };
 }
 
-// TODO: get from @xyd-js/content/md but curently error when importing a `content` lib: Error [ERR_PACKAGE_PATH_NOT_EXPORTED]: No "exports" main defined in /Users/zdunecki/Code/livesession/xyd/node_modules/.pnpm/estree-util-build-jsx@3.0.1/node_modules/estree-walker/package.json
 export function mdCodeGroup() {
     return (tree: any) => {
         visit(tree, 'containerDirective', (node) => {

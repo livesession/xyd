@@ -1,0 +1,994 @@
+{
+    "type": "mdxJsxFlowElement",
+    "name": "GridDecorator",
+    "attributes": [],
+    "children": [
+        {
+            "type": "list",
+            "ordered": false,
+            "start": null,
+            "spread": true,
+            "children": [
+                {
+                    "type": "listItem",
+                    "spread": false,
+                    "checked": null,
+                    "children": [
+                        {
+                            "type": "list",
+                            "ordered": false,
+                            "start": null,
+                            "spread": true,
+                            "children": [
+                                {
+                                    "type": "listItem",
+                                    "spread": false,
+                                    "checked": null,
+                                    "children": [
+                                        {
+                                            "type": "mdxJsxFlowElement",
+                                            "name": "GuideCard",
+                                            "attributes": [
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "title",
+                                                    "value": "Getting Started"
+                                                },
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "href",
+                                                    "value": "/guides/quickstart"
+                                                },
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "icon",
+                                                    "value": {
+                                                        "type": "mdxJsxAttributeValueExpression",
+                                                        "value": "<IconCode/>",
+                                                        "data": {
+                                                            "estree": {
+                                                                "type": "Program",
+                                                                "start": 16,
+                                                                "end": 27,
+                                                                "body": [
+                                                                    {
+                                                                        "type": "ExpressionStatement",
+                                                                        "expression": {
+                                                                            "type": "JSXElement",
+                                                                            "start": 16,
+                                                                            "end": 27,
+                                                                            "loc": {
+                                                                                "start": {
+                                                                                    "line": 1,
+                                                                                    "column": 16,
+                                                                                    "offset": 16
+                                                                                },
+                                                                                "end": {
+                                                                                    "line": 1,
+                                                                                    "column": 27,
+                                                                                    "offset": 27
+                                                                                }
+                                                                            },
+                                                                            "openingElement": {
+                                                                                "type": "JSXOpeningElement",
+                                                                                "start": 16,
+                                                                                "end": 27,
+                                                                                "loc": {
+                                                                                    "start": {
+                                                                                        "line": 1,
+                                                                                        "column": 16,
+                                                                                        "offset": 16
+                                                                                    },
+                                                                                    "end": {
+                                                                                        "line": 1,
+                                                                                        "column": 27,
+                                                                                        "offset": 27
+                                                                                    }
+                                                                                },
+                                                                                "attributes": [],
+                                                                                "name": {
+                                                                                    "type": "JSXIdentifier",
+                                                                                    "start": 17,
+                                                                                    "end": 25,
+                                                                                    "loc": {
+                                                                                        "start": {
+                                                                                            "line": 1,
+                                                                                            "column": 17,
+                                                                                            "offset": 17
+                                                                                        },
+                                                                                        "end": {
+                                                                                            "line": 1,
+                                                                                            "column": 25,
+                                                                                            "offset": 25
+                                                                                        }
+                                                                                    },
+                                                                                    "name": "IconCode",
+                                                                                    "range": [
+                                                                                        17,
+                                                                                        25
+                                                                                    ]
+                                                                                },
+                                                                                "selfClosing": true,
+                                                                                "range": [
+                                                                                    16,
+                                                                                    27
+                                                                                ]
+                                                                            },
+                                                                            "closingElement": null,
+                                                                            "children": [],
+                                                                            "range": [
+                                                                                16,
+                                                                                27
+                                                                            ]
+                                                                        },
+                                                                        "start": 16,
+                                                                        "end": 27,
+                                                                        "loc": {
+                                                                            "start": {
+                                                                                "line": 1,
+                                                                                "column": 16,
+                                                                                "offset": 16
+                                                                            },
+                                                                            "end": {
+                                                                                "line": 1,
+                                                                                "column": 27,
+                                                                                "offset": 27
+                                                                            }
+                                                                        },
+                                                                        "range": [
+                                                                            16,
+                                                                            27
+                                                                        ]
+                                                                    }
+                                                                ],
+                                                                "sourceType": "module",
+                                                                "comments": [],
+                                                                "loc": {
+                                                                    "start": {
+                                                                        "line": 1,
+                                                                        "column": 16,
+                                                                        "offset": 16
+                                                                    },
+                                                                    "end": {
+                                                                        "line": 1,
+                                                                        "column": 27,
+                                                                        "offset": 27
+                                                                    }
+                                                                },
+                                                                "range": [
+                                                                    16,
+                                                                    27
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "position": {
+                                                        "start": {
+                                                            "line": 1,
+                                                            "column": 11,
+                                                            "offset": 10
+                                                        },
+                                                        "end": {
+                                                            "line": 1,
+                                                            "column": 29,
+                                                            "offset": 28
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "children": [
+                                                {
+                                                    "type": "paragraph",
+                                                    "children": [
+                                                        {
+                                                            "type": "text",
+                                                            "value": "Start your journey with our comprehensive quickstart guide.",
+                                                            "position": {
+                                                                "start": {
+                                                                    "line": 39,
+                                                                    "column": 5,
+                                                                    "offset": 633
+                                                                },
+                                                                "end": {
+                                                                    "line": 39,
+                                                                    "column": 64,
+                                                                    "offset": 692
+                                                                }
+                                                            }
+                                                        }
+                                                    ],
+                                                    "position": {
+                                                        "start": {
+                                                            "line": 39,
+                                                            "column": 5,
+                                                            "offset": 633
+                                                        },
+                                                        "end": {
+                                                            "line": 39,
+                                                            "column": 64,
+                                                            "offset": 692
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "position": {
+                                                "start": {
+                                                    "line": 38,
+                                                    "column": 5,
+                                                    "offset": 545
+                                                },
+                                                "end": {
+                                                    "line": 40,
+                                                    "column": 8,
+                                                    "offset": 700
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "position": {
+                                        "start": {
+                                            "line": 37,
+                                            "column": 3,
+                                            "offset": 538
+                                        },
+                                        "end": {
+                                            "line": 40,
+                                            "column": 8,
+                                            "offset": 700
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "listItem",
+                                    "spread": false,
+                                    "checked": null,
+                                    "children": [
+                                        {
+                                            "type": "mdxJsxFlowElement",
+                                            "name": "GuideCard",
+                                            "attributes": [
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "title",
+                                                    "value": "Routing Guide"
+                                                },
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "href",
+                                                    "value": "/guides/routing"
+                                                },
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "icon",
+                                                    "value": {
+                                                        "type": "mdxJsxAttributeValueExpression",
+                                                        "value": "<IconCode/>",
+                                                        "data": {
+                                                            "estree": {
+                                                                "type": "Program",
+                                                                "start": 16,
+                                                                "end": 27,
+                                                                "body": [
+                                                                    {
+                                                                        "type": "ExpressionStatement",
+                                                                        "expression": {
+                                                                            "type": "JSXElement",
+                                                                            "start": 16,
+                                                                            "end": 27,
+                                                                            "loc": {
+                                                                                "start": {
+                                                                                    "line": 1,
+                                                                                    "column": 16,
+                                                                                    "offset": 16
+                                                                                },
+                                                                                "end": {
+                                                                                    "line": 1,
+                                                                                    "column": 27,
+                                                                                    "offset": 27
+                                                                                }
+                                                                            },
+                                                                            "openingElement": {
+                                                                                "type": "JSXOpeningElement",
+                                                                                "start": 16,
+                                                                                "end": 27,
+                                                                                "loc": {
+                                                                                    "start": {
+                                                                                        "line": 1,
+                                                                                        "column": 16,
+                                                                                        "offset": 16
+                                                                                    },
+                                                                                    "end": {
+                                                                                        "line": 1,
+                                                                                        "column": 27,
+                                                                                        "offset": 27
+                                                                                    }
+                                                                                },
+                                                                                "attributes": [],
+                                                                                "name": {
+                                                                                    "type": "JSXIdentifier",
+                                                                                    "start": 17,
+                                                                                    "end": 25,
+                                                                                    "loc": {
+                                                                                        "start": {
+                                                                                            "line": 1,
+                                                                                            "column": 17,
+                                                                                            "offset": 17
+                                                                                        },
+                                                                                        "end": {
+                                                                                            "line": 1,
+                                                                                            "column": 25,
+                                                                                            "offset": 25
+                                                                                        }
+                                                                                    },
+                                                                                    "name": "IconCode",
+                                                                                    "range": [
+                                                                                        17,
+                                                                                        25
+                                                                                    ]
+                                                                                },
+                                                                                "selfClosing": true,
+                                                                                "range": [
+                                                                                    16,
+                                                                                    27
+                                                                                ]
+                                                                            },
+                                                                            "closingElement": null,
+                                                                            "children": [],
+                                                                            "range": [
+                                                                                16,
+                                                                                27
+                                                                            ]
+                                                                        },
+                                                                        "start": 16,
+                                                                        "end": 27,
+                                                                        "loc": {
+                                                                            "start": {
+                                                                                "line": 1,
+                                                                                "column": 16,
+                                                                                "offset": 16
+                                                                            },
+                                                                            "end": {
+                                                                                "line": 1,
+                                                                                "column": 27,
+                                                                                "offset": 27
+                                                                            }
+                                                                        },
+                                                                        "range": [
+                                                                            16,
+                                                                            27
+                                                                        ]
+                                                                    }
+                                                                ],
+                                                                "sourceType": "module",
+                                                                "comments": [],
+                                                                "loc": {
+                                                                    "start": {
+                                                                        "line": 1,
+                                                                        "column": 16,
+                                                                        "offset": 16
+                                                                    },
+                                                                    "end": {
+                                                                        "line": 1,
+                                                                        "column": 27,
+                                                                        "offset": 27
+                                                                    }
+                                                                },
+                                                                "range": [
+                                                                    16,
+                                                                    27
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "position": {
+                                                        "start": {
+                                                            "line": 1,
+                                                            "column": 11,
+                                                            "offset": 10
+                                                        },
+                                                        "end": {
+                                                            "line": 1,
+                                                            "column": 29,
+                                                            "offset": 28
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "children": [
+                                                {
+                                                    "type": "paragraph",
+                                                    "children": [
+                                                        {
+                                                            "type": "text",
+                                                            "value": "Learn about file-convention and settings-based routing in XYD.",
+                                                            "position": {
+                                                                "start": {
+                                                                    "line": 44,
+                                                                    "column": 5,
+                                                                    "offset": 798
+                                                                },
+                                                                "end": {
+                                                                    "line": 44,
+                                                                    "column": 67,
+                                                                    "offset": 860
+                                                                }
+                                                            }
+                                                        }
+                                                    ],
+                                                    "position": {
+                                                        "start": {
+                                                            "line": 44,
+                                                            "column": 5,
+                                                            "offset": 798
+                                                        },
+                                                        "end": {
+                                                            "line": 44,
+                                                            "column": 67,
+                                                            "offset": 860
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "position": {
+                                                "start": {
+                                                    "line": 43,
+                                                    "column": 5,
+                                                    "offset": 715
+                                                },
+                                                "end": {
+                                                    "line": 45,
+                                                    "column": 8,
+                                                    "offset": 868
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "position": {
+                                        "start": {
+                                            "line": 42,
+                                            "column": 3,
+                                            "offset": 708
+                                        },
+                                        "end": {
+                                            "line": 45,
+                                            "column": 8,
+                                            "offset": 868
+                                        }
+                                    }
+                                }
+                            ],
+                            "position": {
+                                "start": {
+                                    "line": 37,
+                                    "column": 3,
+                                    "offset": 538
+                                },
+                                "end": {
+                                    "line": 45,
+                                    "column": 8,
+                                    "offset": 868
+                                }
+                            }
+                        }
+                    ],
+                    "position": {
+                        "start": {
+                            "line": 36,
+                            "column": 1,
+                            "offset": 533
+                        },
+                        "end": {
+                            "line": 45,
+                            "column": 8,
+                            "offset": 868
+                        }
+                    }
+                },
+                {
+                    "type": "listItem",
+                    "spread": false,
+                    "checked": null,
+                    "children": [
+                        {
+                            "type": "list",
+                            "ordered": false,
+                            "start": null,
+                            "spread": true,
+                            "children": [
+                                {
+                                    "type": "listItem",
+                                    "spread": false,
+                                    "checked": null,
+                                    "children": [
+                                        {
+                                            "type": "mdxJsxFlowElement",
+                                            "name": "GuideCard",
+                                            "attributes": [
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "kind",
+                                                    "value": "secondary"
+                                                },
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "title",
+                                                    "value": "Customization"
+                                                },
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "href",
+                                                    "value": "/guides/customization-introduction"
+                                                },
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "icon",
+                                                    "value": {
+                                                        "type": "mdxJsxAttributeValueExpression",
+                                                        "value": "<IconCode/>",
+                                                        "data": {
+                                                            "estree": {
+                                                                "type": "Program",
+                                                                "start": 16,
+                                                                "end": 27,
+                                                                "body": [
+                                                                    {
+                                                                        "type": "ExpressionStatement",
+                                                                        "expression": {
+                                                                            "type": "JSXElement",
+                                                                            "start": 16,
+                                                                            "end": 27,
+                                                                            "loc": {
+                                                                                "start": {
+                                                                                    "line": 1,
+                                                                                    "column": 16,
+                                                                                    "offset": 16
+                                                                                },
+                                                                                "end": {
+                                                                                    "line": 1,
+                                                                                    "column": 27,
+                                                                                    "offset": 27
+                                                                                }
+                                                                            },
+                                                                            "openingElement": {
+                                                                                "type": "JSXOpeningElement",
+                                                                                "start": 16,
+                                                                                "end": 27,
+                                                                                "loc": {
+                                                                                    "start": {
+                                                                                        "line": 1,
+                                                                                        "column": 16,
+                                                                                        "offset": 16
+                                                                                    },
+                                                                                    "end": {
+                                                                                        "line": 1,
+                                                                                        "column": 27,
+                                                                                        "offset": 27
+                                                                                    }
+                                                                                },
+                                                                                "attributes": [],
+                                                                                "name": {
+                                                                                    "type": "JSXIdentifier",
+                                                                                    "start": 17,
+                                                                                    "end": 25,
+                                                                                    "loc": {
+                                                                                        "start": {
+                                                                                            "line": 1,
+                                                                                            "column": 17,
+                                                                                            "offset": 17
+                                                                                        },
+                                                                                        "end": {
+                                                                                            "line": 1,
+                                                                                            "column": 25,
+                                                                                            "offset": 25
+                                                                                        }
+                                                                                    },
+                                                                                    "name": "IconCode",
+                                                                                    "range": [
+                                                                                        17,
+                                                                                        25
+                                                                                    ]
+                                                                                },
+                                                                                "selfClosing": true,
+                                                                                "range": [
+                                                                                    16,
+                                                                                    27
+                                                                                ]
+                                                                            },
+                                                                            "closingElement": null,
+                                                                            "children": [],
+                                                                            "range": [
+                                                                                16,
+                                                                                27
+                                                                            ]
+                                                                        },
+                                                                        "start": 16,
+                                                                        "end": 27,
+                                                                        "loc": {
+                                                                            "start": {
+                                                                                "line": 1,
+                                                                                "column": 16,
+                                                                                "offset": 16
+                                                                            },
+                                                                            "end": {
+                                                                                "line": 1,
+                                                                                "column": 27,
+                                                                                "offset": 27
+                                                                            }
+                                                                        },
+                                                                        "range": [
+                                                                            16,
+                                                                            27
+                                                                        ]
+                                                                    }
+                                                                ],
+                                                                "sourceType": "module",
+                                                                "comments": [],
+                                                                "loc": {
+                                                                    "start": {
+                                                                        "line": 1,
+                                                                        "column": 16,
+                                                                        "offset": 16
+                                                                    },
+                                                                    "end": {
+                                                                        "line": 1,
+                                                                        "column": 27,
+                                                                        "offset": 27
+                                                                    }
+                                                                },
+                                                                "range": [
+                                                                    16,
+                                                                    27
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "position": {
+                                                        "start": {
+                                                            "line": 1,
+                                                            "column": 11,
+                                                            "offset": 10
+                                                        },
+                                                        "end": {
+                                                            "line": 1,
+                                                            "column": 29,
+                                                            "offset": 28
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "children": [
+                                                {
+                                                    "type": "paragraph",
+                                                    "children": [
+                                                        {
+                                                            "type": "text",
+                                                            "value": "Explore how to customize and extend XYD to match your needs.",
+                                                            "position": {
+                                                                "start": {
+                                                                    "line": 50,
+                                                                    "column": 5,
+                                                                    "offset": 1001
+                                                                },
+                                                                "end": {
+                                                                    "line": 50,
+                                                                    "column": 65,
+                                                                    "offset": 1061
+                                                                }
+                                                            }
+                                                        }
+                                                    ],
+                                                    "position": {
+                                                        "start": {
+                                                            "line": 50,
+                                                            "column": 5,
+                                                            "offset": 1001
+                                                        },
+                                                        "end": {
+                                                            "line": 50,
+                                                            "column": 65,
+                                                            "offset": 1061
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "position": {
+                                                "start": {
+                                                    "line": 49,
+                                                    "column": 5,
+                                                    "offset": 882
+                                                },
+                                                "end": {
+                                                    "line": 51,
+                                                    "column": 8,
+                                                    "offset": 1069
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "position": {
+                                        "start": {
+                                            "line": 48,
+                                            "column": 3,
+                                            "offset": 875
+                                        },
+                                        "end": {
+                                            "line": 51,
+                                            "column": 8,
+                                            "offset": 1069
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "listItem",
+                                    "spread": false,
+                                    "checked": null,
+                                    "children": [
+                                        {
+                                            "type": "mdxJsxFlowElement",
+                                            "name": "GuideCard",
+                                            "attributes": [
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "title",
+                                                    "value": "API Documentation"
+                                                },
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "href",
+                                                    "value": "/guides/openapi"
+                                                },
+                                                {
+                                                    "type": "mdxJsxAttribute",
+                                                    "name": "icon",
+                                                    "value": {
+                                                        "type": "mdxJsxAttributeValueExpression",
+                                                        "value": "<IconCode/>",
+                                                        "data": {
+                                                            "estree": {
+                                                                "type": "Program",
+                                                                "start": 16,
+                                                                "end": 27,
+                                                                "body": [
+                                                                    {
+                                                                        "type": "ExpressionStatement",
+                                                                        "expression": {
+                                                                            "type": "JSXElement",
+                                                                            "start": 16,
+                                                                            "end": 27,
+                                                                            "loc": {
+                                                                                "start": {
+                                                                                    "line": 1,
+                                                                                    "column": 16,
+                                                                                    "offset": 16
+                                                                                },
+                                                                                "end": {
+                                                                                    "line": 1,
+                                                                                    "column": 27,
+                                                                                    "offset": 27
+                                                                                }
+                                                                            },
+                                                                            "openingElement": {
+                                                                                "type": "JSXOpeningElement",
+                                                                                "start": 16,
+                                                                                "end": 27,
+                                                                                "loc": {
+                                                                                    "start": {
+                                                                                        "line": 1,
+                                                                                        "column": 16,
+                                                                                        "offset": 16
+                                                                                    },
+                                                                                    "end": {
+                                                                                        "line": 1,
+                                                                                        "column": 27,
+                                                                                        "offset": 27
+                                                                                    }
+                                                                                },
+                                                                                "attributes": [],
+                                                                                "name": {
+                                                                                    "type": "JSXIdentifier",
+                                                                                    "start": 17,
+                                                                                    "end": 25,
+                                                                                    "loc": {
+                                                                                        "start": {
+                                                                                            "line": 1,
+                                                                                            "column": 17,
+                                                                                            "offset": 17
+                                                                                        },
+                                                                                        "end": {
+                                                                                            "line": 1,
+                                                                                            "column": 25,
+                                                                                            "offset": 25
+                                                                                        }
+                                                                                    },
+                                                                                    "name": "IconCode",
+                                                                                    "range": [
+                                                                                        17,
+                                                                                        25
+                                                                                    ]
+                                                                                },
+                                                                                "selfClosing": true,
+                                                                                "range": [
+                                                                                    16,
+                                                                                    27
+                                                                                ]
+                                                                            },
+                                                                            "closingElement": null,
+                                                                            "children": [],
+                                                                            "range": [
+                                                                                16,
+                                                                                27
+                                                                            ]
+                                                                        },
+                                                                        "start": 16,
+                                                                        "end": 27,
+                                                                        "loc": {
+                                                                            "start": {
+                                                                                "line": 1,
+                                                                                "column": 16,
+                                                                                "offset": 16
+                                                                            },
+                                                                            "end": {
+                                                                                "line": 1,
+                                                                                "column": 27,
+                                                                                "offset": 27
+                                                                            }
+                                                                        },
+                                                                        "range": [
+                                                                            16,
+                                                                            27
+                                                                        ]
+                                                                    }
+                                                                ],
+                                                                "sourceType": "module",
+                                                                "comments": [],
+                                                                "loc": {
+                                                                    "start": {
+                                                                        "line": 1,
+                                                                        "column": 16,
+                                                                        "offset": 16
+                                                                    },
+                                                                    "end": {
+                                                                        "line": 1,
+                                                                        "column": 27,
+                                                                        "offset": 27
+                                                                    }
+                                                                },
+                                                                "range": [
+                                                                    16,
+                                                                    27
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "position": {
+                                                        "start": {
+                                                            "line": 1,
+                                                            "column": 11,
+                                                            "offset": 10
+                                                        },
+                                                        "end": {
+                                                            "line": 1,
+                                                            "column": 29,
+                                                            "offset": 28
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "children": [
+                                                {
+                                                    "type": "paragraph",
+                                                    "children": [
+                                                        {
+                                                            "type": "text",
+                                                            "value": "Discover how to document your APIs with OpenAPI specifications.",
+                                                            "position": {
+                                                                "start": {
+                                                                    "line": 55,
+                                                                    "column": 5,
+                                                                    "offset": 1171
+                                                                },
+                                                                "end": {
+                                                                    "line": 55,
+                                                                    "column": 68,
+                                                                    "offset": 1234
+                                                                }
+                                                            }
+                                                        }
+                                                    ],
+                                                    "position": {
+                                                        "start": {
+                                                            "line": 55,
+                                                            "column": 5,
+                                                            "offset": 1171
+                                                        },
+                                                        "end": {
+                                                            "line": 55,
+                                                            "column": 68,
+                                                            "offset": 1234
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "position": {
+                                                "start": {
+                                                    "line": 54,
+                                                    "column": 5,
+                                                    "offset": 1084
+                                                },
+                                                "end": {
+                                                    "line": 56,
+                                                    "column": 8,
+                                                    "offset": 1242
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "position": {
+                                        "start": {
+                                            "line": 53,
+                                            "column": 3,
+                                            "offset": 1077
+                                        },
+                                        "end": {
+                                            "line": 56,
+                                            "column": 8,
+                                            "offset": 1242
+                                        }
+                                    }
+                                }
+                            ],
+                            "position": {
+                                "start": {
+                                    "line": 48,
+                                    "column": 3,
+                                    "offset": 875
+                                },
+                                "end": {
+                                    "line": 56,
+                                    "column": 8,
+                                    "offset": 1242
+                                }
+                            }
+                        }
+                    ],
+                    "position": {
+                        "start": {
+                            "line": 47,
+                            "column": 1,
+                            "offset": 870
+                        },
+                        "end": {
+                            "line": 56,
+                            "column": 8,
+                            "offset": 1242
+                        }
+                    }
+                }
+            ],
+            "position": {
+                "start": {
+                    "line": 36,
+                    "column": 1,
+                    "offset": 533
+                },
+                "end": {
+                    "line": 56,
+                    "column": 8,
+                    "offset": 1242
+                }
+            }
+        }
+    ],
+    "position": {
+        "start": {
+            "line": 35,
+            "column": 1,
+            "offset": 525
+        },
+        "end": {
+            "line": 57,
+            "column": 4,
+            "offset": 1246
+        }
+    }
+}

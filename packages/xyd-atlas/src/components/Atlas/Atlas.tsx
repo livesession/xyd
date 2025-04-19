@@ -1,17 +1,17 @@
 import React from "react";
 
-import {CommonAtlasProps} from "./types";
+import {MDXCommonAtlasProps} from "./types";
 import {AtlasPrimary} from "./AtlasPrimary";
 import {AtlasSecondary} from "./AtlasSecondary";
 
 import * as cn from "./Atlas.styles";
 
-interface AtlasProps<T> extends CommonAtlasProps<T> {
+interface AtlasProps<T> extends MDXCommonAtlasProps<T> {
     kind: "secondary" | "primary" | undefined | null
 }
 
 export function Atlas<T>(props: AtlasProps<T>) {
-    let AtlasComponent: React.FC<CommonAtlasProps<T>>;
+    let AtlasComponent: React.FC<MDXCommonAtlasProps<T>>;
 
     if (props.kind === "secondary") {
         AtlasComponent = AtlasSecondary;

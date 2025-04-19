@@ -1,0 +1,127 @@
+{
+    "type": "root",
+    "children": [
+      {
+        "type": "outputVars",
+        "name": "example",
+        "attributes": {},
+        "children": [
+          {
+            "type": "code",
+            "lang": "bash",
+            "meta": "npm",
+            "value": "npm i -g xyd-js",
+            "position": {
+              "start": {
+                "line": 2,
+                "column": 3,
+                "offset": 13
+              },
+              "end": {
+                "line": 4,
+                "column": 6,
+                "offset": 48
+              }
+            }
+          },
+          {
+            "type": "code",
+            "lang": "bash",
+            "meta": "yarn",
+            "value": "yarn global add xyd-js",
+            "position": {
+              "start": {
+                "line": 6,
+                "column": 3,
+                "offset": 52
+              },
+              "end": {
+                "line": 8,
+                "column": 6,
+                "offset": 95
+              }
+            }
+          },
+          {
+            "type": "code",
+            "lang": "bash",
+            "meta": "pnpm",
+            "value": "pnpm add -g xyd-js",
+            "position": {
+              "start": {
+                "line": 10,
+                "column": 3,
+                "offset": 99
+              },
+              "end": {
+                "line": 12,
+                "column": 6,
+                "offset": 138
+              }
+            }
+          }
+        ],
+        "position": {
+          "start": {
+            "line": 1,
+            "column": 1,
+            "offset": 0
+          },
+          "end": {
+            "line": 13,
+            "column": 4,
+            "offset": 142
+          }
+        }
+      },
+      {
+        "type": "outputVars",
+        "name": "example2",
+        "attributes": {},
+        "children": [
+          {
+            "type": "code",
+            "lang": "tsx",
+            "meta": null,
+            "value": "function() {\n  return <div> Hello World </div>\n}",
+            "position": {
+              "start": {
+                "line": 16,
+                "column": 3,
+                "offset": 158
+              },
+              "end": {
+                "line": 20,
+                "column": 6,
+                "offset": 225
+              }
+            }
+          }
+        ],
+        "position": {
+          "start": {
+            "line": 15,
+            "column": 1,
+            "offset": 144
+          },
+          "end": {
+            "line": 21,
+            "column": 4,
+            "offset": 229
+          }
+        }
+      }
+    ],
+    "position": {
+      "start": {
+        "line": 1,
+        "column": 1,
+        "offset": 0
+      },
+      "end": {
+        "line": 22,
+        "column": 1,
+        "offset": 230
+      }
+    }
+  }

@@ -8,7 +8,6 @@ import { highlight } from "codehike/code"
 
 import { Settings } from "@xyd-js/core";
 
-
 import { FunctionName } from "../functions/types";
 import { MarkdownComponentDirectiveMap } from "./types";
 import { functionMatch, parseFunctionCall } from "../functions/utils";
@@ -317,7 +316,6 @@ function mdCode(node: any, promises: Promise<any>[], settings?: Settings) {
     const codeblocks: any[] = [];
 
     function rewriteNode() {
-        console.log(node, 8888)
         // Add metadata to the node
         node.data = {
             ...node.data,

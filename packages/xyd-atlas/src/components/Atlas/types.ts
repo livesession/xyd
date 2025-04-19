@@ -1,7 +1,12 @@
-import type {Reference} from "@xyd-js/uniform";
+import type { Reference } from "@xyd-js/uniform";
 
-import {MDXReference} from "@/utils/mdx";
+import { MDXReference } from "@/utils/mdx";
 
-export interface CommonAtlasProps<T> {
+// TODO unify MDXCommonAtlasProps and AtlasProps
+export interface MDXCommonAtlasProps<T> {
     references: MDXReference<Reference<T>[]> | []
+}
+
+export interface AtlasProps {
+    references: Reference<any>[]
 }

@@ -1,11 +1,10 @@
-import React from "react";
+import React, {  } from "react";
 
 import {ApiRefItem} from "@/components/ApiRef";
-import {MDXReferenceWrapper} from "@/utils/mdx";
 
-import {CommonAtlasProps} from "./types";
+import {MDXCommonAtlasProps} from "./types";
 
-export function AtlasPrimary<T>(props: CommonAtlasProps<T>) {
+export function AtlasPrimary<T>(props: MDXCommonAtlasProps<T>) {
     return <>
         {
             props.references?.map((reference, i) => <div key={i}>

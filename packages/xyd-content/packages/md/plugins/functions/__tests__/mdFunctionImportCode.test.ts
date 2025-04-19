@@ -153,7 +153,7 @@ line9
 
     describe('transformer', () => {
         it('should transform @importCode statements to code blocks', async () => {
-            const transformer = mdFunctionImportCode();
+            const transformer = mdFunctionImportCode()();
             const tree = createMockTree('test.ts');
             const file = createMockFile();
 
@@ -165,7 +165,7 @@ line9
         });
 
         it('should handle non-existent files gracefully', async () => {
-            const transformer = mdFunctionImportCode();
+            const transformer = mdFunctionImportCode()();
             const tree = createMockTree('nonexistent.ts');
             const file = createMockFile();
 
@@ -185,7 +185,7 @@ line9
 
         it('should handle custom resolveFrom option', async () => {
             const customFixturesDir = path.resolve(__dirname, '../__fixtures__');
-            const transformer = mdFunctionImportCode({ resolveFrom: customFixturesDir });
+            const transformer = mdFunctionImportCode()({ resolveFrom: customFixturesDir });
             const tree = createMockTree('test.ts');
             const file = createMockFile('/some/other/directory');
 
@@ -197,7 +197,7 @@ line9
         });
 
         it('should handle complex import paths with regions and line ranges', async () => {
-            const transformer = mdFunctionImportCode();
+            const transformer = mdFunctionImportCode()()
             const tree = createMockTree('test.ts#testRegion{1-3}');
             const file = createMockFile();
 
@@ -209,7 +209,7 @@ line9
         });
 
         it('should handle import paths with only regions', async () => {
-            const transformer = mdFunctionImportCode();
+            const transformer = mdFunctionImportCode()()
             const tree = createMockTree('test.ts#testRegion');
             const file = createMockFile();
 
@@ -221,7 +221,7 @@ line9
         });
 
         it('should handle import paths with only line ranges', async () => {
-            const transformer = mdFunctionImportCode();
+            const transformer = mdFunctionImportCode()()
             const tree = createMockTree('test.ts{1-3}');
             const file = createMockFile();
 
@@ -240,7 +240,7 @@ line9
                 [externalUrl]: fixtureContent
             });
 
-            const transformer = mdFunctionImportCode();
+            const transformer = mdFunctionImportCode()()
             const tree = createMockTree(externalUrl);
             const file = createMockFile();
 
@@ -255,7 +255,7 @@ line9
         });
 
         it('should debug visit function', async () => {
-            const transformer = mdFunctionImportCode();
+            const transformer = mdFunctionImportCode()()
             const tree = createMockTree('test.ts');
 
             const file = createMockFile();
@@ -270,7 +270,7 @@ line9
         });
 
         it('should handle alternative syntax like @importCode("test.ts")', async () => {
-            const transformer = mdFunctionImportCode();
+            const transformer = mdFunctionImportCode()()
             const tree = createMockTreeAlternativeSyntax('test.ts');
             const file = createMockFile();
 
