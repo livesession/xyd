@@ -1,17 +1,83 @@
-import React from "react"
+import * as React from "react"
+import type { RootContent } from "mdast";
+import { toMarkdown } from "mdast-util-to-markdown";
+import { mdxToMarkdown } from "mdast-util-mdx";
+import { toHast } from 'mdast-util-to-hast'
+import { toHtml } from 'hast-util-to-html'
+import { parse } from '@babel/parser';
 
 import { useMetadata } from "@xyd-js/framework/react";
 import { type AtlasProps } from "@xyd-js/atlas";
 
 import { VarCode } from "@xyd-js/content";
 import { ExampleRoot } from "@xyd-js/uniform";
-import { Callout } from "@xyd-js/components/writer";
 
 import { metaComponent } from './decorators';
+
+
+/**
+ * List of standard MDAST node types
+ */
+const standardMdastTypes = [
+    'root',
+    'paragraph',
+    'heading',
+    'text',
+    'emphasis',
+    'strong',
+    'delete',
+    'blockquote',
+    'code',
+    'link',
+    'image',
+    'list',
+    'listItem',
+    'table',
+    'tableRow',
+    'tableCell',
+    'html',
+    'break',
+    'thematicBreak',
+    'definition',
+    'footnoteDefinition',
+    'footnoteReference',
+    'inlineCode',
+    'linkReference',
+    'imageReference',
+    'footnote',
+    'tableCaption'
+];
+
+/**
+ * Evaluate a tiny JSX expression string to a React element.
+ * In real code you'd use @babel/parser + @babel/traverse or a runtime eval.
+ */
+function evalExpression(expr) {
+    // WARNING: using eval is dangerous! Better to pre-compile or
+    // have a map: { IconCode: IconCodeComponent, … }
+    // Here we just do a naive regex:
+    const tag = expr.match(/<(\w+)/)[1];
+    return React.createElement(tag, null);
+}
+
+
+/**
+ * Checks if a given type is a standard MDAST type
+ * @param type The node type to check
+ * @returns True if the type is a standard MDAST type, false otherwise
+ */
+function isStandardMdastType(type: string): boolean {
+    return standardMdastTypes.includes(type);
+}
+
+function isMdxElement(type: string): boolean {
+    return type === 'mdxJsxFlowElement'
+}
 
 interface AtlasVars {
     examples?: VarCode
 }
+
 
 // TODO: get object from atlas
 // Define the type for an example object
@@ -68,7 +134,8 @@ export abstract class Theme {
     @metaComponent<AtlasProps, AtlasVars>("atlas", "Atlas")
     private atlasMetaComponent(
         props: AtlasProps,
-        vars: AtlasVars
+        vars: AtlasVars,
+        treeChilds: readonly RootContent[]
     ) {
         const examples: ExampleRoot = {
             groups: []
@@ -81,7 +148,7 @@ export abstract class Theme {
         function createExampleObject(example: any): ExampleObject {
             // Extract the highlighted property correctly
             const highlighted = example.highlighted || example;
-            
+
             return {
                 codeblock: {
                     title: example.meta,
@@ -102,7 +169,7 @@ export abstract class Theme {
             if (Array.isArray(example) || !example) {
                 return
             }
-            
+
             examples.groups.push({
                 examples: [createExampleObject(example)]
             })
@@ -113,18 +180,18 @@ export abstract class Theme {
                     // This is a group with a title as the first element
                     const groupTitle = item[0];
                     const groupExamples = item.slice(1);
-                    
+
                     const exampleGroup: ExampleGroup = {
                         examples: []
                     };
-                    
+
                     // Process each example in the group
                     groupExamples.forEach((example) => {
                         if (example && typeof example === 'object') {
                             exampleGroup.examples.push(createExampleObject(example));
                         }
                     });
-                    
+
                     if (exampleGroup.examples.length > 0) {
                         examples.groups.push(exampleGroup);
                     }
@@ -133,22 +200,63 @@ export abstract class Theme {
                     const exampleGroup: ExampleGroup = {
                         examples: [createExampleObject(item)]
                     };
-                    
+
                     examples.groups.push(exampleGroup);
                 }
             });
         }
 
-        // const exampleDom2 = <Callout>hello hello im cool xD</Callout>
-        // // @ts-ignore
-        // props.references[0].description = JSON.stringify(exampleDom2)
+        const reactElements: React.ReactNode[] = []
 
-        // // Assign the examples to the references
+        // TODO: !! IMPORTANT !! BETTER COMPOSE TRANSFORMATION
+        for (const child of treeChilds) {
+            if (isStandardMdastType(child.type)) {
+                const hast = toHast(child)
+                const html = toHtml(hast)
+
+                const reactTree = jsxStringToReactTree(html)
+                if (reactTree) {
+                    reactElements.push(reactTree)
+                }
+
+                continue
+            } else if (isMdxElement(child.type)) {
+                const jsxString = toMarkdown(child, {
+                    extensions: [mdxToMarkdown()],
+                    handlers: {// TODO: find better solution how to convert such as structure?
+                        list(node, parent, context) {
+                            // call containerFlow as a method on context, so `this` stays correct
+                            const items = node.children
+                                .map(item => context.containerFlow(item, node))
+                                .join('\n')
+                            return `<ul>\n${items}\n</ul>`
+                        },
+                        listItem(node, parent, context) {
+                            // same here
+                            //@ts-ignore
+                            const content = context.containerFlow(node, parent).trim()
+                            return `<li>${content}</li>`
+                        },
+                    }
+                });
+
+                const reactTree = jsxStringToReactTree(jsxString)
+                if (reactTree) {
+                    reactElements.push(reactTree)
+                }
+            }
+        }
+
+        // Create a combined React element from all the elements
+        const combinedReactTree = React.createElement(React.Fragment, null, ...reactElements)
+
         // @ts-ignore
         props.references[0].description = {
-            children: <div><h1>Heading 1</h1></div>
+            children: combinedReactTree
         }
+
         props.references[0].examples = examples;
+
         return props
         // TODO: in the future return a component directly here but we need good mechanism for transpiling?
     }
@@ -167,3 +275,130 @@ function Atlas(props) {
         Hello World
     </div>
 }
+
+function buildElement(node) {
+    if (!node) return null;
+    switch (node.type) {
+      case 'JSXElement': {
+        // Resolve type (string for custom components)
+        let type;
+        const nameNode = node.openingElement.name;
+        if (nameNode.type === 'JSXMemberExpression') {
+          // flatten Foo.Bar to "Foo.Bar"
+          const parts: string[] = [];
+          let curr = nameNode;
+          while (curr) {
+            if (curr.property) parts.unshift(curr.property.name);
+            curr = curr.object;
+          }
+          type = parts.join('.');
+        } else {
+          type = nameNode.name;
+        }
+  
+        // Props
+        const props = {};
+        for (const attr of node.openingElement.attributes) {
+          if (attr.type === 'JSXSpreadAttribute') {
+            Object.assign(props, evaluateExpression(attr.argument));
+            continue;
+          }
+          const key = attr.name.name;
+          let value;
+          if (!attr.value) {
+            value = true;
+          } else if (attr.value.type === 'StringLiteral' || attr.value.type === 'NumericLiteral' || attr.value.type === 'BooleanLiteral') {
+            value = attr.value.value;
+          } else if (attr.value.type === 'JSXExpressionContainer') {
+            value = evaluateExpression(attr.value.expression);
+          }
+          props[key] = value;
+        }
+  
+        // Children
+        const children = node.children
+          .map(child => {
+            if (child.type === 'JSXText') {
+              const text = child.value.replace(/\s+/g, ' ');
+              return text.trim() ? text : null;
+            }
+            if (child.type === 'JSXExpressionContainer') {
+              return child.expression.type === 'JSXElement' || child.expression.type === 'JSXFragment'
+                ? buildElement(child.expression)
+                : evaluateExpression(child.expression);
+            }
+            if (child.type === 'JSXElement' || child.type === 'JSXFragment') {
+              return buildElement(child);
+            }
+            return null;
+          })
+          .filter(c => c !== null);
+  
+        // Create React element
+        return React.createElement(type, props, ...children);
+      }
+  
+      case 'JSXFragment': {
+        const children = node.children
+          .map(child => (child.type === 'JSXElement' || child.type === 'JSXFragment')
+            ? buildElement(child)
+            : (child.type === 'JSXText' ? child.value.trim() || null : null)
+          )
+          .filter(Boolean);
+        return React.createElement(React.Fragment, null, ...children);
+      }
+  
+      default:
+        return null;
+    }
+  }
+  
+  // Simplistic evaluator for static expressions: identifiers -> undefined, literals -> value, objects -> {}
+  function evaluateExpression(expr) {
+    switch (expr.type) {
+      case 'StringLiteral': return expr.value;
+      case 'NumericLiteral': return expr.value;
+      case 'BooleanLiteral': return expr.value;
+      case 'ObjectExpression': {
+        const obj = {};
+        for (const prop of expr.properties) {
+          if (prop.type === 'ObjectProperty' && prop.key.type === 'Identifier') {
+            obj[prop.key.name] = evaluateExpression(prop.value);
+          }
+        }
+        return obj;
+      }
+      // Add more cases (Identifier, CallExpression, etc.) as needed
+      default:
+        return undefined;
+    }
+  }
+
+  // 4) Locate first JSX node
+  function findJSX(node) {
+    if (!node || typeof node !== 'object') return null;
+    if (node.type === 'JSXElement' || node.type === 'JSXFragment') return node;
+    for (const key of Object.keys(node)) {
+      const val = node[key];
+      if (Array.isArray(val)) {
+        for (const child of val) {
+          const found = findJSX(child);
+          if (found) return found;
+        }
+      } else {
+        const found = findJSX(val);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  function jsxStringToReactTree(jsxString: string) {
+    const ast = parse(jsxString, { sourceType: 'module', plugins: ['jsx'] });
+    const rootJSX = findJSX(ast);
+    if (!rootJSX) {
+        return null
+    }
+
+    return buildElement(rootJSX)
+  }

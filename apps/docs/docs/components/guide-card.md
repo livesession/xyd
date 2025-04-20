@@ -30,7 +30,9 @@ componentProps:
   ``` 
 <<<
 
-This is my description
+# My custom Name
+
+A card component that displays content with a title and optional icon. The entire card is clickable and links to the specified URL.
 
 :::grid
 - 
@@ -56,4 +58,3 @@ This is my description
     :::
 :::
 
-# Heading 1

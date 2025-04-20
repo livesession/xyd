@@ -1,3 +1,5 @@
+import React from "react";
+
 // TODO: concept only
 export enum ReferenceCategory {
     // for React
@@ -101,7 +103,7 @@ export interface CodeBlockTab {
 // TODO: type, and category also as generic?
 export interface Reference<C = ReferenceContext> {
     title: string;
-    description: string;
+    description: string | React.ReactNode;
     canonical: string;
 
     definitions: Definition[]
@@ -121,7 +123,7 @@ export interface Definition {
 
     id?: string;
 
-    description?: string;
+    description?: string | React.ReactNode;
 }
 
 export interface DefinitionProperty {
@@ -129,7 +131,7 @@ export interface DefinitionProperty {
 
     type: string;
 
-    description: string;
+    description: string | React.ReactNode;
 
     context?: any // TODO: better type
 

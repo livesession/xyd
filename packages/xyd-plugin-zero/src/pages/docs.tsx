@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import React from "react";
+import * as React from "react";
 import { redirect, ScrollRestoration } from "react-router";
 
 import { MetadataMap } from "@xyd-js/core"

@@ -1,4 +1,10 @@
-type TransformFn = (metaProps: any, meta: any) => any // TODO: fix any
+import type { RootContent } from 'mdast'
+
+type TransformFn = (
+    metaProps: any, 
+    meta: any,
+    treeChilds: readonly RootContent[]
+) => any // TODO: fix any
 
 interface MetaComponent {
     name: string

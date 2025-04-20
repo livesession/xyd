@@ -1,13 +1,6 @@
-import fs from 'node:fs';
 import { Root } from 'mdast';
 import { matter } from 'vfile-matter';
 
-import { fromMarkdown } from 'mdast-util-from-markdown'
-import { mdxJsxFromMarkdown } from 'mdast-util-mdx-jsx'
-import { mdxJsx } from 'micromark-extension-mdx-jsx'
-import * as acorn from 'acorn'
-// Import the JSX plugin for Acorn
-import acornJsx from 'acorn-jsx'
 
 import { Metadata, Settings } from '@xyd-js/core';
 import { getMetaComponent } from '@xyd-js/context';
@@ -17,7 +10,6 @@ import { parseFunctionCall } from '../functions/utils';
 import { processUniformFunctionCall } from '../functions/uniformProcessor';
 import { componentLike } from '../utils';
 import { SymbolxVfile } from '../types';
-import { visit } from 'unist-util-visit';
 
 export interface MdMetaOptions {
   resolveFrom?: string
@@ -92,7 +84,8 @@ export function mdMeta(settings?: Settings) {
 
       const resolvedComponentProps = metaComponent.transform(
         resolvedProps,
-        file.data.outputVars
+        file.data.outputVars,
+        Object.freeze(tree.children)
       )
 
       const exportNode = componentLike(
@@ -103,7 +96,7 @@ export function mdMeta(settings?: Settings) {
 
       tree.children = [
         ...treeSanitize(tree),
-        exportNode
+        ...exportNode.children
       ]
     };
   }

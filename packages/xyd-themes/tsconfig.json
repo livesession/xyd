@@ -6,6 +6,9 @@
       ],
       "@xyd-js/context": [
         "../xyd-context/src/index.ts"
+      ],
+      "@xyd-js/core": [
+        "../xyd-core/src/index.ts"
       ]
     },
     "module": "esnext",

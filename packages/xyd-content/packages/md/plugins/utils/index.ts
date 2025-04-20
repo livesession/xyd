@@ -1,3 +1,2 @@
-export {
-    componentLike
-} from "./componentLike"
+export * from './componentLike';
+export * from './mdastTypes';

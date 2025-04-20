@@ -29,7 +29,7 @@ export function referenceAST(ref: Reference) {
     const mdHeading = heading(
         ref.title,
         ref.canonical,
-        ref.description,
+        typeof ref.description === "string" ? ref.description : "",
         ref.category,
         ref.type,
         ref.context

@@ -1,11 +1,17 @@
-import { registerMetaComponent } from "@xyd-js/context";
 
+import type { RootContent } from "mdast";
+
+import { registerMetaComponent } from "@xyd-js/context";
 
 export function metaComponent<P, V>(
     name: string,
     componentName?: string
 ) {
-    return function (target: (props: P, vars: V) => any, context: ClassMethodDecoratorContext) {
+    return function (target: (
+        props: P,
+        vars: V,
+        treeChilds: readonly RootContent[]
+    ) => any, context: ClassMethodDecoratorContext) {
         registerMetaComponent(
             name,
             componentName || name,

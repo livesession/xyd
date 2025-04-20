@@ -40,7 +40,7 @@ export function pluginNavigation(options: pluginNavigationOptions) {
         })
 
         return (ref: Reference) => {
-            const content = matter(ref.description || "") // TODO: pluginMatter before?
+            const content = typeof ref.description === "string" ? matter(ref.description || "") : matter("") // TODO: pluginMatter before?
 
             if (content.data) {
                 const data = content.data as Metadata
