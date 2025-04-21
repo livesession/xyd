@@ -36,32 +36,33 @@ export function ApiRefItem({reference}: ApiRefItemProps) {
         }
     }
 
-    return <div className={cn.ApiRefItemHost}>
+    return <atlas-apiref-item className={cn.ApiRefItemHost}>
         <$Title title={uniformValue(reference.title)}/>
 
         {topNavbar}
 
         {uniformChild(reference.description)}
 
-        <div className={cn.ApiRefItemGrid}>
+        <atlas-apiref-item-showcase className={cn.ApiRefItemGrid}>
             <$Properties reference={reference}/>
+
             {reference.examples && <ApiRefSamples examples={reference.examples}/>}
-        </div>
-    </div>
+        </atlas-apiref-item-showcase>
+    </atlas-apiref-item>
 }
 
 function $Properties({reference}: ApiRefItemProps) {
-    return <div className={cn.ApiRefItemPropertiesHost}>
+    return <atlas-apiref-properties className={cn.ApiRefItemPropertiesHost}>
         {reference?.definitions?.map((definition, i) => <div key={i}>
             {
-                definition.properties?.length && <div key={i} className={cn.ApiRefItemPropertiesItem}>
+                definition.properties?.length ? <div key={i} className={cn.ApiRefItemPropertiesItem}>
                     <$Subtitle title={uniformValue(definition.title)}/>
 
                     <ApiRefProperties properties={definition.properties}/>
-                </div>
+                </div> : null
             }
         </div>)}
-    </div>
+    </atlas-apiref-properties>
 }
 
 function $Navbar({label, subtitle}: { label: string, subtitle: string }) {

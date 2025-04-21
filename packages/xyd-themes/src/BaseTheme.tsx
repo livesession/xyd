@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+import { Theme as ThemeSettings } from "@xyd-js/core";
 import { TocCard, VideoGuide } from '@xyd-js/components/writer';
 import { ContentDecorator } from "@xyd-js/components/content";
 import {
@@ -13,19 +14,17 @@ import {
     FwSidebarGroups,
 
     useMatchedSubNav,
+    useMetadata
 } from "@xyd-js/framework/react";
 
 import { Theme } from "./Theme";
 import { ThemeProps } from "./types";
-
 interface BaseThemeRenderProps {
     children: React.ReactNode;
 }
 
 export abstract class BaseTheme extends Theme {
-    public abcd: string
-
-    constructor() {
+    constructor(settings: ThemeSettings) {
         super()
     }
 
@@ -45,7 +44,6 @@ export abstract class BaseTheme extends Theme {
         const subheader = matchedSubNav ? <FwSubNav /> : null
         let contentNav = hideToc ? undefined : <$ContentNav />
 
-        
         return <LayoutPrimary
             header={<$Navbar />}
             subheader={subheader}
@@ -74,11 +72,13 @@ export abstract class BaseTheme extends Theme {
     }
 
     protected Content({ children }: { children: React.ReactNode }) {
+        const meta = useMetadata()
+
         return <>
             {/*TODO: optional breadcrumbs*/}
             {/*{props.breadcrumbs ? <FwBreadcrumbs/> : undefined}*/}
 
-            <ContentDecorator>
+            <ContentDecorator metaComponent={meta?.component || undefined}>
                 {children}
             </ContentDecorator>
 

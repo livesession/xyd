@@ -1,8 +1,9 @@
 import React from "react";
 
-import {MDXCommonAtlasProps} from "./types";
-import {AtlasPrimary} from "./AtlasPrimary";
-import {AtlasSecondary} from "./AtlasSecondary";
+import { MDXCommonAtlasProps } from "./types";
+import { AtlasDecorator } from "./AtlasDecorator";
+import { AtlasPrimary } from "./AtlasPrimary";
+import { AtlasSecondary } from "./AtlasSecondary";
 
 import * as cn from "./Atlas.styles";
 
@@ -31,7 +32,9 @@ export function Atlas<T>(props: AtlasProps<T>) {
         }
     }
 
-    return <div className={cn.AtlasHost}>
-        <AtlasComponent references={references}/>
-    </div>
+    return <AtlasDecorator>
+        <div className={cn.AtlasHost}>
+            <AtlasComponent references={references} />
+        </div>
+    </AtlasDecorator>
 }

@@ -64,8 +64,12 @@ export default {
                 "url": "/docs/components"
             },
             {
-                "name": "Reference",
-                "url": "/docs/reference"
+                "name": "GraphQL",
+                "url": "/docs/api/graphql"
+            },
+            {
+                "name": "REST",
+                "url": "/docs/api/rest"
             },
         ],
         "sidebar": [
@@ -148,13 +152,23 @@ export default {
 
             // reference
             {
-                "route": "docs/reference",
+                "route": "docs/api/graphql",
                 "items": [
                     {
-                        "group": "GET STARTED",
+                        "group": "Queries",
                         "pages": [
-                            "docs/guides/what-is-xyd",
-                            "docs/guides/getting-started",
+                            "docs/api/graphql/example-query",
+                        ],
+                    },
+                ]
+            },
+            {
+                "route": "docs/api/rest",
+                "items": [
+                    {
+                        "group": "Queries",
+                        "pages": [
+                            "docs/api/rest/example-query",
                         ],
                     },
                 ]
@@ -165,6 +179,8 @@ export default {
     "config": {
         "paths": {
             "@components/*": ["../../packages/xyd-components/src/*"],
+            "@graphql": ["./schema.graphql"],
+            "@rest": ["./openapi.yaml"],
         }
     }
 }

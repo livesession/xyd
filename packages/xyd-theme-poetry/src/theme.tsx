@@ -1,3 +1,4 @@
+import { Theme as ThemeSettings } from "@xyd-js/core"
 import { BaseTheme } from "@xyd-js/themes"
 
 import "./imports.css"
@@ -9,8 +10,8 @@ import './override.css';
 import './vars.css';
 
 export default class ThemePoetry extends BaseTheme {
-    constructor() {
-        super();
+    constructor(settings: ThemeSettings) {
+        super(settings);
     }
 }
 

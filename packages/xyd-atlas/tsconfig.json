@@ -12,6 +12,9 @@
         "src/utils/*"
       ]
     },
+    "typeRoots": [
+      "./types.d.ts"
+    ],
     "module": "esnext",
     "esModuleInterop": true,
     "moduleResolution": "node",
@@ -40,6 +43,7 @@
     "packages/**/*.json",
     ".storybook/**/*.ts",
     ".storybook/**/*.tsx",
+    "types.d.ts"
   ],
   "exclude": [
     "node_modules"

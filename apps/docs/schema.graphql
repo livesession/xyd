@@ -1,0 +1,24 @@
+"""
+Example type
+"""
+type Example {
+    """
+    Title of the example
+    """
+    title: String!
+
+    """
+    Description of the example
+    """
+    description: String!
+}
+
+"""
+Query type
+"""
+type Query {
+    """
+    Example query
+    """
+    example: Example!
+}

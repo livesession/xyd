@@ -1,0 +1,62 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+  description: API documentation based on GraphQL schema
+
+paths:
+  /example:
+    get:
+      summary: Get example data
+      description: Returns example data with title and description
+      operationId: getExample
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Example'
+  /items:
+    get:
+      summary: Get items list
+      description: Returns a list of items
+      operationId: getItems
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+
+components:
+  schemas:
+    Example:
+      type: object
+      description: Example type
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+          description: Title of the example
+        description:
+          type: string
+          description: Description of the example
+    Item:
+      type: object
+      description: Item type
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the item
+        name:
+          type: string
+          description: Name of the item 

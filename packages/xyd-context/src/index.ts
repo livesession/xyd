@@ -1,6 +1,9 @@
 import type { RootContent } from 'mdast'
 
+import type { Theme } from '@xyd-js/core'
+
 type TransformFn = (
+    themeSettings: Theme,
     metaProps: any, 
     meta: any,
     treeChilds: readonly RootContent[]

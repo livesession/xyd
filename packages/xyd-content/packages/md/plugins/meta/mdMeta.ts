@@ -2,7 +2,7 @@ import { Root } from 'mdast';
 import { matter } from 'vfile-matter';
 
 
-import { Metadata, Settings } from '@xyd-js/core';
+import { Metadata, Settings, Theme } from '@xyd-js/core';
 import { getMetaComponent } from '@xyd-js/context';
 
 import { FunctionName } from '../functions/types';
@@ -28,11 +28,24 @@ export function mdMeta(settings?: Settings) {
       }
 
       const meta = file.data.matter as Metadata<Record<string, any>>
+      if (!meta) {
+        return
+      }
+
+      if (meta?.uniform || meta?.openapi) {
+        meta.uniform = meta.uniform || meta.openapi
+        meta.component = "atlas"
+        meta.componentProps = {
+          references: `@uniform('${meta.uniform}')`
+        }
+      }
+      
       if (!meta || !meta.component) {
         return
       }
 
       const metaComponent = getMetaComponent(meta.component)
+
       if (!metaComponent) {
         return
       }
@@ -40,7 +53,6 @@ export function mdMeta(settings?: Settings) {
       const promises: Promise<void>[] = []
 
       let resolvedProps: Record<string, any> = {}
-
       if (meta.componentProps && typeof meta.componentProps === "object") {
         for (const key in meta.componentProps) { // TODO: support nested props
           const value = meta.componentProps[key]
@@ -82,7 +94,8 @@ export function mdMeta(settings?: Settings) {
 
       await Promise.all(promises)
 
-      const resolvedComponentProps = metaComponent.transform(
+      const resolvedComponentProps = await metaComponent.transform(
+        (settings?.theme || {}) as Theme,
         resolvedProps,
         file.data.outputVars,
         Object.freeze(tree.children)

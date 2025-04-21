@@ -2,11 +2,24 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/mdx/*": ["src/mdx/*"],
-      "@/navigation/*": ["src/navigation/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/vite-plugins/*": ["src/vite-plugins/*"],
-        "@xyd-js/core": ["../xyd-core/index.ts"],
+      "@/mdx/*": [
+        "src/mdx/*"
+      ],
+      "@/navigation/*": [
+        "src/navigation/*"
+      ],
+      "@/utils/*": [
+        "src/utils/*"
+      ],
+      "@/vite-plugins/*": [
+        "src/vite-plugins/*"
+      ],
+      "@xyd-js/core": [
+        "../xyd-core"
+      ],
+      "@xyd-js/context": [
+        "../xyd-context/src/index.ts"
+      ]
     },
     "target": "ES2020",
     "module": "ESNext",
@@ -16,12 +29,21 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "types": ["node", "estree", "vite"],
+    "types": [
+      "node",
+      "estree",
+      "vite"
+    ],
     "declaration": true,
     "declarationMap": true,
     "incremental": true,
     "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

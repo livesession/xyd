@@ -58,13 +58,14 @@ Function Calling (`@<function>`) is used to execute [functions](#) within your m
 ```
 
 ## `Output Variable`
-Output Variable (`!<out_variable>{<attributes>}`) is used to pass [output variables](#) from content files, useful for customizing documentation behavior:
+Output Variable (`<<<<out_variable>{<attributes>}`) is used to pass [output variables](#) from content files, useful for customizing documentation behavior:
 
-```mdx
-!toc{anchor="bottom"}
+```md
+<<<toc{anchor="bottom"}
 :::toc-card{title="Starter" href="https://github.com/xyd-js/starter"}
   Check out our starter repo
 :::
+<<<
 ```
 
 ```mdx

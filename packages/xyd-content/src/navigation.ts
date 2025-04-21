@@ -152,14 +152,15 @@ async function getFrontmatter(filePath: string): Promise<Metadata> {
     return matter
 }
 
+// TODO: indices map to not do like this - search for mdx if not then md
 async function job(page: string, frontmatters: MetadataMap) {
     // TODO: it can be cwd because on build time it has entire path?
-    let filePath = path.join(process.cwd(), `${page}.mdx`) // TODO: support md toos
+    let filePath = path.join(process.cwd(), `${page}.mdx`) 
     try {
         await fs.access(filePath)
     } catch (e) {
         try {
-            const mdPath = filePath.replace(".mdx", ".md")
+            const mdPath = path.join(process.cwd(), `${page}.md`) 
             await fs.access(mdPath)
             filePath = mdPath
         } catch (e) {

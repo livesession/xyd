@@ -30,6 +30,17 @@ export interface Metadata<P = void> {
 
     /** Optional 'group' for sidebar navigation */
     group?: string[]
+
+    /** Optional 'uniform' for component references */
+    uniform?: string
+
+    /** Optional 'graphql' for graphql references */
+    graphql?: string
+
+    /** Optional 'openapi' for openapi references */
+    openapi?: string
+    
+    
 }
 
 export type MetadataMap<P = void> = { [page: string]: Metadata<P> }

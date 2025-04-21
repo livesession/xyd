@@ -3,11 +3,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import { VFile } from 'vfile';
 
-import { Settings } from '@xyd-js/core';
+import { Metadata, Settings } from '@xyd-js/core';
 import { sourcesToUniform, type TypeDocReferenceContext } from '@xyd-js/sources/ts';
 import { reactDocgenToUniform } from '@xyd-js/sources/react';
+import { gqlSchemaToReferences } from "@xyd-js/gql"
+import { oapSchemaToReferences, deferencedOpenAPI } from "@xyd-js/openapi"
 
-import { downloadContent, parseImportPath, resolvePathAlias } from './utils';
+import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
 // TODO: rewrite to async
 
 /**
@@ -26,38 +28,36 @@ export async function processUniformFunctionCall(
     settings?: Settings,
 ): Promise<any[] | null> {
     // Parse the import path to extract file path
-    const { filePath } = parseImportPath(value);
+    const { filePath, regions, lineRanges } = parseImportPath(value);
 
     // Resolve path aliases and get the base directory
     const resolvedFilePath = resolvePathAlias(filePath, settings, process.cwd());
 
     // Process the uniform file
-    return processUniformFile(resolvedFilePath, file, resolveFrom);
+    return processUniformFile(resolvedFilePath, regions, lineRanges, file, resolveFrom);
 }
 
-/**
- * Process a uniform file and return the references
- * This is a common function used by both mdFunctionUniform and mdComponentDirective
- * 
- * @param settings The settings object
- * @param filePath The path to the file to process
- * @param file The VFile object
- * @param resolveFrom Optional base directory to resolve relative paths from
- * @returns A promise that resolves to the references or null if processing failed
- */
 async function processUniformFile(
     filePath: string,
+    regions: Region[],
+    lineRanges: LineRange[],
     file: VFile,
     resolveFrom?: string
 ): Promise<any[] | null> {
     try {
-        if (!isProgrammingSource(filePath)) {
+        if (!isSupportedProgrammingSource(filePath)) {
             // TODO: openapi + graphql
             throw new Error(`Unsupported file type: ${filePath}`);
         }
+        
+        let ext = extension(filePath);
+
+        const matter = file.data?.matter as Metadata
+        if (matter?.openapi) {
+            ext = "openapi"
+        }
 
         if (isLocalPath(filePath)) {
-            const ext = extension(filePath);
             const baseDir = resolveFrom || (file.dirname || process.cwd());
             const resolvedFilePath = path.resolve(baseDir, filePath);
 
@@ -106,7 +106,26 @@ async function processUniformFile(
                     return references;
                 }
 
+                case 'graphql': {
+                    const references = gqlSchemaToReferences(resolvedFilePath, {
+                        regions: regions.map(region => region.name)
+                    });
+
+                    return references;
+                }
+
+                case 'openapi': {
+                    console.log(regions, "regions")
+                    const schema = await deferencedOpenAPI(resolvedFilePath);
+                    const references = oapSchemaToReferences(schema, {
+                        regions: regions.map(region => region.name)
+                    });
+
+                    return references;
+                }
+
                 default: {
+                    console.log(filePath, file, 999)
                     throw new Error(`Unsupported file extension: ${ext}`);
                 }
             }
@@ -205,9 +224,13 @@ function cleanupTempFolder(tempDir: string): void {
     }
 }
 
-const programmingExtensions: Record<string, boolean> = {
+const supportedProgrammingExtensions: Record<string, boolean> = {
     'ts': true,
     'tsx': true,
+    'graphql': true,
+    'yaml': true,
+    'yml': true,
+    'json': true,
 
     // TODO
     // 'py': true,
@@ -220,10 +243,10 @@ const programmingExtensions: Record<string, boolean> = {
  * @param filePath The path to the file
  * @returns True if the file is a programming source file
  */
-function isProgrammingSource(filePath: string) {
+function isSupportedProgrammingSource(filePath: string) {
     const ext = extension(filePath);
 
-    if (programmingExtensions[ext]) {
+    if (supportedProgrammingExtensions[ext]) {
         return true;
     }
 

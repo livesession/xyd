@@ -3,7 +3,7 @@ import path from "node:path";
 import * as React from "react";
 import { redirect, ScrollRestoration } from "react-router";
 
-import { MetadataMap } from "@xyd-js/core"
+import { MetadataMap, Theme as ThemeSettings } from "@xyd-js/core"
 import { compileBySlug } from "@xyd-js/content"
 import { markdownPlugins } from "@xyd-js/content/md"
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
@@ -13,15 +13,15 @@ import { HomePage } from "@xyd-js/components/pages";
 import { Atlas, AtlasContext } from "@xyd-js/atlas";
 import { ReactContent } from "@xyd-js/components/content";
 import { getMetaComponent } from "@xyd-js/context";
+import { withTheme } from "@xyd-js/themes";
 
 import settings from 'virtual:xyd-settings';
 import Theme from "virtual:xyd-theme";
 
 import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
-import { withTheme } from "@xyd-js/themes";
 
-const theme = new Theme()
+const theme = new Theme(settings.theme || {} as ThemeSettings) // TODO: !!! FIX TYPES !!!!
 const themeComponents = theme.components()
 
 const ThemeComponent = withTheme(theme)
@@ -82,6 +82,7 @@ export async function loader({ request }: { request: any }) {
         return {}
     }
 
+
     // TODO: in the future map instead of arr
     if (settings.redirects && settings.redirects.length) {
         for (const item of settings.redirects) {
@@ -118,6 +119,7 @@ export async function loader({ request }: { request: any }) {
             error = e
         }
     }
+
 
     const {
         groups: sidebarGroups,
@@ -250,7 +252,6 @@ export default function DocsPage({ loaderData, ...rest }: { loaderData: loaderDa
     const content = mdxContent(loaderData.code)
     const Content = MemoMDXComponent(content.component)
 
-    // console.log(p, 222)
     if (!Content) {
         console.error("Content not found")
         return null

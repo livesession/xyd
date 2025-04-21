@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 
 import { Example, ExampleRoot } from "@xyd-js/uniform";
-import { CodeSample } from "@xyd-js/components/coder";
+import { CodeSample, type CodeThemeBlockProps } from "@xyd-js/components/coder";
 
 import { MDXReference } from "@/utils/mdx"
 import { CodeExampleButtons } from "@/components/Code";
-import type { MDXCodeSampleBlock } from "@/components/Code/CodeSample/CodeSample";
 import { useSyntaxHighlight } from "@/components/Atlas/AtlasContext";
 
 import * as cn from "./ApiRefSamples.styles";
@@ -17,13 +16,20 @@ export interface ApiRefSamplesProps {
 export function ApiRefSamples({ examples }: ApiRefSamplesProps) {
     const syntaxHighlight = useSyntaxHighlight()
 
-    return <div className={cn.ApiRefSamplesContainerHost}>
+    return <atlas-apiref-samples className={cn.ApiRefSamplesContainerHost}>
         {
             examples.groups?.map(({ description, examples }, i) => {
                 const [activeExample, setActiveExample] = useState<MDXReference<Example> | null>(examples?.[0])
 
                 const codeblocks = activeExample?.codeblock?.tabs?.map(tab => {
-                    return tab as any // TODO: !!! FIX !!!
+                    return { // TODO: FIX TYPES !!!!
+                        value: tab.code || "",
+                        lang: tab.language || "",
+                        meta: tab.context || "",
+
+                        // @ts-ignore
+                        highlighted: tab.highlighted
+                    } as unknown as CodeThemeBlockProps // TODO: !!! FIX !!!
                 })
 
                 return <div key={i} className={cn.ApiRefSamplesGroupHost}>
@@ -47,5 +53,5 @@ export function ApiRefSamples({ examples }: ApiRefSamplesProps) {
                 </div>
             })
         }
-    </div>
+    </atlas-apiref-samples>
 }

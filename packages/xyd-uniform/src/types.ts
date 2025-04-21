@@ -1,4 +1,5 @@
 import React from "react";
+import { HighlightedCode } from "codehike/code";
 
 // TODO: concept only
 export enum ReferenceCategory {
@@ -98,6 +99,9 @@ export interface CodeBlockTab {
 
     // context of the generation method e.g openapi or graphql
     context?: ExampleContext;
+
+    // TODO: highlighted code
+    highlighted?: HighlightedCode;
 }
 
 // TODO: type, and category also as generic?

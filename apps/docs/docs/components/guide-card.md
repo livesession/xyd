@@ -1,38 +1,8 @@
 ---
 title: Guide Card
 layout: wide
-component: atlas
-componentProps:
-    references: "@uniform('@components/writer/GuideCard/GuideCard.tsx')"
+uniform: "@components/writer/GuideCard/GuideCard.tsx"
 ---
-
-<<<examples
-- 
-  :::code-group{title="Guide Cards"}
-  ```jsx Guide Card Example
-  function GuideCardV3() {
-    return <div> Guide Card </div>
-  }
-  ```
-
-  ```tsx Card Group V2 Sample
-  function GuideCardV2() {
-    return <div> Guide Card V2 </div>
-  }
-  ``` 
-  :::
-
-- 
-  ```jsx 
-  function GuideCard() {
-    return <div> Guide Card </div>
-  }
-  ``` 
-<<<
-
-# My custom Name
-
-A card component that displays content with a title and optional icon. The entire card is clickable and links to the specified URL.
 
 :::grid
 - 
@@ -58,3 +28,26 @@ A card component that displays content with a title and optional icon. The entir
     :::
 :::
 
+<<<examples
+- 
+  :::code-group{title="Guide Cards"}
+  ```jsx Guide Card Example
+  function GuideCardV3() {
+    return <div> Guide Card </div>
+  }
+  ```
+
+  ```tsx Card Group V2 Sample
+  function GuideCardV2() {
+    return <div> Guide Card V2 </div>
+  }
+  ``` 
+  :::
+
+- 
+  ```jsx 
+  function GuideCard() {
+    return <div> Guide Card </div>
+  }
+  ``` 
+<<<

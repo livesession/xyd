@@ -21,8 +21,14 @@ import {gqlOperationsToUniformRef} from "./utils";
 // TODO: !!! CIRCULAR_DEPENDENCY !!!
 // TODO: sort by tag??
 
+// TODO: support line ranged in the future?
+interface gqlSchemaToReferencesOptions {
+    regions?: string[] // TODO: BETTER API - UNIFY FOR REST API / GRAPHQL ETC
+}
+
 export async function gqlSchemaToReferences(
-    schemaLocation: string
+    schemaLocation: string,
+    options?: gqlSchemaToReferencesOptions
 ): Promise<Reference[]> {
     const loadersList = {
         ["GraphQLFileLoader"]: "@graphql-tools/graphql-file-loader",
@@ -38,9 +44,16 @@ export async function gqlSchemaToReferences(
     const queryFields = queries?.getFields?.()
 
     if (queryFields) {
+        // Filter query fields based on regions if provided
+        const filteredQueryFields = filterFieldsByRegions(
+            queryFields,
+            "Query",
+            options?.regions
+        );
+        
         references.push(...gqlOperationsToUniformRef(
             ReferenceType.GRAPHQL_QUERY,
-            queryFields
+            filteredQueryFields
         ))
     }
 
@@ -48,9 +61,16 @@ export async function gqlSchemaToReferences(
     const mutationFields = mutations?.getFields?.()
 
     if (mutationFields) {
+        // Filter mutation fields based on regions if provided
+        const filteredMutationFields = filterFieldsByRegions(
+            mutationFields,
+            "Mutation",
+            options?.regions
+        );
+        
         references.push(...gqlOperationsToUniformRef(
             ReferenceType.GRAPHQL_MUTATION,
-            mutationFields
+            filteredMutationFields
         ))
     }
 
@@ -62,6 +82,11 @@ export async function gqlSchemaToReferences(
             gqlType.name === "Mutation"
 
         if (builtInType) {
+            continue;
+        }
+
+        // Filter types based on regions if provided
+        if (!shouldIncludeType(gqlType.name, options?.regions)) {
             continue;
         }
 
@@ -104,4 +129,44 @@ export async function gqlSchemaToReferences(
     }
 
     return references
+}
+
+
+/**
+ * Helper function to filter fields based on region patterns
+ * @param fields - The fields to filter
+ * @param prefix - The prefix for the region key (e.g., "Query" or "Mutation")
+ * @param regions - The regions to filter by
+ * @returns Filtered fields object
+ */
+function filterFieldsByRegions<T>(
+    fields: Record<string, T>,
+    prefix: string,
+    regions?: string[]
+): Record<string, T> {
+    if (!regions || regions.length === 0) {
+        return fields;
+    }
+
+    const filteredFields: Record<string, T> = {};
+    for (const [fieldName, field] of Object.entries(fields)) {
+        const regionKey = `${prefix}.${fieldName}`;
+        if (regions.some(region => region === regionKey)) {
+            filteredFields[fieldName] = field;
+        }
+    }
+    return filteredFields;
+}
+
+/**
+ * Helper function to check if a type should be included based on regions
+ * @param typeName - The name of the type
+ * @param regions - The regions to filter by
+ * @returns Whether the type should be included
+ */
+function shouldIncludeType(typeName: string, regions?: string[]): boolean {
+    if (!regions || regions.length === 0) {
+        return true;
+    }
+    return regions.some(region => region === typeName);
 }

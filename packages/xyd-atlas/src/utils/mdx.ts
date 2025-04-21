@@ -40,9 +40,11 @@ export function uniformChild<V extends MDXReferenceWrapper<V>>(v: V) {
         return v.children
     }
 
-    if (typeof v === "object") {
+    if (React.isValidElement(v)) {
+        return v
+    } else if (typeof v === "object") {
         return null
     }
-
+   
     return v
 }

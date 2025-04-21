@@ -37,15 +37,15 @@ export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
 }
 
 function PropName({name, value}: { name: string, value: string }) {
-    return <>
+    return <atlas-apiref-propname>
         <dd>
             <code className={cn.ApiRefPropertiesPropNameCodeHost}>{value}</code>
         </dd>
-    </>
+    </atlas-apiref-propname>
 }
 
 function PropType({name, value, href}: { name: string, value: string, href?: string }) {
-    return <>
+    return <atlas-apiref-proptype>
         <dd>
             <code className={cn.ApiRefPropertiesPropTypeCodeHost}>
                 {
@@ -55,17 +55,17 @@ function PropType({name, value, href}: { name: string, value: string, href?: str
                 }
             </code>
         </dd>
-    </>
+    </atlas-apiref-proptype>
 }
 
 function SubProperties({properties}: { properties: MDXReference<DefinitionProperty>[] }) {
     const [expanded, setExpanded] = useState(false)
 
     return <>
-        <PropToggle
+        {properties?.length ? <PropToggle
             onClick={() => setExpanded(!expanded)}
             isExpanded={expanded}
-        />
+        /> : null}
 
         <div
             className={`${cn.ApiRefPropertiesSubPropsHost} ${expanded && cn.ApiRefPropertiesSubPropsHostExpanded}`}

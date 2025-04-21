@@ -1,4 +1,12 @@
-@layer reset, defaults, components, themes, overrides;
+/* CSS Layer Hierarchy
+ * @layer reset - Base style resets to normalize browser defaults
+ * @layer defaults - Basic component styles for UI, writer, and coder components
+ * @layer components - Composite styles built on top of base components
+ * @layer templates - Template-specific styles like Atlas
+ * @layer themes - Theme-level CSS modifications
+ * @layer overrides - Final override layer for styles not applicable in other layers
+ */
+@layer reset, defaults, components, templates, themes, overrides;
 
 @import "@xyd-js/ui/dist/index.css";
 @import "@xyd-js/components/dist/index.css";
