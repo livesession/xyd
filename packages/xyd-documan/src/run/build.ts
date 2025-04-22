@@ -6,10 +6,13 @@ import {execSync} from 'child_process';
 import {build as viteBuild} from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
 
-import {reactRouter} from "@xyd-js/react-router-dev/vite";
+// import {reactRouter} from "@xyd-js/react-router-dev/vite";
+import {reactRouter} from "@react-router/dev/vite";
+
 
 import {vitePlugins as xydContentVitePlugins} from "@xyd-js/content/vite"
 import {pluginZero} from "@xyd-js/plugin-zero";
+import { writeConfig } from "./write-config";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,52 +24,54 @@ export async function build() {
         throw new Error("PluginZero not found")
     }
 
-    const buildDir = path.join(process.cwd(), ".xyd/build");
+    globalThis.__xydBasePath = resp.basePath
+    globalThis.__xydSettings = resp.settings
 
-    {
-        // TODO: probably we should have better mechanism - maybe bundle?
+    // const buildDir = path.join(process.cwd(), ".xyd/build");
+    // {
+    //     // TODO: probably we should have better mechanism - maybe bundle?
 
-        const packageJsonPath = path.join(buildDir, 'package.json');
+    //     const packageJsonPath = path.join(buildDir, 'package.json');
 
-        const packageJsonContent = {
-            type: "module",
-            scripts: {},
-            dependencies: { // TODO: better
-                "@xyd-js/content": "latest",
-                "@xyd-js/components": "latest",
-                "@xyd-js/framework": "latest",
-                "@xyd-js/theme-poetry": "latest",
+    //     const packageJsonContent = {
+    //         type: "module",
+    //         scripts: {},
+    //         dependencies: { // TODO: better
+    //             "@xyd-js/content": "latest",
+    //             "@xyd-js/components": "latest",
+    //             "@xyd-js/framework": "latest",
+    //             "@xyd-js/theme-poetry": "latest",
 
 
-                "@react-router/node": "7.1.1",
-                "isbot": "^5"
-            },
-            devDependencies: {}
-        };
+    //             "@react-router/node": "7.1.1",
+    //             "isbot": "^5"
+    //         },
+    //         devDependencies: {}
+    //     };
 
-        if (process.env.XYD_DEV_MODE) {
-            Object.keys(packageJsonContent.dependencies).forEach((key) => {
-                if (key.startsWith("@xyd-js/")) {
-                    packageJsonContent.dependencies[key] = "workspace:*";
-                }
-            })
-        }
+    //     if (process.env.XYD_DEV_MODE) {
+    //         Object.keys(packageJsonContent.dependencies).forEach((key) => {
+    //             if (key.startsWith("@xyd-js/")) {
+    //                 packageJsonContent.dependencies[key] = "workspace:*";
+    //             }
+    //         })
+    //     }
 
-        // Ensure the build directory exists
-        if (!fs.existsSync(buildDir)) {
-            fs.mkdirSync(buildDir, {recursive: true});
-        }
+    //     // Ensure the build directory exists
+    //     if (!fs.existsSync(buildDir)) {
+    //         fs.mkdirSync(buildDir, {recursive: true});
+    //     }
 
-        // Write the package.json file
-        fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
+    //     // Write the package.json file
+    //     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
 
-        // Install packages inside buildDir
-        if (process.env.XYD_DEV_MODE) {
-            execSync('pnpm i', {cwd: buildDir, stdio: 'inherit'});
-        } else {
-            execSync('npm install', {cwd: buildDir, stdio: 'inherit'});
-        }
-    }
+    //     // Install packages inside buildDir
+    //     if (process.env.XYD_DEV_MODE) {
+    //         execSync('pnpm i', {cwd: buildDir, stdio: 'inherit'});
+    //     } else {
+    //         execSync('npm install', {cwd: buildDir, stdio: 'inherit'});
+    //     }
+    // }
 
     try {
         // Build the client-side bundle
@@ -79,10 +84,7 @@ export async function build() {
                     },
                     settings: resp.settings,
                 }) as Plugin[]),
-                reactRouter({
-                    outDir: buildDir,
-                    routes: resp.routes
-                }),
+                reactRouter(),
                 tsconfigPaths(),
                 ...resp.vitePlugins
             ],
@@ -104,10 +106,7 @@ export async function build() {
                     },
                     settings: resp.settings,
                 }) as Plugin[]),
-                reactRouter({
-                    outDir: buildDir,
-                    routes: resp.routes
-                }),
+                reactRouter(),
                 tsconfigPaths(),
                 ...resp.vitePlugins
             ],

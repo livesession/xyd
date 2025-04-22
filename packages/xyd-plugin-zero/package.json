@@ -36,12 +36,12 @@
     "@xyd-js/sources": "workspace:*",
     "@xyd-js/themes": "workspace:*",
     "@xyd-js/context": "workspace:*",
-    "@react-router/dev": "7.1.1",
-    "@react-router/node": "7.1.1",
-    "@react-router/serve": "7.1.1",
+    "@react-router/dev": "^7.5.0",
+    "@react-router/node": "^7.5.0",
+    "@react-router/serve": "^7.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router": "7.1.1"
+    "react-router": "^7.5.0"
   },
   "devDependencies": {
     "@types/react-dom": "^19.0.0",

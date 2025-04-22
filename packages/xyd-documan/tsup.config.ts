@@ -47,7 +47,7 @@ export default defineConfig({
         "@react-router/dev",
         "@react-router/express",
 
-        "@xyd-js/react-router-dev",
+        // "@xyd-js/react-router-dev",
 
         "@readme/json-schema-ref-parser",
         "@apidevtools/json-schema-ref-parser",

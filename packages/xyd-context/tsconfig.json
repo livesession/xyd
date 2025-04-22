@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-      "module": "Node16",
+      "module": "esnext",
       "esModuleInterop": true,
-      "moduleResolution": "node16",
+      "moduleResolution": "node",
       "target": "ES6",
       "lib": [
         "dom",
@@ -25,9 +25,7 @@
       "strictNullChecks": true,
       "baseUrl": ".",
       "paths": {
-        "@xyd-js/core": [
-          "../xyd-core"
-        ],
+        "@xyd-js/core": ["../xyd-core/src"]
       },
       "typeRoots": [
         "./types.d.ts"

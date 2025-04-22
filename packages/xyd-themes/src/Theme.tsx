@@ -261,6 +261,15 @@ export abstract class Theme {
       }
     }
 
+    if (props.references[0].description) {
+      // Sanitize frontmatter description
+      if (typeof props.references[0].description === "string") {
+        // Remove frontmatter using regex
+        const content = props.references[0].description.replace(/^---[\s\S]*?---\n/, '');
+        props.references[0].description = content;
+      }
+    }
+    
     if (reactElements.length > 0) {
       if (props.references[0].description && typeof props.references[0].description === "string") {
         reactElements.unshift(props.references[0].description)

@@ -15,6 +15,7 @@ export async function pluginZero(): Promise<PluginOutput | null> {
     let settings: Settings | null = null
     const vitePlugins: VitePlugin[] = []
     const routes: RouteConfigEntry[] = []
+    let basePath = ""
 
     // base docs preset setup
     {
@@ -55,6 +56,7 @@ export async function pluginZero(): Promise<PluginOutput | null> {
 
         docs.routes = docs.routes || []
         routes.push(...docs.routes)
+        basePath = docs.basePath
     }
 
     if (!settings) {
@@ -170,7 +172,8 @@ export async function pluginZero(): Promise<PluginOutput | null> {
     return {
         vitePlugins,
         settings,
-        routes
+        routes,
+        basePath
     }
 }
 

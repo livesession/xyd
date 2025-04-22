@@ -32,14 +32,18 @@ export function mdMeta(settings?: Settings) {
         return
       }
 
-      if (meta?.uniform || meta?.openapi) {
-        meta.uniform = meta.uniform || meta.openapi
+      if (meta?.uniform || meta?.openapi || meta?.graphql) {
+        if (meta.graphql) {
+          meta.uniform = meta.graphql
+        } else if (meta.openapi) {
+          meta.uniform = meta.openapi
+        }
         meta.component = "atlas"
         meta.componentProps = {
           references: `@uniform('${meta.uniform}')`
         }
       }
-      
+
       if (!meta || !meta.component) {
         return
       }

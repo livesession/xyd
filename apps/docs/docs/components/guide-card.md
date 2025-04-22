@@ -32,8 +32,8 @@ uniform: "@components/writer/GuideCard/GuideCard.tsx"
 - 
   :::code-group{title="Guide Cards"}
   ```jsx Guide Card Example
-  function GuideCardV3() {
-    return <div> Guide Card </div>
+  function GuideCardV1() {
+    return <div> Guide Card V1</div>
   }
   ```
 
@@ -46,8 +46,8 @@ uniform: "@components/writer/GuideCard/GuideCard.tsx"
 
 - 
   ```jsx 
-  function GuideCard() {
-    return <div> Guide Card </div>
+  function GuideCardV3() {
+    return <div> Guide Card V3</div>
   }
   ``` 
 <<<

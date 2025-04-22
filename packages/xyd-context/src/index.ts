@@ -1,36 +1,31 @@
-import type { RootContent } from 'mdast'
+import { Settings } from "@xyd-js/core";
 
-import type { Theme } from '@xyd-js/core'
+export * from "./meta"
 
-type TransformFn = (
-    themeSettings: Theme,
-    metaProps: any, 
-    meta: any,
-    treeChilds: readonly RootContent[]
-) => any // TODO: fix any
+let settings: Settings | null = null
+let basePath: string | null = null
 
-interface MetaComponent {
-    name: string
-    
-    componentName: string
+export function contextSettings(): Settings {
+    if (!settings) {
+        throw new Error("Context settings not found")
+    }
 
-    transform: TransformFn
+    return settings
 }
 
-const registry = new Map<string, MetaComponent>()
-
-export function registerMetaComponent(
-    name: string,
-    componentName: string,
-    transform: TransformFn
-) {
-    registry.set(name, {
-        name,
-        componentName,
-        transform
-    })
+export function setContextSettings(s: Settings) {
+    console.log("setContextSettings 22", s)
+    settings = s
 }
 
-export function getMetaComponent(name: string) {
-    return registry.get(name)
+export function contextBasePath(): string {
+    if (!basePath) {
+        throw new Error("Context base path not found")
+    }
+
+    return basePath
+}
+
+export function setContextBasePath(p: string) {
+    basePath = p
 }

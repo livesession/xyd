@@ -31,7 +31,11 @@ export async function processUniformFunctionCall(
     const { filePath, regions, lineRanges } = parseImportPath(value);
 
     // Resolve path aliases and get the base directory
-    const resolvedFilePath = resolvePathAlias(filePath, settings, process.cwd());
+    let resolvedFilePath = resolvePathAlias(filePath, settings, process.cwd());
+
+    if (resolvedFilePath.startsWith("~/")) {
+        resolvedFilePath = path.join(process.cwd(), resolvedFilePath.slice(2));
+    }
 
     // Process the uniform file
     return processUniformFile(resolvedFilePath, regions, lineRanges, file, resolveFrom);
@@ -115,7 +119,6 @@ async function processUniformFile(
                 }
 
                 case 'openapi': {
-                    console.log(regions, "regions")
                     const schema = await deferencedOpenAPI(resolvedFilePath);
                     const references = oapSchemaToReferences(schema, {
                         regions: regions.map(region => region.name)
@@ -125,7 +128,6 @@ async function processUniformFile(
                 }
 
                 default: {
-                    console.log(filePath, file, 999)
                     throw new Error(`Unsupported file extension: ${ext}`);
                 }
             }

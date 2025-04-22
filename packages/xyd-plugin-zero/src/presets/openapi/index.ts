@@ -37,7 +37,7 @@ class OpenAPIUniformPreset extends UniformPreset {
         return new OpenAPIUniformPreset(settings)
             .root(options.root || "")
             .urlPrefix(options.urlPrefix || "")
-            .newUniformPreset()(settings)
+            .newUniformPreset()(settings, "openapi")
     }
 
     protected override async uniformRefResolver(filePath: string): Promise<Reference[]> {

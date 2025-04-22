@@ -1,5 +1,3 @@
-export * from "./ReactContent"
-
 export {
     ReactContent,
 

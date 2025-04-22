@@ -41,7 +41,7 @@ class SourceUniformPreset extends UniformPreset {
             .root(options.root || "")
             .urlPrefix(options.urlPrefix || "")
             .sourceTheme(true)
-            .newUniformPreset()(settings)
+            .newUniformPreset()(settings, "sources")
     }
 
     // TODO: options to specify only specific packages?

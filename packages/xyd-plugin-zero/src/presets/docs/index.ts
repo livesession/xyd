@@ -245,7 +245,8 @@ function preset(settings: Settings, options: docsPluginOptions) {
             vitePluginTheme,
             vitePluginThemeCSS,
             vitePluginThemeOverrideCSS,
-        ]
+        ],
+        basePath
     }
 }
 

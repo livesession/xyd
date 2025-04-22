@@ -20,6 +20,7 @@ export type Preset<T> = (
     routes: RouteConfigEntry[]
     // TODO: 'data' comes from merged object of preinstall
     vitePlugins: (() => (data: VitePluginData) => Promise<VitePlugin>)[]
+    basePath: string
 }
 
 export interface PluginOutput {
@@ -28,6 +29,8 @@ export interface PluginOutput {
     settings: Settings,
 
     routes: RouteConfigEntry[]
+
+    basePath: string
 }
 
 export type Plugin = () => Promise<PluginOutput | null>

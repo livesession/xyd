@@ -1,7 +1,7 @@
 import React from "react";
-import {Theme} from "@code-hike/lighter";
+import { Theme } from "@code-hike/lighter";
 
-import type {CodeThemeBlockProps} from "../CodeTheme";
+import type { CodeThemeBlockProps } from "../CodeTheme";
 
 import {
     Code,
@@ -10,7 +10,7 @@ import {
 import {
     withCodeTabs
 } from "../CodeTabs";
-import {useCodeTheme} from "../CodeTheme";
+import { useCodeTheme } from "../CodeTheme";
 
 export interface CodeSampleProps {
     name: string;
@@ -19,19 +19,20 @@ export interface CodeSampleProps {
     theme?: Theme
     size?: "full"
     kind?: "secondary"
+    controlByMeta?: boolean // TODO: BETTER IN THE FUTURE
 }
 
 export function CodeSample(props: CodeSampleProps) {
     return <Code
-            codeblocks={props.codeblocks}
-            theme={props.theme}
+        codeblocks={props.codeblocks}
+        theme={props.theme}
     >
-        <$ThemedCodeSample {...props}/>
+        <$ThemedCodeSample {...props} />
     </Code>
 }
 
 function $ThemedCodeSample(props: CodeSampleProps) {
-    const {highlighted} = useCodeTheme()
+    const { highlighted } = useCodeTheme()
 
     if (props.kind === "secondary") {
         return <Code.Pre
@@ -48,6 +49,7 @@ function $ThemedCodeSample(props: CodeSampleProps) {
         description={props.description}
         highlighted={highlighted}
         size={props.size}
+        controlByMeta={props.controlByMeta}
     />
 }
 

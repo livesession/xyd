@@ -1,3 +1,4 @@
 node_modules
 dist
 .react-router
+app/shared-data.ts

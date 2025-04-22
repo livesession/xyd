@@ -35,23 +35,15 @@ export function useCodeTheme() {
 }
 
 // TODO: lazy-loading - some codeblocks on server and another on client
+// TODO: lazdy client loading only on specific codeblock
 export function CodeTheme(props: CodeThemeProps) {
     // Initialize with server-side highlighted codeblocks
-    const [highlighted, setHighlighted] = useState<HighlightedCode[] | undefined>(() => {
-        if (!props.codeblocks) return [];
+    const [highlighted, setHighlighted] = useState<HighlightedCode[] | undefined>(initializeHighlighted(props.codeblocks));
+    const [clientSideFetch, setClientSideFetch] = useState(true)
 
-        return props.codeblocks.map(codeblock => {
-            if (codeblock.highlighted && codeblock.highlighted.tokens) {
-                return {
-                    ...codeblock.highlighted,
-                    meta: codeblock.highlighted?.meta || codeblock.meta,
-                };
-            }
-
-            return {};
-        })
-    });
-    const [isClientSide, setIsClientSide] = useState(true)
+    useEffect(() => {
+        setHighlighted(initializeHighlighted(props.codeblocks))
+    }, [props.codeblocks])
 
     useEffect(() => {
         if (!props.codeblocks) {
@@ -67,6 +59,21 @@ export function CodeTheme(props: CodeThemeProps) {
             clientSideHighlight();
         }
     }, [props.codeblocks]);
+
+    function initializeHighlighted(codeblocks: any) {
+        if (!codeblocks) return [];
+
+        return codeblocks.map(codeblock => {
+            if (codeblock.highlighted && codeblock.highlighted.tokens) {
+                return {
+                    ...codeblock.highlighted,
+                    meta: codeblock.highlighted?.meta || codeblock.meta,
+                };
+            }
+
+            return {};
+        }) as HighlightedCode[]
+    }
 
     async function clientSideHighlight() {
         if (!props.codeblocks) {
@@ -117,7 +124,7 @@ export function CodeTheme(props: CodeThemeProps) {
             return result;
         });
 
-        setIsClientSide(false)
+        setClientSideFetch(false)
     }
 
     const withTheme = <CodeThemeProvider
@@ -128,12 +135,12 @@ export function CodeTheme(props: CodeThemeProps) {
         {props.children}
     </CodeThemeProvider>
 
-    const fullSsr = props.codeblocks?.every(codeblock => codeblock.highlighted)
-    if (fullSsr) {
+    const allHighlighted = props.codeblocks?.every(codeblock => codeblock.highlighted)
+    if (allHighlighted) {
         return withTheme
     }
 
-    if (isClientSide) {
+    if (clientSideFetch) {
         return <Loader />
     }
 

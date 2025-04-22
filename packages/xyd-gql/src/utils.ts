@@ -66,6 +66,7 @@ export function gqlOperationsToUniformRef(
             operationType,
             operationName,
             operationName,
+            "/test/" + operationName,
             description,
             [exampleGroup],
             definitions,
@@ -78,8 +79,9 @@ export function gqlOperationsToUniformRef(
 // graphqlReference is a helper function to create a Reference object for a GraphQL query or mutation.
 function graphqlReference(
     operationType: ReferenceType.GRAPHQL_QUERY | ReferenceType.GRAPHQL_MUTATION,
-    title: string,
-    canonical: string,
+    operationName: string,
+    title: string, // TODO: in the future custom canonical
+    canonical: string, // TODO: in the future custom canonical
     description: string,
     examples: ExampleGroup[],
     definitions: Definition[],
@@ -96,5 +98,8 @@ function graphqlReference(
             groups: examples,
         },
         definitions,
+        context: {
+            graphqlName: operationName,
+        }
     }
 }

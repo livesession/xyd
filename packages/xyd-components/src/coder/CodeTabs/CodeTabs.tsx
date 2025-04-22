@@ -14,6 +14,7 @@ export interface CodeTabsProps {
     highlighted: HighlightedCode[]
     size?: "full"
     className?: string
+    controlByMeta?: boolean // TODO: BETTER IN THE FUTURE
 }
 
 export function withCodeTabs(PreComponent) {
@@ -32,6 +33,7 @@ export function withCodeTabs(PreComponent) {
                     className={`${cn.CodeTabsRoot}`}
                     style={props.highlighted[0]?.style}
                     defaultValue={props.highlighted[0]?.meta}
+                    value={props.controlByMeta ? props.highlighted[0]?.meta : undefined}
                 >
                     <$LanguageTabSwitcher
                         description={props.description}

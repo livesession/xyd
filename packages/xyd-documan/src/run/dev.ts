@@ -4,21 +4,29 @@ import fs from "node:fs";
 
 import {createServer, searchForWorkspaceRoot} from "vite";
 
-import {reactRouter} from "@xyd-js/react-router-dev/vite";
+// import {reactRouter} from "@xyd-js/react-router-dev/vite";
+import {reactRouter} from "@react-router/dev/vite";
 
 import {vitePlugins as xydContentVitePlugins} from "@xyd-js/content/vite";
 import {pluginZero} from "@xyd-js/plugin-zero";
+import {writeConfig} from "./write-config";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const port = process.env.XYD_PORT ? parseInt(process.env.XYD_PORT) : 5175;
 
-export async function dev() {
+export async function dev() {    
     const respPluginZero = await pluginZero()
     if (!respPluginZero) {
         throw new Error("PluginZero not found")
     }
+
+    globalThis.__xydBasePath = respPluginZero.basePath
+    globalThis.__xydSettings = respPluginZero.settings
+
+    // Write the configuration to the shared-data.ts file
+    // await writeConfig(respPluginZero.settings, respPluginZero.basePath);
 
     const allowCwd = searchForWorkspaceRoot(process.cwd())
 
@@ -52,10 +60,8 @@ export async function dev() {
                 },
                 settings: respPluginZero.settings,
             }) as Plugin[]),
-            reactRouter({
-                routes: respPluginZero.routes
-            }),
             ...respPluginZero.vitePlugins,
+            reactRouter(),
         ]
     });
 

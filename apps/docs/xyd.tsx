@@ -71,6 +71,10 @@ export default {
                 "name": "REST",
                 "url": "/docs/api/rest"
             },
+            {
+                "name": "GraphQL2",
+                "url": "/docs/api/graphql2"
+            }
         ],
         "sidebar": [
             // docs
@@ -173,7 +177,20 @@ export default {
                     },
                 ]
             },
+            {
+                "route": "docs/api/graphql2",
+                "items": [
+                 
+                ]
+            },
         ],
+    },
+
+    "api": {
+        "graphql": "./schema.graphql",
+        "route": { 
+            "graphql": "docs/api/graphql2",
+        }
     },
 
     "config": {

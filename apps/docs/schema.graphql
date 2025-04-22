@@ -18,6 +18,10 @@ Query type
 """
 type Query {
     """
+    ---
+    title: Example query
+    group: [Endpoints]
+    ---
     Example query
     """
     example: Example!

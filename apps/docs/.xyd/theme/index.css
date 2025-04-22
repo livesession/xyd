@@ -44,6 +44,9 @@
     --xyd-anchor-color: var(--color-primary);
 }
 
+:root {
+    --xyd-page-gutter: 0;
+}
 
 /* Heading */
 :root {
@@ -59,7 +62,7 @@
 
         [part="sidebar"] {
             position: fixed;
-            top: 0;
+            top: var(--xyd-page-gutter);
             z-index: 1;
         }
 

@@ -37,7 +37,7 @@ class GraphQLUniformPreset extends UniformPreset {
         return new GraphQLUniformPreset(settings)
             .root(options.root || "")
             .urlPrefix(options.urlPrefix || "")
-            .newUniformPreset()(settings)
+            .newUniformPreset()(settings, "graphql")
     }
 
     protected override async uniformRefResolver(filePath: string): Promise<Reference[]> {

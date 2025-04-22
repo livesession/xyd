@@ -10,9 +10,10 @@ import {
     Settings,
     APIFile,
     Sidebar,
-    SidebarMulti
+    SidebarMulti,
+    Metadata
 } from "@xyd-js/core";
-import uniform, {pluginNavigation, Reference} from "@xyd-js/uniform";
+import uniform, {pluginNavigation, Reference, ReferenceType} from "@xyd-js/uniform";
 import {
     compile as compileMarkdown,
     referenceAST
@@ -20,7 +21,7 @@ import {
 import {Preset, PresetData} from "../../types";
 
 
-// TODO: REFACTOR PLUGIN-ZERO AND ITS DEPS FOR MORE READABLE CODE AND BETTER API
+// TODO: !!!!! REFACTOR PLUGIN-ZERO AND ITS DEPS FOR MORE READABLE CODE AND BETTER API !!!!
 
 export interface uniformPresetOptions {
     urlPrefix?: string
@@ -115,13 +116,30 @@ function uniformSidebarLevelMap(pages: string []) {
     return out;
 }
 
+// Helper function to read markdown files with support for both .mdx and .md extensions
+async function readMarkdownFile(root: string, page: string): Promise<string> {
+    try {
+        // Try .mdx first
+        return await fs.readFile(path.join(root, page + '.mdx'), "utf-8");
+    } catch (e) {
+        // If .mdx fails, try .md
+        try {
+            return await fs.readFile(path.join(root, page + '.md'), "utf-8");
+        } catch (e) {
+        }
+    }
+
+    return ""
+}
+
 async function uniformResolver(
     root: string,
     matchRoute: string,
     apiFile: string,
     uniformApiResolver: (filePath: string) => Promise<Reference[]>,
     sidebar?: (SidebarMulti | Sidebar)[],
-    options?: uniformPresetOptions
+    options?: uniformPresetOptions,
+    uniformType?: UniformType
 ) {
     let urlPrefix = ""
 
@@ -209,21 +227,21 @@ async function uniformResolver(
             // TODO: below should be inside uniform?
             // TODO: custom `fn` logic?
             await Promise.all(otherUniformPages.map(async (page) => {
-                const content = await fs.readFile(path.join(root, page + '.mdx'), "utf-8") // TODO: support .md
-                uniformData.set(page, content + "\n")
+                const content = await readMarkdownFile(root, page);
+                uniformData.set(page, content + "\n");
             }))
 
             await Promise.all(Object.keys(groups).map(async (group) => {
                 try {
                     // TODO: only if `group_index`
                     const page = groups[group]
-                    const content = await fs.readFile(path.join(root, page + '.mdx'), "utf-8") // TODO: support .md
-                    uniformData.set(page, content + "\n")
+                    const content = await readMarkdownFile(root, page);
+                    uniformData.set(page, content + "\n");
                 } catch (e) {
+                    // Silently continue if file not found
                 }
             }))
         }
-
     }
 
     await Promise.all(
@@ -240,13 +258,44 @@ async function uniformResolver(
                 console.error('frontmatter not found', byCanonical)
                 return
             }
-            const content = matterStringify({content: md}, {
-                title: frontmatter.title,
-            });
 
+            const meta: Metadata = {
+                title: frontmatter.title,
+                layout: "wide"
+            }
+
+            switch (uniformType) {
+                case "graphql": {
+                    const resolvedApiFile = path.join("~/", apiFile)
+
+                    switch (ref.type) {
+                        case ReferenceType.GRAPHQL_QUERY: {
+                            meta.graphql = `${resolvedApiFile}#Query.${ref.context?.graphqlName}`
+                            break
+                        }
+                        case ReferenceType.GRAPHQL_MUTATION: {
+                            meta.graphql = `${resolvedApiFile}#Mutation.${ref.context?.graphqlName}`
+                            break
+                        }
+                    }
+                    break
+                }
+                case "openapi": {
+                    break
+                }
+            }
+
+            const content = matterStringify({content: ""}, meta);
+
+            // Create directory recursively if it doesn't exist
+            try {
+                await fs.access(path.dirname(mdPath));
+            } catch {
+                await fs.mkdir(path.dirname(mdPath), { recursive: true });
+            }
             await fs.writeFile(mdPath, content)
 
-            uniformData.set(byCanonical, md + "\n") // // TODO: group chunks like previously but + loading fs content?
+            // uniformData.set(byCanonical, md + "\n") // TODO: group chunks like previously but + loading fs content? to delete after compose api? 
         })
     )
 
@@ -278,6 +327,7 @@ function preinstall(
     id: string,
     uniformApiResolver: (filePath: string) => Promise<Reference[]>,
     apiFile: APIFile,
+    uniformType: UniformType
 ) {
     return function preinstallInner(options: uniformPresetOptions) {
         return async function uniformPluginInner(settings: Settings, data: PresetData) {
@@ -300,7 +350,8 @@ function preinstall(
                     apiFile,
                     uniformApiResolver,
                     settings?.navigation?.sidebar,
-                    options
+                    options,
+                    uniformType
                 )
 
                 if (resolved.sidebar) {
@@ -389,6 +440,8 @@ function vitePluginUniformContent(pluginId: string) {
     }
 }
 
+type UniformType = "graphql" | "openapi" | "sources"
+
 function uniformPreset(
     id: string,
     apiFile: APIFile,
@@ -396,7 +449,7 @@ function uniformPreset(
     options: uniformPresetOptions,
     uniformApiResolver: (filePath: string) => Promise<Reference[]>
 ) {
-    return function (settings: Settings) {
+    return function (settings: Settings, uniformType: UniformType) {
         const routeMatches: string[] = []
 
         if (apiFile) {
@@ -444,15 +497,17 @@ function uniformPreset(
             basePath = "../../../xyd-plugin-zero"
         }
 
-        let pageTheme = "src/pages/api-reference.tsx"
+        // let pageTheme = "src/pages/api-reference.tsx"
 
-        if (options.sourceTheme) {
-            pageTheme = "src/pages/api-reference-source.tsx"
-        }
+        // if (options.sourceTheme) {
+        //     pageTheme = "src/pages/api-reference-source.tsx"
+        // }
+
+        const pageTheme = "src/pages/docs.tsx"
 
         return {
             preinstall: [
-                preinstall(id, uniformApiResolver, apiFile)
+                preinstall(id, uniformApiResolver, apiFile, uniformType)
             ],
             routes: routeMatches.map((routeMatch, i) => route(
                     `${routeMatch}/*`,
