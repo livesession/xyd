@@ -21,6 +21,7 @@ export interface ExampleCode {
 // Main plugin function
 export function mdComposer(settings?: Settings): Plugin {
     return () => async (tree: UnistNode, file: SymbolxVfile<any>) => {
+        console.time('plugin:mdComposer');
         const varQueue: Record<string, any> = {}
 
         // Create a context object to store the current state for each variable
@@ -128,6 +129,7 @@ export function mdComposer(settings?: Settings): Plugin {
 
         // Wait for all promises from all contexts to resolve
         await Promise.all(Object.values(contexts).flatMap(ctx => ctx.promises))
+        console.timeEnd('plugin:mdComposer');
 
         // Process the results to create the final output structure
         const outputVars = {}

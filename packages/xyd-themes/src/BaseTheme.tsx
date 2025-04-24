@@ -87,16 +87,17 @@ export abstract class BaseTheme extends Theme {
     }
 
     protected ContentNav() {
-        const { TocTop, TocBottom } = this
+        // const { TocTop, TocBottom } = this
 
+        // TODO: toc top and bottom in the future 
         return <>
-            <TocTop />
+            {/* <TocTop /> */}
 
             <div>
                 <FwToc />
             </div>
 
-            <TocBottom />
+            {/* <TocBottom /> */}
         </>
     }
 

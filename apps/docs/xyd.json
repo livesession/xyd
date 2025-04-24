@@ -1,0 +1,160 @@
+{
+    "theme": {
+        "name": "poetry",
+        "logo": "/public/assets/logo.svg",
+        "markdown": {
+            "syntaxHighlight": "dark-plus"
+        }
+    },
+    "navigation": {
+        "header": [
+            {
+                "name": "Guides",
+                "url": "/docs"
+            },
+            {
+                "name": "Components",
+                "url": "/docs/components"
+            },
+            {
+                "name": "GraphQL",
+                "url": "/docs/api/graphql"
+            },
+            {
+                "name": "REST",
+                "url": "/docs/api/rest"
+            },
+            {
+                "name": "GraphQL2",
+                "url": "/docs/api/graphql2"
+            }
+        ],
+        "sidebar": [
+            {
+                "route": "docs",
+                "items": [
+                    {
+                        "group": "Get Started",
+                        "pages": [
+                            "docs/guides/introduction",
+                            "docs/guides/quickstart",
+                            "docs/guides/deploy",
+                            "docs/guides/settings",
+                            "docs/guides/routing",
+                            "docs/guides/themes"
+                        ]
+                    },
+                    {
+                        "group": "Writing Content",
+                        "pages": [
+                            "docs/guides/writing-quickstart",
+                            "docs/guides/special-symbols",
+                            "docs/guides/markdown-extensions",
+                            "docs/guides/developer-content"
+                        ]
+                    },
+                    {
+                        "group": "API Documentation",
+                        "pages": [
+                            "docs/guides/openapi",
+                            "docs/guides/graphql"
+                        ]
+                    },
+                    {
+                        "group": "SDK Generation",
+                        "pages": []
+                    },
+                    {
+                        "group": "Customization",
+                        "pages": [
+                            "docs/guides/customization-introduction",
+                            "docs/guides/extending-default-theme",
+                            "docs/guides/custom-theme"
+                        ]
+                    },
+                    {
+                        "group": "Advanced Topics",
+                        "pages": [
+                            "docs/guides/sdk-federation",
+                            {
+                                "group": "Example",
+                                "pages": [
+                                    "docs/guides/example-nested",
+                                    "docs/guides/example-nested2",
+                                    "docs/guides/example-nested3"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/components",
+                "items": [
+                    {
+                        "group": "Components",
+                        "pages": [
+                            "docs/components/guide-card",
+                            "docs/components/guide-example"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/api/graphql",
+                "items": [
+                    {
+                        "group": "Queries",
+                        "pages": [
+                            "docs/api/graphql/example-query"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/api/rest",
+                "items": [
+                    {
+                        "group": "Queries",
+                        "pages": [
+                            "docs/api/rest/example-query"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/api/graphql2",
+                "items": []
+            }
+        ]
+    },
+    "api": {
+        "graphql": "./schema.graphql",
+        "route": {
+            "graphql": "docs/api/graphql2"
+        }
+    },
+    "config": {
+        "paths": {
+            "@components/*": [
+                "../../packages/xyd-components/src/*"
+            ],
+            "@graphql": [
+                "./schema.graphql"
+            ],
+            "@rest": [
+                "./openapi.yaml"
+            ]
+        }
+    },
+    "redirects": [
+        {
+            "source": "",
+            "destination": "/docs/guides/introduction"
+        },
+        {
+            "source": "/",
+            "destination": "/docs/guides/introduction"
+        }
+    ]
+}

@@ -13,6 +13,7 @@ const basePath = globalThis.__xydBasePath
 
 export const routes = [
     route("*", path.join(basePath, "src/pages/docs.tsx")),
+    route("/public/*", "./public.ts")
 ]
 
 export default routes

@@ -15,6 +15,7 @@ declare global {
  */
 export const extractPage: Plugin = () => {
     return (tree: UnistNode) => {
+        console.time('plugin:extractPage');
         visit(tree, 'exportNamedDeclaration', (node: any) => {
             const declaration = node.declaration;
 
@@ -29,5 +30,6 @@ export const extractPage: Plugin = () => {
                 }
             });
         });
+        console.timeEnd('plugin:extractPage');
     };
 };

@@ -6,6 +6,7 @@ import {visit} from "unist-util-visit";
  */
 export function remarkInjectCodeMeta() {
     return (tree: any) => {
+        console.time('plugin:remarkInjectCodeMeta');
         visit(tree, 'code', (node) => {
             if (node.meta) {
                 node.data = node.data || {};
@@ -15,5 +16,6 @@ export function remarkInjectCodeMeta() {
                 };
             }
         });
+        console.timeEnd('plugin:remarkInjectCodeMeta');
     };
 }

@@ -21,6 +21,7 @@
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/ui": "workspace:*",
     "@xyd-js/context": "workspace:*",
+    "@xyd-js/content": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

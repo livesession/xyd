@@ -7,7 +7,7 @@ const deps = [
     ...Object.keys(pkg.devDependencies || {}),
 ].filter((dep) => [
     // "@xyd-js/atlas",
-    // "@xyd-js/core",k
+    // "@xyd-js/core",
     // "@xyd-js/content",
     // "@xyd-js/framework",
     // "@xyd-js/gql",

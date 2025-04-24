@@ -23,6 +23,7 @@ export interface RemarkMdxTocOptions {
 
 // TODO: fix any
 export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => async (ast: any) => {
+    console.time('plugin:remarkMdxToc');
     const {visit} = await import("unist-util-visit");
     const {toString} = await import("mdast-util-to-string");
     const {valueToEstree} = await import('estree-util-value-to-estree')
@@ -130,4 +131,5 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
         }
     };
     mdast.children.unshift(tocExport);
+    console.timeEnd('plugin:remarkMdxToc');
 };

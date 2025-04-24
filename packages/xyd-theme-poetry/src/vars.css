@@ -1,4 +1,54 @@
+/* Global Variables */
 :root {
-   
+    --blue80: #3b82f6;
+
+    --gray64: #f5f5f5;
+    --gray80: #e0e0e0;
+
+    --dark64: #363434;
+    --dark80: #1e1e1e;
 }
 
+:root {
+    --color-primary: var(--blue80);
+    --color-gray--secondary: var(--gray64);
+}
+
+/* Sidebar */
+:root {
+    --xyd-sidebar-bgcolor: var(--color-gray--secondary);
+    --xyd-sidebar-item-bgcolor--active-mark: var(--color-primary);
+}
+
+/* UnderlineNav */
+:root {
+    --xyd-underlinenav-color--active: var(--color-primary);
+}
+
+/* Progressbar */
+:root {
+    --xyd-progressbar-bgcolor--active: var(--color-primary);
+}
+
+/* Code */
+:root {
+    --xyd-codetabs-bgcolor: var(--dark80);
+    --xyd-codetabs-color: var(--gray80);
+    --xyd-codetabs-color--active: var(--color-primary);
+    --xyd-codetabs-color--hover: var(--dark64);
+    --xyd-code-copy-color: var(--dark64);
+}
+
+/* Anchor */
+:root {
+    --xyd-anchor-color: var(--color-primary);
+}
+
+:root {
+    --xyd-page-gutter: 0;
+}
+
+/* Heading */
+:root {
+    --xyd-heading-icon-color: var(--color-primary);
+}

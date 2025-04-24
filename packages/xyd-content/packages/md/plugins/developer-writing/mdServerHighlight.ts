@@ -6,6 +6,7 @@ import { Settings } from "@xyd-js/core";
 export function mdServerHighlight(settings?: Settings) { 
     return function () {
         return async (tree: any) => {
+            console.time('plugin:mdServerHighlight');
             const promises: Promise<any>[] = []
 
             visit(tree, 'element', (node) => {
@@ -31,6 +32,7 @@ export function mdServerHighlight(settings?: Settings) {
             });
 
             await Promise.all(promises)
+            console.timeEnd('plugin:mdServerHighlight');
         };
     }
 }

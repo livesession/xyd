@@ -9,9 +9,12 @@ declare module 'virtual:xyd-settings' {
 }
 
 declare module 'virtual:xyd-theme' {
-    import type {ThemeProps} from "@xyd-js/themes";
+    import {BaseTheme} from "@xyd-js/themes";
+    import {Theme as ThemeSettings} from "@xyd-js/core";
 
-    // TODO: fix any
-    const Theme: React.ComponentType<ThemeProps<any>>;
-    export default Theme;
+    // Export a concrete theme class that extends BaseTheme
+    class ConcreteTheme extends BaseTheme {
+        constructor(settings: ThemeSettings);
+    }
+    export default ConcreteTheme;
 }

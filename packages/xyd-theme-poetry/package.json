@@ -12,24 +12,19 @@
       "import": "./dist/index.js"
     }
   },
-  "files": [
-    "dist",
-    "public",
-    "package.json"
-  ],
   "scripts": {
     "clean": "rimraf build",
     "build": "rollup -c rollup.config.js"
   },
   "dependencies": {
     "@xyd-js/atlas": "workspace:*",
-    "@xyd-js/themes": "workspace:*",
     "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0"
   },
   "peerDependencies": {
     "@xyd-js/components": "workspace:*",
     "@xyd-js/framework": "workspace:*",
+    "@xyd-js/themes": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router": "^7.5.0"

@@ -18,6 +18,8 @@ declare global {
 export const extractThemeSettings: Plugin = () => {
     return (tree: UnistNode) => {
         visit(tree, 'exportNamedDeclaration', (node: any) => {
+            console.time('plugin:extractThemeSettings');
+
             const declaration = node.declaration;
             if (declaration && declaration.declarations) {
                 declaration.declarations.forEach((decl: any) => {
@@ -26,6 +28,7 @@ export const extractThemeSettings: Plugin = () => {
                     }
                 });
             }
+            console.timeEnd('plugin:extractThemeSettings');
         });
     };
 };

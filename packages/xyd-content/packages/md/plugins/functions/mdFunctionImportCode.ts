@@ -21,6 +21,8 @@ export function mdFunctionImportCode(settings?: Settings) {
             // Collect promises for async operations
             const promises: Promise<void>[] = [];
 
+            console.time('plugin:mdFunctionImportCode');
+            
             visit(tree, 'paragraph', (node: any) => {
                 // Try to parse the function call
                 const result = parseFunctionCall(node, FunctionName.ImportCode);
@@ -74,6 +76,7 @@ export function mdFunctionImportCode(settings?: Settings) {
 
             // Wait for all promises to resolve
             await Promise.all(promises);
+            console.timeEnd('plugin:mdFunctionImportCode');
         };
     }
 }

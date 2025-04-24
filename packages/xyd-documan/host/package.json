@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@xyd-js/theme-poetry": "workspace:*",
+    "@xyd-js/themes": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@react-router/dev": "^7.5.0",
     "@readme/oas-to-snippet": "^26.0.1",
@@ -30,6 +31,7 @@
     "typedoc": "^0.28.1"
   },
   "peerDependencies": {
+    "@xyd-js/themes": "workspace:*",
     "@xyd-js/context": "workspace:*"
   },
   "devDependencies": {

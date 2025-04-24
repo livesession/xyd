@@ -16,7 +16,6 @@ import { ExampleRoot } from "@xyd-js/uniform";
 
 import { metaComponent } from './decorators';
 
-
 /**
  * List of standard MDAST node types
  */
@@ -269,7 +268,7 @@ export abstract class Theme {
         props.references[0].description = content;
       }
     }
-    
+
     if (reactElements.length > 0) {
       if (props.references[0].description && typeof props.references[0].description === "string") {
         reactElements.unshift(props.references[0].description)
@@ -281,7 +280,7 @@ export abstract class Theme {
     }
 
     if (
-      outputVarExamples && 
+      outputVarExamples &&
       !outputVarExamples.groups.length &&
       props.references[0]?.examples.groups?.length
     ) {
@@ -290,7 +289,7 @@ export abstract class Theme {
       props.references[0].examples?.groups.forEach(group => {
         group.examples.forEach(example => {
           example.codeblock.tabs.forEach(tab => {
-            
+
             async function highlightCode() {
               const highlighted = await highlight({
                 value: tab.code,

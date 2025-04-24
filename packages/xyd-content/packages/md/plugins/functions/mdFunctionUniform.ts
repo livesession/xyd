@@ -18,6 +18,8 @@ export function mdFunctionUniform(settings?: Settings) {
             // Collect promises for async operations
             const promises: Promise<void>[] = [];
 
+            console.time('plugin:mdFunctionUniform');
+            
             visit(tree, 'paragraph', (node: any) => {
                 // Try to parse the function call
                 const result = parseFunctionCall(node, FunctionName.Uniform);
@@ -54,6 +56,7 @@ export function mdFunctionUniform(settings?: Settings) {
 
             // Wait for all promises to resolve
             await Promise.all(promises);
+            console.timeEnd('plugin:mdFunctionUniform');
         };
     }
 

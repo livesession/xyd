@@ -25,11 +25,12 @@ function FwNavLogo() {
 export function FwNav({ kind }: { kind?: "middle" }) {
     const matchedSubnav = useMatchedSubNav()
     const location = useLocation()
+    const pathname = trailingSlash(location.pathname)
 
     const settings = useSettings()
 
     const headers = matchedSubnav ? matchedSubnav?.items : settings?.navigation?.header
-    const active = headers?.findLast(item => location.pathname.startsWith(item.url || ""))
+    const active = headers?.findLast(item => pathname.startsWith(item.url || ""))
 
     return <Nav
         value={active?.url || ""}
@@ -59,13 +60,14 @@ export function FwNav({ kind }: { kind?: "middle" }) {
 export function FwSubNav() {
     const matchedSubnav = useMatchedSubNav()
     const location = useLocation()
+    const pathname = trailingSlash(location.pathname)
 
     if (!matchedSubnav) {
         return null
     }
 
     // TODO: in the future routing props from settings like {match: "/docs/api/browser"}
-    const active = matchedSubnav?.items.findLast(item => location.pathname.startsWith(item.url || ""))
+    const active = matchedSubnav?.items.findLast(item => pathname.startsWith(item.url || ""))
 
     // TODO: value
     return <SubNav
@@ -92,7 +94,7 @@ export interface FwSidebarGroupsProps {
 
 export function FwSidebarGroups(props: FwSidebarGroupsProps) {
     const location = useLocation()
-
+    const pathname = trailingSlash(location.pathname)
     const groups = useSidebarGroups()
     const settings = useSettings()
 
@@ -137,7 +139,7 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
 
     const initialActiveItems: any[] = []
     groups.forEach((group, groupIndex) => {
-        const activeLevels = recursiveSearch(group.items, location.pathname) || []
+        const activeLevels = recursiveSearch(group.items, pathname) || []
 
         activeLevels.reduce((acc, index, level) => {
             initialActiveItems.push({
@@ -153,10 +155,17 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
         return group
     })
 
+    let logo = typeof settings.theme?.logo === "string" ? settings.theme?.logo : undefined
+
     return <FwSidebarGroupContext
         initialActiveItems={initialActiveItems}
     >
         <UISidebar footerItems={footerItems && footerItems}>
+    
+            {settings.theme?.name === "poetry" && <UISidebar.Item href="/">
+                <img part="logo" src={logo}/>
+            </UISidebar.Item>}
+
             {
                 groups?.map((group, index) => <FwSidebarItemGroup
                     key={index + group.group}
@@ -340,3 +349,7 @@ function recursiveSearch(items: FwSidebarItemProps[], href: string, levels: any[
     return null
 }
 
+
+function trailingSlash(path: string) {
+    return path.endsWith("/") ? path.slice(0, -1) : path
+}

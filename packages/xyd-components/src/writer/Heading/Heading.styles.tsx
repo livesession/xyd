@@ -11,7 +11,11 @@ export const HeadingHost = css`
         margin: 0;
         padding: 0 24px 0 0;
         scroll-margin-top: 30px;
-        cursor: pointer;
+        cursor: default;
+
+        &[id] {
+            cursor: pointer;
+        }
 
         &:hover {
             svg {

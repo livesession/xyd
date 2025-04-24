@@ -1,3 +1,6 @@
+import path from "node:path";
+import fs from "node:fs/promises";
+
 import type { Config } from "@react-router/dev/config";
 
 import { Settings } from "@xyd-js/core";
@@ -51,13 +54,52 @@ const flattenNavigation = (navigation: Settings['navigation']) => {
     return paths;
 };
 
+// Function to get all static files from the public directory
+async function getStaticFiles() {
+    const publicDir = path.join(process.cwd(), "public");
+    const paths: string[] = [];
+
+    try {
+        await fs.access(publicDir);
+    } catch (e) {
+        return paths;
+    }
+
+    async function scanDirectory(dir: string, basePath: string = "") {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            const relativePath = path.join(basePath, entry.name);
+
+            if (entry.isDirectory()) {
+                await scanDirectory(fullPath, relativePath);
+            } else {
+                paths.push(`/public/${relativePath}`);
+            }
+        }
+    }
+
+    await scanDirectory(publicDir);
+    return paths;
+}
+
 // Use settings.navigation if it exists, otherwise use an empty object
 const navigation = __xydSettings?.navigation || { sidebar: [] };
-const prerenderPaths = flattenNavigation(navigation);
-// console.log("Config - Prerender paths:", prerenderPaths);
+const navigationPaths = flattenNavigation(navigation);
+
+// Get static files and combine with navigation paths
+const staticFiles = await getStaticFiles();
+const prerenderPaths = [
+    ...navigationPaths,
+    ...staticFiles
+];
+
+const cwd = process.cwd()
 
 export default {
     ssr: false,
     prerender: prerenderPaths,
+    buildDirectory: path.join(cwd, ".xyd/build"),
     // return a list of URLs to prerender at build time
 } satisfies Config;

@@ -72,11 +72,13 @@ const parseMarkdown = (content: string) => {
 export function mdComponentDirective(settings?: Settings): Plugin {
     return function() {
         return  async (tree: UnistNode, file: VFile) => {
+            console.time('plugin:mdComponentDirective');
             const promises: Promise<void>[] = [];
     
             visit(tree, 'containerDirective', recreateComponent(file, promises, settings));
     
             await Promise.all(promises);
+            console.timeEnd('plugin:mdComponentDirective');
         }
     }
 }

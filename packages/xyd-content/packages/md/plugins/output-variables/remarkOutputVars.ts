@@ -1,9 +1,8 @@
-
-
 import { outputVars } from './lib'
 import { outputVarsFromMarkdown, outputVarsToMarkdown } from './lib/util'
 
 export function remarkOutputVars() {
+    console.time('plugin:remarkOutputVars');
     const data = this.data()
 
     const micromarkExtensions =
@@ -17,7 +16,7 @@ export function remarkOutputVars() {
     fromMarkdownExtensions.push(outputVarsFromMarkdown())
     toMarkdownExtensions.push(outputVarsToMarkdown())
 
-
+    console.timeEnd('plugin:remarkOutputVars');
     return function () { }
 }
 

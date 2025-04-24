@@ -28,10 +28,12 @@ export function Heading({
         data-size={size}
         data-kind={kind}
         onClick={onClick}
+        // id={id} TODO: in the future
     >
         {children}
 
-        {id && <$Anchor />}
+        {/* TODO: in the future */}
+        {/* {id && <$Anchor />} */} 
     </HeadingComponent>
 }
 

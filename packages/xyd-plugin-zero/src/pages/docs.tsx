@@ -3,7 +3,7 @@ import path from "node:path";
 import * as React from "react";
 import { redirect, ScrollRestoration } from "react-router";
 
-import { MetadataMap, Theme as ThemeSettings } from "@xyd-js/core"
+import { MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core"
 import { compileBySlug } from "@xyd-js/content"
 import { markdownPlugins } from "@xyd-js/content/md"
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
@@ -21,20 +21,8 @@ import Theme from "virtual:xyd-theme";
 import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
 
-const theme = new Theme(settings.theme || {} as ThemeSettings) // TODO: !!! FIX TYPES !!!!
-const themeComponents = theme.components()
-
-const ThemeComponent = withTheme(theme)
-
-interface loaderData {
-    sidebarGroups: FwSidebarGroupProps[]
-    breadcrumbs: IBreadcrumb[],
-    navlinks?: INavLinks,
-    toc: MetadataMap
-    slug: string
-    code: string
-    abcCode: any
-}
+const theme = new Theme(settings.theme || {} as ThemeSettings);
+const themeComponents = theme.components();
 
 const mdPlugins = markdownPlugins({
     minDepth: 2, // TODO: configurable
@@ -74,19 +62,37 @@ function getPathname(url: string) {
     return parsedUrl.pathname.replace(/^\//, '');
 }
 
+interface loaderData {
+    sidebarGroups: FwSidebarGroupProps[]
+    breadcrumbs: IBreadcrumb[],
+    navlinks?: INavLinks,
+    toc: MetadataMap
+    slug: string
+    code: string
+}
+
 export async function loader({ request }: { request: any }) {
+    console.log('loader: starting');
+    console.time('loader:total');
     const slug = getPathname(request.url || "index") || "index"
+    console.log(`loader: processing slug: ${slug}`);
     const ext = path.extname(slug)
+    console.log(`loader: file extension: ${ext}`);
 
     if (!supportedExtensions[ext]) {
+        console.log(`loader: unsupported extension ${ext}, returning empty object`);
+        console.timeEnd('loader:total');
         return {}
     }
 
-
     // TODO: in the future map instead of arr
     if (settings.redirects && settings.redirects.length) {
+        console.log(`loader: checking ${settings.redirects.length} redirects`);
         for (const item of settings.redirects) {
-            if (item.source === getPathname(request.url)) {
+            const pathname = getPathname(request.url)
+            if (item.source === pathname) {
+                console.log(`loader: redirecting from ${item.source} to ${item.destination}`);
+                console.timeEnd('loader:total');
                 return redirect(item.destination)
             }
         }
@@ -95,32 +101,50 @@ export async function loader({ request }: { request: any }) {
     let code = ""
     let error: any
 
+    console.time('loader:compile');
+    console.log('loader: starting compilation process');
+    console.time('loader:compile:withPlugins');
+    console.log('loader: attempting to compile with plugins');
     try {
         code = await compileBySlug(slug, true, mdPlugins)
+        console.log('loader: compilation successful with plugins');
     } catch (e) {
         error = e
+        console.log(`loader: compilation with plugins failed: ${e.message}`);
     }
+    console.timeEnd('loader:compile:withPlugins');
 
     if (error?.code === "ENOENT") {
         error = null
-
+        console.log('loader: attempting compilation without plugins');
+        console.time('loader:compile:withoutPlugins');
         try {
             code = await compileBySlug(slug, false, mdPlugins)
+            console.log('loader: compilation successful without plugins');
         } catch (e) {
             error = e
+            console.log(`loader: compilation without plugins failed: ${e.message}`);
         }
+        console.timeEnd('loader:compile:withoutPlugins');
     }
 
     if (error?.code === "ENOENT") {
+        console.log('loader: attempting compilation with index fallback');
+        console.time('loader:compile:indexFallback');
         try {
             // TODO: better index algorithm
             code = await compileBySlug(slug + "/index", true, mdPlugins)
+            console.log('loader: compilation successful with index fallback');
         } catch (e) {
             error = e
+            console.log(`loader: compilation with index fallback failed: ${e.message}`);
         }
+        console.timeEnd('loader:compile:indexFallback');
     }
+    console.timeEnd('loader:compile');
 
-
+    console.time('loader:mapSettings');
+    console.log('loader: mapping settings to props');
     const {
         groups: sidebarGroups,
         breadcrumbs,
@@ -129,12 +153,17 @@ export async function loader({ request }: { request: any }) {
         settings,
         slug
     )
+    console.log(`loader: mapped settings - found ${sidebarGroups?.length || 0} sidebar groups, ${breadcrumbs?.length || 0} breadcrumbs`);
+    console.timeEnd('loader:mapSettings');
 
     if (error) {
+        console.log(`loader: handling error: ${error.message}`);
         if (sidebarGroups && error.code === "ENOENT") {
             const firstItem = findFirstUrl(sidebarGroups?.[0]?.items);
 
             if (firstItem) {
+                console.log(`loader: redirecting to first available URL: ${firstItem}`);
+                console.timeEnd('loader:total');
                 return redirect(firstItem)
             }
         }
@@ -142,8 +171,8 @@ export async function loader({ request }: { request: any }) {
         console.error(error)
     }
 
-    const abc = getMetaComponent("atlas")
-
+    console.log('loader: completed successfully');
+    console.timeEnd('loader:total');
     return {
         sidebarGroups,
         breadcrumbs,
@@ -256,6 +285,8 @@ export default function DocsPage({ loaderData, ...rest }: { loaderData: loaderDa
         console.error("Content not found")
         return null
     }
+
+    const ThemeComponent = withTheme(theme);
 
     let component: React.JSX.Element
 

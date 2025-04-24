@@ -15,3 +15,6 @@ export default class ThemePoetry extends BaseTheme {
     }
 }
 
+export const TEST = "123"
+
+

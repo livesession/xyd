@@ -39,8 +39,12 @@ export const ItemHost = css`
             width: 100%;
             padding: 8px 12px 8px 16px;
             position: relative;
+            
+            &:has([part="logo"]) {
+                display: table-cell;
+            }
 
-            &:hover {
+            &:not(:has([part="logo"])):hover {
                 background: var(--xyd-sidebar-item-bgcolor--active-hover);
                 color: var( --xyd-sidebar-item-color--active);
                 border-radius: 4px;

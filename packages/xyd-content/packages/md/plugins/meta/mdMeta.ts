@@ -17,18 +17,25 @@ export interface MdMetaOptions {
 
 // TODO: IT SHOULD BE PART OF COMPOSER
 
-export function mdMeta(settings?: Settings) {
-  return function (options: MdMetaOptions = {}) {
-    return async function transformer(tree: Root, file: SymbolxVfile<any>) {
+export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
+  return function() {
+    return async (tree: Root, file: SymbolxVfile<any>) => {
+      console.time('plugin:mdMeta:total');
+      console.time('plugin:mdMeta:frontmatter');
       // Parse frontmatter and expose it at file.data.matter
       matter(file as any);
+      console.timeEnd('plugin:mdMeta:frontmatter');
 
       if (!file.data.matter) {
+        console.timeEnd('plugin:mdMeta:total');
         return
       }
 
+      console.time('plugin:mdMeta:metaProcessing');
       const meta = file.data.matter as Metadata<Record<string, any>>
       if (!meta) {
+        console.timeEnd('plugin:mdMeta:metaProcessing');
+        console.timeEnd('plugin:mdMeta:total');
         return
       }
 
@@ -45,15 +52,21 @@ export function mdMeta(settings?: Settings) {
       }
 
       if (!meta || !meta.component) {
+        console.timeEnd('plugin:mdMeta:metaProcessing');
+        console.timeEnd('plugin:mdMeta:total');
         return
       }
 
       const metaComponent = getMetaComponent(meta.component)
 
       if (!metaComponent) {
+        console.timeEnd('plugin:mdMeta:metaProcessing');
+        console.timeEnd('plugin:mdMeta:total');
         return
       }
+      console.timeEnd('plugin:mdMeta:metaProcessing');
 
+      console.time('plugin:mdMeta:propsProcessing');
       const promises: Promise<void>[] = []
 
       let resolvedProps: Record<string, any> = {}
@@ -85,7 +98,7 @@ export function mdMeta(settings?: Settings) {
             const references = await processUniformFunctionCall(
               importPath,
               file,
-              options.resolveFrom,
+              options?.resolveFrom,
               settings,
             );
 
@@ -97,14 +110,18 @@ export function mdMeta(settings?: Settings) {
       }
 
       await Promise.all(promises)
+      console.timeEnd('plugin:mdMeta:propsProcessing');
 
+      console.time('plugin:mdMeta:transform');
       const resolvedComponentProps = await metaComponent.transform(
         (settings?.theme || {}) as Theme,
         resolvedProps,
         file.data.outputVars,
-        Object.freeze(tree.children)
+        Object.freeze(tree.children) as any
       )
+      console.timeEnd('plugin:mdMeta:transform');
 
+      console.time('plugin:mdMeta:componentCreation');
       const exportNode = componentLike(
         metaComponent.componentName,
         resolvedComponentProps,
@@ -115,7 +132,9 @@ export function mdMeta(settings?: Settings) {
         ...treeSanitize(tree),
         ...exportNode.children
       ]
-    };
+      console.timeEnd('plugin:mdMeta:componentCreation');
+      console.timeEnd('plugin:mdMeta:total');
+    }
   }
 }
 

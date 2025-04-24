@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+
 import { mdxJsxFromMarkdown } from 'mdast-util-mdx-jsx';
 import * as React from 'react';
 import acornJsx from 'acorn-jsx';
@@ -13,12 +15,21 @@ export function componentLike(
     props: Record<string, any>,
     children: any[]
 ) {
+    // console.log(JSON.stringify(props), 999)
+    console.time('componentLike:total');
+    
+    console.time('componentLike:createElement');
     const reactElement = React.createElement(componentName, props, ...children);
+    console.timeEnd('componentLike:createElement');
 
     // Convert the React element to a JSX string
+    console.time('componentLike:toJSXString');
+    // @ts-ignore - The default property exists at runtime
     const mdxString = reactElementToJSXString.default(reactElement);
+    console.timeEnd('componentLike:toJSXString');
 
     // Parse the JSX string to get proper MDX attributes
+    console.time('componentLike:fromMarkdown');
     const ast = fromMarkdown(mdxString, {
         extensions: [mdxJsx({
             acorn: acornWithJsx,
@@ -26,6 +37,8 @@ export function componentLike(
         })],
         mdastExtensions: [mdxJsxFromMarkdown()]
     });
-
+    console.timeEnd('componentLike:fromMarkdown');
+    
+    console.timeEnd('componentLike:total');
     return ast
 }

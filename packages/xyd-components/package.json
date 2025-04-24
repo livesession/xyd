@@ -43,8 +43,6 @@
     "clean": "rimraf build"
   },
   "dependencies": {
-    "@lit-labs/ssr-react": "^0.3.2",
-    "@lit/react": "^1.0.7",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-tabs": "^1.1.1",
     "codehike": "^1.0.3",

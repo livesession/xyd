@@ -1,14 +1,14 @@
-import {promises as fs} from 'fs';
+import { promises as fs } from 'fs';
 import path from "node:path";
 
-import {createServer, Plugin as VitePlugin} from "vite";
-import {route} from "@react-router/dev/routes";
+import { createServer, Plugin as VitePlugin } from "vite";
+import { route } from "@react-router/dev/routes";
 
-import {Settings} from "@xyd-js/core";
+import { Settings } from "@xyd-js/core";
 
-import {Preset, PresetData} from "../../types";
-import {readSettings} from "./settings";
-import {fileURLToPath} from "node:url";
+import { Preset, PresetData } from "../../types";
+import { readSettings } from "./settings";
+import { fileURLToPath } from "node:url";
 
 interface docsPluginOptions {
     urlPrefix?: string
@@ -62,7 +62,7 @@ function preinstall() {
 
 // TODO: maybe later as a separate plugin?
 function vitePluginSettings() {
-    return async function ({preinstall}): Promise<VitePlugin> {
+    return async function ({ preinstall }): Promise<VitePlugin> {
         return {
             name: 'virtual:xyd-settings',
             resolveId(id) {
@@ -86,43 +86,37 @@ function vitePluginSettings() {
 }
 
 export function vitePluginThemeCSS() {
-    return async function ({preinstall}: { preinstall: { settings: Settings } }): Promise<VitePlugin> {
+    return async function ({
+        preinstall
+    }: {
+        preinstall: {
+            settings: Settings
+        }
+    }): Promise<VitePlugin> {
         return {
-            name: 'virtual:xyd-theme-css',
-
+            name: 'virtual:xyd-theme/index.css',
+            
             resolveId(source) {
-                // TODO: BAD SOLUTION
                 if (source === 'virtual:xyd-theme/index.css') {
-                    let basePath = ""
+                    const __filename = fileURLToPath(import.meta.url);
+                    const __dirname = path.dirname(__filename);
 
-                    if (process.env.XYD_CLI) {
-                        const __filename = fileURLToPath(import.meta.url);
-                        const __dirname = path.dirname(__filename);
-                        basePath = __dirname + "/"
+                    const themeName = preinstall.settings.theme?.name || 'poetry';
+                    let themePath = ""
+
+                    if (process.env.XYD_CLI) { // TODO: if cli prod / cli dev ?
+                        themePath = path.join(__dirname, `node_modules/@xyd-js/theme-${themeName}/dist`)
                     } else {
-                        basePath = import.meta.url.split("xyd/packages")[0] += "xyd/"
+                        themePath = path.join(path.resolve(__dirname, "../../"), `xyd-theme-${themeName}/dist`)
                     }
 
-                    switch (preinstall.settings.theme?.name) {
-                        // TODO: support another themes + custom themes
-                        case "gusto": {
-                            const gustoCss = basePath += "node_modules/@xyd-js/theme-gusto/dist/index.css"
-                            return gustoCss.replace("file://", "")
-                        }
-                        case "poetry": {
-                            const poetryCss = basePath += "node_modules/@xyd-js/theme-poetry/dist/index.css"
-                            return poetryCss.replace("file://", "")
-                        }
-                        default: {
-                            const poetryCss = basePath += "node_modules/@xyd-js/poetry/dist/theme.css"
-                            return poetryCss.replace("file://", "")
-                        }
-                    }
+                    return path.join(themePath, "index.css")
                 }
+
                 return null;
-            },
+            }
         };
-    };
+    }
 }
 
 export function vitePluginThemeOverrideCSS() {
@@ -159,8 +153,8 @@ export function vitePluginThemeOverrideCSS() {
 
 export function vitePluginTheme() {
     return async function ({
-                               preinstall
-                           }: {
+        preinstall
+    }: {
         preinstall: {
             settings: Settings
         }
@@ -175,40 +169,25 @@ export function vitePluginTheme() {
             },
             async load(id) {
                 if (id === 'virtual:xyd-theme') {
-                    switch (preinstall.settings.theme?.name) {
-                        // TODO: support another themes + custom themes
-                        case "gusto": {
-                            return `
-                                import Theme from '@xyd-js/theme-gusto'; 
-                                import { withTheme } from "@xyd-js/themes"
+                    // return ''
+                    const __filename = fileURLToPath(import.meta.url);
+                    const __dirname = path.dirname(__filename);
 
-                                export default Theme
-                                
-                                // export default withTheme(new Theme());
-                            `;
-                        }
-                        case "poetry": {
-                            return `
-                                import Theme from '@xyd-js/theme-poetry'; 
-                                import { withTheme } from "@xyd-js/themes"
+                    const themeName = preinstall.settings.theme?.name || 'poetry';
+                    let themePath = ""
 
-                                export default Theme
-
-                                // export default withTheme(new Theme());
-                            `;
-                        }
-                        default: {
-                            // TODO: in the future custom theme loader
-                            return `
-                                import Theme from '@xyd-js/poetry/theme'; 
-                                import { withTheme } from "@xyd-js/themes"
-
-                                export default Theme
-
-                                // export default withTheme(new Theme());
-                            `;
-                        }
+                    if (process.env.XYD_CLI) {
+                        themePath = `@xyd-js/theme-${themeName}`
+                    } else {
+                        themePath = path.join(path.resolve(__dirname, "../../"), `xyd-theme-${themeName}/src`)
                     }
+
+                    // Return a module that imports the theme from the local workspace
+                    return `
+                        import Theme from '${themePath}';
+                        
+                        export default Theme;
+                    `;
                 }
                 return null;
             }
