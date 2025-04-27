@@ -146,6 +146,9 @@ importers:
       '@xyd-js/context':
         specifier: workspace:*
         version: link:../packages/xyd-context
+      '@xyd-js/theme-cosmo':
+        specifier: workspace:*
+        version: link:../packages/xyd-theme-cosmo
       '@xyd-js/theme-poetry':
         specifier: workspace:*
         version: link:../packages/xyd-theme-poetry
@@ -755,6 +758,9 @@ importers:
       '@xyd-js/plugin-zero':
         specifier: workspace:*
         version: link:../xyd-plugin-zero
+      '@xyd-js/theme-cosmo':
+        specifier: workspace:*
+        version: link:../xyd-theme-cosmo
       '@xyd-js/theme-poetry':
         specifier: workspace:*
         version: link:../xyd-theme-poetry
@@ -1110,6 +1116,9 @@ importers:
       '@xyd-js/sources':
         specifier: workspace:*
         version: link:../xyd-sources
+      '@xyd-js/theme-cosmo':
+        specifier: workspace:*
+        version: link:../xyd-theme-cosmo
       '@xyd-js/theme-poetry':
         specifier: workspace:*
         version: link:../xyd-theme-poetry
@@ -1291,6 +1300,100 @@ importers:
         specifier: ^5.4.8
         version: 5.4.18(@types/node@22.14.1)(lightningcss@1.29.3)(terser@5.39.0)
 
+  packages/xyd-theme-cosmo:
+    dependencies:
+      '@linaria/atomic':
+        specifier: ^6.2.0
+        version: 6.3.0(react@19.0.0)
+      '@linaria/core':
+        specifier: ^6.2.0
+        version: 6.3.0
+      '@xyd-js/atlas':
+        specifier: workspace:*
+        version: link:../xyd-atlas
+      '@xyd-js/components':
+        specifier: workspace:*
+        version: link:../xyd-components
+      '@xyd-js/framework':
+        specifier: workspace:*
+        version: link:../xyd-framework
+      '@xyd-js/themes':
+        specifier: workspace:*
+        version: link:../xyd-themes
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
+      react-router:
+        specifier: ^7.5.0
+        version: 7.5.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+    devDependencies:
+      '@babel/preset-env':
+        specifier: ^7.26.0
+        version: 7.26.9(@babel/core@7.26.10)
+      '@babel/preset-flow':
+        specifier: ^7.25.9
+        version: 7.25.9(@babel/core@7.26.10)
+      '@babel/preset-react':
+        specifier: ^7.26.0
+        version: 7.26.3(@babel/core@7.26.10)
+      '@babel/preset-typescript':
+        specifier: ^7.26.0
+        version: 7.27.0(@babel/core@7.26.10)
+      '@rollup/plugin-alias':
+        specifier: ^5.1.1
+        version: 5.1.1(rollup@4.40.0)
+      '@rollup/plugin-babel':
+        specifier: ^6.0.4
+        version: 6.0.4(@babel/core@7.26.10)(@types/babel__core@7.20.5)(rollup@4.40.0)
+      '@rollup/plugin-commonjs':
+        specifier: ^28.0.1
+        version: 28.0.3(rollup@4.40.0)
+      '@rollup/plugin-node-resolve':
+        specifier: ^15.3.0
+        version: 15.3.1(rollup@4.40.0)
+      '@rollup/plugin-typescript':
+        specifier: ^12.1.1
+        version: 12.1.2(rollup@4.40.0)(tslib@2.8.1)(typescript@5.8.3)
+      '@wyw-in-js/rollup':
+        specifier: ^0.5.5
+        version: 0.5.5(rollup@4.40.0)(typescript@5.8.3)
+      '@wyw-in-js/vite':
+        specifier: ^0.5.5
+        version: 0.5.5(typescript@5.8.3)(vite@6.3.3(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.1))
+      autoprefixer:
+        specifier: ^10.4.20
+        version: 10.4.21(postcss@8.5.3)
+      postcss:
+        specifier: ^8.4.47
+        version: 8.5.3
+      postcss-import:
+        specifier: ^16.1.0
+        version: 16.1.0(postcss@8.5.3)
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      rollup:
+        specifier: ^4.27.4
+        version: 4.40.0
+      rollup-plugin-css-only:
+        specifier: ^4.5.2
+        version: 4.5.2(rollup@4.40.0)
+      rollup-plugin-dts:
+        specifier: ^6.1.1
+        version: 6.2.1(rollup@4.40.0)(typescript@5.8.3)
+      rollup-plugin-postcss:
+        specifier: ^4.0.2
+        version: 4.0.2(postcss@8.5.3)
+      rollup-plugin-terser:
+        specifier: ^7.0.2
+        version: 7.0.2(rollup@4.40.0)
+      tsup:
+        specifier: ^8.3.0
+        version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.3)(typescript@5.8.3)(yaml@2.7.1)
+
   packages/xyd-theme-gusto: {}
 
   packages/xyd-theme-poetry:
@@ -1410,6 +1513,9 @@ importers:
       '@xyd-js/uniform':
         specifier: workspace:*
         version: link:../xyd-uniform
+      marked:
+        specifier: ^15.0.11
+        version: 15.0.11
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -6743,6 +6849,11 @@ packages:
 
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
+
+  marked@15.0.11:
+    resolution: {integrity: sha512-1BEXAU2euRCG3xwgLVT1y0xbJEld1XOrmRJpUwRCcy7rxhSCwMrmEu9LXoPhHSCJG41V7YcQ2mjKRr5BA3ITIA==}
+    engines: {node: '>= 18'}
+    hasBin: true
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -15573,6 +15684,8 @@ snapshots:
       uc.micro: 2.1.0
 
   markdown-table@3.0.4: {}
+
+  marked@15.0.11: {}
 
   math-intrinsics@1.1.0: {}
 

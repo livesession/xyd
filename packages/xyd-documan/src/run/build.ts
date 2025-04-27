@@ -108,6 +108,8 @@ function setupInstallableEnvironmentV2() {
         type: "module",
         scripts: {},
         dependencies: {
+            "@react-router/node": "^7.5.0",
+            "isbot": "^5"
         },
         devDependencies: {}
     };

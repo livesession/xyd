@@ -2,6 +2,7 @@ import {css} from "@linaria/core";
 
 export const TabsSampleHost = css`
     @layer defaults {
+        display: block;
         position: relative;
         max-width: 100%;
 
@@ -38,7 +39,7 @@ export const TabsSampleHost = css`
         }
 
         [part="button"] {
-            padding: 0.5rem 1rem;
+            padding: 5px 16px;
 
             border-radius: 0.375rem;
             white-space: nowrap;

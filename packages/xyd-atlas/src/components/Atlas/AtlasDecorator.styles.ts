@@ -5,10 +5,17 @@ export default {
         @layer templates {
            atlas-apiref-proptype {
                 font-size: var(--xyd-font-size-xsmall);
+                line-height: var(--xyd-line-height-xsmall);
            }
 
            atlas-apiref-item-showcase {
             font-size: var(--xyd-font-size-small);
+            line-height: var(--xyd-line-height-small);
+
+            p {
+                font-size: var(--xyd-font-size-small);
+                line-height: var(--xyd-line-height-small);
+            }
            }
         }
     `

@@ -28,6 +28,10 @@ export const ItemHost = css`
     @layer defaults {
         color:var(--xyd-sidebar-item-color);
 
+        button {
+            width: 100%;
+        }
+        
         [part="link"] {
             display: flex;
             width: 100%;
@@ -37,7 +41,7 @@ export const ItemHost = css`
         [part="first-item"] {
             display: flex;
             width: 100%;
-            padding: 8px 12px 8px 16px;
+            padding: 8px 12px 8px var(--xyd-sidebar-item-padding-left);
             position: relative;
             
             &:has([part="logo"]) {
@@ -58,14 +62,14 @@ export const ItemHost = css`
             color: var(--xyd-sidebar-item-color--active);
             
             &::before {
+                content: "";
+                position: absolute;
                 background: var(--xyd-sidebar-item-bgcolor--active-mark);
                 border-radius: 0 2px 2px 0;
-                bottom: 7px;
-                content: "";
+                bottom: 9px;
+                top: 9px;
+                width: 2px;
                 left: 5px;
-                position: absolute;
-                top: 7px;
-                width: 4px;
                 border-radius: 10px;
             }
         }
@@ -76,6 +80,12 @@ export const ItemHost = css`
         &[data-theme="secondary"] [part="first-item"][data-active="true"] {
             background: unset;
             font-weight: 500;
+        }
+
+        [part="item-button"] {
+            &:has(+ [part="subtree"] xyd-collapse[data-open="true"]) {
+                font-weight: bold;
+            }
         }
     }
 `;
@@ -88,11 +98,11 @@ export const TreeHost = css`
 
 export const ItemHeaderHost = css`
     @layer defaults {
-        padding-left: 12px;
+        padding-left: var(--xyd-sidebar-item-padding-left);
         margin-bottom: 8px;
         margin-top: 24px;
         font-weight: 600;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
         color: var( --xyd-sidebar-item-header-color);
     }
 `;

@@ -1,4 +1,4 @@
-import {GraphQLFieldMap} from "graphql/type";
+import { GraphQLFieldMap } from "graphql/type";
 import {
     Reference,
     ReferenceCategory,
@@ -8,9 +8,9 @@ import {
     Example,
 } from "@xyd-js/uniform";
 
-import {gqlArgToUniformDefinitionProperty} from "./hydration/gql-arg";
-import {gqlFieldToUniformDefinitionProperty} from "./hydration/gql-field";
-import {simpleGraphqlExample} from "./samples";
+import { gqlArgToUniformDefinitionProperty } from "./hydration/gql-arg";
+import { gqlFieldToUniformDefinitionProperty } from "./hydration/gql-field";
+import { simpleGraphqlExample } from "./samples";
 
 // gqlOperationsToUniformRef is a helper function to create a list of xyd reference for a GraphQL query or mutation.
 export function gqlOperationsToUniformRef(
@@ -62,11 +62,21 @@ export function gqlOperationsToUniformRef(
 
         let description = operationField.description || ""
 
+        let canonical = ""
+
+        if (operationType === ReferenceType.GRAPHQL_QUERY) {
+            canonical = `queries/${operationName}`
+        } else if (operationType === ReferenceType.GRAPHQL_MUTATION) {
+            canonical = `mutations/${operationName}`
+        } else {
+            throw new Error(`Invalid operation type: ${operationType}`)
+        }
+
         references.push(graphqlReference(
             operationType,
             operationName,
             operationName,
-            "/test/" + operationName,
+            canonical,
             description,
             [exampleGroup],
             definitions,
@@ -99,6 +109,7 @@ function graphqlReference(
         },
         definitions,
         context: {
+            graphqlTypeShort: operationType === ReferenceType.GRAPHQL_QUERY ? "query" : "mutation",
             graphqlName: operationName,
         }
     }

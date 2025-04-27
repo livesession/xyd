@@ -14,23 +14,38 @@ import { useMatchedSubNav } from "../hooks";
 function FwNavLogo() {
     const settings = useSettings()
 
-    const logo = isValidElement(settings?.theme?.logo) ? settings?.theme?.logo : manualHydration(settings?.theme?.logo)
+    const logo = typeof settings?.theme?.logo === "string" ? settings?.theme?.logo : undefined
 
-    // TODO: configurable url?
-    return <a href="/">
-        {logo}
-    </a>
+    if (!logo) {
+        return null
+    }
+
+    return <FwLink href="/">
+        <img part="logo" src={logo} />
+    </FwLink>
 }
 
 export function FwNav({ kind }: { kind?: "middle" }) {
-    const matchedSubnav = useMatchedSubNav()
     const location = useLocation()
-    const pathname = trailingSlash(location.pathname)
 
+    const matchedSubnav = useMatchedSubNav()
     const settings = useSettings()
 
-    const headers = matchedSubnav ? matchedSubnav?.items : settings?.navigation?.header
-    const active = headers?.findLast(item => pathname.startsWith(item.url || ""))
+    const pathname = trailingSlash(location.pathname)
+
+    const navWithoutSub = settings?.navigation?.header?.filter(item => !item.sub) || []
+    const active = navWithoutSub?.findLast(item => item.url === matchedSubnav?.route || pathname.startsWith(item.url || ""))
+
+    const navItems = navWithoutSub
+        .map((item, index) => <Nav.Item
+            key={index + (item.url || "") + item.name}
+            href={item?.url || ""}
+            value={item.url || ""}
+            as={$Link}
+        >
+            {item.name}
+        </Nav.Item>
+        )
 
     return <Nav
         value={active?.url || ""}
@@ -39,21 +54,7 @@ export function FwNav({ kind }: { kind?: "middle" }) {
         onChange={() => {
         }}
     >
-        {
-            settings?.navigation?.header?.map((item, index) => {
-                if (item.sub) {
-                    return null
-                }
-                return <Nav.Item
-                    key={index + (item.url || "") + item.name}
-                    href={item?.url || ""}
-                    value={item.url || ""}
-                    as={$Link}
-                >
-                    {item.name}
-                </Nav.Item>
-            })
-        }
+        {navItems}
     </Nav>
 }
 
@@ -161,7 +162,7 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
         initialActiveItems={initialActiveItems}
     >
         <UISidebar footerItems={footerItems && footerItems}>
-    
+
             {settings.theme?.name === "poetry" && <UISidebar.Item href="/">
                 <img part="logo" src={logo}/>
             </UISidebar.Item>}

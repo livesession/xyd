@@ -36,6 +36,7 @@
     "@xyd-js/sources": "workspace:*",
     "@xyd-js/context": "workspace:*",
     "@xyd-js/theme-poetry": "workspace:*",
+    "@xyd-js/theme-cosmo": "workspace:*",
     "@xyd-js/themes": "workspace:*",
     "@react-router/dev": "^7.5.0",
     "@react-router/node": "^7.5.0",

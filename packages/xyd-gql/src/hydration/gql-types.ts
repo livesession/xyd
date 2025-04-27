@@ -15,7 +15,7 @@ export function gqlEnumToUniformRef(gqlType: GraphQLEnumType): Reference {
     return {
         title: gqlType.name,
         description: gqlType.description || "",
-        canonical: `enum-${gqlType.name}`, // TODO: better solution
+        canonical: `enums/${gqlType.name}`, // TODO: better solution
         context: {
             graphqlName: gqlType.name,
             graphqlTypeShort: "enum" // TODO: better solution
@@ -37,7 +37,7 @@ export function gqlScalarToUniformRef(gqlType: GraphQLScalarType): Reference {
     return {
         title: gqlType.name,
         description: gqlType.description || "",
-        canonical: `scalar-${gqlType.name}`, // TODO: better solution
+        canonical: `scalars/${gqlType.name}`, // TODO: better solution
         context: {
             graphqlName: gqlType.name,
             graphqlTypeShort: "scalar" // TODO: better solution

@@ -4,15 +4,11 @@ export const BadgeHost = css`
     @layer defaults {
         display: inline-flex;
         align-items: center;
-        font-style: normal;
-        letter-spacing: normal;
-        white-space: nowrap;
-        text-transform: none;
         
         /* Size variants */
         &[data-size="sm"] {
             height: 18px;
-            padding: 0 6px;
+            padding: 10px 10px;
             gap: 3px;
             border-radius: 6px;
         }
@@ -26,7 +22,6 @@ export const BadgeHost = css`
             color: var(--xyd-badge-color--info);
             background-color: var(--xyd-badge-bgcolor--info);
         }
-
 
         [part="child"] {
             position: relative;

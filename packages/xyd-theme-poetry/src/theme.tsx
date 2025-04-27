@@ -8,10 +8,19 @@ import "@xyd-js/themes/index.css"
 import './index.css';
 import './override.css';
 import './vars.css';
+import theme from ".";
 
 export default class ThemePoetry extends BaseTheme {
     constructor(settings: ThemeSettings) {
         super(settings);
+
+        if (settings?.markdown) {
+            settings.markdown.syntaxHighlight = "dark-plus";
+        } else {
+            settings.markdown = {
+                syntaxHighlight: "dark-plus",
+            }
+        }
     }
 }
 

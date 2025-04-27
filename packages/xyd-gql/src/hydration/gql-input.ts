@@ -15,7 +15,7 @@ export function gqlInputToUniformRef(gqlType: GraphQLInputObjectType): Reference
     return {
         title: gqlType.name,
         description: gqlType.description || "",
-        canonical: `input-${gqlType.name}`, // TODO: better solution
+        canonical: `inputs/${gqlType.name}`, // TODO: better solution
         context: {
             graphqlName: gqlType.name,
             graphqlTypeShort: "input" // TODO: better solution

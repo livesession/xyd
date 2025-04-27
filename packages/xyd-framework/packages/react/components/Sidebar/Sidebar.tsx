@@ -101,16 +101,14 @@ function FwSidebarItem(props: FwSidebarItemProps) {
         Title = () => props.title
     }
 
+    const nested = !!props.items?.length
+
     const handleClick = () => {
-        console.log("handleClick", props.href)
-        return
-        // Only allow activation if item has an href
-        if (props.href) {
-            setActive()
-        } else if (props.items?.length) {
-            // If it's just a subtree without href, we still want to toggle it
-            setActive()
+        if (!nested) {
+            return
         }
+
+        setActive()
     }
 
     // Determine if this is a parent of the active item with href
@@ -128,7 +126,7 @@ function FwSidebarItem(props: FwSidebarItemProps) {
     const isParentActive = hasActiveChild
 
     return <UISidebar.Item
-        button={!!props.items?.length}
+        button={nested}
         href={props.href}
         active={isActiveItem}
         isParentActive={isParentActive}

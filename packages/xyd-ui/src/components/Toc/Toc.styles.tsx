@@ -1,12 +1,17 @@
 import {css} from '@linaria/core';
 
 const cubizEnter = 'cubic-bezier(.19, 1, .22, 1)';
+const mobileBreakpoint = '768px';
 
 export const TocHost = css`
     @layer defaults {
         position: relative;
         padding-left: 16px;
         display: block;
+
+        @media (max-width: ${mobileBreakpoint}) {
+            display: none;
+        }
 
         [part="scroller"] {
             position: absolute;

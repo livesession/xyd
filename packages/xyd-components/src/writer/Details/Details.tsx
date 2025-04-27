@@ -54,7 +54,7 @@ export function Details(props: DetailsProps) {
             )}
 
             {isDeepKind && (
-                <>
+                <div>
                     <div part="summary-deep">
                         {props.icon || <$IconDeep />}
                         <div part="summary-deep-text">
@@ -64,7 +64,7 @@ export function Details(props: DetailsProps) {
                     <div part="summary-deep-label">
                         {label}
                     </div>
-                </>
+                </div> 
             )}
             {isDeepKind && <$Icon />}
         </summary>

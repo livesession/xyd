@@ -70,9 +70,10 @@ export const SubNavLi = css`
 
         [part="link"] {
             color: var(--xyd-subnav-item-color);
-            display: block;
+            display: flex;
             height: 100%;
             padding: 0 0.50rem;
+            align-items: center;
 
             &:hover {
                 color: var(--xyd-subnav-item-color--active);

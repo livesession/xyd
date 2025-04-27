@@ -99,18 +99,10 @@ export const LayoutPrimaryHost = css`
             right: 0;
             padding: var(--xyd-page-gutter);
             overflow: hidden;
-
-            @media (max-width: ${tabletBreakpoint}) {
-                padding-top: calc(var(--xyd-nav-height) + var(--xyd-header-warning-height) + var(--xyd-page-gutter));
-            }
         }
 
         &[data-subheader="true"][data-hide-subheader="false"] [part="main"] {
             top: calc(var(--xyd-header-total-height) + var(--xyd-header-warning-height));
-
-            @media (max-width: ${tabletBreakpoint}) {
-                padding-top: calc(var(--xyd-header-total-height) + var(--xyd-header-warning-height) + var(--xyd-page-gutter));
-            }
         }
 
         [part="sidebar"] {

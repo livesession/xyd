@@ -1,10 +1,7 @@
 {
     "theme": {
         "name": "poetry",
-        "logo": "/public/assets/logo.svg",
-        "markdown": {
-            "syntaxHighlight": "dark-plus"
-        }
+        "logo": "/public/assets/logo.svg"
     },
     "navigation": {
         "header": [
@@ -15,18 +12,6 @@
             {
                 "name": "Components",
                 "url": "/docs/components"
-            },
-            {
-                "name": "GraphQL",
-                "url": "/docs/api/graphql"
-            },
-            {
-                "name": "REST",
-                "url": "/docs/api/rest"
-            },
-            {
-                "name": "GraphQL2",
-                "url": "/docs/api/graphql2"
             }
         ],
         "sidebar": [
@@ -54,15 +39,11 @@
                         ]
                     },
                     {
-                        "group": "API Documentation",
-                        "pages": [
-                            "docs/guides/openapi",
-                            "docs/guides/graphql"
-                        ]
-                    },
-                    {
                         "group": "SDK Generation",
-                        "pages": []
+                        "pages": [
+                            "docs/guides/sdk-quickstart",
+                            "docs/guides/opensdk"
+                        ]
                     },
                     {
                         "group": "Customization",
@@ -73,17 +54,10 @@
                         ]
                     },
                     {
-                        "group": "Advanced Topics",
+                        "group": "Development",
                         "pages": [
-                            "docs/guides/sdk-federation",
-                            {
-                                "group": "Example",
-                                "pages": [
-                                    "docs/guides/example-nested",
-                                    "docs/guides/example-nested2",
-                                    "docs/guides/example-nested3"
-                                ]
-                            }
+                            "docs/guides/roadmap",
+                            "docs/guides/contributing"
                         ]
                     }
                 ]
@@ -99,51 +73,13 @@
                         ]
                     }
                 ]
-            },
-            {
-                "route": "docs/api/graphql",
-                "items": [
-                    {
-                        "group": "Queries",
-                        "pages": [
-                            "docs/api/graphql/example-query"
-                        ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/api/rest",
-                "items": [
-                    {
-                        "group": "Queries",
-                        "pages": [
-                            "docs/api/rest/example-query"
-                        ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/api/graphql2",
-                "items": []
             }
         ]
-    },
-    "api": {
-        "graphql": "./schema.graphql",
-        "route": {
-            "graphql": "docs/api/graphql2"
-        }
     },
     "config": {
         "paths": {
             "@components/*": [
                 "../../packages/xyd-components/src/*"
-            ],
-            "@graphql": [
-                "./schema.graphql"
-            ],
-            "@rest": [
-                "./openapi.yaml"
             ]
         }
     },

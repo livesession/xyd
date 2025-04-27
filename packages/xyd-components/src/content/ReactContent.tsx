@@ -142,6 +142,9 @@ export function stdContent(
         a: (props) => {
             return <$Link {...props} as={this?.options?.Link} />
         },
+        br: (props) => {
+            return <br />
+        }
     }
 }
 

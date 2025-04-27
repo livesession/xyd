@@ -30,6 +30,7 @@ export async function gqlSchemaToReferences(
     schemaLocation: string,
     options?: gqlSchemaToReferencesOptions
 ): Promise<Reference[]> {
+    console.log("gqlSchemaToReferences", gqlSchemaToReferences)
     const loadersList = {
         ["GraphQLFileLoader"]: "@graphql-tools/graphql-file-loader",
     }
@@ -85,40 +86,40 @@ export async function gqlSchemaToReferences(
             continue;
         }
 
-        // Filter types based on regions if provided
-        if (!shouldIncludeType(gqlType.name, options?.regions)) {
-            continue;
-        }
-
         switch (gqlType.constructor.name) {
             case 'GraphQLObjectType': {
                 const type = gqlType as GraphQLObjectType;
-
-                references.push(gqlObjectToUniformRef(type))
-
+                const regionKey = `Object.${type.name}`;
+                if (!options?.regions || options.regions.includes(regionKey)) {
+                    references.push(gqlObjectToUniformRef(type))
+                }
                 break
             }
 
             case 'GraphQLInputObjectType': {
                 const type = gqlType as GraphQLInputObjectType;
-
-                references.push(gqlInputToUniformRef(type))
+                const regionKey = `Input.${type.name}`;
+                if (!options?.regions || options.regions.includes(regionKey)) {
+                    references.push(gqlInputToUniformRef(type))
+                }
                 break
             }
 
             case 'GraphQLEnumType': {
                 const type = gqlType as GraphQLEnumType;
-
-                references.push(gqlEnumToUniformRef(type))
-
+                const regionKey = `Enum.${type.name}`;
+                if (!options?.regions || options.regions.includes(regionKey)) {
+                    references.push(gqlEnumToUniformRef(type))
+                }
                 break
             }
 
             case 'GraphQLScalarType': {
-                const type = gqlType as GraphQLScalarType
-
-                references.push(gqlScalarToUniformRef(type))
-
+                const type = gqlType as GraphQLScalarType;
+                const regionKey = `Scalar.${type.name}`;
+                if (!options?.regions || options.regions.includes(regionKey)) {
+                    references.push(gqlScalarToUniformRef(type))
+                }
                 break
             }
 

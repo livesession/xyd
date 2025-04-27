@@ -23,6 +23,7 @@
     "@xyd-js/plugin-zero": "workspace:*",
     "@xyd-js/context": "workspace:*",
     "@xyd-js/theme-poetry": "workspace:*",
+    "@xyd-js/theme-cosmo": "workspace:*",
     "@xyd-js/themes": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@react-router/dev": "^7.5.0",

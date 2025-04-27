@@ -86,8 +86,8 @@
 
 
     /* Badge */
-    --xyd-badge-color--warning: #434e4e;
-    --xyd-badge-bgcolor--warning: #ffffe1;
+    --xyd-badge-color--warning: var(--xyd-page-body-color);
+    --xyd-badge-bgcolor--warning: #ffef9e;
     --xyd-badge-color--info: #fff;
     --xyd-badge-bgcolor--info: #1971a8;
 
@@ -126,6 +126,7 @@
 
     /* Anchor */
     --xyd-anchor-color: #7051d4;
+    --xyd-anchor-color--hover: #2e108e;
 
     /* Hr */
     --xyd-hr-border-color: rgba(229, 229, 229, 0.7);
@@ -204,6 +205,7 @@
     --xyd-sidebar-item-bgcolor--active-mark: #7051d4;
     --xyd-sidebar-item-color: #6e6e80;
     --xyd-sidebar-item-header-color: #111827;
+    --xyd-sidebar-item-padding-left: 16px;
 
     /* SubNav */
     --xyd-subnav-height: 44px;

@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import {OpenAPIV3} from "openapi-types";
 import Oas from "oas";
 
@@ -25,7 +27,7 @@ export function oapSchemaToReferences(
 
     const server = schema.servers?.[0]?.url || ""
 
-    Object.entries(schema.paths).forEach(([path, oapPath]) => {
+    Object.entries(schema.paths).forEach(([endpointPath, oapPath]) => {
         SUPPORTED_HTTP_METHODS.forEach((eachMethod) => {
             const httpMethod = eachMethod.toLowerCase()
 
@@ -44,7 +46,7 @@ export function oapSchemaToReferences(
 
             // Check if this method/path combination should be included based on regions
             if (options?.regions && options.regions.length > 0) {
-                const regionKey = `${eachMethod.toUpperCase()} ${path}`
+                const regionKey = `${eachMethod.toUpperCase()} ${endpointPath}`
                 if (!options.regions.some(region => region === regionKey)) {
                     return
                 }
@@ -52,15 +54,16 @@ export function oapSchemaToReferences(
 
             const reference = oapPathToReference(
                 httpMethod,
-                path,
+                endpointPath,
                 oapPath as OpenAPIV3.PathItemObject
             )
 
             if (reference) {
                 const ctx = reference.context as OpenAPIReferenceContext
-                ctx.path = `${encodeURIComponent(server)}${encodeURIComponent(path)}`
+                ctx.path = endpointPath
+                ctx.fullPath = path.join(server, endpointPath)
 
-                const operation = oas.operation(path, httpMethod);
+                const operation = oas.operation(endpointPath, httpMethod);
                 reference.examples.groups = oapExamples(oas, operation)
 
                 references.push(reference)

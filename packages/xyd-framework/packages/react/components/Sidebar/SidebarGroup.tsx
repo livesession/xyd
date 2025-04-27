@@ -59,7 +59,7 @@ function createItemsMap(items: any[]): Map<string, string> {
 // TODO: better data structure + algorithm
 function useDefaultBehaviour(initialActiveItems: any[]) {
     const [activeItems, setActiveItems] = useState(() => createItemsMap(initialActiveItems));
-    
+
     const [currentGroupIndex, setCurrentGroupIndex] = useState<number | null>(() => {
         return initialActiveItems[0]?.groupIndex ?? null;
     });
@@ -74,17 +74,11 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
         if (initialActiveItems.length > 0) {
             setCurrentGroupIndex(initialActiveItems[0]?.groupIndex ?? null);
         }
-        
+
         forceUpdate();
     }, [initialActiveItems]);
 
     const addItem = (item: FwSidebarItemProps) => {
-        // If switching groups, clear all items
-        if (item.groupIndex !== undefined && item.groupIndex !== currentGroupIndex) {
-            activeItems.clear();
-            setCurrentGroupIndex(item.groupIndex);
-        }
-
         const key = `${item.groupIndex}-${item.level}`;
         activeItems.set(key, stringify(item));
         forceUpdate();
@@ -107,10 +101,6 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
         () => {
             if (!hasItem(item)) {
                 addItem(item);
-                return;
-            }
-
-            if (!item.level) {
                 return;
             }
 

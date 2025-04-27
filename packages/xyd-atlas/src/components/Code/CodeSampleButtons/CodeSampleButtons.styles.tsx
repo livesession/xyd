@@ -36,7 +36,7 @@ export const CodeSampleButtonsScrollerContainer = css`
 `;
 
 export const CodeSampleButtonsButtonHost = css`
-    padding: 0.5rem 1rem;
+    padding: 4px 16px;
     border-radius: 0.375rem;
     white-space: nowrap;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;

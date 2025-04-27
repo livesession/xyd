@@ -93,26 +93,19 @@ export function parseImportPath(importPath: string): {
     regions: Region[];
     lineRanges: LineRange[]
 } {
-    let filePath = importPath;
-    const regions: Region[] = [];
-    const lineRanges: LineRange[] = [];
+    // Initialize result
+    const result = {
+        filePath: importPath,
+        regions: [] as Region[],
+        lineRanges: [] as LineRange[]
+    };
 
-    // Extract regions if present
-    const regionMatch = filePath.match(/#([^\{]+)/);
-    if (regionMatch) {
-        const regionNames = regionMatch[1].split(',');
-        filePath = filePath.replace(/#[^\{]+/, '');
-
-        for (const name of regionNames) {
-            regions.push({ name: name.trim() });
-        }
-    }
-
-    // Extract line ranges if present
-    const lineRangeMatch = filePath.match(/\{([^}]+)\}/);
-    if (lineRangeMatch) {
-        const lineRangeStr = lineRangeMatch[1];
-        filePath = filePath.replace(/\{[^}]+\}/, '');
+    // First, handle line ranges in the main path (not in regions)
+    // Only match line ranges that contain numbers
+    const mainLineRangeMatch = result.filePath.match(/\{([0-9,\s:-]+)\}/);
+    if (mainLineRangeMatch) {
+        const lineRangeStr = mainLineRangeMatch[1];
+        result.filePath = result.filePath.replace(/\{[0-9,\s:-]+\}/, '');
 
         // Parse line ranges like "1,2-4, 8:, :10"
         const rangeParts = lineRangeStr.split(',').map(part => part.trim());
@@ -121,24 +114,83 @@ export function parseImportPath(importPath: string): {
             if (part.includes('-')) {
                 // Range like "2-4"
                 const [start, end] = part.split('-').map(num => parseInt(num, 10));
-                lineRanges.push({ start, end });
+                result.lineRanges.push({ start, end });
             } else if (part.endsWith(':')) {
                 // Range like "8:"
                 const start = parseInt(part.replace(':', ''), 10);
-                lineRanges.push({ start });
+                result.lineRanges.push({ start });
             } else if (part.startsWith(':')) {
                 // Range like ":10"
                 const end = parseInt(part.replace(':', ''), 10);
-                lineRanges.push({ end });
+                result.lineRanges.push({ end });
             } else {
                 // Single line like "1"
                 const line = parseInt(part, 10);
-                lineRanges.push({ start: line, end: line });
+                result.lineRanges.push({ start: line, end: line });
             }
         }
     }
 
-    return { filePath, regions, lineRanges };
+    // Then, handle regions
+    const hashIndex = result.filePath.indexOf('#');
+    if (hashIndex !== -1) {
+        // Split the path at the hash
+        const basePath = result.filePath.substring(0, hashIndex);
+        const regionPart = result.filePath.substring(hashIndex + 1);
+        
+        // Update the file path
+        result.filePath = basePath;
+        
+        // Check if the region part contains a numeric line range
+        const regionLineRangeMatch = regionPart.match(/\{([0-9,\s:-]+)\}/);
+        
+        if (regionLineRangeMatch) {
+            // If there are numeric line ranges in the region part, extract them
+            const regionLineRangeStr = regionLineRangeMatch[1];
+            const regionName = regionPart.replace(/\{[0-9,\s:-]+\}/, '').trim();
+            
+            // Parse the line ranges
+            const rangeParts = regionLineRangeStr.split(',').map(part => part.trim());
+            const regionLineRanges: LineRange[] = [];
+            
+            for (const part of rangeParts) {
+                if (part.includes('-')) {
+                    // Range like "2-4"
+                    const [start, end] = part.split('-').map(num => parseInt(num, 10));
+                    regionLineRanges.push({ start, end });
+                } else if (part.endsWith(':')) {
+                    // Range like "8:"
+                    const start = parseInt(part.replace(':', ''), 10);
+                    regionLineRanges.push({ start });
+                } else if (part.startsWith(':')) {
+                    // Range like ":10"
+                    const end = parseInt(part.replace(':', ''), 10);
+                    regionLineRanges.push({ end });
+                } else {
+                    // Single line like "1"
+                    const line = parseInt(part, 10);
+                    regionLineRanges.push({ start: line, end: line });
+                }
+            }
+            
+            // Add the region with its line ranges
+            result.regions.push({ name: regionName, lineRanges: regionLineRanges });
+        } else {
+            // If there are no numeric line ranges in the region part, check if it contains commas
+            if (regionPart.includes(',')) {
+                // Split by comma for multiple regions
+                const regionNames = regionPart.split(',');
+                for (const name of regionNames) {
+                    result.regions.push({ name: name.trim() });
+                }
+            } else {
+                // Single region
+                result.regions.push({ name: regionPart.trim() });
+            }
+        }
+    }
+
+    return result;
 }
 
 /**

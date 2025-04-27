@@ -1,6 +1,7 @@
 /* Global Variables */
 :root {
     --blue80: #3b82f6;
+    --blue100: #1d4ed8; 
 
     --gray64: #f5f5f5;
     --gray80: #e0e0e0;
@@ -42,6 +43,7 @@
 /* Anchor */
 :root {
     --xyd-anchor-color: var(--color-primary);
+    --xyd-anchor-color--hover: var(--blue100);
 }
 
 :root {

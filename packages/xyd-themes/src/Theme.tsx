@@ -5,14 +5,16 @@ import { mdxToMarkdown } from "mdast-util-mdx";
 import { toHast } from 'mdast-util-to-hast'
 import { toHtml } from 'hast-util-to-html'
 import { parse } from '@babel/parser';
-import { highlight, HighlightedCode } from "codehike/code";
+import { highlight, HighlightedCode, Token } from "codehike/code";
+import { marked } from 'marked';
+import { fromMarkdown } from 'mdast-util-from-markdown';
 
 import { useMetadata } from "@xyd-js/framework/react";
 import { type AtlasProps } from "@xyd-js/atlas";
 import { type Theme as ThemeSettings } from "@xyd-js/core"
 
 import { VarCode } from "@xyd-js/content";
-import { ExampleRoot } from "@xyd-js/uniform";
+import { ExampleRoot, Definition, DefinitionProperty } from "@xyd-js/uniform";
 
 import { metaComponent } from './decorators';
 
@@ -48,18 +50,6 @@ const standardMdastTypes = [
   'footnote',
   'tableCaption'
 ];
-
-/**
- * Evaluate a tiny JSX expression string to a React element.
- * In real code you'd use @babel/parser + @babel/traverse or a runtime eval.
- */
-function evalExpression(expr) {
-  // WARNING: using eval is dangerous! Better to pre-compile or
-  // have a map: { IconCode: IconCodeComponent, … }
-  // Here we just do a naive regex:
-  const tag = expr.match(/<(\w+)/)[1];
-  return React.createElement(tag, null);
-}
 
 
 /**
@@ -98,6 +88,8 @@ interface ExampleObject {
 interface ExampleGroup {
   examples: ExampleObject[];
 }
+
+type Whitespace = string;
 
 export abstract class Theme {
   constructor() {
@@ -245,9 +237,8 @@ export abstract class Theme {
               return `<ul>\n${items}\n</ul>`
             },
             listItem(node, parent, context) {
-              // same here
-              //@ts-ignore
-              const content = context.containerFlow(node, parent).trim()
+              // Use a type assertion to handle the parent parameter
+              const content = context.containerFlow(node, parent as any).trim()
               return `<li>${content}</li>`
             },
           }
@@ -260,7 +251,7 @@ export abstract class Theme {
       }
     }
 
-    if (props.references[0].description) {
+    if (props.references?.[0]?.description) {
       // Sanitize frontmatter description
       if (typeof props.references[0].description === "string") {
         // Remove frontmatter using regex
@@ -270,17 +261,18 @@ export abstract class Theme {
     }
 
     if (reactElements.length > 0) {
-      if (props.references[0].description && typeof props.references[0].description === "string") {
+      if (props.references?.[0]?.description && typeof props.references[0].description === "string") {
         reactElements.unshift(props.references[0].description)
       }
       // Create a combined React element from all the elements
       const combinedReactTree = React.createElement(React.Fragment, null, ...reactElements)
 
-      props.references[0].description = combinedReactTree
+      if (props.references?.[0]) {
+        props.references[0].description = combinedReactTree
+      }
     }
 
     if (
-      outputVarExamples &&
       !outputVarExamples.groups.length &&
       props.references[0]?.examples.groups?.length
     ) {
@@ -310,6 +302,11 @@ export abstract class Theme {
       if (props.references?.[0]) {
         props.references[0].examples = outputVarExamples;
       }
+    }
+
+    // Process definition properties recursively to convert markdown descriptions to React trees
+    if (props.references?.[0]?.definitions) {
+      props.references[0].definitions = processDefinitionProperties(props.references[0].definitions);
     }
 
     return props
@@ -447,4 +444,98 @@ function jsxStringToReactTree(jsxString: string) {
   }
 
   return buildElement(rootJSX)
+}
+
+// Helper function to fix backslashes in tokens
+function fixTokensBackslashes(tokens: (Token | Whitespace)[], lang: string): (Token | Whitespace)[] {
+  if (lang !== 'json' && lang !== 'jsonc') {
+    return tokens;
+  }
+
+  return tokens.map(token => {
+    if (Array.isArray(token) && token[0]) {
+      // Fix backslashes in the token content
+      const content = token[0].replace(/(?<!\\)\\(?!\\)/g, '\\\\');
+      return [content, ...token.slice(1)] as Token;
+    }
+    return token;
+  });
+}
+
+
+
+/**
+ * Recursively processes definition properties to convert markdown descriptions to React trees
+ * @param definitions The definitions to process
+ * @returns The processed definitions with markdown descriptions converted to React trees
+ */
+function processDefinitionProperties(definitions: Definition[]): Definition[] {
+  if (!definitions || !Array.isArray(definitions)) {
+    return definitions;
+  }
+
+  return definitions.map(definition => {
+    // Process the definition's properties recursively
+    if (definition.properties && Array.isArray(definition.properties)) {
+      definition.properties = processDefinitionProperty(definition.properties);
+    }
+
+    return definition;
+  });
+}
+
+/**
+ * Recursively processes definition properties to convert markdown descriptions to React trees
+ * @param properties The properties to process
+ * @returns The processed properties with markdown descriptions converted to React trees
+ */
+function processDefinitionProperty(properties: DefinitionProperty[]): DefinitionProperty[] {
+  if (!properties || !Array.isArray(properties)) {
+    return properties;
+  }
+
+  return properties.map(property => {
+    const newProperty: DefinitionProperty = {
+      name: property.name,
+      type: property.type,
+      description: property.description,
+      context: property.context,
+      properties: property.properties
+    };
+    
+    if (typeof newProperty.description === 'string' && isMarkdownText(newProperty.description)) {
+      const mdast = fromMarkdown(newProperty.description);
+      const hast = toHast(mdast);
+      const html = toHtml(hast);
+      const reactTree = jsxStringToReactTree(html);
+      if (reactTree) {
+        newProperty.description = reactTree;
+      }
+    }
+    
+    if (property.properties && Array.isArray(property.properties)) {
+      newProperty.properties = processDefinitionProperty(property.properties);
+    }
+    
+    return newProperty;
+  });
+}
+
+/**
+ * Returns true if the input contains any non-plain-text Markdown tokens.
+ */
+function isMarkdownText(text: string) {
+  // 1) Lex into a token tree
+  const tokens = marked.lexer(text);
+  let found = false;
+
+  // 2) Traverse *every* token (including nested) and flag any non-plain-text kinds
+  marked.walkTokens(tokens, token => {
+    // ignore pure text/whitespace
+    if (!['text', 'paragraph', 'space', 'newline'].includes(token.type)) {
+      found = true;
+    }
+  });
+
+  return found;
 }

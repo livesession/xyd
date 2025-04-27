@@ -53,9 +53,6 @@ UISidebar.Item = function SidebarItem({
 
     const ButtonOrAnchor = button ? 'button' : Link
 
-    const handler = useLinkClickHandler(href || "", {
-    })
-
     let h = href?.endsWith("/") ? href.slice(0, -1) : href
     return <li
         part="item"
@@ -66,10 +63,7 @@ UISidebar.Item = function SidebarItem({
             part={`item-${button ? "button" : "link"}`}
             href={button ? undefined : h}
             to={h}
-            onClick={(e) => {
-                handler(e)
-                onClick?.(e)
-            }}
+            onClick={onClick}
         >
             <div
                 part="first-item"

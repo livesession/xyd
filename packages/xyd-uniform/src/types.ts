@@ -42,6 +42,8 @@ export enum ReferenceType {
 }
 
 export interface GraphQLReferenceContext {
+    graphqlTypeShort: string;
+    graphqlName: string;
 }
 
 // TODO: custom value?
@@ -49,9 +51,28 @@ export interface OpenAPIReferenceContext {
     method: string;
 
     path: string;
+    
+    fullPath: string;
 }
 
-export type ReferenceContext = GraphQLReferenceContext | OpenAPIReferenceContext;
+// Add TypeDocReferenceContext to the union type
+export interface TypeDocReferenceContext {
+    packageName: string;
+    fileName: string;
+    fileFullPath: string;
+    line: number;
+    col: number;
+    signatureText: {
+        code: string;
+        lang: string;
+    };
+    sourcecode: {
+        code: string;
+        lang: string;
+    };
+}
+
+export type ReferenceContext = GraphQLReferenceContext | OpenAPIReferenceContext | TypeDocReferenceContext;
 
 export interface ExampleRoot {
     groups: ExampleGroup[];

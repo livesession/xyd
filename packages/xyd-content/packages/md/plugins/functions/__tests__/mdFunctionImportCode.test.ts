@@ -46,6 +46,23 @@ describe('mdFunctionImportCode', () => {
             });
         });
 
+        it('should handle curly braces in region names for openapi like', () => {
+            const result = parseImportPath('~/api/rest/openapi.yaml#PUT /alerts/{id}');
+            expect(result).toEqual({
+                filePath: '~/api/rest/openapi.yaml',
+                regions: [
+                    { name: 'PUT /alerts/{id}' }
+                ],
+                lineRanges: []
+            });
+        });
+
+        it('AAA', () => {
+            const result = parseImportPath('~/api/rest/openapi.yaml#PUT /alerts/{id}');
+            // expect(1).toBe(2)
+            console.log(result, 9999)
+        });
+
         it('should parse a file path with line ranges', () => {
             const result = parseImportPath('path/to/file.ts{1,2-4,8:,:10}');
             expect(result).toEqual({

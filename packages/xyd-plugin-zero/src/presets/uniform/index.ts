@@ -1,10 +1,10 @@
 import path from "path";
-import {promises as fs} from "fs";
-import {fileURLToPath} from "node:url";
+import { promises as fs } from "fs";
+import { fileURLToPath } from "node:url";
 
 import matterStringify from "gray-matter/lib/stringify";
-import {Plugin as VitePlugin} from "vite"
-import {route} from "@react-router/dev/routes";
+import { Plugin as VitePlugin } from "vite"
+import { route } from "@react-router/dev/routes";
 
 import {
     Settings,
@@ -13,12 +13,12 @@ import {
     SidebarMulti,
     Metadata
 } from "@xyd-js/core";
-import uniform, {pluginNavigation, Reference, ReferenceType} from "@xyd-js/uniform";
+import uniform, { pluginNavigation, Reference, ReferenceType, OpenAPIReferenceContext, GraphQLReferenceContext } from "@xyd-js/uniform";
 import {
     compile as compileMarkdown,
     referenceAST
 } from "@xyd-js/uniform/markdown";
-import {Preset, PresetData} from "../../types";
+import { Preset, PresetData } from "../../types";
 
 
 // TODO: !!!!! REFACTOR PLUGIN-ZERO AND ITS DEPS FOR MORE READABLE CODE AND BETTER API !!!!
@@ -30,7 +30,7 @@ export interface uniformPresetOptions {
 }
 
 function flatPages(
-    sidebar: (SidebarMulti | Sidebar) [],
+    sidebar: (SidebarMulti | Sidebar)[],
     groups: { [key: string]: string },
     resp: string[] = [],
 ) {
@@ -63,7 +63,7 @@ function flatPages(
 }
 
 function flatGroups(
-    sidebar: (SidebarMulti | Sidebar) [],
+    sidebar: (SidebarMulti | Sidebar)[],
     resp: { [key: string]: string } = {}
 ) {
     sidebar.map(async side => {
@@ -102,7 +102,7 @@ function flatGroups(
     return resp
 }
 
-function uniformSidebarLevelMap(pages: string []) {
+function uniformSidebarLevelMap(pages: string[]) {
     const out = {};
     let level = 0;
 
@@ -264,28 +264,26 @@ async function uniformResolver(
                 layout: "wide"
             }
 
+            const resolvedApiFile = path.join("~/", apiFile)
+
             switch (uniformType) {
                 case "graphql": {
-                    const resolvedApiFile = path.join("~/", apiFile)
+                    const ctx = ref.context as GraphQLReferenceContext;
 
-                    switch (ref.type) {
-                        case ReferenceType.GRAPHQL_QUERY: {
-                            meta.graphql = `${resolvedApiFile}#Query.${ref.context?.graphqlName}`
-                            break
-                        }
-                        case ReferenceType.GRAPHQL_MUTATION: {
-                            meta.graphql = `${resolvedApiFile}#Mutation.${ref.context?.graphqlName}`
-                            break
-                        }
-                    }
+                    meta.graphql = `${resolvedApiFile}#${capitalize(ctx.graphqlTypeShort)}.${ctx?.graphqlName}`
+
                     break
                 }
                 case "openapi": {
+                    const ctx = ref.context as OpenAPIReferenceContext;
+                    const method = (ctx?.method || "").toUpperCase()
+
+                    meta.openapi = `${resolvedApiFile}#${method} ${ctx?.path}`
                     break
                 }
             }
 
-            const content = matterStringify({content: ""}, meta);
+            const content = matterStringify({ content: "" }, meta);
 
             // Create directory recursively if it doesn't exist
             try {
@@ -387,7 +385,9 @@ function preinstall(
                         routeMatch,
                         uniform,
                         uniformApiResolver,
-                        settings?.navigation?.sidebar
+                        settings?.navigation?.sidebar,
+                        options,
+                        uniformType
                     )
 
                     if (resolved.sidebar) {
@@ -417,8 +417,8 @@ function preinstall(
 function vitePluginUniformContent(pluginId: string) {
     return function vitePluginUniformContentInner() {
         return async function ({
-                                   preinstall
-                               }): Promise<VitePlugin> {
+            preinstall
+        }): Promise<VitePlugin> {
             return {
                 name: `virtual:xyd-plugin-zero/${pluginId}`, // TODO: unique name per plugin ?
                 resolveId(id) {
@@ -510,11 +510,11 @@ function uniformPreset(
                 preinstall(id, uniformApiResolver, apiFile, uniformType)
             ],
             routes: routeMatches.map((routeMatch, i) => route(
-                    `${routeMatch}/*`,
-                    path.join(basePath, pageTheme), {
-                        id: `xyd-plugin-zero/${id}-${i}`,
-                    }
-                ),
+                `${routeMatch}/*`,
+                path.join(basePath, pageTheme), {
+                id: `xyd-plugin-zero/${id}-${i}`,
+            }
+            ),
             ),
             vitePlugins: [
                 vitePluginUniformContent(id),
@@ -574,3 +574,6 @@ export abstract class UniformPreset {
 }
 
 
+function capitalize(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
+}

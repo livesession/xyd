@@ -18,10 +18,10 @@
   "peerDependencies": {
     "@xyd-js/atlas": "workspace:*",
     "@xyd-js/components": "workspace:*",
+    "@xyd-js/content": "workspace:*",
+    "@xyd-js/context": "workspace:*",
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/ui": "workspace:*",
-    "@xyd-js/context": "workspace:*",
-    "@xyd-js/content": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -31,5 +31,8 @@
     "postcss-import": "^16.1.0",
     "tsup": "^8.3.0",
     "typescript": "5.6.2"
+  },
+  "dependencies": {
+    "marked": "^15.0.11"
   }
 }

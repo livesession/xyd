@@ -29,6 +29,10 @@ export const ApiRefPropertiesLiHost = css`
 
 export const ApiRefPropertiesDescriptionHost = css`
     color: var(--XydAtlas-Component-ApiRef-Properties__color-description);
+
+    p {
+        color: var(--XydAtlas-Component-ApiRef-Properties__color-description);
+    }
 `;
 
 export const ApiRefPropertiesDlHost = css`

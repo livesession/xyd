@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import type {Reference, Definition} from "@xyd-js/uniform";
+import type { Reference, Definition, TypeDocReferenceContext } from "@xyd-js/uniform";
 
 import type {
     JSONOutput,
@@ -11,30 +11,13 @@ import type {
     ReflectionSymbolId,
     Comment,
 } from 'typedoc';
-import {ReflectionKind} from "typedoc";
+import { ReflectionKind } from "typedoc";
 
 import {
     MultiSignatureLoader,
     signatureTextByLine,
     signatureSourceCodeByLine
 } from "./SignatureText";
-
-// Custom type for the context returned by declarationUniformContext
-export interface TypeDocReferenceContext {
-    packageName: string;
-    fileName: string;
-    fileFullPath: string;
-    line: number;
-    col: number;
-    signatureText: {
-        code: string;
-        lang: string;
-    };
-    sourcecode: {
-        code: string;
-        lang: string;
-    };
-}
 
 class TypeDocSignatureTextLoader extends MultiSignatureLoader {
     constructor(
@@ -124,7 +107,7 @@ class Transformer {
 
         if (!packageJsonPaths.length) {
             console.warn('(Transformer.createPackagePathMap): No package.json found in rootPath', this.rootPath)
-            return {packageMap: null, moduleRootMap: null}
+            return { packageMap: null, moduleRootMap: null }
         }
 
         for (const packageJsonPath of packageJsonPaths) {
@@ -219,8 +202,8 @@ export function typedocToUniform(
 
                     ref.context = {
                         ...ref.context,
-                        package: container.name,
-                    }
+                        packageName: container.name,
+                    } as TypeDocReferenceContext;
                     references.push(ref)
                 }
 
@@ -230,7 +213,9 @@ export function typedocToUniform(
             case ReflectionKind.Function:
             case ReflectionKind.Class:
             case ReflectionKind.Interface: {
-                if (!(child satisfies DeclarationReflection)) {
+                if (!('kind' in child) || child.kind !== ReflectionKind.Function &&
+                    child.kind !== ReflectionKind.Class &&
+                    child.kind !== ReflectionKind.Interface) {
                     throw new Error('(typedocToUniform): Function/Class/Interface reflection expected to be a DeclarationReflection');
                 }
 
@@ -245,15 +230,15 @@ export function typedocToUniform(
 
                 ref.context = {
                     ...ref.context,
-                    package: project.name,
-                }
+                    packageName: project.name,
+                } as TypeDocReferenceContext;
                 references.push(ref)
 
                 break
             }
 
             case ReflectionKind.TypeAlias: {
-                if (!(child satisfies DeclarationReflection)) {
+                if (!('kind' in child) || child.kind !== ReflectionKind.TypeAlias) {
                     throw new Error('(typedocToUniform): Type alias reflection expected to be a DeclarationReflection');
                 }
 
@@ -268,14 +253,39 @@ export function typedocToUniform(
 
                 ref.context = {
                     ...ref.context,
-                    package: project.name,
+                    packageName: project.name,
+                } as TypeDocReferenceContext;
+                references.push(ref)
+
+                break
+            }
+
+            case ReflectionKind.Enum: {
+                if (!('kind' in child) || child.kind !== ReflectionKind.Enum) {
+                    throw new Error('(typedocToUniform): Enum reflection expected to be a DeclarationReflection');
                 }
+
+                const ref = jsEnumToUniformRef.call(
+                    transformer,
+                    child as DeclarationReflection
+                )
+
+                if (!ref) {
+                    break
+                }
+
+                ref.context = {
+                    ...ref.context,
+                    packageName: project.name,
+                } as TypeDocReferenceContext;
+
                 references.push(ref)
 
                 break
             }
 
             default: {
+                console.log(child);
                 console.warn("(typedocToUniform): Another children project kind not supported", child.kind)
             }
         }
@@ -283,21 +293,21 @@ export function typedocToUniform(
 
     // Sort references by file path and line number to preserve the original order in the source files
     references.sort((a, b) => {
-        // First sort by file path
-        const contextA = a.context as TypeDocReferenceContext | undefined;
-        const contextB = b.context as TypeDocReferenceContext | undefined;
-        
+        // First sort by file pathc
+        const contextA = a.context as unknown as TypeDocReferenceContext | undefined;
+        const contextB = b.context as unknown as TypeDocReferenceContext | undefined;
+
         const filePathA = contextA?.fileFullPath || '';
         const filePathB = contextB?.fileFullPath || '';
-        
+
         if (filePathA !== filePathB) {
             return filePathA.localeCompare(filePathB);
         }
-        
+
         // Then sort by line number
         const lineA = contextA?.line || 0;
         const lineB = contextB?.line || 0;
-        
+
         return lineA - lineB;
     });
 
@@ -326,6 +336,11 @@ function typedocGroupToUniform(
 
             break
         }
+        case ReflectionKind.Enum: {
+            ref = jsEnumToUniformRef.call(this, group)
+
+            break
+        }
         default: {
             console.warn('(typedocGroupToUniform): Unhandled reflection kind', group.kind)
         }
@@ -344,7 +359,7 @@ function jsClassToUniformRef(
         title: `Class ${dec.name}`,
         canonical: `class-${dec.name}`,
         description: '',
-        context: {},
+        context: undefined,
         examples: {
             groups: []
         },
@@ -446,7 +461,7 @@ function jsFunctionToUniformRef(
         title: `Function ${dec.name}`,
         canonical: `fn-${dec.name}`,
         description: '',
-        context: {},
+        context: undefined,
         examples: {
             groups: [],
         },
@@ -547,7 +562,7 @@ function jsInterfaceToUniformRef(
         title: `Interface ${dec.name}`,
         canonical: `interface-${dec.name}`,
         description: '',
-        context: {},
+        context: undefined,
         examples: {
             groups: []
         },
@@ -654,7 +669,7 @@ function jsTypeAliasToUniformRef(
         title: `Type ${dec.name}`,
         canonical: `type-${dec.name}`,
         description: '',
-        context: {},
+        context: undefined,
         examples: {
             groups: []
         },
@@ -697,6 +712,113 @@ ${description}`
             })
 
             definitions.push(typeDef)
+        }
+    }
+
+    return ref
+}
+
+function jsEnumToUniformRef(
+    this: Transformer,
+    dec: DeclarationReflection
+) {
+    const definitions: Definition[] = []
+
+    const ref: Reference = {
+        title: `Enum ${dec.name}`,
+        canonical: `enum-${dec.name}`,
+        description: '',
+        context: undefined,
+        examples: {
+            groups: []
+        },
+        definitions
+    }
+
+    const declarationCtx = declarationUniformContext.call(this, dec)
+    if (declarationCtx) {
+        ref.context = {
+            ...ref.context,
+            ...declarationCtx
+        }
+    }
+
+    if (dec.comment) {
+        const description = commentToUniform(dec.comment)
+        const group = (declarationCtx?.packageName.split('/') || [])
+            .map(name => `"${name}"`)
+            .join(",")
+
+        ref.description = `---
+title: ${dec.name} 
+group: [${group}, Enums]
+---
+${description}`
+    }
+
+    // handle enum members
+    {
+        const members = dec.children?.filter(child =>
+            child.kind === ReflectionKind.EnumMember
+        ) || []
+
+        if (members.length > 0) {
+            const membersDef: Definition = {
+                title: 'Members',
+                properties: []
+            }
+
+            // Sort members by their line number to preserve the original order in the source code
+            const sortedMembers = [...members].sort((a, b) => {
+                if (!a.sources?.[0]?.line || !b.sources?.[0]?.line) {
+                    return 0;
+                }
+                return a.sources[0].line - b.sources[0].line;
+            });
+
+            for (const member of sortedMembers) {
+                let description = ""
+                if (member.comment) {
+                    description = commentToUniform(member.comment)
+                }
+
+                // Extract the enum member value
+                let value = "";
+                let type = "number";
+
+                // Check if the member has a type property with a literal value
+                if (member.type && typeof member.type === 'object' && member.type.type === 'literal' && member.type.value !== null) {
+                    // If the value is a string, it's a string enum
+                    if (typeof member.type.value === 'string') {
+                        value = member.type.value;
+                        type = "string";
+                    } else {
+                        // Otherwise it's a number enum
+                        value = member.type.value.toString();
+                        type = "number";
+                    }
+                }
+                // Fallback to defaultValue if type is not available
+                else if (member.defaultValue !== undefined) {
+                    value = member.defaultValue.toString();
+                    // Check if the value is a string (enclosed in quotes)
+                    if (value.startsWith('"') && value.endsWith('"')) {
+                        type = "string";
+                        // Remove the quotes for display
+                        value = value.substring(1, value.length - 1);
+                    }
+                }
+
+                const formattedName = `${member.name} (${value})`;
+
+                membersDef.properties.push({
+                    name: formattedName,
+                    type: type,
+                    description
+                })
+            }
+
+            definitions.push(membersDef)
         }
     }
 

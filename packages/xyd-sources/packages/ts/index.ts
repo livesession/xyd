@@ -6,8 +6,6 @@ import {
     typedocToUniform
 } from "./TypeDocTransformer"
 
-export {TypeDocReferenceContext} from "./TypeDocTransformer"
-
 // TODO: SUPPORT GET FROM URL + VIRTUAL FS (OR NO FS JUST SET NEEDED OPTIONS VIA CODE)
 export async function sourcesToUniform(
     root: string,
