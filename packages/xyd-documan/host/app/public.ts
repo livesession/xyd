@@ -17,16 +17,20 @@ const MIME_TYPES: Record<string, string> = {
     '.txt': 'text/plain',
 };
 
+const BINARY_FILE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.ico'];
+
 export async function loader({ params }: any) {
     const filePath = path.join(process.cwd(), "public", params["*"])
+    
     try {
         await fs.access(filePath)
     } catch (e) {
         return redirect("/404")
     }
 
-    const fileContent = await fs.readFile(filePath, 'utf-8');
     const ext = path.extname(filePath).toLowerCase();
+    const isBinaryFile = BINARY_FILE_EXTENSIONS.includes(ext);
+    const fileContent = await fs.readFile(filePath, isBinaryFile ? null : 'utf-8');
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
     return new Response(fileContent, {

@@ -278,6 +278,9 @@ export const LayoutPrimaryHost = css`
         }
 
         [part="page-article-nav"] {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
             flex: none;
             width: var(--xyd-layout-nav-width-medium);
             position: sticky;
@@ -294,11 +297,9 @@ export const LayoutPrimaryHost = css`
             }
 
             @media (max-width: ${mobileBreakpoint}) {
-                width: 100%;
-                position: static;
-                max-height: none;
-                padding-right: 0;
+                display: none;
             }
         }
     }
 `;
+

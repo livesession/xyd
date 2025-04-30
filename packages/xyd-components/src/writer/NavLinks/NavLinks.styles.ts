@@ -2,6 +2,7 @@ import {css} from "@linaria/core";
 
 export const NavLinksHost = css`
     @layer defaults {
+        font-weight: 600;
         display: flex;
         padding-top: 2rem;
         margin-top: 2rem;

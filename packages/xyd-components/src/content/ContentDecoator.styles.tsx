@@ -3,6 +3,7 @@ import { css } from "@linaria/core";
 export default {
     ContentDecoratorHost: css`
         @layer components {
+            --space-small: 8px;
             --space-medium: 16px;
             --space-large: 20px;
             --space-xlarge: 24px;
@@ -21,10 +22,12 @@ export default {
                 code {
                     font-size: var(--xyd-font-size-small);
                     line-height: var(--xyd-line-height-small);
+                    margin: 0;
                 }
             }
             
             h2,h3,h4,h5,h6 {
+                margin-top: var(--space-xxlarge);
                 display: table;
                 &[data-kind="muted"] {
                     display: block;
@@ -41,11 +44,10 @@ export default {
                     letter-spacing: 2px;
                 }
             }
-            h2 {
-                margin-top: var(--space-large);
-            }
-            h3 {
-                margin-top: var(--space-medium);
+            h4 {
+                &[data-kind="muted"] {
+                    margin: 4px 0 16px;
+                }
             }
             
             details summary {
@@ -65,6 +67,20 @@ export default {
             xyd-codetabs, xyd-callout, xyd-guidecard, xyd-tabs {
                 margin: var(--space-large) 0;
             }
+            xyd-guidecard [part="body"]  {
+                color: var(--dark48);
+                font-size: var(--xyd-font-size-small);
+                line-height: var(--xyd-line-height-medium);
+
+                p {
+                    color: var(--dark48);
+                    font-size: var(--xyd-font-size-small);
+                    line-height: var(--xyd-line-height-medium);
+                }
+            }
+            xyd-guidecard-list xyd-guidecard {
+                margin-bottom: 0;
+            }
             xyd-tabs [part="buttons"] {
                 font-size: var(--xyd-font-size-small);
                 line-height: var(--xyd-line-height-small);
@@ -72,12 +88,13 @@ export default {
 
             xyd-callout {
                 --xyd-font-size-medium: var(--xyd-font-size-small);
-                --xyd-line-height-medium: var(--xyd-line-height-small);
             }
-
+        
             xyd-codetabs {
-                font-size: var(--xyd-font-size-small);
-                line-height: var(--xyd-line-height-small);
+                xyd-code-pre {
+                    font-size: var(--xyd-font-size-xsmall);
+                    line-height: var(--xyd-line-height-xsmall);
+                }
             }
         }
     `

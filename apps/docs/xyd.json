@@ -56,8 +56,9 @@
                     {
                         "group": "Development",
                         "pages": [
-                            "docs/guides/roadmap",
-                            "docs/guides/contributing"
+                            "docs/development/roadmap",
+                            "docs/development/contributing",
+                            "docs/development/changelog"
                         ]
                     }
                 ]

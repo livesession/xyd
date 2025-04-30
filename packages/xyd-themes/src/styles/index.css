@@ -22,11 +22,3 @@
         line-height: var(--xyd-line-height-small);
     }
 }
-
-@layer components {
-    xyd-layout-primary [part="page-article-nav"] {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-}

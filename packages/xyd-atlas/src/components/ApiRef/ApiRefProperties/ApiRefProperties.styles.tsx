@@ -43,7 +43,7 @@ export const ApiRefPropertiesDlHost = css`
     flex-wrap: wrap;
     gap: 10px;
 
-    margin: 8px 0;
+    margin: 4px 0;
 
     dd {
         margin-inline-start: 0px;

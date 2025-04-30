@@ -1,49 +1,49 @@
 /* Global Variables */
 :root {
-    --blue80: #3b82f6;
-    --blue100: #1d4ed8; 
+    --poetry-blue80: #3b82f6;
+    --poetry-blue100: #1d4ed8; 
 
-    --gray64: #f5f5f5;
-    --gray80: #e0e0e0;
+    --poetry-gray64: #f5f5f5;
+    --poetry-gray80: #e0e0e0;
 
-    --dark64: #363434;
-    --dark80: #1e1e1e;
+    --poetry-gray64: #363434;
+    --poetry-gray80: #1e1e1e;
 }
 
 :root {
-    --color-primary: var(--blue80);
-    --color-gray--secondary: var(--gray64);
+    --poetry-color-primary: var(--poetry-blue80);
+    --poetry-color-gray--secondary: var(--poetry-gray64);
 }
 
 /* Sidebar */
 :root {
-    --xyd-sidebar-bgcolor: var(--color-gray--secondary);
-    --xyd-sidebar-item-bgcolor--active-mark: var(--color-primary);
+    --xyd-sidebar-bgcolor: var(--poetry-color-gray--secondary);
+    --xyd-sidebar-item-bgcolor--active-mark: var(--poetry-color-primary);
 }
 
 /* UnderlineNav */
 :root {
-    --xyd-underlinenav-color--active: var(--color-primary);
+    --xyd-underlinenav-color--active: var(--poetry-color-primary);
 }
 
 /* Progressbar */
 :root {
-    --xyd-progressbar-bgcolor--active: var(--color-primary);
+    --xyd-progressbar-bgcolor--active: var(--poetry-color-primary);
 }
 
 /* Code */
 :root {
-    --xyd-codetabs-bgcolor: var(--dark80);
-    --xyd-codetabs-color: var(--gray80);
-    --xyd-codetabs-color--active: var(--color-primary);
-    --xyd-codetabs-color--hover: var(--dark64);
-    --xyd-code-copy-color: var(--dark64);
+    --xyd-codetabs-bgcolor: var(--poetry-gray80);
+    --xyd-codetabs-color: var(--poetry-gray80);
+    --xyd-codetabs-color--active: var(--poetry-color-primary);
+    --xyd-codetabs-color--hover: var(--poetry-gray64);
+    --xyd-code-copy-color: var(--poetry-gray64);
 }
 
 /* Anchor */
 :root {
-    --xyd-anchor-color: var(--color-primary);
-    --xyd-anchor-color--hover: var(--blue100);
+    --xyd-anchor-color: var(--poetry-color-primary);
+    --xyd-anchor-color--hover: var(--poetry-blue100);
 }
 
 :root {
@@ -52,5 +52,5 @@
 
 /* Heading */
 :root {
-    --xyd-heading-icon-color: var(--color-primary);
+    --xyd-heading-icon-color: var(--poetry-color-primary);
 }

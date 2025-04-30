@@ -8,11 +8,7 @@ export const TocHost = css`
         position: relative;
         padding-left: 16px;
         display: block;
-
-        @media (max-width: ${mobileBreakpoint}) {
-            display: none;
-        }
-
+        
         [part="scroller"] {
             position: absolute;
             top: 0;
@@ -52,6 +48,10 @@ export const TocLi = css`
             color: var(--xyd-toc-item-color);
             text-wrap: pretty;
             transition: color .15s ease;
+
+            &:hover {
+                color: var(--xyd-toc-item-color--active);
+            }
         }
 
         &[data-active="true"] [part="link"] {

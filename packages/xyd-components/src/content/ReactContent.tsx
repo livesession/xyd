@@ -148,11 +148,21 @@ export function stdContent(
     }
 }
 
+function GuideCardContentComponent(props) {
+    return <GuideCard
+        {...props}
+        as={this?.options?.Link}
+    />
+}
+
 export function writerContent() {
+    const GuideCardContent = GuideCardContentComponent.bind(this)
+    GuideCardContent.List = GuideCard.List
+
     return {
         Callout,
         Details,
-        GuideCard,
+        GuideCard: GuideCardContent,
         Steps,
         Tabs,
         Table,

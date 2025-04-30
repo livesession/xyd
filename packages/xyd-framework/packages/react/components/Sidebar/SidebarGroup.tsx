@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 import { FwSidebarItemProps } from "./Sidebar";
+import { useNavigation } from "react-router";
 
 export interface FwGroupContext {
     active: (item: FwSidebarItemProps) => [boolean, () => void],
@@ -32,81 +33,75 @@ export function useGroup() {
     return useContext(GroupContext)
 }
 
-
-// TODO: !!! better algorithm (JSON.stringify is not good) !!!!!
-// TODO: !!!! use array structure instad! !!!
-
-function stringify(item: FwSidebarItemProps) {
-    return JSON.stringify({
-        title: item.title,
-        href: item.href,
-        items: item.items?.map((item) => stringify(item)),
-    })
-}
-
-// Helper function to create a map from initialActiveItems
-function createItemsMap(items: any[]): Map<string, string> {
-    const map = new Map<string, string>();
-    items.forEach(item => {
-        const key = `${item.groupIndex}-${item.level}`;
-        map.set(key, stringify(item));
-    });
-    return map;
-}
-
 // TOOD: issues if same page url on initialitems
 // TODO: the time of chaning is not perfectly the same with react-router 
 // TODO: better data structure + algorithm
+// TODO: !!!! REFACTOR !!! !!! nagivation loaders !!!
 function useDefaultBehaviour(initialActiveItems: any[]) {
     const [activeItems, setActiveItems] = useState(() => createItemsMap(initialActiveItems));
 
-    const [currentGroupIndex, setCurrentGroupIndex] = useState<number | null>(() => {
-        return initialActiveItems[0]?.groupIndex ?? null;
-    });
     const [, setForceUpdate] = useState(0);
-
     const forceUpdate = () => setForceUpdate((prev) => prev + 1);
 
-    // Update activeItems and currentGroupIndex when initialActiveItems changes
     useEffect(() => {
         setActiveItems(createItemsMap(initialActiveItems));
         
-        if (initialActiveItems.length > 0) {
-            setCurrentGroupIndex(initialActiveItems[0]?.groupIndex ?? null);
-        }
-
         forceUpdate();
     }, [initialActiveItems]);
 
-    const addItem = (item: FwSidebarItemProps) => {
-        const key = `${item.groupIndex}-${item.level}`;
-        activeItems.set(key, stringify(item));
+    function addItem(item: FwSidebarItemProps) {
+        const key = itemId(item);
+
+        setActiveItems(prev => {
+            const newMap = new Map(prev);
+            newMap.set(key, true);
+            return newMap;
+        });
         forceUpdate();
-    };
+    }
 
-    const deleteItem = (item: FwSidebarItemProps) => {
-        const key = `${item.groupIndex}-${item.level}`;
-        activeItems.delete(key);
+    function deleteItem(item: FwSidebarItemProps) {
+        const key = itemId(item);
+
+        setActiveItems(prev => {
+            const newMap = new Map(prev);
+            newMap.delete(key);
+            return newMap;
+        });
         forceUpdate();
-    };
+    }
 
-    const hasItem = (item: FwSidebarItemProps) => {
-        const key = `${item.groupIndex}-${item.level}`;
-        const activeItem = activeItems.get(key);
-        return activeItem === stringify(item);
-    };
+    function hasItem(item: FwSidebarItemProps) {
+        const key = itemId(item);
 
-    return (item: FwSidebarItemProps): [boolean, () => void] => [
-        hasItem(item) || false,
-        () => {
-            if (!hasItem(item)) {
-                addItem(item);
-                return;
+        return activeItems.get(key) || false;
+    }
+
+    return (item: FwSidebarItemProps): [boolean, () => void] => {
+        return [
+            hasItem(item) || false,
+            () => {
+                if (!hasItem(item)) {
+                    addItem(item);
+                    return;
+                }
+                deleteItem(item);
             }
-
-            deleteItem(item);
-        }
-    ]
+        ]
+    }
 }
 
+function itemId(item: FwSidebarItemProps) {
+    const id = `${item.uniqIndex}:${item.groupIndex}-${item.level}-${item.itemIndex}`
+    
+    return id;
+}
 
+function createItemsMap(items: any[]): Map<string, boolean> {
+    const map = new Map<string, boolean>();
+    items.forEach(item => {
+        const key = itemId(item);
+        map.set(key, true);
+    });
+    return map;
+}

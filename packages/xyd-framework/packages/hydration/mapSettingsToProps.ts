@@ -1,10 +1,10 @@
 // server-only
 
-import {Sidebar, MetadataMap, Settings, SidebarMulti} from "@xyd-js/core";
-import {filterNavigationByLevels, pageFrontMatters} from "@xyd-js/content";
-import {IBreadcrumb, INavLinks} from "@xyd-js/ui";
+import { Sidebar, MetadataMap, Settings, SidebarMulti } from "@xyd-js/core";
+import { filterNavigationByLevels, pageFrontMatters } from "@xyd-js/content";
+import { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
-import {FwSidebarGroupProps} from "../react";
+import { FwSidebarGroupProps } from "../react";
 
 // TODO: framework vs content responsibility
 
@@ -16,7 +16,9 @@ export async function mapSettingsToProps(
     groups: FwSidebarGroupProps[],
     breadcrumbs: IBreadcrumb[]
     navlinks?: INavLinks
+    hiddenPages?: { [key: string]: boolean }
 }> {
+    let uniqIndex = 0
     const filteredNav = filterNavigation(settings, slug)
     const frontmatters = await pageFrontMatters(filteredNav)
 
@@ -24,13 +26,23 @@ export async function mapSettingsToProps(
     const breadcrumbs: IBreadcrumb[] = []
     let navlinks: INavLinks | undefined = undefined
 
+    const hiddenPages = Object.keys(frontmatters).reduce((acc, page) => {
+        if (frontmatters[page].hidden) {
+            acc[page] = true
+        }
+
+        return acc
+    }, {})
+
     function mapItems(
         page: string | Sidebar,
         currentNav: Sidebar,
         nav: Sidebar[]
     ) {
         if (typeof page !== "string") {
-            const items = page.pages?.map((p) => mapItems(p, page, nav))
+            const items = page.pages
+                ?.map((p) => mapItems(p, page, nav))
+                ?.filter(Boolean)
 
             if (items?.find(item => normalizeHrefCheck(item.href, slug))) {
                 breadcrumbs.unshift({
@@ -43,8 +55,13 @@ export async function mapSettingsToProps(
                 title: page.group,
                 href: "",
                 active: false,
+                uniqIndex: uniqIndex++,
                 items,
             }
+        }
+
+        if (hiddenPages[page]) {
+            return null
         }
 
         const matterTitle = frontmatters && frontmatters[page] && frontmatters[page].title
@@ -64,7 +81,7 @@ export async function mapSettingsToProps(
 
         // TODO: better data structures - for example flat array of filtered nav
         if (slugFrontmatter && (slugFrontmatter === frontmatters[page])) {
-            const nlinks = mapNavToLinks(page, currentNav, nav, frontmatters)
+            const nlinks = mapNavToLinks(page, currentNav, nav, frontmatters, hiddenPages)
 
             if (nlinks) {
                 navlinks = nlinks
@@ -84,36 +101,38 @@ export async function mapSettingsToProps(
         }
 
         return {
-            // @ts-ignore
             title,
             href: safePageLink(page),
-            active: false // TODO:
+            active: false,
+            uniqIndex: uniqIndex++,
         }
     }
 
-    const groups = filteredNav.map((nav) => {
-        // TODO: finish
-        if ("route" in nav) {
-            return {
-                group: "",
-                items: [],
-                groupIndex: 0,
-            } as FwSidebarGroupProps
-        }
+    const groups = filteredNav
+        .map((nav) => {
+            // TODO: finish
+            if ("route" in nav) {
+                return {
+                    group: "",
+                    items: [],
+                    groupIndex: 0,
+                } as FwSidebarGroupProps
+            }
 
-        return {
-            group: nav.group,
-            items: nav.pages?.map((p) => {
-                // @ts-ignore
-                return mapItems(p, nav, filteredNav)
-            }) || [],
-        } as FwSidebarGroupProps
-    }) || []
+            const items = (nav.pages?.map((p) => mapItems(p, nav, filteredNav)) || [])
+                .filter(Boolean)
+
+            return {
+                group: nav.group,
+                items
+            } as FwSidebarGroupProps
+        }) || []
 
     return {
         groups,
         breadcrumbs,
-        navlinks
+        navlinks,
+        hiddenPages
     }
 }
 
@@ -193,7 +212,8 @@ function mapNavToLinks(
     page: string | Sidebar,
     currentNav: Sidebar,
     nav: Sidebar[],
-    frontmatters: MetadataMap
+    frontmatters: MetadataMap,
+    hiddenPages: { [key: string]: boolean }
 ): INavLinks | undefined {
     if (!currentNav.group) {
         console.error("current nav need group to calculate navlinks")
@@ -248,35 +268,27 @@ function mapNavToLinks(
                 return
             }
 
-            if (prev && next) {
-                return {
-                    prev: {
-                        title: prevTitle,
-                        href: safePageLink(prev),
-                    },
-                    next: {
-                        title: nextTitle,
-                        href: safePageLink(next),
-                    }
+    
+            let prevLink
+            let nextLink
+
+            if (prev && !hiddenPages[prev]) {
+                prevLink = {
+                    title: prevTitle,
+                    href: safePageLink(prev),
                 }
             }
 
-            if (prev) {
-                return {
-                    prev: {
-                        title: prevTitle,
-                        href: safePageLink(prev),
-                    },
+            if (next && !hiddenPages[next]) {
+                nextLink = {
+                    title: nextTitle,
+                    href: safePageLink(next),
                 }
             }
 
-            if (next) {
-                return {
-                    next: {
-                        title: nextTitle,
-                        href: safePageLink(next),
-                    },
-                }
+            return {
+                prev: prevLink || undefined,
+                next: nextLink || undefined,
             }
         }
     }

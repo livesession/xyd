@@ -104,6 +104,7 @@ function useSubHeader(ref?: React.RefObject<HTMLDivElement | null>) {
     const [hideMainHeader, setHideMainHeader] = useState(false)
     const [scrollTop, setScrollTop] = useState(0)
     const [controlScrollPos, setControlScrollPos] = useState(0)
+    const [lastScrollDirection, setLastScrollDirection] = useState<'up' | 'down' | null>(null)
 
     useEffect(() => {
         if (scrollTop === controlScrollPos) {
@@ -113,13 +114,23 @@ function useSubHeader(ref?: React.RefObject<HTMLDivElement | null>) {
         // Get the header height from CSS variable
         const headerHeight = parseInt(
             getComputedStyle(document.documentElement)
-                .getPropertyValue('--xyd-header-height')
+                .getPropertyValue('--xyd-nav-height')
                 .trim() || '0',
             10
         );
         const checkpoint = headerHeight / 2;
         const diff = scrollTop - controlScrollPos
         const reversePosDiff = Math.abs(scrollTop - controlScrollPos)
+        
+        // Determine scroll direction
+        const direction = diff > 0 ? 'down' : 'up'
+        setLastScrollDirection(direction)
+        
+        // Always show header when near the top of the page
+        if (scrollTop < headerHeight) {
+            setHideMainHeader(false)
+            return
+        }
 
         if (diff > checkpoint) {
             setHideMainHeader(true)
@@ -148,7 +159,6 @@ function useSubHeader(ref?: React.RefObject<HTMLDivElement | null>) {
         setControlScrollPos(e.target?.scrollTop)
     }
 
-    // TODO: MOVE SOMEWHERE ELSE BECAUSE IT DECREASE PERFORMANCE (RERENDER)
     useEffect(() => {
         if (!ref?.current) {
             return

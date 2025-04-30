@@ -31,6 +31,9 @@ export const CodeTabsLanguagesHost = css`
 
         min-width: 0;
 
+        font-weight: 600;
+        font-size: var(--xyd-font-size-xsmall);
+
         &[data-single="true"] {
             height: 0;
         }

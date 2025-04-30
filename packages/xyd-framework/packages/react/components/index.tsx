@@ -20,9 +20,9 @@ function FwNavLogo() {
         return null
     }
 
-    return <FwLink href="/">
+    return <a href="/">
         <img part="logo" src={logo} />
-    </FwLink>
+    </a>
 }
 
 export function FwNav({ kind }: { kind?: "middle" }) {
@@ -146,8 +146,8 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
             initialActiveItems.push({
                 ...acc[index],
                 groupIndex: groupIndex,
-                itemIndex: index,
                 level: level,
+                itemIndex: index,
             })
             acc[index].active = true
             return acc[index].items

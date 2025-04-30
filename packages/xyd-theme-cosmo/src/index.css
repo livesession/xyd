@@ -6,5 +6,5 @@ html {
 }
 
 xyd-code-pre pre {
-    background: var(--xyd-coder-code-background) !important;
+    background: linear-gradient(45deg, #f7f7f8 0%, #f7f7f8 100%) !important;
 }

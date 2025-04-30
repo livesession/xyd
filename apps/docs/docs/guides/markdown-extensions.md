@@ -43,6 +43,7 @@ Hello World, **Bold**, _Italic_, ~~Hidden~~
 | Hello | World       |
 ```
 
+&nbsp;
 
 ## MDX
 MDX combines Markdown with JSX, letting you use React components in your docs.
@@ -96,6 +97,8 @@ MDX combines Markdown with JSX, letting you use React components in your docs.
     <MyComponent category="fantasy" />
     ```
 
+&nbsp;
+
 ## Headers Anchors
 Headers(`#`) get automatically anchor links applied, anchors can also 
 be configured using the `anchor` option.
@@ -105,6 +108,8 @@ If you'd like to set a custom anchor,  add a suffix to the heading:
 # My custom anchors {#custom-anchors}
 ```
 This sets the heading anchor to `#custom-anchors` instead of the default `#my-custom-anchors`.
+
+&nbsp;
 
 ## TOC Anchors
 The table of contents (TOC) will be generated based on headings, you can also customise the effects of headings:
@@ -119,6 +124,8 @@ This heading will **only** be visible in TOC, you can use it to add additional T
 # TOC Changed{toc="toc changed"}
 It display 'toc changed' in TOC section instead of 'TOC Changed'
 ```
+
+&nbsp;
 
 ## Component Directives
 Use markdown directives (`:::`) to render components in markdown syntax (instead of MDX), the full list of components you can find [here](/docs/components).
@@ -185,6 +192,8 @@ This creates a navigation component with two tabs: "CLI" and "Code", each with i
 :::guide-card{icon="<IconCode/>" title="Component Directives" href="https://github.com/xyd-js/xyd-samples/tree/main/component-directives"}
 Explore samples with component directives
 :::
+
+&nbsp;
 
 ## Emojis 🎉
 For declaring just copy and paste the emoji you want to use in your markdown, for example:

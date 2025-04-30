@@ -11,7 +11,7 @@ export interface FwSidebarGroupProps {
     group: string
     
     groupIndex: number
-
+    
     items: FwSidebarItemProps[]
 }
 
@@ -22,14 +22,15 @@ export function FwSidebarItemGroup(props: FwSidebarGroupProps) {
         </UISidebar.ItemHeader>
 
         {props.items.map((item, index) => <FwSidebarItem
+            uniqIndex={item.uniqIndex}
             groupIndex={props.groupIndex}
+            level={0}
             itemIndex={index}
             key={index + item.href}
             title={item.title}
             href={item.href}
             items={item.items}
             active={item.active}
-            level={0}
         />)}
     </>
 }
@@ -40,6 +41,8 @@ export interface FwSidebarItemProps {
     }
 
     href: string
+
+    uniqIndex: number
 
     items?: FwSidebarItemProps[]
 
@@ -139,14 +142,15 @@ function FwSidebarItem(props: FwSidebarItemProps) {
                 <>
                     {
                         props.items?.map((item, index) => <FwSidebarItem
+                            uniqIndex={item.uniqIndex}
                             groupIndex={props.groupIndex}
+                            level={(props.level || 0) + 1}
                             itemIndex={index}
                             key={index + item.href}
                             title={item.title}
                             href={item.href}
                             items={item.items}
                             active={active(item)[0]}
-                            level={(props.level || 0) + 1}
                         />)
                     }
                 </>

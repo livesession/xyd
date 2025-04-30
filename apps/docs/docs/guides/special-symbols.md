@@ -50,12 +50,16 @@ Some components/built-in tags has special symbols as props, for example:
 
 above will pass `id` as prop for `my-component`. More details about this API you can find [here](#).  
 
+&nbsp;
+
 ## `Function Calling`
 Function Calling (`@<function>`) is used to execute [functions](#) within your markdown content:
 
 ```mdx
 @import "~/snippets/Hello.ts"
 ```
+
+&nbsp;
 
 ## `Output Variable`
 Output Variable (`<<<<out_variable>{<attributes>}`) is used to pass [output variables](#) from content files, useful for customizing documentation behavior:
@@ -95,12 +99,16 @@ class MyTheme extends BaseTheme {
 
 ```
 
+&nbsp;
+
 ## `Read Variable`
 Read Variable (`{<read_variable>}`) is used to access [read variables](#) from frontmatter and other [pages](#):
 
 ```mdx
 {frontmatter.title}
 ```
+
+&nbsp;
 
 ## `Attributes`
 Some built-in tags has abilities to pass [attributes](#) (`<tag|expression>{<attributes>}`):

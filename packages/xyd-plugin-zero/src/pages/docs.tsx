@@ -149,12 +149,19 @@ export async function loader({ request }: { request: any }) {
         groups: sidebarGroups,
         breadcrumbs,
         navlinks,
+        hiddenPages
     } = await mapSettingsToProps(
         settings,
-        slug
+        slug,
     )
     console.log(`loader: mapped settings - found ${sidebarGroups?.length || 0} sidebar groups, ${breadcrumbs?.length || 0} breadcrumbs`);
     console.timeEnd('loader:mapSettings');
+
+    if (hiddenPages?.[slug]) {
+        const firstItem = findFirstUrl(sidebarGroups?.[0]?.items);
+
+        return redirect(firstItem)
+    }
 
     if (error) {
         console.log(`loader: handling error: ${error.message}`);

@@ -39,8 +39,35 @@ export interface Metadata<P = void> {
 
     /** Optional 'openapi' for openapi references */
     openapi?: string
-    
-    
+
+    /** Optional 'hidden' for content visibility */
+    hidden?: boolean
+
+    /**
+     * Optional 'tocGithub' for github references
+     * 
+     * @optional
+     * @unsafe
+     * @todo: !!! IN THE FUTURE COMPOSE API !!!
+     * @example
+     * ```
+     * tocGithub: {
+     *     link: "https://github.com/livesession/livesession-browser",
+     *     title: "Checkout the code",
+     *     description: "Check how to use the LiveSession Browser SDK",
+     * }
+     * ```
+     */
+    tocGithub?: {
+        /** 'link' for github references */
+        link: string
+
+        /** 'title' for github references */
+        title: string
+
+        /** 'description' for github references */
+        description: string
+    }
 }
 
 export type MetadataMap<P = void> = { [page: string]: Metadata<P> }

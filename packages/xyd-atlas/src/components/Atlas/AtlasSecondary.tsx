@@ -9,10 +9,11 @@ import {
     IconQuote
 } from "@xyd-js/components/writer";
 
-import {MDXCommonAtlasProps} from "@/components/Atlas/types";
-import {uniformValue, uniformChild} from "@/utils/mdx";
-import {CodeSample} from "@xyd-js/components/coder";
-import {useSyntaxHighlight} from "./AtlasContext";
+import { MDXCommonAtlasProps } from "@/components/Atlas/types";
+import { uniformValue, uniformChild } from "@/utils/mdx";
+import { CodeSample } from "@xyd-js/components/coder";
+import { useSyntaxHighlight } from "./AtlasContext";
+import { type Theme } from "@code-hike/lighter";
 
 // TODO: interface should be imported from somewhere
 interface CodeSourceContext {
@@ -21,80 +22,128 @@ interface CodeSourceContext {
     sourcecode: string;
 }
 
-export function AtlasSecondary({references}: MDXCommonAtlasProps<CodeSourceContext>) {
+const MAX_REFERENCES = 2;
+
+interface ReferenceItemProps {
+    reference: any;
+    index: number;
+    syntaxHighlight: Theme | null;
+}
+
+
+export function AtlasSecondary({ references }: MDXCommonAtlasProps<CodeSourceContext>) {
     const syntaxHighlight = useSyntaxHighlight()
 
-    return <>
-        {
-            references?.map((reference, i) => {
-                return <>
-                    <Heading size={1}>
-                        {uniformValue(reference.title)}
-                    </Heading>
+    if (!references) return null;
 
-                    {/*<p>*/}
-                    {/*    {uniformChild(reference.description)}*/}
-                    {/*</p>*/}
+    const initialReferences = references.slice(0, MAX_REFERENCES);
+    const remainingReferences = references.slice(MAX_REFERENCES);
 
-                    {
-                        uniformValue(reference.context?.fileName) && <Details
-                            label=""
-                            kind="tertiary"
-                            title={<>
-                                Source code in <Code>{uniformValue(reference.context.fileFullPath)}</Code>
-                            </>}
-                            icon={<IconQuote/>}>
-                            <CodeSample
-                                name={reference.context.fileName}
-                                description={reference.context.sourcecode.description}
-                                theme={syntaxHighlight || undefined}
-                                codeblocks={[
-                                    {
-                                        lang: reference.context.sourcecode.lang,
-                                        meta: "",
-                                        value: reference.context.sourcecode.code
-                                    }
-                                ]}
-                            />
-                            {/* {parseChild(reference.context.sourcecode)} */}
-                        </Details>
-                    }
+    const showMoreText = remainingReferences.length > 0 ?
+        `Show more (${remainingReferences.length}) reference${remainingReferences.length === 1 ? '' : 's'}` :
+        '';
 
-                    {
-                        reference.definitions.map((definition, index) => {
-                            return <>
-                                <Heading size={2}>
-                                    {uniformValue(definition.title)}
-                                </Heading>
-                                <Table key={index}>
-                                    <Table.Head>
-                                        <Table.Tr>
-                                            <Table.Th>Name</Table.Th>
-                                            <Table.Th>Type</Table.Th>
-                                            <Table.Th>Description</Table.Th>
+    return (
+        <>
+            {initialReferences.map((reference, i) => (
+                <$ReferenceItem
+                    key={i}
+                    reference={reference}
+                    index={i}
+                    syntaxHighlight={syntaxHighlight}
+                />
+            ))}
+
+            {remainingReferences.length > 0 && (
+                <Details
+                    label={showMoreText}
+                >
+                    {remainingReferences.map((reference, i) => (
+                        <$ReferenceItem
+                            key={i + MAX_REFERENCES}
+                            reference={reference}
+                            index={i + MAX_REFERENCES}
+                            syntaxHighlight={syntaxHighlight}
+                        />
+                    ))}
+                </Details>
+            )}
+        </>
+    )
+}
+
+function $ReferenceItem({ reference, index, syntaxHighlight }: ReferenceItemProps) {
+    return (
+        <React.Fragment key={index}>
+            <Heading size={3}>
+                {uniformValue(reference.title)}
+            </Heading>
+
+            {/*<p>*/}
+            {/*    {uniformChild(reference.description)}*/}
+            {/*</p>*/}
+
+            {
+                uniformValue(reference.context?.fileName) && <Details
+                    label=""
+                    kind="tertiary"
+                    title={<>
+                        Source code in <Code>{uniformValue(reference.context.fileFullPath)}</Code>
+                    </>}
+                    icon={<IconQuote />}>
+                    <CodeSample
+                        name={reference.context.fileName}
+                        description={reference.context.sourcecode.description}
+                        theme={syntaxHighlight || undefined}
+                        codeblocks={[
+                            {
+                                lang: reference.context.sourcecode.lang,
+                                meta: "",
+                                value: reference.context.sourcecode.code
+                            }
+                        ]}
+                    />
+                    {/* {parseChild(reference.context.sourcecode)} */}
+                </Details>
+            }
+
+            {
+                reference.definitions.map((definition: any, index: number) => {
+                    return (
+                        <React.Fragment key={index}>
+                            <Heading size={4}>
+                                {uniformValue(definition.title)}
+                            </Heading>
+                            <Table>
+                                <Table.Head>
+                                    <Table.Tr>
+                                        <Table.Th>Name</Table.Th>
+                                        <Table.Th>Type</Table.Th>
+                                        <Table.Th>Description</Table.Th>
+                                    </Table.Tr>
+                                </Table.Head>
+                                <Table.Body>
+                                    {definition.properties?.map((property: any, propIndex: number) => (
+                                        <Table.Tr key={propIndex}>
+                                            <Table.Td>
+                                                <Code>{uniformValue(property.name)}</Code>
+                                            </Table.Td>
+                                            <Table.Td>
+                                                <Code>{uniformValue(property.type)}</Code>
+                                            </Table.Td>
+                                            <Table.Td muted>
+                                                {uniformChild(property.description)}
+                                            </Table.Td>
                                         </Table.Tr>
-                                    </Table.Head>
-                                    <Table.Body>
-                                        {definition.properties?.map((property, propIndex) => (
-                                            <Table.Tr key={propIndex}>
-                                                <Table.Td>
-                                                    <Code>{uniformValue(property.name)}</Code>
-                                                </Table.Td>
-                                                <Table.Td>
-                                                    <Code>{uniformValue(property.type)}</Code>
-                                                </Table.Td>
-                                                <Table.Td muted>
-                                                    {uniformChild(property.description)}
-                                                </Table.Td>
-                                            </Table.Tr>
-                                        ))}
-                                    </Table.Body>
-                                </Table>
-                            </>
-                        })
-                    }
-                </>
-            })
-        }
-    </>
+                                    ))}
+                                </Table.Body>
+                            </Table>
+                        </React.Fragment>
+                    )
+                })
+            }
+
+            <br />
+        </React.Fragment>
+    )
 }

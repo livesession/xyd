@@ -26,6 +26,7 @@ export const HeadingHost = css`
         &[data-kind="muted"] {
             color: var(--xyd-heading-color--muted);
             cursor: default;
+            font-weight: 500;
         }
 
         &[data-size="1"] {

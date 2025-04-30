@@ -87,7 +87,7 @@ export abstract class BaseTheme extends Theme {
     }
 
     protected ContentNav() {
-        // const { TocTop, TocBottom } = this
+        const { TocTop, TocBottom } = this
 
         // TODO: toc top and bottom in the future 
         return <>
@@ -97,7 +97,7 @@ export abstract class BaseTheme extends Theme {
                 <FwToc />
             </div>
 
-            {/* <TocBottom /> */}
+            <TocBottom />
         </>
     }
 
@@ -108,15 +108,19 @@ export abstract class BaseTheme extends Theme {
     }
 
     protected TocBottom() {
-        return <>
+        const meta = useMetadata()
+        const tocGithub = meta?.tocGithub
+        const isEmpty = !tocGithub || !tocGithub.link || !tocGithub.title || !tocGithub.description
+        if (isEmpty) {
+            return null
+        }
 
-            <div>
-                <TocCard
-                    title="Sample app"
-                    description="Explore our example app to see how the TocCard component works."
-                    href="https://github.com/xyd-js/xyd-samples/tree/main/example"
-                />
-            </div>
-        </>
+        return <div>
+            <TocCard
+                title={tocGithub.title}
+                description={tocGithub.description}
+                href={tocGithub.link}
+            />
+        </div>
     }
 }

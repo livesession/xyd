@@ -31,25 +31,25 @@ export const TextHost = css`
         }
 
         &[data-kind="default"] { 
-            color: var(--xyd-text-color-default);
+            color: var(--xyd-text-color--default);
         }
         &[data-kind="ghost"] { 
-            color: var(--xyd-text-color-ghost);
+            color: var(--xyd-text-color--ghost);
         }
         &[data-kind="success"] { 
-            color: var(--xyd-text-color-success);
+            color: var(--xyd-text-color--success);
         }
         &[data-kind="warn"] { 
-            color: var(--xyd-text-color-warn);
+            color: var(--xyd-text-color--warn);
         }
         &[data-kind="error"] { 
-            color: var(--xyd-text-color-error);
+            color: var(--xyd-text-color--error);
         }
         &[data-kind="primary"] { 
-            color: var(--xyd-text-color-primary);
+            color: var(--xyd-text-color--primary);
         }
         &[data-kind="secondary"] { 
-            color: var(--xyd-text-color-secondary);
+            color: var(--xyd-text-color--secondary);
         }
 
         &[data-weight="normal"] { 

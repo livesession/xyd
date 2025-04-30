@@ -79,7 +79,8 @@ Code.Pre = function CodePre(props: {
         handlers,
     } = props;
 
-    // TODO: support import { getThemeColors } from "@code-hike/lighter";
+    fixLastToken(codeblock)
+
     return <xyd-code-pre>
         <Pre
             part="pre"
@@ -90,4 +91,16 @@ Code.Pre = function CodePre(props: {
             handlers={handlers}
         />
     </xyd-code-pre>
+}
+
+/**
+ * FOR SOME REASONS FOR SINGLE CODE BLOCKS LAST TOKEN IS EMPTY STRING
+ * 
+ * @todo: fix this
+ */
+function fixLastToken(codeblock: HighlightedCode) {
+    const lastToken = codeblock.tokens[codeblock.tokens.length - 1]
+    if (typeof lastToken === 'string' && (lastToken === ' ' || lastToken === '\n')) {
+        codeblock.tokens.pop()
+    }
 }

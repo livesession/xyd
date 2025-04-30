@@ -60,6 +60,9 @@ export const CodeHost = css`
         [data-size="full"] {
             max-height: 100%;   
         }
+
+        & > div {
+        }
     }
 `;
 

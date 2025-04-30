@@ -1,6 +1,7 @@
 import React from "react"
 
 import * as cn from "./GuideCard.styles";
+import { Anchor } from "../Anchor/Anchor";
 
 /**
  * Props for the GuideCard component
@@ -26,6 +27,9 @@ export interface GuideCardProps {
 
     /** Additional CSS class names to apply to the card */
     className?: string
+
+    /** Additional props to pass to the link element */
+    as?: React.ElementType
 }
 
 /**
@@ -40,13 +44,16 @@ export function GuideCard({
     kind,
     size,
     className,
+    as,
 }: GuideCardProps) {
+    const Link = as || $Link
+
     return <xyd-guidecard
         className={`${cn.GuideHost} ${className || ""}`}
         data-kind={kind}
         data-size={size}
     >
-        <a part="link" href={href}>
+        <Link part="link" href={href}>
             <div part="item">
                 {icon && <div part="icon">
                     {icon}
@@ -63,7 +70,7 @@ export function GuideCard({
                     </div>
                 </div>
             </div>
-        </a>
+        </Link>
     </xyd-guidecard>
 }
 
@@ -96,4 +103,13 @@ function $Pointer() {
             />
         </svg>
     </div>
+}
+
+function $Link({ href, children, ...rest }) {
+    return <a
+        href={href}
+        {...rest}
+    >
+        {children}
+    </a>
 }

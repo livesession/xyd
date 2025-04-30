@@ -58,6 +58,11 @@ export const GuideHost = css`
             transition: background .2s ease;
             box-sizing: border-box;
             flex-shrink: 0;
+
+            svg {
+                width: 24px;
+                height: 24px;
+            }
         }
 
         [part="right"] {

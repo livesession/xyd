@@ -2,6 +2,6 @@
 title: OpenSDK
 ---
 
-# Open SDK
+# OpenSDK
 
 

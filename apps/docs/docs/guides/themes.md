@@ -10,23 +10,23 @@ Customize the appearance of your documentation
 Choose from our pre-built themes to match your brand's unique style.
 
 ## Setup
-You can configure the theme in the [`settings`](/#settings-json) file:
+You can configure the theme in the [`settings`](/docs/guides/settings) file:
 
 ```json
 {
-  "theme": "gusto"
+  "theme": "poetry"
 }
 ```
 
 ## Available themes
 
-- `Cosmo`
-- `Gusto`
-- `Poetry`
-- `Picasso`
+- `poetry`
+- `cosmo`
+- `gusto` (coming soon)
+- `picasso` (coming soon)
 
 ## Customizing the theme
 
-You can also customize the theme by [`Extending the Default Theme`](/docs/customizing-the-default-theme) or
-[`Creating your own theme`](/docs/creating-your-own-theme).
+You can also customize the theme by [Extending the Default Theme](/docs/customizing-the-default-theme) or
+[Creating your own theme](/docs/creating-your-own-theme).
 

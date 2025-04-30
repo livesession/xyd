@@ -41,7 +41,8 @@ export const ItemHost = css`
         [part="first-item"] {
             display: flex;
             width: 100%;
-            padding: 8px 12px 8px var(--xyd-sidebar-item-padding-left);
+            padding: 6px 12px 6px var(--xyd-sidebar-item-padding-left);
+            margin-bottom: 4px;
             position: relative;
             
             &:has([part="logo"]) {
@@ -98,12 +99,14 @@ export const TreeHost = css`
 
 export const ItemHeaderHost = css`
     @layer defaults {
+        font-size: var(--xyd-font-size-xsmall);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.25px;
+        color: var( --xyd-sidebar-item-header-color);
         padding-left: var(--xyd-sidebar-item-padding-left);
         margin-bottom: 8px;
         margin-top: 24px;
-        font-weight: 600;
-        letter-spacing: 1px;
-        color: var( --xyd-sidebar-item-header-color);
     }
 `;
 
