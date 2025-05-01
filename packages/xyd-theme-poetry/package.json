@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/ui": "workspace:*",
     "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0"
   },

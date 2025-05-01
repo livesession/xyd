@@ -36,6 +36,9 @@ declare global {
         'xyd-grid-decorator': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         // Kit
         'xyd-loader': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+
+        // System
+        'xyd-search-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       }
     }
   }

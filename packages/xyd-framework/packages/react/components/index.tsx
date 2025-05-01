@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router";
 
 import type { ITOC } from "@xyd-js/ui";
 import { Breadcrumbs, NavLinks, Anchor } from "@xyd-js/components/writer";
+import { SearchButton } from "@xyd-js/components/system";
 import { Toc, SubNav, UISidebar, Nav } from "@xyd-js/ui"
 
 import { useBreadcrumbs, useNavLinks, useSettings, useSidebarGroups, useToC } from "../contexts";
@@ -10,6 +11,7 @@ import { FwSidebarItemGroup, FwSidebarGroupContext, FwSidebarItemProps } from ".
 
 import { manualHydration } from "../utils/manualHydration";
 import { useMatchedSubNav } from "../hooks";
+import { Surface } from "./Surface";
 
 function FwNavLogo() {
     const settings = useSettings()
@@ -156,16 +158,12 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
         return group
     })
 
-    let logo = typeof settings.theme?.logo === "string" ? settings.theme?.logo : undefined
-
+    // TODO: better API for elements like logo search
     return <FwSidebarGroupContext
         initialActiveItems={initialActiveItems}
     >
         <UISidebar footerItems={footerItems && footerItems}>
-
-            {settings.theme?.name === "poetry" && <UISidebar.Item href="/">
-                <img part="logo" src={logo}/>
-            </UISidebar.Item>}
+            <Surface target="sidebar.top" />
 
             {
                 groups?.map((group, index) => <FwSidebarItemGroup
@@ -251,10 +249,35 @@ export function FwNavLinks() {
     return null
 }
 
+export function FwLogo() {
+    const settings = useSettings()
+
+    if (typeof settings?.theme?.logo === "string") {
+        return <img src={settings?.theme?.logo} />
+    }
+
+    if (isValidElement(settings?.theme?.logo)) {
+        return <a href="/">
+            {settings?.theme?.logo}
+        </a>
+    }
+
+    return null
+}
+
 export function FwLink({ children, ...rest }) {
     return <Anchor {...rest} as={Link}>
         {children}
     </Anchor>
+}
+
+// TODO: FINISH
+export function useSearch() {
+    return {
+        click: () => {
+            alert("clicked")
+        }
+    }
 }
 
 function $Link({ children, ...rest }) {

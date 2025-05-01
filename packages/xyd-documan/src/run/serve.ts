@@ -3,8 +3,8 @@ import os from "node:os";
 import path from "node:path";
 import url from "node:url";
 
-import type {ServerBuild} from "react-router";
 import {createRequestHandler} from "@react-router/express";
+import type {ServerBuild} from "react-router";
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";

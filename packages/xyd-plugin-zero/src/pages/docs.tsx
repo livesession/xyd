@@ -12,7 +12,6 @@ import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 import { HomePage } from "@xyd-js/components/pages";
 import { Atlas, AtlasContext } from "@xyd-js/atlas";
 import { ReactContent } from "@xyd-js/components/content";
-import { getMetaComponent } from "@xyd-js/context";
 import { withTheme } from "@xyd-js/themes";
 
 import settings from 'virtual:xyd-settings';
@@ -21,7 +20,12 @@ import Theme from "virtual:xyd-theme";
 import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
 
-const theme = new Theme(settings.theme || {} as ThemeSettings);
+const surfaces = {} // TODO: BETTER API !!!
+
+const theme = new Theme(
+    settings.theme || {} as ThemeSettings,
+    surfaces
+);
 const themeComponents = theme.components();
 
 const mdPlugins = markdownPlugins({
@@ -189,7 +193,7 @@ export async function loader({ request }: { request: any }) {
     } as loaderData
 }
 
-function findFirstUrl(items: any): string {
+function findFirstUrl(items: any = []): string {
     const queue = [...items];
 
     while (queue.length > 0) {
@@ -320,6 +324,7 @@ export default function DocsPage({ loaderData, ...rest }: { loaderData: loaderDa
             syntaxHighlight: settings?.theme?.markdown?.syntaxHighlight || null
         }}
     >
+
         <Framework
             settings={settings}
             sidebarGroups={loaderData.sidebarGroups || []}
@@ -327,6 +332,7 @@ export default function DocsPage({ loaderData, ...rest }: { loaderData: loaderDa
             toc={content.toc || []}
             breadcrumbs={loaderData.breadcrumbs || []}
             navlinks={loaderData.navlinks}
+            surfaces={surfaces}
         >
             {component}
             <ScrollRestoration />

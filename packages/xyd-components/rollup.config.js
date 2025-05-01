@@ -1,24 +1,24 @@
 import fs from 'fs';
 import path from 'path';
-import {fileURLToPath} from 'url';
+import { fileURLToPath } from 'url';
 
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
-import {terser} from 'rollup-plugin-terser';
+import { terser } from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';
 import wyw from '@wyw-in-js/rollup';
 
-import {createRequire} from 'module';
+import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 const {
     dependencies,
     peerDependencies,
     devDependencies
-} = require('./package.json', {assert: {type: 'json'}});
+} = require('./package.json', { assert: { type: 'json' } });
 
 const external = [
     ...Object.keys(dependencies),
@@ -47,6 +47,7 @@ export default [
             pages: 'src/pages/index.ts',
             views: 'src/views/index.ts',
             writer: 'writer.ts',
+            system: 'src/system/index.ts',
             ...themes
         },
         output: [
@@ -177,6 +178,15 @@ export default [
         input: 'writer.ts',
         output: {
             file: 'dist/writer.d.ts',
+            format: 'es',
+        },
+        plugins: [dts()],
+        external
+    },
+    {
+        input: 'src/system/index.ts',
+        output: {
+            file: 'dist/system.d.ts',
             format: 'es',
         },
         plugins: [dts()],

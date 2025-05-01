@@ -2,12 +2,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 
-import { createServer, searchForWorkspaceRoot } from "vite";
+import { createServer, PluginOption, searchForWorkspaceRoot } from "vite";
 
 import { reactRouter } from "@react-router/dev/vite";
 
 import { vitePlugins as xydContentVitePlugins } from "@xyd-js/content/vite";
 import { pluginZero } from "@xyd-js/plugin-zero";
+import { OramaPlugin } from "@xyd-js/plugin-orama";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,6 +63,8 @@ export async function dev() {
             }) as Plugin[]),
             ...respPluginZero.vitePlugins,
             reactRouter(),
+
+            OramaPlugin(respPluginZero.settings),
         ]
     });
 
@@ -100,3 +103,22 @@ export async function dev() {
         watcher.close();
     });
 }
+
+// function examplePlugin(): PluginOption {
+//     return {
+//         name: 'oramasearch',
+//         enforce: 'pre',
+//         configResolved(config) {
+//         },
+//         config: () => {
+//             return {
+//                 resolve: {
+//                     alias: {
+//                         'virtual:Search': new URL('./Search.tsx', import.meta.url).pathname
+//                         // '@xyd-js/my-custom-component': "./Example.tsx",
+//                     }
+//                 }
+//             }
+//         },
+//     }
+// }

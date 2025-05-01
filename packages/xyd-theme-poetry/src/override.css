@@ -48,4 +48,8 @@
     xyd-code-pre [part="pre"] {
         border-top: none;
     }
+
+    xyd-search-button {
+        background: var(--white);
+    }
 }

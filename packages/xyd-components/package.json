@@ -32,6 +32,9 @@
     "./writer": {
       "import": "./dist/writer.js"
     },
+    "./system": {
+      "import": "./dist/system.js"
+    },
     "./coder/themes/*": {
       "import": "./dist/coder/themes/*"
     }

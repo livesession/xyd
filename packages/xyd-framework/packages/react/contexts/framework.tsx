@@ -1,10 +1,11 @@
-import React, {createContext, useContext} from "react";
+import React, { createContext, useContext } from "react";
 
-import {Metadata, Settings} from "@xyd-js/core";
-import {type ITOC, type IBreadcrumb, type INavLinks, ProgressBar} from "@xyd-js/ui";
+import { Metadata, Settings } from "@xyd-js/core";
+import { type ITOC, type IBreadcrumb, type INavLinks, ProgressBar } from "@xyd-js/ui";
 
-import {FwSidebarGroupProps} from "../components/Sidebar";
-import {useNavigation} from "react-router";
+import { FwSidebarGroupProps } from "../components/Sidebar";
+import { useNavigation } from "react-router";
+import { SurfaceContext, SurfaceRegistry } from "../components/Surface";
 
 export interface IFramework {
     settings: Settings
@@ -37,6 +38,7 @@ export interface FrameworkProps {
     toc?: ITOC[],
     breadcrumbs?: IBreadcrumb[],
     navlinks?: INavLinks
+    surfaces?: SurfaceRegistry
 }
 
 export function Framework(props: FrameworkProps) {
@@ -52,9 +54,11 @@ export function Framework(props: FrameworkProps) {
         navlinks: props.navlinks,
     }}>
         {/* TODO: in the futre in another place? */}
-        <ProgressBar isActive={navigation.state === 'loading'}/>
+        <ProgressBar isActive={navigation.state === 'loading'} />
 
-        {props.children}
+        <SurfaceContext value={props.surfaces || {}}>
+            {props.children}
+        </SurfaceContext>
     </FrameworkContext.Provider>
 }
 

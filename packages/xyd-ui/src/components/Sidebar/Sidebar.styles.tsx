@@ -45,11 +45,11 @@ export const ItemHost = css`
             margin-bottom: 4px;
             position: relative;
             
-            &:has([part="logo"]) {
-                display: table-cell;
+            &[data-anchor="true"] {
+                padding: 6px 12px 12px var(--xyd-sidebar-item-padding-left);
             }
 
-            &:not(:has([part="logo"])):hover {
+            &:not([data-anchor="true"]):hover {
                 background: var(--xyd-sidebar-item-bgcolor--active-hover);
                 color: var( --xyd-sidebar-item-color--active);
                 border-radius: 4px;

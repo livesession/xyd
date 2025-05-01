@@ -247,6 +247,9 @@
     --xyd-toc-scroll-bgcolor: var(--dark80);
     --xyd-toc-item-color: var(--dark48);
     --xyd-toc-item-color--active: var(--dark80);
+
+    /* SearchButton */
+    --xyd-searchbutton-background: var(--dark16);
 }
 
 /* Atlas */
@@ -261,4 +264,5 @@
     --XydAtlas-Ref-Palette-Neutral-70: var(--dark60);
     --XydAtlas-Ref-Palette-Neutral-80: var(--dark80);
     --XydAtlas-Ref-Palette-Neutral-100: var(--dark100);
+    
 }
