@@ -1,14 +1,20 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import * as cn from "./SearchButton.styles";
 
 interface SearchButtonProps {
   onClick?: () => void;
   placeholder?: string;
-  shortcuts?: boolean;
+  shortcutKeys?: string[];
 }
 
-export function SearchButton({ shortcuts = true, ...props }: SearchButtonProps) {
+export function SearchButton({
+  shortcutKeys = ['⌘', 'K'],
+  ...props
+}: SearchButtonProps) {
+
+  useShortcuts(shortcutKeys, () => props.onClick?.());
+
   return (
     <xyd-search-button
       className={cn.SearchButton}
@@ -35,13 +41,60 @@ export function SearchButton({ shortcuts = true, ...props }: SearchButtonProps) 
       </span>
 
       {
-        shortcuts && (
+        shortcutKeys.length > 0 && (
           <span part="keys">
-            <kbd part="key">⌘</kbd>
-            <kbd part="key">K</kbd>
+            {shortcutKeys.map((key, index) => (
+              <kbd key={index} part="key">{key}</kbd>
+            ))}
           </span>
         )
       }
     </xyd-search-button>
   )
+}
+
+function useShortcuts(shortcutKeys: string[], onTrigger: () => void): void {
+  // Keep latest handler reference to avoid stale closures
+  const savedHandler = useRef(onTrigger);
+
+  useEffect(() => {
+    savedHandler.current = onTrigger;
+  }, [onTrigger]);
+
+  useEffect(() => {
+    const listener = (event: KeyboardEvent) => {
+      // For single key shortcuts
+      if (shortcutKeys.length === 1) {
+        if (event.key.toLowerCase() === shortcutKeys[0].toLowerCase()) {
+          event.preventDefault();
+          savedHandler.current();
+        }
+        return;
+      }
+
+      // For modifier combinations
+      if (shortcutKeys.length === 2) {
+        const [modifier, key] = shortcutKeys;
+        const pressedKey = event.key.toLowerCase();
+
+        const isModifierMatch =
+          (modifier === '⌘' && event.metaKey) ||
+          (modifier === 'Ctrl' && event.ctrlKey);
+
+        if (isModifierMatch && pressedKey === key.toLowerCase()) {
+          event.preventDefault();
+          savedHandler.current();
+        }
+      }
+    };
+
+    // Use capture phase and listen to both keydown and keyup
+    window.addEventListener('keydown', listener, { capture: true });
+    window.addEventListener('keyup', listener, { capture: true });
+
+    return () => {
+      window.removeEventListener('keydown', listener, { capture: true });
+      window.removeEventListener('keyup', listener, { capture: true });
+    };
+  }, [shortcutKeys]);
 }

@@ -34,6 +34,7 @@ export async function dev() {
         root: appRoot,
         publicDir: '/public',
         server: {
+            allowedHosts: ["15b074b9e0d0.ngrok.app"],
             port: port,
             fs: {
                 allow: [
@@ -54,18 +55,22 @@ export async function dev() {
         optimizeDeps: {
             include: ["react/jsx-runtime"],
         },
-        plugins: [ // TODO: fix plugin ts
+        plugins: [
             ...(xydContentVitePlugins({
                 toc: {
                     minDepth: 2,
                 },
                 settings: respPluginZero.settings,
-            }) as Plugin[]),
+            }) as Plugin[]),     // TODO: fix plugin ts
             ...respPluginZero.vitePlugins,
+
             reactRouter(),
 
+            virtualComponentsPlugin(),
+
+            // TODO: plugin api
             OramaPlugin(respPluginZero.settings),
-        ]
+        ],
     });
 
     // Set up manual file watcher for markdown files TODO: better way? + HMR only for specific components instead or reload a pag
@@ -104,21 +109,21 @@ export async function dev() {
     });
 }
 
-// function examplePlugin(): PluginOption {
-//     return {
-//         name: 'oramasearch',
-//         enforce: 'pre',
-//         configResolved(config) {
-//         },
-//         config: () => {
-//             return {
-//                 resolve: {
-//                     alias: {
-//                         'virtual:Search': new URL('./Search.tsx', import.meta.url).pathname
-//                         // '@xyd-js/my-custom-component': "./Example.tsx",
-//                     }
-//                 }
-//             }
-//         },
-//     }
-// }
+function virtualComponentsPlugin(): PluginOption {
+    return {
+        name: 'xyd-plugin-virtual-components',
+        enforce: 'pre',
+        config: () => {
+            // TODO: different for build
+            const componentsDist = path.resolve(__dirname, "../node_modules/@xyd-js/components/dist")
+
+            return {
+                resolve: {
+                    alias: {
+                        'virtual:Search': path.resolve(componentsDist, "system.js")
+                    }
+                }
+            }
+        },
+    }
+}

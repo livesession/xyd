@@ -39,6 +39,7 @@ export const UnderlineNavHost = css`
             height: 100%;
             padding: 10px;
             transition: all 0.3s ease;
+            cursor: pointer;
 
             &:hover {
                 color: var(--xyd-underlinenav-color--active);

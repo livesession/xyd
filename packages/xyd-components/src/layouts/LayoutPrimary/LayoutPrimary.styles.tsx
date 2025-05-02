@@ -20,7 +20,6 @@ export const LayoutPrimaryHost = css`
             right: var(--xyd-page-gutter);
             left: var(--xyd-page-gutter);
             height: var(--xyd-nav-height);
-            z-index: 20;
             background: var(--xyd-layout-header-bgcolor);
 
             @media (max-width: ${mobileBreakpoint}) {

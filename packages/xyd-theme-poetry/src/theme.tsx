@@ -53,10 +53,10 @@ function Search() {
             <SearchButton2 />
         </UISidebar.Item>
 
-        <UISidebar.Item button anchor>
+        {/* <UISidebar.Item button anchor>
             <SearchButton
                 onClick={click}
             />
-        </UISidebar.Item>
+        </UISidebar.Item> */}
     </>
 }

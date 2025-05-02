@@ -181,11 +181,11 @@ function mdNav(node: any) {
                                     name: 'value',
                                     value: tabValue
                                 },
-                                {
-                                    type: 'mdxJsxAttribute',
-                                    name: 'href',
-                                    value: `#${tabValue}`
-                                }
+                                // {   TODO: IN THE FUTURE + ADD REACT-ROUTER LINK ON FRAMEWORK LEVEL
+                                //     type: 'mdxJsxAttribute',
+                                //     name: 'href',
+                                //     value: `#${tabValue}`
+                                // }
                             ],
                             children: [{
                                 type: 'text',
