@@ -12,8 +12,17 @@ export function SearchButton({
   shortcutKeys = ['⌘', 'K'],
   ...props
 }: SearchButtonProps) {
-
   useShortcuts(shortcutKeys, () => props.onClick?.());
+
+  useEffect(() => {
+    // @ts-ignore - !!! FIX IN THE FUTURE !!! its a fix for loading virtual:Search twice? original and from plugin - check if exists on prod
+    window.__UNSAFE_xyd_search_button_inited = true
+
+    return () => {
+      // @ts-ignore
+      window.__UNSAFE_xyd_search_button_inited = false
+    }
+  }, [])
 
   return (
     <xyd-search-button
@@ -62,11 +71,17 @@ function useShortcuts(shortcutKeys: string[], onTrigger: () => void): void {
   }, [onTrigger]);
 
   useEffect(() => {
+    // @ts-ignore
+    if (window.__UNSAFE_xyd_search_button_inited) {
+      return
+    }
+
     const listener = (event: KeyboardEvent) => {
       // For single key shortcuts
       if (shortcutKeys.length === 1) {
         if (event.key.toLowerCase() === shortcutKeys[0].toLowerCase()) {
           event.preventDefault();
+
           savedHandler.current();
         }
         return;
@@ -83,6 +98,7 @@ function useShortcuts(shortcutKeys: string[], onTrigger: () => void): void {
 
         if (isModifierMatch && pressedKey === key.toLowerCase()) {
           event.preventDefault();
+
           savedHandler.current();
         }
       }
@@ -96,5 +112,5 @@ function useShortcuts(shortcutKeys: string[], onTrigger: () => void): void {
       window.removeEventListener('keydown', listener, { capture: true });
       window.removeEventListener('keyup', listener, { capture: true });
     };
-  }, [shortcutKeys]);
+  }, []);
 }

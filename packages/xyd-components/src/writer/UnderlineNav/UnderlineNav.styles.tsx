@@ -25,9 +25,18 @@ export const UnderlineNavHost = css`
             height: 100%;
             position: relative;
 
+            a, button {
+                height: 100%;
+            }
+            
             &[data-state="active"] {
                 a {
                     border-bottom-color: var(--xyd-underlinenav-color--active);
+                }
+            }
+            &[data-state="inactive"] {
+                a, button {
+                    color: unset;
                 }
             }
         }

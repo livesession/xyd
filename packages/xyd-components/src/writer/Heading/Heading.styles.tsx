@@ -68,6 +68,11 @@ export const HeadingHost = css`
             color: var(--xyd-heading-icon-color);
             transition: opacity .15s ease;
         }
+        &[data-active="true"] {
+            [part="icon"] {
+                opacity: 1;
+            }
+        }
     }
 `;
 

@@ -9,6 +9,7 @@ import { remarkMdxToc, RemarkMdxTocOptions } from "./mdToc";
 import { remarkInjectCodeMeta } from "./mdCode";
 import { extractThemeSettings } from "./mdThemeSettings";
 import { extractPage } from "./mdPage";
+import { mdHeading } from "./mdHeading";
 import { mdComponentDirective } from "./component-directives";
 import { mdFunctionImportCode, mdFunctionUniform } from "./functions"
 import { mdServerHighlight } from "./developer-writing";
@@ -45,6 +46,7 @@ function remarkPlugins(
         remarkInjectCodeMeta,
         extractThemeSettings,
         extractPage,
+        mdHeading,
 
         outputVars,
         mdComponentDirective(settings),

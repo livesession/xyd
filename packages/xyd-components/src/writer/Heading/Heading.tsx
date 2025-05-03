@@ -10,6 +10,8 @@ export interface HeadingProps {
     kind?: "muted"
     onClick?: () => void
     className?: string
+    active?: boolean
+    ref?: React.RefObject<HTMLHeadingElement>
 }
 
 export function Heading({
@@ -19,7 +21,9 @@ export function Heading({
     id,
     onClick,
     className,
-    kind
+    kind,
+    active,
+    ref
 }: HeadingProps) {
     let HeadingComponent = as ? as : `h${size}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 
@@ -27,13 +31,14 @@ export function Heading({
         className={` ${cn.HeadingHost}  ${className || ''}`}
         data-size={size}
         data-kind={kind}
+        data-active={String(active || "false")}
         onClick={onClick}
-        // id={id} TODO: in the future
+        id={id}
+        ref={ref}
     >
         {children}
 
-        {/* TODO: in the future */}
-        {/* {id && <$Anchor />} */} 
+        {id && <$Anchor />}
     </HeadingComponent>
 }
 

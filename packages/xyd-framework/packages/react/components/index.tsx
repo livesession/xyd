@@ -1,5 +1,5 @@
 import React, { isValidElement } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, type To, useNavigate } from "react-router";
 
 import type { ITOC } from "@xyd-js/ui";
 import { Breadcrumbs, NavLinks, Anchor } from "@xyd-js/components/writer";
@@ -55,6 +55,7 @@ export function FwNav({ kind }: { kind?: "middle" }) {
         logo={<FwNavLogo />}
         onChange={() => {
         }}
+        rightSurface={<Surface target="nav.right" />}
     >
         {navItems}
     </Nav>
@@ -266,7 +267,7 @@ export function FwLogo() {
 }
 
 export function FwLink({ children, ...rest }) {
-    return <Anchor {...rest} as={Link}>
+    return <Anchor {...rest} as={$Link}>
         {children}
     </Anchor>
 }
@@ -281,7 +282,45 @@ export function useSearch() {
 }
 
 function $Link({ children, ...rest }) {
-    return <Link {...rest} to={rest.href}>
+    let to: To = ""
+
+    if (rest.href) {
+        try {
+            new URL(rest.href)
+            to = rest.href
+        } catch (error) {
+            if (rest.href.startsWith("/")) {
+                const url = new URL(`https://example.com${rest.href}`)
+                to = {
+                    pathname: url.pathname,
+                    search: url.search,
+                    hash: url.hash,
+                }
+            } else {
+                const params = new URLSearchParams(rest.href)
+                return <Anchor as="button" onClick={() => { // TODO: in the future we should use react-router but it rerenders tha page
+                    const url = new URL(window.location.href)
+                    const currentParams = url.searchParams
+                    
+                    // Update parameters from the new params
+                    new URLSearchParams(rest.href).forEach((value, key) => {
+                        currentParams.set(key, value)
+                    })
+                    
+                    url.search = currentParams.toString()
+                    if (params.get("hash")) {
+                        url.hash = params.get("hash") || ""
+                    }
+                    
+                    history.replaceState(null, '', url)
+                }}>
+                    {children}
+                </Anchor>
+            }
+        }
+    }
+
+    return <Link {...rest} to={to}>
         {children}
     </Link>
 }

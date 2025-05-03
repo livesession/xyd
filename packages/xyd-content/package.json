@@ -31,6 +31,7 @@
     "codehike": "^1.0.4",
     "estree-util-is-identifier-name": "^3.0.0",
     "estree-util-value-to-estree": "^3.1.2",
+    "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
     "mdast": "^3.0.0",
     "mdast-util-mdx": "^3.0.0",

@@ -26,22 +26,20 @@ export default {
                 }
             }
             
-            h2,h3,h4,h5,h6 {
-                margin-top: var(--space-xxlarge);
-                display: table;
-                &[data-kind="muted"] {
-                    display: block;
-                }
-            }
             h1 {
-                display: flex;
-                align-items: center;
-                gap: 10px;
+                display: table;
                 
                 xyd-badge {
                     font-size: var(--xyd-font-size-xsmall);
                     line-height: var(--xyd-line-height-xsmall);
                     letter-spacing: 2px;
+                }
+            }
+            h2,h3,h4,h5,h6 {
+                margin-top: var(--space-xxlarge);
+                display: table;
+                &[data-kind="muted"] {
+                    display: block;
                 }
             }
             h4 {

@@ -10,9 +10,10 @@ export interface NavProps {
     logo?: React.ReactNode;
     kind?: "middle"
     className?: string;
+    rightSurface?: React.ReactNode;
 }
 
-export function Nav({ children, value, onChange, logo, kind, className }: NavProps) {
+export function Nav({ children, value, onChange, logo, kind, className, rightSurface }: NavProps) {
     return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
         <xyd-nav
             className={`${cn.NavHost} ${className || ""}`}
@@ -28,7 +29,7 @@ export function Nav({ children, value, onChange, logo, kind, className }: NavPro
                         {children}
                     </div>
                 </RadixTabs.List>
-                {kind === "middle" && <div />}
+                {(kind === "middle" || rightSurface) && <div part="right">{rightSurface}</div>}
             </nav>
         </xyd-nav>
     </RadixTabs.Root>

@@ -46,6 +46,12 @@ export const NavHost = css`
             justify-content: center;
             gap: 8px;
         }
+
+        [part="right"] {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
     }
 `;
 

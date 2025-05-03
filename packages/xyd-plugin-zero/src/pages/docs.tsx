@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import * as React from "react";
-import { redirect, ScrollRestoration } from "react-router";
+import { redirect, ScrollRestoration, useLocation, useNavigate } from "react-router";
 
 import { MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core"
 import { compileBySlug } from "@xyd-js/content"
@@ -33,7 +33,9 @@ const mdPlugins = markdownPlugins({
 }, settings)
 
 const reactContent = new ReactContent(settings, {
-    Link: FwLink
+    Link: FwLink,
+    useLocation, // // TODO: !!!! BETTER API !!!!!
+    useNavigate
 })
 const contentComponents = {
     ...reactContent.components(),

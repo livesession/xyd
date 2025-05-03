@@ -47,3 +47,9 @@
         }
     }
 }
+
+@layer components {
+    xyd-nav xyd-search-button {
+        max-width: 200px;
+    }
+}

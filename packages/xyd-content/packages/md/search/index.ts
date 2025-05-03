@@ -7,7 +7,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import { visit } from "unist-util-visit";
 
-import slugify from 'slugify' // TODO: use github slugify (mybe move to @xyd-js/content)
+import GitHubSlugger from 'github-slugger';
 
 import type { Settings, Sidebar, SidebarMulti } from '@xyd-js/core'
 
@@ -73,8 +73,8 @@ export async function mapContentToDocSections(
                                 console.error("Multiple h1 found")
                             }
 
-                            rootSection.pageId = slugify(heading, { lower: true })
-                            rootSection.pageUrl = `/${route}` 
+                            rootSection.pageId = slugify(heading)
+                            rootSection.pageUrl = `/${route}`
                             rootSection.pageTitle = heading
                             rootSection.headingLevel = 1
                             rootSection.headingTitle = heading
@@ -224,4 +224,10 @@ function flatPages(
     })
 
     return resp
+}
+
+function slugify(text: string) {
+    const slugger = new GitHubSlugger()
+
+    return slugger.slug(text)
 }

@@ -1,4 +1,5 @@
 import React, { useState, lazy, Suspense, useEffect, useCallback } from "react"
+import { createPortal } from 'react-dom'
 import { create, insertMultiple } from '@orama/orama'
 
 const OramaSearchBox = lazy(() => import('@orama/react-components').then(mod => ({ default: mod.OramaSearchBox })));
@@ -9,19 +10,28 @@ export function SearchButton() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const handleClick = useCallback(() => {
+        if (isSearchOpen) {
+            return
+        }
+
         setIsSearchOpen(true)
+    }, [])
+
+    const onModalClosed = useCallback(() => {
+        setIsSearchOpen(false)
     }, [])
 
     return <>
         <XydSearchButton onClick={handleClick} />
 
         <Suspense>
-            <$OramaSearchBoxWrapper isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} />
+            <$OramaSearchBoxWrapper isSearchOpen={isSearchOpen} onModalClosed={onModalClosed} />
         </Suspense>
     </>
 }
 
-function $OramaSearchBoxWrapper({ isSearchOpen, setIsSearchOpen }: { isSearchOpen: boolean, setIsSearchOpen: (isSearchOpen: boolean) => void }) {
+
+function $OramaSearchBoxWrapper({ isSearchOpen, onModalClosed }: { isSearchOpen: boolean, onModalClosed: () => void }) {
     const [oramaLocalClientInstance, setOramaLocalClientInstance] = useState<any>(null);
     const [pluginOptions, setPluginOptions] = useState<any>(null);
 
@@ -55,11 +65,11 @@ function $OramaSearchBoxWrapper({ isSearchOpen, setIsSearchOpen }: { isSearchOpe
 
     if (!isSearchOpen) return null;
 
-    return (oramaLocalClientInstance || pluginOptions?.cloudConfig) ? (
+    const searchBox = (oramaLocalClientInstance || pluginOptions?.cloudConfig) ? (
         <OramaSearchBox
             open={isSearchOpen}
             clientInstance={oramaLocalClientInstance}
-            onModalClosed={() => setIsSearchOpen(false)}
+            onModalClosed={onModalClosed}
             suggestions={pluginOptions.suggestions}
             highlightTitle={{
                 caseSensitive: false,
@@ -76,6 +86,9 @@ function $OramaSearchBoxWrapper({ isSearchOpen, setIsSearchOpen }: { isSearchOpe
             disableChat={!pluginOptions?.cloudConfig}
         />
     ) : null;
+
+
+    return createPortal(searchBox, document.body);
 }
 
 async function createOramaInstance(oramaDocs: any[]): Promise<any> {

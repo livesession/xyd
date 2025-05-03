@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 import { HighlightedCode } from 'codehike/code';
 
@@ -45,9 +45,12 @@ import {
 import { CodeSample } from "../coder";
 import { GridDecorator } from './GridDecorator';
 
-
 interface ReactContentOptions {
     Link?: React.ElementType
+    useLocation?: () => {
+        search: string
+    } // TODO: !!!! BETTER API !!!!!
+    useNavigate?: (to: any) => void
 }
 export class ReactContent {
     constructor(
@@ -73,22 +76,23 @@ export function stdContent(
     this: ReactContent,
 ) {
     const $$Pre = $Pre.bind(this)
+    const $$Heading = $Heading.bind(this)
 
     return {
         h1: (props) => {
-            return <Heading id={props.children} {...props} />
+            return <$$Heading depth={1} {...props} />
         },
         h2: props => {
-            return <Heading id={props.children} size={2} {...props} />
+            return <$$Heading depth={2} {...props} />
         },
         h3: props => {
-            return <Heading id={props.children} size={3} {...props} />
+            return <$$Heading depth={3} {...props} />
         },
         h4: props => {
-            return <Heading id={props.children} size={4} {...props} />
+            return <$$Heading depth={4} {...props} />
         },
         h5: props => {
-            return <Heading id={props.children} size={5} {...props} />
+            return <$$Heading depth={5} {...props} />
         },
         p: props => {
             return <Text {...props} />
@@ -148,16 +152,46 @@ export function stdContent(
     }
 }
 
-function GuideCardContentComponent(props) {
-    return <GuideCard
-        {...props}
-        as={this?.options?.Link}
-    />
+interface HeadingContentProps {
+    id: string
+    depth: 1 | 2 | 3 | 4 | 5 | 6
+    children: React.ReactNode
+}
+
+function $Heading({ id, depth, children }: HeadingContentProps) {
+    const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
+    const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
+
+    const ref = useRef<HTMLHeadingElement>(null!)
+    const [active, setActive] = useState(false)
+
+    useEffect(() => {
+        const active = location?.hash === `#${id}`
+        setActive(active)
+
+        if (active && ref.current) {
+            console.log("scroll")
+            ref.current.scrollIntoView({ behavior: "smooth" })
+        }
+    }, [])
+
+    return <Heading ref={ref} id={id} size={depth} active={active} onClick={() => {
+        navigate({
+            hash: id
+        })
+    }}>
+        {children}
+    </Heading>
 }
 
 export function writerContent() {
-    const GuideCardContent = GuideCardContentComponent.bind(this)
+    const GuideCardContent = $GuideCardContentComponent.bind(this)
     GuideCardContent.List = GuideCard.List
+
+    const UnderlineNavContent = $UnderlineNavContentComponent.bind(this)
+    UnderlineNavContent.Content = $UnderlineNavContentContentComponent.bind(this)
+    UnderlineNavContent.Item = $UnderlineNavItemContentComponent.bind(this)
+    UnderlineNavContent.Item.displayName = "UnderlineNav.Item"
 
     return {
         Callout,
@@ -167,7 +201,7 @@ export function writerContent() {
         Tabs,
         Table,
         Badge,
-        UnderlineNav,
+        UnderlineNav: UnderlineNavContent,
 
         Subtitle(props) {
             const paragraph = props?.children?.props?.children
@@ -177,6 +211,92 @@ export function writerContent() {
             </Heading>
         }
     }
+}
+function $GuideCardContentComponent(props) {
+    return <GuideCard
+        {...props}
+        as={this?.options?.Link}
+    />
+}
+
+const UnderlineNavContentContext = createContext({
+    value: "",
+    onChange: (v: string) => { }
+})
+
+function $UnderlineNavContentComponent(props) {
+    const [value, setValue] = useState(props.value)
+
+    return <UnderlineNavContentContext value={{ value, onChange: setValue }}>
+        <UnderlineNav
+            {...props}
+            value={value}
+            onChange={val => {
+                setValue(val)
+            }}
+        />
+    </UnderlineNavContentContext>
+}
+
+function $UnderlineNavContentContentComponent(this: ReactContent, props) {
+    const { onChange } = useContext(UnderlineNavContentContext)
+    const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
+
+    const search = location?.search
+    const params = new URLSearchParams(search)
+    const propsParams = new URLSearchParams(props.value)
+
+    let tabsMatch: boolean | undefined = true
+    let keyMatchExists = true
+    propsParams.forEach((value, key) => {
+        const paramKey = params.get(key)
+        if (paramKey !== value) {
+            tabsMatch = false
+        }
+        if (!paramKey) {
+            keyMatchExists = false
+        }
+    })
+
+    useEffect(() => {
+        if (tabsMatch) {
+            onChange(props.value)
+        }
+    }, [tabsMatch])
+
+    if (!keyMatchExists) {
+        tabsMatch = undefined
+    }
+
+    return <UnderlineNav.Content {...props} defaultActive={tabsMatch} />
+}
+
+function $UnderlineNavItemContentComponent(props) {
+    const { onChange } = useContext(UnderlineNavContentContext)
+    const location = this?.options?.useLocation?.()
+
+    const search = location?.search
+    const params = new URLSearchParams(search)
+    const propsParams = new URLSearchParams(props.value)
+
+    let tabsMatch = true
+    propsParams.forEach((value, key) => {
+        if (params.get(key) !== value) {
+            tabsMatch = false
+        }
+    })
+
+    useEffect(() => {
+        if (tabsMatch) {
+            onChange(props.value)
+        }
+    }, [tabsMatch])
+
+    return <UnderlineNav.Item
+        {...props}
+        as={this?.options?.Link}
+        defaultActive={tabsMatch}
+    />
 }
 
 // TODO: better system for icons + should work with .md like icon="session-replay" etc.

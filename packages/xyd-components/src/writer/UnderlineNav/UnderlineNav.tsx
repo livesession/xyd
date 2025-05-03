@@ -26,12 +26,14 @@ export function UnderlineNav({
 }: TabsProps) {
     const childrenArray = React.Children.toArray(children);
     const navItems = childrenArray.filter(
-        child => React.isValidElement(child) &&
-            (child.type === UnderlineNav.Item)
+        child => {
+            return React.isValidElement(child) &&
+                (child.type === UnderlineNav.Item || child.type.displayName === "UnderlineNav.Item")
+        }
     );
     const otherChildren = childrenArray.filter(
         child => !React.isValidElement(child) ||
-            (child.type !== UnderlineNav.Item)
+            (child.type !== UnderlineNav.Item && child.type.displayName !== "UnderlineNav.Item")
     );
 
     const [direction, value, handleValueChange] = useValueChange(
@@ -68,14 +70,28 @@ export interface UnderlineNavItemProps {
     value: string
     href?: string
     as?: React.ElementType
+    defaultActive?: boolean
 }
 
-UnderlineNav.Item = function UnderlineNavItem({ children, value, href, as }: UnderlineNavItemProps) {
+UnderlineNav.Item = function UnderlineNavItem({ children, value, href, as, defaultActive }: UnderlineNavItemProps) {
     const Link = as || $Link;
+    const controlByItem = typeof defaultActive === "boolean"
+    const [defaultActiveState, setDefaultActiveState] = useState(controlByItem ? (defaultActive ? "active" : "inactive") : undefined)
 
-    // TODO: add href
+    let activeProps = controlByItem && defaultActiveState != undefined
+        ? { "data-state": defaultActiveState }
+        : undefined
+
+    useEffect(() => {
+        if (!controlByItem) {
+            return
+        }
+
+        setDefaultActiveState(undefined)
+    }, [])
+
     return (
-        <RadixTabs.Trigger asChild value={value}>
+        <RadixTabs.Trigger value={value} asChild {...activeProps}>
             <li part="item">
                 <Link part="link" href={href}>
                     {children}
@@ -88,19 +104,37 @@ UnderlineNav.Item = function UnderlineNavItem({ children, value, href, as }: Und
 export interface UnderlineNavContentProps {
     children: React.ReactNode
     value: string
+    defaultActive?: boolean
 }
 
 UnderlineNav.Content = function UnderlineNavContent({
     children,
-    value
+    value,
+    defaultActive
 }: UnderlineNavContentProps) {
     const { direction } = useContext(UnderlineContext);
+
+    const controlByItem = typeof defaultActive === "boolean"
+    const [defaultActiveState, setDefaultActiveState] = useState(controlByItem ? (defaultActive ? "active" : "inactive") : undefined)
+
+    let activeProps = controlByItem && defaultActiveState != undefined
+        ? { "data-state": defaultActiveState }
+        : undefined
+
+    useEffect(() => {
+        if (!controlByItem) {
+            return
+        }
+
+        setDefaultActiveState(undefined)
+    }, [])
 
     return (
         <RadixTabs.Content
             value={value}
             forceMount={true}
             asChild
+            {...activeProps}
         >
             <xyd-underlinenav-content
                 className={cn.UnderlineNavContent}

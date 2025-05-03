@@ -168,7 +168,13 @@ function mdNav(node: any) {
                         }
 
                         // Extract tab value and label
-                        const tabValue = link.url.replace('tab=', ''); // TODO: NOT ONLY 'tab'
+                        let tabValue = '';
+                        const linkUrlFormula = (link.url || "").split(" ").join("&")
+                        if (link.url.startsWith('#')) {
+                            tabValue = link.url;
+                        } else {
+                            tabValue = linkUrlFormula
+                        }
                         const tabLabel = link.children[0].value;
 
                         // Create tab item
@@ -181,11 +187,11 @@ function mdNav(node: any) {
                                     name: 'value',
                                     value: tabValue
                                 },
-                                // {   TODO: IN THE FUTURE + ADD REACT-ROUTER LINK ON FRAMEWORK LEVEL
-                                //     type: 'mdxJsxAttribute',
-                                //     name: 'href',
-                                //     value: `#${tabValue}`
-                                // }
+                                {   
+                                    type: 'mdxJsxAttribute',
+                                    name: 'href',
+                                    value: tabValue
+                                }
                             ],
                             children: [{
                                 type: 'text',

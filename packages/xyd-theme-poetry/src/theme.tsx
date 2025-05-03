@@ -2,12 +2,11 @@ import React from "react"
 
 import { Theme as ThemeSettings } from "@xyd-js/core"
 import { UISidebar } from "@xyd-js/ui"
-import { SearchButton } from "@xyd-js/components/system"
-import { FwLogo, useSearch } from "@xyd-js/framework/react"
+import { FwLogo } from "@xyd-js/framework/react"
 import { BaseTheme } from "@xyd-js/themes"
 
 // @ts-ignore
-import { SearchButton as SearchButton2 } from 'virtual:Search'
+import { SearchButton } from 'virtual:Search'
 
 import "./imports.css"
 
@@ -40,8 +39,6 @@ export default class ThemePoetry extends BaseTheme {
 }
 
 function Search() {
-    const { click } = useSearch()
-
     return <>
         <UISidebar.Item button anchor>
             <a href="/">
@@ -50,13 +47,7 @@ function Search() {
         </UISidebar.Item>
 
         <UISidebar.Item button anchor>
-            <SearchButton2 />
+            <SearchButton />
         </UISidebar.Item>
-
-        {/* <UISidebar.Item button anchor>
-            <SearchButton
-                onClick={click}
-            />
-        </UISidebar.Item> */}
     </>
 }
