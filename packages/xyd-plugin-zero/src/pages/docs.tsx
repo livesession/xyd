@@ -1,7 +1,8 @@
 import path from "node:path";
 
 import * as React from "react";
-import { redirect, ScrollRestoration, useLocation, useNavigate } from "react-router";
+import { useMemo } from "react";
+import { redirect, ScrollRestoration, useLocation, useNavigate, useNavigation, Location } from "react-router";
 
 import { MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core"
 import { compileBySlug } from "@xyd-js/content"
@@ -19,6 +20,7 @@ import Theme from "virtual:xyd-theme";
 
 import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
+import { useEffect } from "react";
 
 const surfaces = {} // TODO: BETTER API !!!
 
@@ -35,7 +37,8 @@ const mdPlugins = markdownPlugins({
 const reactContent = new ReactContent(settings, {
     Link: FwLink,
     useLocation, // // TODO: !!!! BETTER API !!!!!
-    useNavigate
+    useNavigate,
+    useNavigation
 })
 const contentComponents = {
     ...reactContent.components(),
@@ -284,22 +287,26 @@ function mdxContent(code: string) {
 }
 
 export function MemoMDXComponent(codeComponent: any) {
-    return React.useMemo(
+    return useMemo(
         () => codeComponent ? codeComponent : null,
         [codeComponent]
     )
 }
 
-export default function DocsPage({ loaderData, ...rest }: { loaderData: loaderData }) {
+export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
+    const location = useLocation()
     const content = mdxContent(loaderData.code)
+
     const Content = MemoMDXComponent(content.component)
+    // const ThemeComponent = useMemo(() => withTheme(theme), [
+    //     rerenderThemeKey(location)
+    // ])
+    const ThemeComponent = withTheme(theme)
 
     if (!Content) {
         console.error("Content not found")
         return null
     }
-
-    const ThemeComponent = withTheme(theme);
 
     let component: React.JSX.Element
 
@@ -340,4 +347,9 @@ export default function DocsPage({ loaderData, ...rest }: { loaderData: loaderDa
             <ScrollRestoration />
         </Framework>
     </AtlasContext>
+}
+
+ // TODO: !!! FIND BETTER SOLUTION !!! BUT WITHOUT THAT IT RERENDERS EVERY HASH CHANGE FOR EXAMPLE
+function rerenderThemeKey(location: Location) {
+    return location.pathname
 }

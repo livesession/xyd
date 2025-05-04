@@ -51,6 +51,7 @@ interface ReactContentOptions {
         search: string
     } // TODO: !!!! BETTER API !!!!!
     useNavigate?: (to: any) => void
+    useNavigation?: () => any
 }
 export class ReactContent {
     constructor(
@@ -160,7 +161,8 @@ interface HeadingContentProps {
 
 function $Heading({ id, depth, children }: HeadingContentProps) {
     const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
-    const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
+    // const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
+    const navigation = this?.options?.useNavigation() // TODO: !!!! BETTER API !!!!!
 
     const ref = useRef<HTMLHeadingElement>(null!)
     const [active, setActive] = useState(false)
@@ -169,16 +171,23 @@ function $Heading({ id, depth, children }: HeadingContentProps) {
         const active = location?.hash === `#${id}`
         setActive(active)
 
-        if (active && ref.current) {
-            console.log("scroll")
-            ref.current.scrollIntoView({ behavior: "smooth" })
+        if (active && ref.current && navigation?.state !== "loading") {
+            ref.current.scrollIntoView()
+            // ref.current.scrollIntoView({ behavior: "smooth" }) // TODO: if we remove smooth then issues with toc cuz it depends on scroll
         }
     }, [])
 
     return <Heading ref={ref} id={id} size={depth} active={active} onClick={() => {
-        navigate({
-            hash: id
-        })
+        // navigate({
+        //     hash: id
+        // })
+
+        // TODO: !!! in the future we should use react-router but some issues with the hash !!!
+        const url = new URL(window.location.href)
+        url.hash = id
+        history.replaceState(null, '', url)
+
+        document.querySelector(`#${id}`)?.scrollIntoView()
     }}>
         {children}
     </Heading>

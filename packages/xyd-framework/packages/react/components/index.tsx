@@ -1,4 +1,4 @@
-import React, { isValidElement } from "react";
+import React, { isValidElement, useEffect } from "react";
 import { Link, useLocation, type To, useNavigate } from "react-router";
 
 import type { ITOC } from "@xyd-js/ui";
@@ -180,10 +180,12 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
 type FlatTOC = {
     depth: number
     value: string
+    id: string
 }
 
 export function FwToc() {
     const toc = useToC()
+    const location = useLocation()
 
     if (!toc) {
         return null
@@ -199,28 +201,25 @@ export function FwToc() {
         toc.forEach(item => {
             flatToc.push({
                 depth: item.depth,
-                value: item.value
+                value: item.value,
+                id: item.id
             })
 
             flatten(item.children)
         })
     }
 
-    flatten(toc)
+    flatten(toc);
 
     // TODO: its temporary
     const tocFinal = flatToc.filter(item => item.depth === 2)
+    const hash = location.hash ? "" : tocFinal[0].id
 
-    const location = useLocation()
-
-    // TODO: better in the future
-    const defaultValue = location.hash ? location.hash.replace("#", "") : tocFinal[0]?.value
-
-    return <Toc defaultValue={defaultValue}>
+    return <Toc defaultValue={hash || ""}>
         {
             tocFinal.map((item, index) => <Toc.Item
-                key={index + item.value + item.depth}
-                value={item.value}
+                key={index + item.id + item.depth}
+                id={item.id}
             >
                 {item.value}
             </Toc.Item>)
@@ -297,8 +296,7 @@ function $Link({ children, ...rest }) {
                     hash: url.hash,
                 }
             } else {
-                const params = new URLSearchParams(rest.href)
-                return <Anchor as="button" onClick={() => { // TODO: in the future we should use react-router but it rerenders tha page
+                return <Anchor as="button" onClick={() => { // TODO: !!! in the future we should use react-router but it rerenders tha page !!!
                     const url = new URL(window.location.href)
                     const currentParams = url.searchParams
                     
@@ -308,10 +306,6 @@ function $Link({ children, ...rest }) {
                     })
                     
                     url.search = currentParams.toString()
-                    if (params.get("hash")) {
-                        url.hash = params.get("hash") || ""
-                    }
-                    
                     history.replaceState(null, '', url)
                 }}>
                     {children}

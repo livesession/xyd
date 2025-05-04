@@ -19,6 +19,7 @@ import {
 
 import { Theme } from "./Theme";
 import { ThemeProps } from "./types";
+import { useEffect } from 'react';
 
 interface BaseThemeRenderProps {
     children: React.ReactNode;

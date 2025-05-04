@@ -5,6 +5,7 @@ import {MdxJsxFlowElement, MdxJsxAttribute} from "mdast-util-mdx-jsx";
 
 export type TocEntry = {
     depth: number,
+    id: string,
     value: string,
     attributes: { [key: string]: string },
     children: TocEntry[]
@@ -48,6 +49,7 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
         }
         return {
             depth,
+            id: (node.data as any)?.hProperties?.id,
             value: toString(node, {includeImageAlt: false}),
             attributes,
             children: []
@@ -55,6 +57,8 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
     };
 
     visit(mdast, ["heading", "mdxJsxFlowElement"], node => {
+        // @ts-ignore
+        console.log(111, node?.data?.hProperties)
         let depth = 0;
         if (node.type === "mdxJsxFlowElement") {
             let valid = false;

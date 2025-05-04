@@ -42,12 +42,11 @@ function remarkPlugins(
     settings?: Settings
 ) {
     return [
+        mdHeading,
         remarkMdxToc(toc),
         remarkInjectCodeMeta,
         extractThemeSettings,
         extractPage,
-        mdHeading,
-
         outputVars,
         mdComponentDirective(settings),
         mdComposer(settings),

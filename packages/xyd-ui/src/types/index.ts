@@ -1,6 +1,7 @@
 export interface ITOC {
     depth: number
     value: string
+    id: string
     children: ITOC[]
 }
 

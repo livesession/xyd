@@ -16,7 +16,9 @@ export const mdHeading: Plugin<[], Root> = () => {
   return (tree) => {
     visit(tree, 'heading', (node: Heading & { data?: HeadingData }) => {
       if (!node.data) {
-        node.data = {};
+        node.data = {
+          hProperties: {}
+        };
       }
 
       if (node.depth === 1) {
