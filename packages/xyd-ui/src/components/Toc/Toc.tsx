@@ -1,242 +1,186 @@
-import React, { useState, useEffect, useContext, useRef, useCallback } from "react"
-import { Link, useLocation, useNavigation } from "react-router"
-
-import * as cn from "./Toc.styles";
+import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react'
+import { Link } from 'react-router'
+import * as cn from './Toc.styles'
 
 export interface TocProps {
-    children: React.ReactNode;
-    defaultValue?: string
-    className?: string
+  children: React.ReactNode
+  defaultValue?: string
+  className?: string
 }
 
 interface TocContextType {
-    value: string;
-    onChange: (v: string) => void;
-    registerActiveItem: (ref: React.RefObject<HTMLLIElement | null>, value: string) => void;
-    unregisterActiveItem: (value: string) => void;
+  value: string
+  onChange: (v: string) => void
+  registerActiveItem: (ref: React.RefObject<HTMLLIElement>, value: string) => void
+  unregisterActiveItem: (value: string) => void
 }
 
-const Context = React.createContext<TocContextType>({
-    value: "",
-    onChange: (v: string) => { },
-    registerActiveItem: (ref: React.RefObject<HTMLLIElement | null>, value: string) => { },
-    unregisterActiveItem: (value: string) => { },
+const Context = createContext<TocContextType>({
+  value: '',
+  onChange: () => {},
+  registerActiveItem: () => {},
+  unregisterActiveItem: () => {},
 })
 
-// TODO: refactor in the future - few hacky ways like using scroll and intersection observer at the same time and much more
-export function Toc({ children, defaultValue,className }: TocProps) {
-    const [activeTrackHeight, setActiveTrackHeight] = useState<number | undefined>(undefined)
-    const [activeTrackTop, setActiveTrackTop] = useState<number | undefined>(undefined)
-    const [value, setValue] = useState(defaultValue || "")
-    const activeItemsRef = useRef<Map<string, React.RefObject<HTMLLIElement | null>>>(new Map())
-    const observerRef = useRef<IntersectionObserver | null>(null)
+export function Toc({ children, defaultValue, className }: TocProps) {
+  const [activeTrackHeight, setActiveTrackHeight] = useState(0)
+  const [activeTrackTop, setActiveTrackTop] = useState(0)
+  const [value, setValue] = useState(defaultValue || '')
 
-    function setFirstHeading() {
-        const [firstHeading] = Array.from(document.querySelectorAll("h2"))
+  const activeItemsRef = useRef<Map<string, React.RefObject<HTMLLIElement>>>(new Map())
+  const headingsRef = useRef<string[]>([])
+  const ignoreScrollRef = useRef(false)
 
-        setValue(firstHeading.id)
+  const registerActiveItem = useCallback(
+    (ref: React.RefObject<HTMLLIElement>, id: string) => {
+      activeItemsRef.current.set(id, ref)
+    },
+    []
+  )
+  const unregisterActiveItem = useCallback((id: string) => {
+    activeItemsRef.current.delete(id)
+  }, [])
+
+  // Called when user clicks a TOC item
+  const handleUserSelect = useCallback((id: string) => {
+    setValue(id)
+    // temporarily ignore the next scroll event to preserve click selection
+    ignoreScrollRef.current = true
+  }, [])
+
+  function getScrollElement(): HTMLElement | Window {
+    const el = document.querySelector('[part=page-scroll]') as HTMLElement
+    return el || window
+  }
+
+  function trackHeight() {
+    const ref = activeItemsRef.current.get(value)
+    if (ref?.current) {
+      setActiveTrackHeight(ref.current.offsetHeight)
+      setActiveTrackTop(ref.current.offsetTop)
     }
+  }
 
-    function setHeadingByHash() {
-        const id = window.location.hash.replace("#", "")
+  function updateHeadingsList() {
+    headingsRef.current = Array.from(document.querySelectorAll('h2')).map(h => h.id)
+  }
 
-        setValue(id)
+  useEffect(() => {
+    updateHeadingsList()
+    if (!defaultValue && headingsRef.current.length) {
+      setValue(headingsRef.current[0])
     }
+    window.addEventListener('resize', updateHeadingsList)
+    return () => window.removeEventListener('resize', updateHeadingsList)
+  }, [defaultValue])
 
-    function onChange(v: string) {
-        setValue(v)
-    }
+  // On scroll, pick active heading unless we're ignoring due to click
+  useEffect(() => {
+    const scrollEl = getScrollElement()
+    function handleScroll() {
+      if (ignoreScrollRef.current) {
+        ignoreScrollRef.current = false
+        return
+      }
+      const scrollTop = scrollEl instanceof Window ? window.pageYOffset : scrollEl.scrollTop
+      const viewportHeight = scrollEl instanceof Window ? window.innerHeight : scrollEl.clientHeight
+      const threshold = viewportHeight * 0.2
 
-    const registerActiveItem = useCallback((ref: React.RefObject<HTMLLIElement | null>, itemValue: string) => {
-        activeItemsRef.current.set(itemValue, ref)
-    }, [])
-
-    const unregisterActiveItem = useCallback((itemValue: string) => {
-        activeItemsRef.current.delete(itemValue)
-    }, [])
-
-    function trackHeight() {
-        const activeItemRef = activeItemsRef.current.get(value)
-        if (!activeItemRef || !activeItemRef.current) {
-            return
+      let newActive = headingsRef.current[0] || ''
+      for (const id of headingsRef.current) {
+        const elem = document.getElementById(id)
+        if (elem) {
+          const top = elem.getBoundingClientRect().top
+          if (top <= threshold) {
+            newActive = id
+          } else {
+            break
+          }
         }
+      }
 
-        const activeElement = activeItemRef.current
+      const totalHeight = scrollEl instanceof Window
+        ? document.documentElement.scrollHeight
+        : (scrollEl as HTMLElement).scrollHeight
+      // only override for bottom if content is scrollable
+      if (totalHeight > viewportHeight && scrollTop + viewportHeight >= totalHeight - 1) {
+        newActive = headingsRef.current[headingsRef.current.length - 1] || newActive
+      }
 
-        setActiveTrackHeight(activeElement.offsetHeight)
-        setActiveTrackTop(activeElement.offsetTop)
+      if (newActive !== value) {
+        setValue(newActive)
+      }
     }
 
-    function observeFn(entries: IntersectionObserverEntry[]) {
-        console.log('observe fn')
-        let id = ""
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) {
-                return
-            }
-            id = entry.target.id
-        });
+    scrollEl.addEventListener('scroll', handleScroll)
+    handleScroll()
+    return () => scrollEl.removeEventListener('scroll', handleScroll)
+  }, [value])
 
-        if (!id) {
-            return
-        }
+  useEffect(() => {
+    trackHeight()
+  }, [value])
 
-        setValue(id)
-    }
-
-    function setupObserver() {
-        console.log('setup observer')
-        observerRef.current = new IntersectionObserver(
-            observeFn,
-            {
-                rootMargin: '-20% 0px -50% 0px',
-                threshold: 0
-            }
-        );
-
-        // TODO: !!! GET TOC LEVEL SETTINGS TO MATCH WITH H3, H4 ETC. !!!
-        const headings = Array.from(document.querySelectorAll("h2"))
-
-        headings.forEach(heading => {
-            observerRef.current?.observe(heading);
-        });
-    }
-
-    function getScrollElement() {
-        const scrollElement = document.querySelector("[part=page-scroll]")
-        if (!scrollElement) {
-            return
-        }
-
-        return scrollElement
-    }
-
-    function initilHashScollEnd() {
-        const scrollElement = getScrollElement()
-        if (!scrollElement) {
-            return
-        }
-
-        scrollElement.removeEventListener("scrollend", initilHashScollEnd)
-        setupObserver()
-    }
-
-    useEffect(() => {
-        console.log('use effect')
-        if (window.location.hash) {
-            setHeadingByHash()
-
-            const scrollElement = getScrollElement()
-            if (!scrollElement) {
-                return
-            }
-
-            scrollElement.addEventListener("scrollend", initilHashScollEnd)
-
-            return () => {
-                console.log('disconnect observer')
-                if (observerRef.current) {
-                    observerRef.current.disconnect()
-                }
-            }
-        }
-
-        setFirstHeading()
-        setupObserver()
-
-        return () => {
-            console.log('disconnect observer')
-            if (observerRef.current) {
-                observerRef.current.disconnect()
-            }
-        }
-    }, [])
-
-    useEffect(() => {
-        trackHeight();
-    }, [value]);
-
-    return <Context.Provider value={{
-        value: value,
-        onChange,
-        registerActiveItem,
-        unregisterActiveItem,
-    }}>
-        <xyd-toc className={`${cn.TocHost} ${className || ""}`}>
-            <div part="scroller">
-                <div
-                    part="scroll"
-                    style={{
-                        // @ts-ignore
-                        "--xyd-toc-active-track-height": `${activeTrackHeight}px`,
-                        "--xyd-toc-active-track-top": `${activeTrackTop}px`,
-                    }}
-                />
-            </div>
-            <ul part="list">
-                {children}
-            </ul>
-        </xyd-toc>
+  return (
+    <Context.Provider value={{ value, onChange: handleUserSelect, registerActiveItem, unregisterActiveItem }}>
+      <xyd-toc className={`${cn.TocHost} ${className || ''}`}>
+        <div part="scroller">
+          <div
+            part="scroll"
+            style={{
+              // @ts-ignore
+              '--xyd-toc-active-track-height': `${activeTrackHeight}px`,
+              '--xyd-toc-active-track-top': `${activeTrackTop}px`,
+            } as any}
+          />
+        </div>
+        <ul part="list">{children}</ul>
+      </xyd-toc>
     </Context.Provider>
+  )
 }
 
 export interface TocItemProps {
-    children: React.ReactNode;
-    id: string;
-    className?: string
+  children: React.ReactNode
+  id: string
+  className?: string
 }
 
-Toc.Item = function TocItem({
-    children,
-    id,
-    className
-}: TocItemProps) {
-    const {
-        value: rootValue,
-        onChange,
-        registerActiveItem,
-        unregisterActiveItem,
-    } = useContext(Context);
+Toc.Item = function TocItem({ children, id, className }: TocItemProps) {
+  const { value: activeId, onChange, registerActiveItem, unregisterActiveItem } = useContext(Context)
+  const itemRef = useRef<HTMLLIElement>(null)
+  const active = activeId === id
 
-    const itemRef = useRef<HTMLLIElement>(null)
-    const active = rootValue === id;
+  useEffect(() => {
+    if (active && itemRef.current) {
+      registerActiveItem(itemRef, id)
+    }
+    return () => unregisterActiveItem(id)
+  }, [active, id, registerActiveItem, unregisterActiveItem])
 
-    useEffect(() => {
-        if (active && itemRef.current) {
-            registerActiveItem(itemRef, id)
-        }
-
-        return () => {
-            unregisterActiveItem(id)
-        }
-    }, [active, id, registerActiveItem, unregisterActiveItem])
-
-    return <xyd-toc-item>
-        <li
-            ref={itemRef}
-            className={`${cn.TocLi} ${className || ""}`}
-            data-active={String(active)}
+  return (
+    <xyd-toc-item>
+      <li
+        ref={itemRef}
+        className={`${cn.TocLi} ${className || ''}`}
+        data-active={String(active)}
+      >
+        <Link
+          part="link"
+          to=""
+          onClick={e => {
+            e.preventDefault()
+            onChange(id)
+            // update URL hash so browser scrolls correctly
+            const url = new URL(window.location.href)
+            url.hash = id
+            history.replaceState(null, '', url.toString())
+            document.getElementById(id)?.scrollIntoView()
+          }}
         >
-            <Link
-                part="link"
-                to=""
-                // to={{
-                //     hash: id
-                // }}
-                onClick={(e) => {
-                    e.preventDefault()
-                    onChange(id)
-
-                    const url = new URL(window.location.href)
-                    url.hash = id
-                    history.replaceState(null, '', url)
-
-                    document.querySelector(`#${id}`)?.scrollIntoView()
-                }}
-            >
-                {children}
-            </Link>
-        </li>
+          {children}
+        </Link>
+      </li>
     </xyd-toc-item>
+  )
 }
-

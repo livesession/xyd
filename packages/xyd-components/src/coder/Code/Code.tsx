@@ -45,6 +45,8 @@ Code.LineNumber = function CodeLineNumber(props: any) {
 // TODO: fix any
 Code.Mark = function CodeMark(props: any) {
     return <xyd-code-mark
+        data-diff={props.annotation?.diff ? "true" : undefined}
+        data-query={props.annotation?.diff && props.annotation?.query ? props.annotation?.query : undefined}
         data-annotated={String(!!props.annotation)}
         className={`${cn.MarkHost}`}
     >
@@ -53,6 +55,18 @@ Code.Mark = function CodeMark(props: any) {
             merge={props}
         />
     </xyd-code-mark>
+}
+
+Code.MarkInline = function CodeMarkInline(props: any) {
+    return (
+        <xyd-code-mark-inline
+            data-diff={props.annotation?.diff ? "true" : undefined}
+            data-query={props.annotation?.diff && props.annotation?.query ? props.annotation?.query : undefined}
+            className={cn.MarkInlineHost}
+        >
+            {props.children}
+        </xyd-code-mark-inline>
+    )
 }
 
 // TODO: fix any

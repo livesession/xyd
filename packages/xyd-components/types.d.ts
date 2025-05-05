@@ -6,6 +6,7 @@ declare global {
       interface IntrinsicElements {
         // Code
         'xyd-code-bg': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+        'xyd-code-mark-inline': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-code-linenumber': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-code-mark': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-code-pre': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;

@@ -23,6 +23,7 @@ import { useEffect } from 'react';
 
 interface BaseThemeRenderProps {
     children: React.ReactNode;
+    Content: any
 }
 
 export abstract class BaseTheme extends Theme {
@@ -55,7 +56,7 @@ export abstract class BaseTheme extends Theme {
             header={<$Navbar />}
             subheader={subheader}
             aside={<$Sidebar />}
-            content={<$Content>{props.children}</$Content>}
+            content={<$Content Content={props.Content}>{props.children}</$Content>}
             contentNav={contentNav}
             layoutSize={layoutSize}
         />
@@ -78,7 +79,7 @@ export abstract class BaseTheme extends Theme {
         return <FwSidebarGroups />
     }
 
-    protected Content({ children }: { children: React.ReactNode }) {
+    protected Content({ children, Content }: { children: React.ReactNode, Content: any }) {
         const meta = useMetadata()
 
         const { BuiltWithXYD } = this

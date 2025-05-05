@@ -68,12 +68,14 @@ export async function mapContentToDocSections(
                             currentContent = ''
                         }
 
+                        const slug = slugify(heading)
+
                         if (node.depth === 1) {
                             if (rootSection.pageId) {
                                 console.error("Multiple h1 found")
                             }
 
-                            rootSection.pageId = slugify(heading)
+                            rootSection.pageId = slug
                             rootSection.pageUrl = `/${route}`
                             rootSection.pageTitle = heading
                             rootSection.headingLevel = 1
@@ -83,7 +85,7 @@ export async function mapContentToDocSections(
                         } else {
                             const section: DocSectionSchema = {
                                 pageId: rootSection.pageId,
-                                pageUrl: rootSection.pageUrl, // TODO: HASHES AND QUERY PARAMS
+                                pageUrl: `${rootSection.pageUrl}#${slug}`, // TODO: QUERY PARAMS
                                 pageTitle: rootSection.headingTitle,
                                 headingLevel: node.depth,
                                 headingTitle: heading,

@@ -25,11 +25,45 @@ export const MarkHost = css`
             background-color: var(--xyd-coder-code-mark-bgcolor);
         }
 
+        &[data-diff="true"] {
+            &[data-query="-"] {
+                border-color: var(--xyd-text-color--error--active);
+                background-color: var(--xyd-text-color--error--muted);
+            }
+
+            &[data-query="+"] {
+                border-color: var(--xyd-text-color--success--active);
+                background-color: var(--xyd-text-color--success--muted);
+            }
+        }
+
         [part="line"] {
             flex: 1 1 0%;
         }
     }
 `;
+
+export const MarkInlineHost = css`
+    @layer defaults {
+        display: inline-block;
+
+        outline: solid 1px var(--xyd-coder-code-mark-border-color);
+        background: var(--xyd-coder-code-mark-bgcolor);
+
+
+        &[data-diff="true"] {
+            &[data-query="-"] {
+                border-color: var(--xyd-text-color--error--active);
+                background-color: var(--xyd-text-color--error--muted);
+            }
+
+            &[data-query="+"] {
+                border-color: var(--xyd-text-color--success--active);
+                background-color: var(--xyd-text-color--success--muted);
+            }
+        }
+    }
+`
 
 export const BgHost = css`
     @layer defaults {

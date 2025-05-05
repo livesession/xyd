@@ -58,7 +58,8 @@ const $CodeSampleTabs = withCodeTabs((props) => <Code.Pre
     handlers={[
         annotations.mark,
         annotations.bg,
-        annotations.lineNumbers
+        annotations.lineNumbers,
+        annotations.diff
     ]}
 />)
 

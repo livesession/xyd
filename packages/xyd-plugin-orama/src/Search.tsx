@@ -1,6 +1,7 @@
 import React, { useState, lazy, Suspense, useEffect, useCallback } from "react"
 import { createPortal } from 'react-dom'
 import { create, insertMultiple } from '@orama/orama'
+import { pluginAnalytics } from "@xyd-js/plugin-orama-livesession"
 
 const OramaSearchBox = lazy(() => import('@orama/react-components').then(mod => ({ default: mod.OramaSearchBox })));
 
@@ -99,7 +100,14 @@ async function createOramaInstance(oramaDocs: any[]): Promise<any> {
             title: "string",
             description: "string",
             content: "string"
-        }
+        },
+        plugins: [
+            pluginAnalytics({
+                enabled: true,
+                apiKey: "1234567890",
+                indexId: "1234567890"
+            })
+        ]
     })
 
     await insertMultiple(db, oramaDocs as any)

@@ -30,7 +30,6 @@ export async function gqlSchemaToReferences(
     schemaLocation: string,
     options?: gqlSchemaToReferencesOptions
 ): Promise<Reference[]> {
-    console.log("gqlSchemaToReferences", gqlSchemaToReferences)
     const loadersList = {
         ["GraphQLFileLoader"]: "@graphql-tools/graphql-file-loader",
     }

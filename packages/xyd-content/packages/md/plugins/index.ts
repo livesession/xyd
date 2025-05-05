@@ -43,8 +43,8 @@ function remarkPlugins(
 ) {
     return [
         mdHeading,
-        remarkMdxToc(toc),
         remarkInjectCodeMeta,
+        remarkMdxToc(toc),
         extractThemeSettings,
         extractPage,
         outputVars,

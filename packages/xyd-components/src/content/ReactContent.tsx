@@ -160,20 +160,29 @@ interface HeadingContentProps {
 }
 
 function $Heading({ id, depth, children }: HeadingContentProps) {
-    const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
+    // const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
     // const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
     const navigation = this?.options?.useNavigation() // TODO: !!!! BETTER API !!!!!
 
     const ref = useRef<HTMLHeadingElement>(null!)
     const [active, setActive] = useState(false)
 
+    function onReplaceState(e: any) {
+        const active = window.location.hash === `#${id}`
+        setActive(active)
+    }
     useEffect(() => {
-        const active = location?.hash === `#${id}`
+        window.addEventListener('replaceState', onReplaceState)
+
+        const active = window.location.hash === `#${id}`
         setActive(active)
 
         if (active && ref.current && navigation?.state !== "loading") {
             ref.current.scrollIntoView()
-            // ref.current.scrollIntoView({ behavior: "smooth" }) // TODO: if we remove smooth then issues with toc cuz it depends on scroll
+        }
+
+        return () => {
+            window.removeEventListener('replaceState', onReplaceState)
         }
     }, [])
 
@@ -387,7 +396,7 @@ function $Pre(
                 value: props?.children?.props?.children,
                 lang: lang,
                 meta: lang,
-                highlighted
+                highlighted,
             }
         ]}
         size="full" // TODO: in the future configurable

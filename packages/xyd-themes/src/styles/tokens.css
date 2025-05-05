@@ -14,7 +14,9 @@
     --blue32: #60A5FA;
     --blue80: #1971a8;
     --green80: #28a745;
+    --green100: #108944;
     --red80: #dc3545;
+    --red100: #b91c1c;
     --yellow80: #ffc107;
 
     --color-bg: var(--white);
@@ -147,8 +149,12 @@
     --xyd-text-color--default: var(--text-primary);
     --xyd-text-color--ghost: var(--text-tertiary);
     --xyd-text-color--success: var(--green80);
+    --xyd-text-color--success--active: var(--green100);
+    --xyd-text-color--success--muted: rgba(40, 167, 69, 0.3);
     --xyd-text-color--warn: var(--yellow80);
     --xyd-text-color--error: var(--red80);
+    --xyd-text-color--error--active: var(--red100);
+    --xyd-text-color--error--muted: rgba(220, 53, 69, 0.3);
     --xyd-text-color--primary: var(--color-primary);
     --xyd-text-color--secondary: var(--text-secondary);
 

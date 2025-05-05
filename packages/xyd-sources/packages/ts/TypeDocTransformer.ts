@@ -285,7 +285,6 @@ export function typedocToUniform(
             }
 
             default: {
-                console.log(child);
                 console.warn("(typedocToUniform): Another children project kind not supported", child.kind)
             }
         }

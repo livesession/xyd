@@ -13,7 +13,7 @@ importers:
         version: 1.9.4
       '@changesets/cli':
         specifier: ^2.28.1
-        version: 2.29.2
+        version: 2.29.3
       '@types/node':
         specifier: 20.9.0
         version: 20.9.0
@@ -72,7 +72,7 @@ importers:
         version: 1.0.6
       framer-motion:
         specifier: ^12.6.3
-        version: 12.9.4(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 12.9.6(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       gsap:
         specifier: ^3.12.4
         version: 3.13.0
@@ -93,7 +93,7 @@ importers:
         version: 19.0.0(react@19.0.0)
       zod:
         specifier: ^3.24.2
-        version: 3.24.3
+        version: 3.24.4
     devDependencies:
       '@eslint/js':
         specifier: ^8.56.0
@@ -149,6 +149,9 @@ importers:
       '@xyd-js/theme-cosmo':
         specifier: workspace:*
         version: link:../packages/xyd-theme-cosmo
+      '@xyd-js/theme-opener':
+        specifier: workspace:*
+        version: link:../packages/xyd-theme-opener
       '@xyd-js/theme-poetry':
         specifier: workspace:*
         version: link:../packages/xyd-theme-poetry
@@ -285,7 +288,7 @@ importers:
         version: 8.6.12(@storybook/test@8.6.12(storybook@8.6.12(prettier@2.8.8)))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(storybook@8.6.12(prettier@2.8.8))(typescript@5.8.3)
       '@storybook/react-vite':
         specifier: ^8.4.5
-        version: 8.6.12(@storybook/test@8.6.12(storybook@8.6.12(prettier@2.8.8)))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@4.40.1)(storybook@8.6.12(prettier@2.8.8))(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+        version: 8.6.12(@storybook/test@8.6.12(storybook@8.6.12(prettier@2.8.8)))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@4.40.1)(storybook@8.6.12(prettier@2.8.8))(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       '@storybook/test':
         specifier: ^8.4.5
         version: 8.6.12(storybook@8.6.12(prettier@2.8.8))
@@ -300,7 +303,7 @@ importers:
         version: 0.5.5(rollup@4.40.1)(typescript@5.8.3)
       '@wyw-in-js/vite':
         specifier: ^0.5.5
-        version: 0.5.5(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+        version: 0.5.5(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       '@xyd-js/gql':
         specifier: workspace:*
         version: link:../xyd-gql
@@ -354,7 +357,7 @@ importers:
         version: 1.7.0
       '@react-router/dev':
         specifier: ^7.5.0
-        version: 7.5.3(@react-router/serve@7.5.3(react-router@7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(typescript@5.8.3))(@types/node@22.15.3)(lightningcss@1.29.3)(react-router@7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(terser@5.39.0)(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+        version: 7.5.3(@react-router/serve@7.5.3(react-router@7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(typescript@5.8.3))(@types/node@22.15.3)(lightningcss@1.29.3)(react-router@7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(terser@5.39.0)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       '@react-router/node':
         specifier: ^7.5.0
         version: 7.5.3(react-router@7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(typescript@5.8.3)
@@ -459,7 +462,7 @@ importers:
         version: 6.0.3
       vite-tsconfig-paths:
         specifier: ^5.1.4
-        version: 5.1.4(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+        version: 5.1.4(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       yaml:
         specifier: ^2.6.0
         version: 2.7.1
@@ -539,7 +542,7 @@ importers:
         version: 0.5.5(rollup@4.40.1)(typescript@5.8.3)
       '@wyw-in-js/vite':
         specifier: ^0.5.5
-        version: 0.5.5(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+        version: 0.5.5(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.21(postcss@8.5.3)
@@ -675,7 +678,7 @@ importers:
         version: 4.9.5
       vite:
         specifier: ^6.0.7
-        version: 6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
+        version: 6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
       vitest:
         specifier: ^1.3.1
         version: 1.6.1(@types/node@22.15.3)(happy-dom@15.11.7)(lightningcss@1.29.3)(terser@5.39.0)
@@ -758,6 +761,9 @@ importers:
       '@xyd-js/context':
         specifier: workspace:*
         version: link:../xyd-context
+      '@xyd-js/plugin-algolia':
+        specifier: workspace:*
+        version: link:../xyd-plugin-algolia
       '@xyd-js/plugin-orama':
         specifier: workspace:*
         version: link:../xyd-plugin-orama
@@ -767,6 +773,9 @@ importers:
       '@xyd-js/theme-cosmo':
         specifier: workspace:*
         version: link:../xyd-theme-cosmo
+      '@xyd-js/theme-opener':
+        specifier: workspace:*
+        version: link:../xyd-theme-opener
       '@xyd-js/theme-poetry':
         specifier: workspace:*
         version: link:../xyd-theme-poetry
@@ -905,7 +914,7 @@ importers:
         version: 0.5.5(rollup@4.40.1)(typescript@5.8.3)
       '@wyw-in-js/vite':
         specifier: ^0.5.5
-        version: 0.5.5(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+        version: 0.5.5(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.21(postcss@8.5.3)
@@ -1078,6 +1087,37 @@ importers:
         specifier: ^8.3.0
         version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.1)
 
+  packages/xyd-plugin-algolia:
+    dependencies:
+      '@docsearch/react':
+        specifier: ^3.9.0
+        version: 3.9.0(@algolia/client-search@5.24.0)(@types/react@19.1.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)
+      '@xyd-js/components':
+        specifier: workspace:*
+        version: link:../xyd-components
+      '@xyd-js/content':
+        specifier: workspace:*
+        version: link:../xyd-content
+      '@xyd-js/core':
+        specifier: workspace:*
+        version: link:../xyd-core
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^1.6.1
+        version: 1.6.1(vitest@1.6.1(@types/node@22.15.3)(happy-dom@15.11.7)(lightningcss@1.29.3)(terser@5.39.0))
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.4.0
+        version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.1)
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.19(@types/node@22.15.3)(lightningcss@1.29.3)(terser@5.39.0)
+      vitest:
+        specifier: ^1.6.1
+        version: 1.6.1(@types/node@22.15.3)(happy-dom@15.11.7)(lightningcss@1.29.3)(terser@5.39.0)
+
   packages/xyd-plugin-orama:
     dependencies:
       '@orama/orama':
@@ -1092,6 +1132,64 @@ importers:
       '@orama/searchbox':
         specifier: 1.0.0-rc53
         version: 1.0.0-rc53(@orama/highlight@0.1.9)(@orama/orama@3.1.6)(@oramacloud/client@2.1.4)(@preact/signals-core@1.8.0)(@preact/signals-react@2.3.0(react@19.0.0))(@r2wc/react-to-web-component@2.0.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(encoding@0.1.13)(react-dom@19.0.0(react@19.0.0))(react-markdown@9.1.0(@types/react@19.1.2)(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(ws@8.18.2)(zod@3.24.3)
+      '@xyd-js/components':
+        specifier: workspace:*
+        version: link:../xyd-components
+      '@xyd-js/content':
+        specifier: workspace:*
+        version: link:../xyd-content
+      '@xyd-js/core':
+        specifier: workspace:*
+        version: link:../xyd-core
+      '@xyd-js/plugin-orama-livesession':
+        specifier: workspace:*
+        version: link:../xyd-plugin-orama-livesession
+      rehype-stringify:
+        specifier: ^10.0.0
+        version: 10.0.1
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0
+      remark-rehype:
+        specifier: ^11.0.0
+        version: 11.1.2
+      slugify:
+        specifier: ^1.6.6
+        version: 1.6.6
+      unified:
+        specifier: ^11.0.4
+        version: 11.0.5
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^1.6.1
+        version: 1.6.1(vitest@1.6.1(@types/node@22.15.3)(happy-dom@15.11.7)(lightningcss@1.29.3)(terser@5.39.0))
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.4.0
+        version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.1)
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.19(@types/node@22.15.3)(lightningcss@1.29.3)(terser@5.39.0)
+      vitest:
+        specifier: ^1.6.1
+        version: 1.6.1(@types/node@22.15.3)(happy-dom@15.11.7)(lightningcss@1.29.3)(terser@5.39.0)
+
+  packages/xyd-plugin-orama-livesession:
+    dependencies:
+      '@orama/orama':
+        specifier: ^3.1.6
+        version: 3.1.6
+      '@orama/plugin-data-persistence':
+        specifier: ^3.1.6
+        version: 3.1.6
+      '@orama/react-components':
+        specifier: ^0.7.0
+        version: 0.7.0(@stencil/core@4.27.0)(@types/react@19.1.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@orama/searchbox':
+        specifier: 1.0.0-rc53
+        version: 1.0.0-rc53(@orama/highlight@0.1.9)(@orama/orama@3.1.6)(@oramacloud/client@2.1.4)(@preact/signals-core@1.8.0)(@preact/signals-react@2.3.0(react@19.0.0))(@r2wc/react-to-web-component@2.0.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(encoding@0.1.13)(react-dom@19.0.0(react@19.0.0))(react-markdown@9.1.0(@types/react@19.1.2)(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(ws@8.18.2)(zod@3.24.4)
       '@xyd-js/components':
         specifier: workspace:*
         version: link:../xyd-components
@@ -1180,6 +1278,9 @@ importers:
       '@xyd-js/theme-cosmo':
         specifier: workspace:*
         version: link:../xyd-theme-cosmo
+      '@xyd-js/theme-opener':
+        specifier: workspace:*
+        version: link:../xyd-theme-opener
       '@xyd-js/theme-poetry':
         specifier: workspace:*
         version: link:../xyd-theme-poetry
@@ -1423,7 +1524,7 @@ importers:
         version: 0.5.5(rollup@4.40.1)(typescript@5.8.3)
       '@wyw-in-js/vite':
         specifier: ^0.5.5
-        version: 0.5.5(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+        version: 0.5.5(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.21(postcss@8.5.3)
@@ -1456,6 +1557,112 @@ importers:
         version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.1)
 
   packages/xyd-theme-gusto: {}
+
+  packages/xyd-theme-opener:
+    dependencies:
+      '@docsearch/css':
+        specifier: ^3.9.0
+        version: 3.9.0
+      '@docsearch/react':
+        specifier: ^3.9.0
+        version: 3.9.0(@algolia/client-search@5.24.0)(@types/react@19.1.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(search-insights@2.17.3)
+      '@linaria/atomic':
+        specifier: ^6.2.0
+        version: 6.3.0(react@19.0.0)
+      '@linaria/core':
+        specifier: ^6.2.0
+        version: 6.3.0
+      '@orama/react-components':
+        specifier: ^0.7.0
+        version: 0.7.0(@stencil/core@4.27.0)(@types/react@19.1.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@xyd-js/atlas':
+        specifier: workspace:*
+        version: link:../xyd-atlas
+      '@xyd-js/components':
+        specifier: workspace:*
+        version: link:../xyd-components
+      '@xyd-js/framework':
+        specifier: workspace:*
+        version: link:../xyd-framework
+      '@xyd-js/themes':
+        specifier: workspace:*
+        version: link:../xyd-themes
+      '@xyd-js/ui':
+        specifier: workspace:*
+        version: link:../xyd-ui
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
+      react-router:
+        specifier: ^7.5.0
+        version: 7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+    devDependencies:
+      '@babel/preset-env':
+        specifier: ^7.26.0
+        version: 7.27.1(@babel/core@7.27.1)
+      '@babel/preset-flow':
+        specifier: ^7.25.9
+        version: 7.27.1(@babel/core@7.27.1)
+      '@babel/preset-react':
+        specifier: ^7.26.0
+        version: 7.27.1(@babel/core@7.27.1)
+      '@babel/preset-typescript':
+        specifier: ^7.26.0
+        version: 7.27.1(@babel/core@7.27.1)
+      '@rollup/plugin-alias':
+        specifier: ^5.1.1
+        version: 5.1.1(rollup@4.40.1)
+      '@rollup/plugin-babel':
+        specifier: ^6.0.4
+        version: 6.0.4(@babel/core@7.27.1)(@types/babel__core@7.20.5)(rollup@4.40.1)
+      '@rollup/plugin-commonjs':
+        specifier: ^28.0.1
+        version: 28.0.3(rollup@4.40.1)
+      '@rollup/plugin-node-resolve':
+        specifier: ^15.3.0
+        version: 15.3.1(rollup@4.40.1)
+      '@rollup/plugin-typescript':
+        specifier: ^12.1.1
+        version: 12.1.2(rollup@4.40.1)(tslib@2.8.1)(typescript@5.8.3)
+      '@wyw-in-js/rollup':
+        specifier: ^0.5.5
+        version: 0.5.5(rollup@4.40.1)(typescript@5.8.3)
+      '@wyw-in-js/vite':
+        specifier: ^0.5.5
+        version: 0.5.5(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+      autoprefixer:
+        specifier: ^10.4.20
+        version: 10.4.21(postcss@8.5.3)
+      postcss:
+        specifier: ^8.4.47
+        version: 8.5.3
+      postcss-import:
+        specifier: ^16.1.0
+        version: 16.1.0(postcss@8.5.3)
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      rollup:
+        specifier: ^4.27.4
+        version: 4.40.1
+      rollup-plugin-css-only:
+        specifier: ^4.5.2
+        version: 4.5.2(rollup@4.40.1)
+      rollup-plugin-dts:
+        specifier: ^6.1.1
+        version: 6.2.1(rollup@4.40.1)(typescript@5.8.3)
+      rollup-plugin-postcss:
+        specifier: ^4.0.2
+        version: 4.0.2(postcss@8.5.3)
+      rollup-plugin-terser:
+        specifier: ^7.0.2
+        version: 7.0.2(rollup@4.40.1)
+      tsup:
+        specifier: ^8.3.0
+        version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.7.1)
 
   packages/xyd-theme-poetry:
     dependencies:
@@ -1531,7 +1738,7 @@ importers:
         version: 0.5.5(rollup@4.40.1)(typescript@5.8.3)
       '@wyw-in-js/vite':
         specifier: ^0.5.5
-        version: 0.5.5(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+        version: 0.5.5(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.21(postcss@8.5.3)
@@ -1665,7 +1872,7 @@ importers:
         version: 0.5.5(rollup@4.40.1)(typescript@5.8.3)
       '@wyw-in-js/vite':
         specifier: ^0.5.5
-        version: 0.5.5(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+        version: 0.5.5(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.21(postcss@8.5.3)
@@ -2464,14 +2671,14 @@ packages:
   '@changesets/apply-release-plan@7.0.12':
     resolution: {integrity: sha512-EaET7As5CeuhTzvXTQCRZeBUcisoYPDDcXvgTE/2jmmypKp0RC7LxKj/yzqeh/1qFTZI7oDGFcL1PHRuQuketQ==}
 
-  '@changesets/assemble-release-plan@6.0.6':
-    resolution: {integrity: sha512-Frkj8hWJ1FRZiY3kzVCKzS0N5mMwWKwmv9vpam7vt8rZjLL1JMthdh6pSDVSPumHPshTTkKZ0VtNbE0cJHZZUg==}
+  '@changesets/assemble-release-plan@6.0.7':
+    resolution: {integrity: sha512-vS5J92Rm7ZUcrvtu6WvggGWIdohv8s1/3ypRYQX8FsPO+KPDx6JaNC3YwSfh2umY/faGGfNnq42A7PRT0aZPFw==}
 
   '@changesets/changelog-git@0.2.1':
     resolution: {integrity: sha512-x/xEleCFLH28c3bQeQIyeZf8lFXyDFVn1SgcBiR2Tw/r4IAWlk1fzxCEZ6NxQAjF2Nwtczoen3OA2qR+UawQ8Q==}
 
-  '@changesets/cli@2.29.2':
-    resolution: {integrity: sha512-vwDemKjGYMOc0l6WUUTGqyAWH3AmueeyoJa1KmFRtCYiCoY5K3B68ErYpDB6H48T4lLI4czum4IEjh6ildxUeg==}
+  '@changesets/cli@2.29.3':
+    resolution: {integrity: sha512-TNhKr6Loc7I0CSD9LpAyVNSxWBHElXVmmvQYIZQvaMan5jddmL7geo3+08Wi7ImgHFVNB0Nhju/LzXqlrkoOxg==}
     hasBin: true
 
   '@changesets/config@3.1.1':
@@ -2483,8 +2690,8 @@ packages:
   '@changesets/get-dependents-graph@2.1.3':
     resolution: {integrity: sha512-gphr+v0mv2I3Oxt19VdWRRUxq3sseyUpX9DaHpTUmLj92Y10AGy+XOtV+kbM6L/fDcpx7/ISDFK6T8A/P3lOdQ==}
 
-  '@changesets/get-release-plan@4.0.10':
-    resolution: {integrity: sha512-CCJ/f3edYaA3MqoEnWvGGuZm0uMEMzNJ97z9hdUR34AOvajSwySwsIzC/bBu3+kuGDsB+cny4FljG8UBWAa7jg==}
+  '@changesets/get-release-plan@4.0.11':
+    resolution: {integrity: sha512-4DZpsewsc/1m5TArVg5h1c0U94am+cJBnu3izAM3yYIZr8+zZwa3AXYdEyCNURzjx0wWr80u/TWoxshbwdZXOA==}
 
   '@changesets/get-version-range-type@0.4.0':
     resolution: {integrity: sha512-hwawtob9DryoGTpixy1D3ZXbGgJu1Rhr+ySH2PvTLHvkZuQ7sRT4oQwMh0hbqZH1weAooedEjRsbrWcGLCeyVQ==}
@@ -5167,8 +5374,8 @@ packages:
   caniuse-api@3.0.0:
     resolution: {integrity: sha512-bsTwuIg/BZZK/vreVTYYbSWoe2F+71P7K5QGEX+pT250DZbfU1MQ5prOKpPR+LL6uWKK3KMwMCAS74QB3Um1uw==}
 
-  caniuse-lite@1.0.30001716:
-    resolution: {integrity: sha512-49/c1+x3Kwz7ZIWt+4DvK3aMJy9oYXXG6/97JKsnjdCk/6n9vVyWL8NAwVt95Lwt9eigI10Hl782kDfZUUlRXw==}
+  caniuse-lite@1.0.30001717:
+    resolution: {integrity: sha512-auPpttCq6BDEG8ZAuHJIplGw6GODhjw+/11e7IjpnYCxZcW/ONgPs0KVBJ0d1bY3e2+7PRe5RCLyP+PfwVgkYw==}
 
   capital-case@1.0.4:
     resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
@@ -6277,8 +6484,8 @@ packages:
   fraction.js@4.3.7:
     resolution: {integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==}
 
-  framer-motion@12.9.4:
-    resolution: {integrity: sha512-yaeGDmGQ3eCQEwZ95/pRQMaSh/Q4E2CK6JYOclG/PdjyQad0MULJ+JFVV8911Fl5a6tF6o0wgW8Dpl5Qx4Adjg==}
+  framer-motion@12.9.6:
+    resolution: {integrity: sha512-IIFf8lGl9ZrbzPvm4u5txyUXiS4x8lRxKWIQ4EFU1bC0aaUTNBM8PJIWR7S9DotBDlBqC7FNsxpDmdJNJzU5Iw==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0 || ^19.0.0
@@ -7764,8 +7971,8 @@ packages:
     resolution: {integrity: sha512-AbegBVI4sh6El+1gNwvD5YIck7nSA36weD7xvIxG4in80j/UoK8AEGaWnnz8v1GxonMCltmlNs5ZKbGvl9b1XQ==}
     engines: {node: '>= 0.8.0'}
 
-  motion-dom@12.9.4:
-    resolution: {integrity: sha512-25TWkQPj5I18m+qVjXGtCsxboY11DaRC5HMjd29tHKExazW4Zf4XtAagBdLpyKsVuAxEQ6cx5/E4AB21PFpLnQ==}
+  motion-dom@12.9.6:
+    resolution: {integrity: sha512-IK9pm5zU8BIp3FCoUGF3T7AHVLVOlXxlwco/bIbcnpBtyYb2gDQhdOzUh2KSDJVjYl1MZ9vdq8tnFTTahX2lfg==}
 
   motion-utils@12.9.4:
     resolution: {integrity: sha512-BW3I65zeM76CMsfh3kHid9ansEJk9Qvl+K5cu4DVHKGsI52n76OJ4z2CUJUV+Mn3uEP9k1JJA3tClG0ggSrRcg==}
@@ -9970,8 +10177,8 @@ packages:
       terser:
         optional: true
 
-  vite@6.3.4:
-    resolution: {integrity: sha512-BiReIiMS2fyFqbqNT/Qqt4CVITDU9M9vE+DKcVAsB+ZV0wvTKd+3hMbkpxz1b+NmEDMegpVbisKiAZOnvO92Sw==}
+  vite@6.3.5:
+    resolution: {integrity: sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -10246,6 +10453,9 @@ packages:
 
   zod@3.24.3:
     resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
+
+  zod@3.24.4:
+    resolution: {integrity: sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -11168,7 +11378,7 @@ snapshots:
       resolve-from: 5.0.0
       semver: 7.7.1
 
-  '@changesets/assemble-release-plan@6.0.6':
+  '@changesets/assemble-release-plan@6.0.7':
     dependencies:
       '@changesets/errors': 0.2.0
       '@changesets/get-dependents-graph': 2.1.3
@@ -11181,15 +11391,15 @@ snapshots:
     dependencies:
       '@changesets/types': 6.1.0
 
-  '@changesets/cli@2.29.2':
+  '@changesets/cli@2.29.3':
     dependencies:
       '@changesets/apply-release-plan': 7.0.12
-      '@changesets/assemble-release-plan': 6.0.6
+      '@changesets/assemble-release-plan': 6.0.7
       '@changesets/changelog-git': 0.2.1
       '@changesets/config': 3.1.1
       '@changesets/errors': 0.2.0
       '@changesets/get-dependents-graph': 2.1.3
-      '@changesets/get-release-plan': 4.0.10
+      '@changesets/get-release-plan': 4.0.11
       '@changesets/git': 3.0.4
       '@changesets/logger': 0.1.1
       '@changesets/pre': 2.0.2
@@ -11233,9 +11443,9 @@ snapshots:
       picocolors: 1.1.1
       semver: 7.7.1
 
-  '@changesets/get-release-plan@4.0.10':
+  '@changesets/get-release-plan@4.0.11':
     dependencies:
-      '@changesets/assemble-release-plan': 6.0.6
+      '@changesets/assemble-release-plan': 6.0.7
       '@changesets/config': 3.1.1
       '@changesets/pre': 2.0.2
       '@changesets/read': 0.6.5
@@ -11953,12 +12163,12 @@ snapshots:
     optionalDependencies:
       typescript: 5.8.3
 
-  '@joshwooding/vite-plugin-react-docgen-typescript@0.5.0(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))':
+  '@joshwooding/vite-plugin-react-docgen-typescript@0.5.0(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))':
     dependencies:
       glob: 10.4.5
       magic-string: 0.27.0
       react-docgen-typescript: 2.2.2(typescript@5.8.3)
-      vite: 6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
+      vite: 6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
     optionalDependencies:
       typescript: 5.8.3
 
@@ -12214,8 +12424,8 @@ snapshots:
       express-rate-limit: 7.5.0(express@5.1.0)
       pkce-challenge: 5.0.0
       raw-body: 3.0.0
-      zod: 3.24.3
-      zod-to-json-schema: 3.24.5(zod@3.24.3)
+      zod: 3.24.4
+      zod-to-json-schema: 3.24.5(zod@3.24.4)
     transitivePeerDependencies:
       - supports-color
 
@@ -12580,6 +12790,15 @@ snapshots:
       - ws
       - zod
 
+  '@orama/plugin-secure-proxy@2.1.1(encoding@0.1.13)(typescript@5.8.3)(ws@8.18.2)(zod@3.24.4)':
+    dependencies:
+      '@oramacloud/client': 1.3.20(encoding@0.1.13)(typescript@5.8.3)(ws@8.18.2)(zod@3.24.4)
+    transitivePeerDependencies:
+      - encoding
+      - typescript
+      - ws
+      - zod
+
   '@orama/react-components@0.7.0(@stencil/core@4.27.0)(@types/react@19.1.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@orama/wc-components': 0.7.0
@@ -12597,6 +12816,33 @@ snapshots:
       '@orama/orama': 3.1.6
       '@orama/plugin-analytics': 2.1.1
       '@orama/plugin-secure-proxy': 2.1.1(encoding@0.1.13)(typescript@5.8.3)(ws@8.18.2)(zod@3.24.3)
+      '@oramacloud/client': 2.1.4
+      '@phosphor-icons/react': 2.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@preact/signals-core': 1.8.0
+      '@preact/signals-react': 2.3.0(react@19.0.0)
+      '@r2wc/react-to-web-component': 2.0.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      classnames: 2.5.1
+      highlight.js: 11.11.1
+      lodash.debounce: 4.0.8
+      lodash.omit: 4.5.0
+      markdown-to-jsx: 7.7.6(react@19.0.0)
+      object-to-css-variables: 0.2.1
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+      react-markdown: 9.1.0(@types/react@19.1.2)(react@19.0.0)
+      styled-components: 6.1.17(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+    transitivePeerDependencies:
+      - encoding
+      - typescript
+      - ws
+      - zod
+
+  '@orama/searchbox@1.0.0-rc53(@orama/highlight@0.1.9)(@orama/orama@3.1.6)(@oramacloud/client@2.1.4)(@preact/signals-core@1.8.0)(@preact/signals-react@2.3.0(react@19.0.0))(@r2wc/react-to-web-component@2.0.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(encoding@0.1.13)(react-dom@19.0.0(react@19.0.0))(react-markdown@9.1.0(@types/react@19.1.2)(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(ws@8.18.2)(zod@3.24.4)':
+    dependencies:
+      '@orama/highlight': 0.1.9
+      '@orama/orama': 3.1.6
+      '@orama/plugin-analytics': 2.1.1
+      '@orama/plugin-secure-proxy': 2.1.1(encoding@0.1.13)(typescript@5.8.3)(ws@8.18.2)(zod@3.24.4)
       '@oramacloud/client': 2.1.4
       '@phosphor-icons/react': 2.1.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@preact/signals-core': 1.8.0
@@ -12650,6 +12896,20 @@ snapshots:
       '@orama/orama': 2.1.1
       lodash: 4.17.21
       openai: 4.97.0(encoding@0.1.13)(ws@8.18.2)(zod@3.24.3)
+      react: 18.3.1
+      vue: 3.5.13(typescript@5.8.3)
+    transitivePeerDependencies:
+      - encoding
+      - typescript
+      - ws
+      - zod
+
+  '@oramacloud/client@1.3.20(encoding@0.1.13)(typescript@5.8.3)(ws@8.18.2)(zod@3.24.4)':
+    dependencies:
+      '@orama/cuid2': 2.2.3
+      '@orama/orama': 2.1.1
+      lodash: 4.17.21
+      openai: 4.97.0(encoding@0.1.13)(ws@8.18.2)(zod@3.24.4)
       react: 18.3.1
       vue: 3.5.13(typescript@5.8.3)
     transitivePeerDependencies:
@@ -12885,7 +13145,7 @@ snapshots:
       - supports-color
       - terser
 
-  '@react-router/dev@7.5.3(@react-router/serve@7.5.3(react-router@7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(typescript@5.8.3))(@types/node@22.15.3)(lightningcss@1.29.3)(react-router@7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(terser@5.39.0)(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))':
+  '@react-router/dev@7.5.3(@react-router/serve@7.5.3(react-router@7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(typescript@5.8.3))(@types/node@22.15.3)(lightningcss@1.29.3)(react-router@7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(terser@5.39.0)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))':
     dependencies:
       '@babel/core': 7.27.1
       '@babel/generator': 7.27.1
@@ -12914,7 +13174,7 @@ snapshots:
       semver: 7.7.1
       set-cookie-parser: 2.7.1
       valibot: 0.41.0(typescript@5.8.3)
-      vite: 6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
+      vite: 6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
       vite-node: 3.0.0-beta.2(@types/node@22.15.3)(lightningcss@1.29.3)(terser@5.39.0)
     optionalDependencies:
       '@react-router/serve': 7.5.3(react-router@7.5.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(typescript@5.8.3)
@@ -13327,13 +13587,13 @@ snapshots:
       ts-dedent: 2.2.0
       vite: 5.4.19(@types/node@22.15.3)(lightningcss@1.29.3)(terser@5.39.0)
 
-  '@storybook/builder-vite@8.6.12(storybook@8.6.12(prettier@2.8.8))(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))':
+  '@storybook/builder-vite@8.6.12(storybook@8.6.12(prettier@2.8.8))(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))':
     dependencies:
       '@storybook/csf-plugin': 8.6.12(storybook@8.6.12(prettier@2.8.8))
       browser-assert: 1.2.1
       storybook: 8.6.12(prettier@2.8.8)
       ts-dedent: 2.2.0
-      vite: 6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
+      vite: 6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
 
   '@storybook/components@8.6.12(storybook@8.6.12(prettier@2.8.8))':
     dependencies:
@@ -13418,11 +13678,11 @@ snapshots:
       - supports-color
       - typescript
 
-  '@storybook/react-vite@8.6.12(@storybook/test@8.6.12(storybook@8.6.12(prettier@2.8.8)))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@4.40.1)(storybook@8.6.12(prettier@2.8.8))(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))':
+  '@storybook/react-vite@8.6.12(@storybook/test@8.6.12(storybook@8.6.12(prettier@2.8.8)))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rollup@4.40.1)(storybook@8.6.12(prettier@2.8.8))(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))':
     dependencies:
-      '@joshwooding/vite-plugin-react-docgen-typescript': 0.5.0(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+      '@joshwooding/vite-plugin-react-docgen-typescript': 0.5.0(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       '@rollup/pluginutils': 5.1.4(rollup@4.40.1)
-      '@storybook/builder-vite': 8.6.12(storybook@8.6.12(prettier@2.8.8))(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
+      '@storybook/builder-vite': 8.6.12(storybook@8.6.12(prettier@2.8.8))(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
       '@storybook/react': 8.6.12(@storybook/test@8.6.12(storybook@8.6.12(prettier@2.8.8)))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(storybook@8.6.12(prettier@2.8.8))(typescript@5.8.3)
       find-up: 5.0.0
       magic-string: 0.30.17
@@ -13432,7 +13692,7 @@ snapshots:
       resolve: 1.22.10
       storybook: 8.6.12(prettier@2.8.8)
       tsconfig-paths: 4.2.0
-      vite: 6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
+      vite: 6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
     optionalDependencies:
       '@storybook/test': 8.6.12(storybook@8.6.12(prettier@2.8.8))
     transitivePeerDependencies:
@@ -14103,11 +14363,11 @@ snapshots:
       - supports-color
       - typescript
 
-  '@wyw-in-js/vite@0.5.5(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))':
+  '@wyw-in-js/vite@0.5.5(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))':
     dependencies:
       '@wyw-in-js/shared': 0.5.5
       '@wyw-in-js/transform': 0.5.5(typescript@5.8.3)
-      vite: 6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
+      vite: 6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -14275,7 +14535,7 @@ snapshots:
   autoprefixer@10.4.21(postcss@8.5.3):
     dependencies:
       browserslist: 4.24.5
-      caniuse-lite: 1.0.30001716
+      caniuse-lite: 1.0.30001717
       fraction.js: 4.3.7
       normalize-range: 0.1.2
       picocolors: 1.1.1
@@ -14416,7 +14676,7 @@ snapshots:
 
   browserslist@4.24.5:
     dependencies:
-      caniuse-lite: 1.0.30001716
+      caniuse-lite: 1.0.30001717
       electron-to-chromium: 1.5.149
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.5)
@@ -14499,11 +14759,11 @@ snapshots:
   caniuse-api@3.0.0:
     dependencies:
       browserslist: 4.24.5
-      caniuse-lite: 1.0.30001716
+      caniuse-lite: 1.0.30001717
       lodash.memoize: 4.1.2
       lodash.uniq: 4.5.0
 
-  caniuse-lite@1.0.30001716: {}
+  caniuse-lite@1.0.30001717: {}
 
   capital-case@1.0.4:
     dependencies:
@@ -15442,7 +15702,7 @@ snapshots:
       minimatch: 3.1.2
       natural-compare: 1.4.0
       optionator: 0.9.4
-      zod: 3.24.3
+      zod: 3.24.4
     optionalDependencies:
       jiti: 2.4.2
     transitivePeerDependencies:
@@ -15809,9 +16069,9 @@ snapshots:
 
   fraction.js@4.3.7: {}
 
-  framer-motion@12.9.4(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+  framer-motion@12.9.6(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
-      motion-dom: 12.9.4
+      motion-dom: 12.9.6
       motion-utils: 12.9.4
       tslib: 2.8.1
     optionalDependencies:
@@ -17720,7 +17980,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  motion-dom@12.9.4:
+  motion-dom@12.9.6:
     dependencies:
       motion-utils: 12.9.4
 
@@ -17770,7 +18030,7 @@ snapshots:
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.15
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001716
+      caniuse-lite: 1.0.30001717
       postcss: 8.4.31
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -18064,6 +18324,21 @@ snapshots:
     optionalDependencies:
       ws: 8.18.2
       zod: 3.24.3
+    transitivePeerDependencies:
+      - encoding
+
+  openai@4.97.0(encoding@0.1.13)(ws@8.18.2)(zod@3.24.4):
+    dependencies:
+      '@types/node': 18.19.87
+      '@types/node-fetch': 2.6.12
+      abort-controller: 3.0.0
+      agentkeepalive: 4.6.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0(encoding@0.1.13)
+    optionalDependencies:
+      ws: 8.18.2
+      zod: 3.24.4
     transitivePeerDependencies:
       - encoding
 
@@ -20240,13 +20515,13 @@ snapshots:
       - supports-color
       - typescript
 
-  vite-tsconfig-paths@5.1.4(typescript@5.8.3)(vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)):
+  vite-tsconfig-paths@5.1.4(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)):
     dependencies:
       debug: 4.4.0
       globrex: 0.1.2
       tsconfck: 3.1.5(typescript@5.8.3)
     optionalDependencies:
-      vite: 6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
+      vite: 6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -20295,7 +20570,7 @@ snapshots:
       lightningcss: 1.29.3
       terser: 5.39.0
 
-  vite@6.3.4(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1):
+  vite@6.3.5(@types/node@22.15.3)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1):
     dependencies:
       esbuild: 0.25.3
       fdir: 6.4.4(picomatch@4.0.2)
@@ -20597,6 +20872,12 @@ snapshots:
     dependencies:
       zod: 3.24.3
 
+  zod-to-json-schema@3.24.5(zod@3.24.4):
+    dependencies:
+      zod: 3.24.4
+
   zod@3.24.3: {}
+
+  zod@3.24.4: {}
 
   zwitch@2.0.4: {}

@@ -22,6 +22,7 @@ You can configure the theme in the [`settings`](/docs/guides/settings) file:
 
 - `poetry`
 - `cosmo`
+- `opener`
 - `gusto` (coming soon)
 - `picasso` (coming soon)
 

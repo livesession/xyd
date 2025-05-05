@@ -6,7 +6,7 @@ import { FwLogo } from "@xyd-js/framework/react"
 import { BaseTheme } from "@xyd-js/themes"
 
 // @ts-ignore
-import { SearchButton } from 'virtual:Search'
+import { SearchButton } from 'virtual-component:Search'
 
 import "./imports.css"
 

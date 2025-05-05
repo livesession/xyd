@@ -9,7 +9,7 @@ import { reactRouter } from "@react-router/dev/vite";
 import { vitePlugins as xydContentVitePlugins } from "@xyd-js/content/vite";
 import { pluginZero } from "@xyd-js/plugin-zero";
 import { OramaPlugin } from "@xyd-js/plugin-orama";
-
+import { AlgoliaPlugin } from "@xyd-js/plugin-algolia";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -69,7 +69,12 @@ export async function dev() {
             virtualComponentsPlugin(),
 
             // TODO: plugin api
-            OramaPlugin(respPluginZero.settings),
+            // OramaPlugin(respPluginZero.settings),
+            AlgoliaPlugin(respPluginZero.settings, {
+                appId: "D8T2JZ8FPG",
+                apiKey: "3485406c5c0d30b8d1c2ae298ec2a391",
+                indexName: "algolia"
+            }),
         ],
     });
 
@@ -120,7 +125,7 @@ function virtualComponentsPlugin(): PluginOption {
             return {
                 resolve: {
                     alias: {
-                        'virtual:Search': path.resolve(componentsDist, "system.js")
+                        'virtual-component:Search': path.resolve(componentsDist, "system.js")
                     }
                 }
             }

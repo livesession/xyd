@@ -22,4 +22,7 @@
     --xyd-codetabs-bgcolor: var(--poetry-gray80);
     --xyd-codetabs-color: var(--white);
     --xyd-codetabs-color--hover: var(--poetry-gray64);
+
+    --xyd-coder-code-mark-bgcolor: var(--xyd-codetabs-color--hover);
+    --xyd-coder-code-mark-border-color: var(--color-primary);
 }

@@ -1,6 +1,9 @@
 ---
 title: Introduction
+og:title: "Og title"
+description: Documentation platform built for developers
 ---
+
 
 # Why `xyd`?
 

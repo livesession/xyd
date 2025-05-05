@@ -14,7 +14,6 @@ export function contextSettings(): Settings {
 }
 
 export function setContextSettings(s: Settings) {
-    console.log("setContextSettings 22", s)
     settings = s
 }
 

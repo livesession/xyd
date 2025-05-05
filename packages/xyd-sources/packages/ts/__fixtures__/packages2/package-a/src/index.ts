@@ -34,7 +34,7 @@ export interface Theme {
     /** 
      * A preset theme configuration that changes the look and feel of the project. 
      * A theme is a set of default styling configurations. 
-     * Examples: cosmo, gusto, poetry, picasso
+     * Examples: cosmo, gusto, poetry, picasso,
      */
     readonly name: ThemePresetName | string
 

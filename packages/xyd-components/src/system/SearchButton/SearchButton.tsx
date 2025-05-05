@@ -15,7 +15,7 @@ export function SearchButton({
   useShortcuts(shortcutKeys, () => props.onClick?.());
 
   useEffect(() => {
-    // @ts-ignore - !!! FIX IN THE FUTURE !!! its a fix for loading virtual:Search twice? original and from plugin - check if exists on prod
+    // @ts-ignore - !!! FIX IN THE FUTURE !!! its a fix for loading virtual-component:Search twice? original and from plugin - check if exists on prod
     window.__UNSAFE_xyd_search_button_inited = true
 
     return () => {

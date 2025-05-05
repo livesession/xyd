@@ -1,6 +1,6 @@
 // server-only
 
-import { Sidebar, MetadataMap, Settings, SidebarMulti } from "@xyd-js/core";
+import { Sidebar, MetadataMap, Settings, SidebarMulti, Metadata } from "@xyd-js/core";
 import { filterNavigationByLevels, pageFrontMatters } from "@xyd-js/content";
 import { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
@@ -17,6 +17,7 @@ export async function mapSettingsToProps(
     breadcrumbs: IBreadcrumb[]
     navlinks?: INavLinks
     hiddenPages?: { [key: string]: boolean }
+    metadata?: Metadata | null
 }> {
     let uniqIndex = 0
     const filteredNav = filterNavigation(settings, slug)
@@ -132,7 +133,8 @@ export async function mapSettingsToProps(
         groups,
         breadcrumbs,
         navlinks,
-        hiddenPages
+        hiddenPages,
+        metadata: slugFrontmatter
     }
 }
 

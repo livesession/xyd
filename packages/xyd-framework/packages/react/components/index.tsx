@@ -213,9 +213,9 @@ export function FwToc() {
 
     // TODO: its temporary
     const tocFinal = flatToc.filter(item => item.depth === 2)
-    const hash = location.hash ? "" : tocFinal[0].id
+    const hash = location.hash ? "" : tocFinal?.[0]?.id
 
-    return <Toc defaultValue={hash || ""}>
+    return <Toc>
         {
             tocFinal.map((item, index) => <Toc.Item
                 key={index + item.id + item.depth}

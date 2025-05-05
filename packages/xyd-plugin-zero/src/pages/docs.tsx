@@ -1,10 +1,10 @@
 import path from "node:path";
 
 import * as React from "react";
-import { useMemo } from "react";
+import { ReactElement, ReactNode, useMemo } from "react";
 import { redirect, ScrollRestoration, useLocation, useNavigate, useNavigation, Location } from "react-router";
 
-import { MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core"
+import { MetadataMap, Settings, Theme as ThemeSettings, Metadata } from "@xyd-js/core"
 import { compileBySlug } from "@xyd-js/content"
 import { markdownPlugins } from "@xyd-js/content/md"
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
@@ -56,8 +56,6 @@ const contentComponents = {
     </HomePage>,
 
     Atlas: (props) => <Atlas {...props} />,
-
-    Content: (props) => <div>{props.children}</div> // TODO: remove !!!!
 }
 
 const supportedExtensions = {
@@ -75,9 +73,10 @@ interface loaderData {
     sidebarGroups: FwSidebarGroupProps[]
     breadcrumbs: IBreadcrumb[],
     navlinks?: INavLinks,
-    toc: MetadataMap
+    toc: MetadataMap,
     slug: string
     code: string
+    metadata: Metadata | null
 }
 
 export async function loader({ request }: { request: any }) {
@@ -158,7 +157,8 @@ export async function loader({ request }: { request: any }) {
         groups: sidebarGroups,
         breadcrumbs,
         navlinks,
-        hiddenPages
+        hiddenPages,
+        metadata
     } = await mapSettingsToProps(
         settings,
         slug,
@@ -195,7 +195,61 @@ export async function loader({ request }: { request: any }) {
         navlinks,
         slug,
         code,
+        metadata,
     } as loaderData
+}
+
+interface MetaProps {
+    title?: string
+    
+    name?: string
+
+    property?: string
+
+    content?: string
+}
+
+// TODO: better SEO
+export function meta(props: any) {
+    const {
+        title = "",
+        description = "",
+
+        ["og:title"]: ogTitle = "",
+        ["og:description"]: ogDescription = "",
+        ["og:image"]: ogImage = "",
+    } = props?.data?.metadata || {}
+
+    const meta: MetaProps[] = [
+        { title: title },
+        {
+            name: "description",
+            content: description,
+        },
+    ]
+
+    {
+        if (ogTitle) {
+            meta.push({
+                property: "og:title",
+                content: ogTitle,
+            })
+        }
+        if (ogDescription) {
+            meta.push({
+                property: "og:description",
+                content: ogDescription,
+            })
+        }
+        if (ogImage) {
+            meta.push({
+                property: "og:image",
+                content: ogImage,
+            })
+        }
+    }
+   
+    return meta
 }
 
 function findFirstUrl(items: any = []): string {
@@ -294,7 +348,6 @@ export function MemoMDXComponent(codeComponent: any) {
 }
 
 export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
-    const location = useLocation()
     const content = mdxContent(loaderData.code)
 
     const Content = MemoMDXComponent(content.component)
@@ -317,7 +370,7 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
             }}
         />
     } else {
-        component = <ThemeComponent>
+        component = <ThemeComponent Content={Content}>
             <Content
                 components={{
                     ...contentComponents,
@@ -349,7 +402,31 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     </AtlasContext>
 }
 
- // TODO: !!! FIND BETTER SOLUTION !!! BUT WITHOUT THAT IT RERENDERS EVERY HASH CHANGE FOR EXAMPLE
+// TODO: !!! FIND BETTER SOLUTION !!! BUT WITHOUT THAT IT RERENDERS EVERY HASH CHANGE FOR EXAMPLE
 function rerenderThemeKey(location: Location) {
     return location.pathname
+}
+
+export function iterateReactElements(
+    element: ReactNode,
+    callback: (element: ReactElement, depth: number) => void,
+    depth: number = 0
+): void {
+    // Handle null, undefined, boolean, number, or string
+    if (!element || typeof element !== 'object') {
+        return;
+    }
+
+    // Check if it's a valid React element
+    if (React.isValidElement(element)) {
+        // Call the callback for the current element
+        callback(element, depth);
+
+        // @ts-ignore
+        console.log(element.props.children)
+
+        // React.Children.toArray(element).forEach(child => {
+        //     iterateReactElements(child, callback, depth + 1);
+        // });
+    }
 }

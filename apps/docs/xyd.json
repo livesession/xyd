@@ -1,6 +1,6 @@
 {
     "theme": {
-        "name": "poetry",
+        "name": "opener",
         "logo": "/public/assets/logo.svg"
     },
     "navigation": {
@@ -23,7 +23,12 @@
                         "pages": [
                             "docs/guides/introduction",
                             "docs/guides/quickstart",
-                            "docs/guides/deploy",
+                            "docs/guides/deploy"
+                        ]
+                    },
+                    {
+                        "group": "Core concepts",
+                        "pages": [
                             "docs/guides/settings",
                             "docs/guides/routing",
                             "docs/guides/themes"
@@ -39,18 +44,18 @@
                         ]
                     },
                     {
-                        "group": "SDK Generation",
-                        "pages": [
-                            "docs/guides/sdk-quickstart",
-                            "docs/guides/opensdk"
-                        ]
-                    },
-                    {
                         "group": "Customization",
                         "pages": [
                             "docs/guides/customization-introduction",
                             "docs/guides/extending-default-theme",
                             "docs/guides/custom-theme"
+                        ]
+                    },
+                    {
+                        "group": "SDK Generation",
+                        "pages": [
+                            "docs/guides/sdk-quickstart",
+                            "docs/guides/opensdk"
                         ]
                     },
                     {

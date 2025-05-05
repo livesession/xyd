@@ -4,7 +4,7 @@ import { Theme as ThemeSettings } from "@xyd-js/core"
 import { BaseTheme } from "@xyd-js/themes"
 
 // @ts-ignore
-import { SearchButton } from 'virtual:Search'
+import { SearchButton } from 'virtual-component:Search'
 
 import { syntaxThemeCosmoLight } from "./syntaxTheme"
 

@@ -2,6 +2,21 @@ import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { HydratedRouter } from "react-router/dom";
 
+// TODO: !!! BETTER !!! - needed cuz issues with rerender in react-router hash change
+(() => {
+  var _wr = function(type: 'pushState' | 'replaceState') {
+    var orig = history[type];
+    return function(data: any, unused: string, url?: string | URL | null) {
+      var rv = orig.call(history, data, unused, url);
+      var e = new Event(type);
+      (e as any).arguments = arguments;
+      window.dispatchEvent(e);
+      return rv;
+    };
+  };
+  history.replaceState = _wr('replaceState')
+})()
+
 console.log(`+-----------------------------------------------------------------------------------------------------------------------------+
 |                                                                                                                             |
 |                                                                                              dddddddd                       |

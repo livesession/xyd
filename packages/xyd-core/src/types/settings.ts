@@ -145,7 +145,7 @@ export interface FontDetailsType {
 }
 
 /** Available theme preset names */
-export type ThemePresetName = "gusto" | "poetry" | "picasso" | "cosmo"
+export type ThemePresetName = "gusto" | "poetry" | "picasso" | "cosmo" | "opener"
 
 /** Search bar location options */
 export type SearchType = "side" | "top"

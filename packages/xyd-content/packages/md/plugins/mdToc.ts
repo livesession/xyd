@@ -58,7 +58,6 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
 
     visit(mdast, ["heading", "mdxJsxFlowElement"], node => {
         // @ts-ignore
-        console.log(111, node?.data?.hProperties)
         let depth = 0;
         if (node.type === "mdxJsxFlowElement") {
             let valid = false;

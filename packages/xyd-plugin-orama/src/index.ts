@@ -22,7 +22,7 @@ export function OramaPlugin(
         config: () => ({
             resolve: {
                 alias: {
-                    'virtual:Search': new URL('./Search.tsx', import.meta.url).pathname
+                    'virtual-component:Search': new URL('./Search.tsx', import.meta.url).pathname
                 }
             }
         }),

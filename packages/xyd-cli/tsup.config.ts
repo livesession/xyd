@@ -20,6 +20,7 @@ import oapPkg from '../xyd-openapi/package.json';
 import pluginZeroPkg from '../xyd-plugin-zero/package.json';
 import themeGustoPkg from '../xyd-theme-gusto/package.json';
 import themePoetryPkg from '../xyd-theme-poetry/package.json';
+import themeOpenerPkg from '../xyd-theme-opener/package.json';
 import uiPkg from '../xyd-ui/package.json';
 import uniformPkg from '../xyd-uniform/package.json';
 import sourcesPk from '../xyd-sources/package.json';
@@ -44,6 +45,7 @@ const deps = {
         ...pluginZeroPkg.dependencies,
         ...themeGustoPkg.dependencies,
         ...themePoetryPkg.dependencies,
+        ...themeOpenerPkg.dependencies,
         ...uiPkg.dependencies,
         ...uniformPkg.dependencies,
         ...sourcesPk.dependencies,
@@ -62,6 +64,7 @@ const deps = {
         ...pluginZeroPkg.devDependencies,
         ...themeGustoPkg.devDependencies,
         ...themePoetryPkg.devDependencies,
+        ...themeOpenerPkg.devDependencies,
         ...uiPkg.devDependencies,
         ...uniformPkg.devDependencies,
         ...sourcesPk.devDependencies,
