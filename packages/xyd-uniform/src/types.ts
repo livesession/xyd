@@ -1,6 +1,85 @@
 import React from "react";
 import { HighlightedCode } from "codehike/code";
 
+// TODO: type, and category also as generic?
+export interface Reference<C = ReferenceContext> {
+    title: string;
+    description: string | React.ReactNode;
+    canonical: string;
+
+    definitions: Definition[]
+    examples: ExampleRoot
+
+    category?: ReferenceCategory; // TODO: do we need that?
+    type?: ReferenceType; // TODO: do we need that?
+    context?: C;
+}
+
+export interface Definition {
+    title: string;
+
+    properties: DefinitionProperty[];
+
+    type?: string;
+
+    id?: string;
+
+    description?: string | React.ReactNode;
+}
+
+export interface DefinitionProperty {
+    name: string;
+
+    type: string;
+
+    description: string | React.ReactNode;
+
+    context?: any // TODO: better type
+
+    properties?: DefinitionProperty[];
+}
+
+export interface ExampleRoot {
+    groups: ExampleGroup[];
+}
+
+export interface ExampleGroup {
+    description?: string;
+
+    examples: Example[];
+}
+
+export interface Example {
+    description?: string; // TODO: replace with title ?
+
+    codeblock: CodeBlock;
+}
+
+export interface CodeBlock {
+    title?: string;
+
+    tabs: CodeBlockTab[];
+}
+
+export interface CodeBlockTab {
+    // title of the tab e.g "JavaScript"
+    title: string;
+
+    // code in the tab e.g "console.log('Hello World')"
+    code: string
+
+    // language of the code e.g "js"
+    language: string;
+
+    // context of the generation method e.g openapi or graphql
+    context?: ExampleContext;
+
+    // TODO: highlighted code
+    highlighted?: HighlightedCode;
+}
+
+export type ExampleContext = GraphQLExampleContext | OpenAPIExampleContext;
+
 // TODO: concept only
 export enum ReferenceCategory {
     // for React
@@ -51,7 +130,7 @@ export interface OpenAPIReferenceContext {
     method: string;
 
     path: string;
-    
+
     fullPath: string;
 }
 
@@ -74,28 +153,6 @@ export interface TypeDocReferenceContext {
 
 export type ReferenceContext = GraphQLReferenceContext | OpenAPIReferenceContext | TypeDocReferenceContext;
 
-export interface ExampleRoot {
-    groups: ExampleGroup[];
-}
-
-export interface ExampleGroup {
-    description?: string;
-
-    examples: Example[];
-}
-
-export interface Example {
-    description?: string; // TODO: replace with title ?
-
-    codeblock: CodeBlock;
-}
-
-export interface CodeBlock {
-    title?: string;
-
-    tabs: CodeBlockTab[];
-}
-
 export interface GraphQLExampleContext {
     schema?: any; // TODO:
 }
@@ -106,59 +163,4 @@ export interface OpenAPIExampleContext {
     content?: string;
 }
 
-export type ExampleContext = GraphQLExampleContext | OpenAPIExampleContext;
 
-export interface CodeBlockTab {
-    // title of the tab e.g "JavaScript"
-    title: string;
-
-    // code in the tab e.g "console.log('Hello World')"
-    code: string
-
-    // language of the code e.g "js"
-    language: string;
-
-    // context of the generation method e.g openapi or graphql
-    context?: ExampleContext;
-
-    // TODO: highlighted code
-    highlighted?: HighlightedCode;
-}
-
-// TODO: type, and category also as generic?
-export interface Reference<C = ReferenceContext> {
-    title: string;
-    description: string | React.ReactNode;
-    canonical: string;
-
-    definitions: Definition[]
-    examples: ExampleRoot
-
-    category?: ReferenceCategory; // TODO: do we need that?
-    type?: ReferenceType; // TODO: do we need that?
-    context?: C;
-}
-
-export interface Definition {
-    title: string;
-
-    properties: DefinitionProperty[];
-
-    type?: string;
-
-    id?: string;
-
-    description?: string | React.ReactNode;
-}
-
-export interface DefinitionProperty {
-    name: string;
-
-    type: string;
-
-    description: string | React.ReactNode;
-
-    context?: any // TODO: better type
-
-    properties?: DefinitionProperty[];
-}

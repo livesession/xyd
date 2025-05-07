@@ -6,63 +6,64 @@ import { mapSettingsToDocSections, type DocSectionSchema } from '@xyd-js/content
 import { DEFAULT_SUGGESTIONS } from './const'
 import type { OramaPluginOptions, OramaCloudConfig, OramaSectionSchema } from './types'
 
-export function OramaPlugin(
-    xydSettings: Settings,
+export default function OramaPlugin(
     pluginOptions: OramaPluginOptions = {}
-): Plugin {
-    const virtualModuleId = 'virtual:xyd-plugin-orama-data'
-    const resolvedVirtualModuleId = `\0${virtualModuleId}`
+) {
+    return function (xydSettings: Settings): Plugin {
+        const virtualModuleId = 'virtual:xyd-plugin-orama-data'
+        const resolvedVirtualModuleId = `\0${virtualModuleId}`
 
-    let resolveConfig: ResolvedConfig | null = null
+        let resolveConfig: ResolvedConfig | null = null
 
-    return {
-        name: 'xyd-plugin-orama',
-        enforce: 'pre',
+        return {
+            name: 'xyd-plugin-orama',
+            enforce: 'pre',
 
-        config: () => ({
-            resolve: {
-                alias: {
-                    'virtual-component:Search': new URL('./Search.tsx', import.meta.url).pathname
+            config: () => ({
+                resolve: {
+                    alias: {
+                        'virtual-component:Search': new URL('./Search.tsx', import.meta.url).pathname
+                    }
                 }
-            }
-        }),
+            }),
 
-        async configResolved(config: ResolvedConfig) {
-            if (resolveConfig) {
-                return
-            }
-
-            resolveConfig = config
-        },
-
-        async resolveId(id) {
-            if (id === virtualModuleId) {
-                return resolvedVirtualModuleId
-            }
-        },
-
-        async load(this, id: string) {
-            if (id !== resolvedVirtualModuleId) {
-                return
-            }
-
-            let cloudConfig: OramaCloudConfig | null = null
-            if (pluginOptions.endpoint && pluginOptions.apiKey) {
-                cloudConfig = {
-                    endpoint: pluginOptions.endpoint,
-                    api_key: pluginOptions.apiKey
+            async configResolved(config: ResolvedConfig) {
+                if (resolveConfig) {
+                    return
                 }
-            }
 
-            const sections = (await mapSettingsToDocSections(xydSettings)).map(mapDocSectionsToOrama)
+                resolveConfig = config
+            },
 
-            return `
+            async resolveId(id) {
+                if (id === virtualModuleId) {
+                    return resolvedVirtualModuleId
+                }
+            },
+
+            async load(this, id: string) {
+                if (id !== resolvedVirtualModuleId) {
+                    return
+                }
+
+                let cloudConfig: OramaCloudConfig | null = null
+                if (pluginOptions.endpoint && pluginOptions.apiKey) {
+                    cloudConfig = {
+                        endpoint: pluginOptions.endpoint,
+                        apiKey: pluginOptions.apiKey
+                    }
+                }
+
+                const sections = (await mapSettingsToDocSections(xydSettings)).map(mapDocSectionsToOrama)
+
+                return `
                 const docs = ${JSON.stringify(sections)};
                 const cloudConfig = ${JSON.stringify(cloudConfig)};
                 const suggestions = ${JSON.stringify(pluginOptions.suggestions || DEFAULT_SUGGESTIONS)};
 
                 export default { docs, cloudConfig, suggestions };
             `
+            }
         }
     }
 }

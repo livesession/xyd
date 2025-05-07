@@ -243,9 +243,10 @@ export const LayoutPrimaryHost = css`
             max-width: var(--xyd-layout-width-medium);
             margin: 0 auto;
             padding: 0 var(--xyd-page-gutter);
+            height: 100%;
         }
 
-        &[data-layout="large"] [part="page-container"] {
+        &[data-layout="wide"] [part="page-container"] {
             max-width: var(--xyd-layout-width-large);
         }
 

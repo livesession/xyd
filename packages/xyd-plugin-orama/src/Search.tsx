@@ -82,7 +82,7 @@ function $OramaSearchBoxWrapper({ isSearchOpen, onModalClosed }: { isSearchOpen:
             }}
             index={pluginOptions?.cloudConfig && {
                 endpoint: pluginOptions.cloudConfig.endpoint,
-                api_key: pluginOptions.cloudConfig.api_key
+                api_key: pluginOptions.cloudConfig.apiKey
             }}
             disableChat={!pluginOptions?.cloudConfig}
         />

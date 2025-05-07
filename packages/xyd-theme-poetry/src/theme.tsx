@@ -1,12 +1,12 @@
 import React from "react"
 
-import { Theme as ThemeSettings } from "@xyd-js/core"
-import { UISidebar } from "@xyd-js/ui"
-import { FwLogo } from "@xyd-js/framework/react"
-import { BaseTheme } from "@xyd-js/themes"
+import {Theme as ThemeSettings} from "@xyd-js/core"
+import {UISidebar} from "@xyd-js/ui"
+import {FwLogo} from "@xyd-js/framework/react"
+import {BaseTheme} from "@xyd-js/themes"
 
 // @ts-ignore
-import { SearchButton } from 'virtual-component:Search'
+import {SearchButton} from 'virtual-component:Search'
 
 import "./imports.css"
 
@@ -17,37 +17,31 @@ import './override.css';
 import './vars.css';
 
 export default class ThemePoetry extends BaseTheme {
-    constructor(
-        settings: ThemeSettings,
-        surfaces: any
-    ) {
-        super(settings);
+    constructor() {
+        super();
 
-        if (settings?.markdown) {
-            settings.markdown.syntaxHighlight = "dark-plus";
+        if (this.settings?.markdown) {
+            this.settings.markdown.syntaxHighlight = "dark-plus";
         } else {
-            settings.markdown = {
+            this.settings.markdown = {
                 syntaxHighlight: "dark-plus",
             }
         }
 
-        // TODO: BETTER API !!!
-        if (surfaces) {
-            surfaces["sidebar.top"] = () => <Search />
-        }
+        this.surfaces.define("sidebar.top", <_Search/>);
     }
 }
 
-function Search() {
+function _Search() {
     return <>
         <UISidebar.Item button anchor>
             <a href="/">
-                <FwLogo />
+                <FwLogo/>
             </a>
         </UISidebar.Item>
 
         <UISidebar.Item button anchor>
-            <SearchButton />
+            <SearchButton/>
         </UISidebar.Item>
     </>
 }

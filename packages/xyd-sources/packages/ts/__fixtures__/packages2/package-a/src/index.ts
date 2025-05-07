@@ -156,7 +156,7 @@ export type SearchType = "side" | "top"
  */
 export interface Navigation {
     /** Definition of sidebar - an array of groups with all the pages within that group */
-    sidebar: (SidebarMulti | Sidebar)[]
+    sidebar: (SidebarRoute | Sidebar)[]
 
     /** Array of headers */
     header?: Header[]
@@ -189,7 +189,7 @@ export interface Navigation {
 /**
  * Sidebar multi-group configuration
  */
-export interface SidebarMulti {
+export interface SidebarRoute {
     /** Route for this sidebar group */
     route: string
 

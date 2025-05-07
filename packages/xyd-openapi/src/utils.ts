@@ -1,15 +1,11 @@
 import path from "path";
 import fs from "fs";
+
 import yaml from "js-yaml";
 import $refParser from "json-schema-ref-parser";
 import {OpenAPIV3} from "openapi-types";
 
 import {ReferenceType} from "@xyd-js/uniform";
-
-type Parameters = {
-    query?: Record<string, string | number | boolean>;
-    headers?: Record<string, string>;
-};
 
 export function toPascalCase(str: string): string {
     return str

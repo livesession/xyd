@@ -10,7 +10,7 @@ import {
     Settings,
     APIFile,
     Sidebar,
-    SidebarMulti,
+    SidebarRoute,
     Metadata
 } from "@xyd-js/core";
 import uniform, { pluginNavigation, Reference, ReferenceType, OpenAPIReferenceContext, GraphQLReferenceContext } from "@xyd-js/uniform";
@@ -20,17 +20,39 @@ import {
 } from "@xyd-js/uniform/markdown";
 import { Preset, PresetData } from "../../types";
 
+const DEFAULT_VIRTUAL_FOLDER = ".xyd/.cache/.content" // TODO: share this + .xyd/.build/.content for build
+
+async function ensureAndCleanupVirtualFolder() {
+    try {
+        // Create directory recursively if it doesn't exist
+        await fs.mkdir(DEFAULT_VIRTUAL_FOLDER, { recursive: true });
+
+        // Read all files and directories in the folder
+        const entries = await fs.readdir(DEFAULT_VIRTUAL_FOLDER, { withFileTypes: true });
+
+        // Delete each entry recursively
+        for (const entry of entries) {
+            const fullPath = path.join(DEFAULT_VIRTUAL_FOLDER, entry.name);
+            if (entry.isDirectory()) {
+                await fs.rm(fullPath, { recursive: true, force: true });
+            } else {
+                await fs.unlink(fullPath);
+            }
+        }
+    } catch (error) {
+        console.error('Error managing virtual folder:', error);
+    }
+}
 
 // TODO: !!!!! REFACTOR PLUGIN-ZERO AND ITS DEPS FOR MORE READABLE CODE AND BETTER API !!!!
 
 export interface uniformPresetOptions {
     urlPrefix?: string
-    root?: string
     sourceTheme?: boolean
 }
 
 function flatPages(
-    sidebar: (SidebarMulti | Sidebar)[],
+    sidebar: (SidebarRoute | Sidebar)[],
     groups: { [key: string]: string },
     resp: string[] = [],
 ) {
@@ -55,6 +77,11 @@ function flatPages(
                 return
             }
 
+            if ("virtual" in page) {
+                resp.push(page.virtual)
+                return
+            }
+
             return flatPages([page], groups, resp)
         })
     })
@@ -63,7 +90,7 @@ function flatPages(
 }
 
 function flatGroups(
-    sidebar: (SidebarMulti | Sidebar)[],
+    sidebar: (SidebarRoute | Sidebar)[],
     resp: { [key: string]: string } = {}
 ) {
     sidebar.map(async side => {
@@ -92,6 +119,10 @@ function flatGroups(
 
         side?.pages?.map(async page => {
             if (typeof page === "string") {
+                return
+            }
+
+            if ("virtual" in page) {
                 return
             }
 
@@ -133,11 +164,12 @@ async function readMarkdownFile(root: string, page: string): Promise<string> {
 }
 
 async function uniformResolver(
+    settings: Settings,
     root: string,
     matchRoute: string,
     apiFile: string,
     uniformApiResolver: (filePath: string) => Promise<Reference[]>,
-    sidebar?: (SidebarMulti | Sidebar)[],
+    sidebar?: (SidebarRoute | Sidebar)[],
     options?: uniformPresetOptions,
     uniformType?: UniformType
 ) {
@@ -156,21 +188,31 @@ async function uniformResolver(
         })
     }
 
+    if (!urlPrefix) {
+        sidebar?.push({
+            route: matchRoute,
+            items: []
+        })
+        urlPrefix = matchRoute
+    }
+
     if (!urlPrefix && options?.urlPrefix) {
         urlPrefix = options.urlPrefix
     }
 
     if (!urlPrefix) {
-        throw new Error('urlPrefix not found')
+        throw new Error('(uniformResolver): urlPrefix not found')
     }
+
 
     const apiFilePath = path.join(root, apiFile); // TODO: support https
     const uniformRefs = await uniformApiResolver(apiFilePath)
     const uniformWithNavigation = uniform(uniformRefs, {
-        plugins: [pluginNavigation({
+        plugins: [pluginNavigation(settings, {
             urlPrefix,
         })]
     })
+
 
     let pageLevels = {}
 
@@ -193,7 +235,7 @@ async function uniformResolver(
         }
     }
 
-    const uniformSidebars: SidebarMulti[] = []
+    const uniformSidebars: SidebarRoute[] = []
 
     if (sidebar && matchRoute) {
         // TODO: DRY
@@ -244,13 +286,19 @@ async function uniformResolver(
         }
     }
 
+    await ensureAndCleanupVirtualFolder()
+
+    const basePath = settings.config?.uniform?.store
+        ? root
+        : path.join(root, DEFAULT_VIRTUAL_FOLDER)
+
     await Promise.all(
         uniformWithNavigation.references.map(async (ref) => {
             const ast = referenceAST(ref)
             const md = compileMarkdown(ast)
 
             const byCanonical = path.join(urlPrefix, ref.canonical)
-            const mdPath = path.join(root, byCanonical + '.md')
+            const mdPath = path.join(basePath, byCanonical + '.md')
 
             const frontmatter = uniformWithNavigation.out.pageFrontMatter[byCanonical]
 
@@ -285,15 +333,13 @@ async function uniformResolver(
 
             const content = matterStringify({ content: "" }, meta);
 
-            // Create directory recursively if it doesn't exist
             try {
                 await fs.access(path.dirname(mdPath));
             } catch {
                 await fs.mkdir(path.dirname(mdPath), { recursive: true });
             }
-            await fs.writeFile(mdPath, content)
 
-            // uniformData.set(byCanonical, md + "\n") // TODO: group chunks like previously but + loading fs content? to delete after compose api? 
+            await fs.writeFile(mdPath, content)
         })
     )
 
@@ -329,8 +375,8 @@ function preinstall(
 ) {
     return function preinstallInner(options: uniformPresetOptions) {
         return async function uniformPluginInner(settings: Settings, data: PresetData) {
-            const root = options.root ?? process.cwd()
-
+            const root =  process.cwd()
+         
             if (!apiFile) {
                 return
             }
@@ -343,13 +389,14 @@ function preinstall(
                 const routeMatch = settings.api?.route?.[id] || ""
 
                 const resolved = await uniformResolver(
+                    settings,
                     root,
                     routeMatch,
                     apiFile,
                     uniformApiResolver,
                     settings?.navigation?.sidebar,
                     options,
-                    uniformType
+                    uniformType,
                 )
 
                 if (resolved.sidebar) {
@@ -381,6 +428,7 @@ function preinstall(
                     }
 
                     const resolved = await uniformResolver(
+                        settings,
                         root,
                         routeMatch,
                         uniform,
@@ -445,7 +493,7 @@ type UniformType = "graphql" | "openapi" | "sources"
 function uniformPreset(
     id: string,
     apiFile: APIFile,
-    sidebar: (SidebarMulti | Sidebar)[],
+    sidebar: (SidebarRoute | Sidebar)[],
     options: uniformPresetOptions,
     uniformApiResolver: (filePath: string) => Promise<Reference[]>
 ) {
@@ -481,7 +529,7 @@ function uniformPreset(
             })
         } else {
             if (!options.urlPrefix) {
-                throw new Error('urlPrefix not found')
+                throw new Error('(uniformPreset): urlPrefix not found')
             }
 
             routeMatches.push(`${options.urlPrefix}/*`)
@@ -526,24 +574,17 @@ function uniformPreset(
 
 // TODO: refactor to use class methods + separate functions if needed?
 export abstract class UniformPreset {
-    private _root: string;
     private _urlPrefix: string;
     private _sourceTheme: boolean;
 
     protected constructor(
         private presetId: string,
         private apiFile: APIFile,
-        private sidebar: (SidebarMulti | Sidebar)[],
+        private sidebar: (SidebarRoute | Sidebar)[],
     ) {
     }
 
     protected abstract uniformRefResolver(filePath: string): Promise<Reference[]>
-
-    protected root(root: string): this {
-        this._root = root
-
-        return this
-    }
 
     protected urlPrefix(urlPrefix: string): this {
         this._urlPrefix = urlPrefix
@@ -563,14 +604,12 @@ export abstract class UniformPreset {
             this.apiFile,
             this.sidebar,
             {
-                root: this._root,
                 urlPrefix: this._urlPrefix,
                 sourceTheme: this._sourceTheme,
             },
             this.uniformRefResolver,
         )
     }
-
 }
 
 

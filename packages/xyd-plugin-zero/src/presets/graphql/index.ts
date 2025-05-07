@@ -35,7 +35,6 @@ class GraphQLUniformPreset extends UniformPreset {
         options: graphqlPluginOptions
     ) {
         return new GraphQLUniformPreset(settings)
-            .root(options.root || "")
             .urlPrefix(options.urlPrefix || "")
             .newUniformPreset()(settings, "graphql")
     }

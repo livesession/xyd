@@ -1,30 +1,25 @@
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useNavigation } from "react-router";
 
 import { Metadata, Settings } from "@xyd-js/core";
 import { type ITOC, type IBreadcrumb, type INavLinks, ProgressBar } from "@xyd-js/ui";
 
 import { FwSidebarGroupProps } from "../components/Sidebar";
-import { useNavigation } from "react-router";
-import { SurfaceContext, SurfaceRegistry } from "../components/Surface";
+import { SurfaceContext, Surfaces } from "../components/Surfaces";
 
 export interface IFramework {
-    settings: Settings
+    settings: Readonly<Settings>
 
-    sidebarGroups: FwSidebarGroupProps[]
-
-    toc?: ITOC[]
-
-    breadcrumbs?: IBreadcrumb[]
-
-    navlinks?: INavLinks
-
-    metadata?: Metadata
+    sidebarGroups: Readonly<FwSidebarGroupProps[]>
+    metadata: Readonly<Metadata>
+    setMetadata: (metadata: Metadata) => void
 }
 
-// TODO: page context + app context?
 const framework: IFramework = {
     settings: {},
-    sidebarGroups: []
+    metadata: {},
+    sidebarGroups: [],
+    setMetadata: () => { }
 }
 const FrameworkContext = createContext<IFramework>(framework)
 
@@ -32,34 +27,76 @@ export interface FrameworkProps {
     children: React.ReactNode
 
     settings: Settings,
+    metadata: Metadata,
     sidebarGroups: FwSidebarGroupProps[],
-    metadata: Metadata
-
-    toc?: ITOC[],
-    breadcrumbs?: IBreadcrumb[],
-    navlinks?: INavLinks
-    surfaces?: SurfaceRegistry
+    surfaces: Surfaces
 }
 
 export function Framework(props: FrameworkProps) {
     const navigation = useNavigation()
+    const [metadata, setMetadata] = useState<Metadata | undefined>(props.metadata)
 
-    return <FrameworkContext.Provider value={{
-        settings: props.settings,
-        sidebarGroups: props.sidebarGroups,
-        metadata: props.metadata,
-
-        toc: props.toc,
-        breadcrumbs: props.breadcrumbs,
-        navlinks: props.navlinks,
+    return <FrameworkContext value={{
+        settings: Object.freeze({ ...props.settings }),
+        sidebarGroups: Object.freeze([...props.sidebarGroups]),
+        metadata: Object.freeze({ ...metadata }),
+        setMetadata: setMetadata,
     }}>
-        {/* TODO: in the futre in another place? */}
-        <ProgressBar isActive={navigation.state === 'loading'} />
+        <SurfaceContext value={{
+            surfaces: props.surfaces
+        }}>
+            <ProgressBar isActive={navigation.state === 'loading'} />
 
-        <SurfaceContext value={props.surfaces || {}}>
             {props.children}
         </SurfaceContext>
-    </FrameworkContext.Provider>
+    </FrameworkContext>
+}
+
+interface FrameworkPageProps {
+    children: React.ReactNode
+
+    ContentComponent?: (props: { components: any, children: React.ReactNode }) => React.JSX.Element
+
+    metadata: Metadata
+    breadcrumbs?: IBreadcrumb[],
+    rawPage?: string
+    toc?: ITOC[],
+    navlinks?: INavLinks
+}
+
+interface IFrameworkPageContext {
+    ContentComponent: (props: { components: any, children: React.ReactNode }) => React.JSX.Element
+    metadata: Readonly<Metadata>
+    breadcrumbs?: Readonly<IBreadcrumb[]>
+    rawPage?: Readonly<string>
+    toc?: Readonly<ITOC[]>
+    navlinks?: Readonly<INavLinks>
+}
+
+const FrameworkPageContext = createContext<IFrameworkPageContext>({
+    ContentComponent: () => <></>,
+    metadata: {
+        title: "",
+    }
+})
+
+export function FrameworkPage(props: FrameworkPageProps) {
+    const { setMetadata } = useContext(FrameworkContext)
+
+    useEffect(() => {
+        setMetadata(props.metadata)
+    }, [])
+
+    return <FrameworkPageContext value={{
+        ContentComponent: props.ContentComponent || (() => <></>),
+        metadata: Object.freeze(props.metadata),
+        breadcrumbs: Object.freeze(props.breadcrumbs),
+        rawPage: Object.freeze(props.rawPage),
+        toc: Object.freeze(props.toc),
+        navlinks: Object.freeze(props.navlinks),
+    }}>
+        {props.children}
+    </FrameworkPageContext>
 }
 
 export function useSidebarGroups() {
@@ -74,26 +111,39 @@ export function useSettings() {
     return ctx.settings
 }
 
-export function useToC() {
+export function useMetadata() {
     const ctx = useContext(FrameworkContext)
+
+    return ctx.metadata
+}
+
+export function useToC() {
+    const ctx = useContext(FrameworkPageContext)
 
     return ctx.toc
 }
 
 export function useBreadcrumbs() {
-    const ctx = useContext(FrameworkContext)
+    const ctx = useContext(FrameworkPageContext)
 
     return ctx.breadcrumbs
 }
 
 export function useNavLinks() {
-    const ctx = useContext(FrameworkContext)
+    const ctx = useContext(FrameworkPageContext)
 
     return ctx.navlinks
 }
 
-export function useMetadata() {
-    const ctx = useContext(FrameworkContext)
 
-    return ctx.metadata
+export function useRawPage() {
+    const ctx = useContext(FrameworkPageContext)
+
+    return ctx.rawPage
+}
+
+export function useContentComponent() {
+    const ctx = useContext(FrameworkPageContext)
+
+    return ctx.ContentComponent
 }

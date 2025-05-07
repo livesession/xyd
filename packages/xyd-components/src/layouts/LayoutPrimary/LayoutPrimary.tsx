@@ -1,33 +1,62 @@
 import * as React from 'react'
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
+
+import { PageLayout } from '@xyd-js/core';
 
 import * as cn from "./LayoutPrimary.styles"
 
 export interface LayoutPrimaryProps {
-    header: React.ReactNode;
-    aside: React.ReactNode;
-    content: React.ReactNode;
-    contentNav?: React.ReactNode;
-    subheader?: React.ReactNode;
+    children: React.ReactNode;
 
-    layoutSize?: "large"
-
+    subheader?: boolean;
     className?: string;
+    layout?: PageLayout
 }
+
+const LayoutPrimaryContext = React.createContext<{
+    scrollRef: React.RefObject<HTMLDivElement | null>;
+    isMobileNavOpen: boolean;
+    setIsMobileNavOpen: (isOpen: boolean) => void;
+}>({
+    scrollRef: React.createRef(),
+    isMobileNavOpen: false,
+    setIsMobileNavOpen: () => { },
+})
 
 // TODO: move scroller to xyd-foo
 export function LayoutPrimary(props: LayoutPrimaryProps) {
     const scrollRef = useRef<HTMLDivElement>(null)
+
     const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
 
     const { hideMainHeader } = props.subheader ? useSubHeader(scrollRef) : { hideMainHeader: false }
 
-    return <xyd-layout-primary
-        className={`${cn.LayoutPrimaryHost} ${props.className || ""}`}
-        data-subheader={String(!!props.subheader)}
-        data-hide-subheader={String(hideMainHeader)}
-        data-layout={props.layoutSize}
+    return <LayoutPrimaryContext value={{
+        scrollRef,
+        isMobileNavOpen,
+        setIsMobileNavOpen
+    }}
     >
+        <xyd-layout-primary
+            className={`${cn.LayoutPrimaryHost} ${props.className || ""}`}
+            data-subheader={String(!!props.subheader)}
+            data-hide-subheader={String(hideMainHeader)}
+            data-layout={props.layout}
+        >
+            {props.children}
+        </xyd-layout-primary>
+    </LayoutPrimaryContext>
+}
+
+interface LayoutPrimaryHeaderProps {
+    header: React.ReactNode;
+
+    subheader?: React.ReactNode;
+}
+LayoutPrimary.Header = function LayoutPrimaryHeader(props: LayoutPrimaryHeaderProps) {
+    const { isMobileNavOpen, setIsMobileNavOpen } = useContext(LayoutPrimaryContext)
+
+    return <>
         <header part="header">
             <div part="header-content">
                 {props.header}
@@ -43,9 +72,18 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
                     </div>
                 </button>
             </div>
+
             {props.subheader}
         </header>
+    </>
+}
 
+interface LayoutPrimaryMobileAsideProps {
+    aside: React.ReactNode;
+}
+LayoutPrimary.MobileAside = function LayoutPrimaryAside(props: LayoutPrimaryMobileAsideProps) {
+    const { isMobileNavOpen, setIsMobileNavOpen } = useContext(LayoutPrimaryContext)
+    return <>
         <div
             part="mobile-overlay"
             data-active={isMobileNavOpen}
@@ -66,30 +104,38 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
                 <div part="mobile-sidebar-close-icon" />
             </button>
         </aside>
+    </>
+}
 
-        <main part="main">
-            <aside part="sidebar">
-                {props.aside}
-            </aside>
+interface LayoutPrimaryPageProps {
+    children: React.ReactNode;
+    contentNav?: React.ReactNode;
+}
+LayoutPrimary.Page = function LayoutPrimaryPage(props: LayoutPrimaryPageProps) {
+    const { scrollRef } = useContext(LayoutPrimaryContext)
 
-            <div part="page">
-                <div part="page-scroll" ref={scrollRef}>
-                    <div part="page-container">
-                        <div part="page-article-container">
-                            <article part="page-article">
-                                <section part="page-article-content">
-                                    {props.content}
-                                </section>
-                            </article>
-                            {props.contentNav && <nav part="page-article-nav">
+    return <>
+        <div part="page">
+            <div part="page-scroll" ref={scrollRef}>
+                <div part="page-container">
+                    <div part="page-article-container">
+
+                        <article part="page-article">
+                            <section part="page-article-content">
+                                {props.children}
+                            </section>
+                        </article>
+
+                        {
+                            props.contentNav && <nav part="page-article-nav">
                                 {props.contentNav}
-                            </nav>}
-                        </div>
+                            </nav>
+                        }
                     </div>
                 </div>
             </div>
-        </main>
-    </xyd-layout-primary>
+        </div>
+    </>
 }
 
 function $HamburgerLine({ active }: { active: boolean }) {
@@ -121,11 +167,11 @@ function useSubHeader(ref?: React.RefObject<HTMLDivElement | null>) {
         const checkpoint = headerHeight / 2;
         const diff = scrollTop - controlScrollPos
         const reversePosDiff = Math.abs(scrollTop - controlScrollPos)
-        
+
         // Determine scroll direction
         const direction = diff > 0 ? 'down' : 'up'
         setLastScrollDirection(direction)
-        
+
         // Always show header when near the top of the page
         if (scrollTop < headerHeight) {
             setHideMainHeader(false)

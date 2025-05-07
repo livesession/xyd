@@ -20,23 +20,8 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(function (
             <Link
                 ref={forwardedRef}
                 href={href}
-                to={href}
                 target="_blank"
                 rel="noreferrer"
-                className={cn.AnchorHost}
-                {...props}
-            >
-                {children}
-            </Link>
-        )
-    }
-
-    if (!href) {
-        return (
-            <Link
-                ref={forwardedRef}
-                href={href}
-                to={href}
                 className={cn.AnchorHost}
                 {...props}
             >
@@ -48,9 +33,8 @@ export const Anchor = forwardRef<HTMLAnchorElement, AnchorProps>(function (
     return (
         <Link
             ref={forwardedRef}
-            href={href}
-            to={href}
             className={cn.AnchorHost}
+            href={href || undefined}
             {...props}
         >
             {children}

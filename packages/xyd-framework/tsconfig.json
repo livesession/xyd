@@ -13,6 +13,9 @@
       ],
       "@xyd-js/core": [
         "../xyd-core/index.ts"
+      ],
+      "@xyd-js/themes": [
+        "../xyd-themes/src/index.ts"
       ]
     },
     "module": "esnext",

@@ -1,8 +1,4 @@
-import { Settings } from "@xyd-js/core"
-
-export {
-    compileBySlug
-} from "./fs"
+export { ContentFS } from "./fs"
 
 export {
     pageFrontMatters,

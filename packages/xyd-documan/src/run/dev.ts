@@ -8,8 +8,8 @@ import { reactRouter } from "@react-router/dev/vite";
 
 import { vitePlugins as xydContentVitePlugins } from "@xyd-js/content/vite";
 import { pluginZero } from "@xyd-js/plugin-zero";
-import { OramaPlugin } from "@xyd-js/plugin-orama";
-import { AlgoliaPlugin } from "@xyd-js/plugin-algolia";
+import { Integrations, Plugins, Settings } from "@xyd-js/core";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -21,11 +21,26 @@ export async function dev() {
         throw new Error("PluginZero not found")
     }
 
+    if (!respPluginZero.settings.integrations?.search) {
+        respPluginZero.settings.integrations = {
+            ...(respPluginZero.settings.integrations || {}),
+            search: {
+                orama: true
+            }
+        }
+    }
+
+    const plugins = integrationsToPlugins(respPluginZero.settings.integrations)
+    if (respPluginZero.settings.plugins) {
+        respPluginZero.settings.plugins = [...plugins, ...respPluginZero.settings.plugins]
+    } else {
+        respPluginZero.settings.plugins = plugins
+    }
+    const resolvedPlugins = await loadPlugins(respPluginZero.settings) || []
+
     globalThis.__xydBasePath = respPluginZero.basePath
     globalThis.__xydSettings = respPluginZero.settings
-
-    // Write the configuration to the shared-data.ts file
-    // await writeConfig(respPluginZero.settings, respPluginZero.basePath);
+    globalThis.__xydPagePathMapping = respPluginZero.pagePathMapping
 
     const allowCwd = searchForWorkspaceRoot(process.cwd())
     const appRoot = process.env.XYD_CLI ? __dirname : process.env.XYD_DOCUMAN_HOST || path.join(__dirname, "../host")
@@ -34,7 +49,7 @@ export async function dev() {
         root: appRoot,
         publicDir: '/public',
         server: {
-            allowedHosts: ["15b074b9e0d0.ngrok.app"],
+            allowedHosts: [],
             port: port,
             fs: {
                 allow: [
@@ -68,13 +83,7 @@ export async function dev() {
 
             virtualComponentsPlugin(),
 
-            // TODO: plugin api
-            // OramaPlugin(respPluginZero.settings),
-            AlgoliaPlugin(respPluginZero.settings, {
-                appId: "D8T2JZ8FPG",
-                apiKey: "3485406c5c0d30b8d1c2ae298ec2a391",
-                indexName: "algolia"
-            }),
+            ...resolvedPlugins,
         ],
     });
 
@@ -131,4 +140,67 @@ function virtualComponentsPlugin(): PluginOption {
             }
         },
     }
+}
+
+function integrationsToPlugins(integrations: Integrations) {
+    const plugins: Plugins = []
+    let foundSearchIntegation = 0
+
+    if (integrations?.search?.orama) {
+        if (typeof integrations.search.orama === "boolean") {
+            plugins.push("@xyd-js/plugin-orama")
+        } else {
+            plugins.push(["@xyd-js/plugin-orama", integrations.search.orama])
+        }
+        foundSearchIntegation++
+    }
+
+    if (integrations?.search?.algolia) {
+        plugins.push(["@xyd-js/plugin-algolia", integrations.search.algolia])
+        foundSearchIntegation++
+    }
+
+    if (foundSearchIntegation > 1) {
+        throw new Error("Only one search integration is allowed")
+    }
+
+    return plugins
+}
+
+async function loadPlugins(
+    settings: Settings,
+) {
+    const resolvedPlugins: any[] = []
+
+    for (const plugin of settings.plugins || []) {
+        if (typeof plugin === "string") {
+            const mod = await import(plugin)
+            if (!mod.default) {
+                console.error(`Plugin ${plugin} has no default export`)
+                continue
+            }
+
+            const pluginInstance = mod.default()
+
+            if (typeof pluginInstance === "function") {
+                resolvedPlugins.push(pluginInstance(settings))
+            } else {
+                resolvedPlugins.push(pluginInstance)
+            }
+            continue
+        }
+
+        const [pluginName, ...pluginArgs] = plugin
+
+        const pluginModule = await import(pluginName)
+        const pluginInstance = pluginModule.default(...pluginArgs)
+
+        if (typeof pluginInstance === "function") {
+            resolvedPlugins.push(pluginInstance(settings))
+        } else {
+            resolvedPlugins.push(pluginInstance)
+        }
+    }
+
+    return resolvedPlugins
 }

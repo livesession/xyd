@@ -2,7 +2,7 @@
 import {Reference} from "./types";
 
 // Define the new PluginV type with a callback function that returns another function
-export type UniformPlugin<T> = (cb: (cb: () => T) => void) => (ref: Reference) => void;
+export type UniformPlugin<T> = (defer: (defer: () => T) => void) => (ref: Reference) => void;
 
 // Utility type to infer if a type is an array and avoid wrapping it into an array twice
 type NormalizeArray<T> = T extends Array<infer U> ? U[] : T;
@@ -71,8 +71,8 @@ export default function uniform<T extends UniformPlugin<any>[]>(
 //     return (ref: Reference) => {
 //     };
 // };
-// function examplePlugin(cb: (cb: () => { value: boolean }) => void) {
-//     cb(() => ({
+// function examplePlugin(defer: (defer: () => { value: boolean }) => void) {
+//     defer(() => ({
 //         value: true,
 //     }));
 //

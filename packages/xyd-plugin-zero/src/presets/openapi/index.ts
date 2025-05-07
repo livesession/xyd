@@ -35,7 +35,6 @@ class OpenAPIUniformPreset extends UniformPreset {
         options: openapiPresetOptions
     ) {
         return new OpenAPIUniformPreset(settings)
-            .root(options.root || "")
             .urlPrefix(options.urlPrefix || "")
             .newUniformPreset()(settings, "openapi")
     }

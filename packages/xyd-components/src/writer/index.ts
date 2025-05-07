@@ -6,6 +6,8 @@ export * from "./Blockquote"
 
 export * from "./Breadcrumbs"
 
+export * from "./Button"
+
 export * from "./Callout"
 
 export * from "./Code"

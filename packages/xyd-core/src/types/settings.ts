@@ -7,7 +7,7 @@ import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
  */
 export interface Settings {
     /** Theme configuration for the application */
-    theme?: Theme | ThemeResolver
+    theme?: Theme
 
     /** Navigation configuration */
     navigation?: Navigation
@@ -18,10 +18,20 @@ export interface Settings {
     /** Integrations configuration */
     integrations?: Integrations
 
-    /** Redirects configuration */
+    /** Plugins configuration */
+    plugins?: Plugins
+
+    /**
+     * @unsafe
+     * 
+     * Redirects configuration
+     */
     redirects?: Redirects[]
 
-    /** SEO configuration */
+    /**
+     * @unsafe
+     * SEO configuration
+     */
     seo?: SEO
 
     /** Config configuration */
@@ -54,27 +64,20 @@ export interface Theme {
     favicon?: string;
 
     /** Hex color codes for your global theme */
-    colors?: Colors
+    // colors?: Colors TODO: maybe in the future
 
     /** Set a custom background image to be displayed behind every page */
-    backgroundImage?: string
+    // backgroundImage?: string TODO: maybe in the future
 
     /** 
      * Custom fonts. Apply globally or set different fonts for headings and the body text.
      */
-    font?: FontDetailsType | { headings?: FontDetailsType, body?: FontDetailsType }
+    // font?: FontDetailsType | { headings?: FontDetailsType, body?: FontDetailsType } TODO: maybe in the future
 
     /** The location of the search bar entry */
-    search?: SearchType
+    // search?: SearchType TODO: maybe in the future
 }
 // #endregion Theme
-
-/**
- * Theme resolver interface (TODO: in the future (typescript))
- */
-export interface ThemeResolver extends Theme {
-
-}
 
 /**
  * Markdown configuration interface
@@ -159,40 +162,25 @@ export type SearchType = "side" | "top"
  */
 export interface Navigation {
     /** Definition of sidebar - an array of groups with all the pages within that group */
-    sidebar: (SidebarMulti | Sidebar)[]
+    sidebar: (SidebarRoute | Sidebar)[]
 
     /** Array of headers */
     header?: Header[]
-
-    /** The call to action button in the topbar */
-    topbarCtaButton?: CallToAction
 
     /** 
      * Array of version names. Only use this if you want to show different versions of docs 
      * with a dropdown in the navigation bar.
      */
-    versions?: string[]
+    // versions?: string[]
 
     /** Anchors, includes the icon, name, and url */
     anchors?: AnchorRoot
-
-    /** 
-     * An object of social media accounts where the key:property pair represents 
-     * the social media platform and the account url.
-     */
-    footerSocials?: FooterSocials
-
-    /** Configurations to enable feedback buttons */
-    feedback?: Feedback
-
-    /** Configurations to change the search prompt */
-    search?: Search
 }
 
 /**
  * Sidebar multi-group configuration
  */
-export interface SidebarMulti {
+export interface SidebarRoute {
     /** Route for this sidebar group */
     route: string
 
@@ -211,16 +199,40 @@ export interface Sidebar {
      * The relative paths to the markdown files that will serve as pages.
      * Note: groups are recursive, so to add a sub-folder add another group object in the page array.
      */
-    pages?: (string | Sidebar)[]
-
-    /** The Fontawesome icon for the group. Note: this only applies to sub-folders */
-    icon?: string | React.JSX.Element
-
-    /** 
-     * The type of Fontawesome icon. Must be one of: brands, duotone, light, sharp-solid, solid, thin
-     */
-    iconType?: string
+    pages?: PageURL[]
 }
+
+/**
+ * Page URL type
+ */
+export type PageURL = string | VirtualPage | Sidebar
+
+/**
+ * Virtual page type
+ * 
+ * Virtual pages are composition of pages, needed for templating e.g in uniform
+ * 
+ * Example:
+ * 
+ * {
+ *  pages: [
+ *    ".xyd/.cache/.content/docs/rest/todo:docs/rest/todo",
+ *  ]
+ * }
+ * 
+ * above will be rendered as docs/rest/todo.md using composition from xyd's `.content`
+ */
+export type VirtualPage = string | {
+    /** The virtual page to use for the page */
+    virtual: string
+
+    /** The page to use for the page */
+    page: string
+
+    /** The template to use for the page */
+    templates?: string | string[]
+}
+
 
 /**
  * Sub-header configuration
@@ -251,32 +263,6 @@ export interface Header {
 }
 
 /**
- * Call to action configuration
- */
-export interface CallToAction {
-    /** 
-     * Link shows a button. GitHub shows the repo information at the url provided 
-     * including the number of GitHub stars.
-     */
-    type?: "link" | "github"
-
-    /** 
-     * If type is a link: What the button links to. 
-     * If type is a github: Link to the repository to load GitHub information from.
-     */
-    url?: string
-
-    /** Text inside the button. Only required if type is a link */
-    name?: string
-
-    /** The style of the button */
-    style?: "pill" | "roundedRectangle"
-
-    /** Whether to display the arrow */
-    arrow?: boolean
-}
-
-/**
  * Anchor configuration
  */
 export interface Anchor {
@@ -299,42 +285,6 @@ export interface Anchor {
 export interface AnchorRoot {
     /** Bottom anchors */
     bottom: Anchor[]
-}
-
-/**
- * Footer socials configuration
- */
-export interface FooterSocials {
-    /** 
-     * One of the following values website, facebook, x, youtube, discord, slack, 
-     * github, linkedin, instagram, hacker-news
-     */
-    [key: string]: string
-
-    /** The URL to the social platform */
-    property: string
-}
-
-/**
- * Feedback configuration
- */
-export interface Feedback {
-    /** Enables a rating system for users to indicate whether the page has been helpful */
-    thumbsRating?: boolean
-
-    /** Enables a button to allow users to suggest edits via pull requests */
-    suggestEdit?: boolean
-
-    /** Enables a button to allow users to raise an issue about the documentation */
-    raiseIssue?: boolean
-}
-
-/**
- * Search configuration
- */
-export interface Search {
-    /** Set the prompt for the search bar. Default is Search... */
-    prompt?: string
 }
 
 // ------ END  setting for structure END ------
@@ -406,7 +356,7 @@ export interface APIInfo {
     name?: string
 
     /**
-     * The default value that's designed to be a prefix for the authentication input field.
+     * The default value that's designed to be a prefisx for the authentication input field.
      * E.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.
      */
     inputPrefix?: string
@@ -461,22 +411,98 @@ export interface Integrations {
      * Configurations to add third-party analytics integrations. 
      * See full list of supported analytics here.
      */
-    analytics?: Analytics
+    analytics?: IntegrationAnalytics
+
+    /**
+     * Configurations to add third-party search integrations. 
+     * See full list of supported search here.
+     */
+    search?: IntegrationSearch
 }
 
 /**
  * Analytics configuration
  */
-export interface Analytics {
+export interface IntegrationAnalytics {
     /** Livesession analytics configuration */
     livesession: {
-        /** Tracking ID for Livesession */
+        /** Livesession's TrackID */
         trackId: string
     }
 }
 
+/**
+ * Search configuration
+ */
+export interface IntegrationSearch {
+    /** Algolia search configuration */
+    algolia?: {
+        /** Algolia application ID */
+        appId: string
+
+        /** Algolia API key */
+        apiKey: string
+    }
+
+    orama?: {
+        /** Orama endpoint */
+        endpoint: string
+
+        /** Orama API key */
+        apiKey: string
+
+        /** Orama suggestions */
+        suggestions?: string[]
+    } | boolean
+}
+
 // ------ END  setting for integrations END ------
 
+// ------ START  setting for plugins START ------
+
+/**
+ * Plugin configuration
+ * 
+ * Example:
+ * 1)
+ * {
+ *  plugins: [
+ *    "livesession",
+ *  ]
+ * }
+ * 
+ * or 2)
+ * {
+ *  plugins: [
+ *    [
+ *      "livesession",
+ *      "accountID.websiteID",
+ *      {
+ *          keystrokes: true 
+ *      }
+ *    ]
+ *  ]
+ * }
+ * 
+ * you can also use the type to define the plugin config in your code:
+ * 
+ * const livesessionPlugin: PluginConfig<"livesession", [string, { keystrokes: boolean }]> = [
+ *    "livesession",
+ *    "accountID.websiteID",
+ *    {
+ *        keystrokes: true 
+ *    }
+ * ]
+ */
+export type Plugins = (string | PluginConfig)[]
+
+export type PluginConfig<
+    PluginName extends string = string,
+    PluginArgs extends unknown[] = unknown[]
+> = [PluginName, ...PluginArgs]
+
+
+// ------ END  setting for plugins END ------
 
 // ------ START  setting for redirecs START ------
 /**
@@ -501,7 +527,6 @@ export interface SEO {
 // ------ END  setting for redirects END ------
 
 // ------ START  setting for config START ------
-type ConfigPaths = { [key: string]: string[] }
 /**
  * Config configuration
  */
@@ -509,6 +534,7 @@ export interface Config {
     /** 
      * Path aliases for imports. Avoid long relative paths by creating shortcuts.
      * 
+     * @example
      * ```json
      * {
      *   "paths": {
@@ -528,6 +554,23 @@ export interface Config {
      * ```
      */
     paths?: ConfigPaths
+
+    /**
+     * @unsafe
+     * 
+     * Uniform configuration
+     * 
+     */
+    uniform?: ConfigUniform
+}
+
+type ConfigPaths = { [key: string]: string[] }
+
+type ConfigUniform = {
+    /**
+     * If `true` then virtual pages will not created and generated content will be stored on disk
+     */
+    store: boolean
 }
 
 // ------ END  setting for config END ------

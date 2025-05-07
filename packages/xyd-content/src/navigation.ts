@@ -1,16 +1,17 @@
-import {promises as fs} from 'fs';
-import fs2, {open} from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
 
 import React from "react";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
-import matter from 'gray-matter';
-import {VFile} from "vfile";
-import {compile as mdxCompile} from "@mdx-js/mdx";
+import { VFile } from "vfile";
+import { compile as mdxCompile } from "@mdx-js/mdx";
 
-import {Metadata, Sidebar, MetadataMap, Header} from "@xyd-js/core";
+import { Metadata, Sidebar, MetadataMap, Header, PageURL, VirtualPage } from "@xyd-js/core";
 
+declare global {
+    var __xydPagePathMapping: { [key: string]: string }
+}
 // TODO: better algorithm + data structures - since it's on build time it's not a big deal nevertheless it should be changed in the future
 
 // pageFrontMatters gets frontmatters for given navigation
@@ -19,9 +20,13 @@ export async function pageFrontMatters(navigation: Sidebar[]): Promise<MetadataM
 
     const promises: Promise<any>[] = []
 
-    function mapPages(page: string | Sidebar) {
+    function mapPages(page: PageURL) {
         if (typeof page !== "string") {
-            page.pages?.forEach(mapPages)
+            if ("virtual" in page) {
+                promises.push(job(page, frontmatters))
+            } else {
+                page.pages?.forEach(mapPages)
+            }
             return
         }
 
@@ -74,11 +79,20 @@ export function filterNavigationByLevels(
             const level = parseInt(levelStr)
             const findThisSlug = slug.split("/").filter(s => !!s).slice(0, level).join("/")
 
-            function findMatchedPage(page: string | Sidebar) {
+            function findMatchedPage(page: PageURL) {
                 if (typeof page !== "string") {
-                    page.pages?.forEach(findMatchedPage)
+                    if ("virtual" in page) {
+                        return matchPage(page.virtual)
+                    } else {
+                        page.pages?.forEach(findMatchedPage)
+                    }
                     return
                 }
+
+                return matchPage(page)
+            }
+
+            function matchPage(page: string) {
                 const findThisPage = page.split("/").filter(p => !!p).slice(0, level).join("/")
 
                 const set = topLevelTabMatcher[level]
@@ -137,7 +151,7 @@ async function getFrontmatter(filePath: string): Promise<Metadata> {
     const matter: Metadata = frontmatter
 
     let title = ""
-    if (typeof matter.title === "string" ) {
+    if (typeof matter.title === "string") {
         title = matter.title
     }
     if (reactFrontmatter) {
@@ -153,21 +167,26 @@ async function getFrontmatter(filePath: string): Promise<Metadata> {
 }
 
 // TODO: indices map to not do like this - search for mdx if not then md
-async function job(page: string, frontmatters: MetadataMap) {
-    // TODO: it can be cwd because on build time it has entire path?
-    let filePath = path.join(process.cwd(), `${page}.mdx`) 
-    try {
-        await fs.access(filePath)
-    } catch (e) {
-        try {
-            const mdPath = path.join(process.cwd(), `${page}.md`) 
-            await fs.access(mdPath)
-            filePath = mdPath
-        } catch (e) {
-        }
+async function job(page: string | VirtualPage, frontmatters: MetadataMap) {
+    let fileSource = ""
+
+    if (typeof page === "string") {
+        fileSource = page
+    } else {
+        fileSource = page.virtual
     }
 
+    let pageName = ""
+    if (typeof page === "string") {
+        pageName = page
+    } else {
+        pageName = page.page
+    }
+
+    const pagePath = globalThis.__xydPagePathMapping[pageName] || ""
+    const filePath = path.join(process.cwd(), pagePath)
+    
     const matter = await getFrontmatter(filePath)
 
-    frontmatters[page] = matter
+    frontmatters[pageName] = matter
 }

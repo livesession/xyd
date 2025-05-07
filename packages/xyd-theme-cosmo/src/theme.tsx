@@ -17,28 +17,23 @@ import './override.css';
 import './vars.css';
 
 export default class ThemeCosmo extends BaseTheme {
-    constructor(
-        settings: ThemeSettings,
-        surfaces: any
-    ) {
-        super(settings);
-        if (settings?.markdown) {
-            settings.markdown.syntaxHighlight = syntaxThemeCosmoLight;
+    constructor() {
+        super();
+
+        if (this.settings?.markdown) {
+            this.settings.markdown.syntaxHighlight = syntaxThemeCosmoLight;
         } else {
-            settings.markdown = {
+            this.settings.markdown = {
                 syntaxHighlight: syntaxThemeCosmoLight,
             }
         }
 
-        // TODO: BETTER API !!!
-        if (surfaces) {
-            surfaces["nav.right"] = () => <Search />
-        }
+        this.surfaces.define("nav.right", <_Search />)
     }
 }
 
 
-function Search() {
+function _Search() {
     return <SearchButton />
 }
 

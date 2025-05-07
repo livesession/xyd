@@ -33,13 +33,13 @@ export function oapPathToReference(
 
     const endpointRef: Reference = {
         title: oapMethod?.summary || "",
-        canonical: toPascalCase(oapMethod?.summary || ""),
+        canonical: oapMethod.operationId || toPascalCase(oapMethod?.summary || ""),
         description: oapMethod?.description || "",
 
         category: ReferenceCategory.REST,
         type: mType,
 
-        context: {
+        context: { // TODO: !!! FINISH TYPES !!!
             method: httpMethod,
 
             path: `${encodeURIComponent(path)}`,

@@ -1,7 +1,13 @@
 {
     "theme": {
         "name": "opener",
-        "logo": "/public/assets/logo.svg"
+        "logo": "/public/assets/logo.svg",
+        "favicon": "/public/assets/logo.svg"
+    },
+    "integrations": {
+        "search": {
+            "orama": true
+        }
     },
     "navigation": {
         "header": [

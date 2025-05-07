@@ -1,3 +1,5 @@
+// TODO: og
+
 /**
  * Represents metadata for a content page.
  * Usually used as md/mdx frontmatter.
@@ -5,7 +7,7 @@
  */
 export interface Metadata<P = void> {
     /** The main title of the content - by default visible in navigation and page title */
-    title: string | {
+    title?: string | {
         title: string
         code: string // TODO: delete
     }
@@ -20,7 +22,7 @@ export interface Metadata<P = void> {
     icon?: string
 
     /** Optional layout type for the content display */
-    layout?: "page" | "wide" | "center"
+    layout?: PageLayout
 
     /** The type of component to render this content with */
     component?: "docs" | "atlas" | "page"
@@ -71,3 +73,5 @@ export interface Metadata<P = void> {
 }
 
 export type MetadataMap<P = void> = { [page: string]: Metadata<P> }
+
+export type PageLayout = "wide" | "page" | "center"

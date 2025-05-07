@@ -9,7 +9,7 @@ import { highlight, HighlightedCode, Token } from "codehike/code";
 import { marked } from 'marked';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 
-import { useMetadata } from "@xyd-js/framework/react";
+import { useMetadata, Surfaces } from "@xyd-js/framework/react";
 import { type AtlasProps } from "@xyd-js/atlas";
 import { type Theme as ThemeSettings } from "@xyd-js/core"
 
@@ -17,6 +17,10 @@ import { VarCode } from "@xyd-js/content";
 import { ExampleRoot, Definition, DefinitionProperty } from "@xyd-js/uniform";
 
 import { metaComponent } from './decorators';
+import { ReactContent } from "@xyd-js/components/content";
+
+// TODO: !!!! REFACTOR !!!
+
 
 /**
  * List of standard MDAST node types
@@ -93,7 +97,19 @@ type Whitespace = string;
 
 export abstract class Theme {
   constructor() {
+    // TODO: !!!better API for this!!!
+    this.settings = globalThis.themeSettings
+    this.surfaces = globalThis.surfaces
+    this.reactContent = globalThis.reactContent
   }
+
+  protected settings: ThemeSettings
+  protected readonly reactContent: ReactContent
+  protected readonly surfaces: Surfaces
+
+  public abstract Page({ children }: { children: React.ReactNode })
+  public abstract Layout({ children }: { children: React.ReactNode })
+  public abstract reactContentComponents(): {[component: string]: (props: any) => React.JSX.Element | null}
 
   protected useHideToc() {
     const meta = useMetadata()
@@ -312,11 +328,6 @@ export abstract class Theme {
     return props
     // TODO: in the future return a component directly here but we need good mechanism for transpiling?
   }
-
-  public components() {
-    return {
-    }
-  }
 }
 
 function buildElement(node) {
@@ -502,7 +513,7 @@ function processDefinitionProperty(properties: DefinitionProperty[]): Definition
       context: property.context,
       properties: property.properties
     };
-    
+
     if (typeof newProperty.description === 'string' && isMarkdownText(newProperty.description)) {
       const mdast = fromMarkdown(newProperty.description);
       const hast = toHast(mdast);
@@ -512,11 +523,11 @@ function processDefinitionProperty(properties: DefinitionProperty[]): Definition
         newProperty.description = reactTree;
       }
     }
-    
+
     if (property.properties && Array.isArray(property.properties)) {
       newProperty.properties = processDefinitionProperty(property.properties);
     }
-    
+
     return newProperty;
   });
 }

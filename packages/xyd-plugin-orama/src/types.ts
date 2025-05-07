@@ -1,7 +1,7 @@
 export interface OramaCloudConfig {
     endpoint: string
 
-    api_key: string
+    apiKey: string
 }
 
 export interface OramaPluginOptions {

@@ -38,7 +38,6 @@ class SourceUniformPreset extends UniformPreset {
         options: sourcesPresetsOptions
     ) {
         return new SourceUniformPreset(settings)
-            .root(options.root || "")
             .urlPrefix(options.urlPrefix || "")
             .sourceTheme(true)
             .newUniformPreset()(settings, "sources")

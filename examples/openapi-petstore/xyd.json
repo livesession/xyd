@@ -1,0 +1,58 @@
+{
+    "theme": {
+        "name": "opener",
+        "logo": "/public/assets/logo.svg",
+        "favicon": "/public/assets/logo.svg"
+    },
+    "integrations": {
+        "search": {
+            "orama": true
+        }
+    },
+    "navigation": {
+        "header": [
+            {
+                "name": "Guides",
+                "url": "/docs"
+            },
+            {
+                "name": "REST API",
+                "url": "/docs/rest"
+            }
+        ],
+        "sidebar": [
+            {
+                "route": "docs",
+                "items": [
+                    {
+                        "group": "Get Started",
+                        "pages": [
+                            "docs/introduction"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/rest",
+                "items": [
+                    {
+                        "group": "Get Started",
+                        "pages": [
+                            "docs/rest/introduction"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "api": {
+        "openapi": {
+            "rest": "./openapi.yaml"
+        },
+        "route": {
+            "openapi": {
+                "rest": "docs/rest"
+            }
+        }
+    }
+}

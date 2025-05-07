@@ -1,41 +1,52 @@
-import { promises as fs } from "fs";
-import path from "path";
+import fs from "fs/promises"
 
+import { VFile } from "vfile"
 import { PluggableList } from "unified";
-import { VFile } from "vfile";
 import { compile as mdxCompile } from "@mdx-js/mdx";
 
-interface FsCompileOptions {
-    remarkPlugins: PluggableList;
-    rehypePlugins: PluggableList;
+import { Settings } from "@xyd-js/core"
+
+export {
+    pageFrontMatters,
+    filterNavigationByLevels
+} from "./navigation"
+
+export type { VarCode } from "./types"
+
+export class ContentFS {
+    constructor(
+        private readonly settings: Settings,
+        private readonly remarkPlugins: PluggableList,
+        private readonly rehypePlugins: PluggableList,
+    ) { }
+
+    public async compile(filePath: string): Promise<string> {
+        await fs.access(filePath)
+
+        const content = await fs.readFile(filePath, "utf-8");
+
+        const vfile = new VFile({
+            path: filePath,
+            value: content,
+            contents: content
+        });
+
+        const compiled = await mdxCompile(vfile, {
+            remarkPlugins: this.remarkPlugins,
+            rehypePlugins: this.rehypePlugins,
+            recmaPlugins: [],
+            outputFormat: 'function-body',
+            development: false,
+        });
+
+        return String(compiled)
+    }
+
+    public async readRaw(filePath: string) {
+        await fs.access(filePath)
+
+        const content = await fs.readFile(filePath, "utf-8");
+
+        return content
+    }
 }
-
-export async function compileBySlug(
-    slug: string,
-    mdx: boolean,
-    opt?: FsCompileOptions
-): Promise<string> {
-    // TODO: cwd ?
-    const filePath = path.join(process.cwd(), `${slug}.${mdx ? "mdx" : "md"}`)
-
-    await fs.access(filePath)
-
-    const content = await fs.readFile(filePath, "utf-8");
-
-    const vfile = new VFile({
-        path: filePath,
-        value: content,
-        contents: content
-    });
-
-    const compiled = await mdxCompile(vfile, {
-        remarkPlugins: opt?.remarkPlugins || [],
-        rehypePlugins: opt?.rehypePlugins || [],
-        recmaPlugins: [],
-        outputFormat: 'function-body',
-        development: false,
-    });
-
-    return String(compiled)
-}
-

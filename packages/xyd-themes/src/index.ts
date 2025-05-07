@@ -3,13 +3,6 @@ export {
 } from "./BaseTheme"
 
 export {
-    Theme
+    type Theme
 } from "./Theme"
 
-export type {
-    ThemeProps
-} from "./types"
-
-export {
-    withTheme,
-} from "./withTheme"

@@ -9,7 +9,7 @@ import { visit } from "unist-util-visit";
 
 import GitHubSlugger from 'github-slugger';
 
-import type { Settings, Sidebar, SidebarMulti } from '@xyd-js/core'
+import type { Settings, Sidebar, SidebarRoute } from '@xyd-js/core'
 
 import { DocSectionSchema } from './types';
 import { markdownPlugins } from "../"
@@ -196,7 +196,7 @@ async function processSections(pages: { name: string, path: string }[], xydSetti
 
 // TODO: !!!! DRY !!!
 function flatPages(
-    sidebar: (SidebarMulti | Sidebar)[],
+    sidebar: (SidebarRoute | Sidebar)[],
     groups: { [key: string]: string },
     resp: string[] = [],
 ) {
@@ -218,6 +218,11 @@ function flatPages(
         side?.pages?.map(async page => {
             if (typeof page === "string") {
                 resp.push(page)
+                return
+            }
+            
+            if ("virtual" in page) {
+                resp.push(page.virtual)
                 return
             }
 

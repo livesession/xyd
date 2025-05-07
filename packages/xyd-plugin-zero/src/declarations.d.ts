@@ -14,7 +14,7 @@ declare module 'virtual:xyd-theme' {
 
     // Export a concrete theme class that extends BaseTheme
     class ConcreteTheme extends BaseTheme {
-        constructor(settings: ThemeSettings, surfaces: any);
+        constructor();
     }
     export default ConcreteTheme;
 }

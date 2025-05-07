@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 import { FwSidebarItemProps } from "./Sidebar";
-import { useNavigation } from "react-router";
+import { useLocation, useNavigation } from "react-router";
 
 export interface FwGroupContext {
     active: (item: FwSidebarItemProps) => [boolean, () => void],
@@ -38,16 +38,18 @@ export function useGroup() {
 // TODO: better data structure + algorithm
 // TODO: !!!! REFACTOR !!! !!! nagivation loaders !!!
 function useDefaultBehaviour(initialActiveItems: any[]) {
+    const navigation = useNavigation();
     const [activeItems, setActiveItems] = useState(() => createItemsMap(initialActiveItems));
 
     const [, setForceUpdate] = useState(0);
     const forceUpdate = () => setForceUpdate((prev) => prev + 1);
 
     useEffect(() => {
-        setActiveItems(createItemsMap(initialActiveItems));
-        
-        forceUpdate();
-    }, [initialActiveItems]);
+        if (navigation.state !== 'loading') {
+            setActiveItems(createItemsMap(initialActiveItems));
+            forceUpdate();
+        }
+    }, [initialActiveItems, navigation.state]);
 
     function addItem(item: FwSidebarItemProps) {
         const key = itemId(item);

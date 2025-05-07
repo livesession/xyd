@@ -31,6 +31,8 @@ export interface PluginOutput {
     routes: RouteConfigEntry[]
 
     basePath: string
+
+    pagePathMapping: {[page: string]: string}
 }
 
 export type Plugin = () => Promise<PluginOutput | null>

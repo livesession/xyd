@@ -1,6 +1,9 @@
-import {Settings} from "@xyd-js/core";
+import {Navigation, Settings} from "@xyd-js/core";
 import type {Plugin as VitePlugin} from "vite";
 import {RouteConfigEntry} from "@react-router/dev/routes";
+import type {PageURL} from "@xyd-js/core";
+import fs from "fs";
+import path from "path";
 
 import {docsPreset} from "./presets/docs";
 import {graphqlPreset} from "./presets/graphql";
@@ -135,13 +138,14 @@ export async function pluginZero(): Promise<PluginOutput | null> {
 
     if (settings?.api?.sources) {
         const options = {
-            root: "" // TODO: FINISH
         }
 
         const src = sourcesPreset(settings, options)
         src.preinstall = src.preinstall || []
 
-        let preinstallMerge = {}
+        let preinstallMerge = {
+            
+        }
 
         for (const preinstall of src.preinstall) {
             const resp = await preinstall(options)(settings, {
@@ -169,12 +173,79 @@ export async function pluginZero(): Promise<PluginOutput | null> {
         routes.push(...src.routes)
     }
 
+    let pagePathMapping: Record<string, string> = {}
+
+    if (settings?.navigation) {
+        pagePathMapping = mapNavigationToPagePathMapping(settings?.navigation)
+    } else {
+        console.warn("No navigation found in settings")
+    }
+
     return {
         vitePlugins,
         settings,
         routes,
-        basePath
+        basePath,
+        pagePathMapping
     }
+}
+
+// TODO: in the future better algorithm - we should be .md/.mdx faster than checking fs here
+function mapNavigationToPagePathMapping(navigation: Navigation) {
+    const mapping: Record<string, string> = {}
+
+    function getExistingFilePath(basePath: string): string | null {
+        const mdPath = `${basePath}.md`
+        const mdxPath = `${basePath}.mdx`
+        
+        if (fs.existsSync(mdPath)) {
+            return mdPath
+        }
+        if (fs.existsSync(mdxPath)) {
+            return mdxPath
+        }
+        return null
+    }
+
+    function processPages(pages: PageURL[]) {
+        for (const page of pages) {
+            if (typeof page === 'string') {
+                // Handle regular page
+                const existingPath = getExistingFilePath(page)
+                if (existingPath) {
+                    mapping[page] = existingPath
+                }
+            } else if (typeof page === 'object' && 'virtual' in page) {
+                // Handle virtual page
+                const virtualPath = page.virtual
+                const pagePath = page.page
+                const existingPath = getExistingFilePath(virtualPath)
+                if (existingPath) {
+                    mapping[pagePath] = existingPath
+                }
+            } else if (typeof page === 'object' && 'pages' in page) {
+                // Handle nested sidebar
+                processPages(page.pages || [])
+            }
+        }
+    }
+
+    // Process each sidebar route
+    for (const sidebar of navigation.sidebar) {
+        if ('items' in sidebar) {
+            // Handle SidebarRoute
+            for (const item of sidebar.items) {
+                if (item.pages) {
+                    processPages(item.pages)
+                }
+            }
+        } else if (sidebar.pages) {
+            // Handle Sidebar
+            processPages(sidebar.pages)
+        }
+    }
+
+    return mapping
 }
 
 export type {

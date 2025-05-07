@@ -1,6 +1,6 @@
 // server-only
 
-import { Sidebar, MetadataMap, Settings, SidebarMulti, Metadata } from "@xyd-js/core";
+import { Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL } from "@xyd-js/core";
 import { filterNavigationByLevels, pageFrontMatters } from "@xyd-js/content";
 import { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
@@ -21,7 +21,7 @@ export async function mapSettingsToProps(
 }> {
     let uniqIndex = 0
     const filteredNav = filterNavigation(settings, slug)
-    const frontmatters = await pageFrontMatters(filteredNav)
+    const frontmatters = await pageFrontMatters(filteredNav) as MetadataMap
 
     const slugFrontmatter = frontmatters[slug] || null
     const breadcrumbs: IBreadcrumb[] = []
@@ -36,11 +36,11 @@ export async function mapSettingsToProps(
     }, {})
 
     function mapItems(
-        page: string | Sidebar,
+        page: PageURL,
         currentNav: Sidebar,
         nav: Sidebar[]
     ) {
-        if (typeof page !== "string") {
+        if (typeof page !== "string" && !("virtual" in page)) {
             const items = page.pages
                 ?.map((p) => mapItems(p, page, nav))
                 ?.filter(Boolean)
@@ -60,12 +60,18 @@ export async function mapSettingsToProps(
                 items,
             }
         }
+        let pageName = ""
+        if (typeof page === "string") {
+            pageName = page
+        } else {
+            pageName = page.page
+        }
 
-        if (hiddenPages[page]) {
+        if (hiddenPages[pageName]) {
             return null
         }
 
-        const matterTitle = frontmatters && frontmatters[page] && frontmatters[page].title
+        const matterTitle = frontmatters && frontmatters[pageName] && frontmatters[pageName].title
 
         let title = ""
 
@@ -77,12 +83,12 @@ export async function mapSettingsToProps(
         }
 
         if (!title) {
-            console.error("Title not found for page", page)
+            console.error("Title not found for page", pageName)
         }
 
         // TODO: better data structures - for example flat array of filtered nav
-        if (slugFrontmatter && (slugFrontmatter === frontmatters[page])) {
-            const nlinks = mapNavToLinks(page, currentNav, nav, frontmatters, hiddenPages)
+        if (slugFrontmatter && (slugFrontmatter === frontmatters[pageName])) {
+            const nlinks = mapNavToLinks(pageName, currentNav, nav, frontmatters, hiddenPages)
 
             if (nlinks) {
                 navlinks = nlinks
@@ -97,13 +103,13 @@ export async function mapSettingsToProps(
             breadcrumbs.push({
                 // @ts-ignore
                 title,
-                href: page,
+                href: pageName,
             })
         }
 
         return {
             title,
-            href: safePageLink(page),
+            href: safePageLink(pageName),
             active: false,
             uniqIndex: uniqIndex++,
         }
@@ -141,7 +147,7 @@ export async function mapSettingsToProps(
 function filterNavigation(settings: Settings, slug: string): Sidebar[] {
     const sidebarItems: Sidebar[] = []
 
-    let multiSidebarMatch: SidebarMulti | null = null
+    let multiSidebarMatch: SidebarRoute | null = null
 
     settings?.navigation?.sidebar.filter(sidebar => {
         if ("route" in sidebar) {
@@ -174,7 +180,7 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
     })
 
     if (multiSidebarMatch != null) {
-        const side = multiSidebarMatch as SidebarMulti
+        const side = multiSidebarMatch as SidebarRoute
         sidebarItems.push(...side.items)
     }
 
@@ -234,64 +240,75 @@ function mapNavToLinks(
         let prev = currentNav?.pages?.[currentPageIndex - 1]
         let next = currentNav?.pages?.[currentPageIndex + 1]
 
-        if (prev || next) {
-            if (prev && typeof prev !== "string") {
-                console.error("currently nested pages for navlinks are not supported (step 1)")
-                return
+        const atLeastOne = prev || next
+
+        if (!atLeastOne) {
+            return {}
+        }
+
+        if (prev && typeof prev !== "string" && "virtual" in prev) {
+            prev = prev.virtual
+        }
+        if (next && typeof next !== "string" && "virtual" in next) {
+            next = next.virtual
+        }
+
+        if (prev && typeof prev !== "string") {
+            console.error("currently nested pages for navlinks are not supported (step 1)")
+            return
+        }
+
+        if (next && typeof next !== "string") {
+            console.error("currently nested pages for navlinks are not supported (step 1)")
+            return
+        }
+
+        let prevTitle = prev ? frontmatters[prev]?.title || "" : ""
+        let nextTitle = next ? frontmatters[next]?.title || "" : ""
+
+        if (typeof prevTitle !== "string") {
+            if (prevTitle?.title) {
+                prevTitle = prevTitle.title
             }
+        }
 
-            if (next && typeof next !== "string") {
-                console.error("currently nested pages for navlinks are not supported (step 1)")
-                return
+        if (typeof nextTitle !== "string") {
+            if (nextTitle?.title) {
+                nextTitle = nextTitle.title
             }
+        }
 
-            let prevTitle = prev ? frontmatters[prev]?.title || "" : ""
-            let nextTitle = next ? frontmatters[next]?.title || "" : ""
+        if (typeof prevTitle !== "string") {
+            console.error("currently navlink 'prev' must be a string")
+            return
+        }
 
-            if (typeof prevTitle !== "string") {
-                if (prevTitle?.title) {
-                    prevTitle = prevTitle.title
-                }
+        if (typeof nextTitle !== "string") {
+            console.error("currently navlink 'next' must be a string")
+            return
+        }
+
+
+        let prevLink
+        let nextLink
+
+        if (prev && !hiddenPages[prev]) {
+            prevLink = {
+                title: prevTitle,
+                href: safePageLink(prev),
             }
+        }
 
-            if (typeof nextTitle !== "string") {
-                if (nextTitle?.title) {
-                    nextTitle = nextTitle.title
-                }
+        if (next && !hiddenPages[next]) {
+            nextLink = {
+                title: nextTitle,
+                href: safePageLink(next),
             }
+        }
 
-            if (typeof prevTitle !== "string") {
-                console.error("currently navlink 'prev' must be a string")
-                return
-            }
-
-            if (typeof nextTitle !== "string") {
-                console.error("currently navlink 'next' must be a string")
-                return
-            }
-
-    
-            let prevLink
-            let nextLink
-
-            if (prev && !hiddenPages[prev]) {
-                prevLink = {
-                    title: prevTitle,
-                    href: safePageLink(prev),
-                }
-            }
-
-            if (next && !hiddenPages[next]) {
-                nextLink = {
-                    title: nextTitle,
-                    href: safePageLink(next),
-                }
-            }
-
-            return {
-                prev: prevLink || undefined,
-                next: nextLink || undefined,
-            }
+        return {
+            prev: prevLink || undefined,
+            next: nextLink || undefined,
         }
     }
 

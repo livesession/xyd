@@ -96,6 +96,25 @@
     --xyd-callout-icon-color: var(--dark48);
     --xyd-callout-message-color: var(--dark80);
 
+    /* Button */
+    --xyd-button-primary-bg: var(--color-primary);
+    --xyd-button-primary-color: var(--white);
+    --xyd-button-primary-border: var(--color-primary);
+    --xyd-button-primary-bg-hover: var(--color-primary--active);
+    --xyd-button-primary-border-hover: var(--color-primary--active);
+
+    --xyd-button-secondary-bg: var(--dark16);
+    --xyd-button-secondary-color: var(--text-primary);
+    --xyd-button-secondary-border: var(--dark32);
+    --xyd-button-secondary-bg-hover: var(--dark32);
+    --xyd-button-secondary-border-hover: var(--dark40);
+
+    --xyd-button-tertiary-bg: transparent;
+    --xyd-button-tertiary-color: var(--text-primary);
+    --xyd-button-tertiary-border: transparent;
+    --xyd-button-tertiary-bg-hover: var(--dark16);
+    --xyd-button-tertiary-border-hover: var(--dark32);
+
     /* Coder */
     --xyd-code-bgcolor: linear-gradient(45deg, var(--dark8) 0%, var(--dark8) 100%);
     --xyd-code-border-color: var(--dark32);
@@ -138,9 +157,9 @@
     --xyd-guidecard-bgcolor--secondary-active: var(--color-bg);
     --xyd-guidecard-icon-color: var(--text-primary);
     --xyd-guidecard-title-color: var(--text-primary);
-    --xyd-guidecard-color: var(--dark48)
-        /* Heading */
-        --xyd-heading-color: var(--text-primary);
+    --xyd-guidecard-color: var(--dark48);
+    /* Heading */
+    --xyd-heading-color: var(--text-primary);
     --xyd-heading-color--muted: var(--dark48);
     --xyd-heading-icon-color: var(--color-primary);
 
@@ -270,5 +289,5 @@
     --XydAtlas-Ref-Palette-Neutral-70: var(--dark60);
     --XydAtlas-Ref-Palette-Neutral-80: var(--dark80);
     --XydAtlas-Ref-Palette-Neutral-100: var(--dark100);
-    
+
 }

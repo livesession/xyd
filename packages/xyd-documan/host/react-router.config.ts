@@ -3,10 +3,11 @@ import fs from "node:fs/promises";
 
 import type { Config } from "@react-router/dev/config";
 
-import { Settings } from "@xyd-js/core";
+import { Settings, Sidebar } from "@xyd-js/core";
 
 declare global {
     var __xydSettings: Settings;
+    var staticFiles: string[];
 }
 
 // console.log("Config - Settings from shared data:", settings);
@@ -34,17 +35,21 @@ const flattenNavigation = (navigation: Settings['navigation']) => {
     });
 
     // Helper function to process sidebar items recursively
-    function processSidebarItems(items: any[]) {
+    function processSidebarItems(items:  Sidebar[]) {
         items.forEach(item => {
             // If item has pages, process them
             if (item.pages) {
-                item.pages.forEach((page: any) => {
+                item.pages.forEach((page) => {
                     if (typeof page === 'string') {
                         // Add the page path
                         paths.push(`/${page}`);
-                    } else if (page.pages) {
-                        // Recursively process nested pages
-                        processSidebarItems([page]);
+                    } else {
+                        if ("virtual" in page) {
+                            paths.push(`/${page.page}`);
+                        } else {
+                            // Recursively process nested pages
+                            processSidebarItems([page]);
+                        }
                     }
                 });
             }
@@ -84,18 +89,48 @@ async function getStaticFiles() {
     return paths;
 }
 
+// Function to find documentation files for navigation paths
+async function findDocFiles(navigationPaths: string[]) {
+    const docFiles: string[] = [];
+
+    for (const navPath of navigationPaths) {
+        // Try .mdx first, then .md
+        const mdxPath = path.join(process.cwd(), navPath + '.mdx');
+        const mdPath = path.join(process.cwd(), navPath + '.md');
+
+        try {
+            await fs.access(mdxPath);
+            docFiles.push(navPath + ".mdx");
+        } catch {
+            try {
+                await fs.access(mdPath);
+                docFiles.push(navPath + ".md");
+            } catch {
+            }
+        }
+    }
+
+    return docFiles;
+}
+
 // Use settings.navigation if it exists, otherwise use an empty object
 const navigation = __xydSettings?.navigation || { sidebar: [] };
 const navigationPaths = flattenNavigation(navigation);
 
-// Get static files and combine with navigation paths
+// Get static files and documentation files
 const staticFiles = await getStaticFiles();
+const docFiles = await findDocFiles(navigationPaths);
+
+globalThis.staticFiles = staticFiles
+
+// Combine all paths for prerendering
 const prerenderPaths = [
     ...navigationPaths,
-    ...staticFiles
+    ...staticFiles,
+    // ...docFiles,
 ];
-
-const cwd = process.cwd()
+console.log(prerenderPaths, "prerenderPaths")
+const cwd = process.cwd();
 
 export default {
     ssr: false,

@@ -57,12 +57,6 @@ describe('mdFunctionImportCode', () => {
             });
         });
 
-        it('AAA', () => {
-            const result = parseImportPath('~/api/rest/openapi.yaml#PUT /alerts/{id}');
-            // expect(1).toBe(2)
-            console.log(result, 9999)
-        });
-
         it('should parse a file path with line ranges', () => {
             const result = parseImportPath('path/to/file.ts{1,2-4,8:,:10}');
             expect(result).toEqual({
