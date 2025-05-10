@@ -73,17 +73,20 @@ function vitePluginSettings() {
             },
             async load(id) {
                 if (id === 'virtual:xyd-settings.jsx') {
-                    if (typeof preinstall.settings === "string") {
-                        return preinstall.settings
-                    }
-
-                    return `export default ${JSON.stringify(preinstall.settings)};`
+                    return `
+                        export default {
+                            get settings() {
+                                return globalThis.__xydSettings || ${typeof preinstall.settings === "string" ? preinstall.settings : JSON.stringify(preinstall.settings)}
+                            }
+                        }
+                    `
                 }
                 return null;
             },
         };
     }
 }
+
 
 export function vitePluginThemeCSS() {
     return async function ({
@@ -95,7 +98,7 @@ export function vitePluginThemeCSS() {
     }): Promise<VitePlugin> {
         return {
             name: 'virtual:xyd-theme/index.css',
-            
+
             resolveId(source) {
                 if (source === 'virtual:xyd-theme/index.css') {
                     const __filename = fileURLToPath(import.meta.url);

@@ -34,8 +34,8 @@ export interface Settings {
      */
     seo?: SEO
 
-    /** Config configuration */
-    config?: Config
+    /** Engine configuration */
+    engine?: Engine
 }
 
 // ------ START setting for theme START ------
@@ -62,6 +62,9 @@ export interface Theme {
 
     /** Path to the favicon image. For example: /path/to/favicon.svg */
     favicon?: string;
+
+    /** The defult level of the table of contents. */
+    maxTocDepth?: number
 
     /** Hex color codes for your global theme */
     // colors?: Colors TODO: maybe in the future
@@ -200,6 +203,15 @@ export interface Sidebar {
      * Note: groups are recursive, so to add a sub-folder add another group object in the page array.
      */
     pages?: PageURL[]
+
+    /**
+     * The sort order of the group.
+     */
+    sort?: number | {
+        before: string
+
+        after: string
+    }
 }
 
 /**
@@ -291,50 +303,52 @@ export interface AnchorRoot {
 
 
 // ------ START  setting for API START ------
-type APIFileAlias = { [id: string]: string }
-
-/**
- * API file type - can be a string, array of strings, or a map of strings
- */
-export type APIFile = string | string[] | APIFileAlias
-
 /**
  * API configuration interface
  */
 export interface API {
-    /** API information */
-    info?: APIInfo
-
     /** 
-     * A string/array/map of strings of URL(s) or relative path(s) pointing to your OpenAPI file.
+     * OpenAPI configuration
      */
     openapi?: APIFile
 
-    /** 
-     * A string or an array of strings of URL(s) or relative path(s) pointing to your GraphQL file.
+    /**
+     * GraphQL configuration
      */
     graphql?: APIFile
 
-    /** 
-     * A string or an array of strings of URL(s) or relative path(s) pointing to your source code folder.
+    /**
+     * Sources configuration
      */
     sources?: APIFile
-
-    /** 
-     * TODO: better in the future? -> move outside of API ?
-     * Route configuration for API endpoints
-     */
-    route?: {
-        /** GraphQL route */
-        graphql?: string
-
-        /** OpenAPI route */
-        openapi?: string
-
-        /** Sources route */
-        sources?: string
-    }
 }
+
+/**
+ * API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration
+ */
+export type APIFile = string | string[] | APIFileAdvanced | APIFileMap
+
+/**
+ * API file map type
+ */
+export type APIFileMap = { 
+    [name: string]: string
+}
+
+/**
+ * API file advanced type
+ */
+export type APIFileAdvanced = { 
+    /** API information configuration */
+    info?: APIInfo
+
+    /** Route configuration */
+    route: string
+}
+
+/**
+ * API file type - can be a string, array of strings, or a map of strings
+ */
 
 /**
  * API information configuration
@@ -530,7 +544,7 @@ export interface SEO {
 /**
  * Config configuration
  */
-export interface Config {
+export interface Engine {
     /** 
      * Path aliases for imports. Avoid long relative paths by creating shortcuts.
      * 
@@ -553,7 +567,7 @@ export interface Config {
      * @importCode("@my-package/src/components/Badge.tsx")
      * ```
      */
-    paths?: ConfigPaths
+    paths?: EnginePaths
 
     /**
      * @unsafe
@@ -561,12 +575,12 @@ export interface Config {
      * Uniform configuration
      * 
      */
-    uniform?: ConfigUniform
+    uniform?: EngineUniform
 }
 
-type ConfigPaths = { [key: string]: string[] }
+type EnginePaths = { [key: string]: string[] }
 
-type ConfigUniform = {
+type EngineUniform = {
     /**
      * If `true` then virtual pages will not created and generated content will be stored on disk
      */

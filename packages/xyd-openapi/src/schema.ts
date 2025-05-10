@@ -3,7 +3,7 @@ import path from "node:path";
 import {OpenAPIV3} from "openapi-types";
 import Oas from "oas";
 
-import type {Reference, OpenAPIReferenceContext} from "@xyd-js/uniform";
+import type {Reference, OpenAPIReferenceContext, ReferenceContext} from "@xyd-js/uniform";
 
 import {SUPPORTED_HTTP_METHODS} from "./const";
 import {oapPathToReference} from "./paths";
@@ -70,6 +70,30 @@ export function oapSchemaToReferences(
             }
         })
     })
-
+    const tags = oas.getTags()
+    sortReferencesByTags(references, tags)
+    
     return references
+}
+
+function sortReferencesByTags(references: Reference[], tags: string[]) {
+    return references.sort((prev, next) => {
+        const aTags = prev.context?.group || []
+        const bTags = next.context?.group || []
+
+        // Find the first tag that exists in both arrays
+        for (const tag of tags) {
+            const aIndex = aTags.indexOf(tag)
+            const bIndex = bTags.indexOf(tag)
+            
+            if (aIndex !== -1 && bIndex !== -1) {
+                return aIndex - bIndex
+            }
+            if (aIndex !== -1) return -1
+            if (bIndex !== -1) return 1
+        }
+
+        // If no matching tags found, sort by first tag
+        return (aTags[0] || '').localeCompare(bTags[0] || '')
+    })
 }

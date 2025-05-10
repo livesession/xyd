@@ -19,11 +19,16 @@ export type CustomTag = {
 export interface RemarkMdxTocOptions {
     name?: string,
     customTags?: CustomTag[],
+    maxDepth?: number,
     minDepth?: number
 }
 
 // TODO: fix any
 export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => async (ast: any) => {
+    if (!options?.minDepth) {
+        options.minDepth = 2
+    }
+
     console.time('plugin:remarkMdxToc');
     const {visit} = await import("unist-util-visit");
     const {toString} = await import("mdast-util-to-string");
@@ -83,7 +88,11 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
             return;
         }
 
-        if (depth && (options?.minDepth && options.minDepth > depth)) {
+        if (depth && (options?.maxDepth && options.maxDepth < depth)) {
+            return
+        }
+
+        if (depth && (options?.minDepth && depth < options.minDepth)) {
             return
         }
 

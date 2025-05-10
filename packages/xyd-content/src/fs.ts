@@ -37,6 +37,7 @@ export class ContentFS {
             recmaPlugins: [],
             outputFormat: 'function-body',
             development: false,
+            jsx: false
         });
 
         return String(compiled)

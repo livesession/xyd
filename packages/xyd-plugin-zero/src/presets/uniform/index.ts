@@ -13,12 +13,16 @@ import {
     SidebarRoute,
     Metadata
 } from "@xyd-js/core";
-import uniform, { pluginNavigation, Reference, ReferenceType, OpenAPIReferenceContext, GraphQLReferenceContext } from "@xyd-js/uniform";
+import uniform, { pluginNavigation, Reference, ReferenceType, OpenAPIReferenceContext, GraphQLReferenceContext, pluginOpenAIMeta } from "@xyd-js/uniform";
 import {
     compile as compileMarkdown,
     referenceAST
 } from "@xyd-js/uniform/markdown";
 import { Preset, PresetData } from "../../types";
+
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const matter = require('gray-matter'); // TODO: !!! BETTER SOLUTION !!!
 
 const DEFAULT_VIRTUAL_FOLDER = ".xyd/.cache/.content" // TODO: share this + .xyd/.build/.content for build
 
@@ -49,6 +53,7 @@ async function ensureAndCleanupVirtualFolder() {
 export interface uniformPresetOptions {
     urlPrefix?: string
     sourceTheme?: boolean
+    disableFSWrite?: boolean
 }
 
 function flatPages(
@@ -171,7 +176,8 @@ async function uniformResolver(
     uniformApiResolver: (filePath: string) => Promise<Reference[]>,
     sidebar?: (SidebarRoute | Sidebar)[],
     options?: uniformPresetOptions,
-    uniformType?: UniformType
+    uniformType?: UniformType,
+    disableFSWrite?: boolean
 ) {
     let urlPrefix = ""
 
@@ -208,9 +214,12 @@ async function uniformResolver(
     const apiFilePath = path.join(root, apiFile); // TODO: support https
     const uniformRefs = await uniformApiResolver(apiFilePath)
     const uniformWithNavigation = uniform(uniformRefs, {
-        plugins: [pluginNavigation(settings, {
-            urlPrefix,
-        })]
+        plugins: [
+            pluginOpenAIMeta,
+            pluginNavigation(settings, {
+                urlPrefix,
+            }),
+        ]
     })
 
 
@@ -288,15 +297,18 @@ async function uniformResolver(
 
     await ensureAndCleanupVirtualFolder()
 
-    const basePath = settings.config?.uniform?.store
+    let composedFileMap: Record<string, string> = {}
+    if (!settings.engine?.uniform?.store) {
+        composedFileMap = await composeFileMap(root, matchRoute)
+    }
+
+    const basePath = settings.engine?.uniform?.store
         ? root
         : path.join(root, DEFAULT_VIRTUAL_FOLDER)
 
+
     await Promise.all(
         uniformWithNavigation.references.map(async (ref) => {
-            const ast = referenceAST(ref)
-            const md = compileMarkdown(ast)
-
             const byCanonical = path.join(urlPrefix, ref.canonical)
             const mdPath = path.join(basePath, byCanonical + '.md')
 
@@ -307,39 +319,56 @@ async function uniformResolver(
                 return
             }
 
-            const meta: Metadata = {
+            let meta: Metadata = {
                 title: frontmatter.title,
                 layout: "wide"
             }
 
             const resolvedApiFile = path.join("~/", apiFile)
-
+            let region = ""
+            // TODO: in the future more advanced composition? - not only like `GET /users/{id}`
             switch (uniformType) {
                 case "graphql": {
                     const ctx = ref.context as GraphQLReferenceContext;
+                    region = `${ctx.graphqlTypeShort}.${ctx?.graphqlName}`
 
-                    meta.graphql = `${resolvedApiFile}#${capitalize(ctx.graphqlTypeShort)}.${ctx?.graphqlName}`
+                    meta.graphql = `${resolvedApiFile}#${region}`
 
                     break
                 }
                 case "openapi": {
                     const ctx = ref.context as OpenAPIReferenceContext;
                     const method = (ctx?.method || "").toUpperCase()
-
-                    meta.openapi = `${resolvedApiFile}#${method} ${ctx?.path}`
+                    region = `${method} ${ctx?.path}`
+                    meta.openapi = `${resolvedApiFile}#${region}`
                     break
                 }
             }
 
-            const content = matterStringify({ content: "" }, meta);
+            let composedContent = ""
+            if (region && composedFileMap[region]) {
+                const content = await fs.readFile(composedFileMap[region], 'utf-8');
+                const resp = matter(content);
 
-            try {
-                await fs.access(path.dirname(mdPath));
-            } catch {
-                await fs.mkdir(path.dirname(mdPath), { recursive: true });
+                meta = {
+                    ...meta,
+                    ...composyingMetaProps(resp.data, "title", "description", "layout")
+                }
+
+                composedContent = resp.content
             }
 
-            await fs.writeFile(mdPath, content)
+            const content = matterStringify({ content: composedContent }, meta);
+
+            if (!disableFSWrite) {
+                try {
+                    await fs.access(path.dirname(mdPath));
+                } catch {
+                    await fs.mkdir(path.dirname(mdPath), { recursive: true });
+                }
+
+                await fs.writeFile(mdPath, content)
+            }
         })
     )
 
@@ -363,7 +392,54 @@ async function uniformResolver(
 
     return {
         data: uniformData.data,
+        composedFileMap
     }
+}
+
+const allowedMetaProps = ['title', 'description', 'layout'] as const;
+
+type AllowedMetaProps = Pick<Metadata, typeof allowedMetaProps[number]>;
+
+function composyingMetaProps(meta: Metadata, ...props: (keyof AllowedMetaProps)[]) {
+    let newProps = {}
+    props.forEach(prop => {
+        if (allowedMetaProps.includes(prop as typeof allowedMetaProps[number]) && typeof meta[prop] === "string") {
+            newProps[prop] = meta[prop] as string;
+        }
+    });
+
+    return newProps;
+}
+
+async function composeFileMap(basePath: string, matchRoute: string) {
+    const routeMap: Record<string, string> = {};
+
+    async function processDirectory(dirPath: string) {
+        const entries = await fs.readdir(dirPath, { withFileTypes: true });
+
+        for (const entry of entries) {
+            const fullPath = path.join(dirPath, entry.name);
+
+            if (entry.isDirectory()) {
+                await processDirectory(fullPath);
+            } else if (entry.isFile() && (entry.name.endsWith('.md') || entry.name.endsWith('.mdx'))) {
+                try {
+                    const content = await fs.readFile(fullPath, 'utf-8');
+                    const { data: frontmatter } = matter(content);
+
+                    if (frontmatter && frontmatter.openapi) {
+                        const route = frontmatter.openapi;
+                        routeMap[route] = path.join(matchRoute, entry.name);
+                    }
+                } catch (error) {
+                    console.error(`Error processing file ${fullPath}:`, error);
+                }
+            }
+        }
+    }
+
+    await processDirectory(path.join(basePath, matchRoute));
+    return routeMap;
 }
 
 // preinstall adds uniform navigation to settings
@@ -371,12 +447,13 @@ function preinstall(
     id: string,
     uniformApiResolver: (filePath: string) => Promise<Reference[]>,
     apiFile: APIFile,
-    uniformType: UniformType
+    uniformType: UniformType,
+    disableFSWrite?: boolean
 ) {
     return function preinstallInner(options: uniformPresetOptions) {
         return async function uniformPluginInner(settings: Settings, data: PresetData) {
-            const root =  process.cwd()
-         
+            const root = process.cwd()
+
             if (!apiFile) {
                 return
             }
@@ -386,7 +463,7 @@ function preinstall(
             // TODO: support NOT ROUTE MATCH
 
             if (typeof apiFile === "string") {
-                const routeMatch = settings.api?.route?.[id] || ""
+                const routeMatch = id
 
                 const resolved = await uniformResolver(
                     settings,
@@ -397,6 +474,7 @@ function preinstall(
                     settings?.navigation?.sidebar,
                     options,
                     uniformType,
+                    disableFSWrite
                 )
 
                 if (resolved.sidebar) {
@@ -417,8 +495,8 @@ function preinstall(
                 })
             } else {
                 for (const openapiKey in apiFile) {
-                    const uniform = apiFile?.[openapiKey]
-                    const routeMatch = settings.api?.route?.[id]?.[openapiKey] || ""
+                    const uniform = apiFile?.[openapiKey]?.source || ""
+                    const routeMatch = settings.api?.[id]?.[openapiKey]?.route || ""
 
                     if (!routeMatch) {
                         throw new Error(`route match not found for ${openapiKey}`)
@@ -435,7 +513,8 @@ function preinstall(
                         uniformApiResolver,
                         settings?.navigation?.sidebar,
                         options,
-                        uniformType
+                        uniformType,
+                        disableFSWrite
                     )
 
                     if (resolved.sidebar) {
@@ -495,7 +574,8 @@ function uniformPreset(
     apiFile: APIFile,
     sidebar: (SidebarRoute | Sidebar)[],
     options: uniformPresetOptions,
-    uniformApiResolver: (filePath: string) => Promise<Reference[]>
+    uniformApiResolver: (filePath: string) => Promise<Reference[]>,
+    disableFSWrite?: boolean
 ) {
     return function (settings: Settings, uniformType: UniformType) {
         const routeMatches: string[] = []
@@ -504,7 +584,7 @@ function uniformPreset(
             sidebar.forEach((sidebar) => {
                 if ("route" in sidebar) {
                     if (typeof apiFile === "string") {
-                        const routeMatch = settings?.api?.route?.[id]
+                        const routeMatch = id
 
                         if (sidebar.route === routeMatch) {
                             routeMatches.push(routeMatch)
@@ -516,7 +596,7 @@ function uniformPreset(
                     if (typeof apiFile === "object" && !Array.isArray(apiFile)) {
                         for (const routeMatchKey in apiFile) {
                             // TODO: is 'id' a good idea here?
-                            const routeMatch = settings?.api?.route?.[id]?.[routeMatchKey]
+                            const routeMatch = settings?.api?.[id]?.[routeMatchKey]?.route || ""
                             if (sidebar.route === routeMatch) {
                                 routeMatches.push(routeMatch)
                             }
@@ -555,7 +635,7 @@ function uniformPreset(
 
         return {
             preinstall: [
-                preinstall(id, uniformApiResolver, apiFile, uniformType)
+                preinstall(id, uniformApiResolver, apiFile, uniformType, disableFSWrite)
             ],
             routes: routeMatches.map((routeMatch, i) => route(
                 `${routeMatch}/*`,
@@ -581,6 +661,7 @@ export abstract class UniformPreset {
         private presetId: string,
         private apiFile: APIFile,
         private sidebar: (SidebarRoute | Sidebar)[],
+        private disableFSWrite?: boolean
     ) {
     }
 
@@ -608,11 +689,9 @@ export abstract class UniformPreset {
                 sourceTheme: this._sourceTheme,
             },
             this.uniformRefResolver,
+            this.disableFSWrite
         )
     }
 }
 
 
-function capitalize(str: string) {
-    return str.charAt(0).toUpperCase() + str.slice(1)
-}

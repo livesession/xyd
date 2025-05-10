@@ -1,42 +1,53 @@
-import React, {useState} from "react";
-import {DefinitionProperty} from "@xyd-js/uniform";
+import React, { useState } from "react";
+import { DefinitionProperty, DefinitionPropertyMeta } from "@xyd-js/uniform";
 
-import {type MDXReference, uniformValue, uniformChild} from "@/utils/mdx"
+import { type MDXReference, uniformValue, uniformChild } from "@/utils/mdx"
 import * as cn from "./ApiRefProperties.styles";
 
 export interface ApiRefPropertiesProps {
     properties: MDXReference<DefinitionProperty[]>
 }
 
-export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
+export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
     return <ul className={cn.ApiRefPropertiesUlHost}>
         {
-            properties?.map((property, i) => (
-                <li className={cn.ApiRefPropertiesLiHost} key={i}>
-                    <dl className={cn.ApiRefPropertiesDlHost}>
-                        <PropName name="name" value={uniformValue(property.name)}/>
-                        <PropType
-                            name="type"
-                            value={uniformValue(property.type)}
-                            href={propertyTypeHref(property)}
-                        />
-                    </dl>
-                    <div className={cn.ApiRefPropertiesDescriptionHost}>
-                        {uniformChild(property.description) || uniformChild(property)}
-                    </div>
-                    {
-                        property.properties ?
-                            <SubProperties
-                                properties={property.properties as MDXReference<DefinitionProperty>[]}
-                            /> : null
-                    }
-                </li>
-            ))
+            properties?.map((property, i) => {
+                const propName = uniformValue(property.name)
+                const propValue = uniformValue(property.type)
+
+                return  <li className={cn.ApiRefPropertiesLiHost} key={i}>
+                {
+                    propName || propValue ?
+                        <dl className={cn.ApiRefPropertiesDlHost}>
+                            <PropName value={propName} />
+                            <PropType
+                                value={propValue}
+                                meta={property.meta || []}
+                            />
+                            <PropMetaList
+                                metas={property.meta || []}
+                            />
+                        </dl> : null
+                }
+                <div className={cn.ApiRefPropertiesDescriptionHost}>
+                    {uniformChild(property.description) || uniformChild(property)}
+                </div>
+                {
+                    property.properties ?
+                        <SubProperties
+                            properties={property.properties as MDXReference<DefinitionProperty>[]}
+                        /> : null
+                }
+            </li>
+            })
         }
     </ul>
 }
 
-function PropName({name, value}: { name: string, value: string }) {
+function PropName({ value }: { value: string }) {
+    if (!value) {
+        return null
+    }
     return <atlas-apiref-propname>
         <dd>
             <code className={cn.ApiRefPropertiesPropNameCodeHost}>{value}</code>
@@ -44,21 +55,99 @@ function PropName({name, value}: { name: string, value: string }) {
     </atlas-apiref-propname>
 }
 
-function PropType({name, value, href}: { name: string, value: string, href?: string }) {
+interface PropTypeProps {
+    value: string
+
+    href?: string
+
+    meta?: PropMetaProps[]
+}
+function PropType({ value, href, meta }: PropTypeProps) {
+    if (!value) {
+        return null
+    }
+
+    let valueText = value
+
+    const multipleTypes = [value]
+    for (const m of meta || []) { // TODO: find better way to do this
+        if (m.name === "nullable") {
+            multipleTypes.push("null")
+        }
+    }
+    valueText = multipleTypes.join(" or ")
+
     return <atlas-apiref-proptype>
         <dd>
             <code className={cn.ApiRefPropertiesPropTypeCodeHost}>
                 {
                     href
-                        ? <a className={cn.ApiRefPropertiesPropTypeCodeLink} href={href}>{value}</a>
-                        : value
+                        ? <a className={cn.ApiRefPropertiesPropTypeCodeLink} href={href}>{valueText}</a>
+                        : valueText
                 }
             </code>
         </dd>
     </atlas-apiref-proptype>
 }
 
-function SubProperties({properties}: { properties: MDXReference<DefinitionProperty>[] }) {
+export interface PropMetaProps extends DefinitionPropertyMeta {
+    href?: string
+}
+
+function PropMeta(props: PropMetaProps) {
+    let valueText = props.value
+
+    switch (props.name) {
+        case "required":
+            valueText = "Required"
+            break
+        case "deprecated":
+            valueText = "Deprecated"
+            break
+        case "defaults":
+            valueText = `Defaults: ${props.value}`
+            break
+        case "nullable": 
+            return null
+    }
+
+    return <atlas-apiref-propmeta data-name={props.name} data-value={props.value}>
+        <dd>
+            <code>
+                {
+                    props.href
+                        ? <a href={props.href}>{valueText}</a>
+                        : valueText
+                }
+            </code>
+        </dd>
+    </atlas-apiref-propmeta>
+}
+
+export interface PropMetaListProps {
+    metas: PropMetaProps[]
+}
+
+function PropMetaList({ metas }: PropMetaListProps) {
+    const order = { deprecated: 0, required: 1, defaults: 2 };
+
+    const sortedMetas = [...metas].sort((a, b) => {
+        return (order[a.name as keyof typeof order] ?? 3) - (order[b.name as keyof typeof order] ?? 3);
+    });
+
+    return <>
+        {
+            sortedMetas.map((meta, i) => (
+                <PropMeta
+                    key={i}
+                    {...meta}
+                />
+            ))
+        }
+    </>
+}
+
+function SubProperties({ properties }: { properties: MDXReference<DefinitionProperty>[] }) {
     const [expanded, setExpanded] = useState(false)
 
     return <>
@@ -74,22 +163,30 @@ function SubProperties({properties}: { properties: MDXReference<DefinitionProper
                 <ul role="list" className={cn.ApiRefPropertiesSubPropsUl}>
                     {
                         properties?.map((prop, i) => {
+                            const propName = uniformValue(prop.name)
+                            const propValue = uniformValue(prop.type)
+
                             return <li className={cn.ApiRefPropertiesSubPropsLi} key={i}>
-                                <dl className={cn.ApiRefPropertiesDlHost}>
-                                    <PropName name="name" value={uniformValue(prop.name)}/>
-                                    <PropType
-                                        name="type"
-                                        value={uniformValue(prop.type)}
-                                        href={propertyTypeHref(prop)}
-                                    />
-                                </dl>
+                                {
+                                    propName || propValue ?
+                                        <dl className={cn.ApiRefPropertiesDlHost}>
+                                            <PropName value={propName} />
+                                            <PropType
+                                                value={propValue}
+                                                meta={prop.meta || []}
+                                            />
+                                            <PropMetaList
+                                                metas={prop.meta || []}
+                                            />
+                                        </dl> : null
+                                }
                                 <div className={cn.ApiRefPropertiesDescriptionHost}>
                                     {uniformChild(prop.description) || uniformChild(prop)}
                                 </div>
                                 {
                                     prop.properties ?
                                         <SubProperties
-                                            properties={prop.properties as MDXReference<DefinitionProperty>[]}/> : null
+                                            properties={prop.properties as MDXReference<DefinitionProperty>[]} /> : null
                                 }
                             </li>
                         })
@@ -135,13 +232,3 @@ function PropToggle(props: PropsToggleProps) {
     )
 }
 
-function propertyTypeHref(property: MDXReference<DefinitionProperty>) {
-    if (property?.context?.graphqlBuiltInType?.title === "true") { // graphqlBuiltInType should be a boolean
-        return undefined
-    }
-
-    // TODO: FINISH SLUG
-    return property.context?.graphqlTypeShort?.title
-        ? `/docs/api/graphql/${property.context?.graphqlTypeShort?.title}-${uniformValue(property.context?.graphqlTypeFlat?.title)}`
-        : undefined
-}

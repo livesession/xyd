@@ -4,9 +4,9 @@ import { HydratedRouter } from "react-router/dom";
 
 // TODO: !!! BETTER !!! - needed cuz issues with rerender in react-router hash change
 (() => {
-  var _wr = function(type: 'pushState' | 'replaceState') {
+  var _wr = function (type: 'pushState' | 'replaceState') {
     var orig = history[type];
-    return function(data: any, unused: string, url?: string | URL | null) {
+    return function (data: any, unused: string, url?: string | URL | null) {
       var rv = orig.call(history, data, unused, url);
       var e = new Event(type);
       (e as any).arguments = arguments;

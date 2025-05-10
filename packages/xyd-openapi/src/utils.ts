@@ -3,15 +3,14 @@ import fs from "fs";
 
 import yaml from "js-yaml";
 import $refParser from "json-schema-ref-parser";
-import {OpenAPIV3} from "openapi-types";
+import { OpenAPIV3 } from "openapi-types";
+import GithubSlugger from 'github-slugger';
 
-import {ReferenceType} from "@xyd-js/uniform";
+import { DefinitionPropertyMeta, ReferenceType } from "@xyd-js/uniform";
 
-export function toPascalCase(str: string): string {
-    return str
-        .split(/[\s_-]+/)
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join('');
+export function slug(str: string): string {
+    const slugger = new GithubSlugger();
+    return slugger.slug(str);
 }
 
 // TODO: support from url?
@@ -119,3 +118,49 @@ export function generateRequestInitFromOapOperation(
     };
 }
 
+
+export function objectPropMeta(objProp: OpenAPIV3.SchemaObject | OpenAPIV3.ParameterObject, name: string) {
+    const meta: DefinitionPropertyMeta[] = []
+    if (!objProp) {
+        return meta
+    }
+
+    if (typeof objProp.required === "boolean" && objProp.required) {
+        meta.push({
+            name: "required",
+            value: "true"
+        })
+    } else if (Array.isArray(objProp.required)) {
+        for (const req of objProp.required) {
+            if (req === name) {
+                meta.push({
+                    name: "required",
+                    value: "true"
+                })
+            }
+        }
+    }
+
+    if (objProp.deprecated) {
+        meta.push({
+            name: "deprecated",
+            value: "true"
+        })
+    }
+
+    if ("default" in objProp) {
+        meta.push({
+            name: "defaults",
+            value: objProp.default
+        })
+    }
+
+    if ("nullable" in objProp) {
+        meta.push({
+            name: "nullable",
+            value: "true"
+        })
+    }
+
+    return meta
+}

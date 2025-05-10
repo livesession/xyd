@@ -1,5 +1,6 @@
-import {OpenAPIV3} from "openapi-types";
-import {DefinitionProperty} from "@xyd-js/uniform";
+import { OpenAPIV3 } from "openapi-types";
+import { DefinitionProperty, DefinitionPropertyMeta } from "@xyd-js/uniform";
+import { objectPropMeta } from "./utils";
 
 // schemaObjectToDefinitionProperties converts OpenAPI schema object to uniform DefinitionProperty[]
 export function schemaObjectToDefinitionProperties(v: OpenAPIV3.SchemaObject): DefinitionProperty[] {
@@ -23,6 +24,11 @@ export function schemaObjectToDefinitionProperties(v: OpenAPIV3.SchemaObject): D
             merged = schemaObjectToDefinitionProperties(items)
         }
 
+        const meta = [
+            ...(objectPropMeta(objProp, name) || []),
+            ...(objectPropMeta(v, name) || [])
+        ]
+        
         return {
             name: name,
             type: objProp.type || "",
@@ -31,7 +37,8 @@ export function schemaObjectToDefinitionProperties(v: OpenAPIV3.SchemaObject): D
                 merged?.length
                     ? merged
                     : objProp.properties ? schemaObjectToDefinitionProperties(objProp) : []
-            )
+            ),
+            meta
         }
     })
 }

@@ -1,8 +1,13 @@
 // Define the new PluginV type with a callback function that returns another function
-import {Reference} from "./types";
+import { Reference } from "./types";
 
 // Define the new PluginV type with a callback function that returns another function
-export type UniformPlugin<T> = (defer: (defer: () => T) => void) => (ref: Reference) => void;
+export type UniformPluginArgs = {
+    defer: (defer: () => any) => void;
+    // TODO: better type
+    visit: (selector: string | "[method] [path]", callback: (...args: any[]) => void) => void;
+}
+export type UniformPlugin<T> = (args: UniformPluginArgs) => (ref: Reference) => void;
 
 // Utility type to infer if a type is an array and avoid wrapping it into an array twice
 type NormalizeArray<T> = T extends Array<infer U> ? U[] : T;
@@ -38,11 +43,18 @@ export default function uniform<T extends UniformPlugin<any>[]>(
     const finishCallbacks = new Set();
 
     config.plugins.forEach((plugin) => {
-        const call = plugin(cb => {
-            finishCallbacks.add(cb);
+        const call = plugin({
+            defer: (cb) => {
+                if (typeof cb === "function") {
+                    finishCallbacks.add(cb);
+                }
+            },
+            visit: (pattern, callback) => {
+                console.log(5)
+            }
         })
 
-        references.forEach((ref) => {
+        references.map((ref) => {
             call(ref)
         });
     })

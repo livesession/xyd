@@ -1,7 +1,7 @@
 import {Navigation, Settings} from "@xyd-js/core";
 import type {Plugin as VitePlugin} from "vite";
 import {RouteConfigEntry} from "@react-router/dev/routes";
-import type {PageURL} from "@xyd-js/core";
+import type {PageURL, Sidebar, SidebarRoute} from "@xyd-js/core";
 import fs from "fs";
 import path from "path";
 
@@ -12,9 +12,14 @@ import {sourcesPreset} from "./presets/sources";
 
 import type {PluginOutput, Plugin} from "./types";
 
+export interface PluginZeroOptions {
+    disableAPIGeneration?: boolean
+    disableFSWrite?: boolean
+}
+
 // TODO: better plugin runner
 // TODO: REFACTOR
-export async function pluginZero(): Promise<PluginOutput | null> {
+export async function pluginZero(options?: PluginZeroOptions): Promise<PluginOutput | null> {
     let settings: Settings | null = null
     const vitePlugins: VitePlugin[] = []
     const routes: RouteConfigEntry[] = []
@@ -67,17 +72,19 @@ export async function pluginZero(): Promise<PluginOutput | null> {
     }
 
     // graphql preset setup
-    if (settings?.api?.graphql) {
-        const options = {}
+    if (!options?.disableAPIGeneration && settings?.api?.graphql) {
+        const opt = {
+            disableFSWrite: options?.disableFSWrite
+        }
 
-        const gql = graphqlPreset(settings, options)
+        const gql = graphqlPreset(settings, opt)
         gql.preinstall = gql.preinstall || []
 
         let preinstallMerge = {}
 
         for (const preinstall of gql.preinstall) {
-            const resp = await preinstall(options)(settings, {
-                routes: gql.routes
+            const resp = await preinstall(opt)(settings, {
+                routes: gql.routes,
             })
 
             if (resp && typeof resp === 'object') {
@@ -102,17 +109,19 @@ export async function pluginZero(): Promise<PluginOutput | null> {
     }
 
     // openapi preset setup
-    if (settings?.api?.openapi) {
-        const options = {}
+    if (!options?.disableAPIGeneration && settings?.api?.openapi) {
+        const opt = {
+            disableFSWrite: options?.disableFSWrite
+        }
 
-        const oap = openapiPreset(settings, options)
+        const oap = openapiPreset(settings, opt)
         oap.preinstall = oap.preinstall || []
 
         let preinstallMerge = {}
 
         for (const preinstall of oap.preinstall) {
-            const resp = await preinstall(options)(settings, {
-                routes: oap.routes
+            const resp = await preinstall(opt)(settings, {
+                routes: oap.routes,
             })
 
             if (resp && typeof resp === 'object') {
@@ -136,11 +145,12 @@ export async function pluginZero(): Promise<PluginOutput | null> {
         routes.push(...oap.routes)
     }
 
-    if (settings?.api?.sources) {
-        const options = {
+    if (!options?.disableAPIGeneration && settings?.api?.sources) {
+        const opt = {
+            disableFSWrite: options?.disableFSWrite
         }
 
-        const src = sourcesPreset(settings, options)
+        const src = sourcesPreset(settings, opt)
         src.preinstall = src.preinstall || []
 
         let preinstallMerge = {
@@ -148,8 +158,8 @@ export async function pluginZero(): Promise<PluginOutput | null> {
         }
 
         for (const preinstall of src.preinstall) {
-            const resp = await preinstall(options)(settings, {
-                routes: src.routes
+            const resp = await preinstall(opt)(settings, {
+                routes: src.routes,
             })
 
             if (resp && typeof resp === 'object') {
@@ -181,12 +191,38 @@ export async function pluginZero(): Promise<PluginOutput | null> {
         console.warn("No navigation found in settings")
     }
 
+    sortSidebarGroups(settings?.navigation?.sidebar || [])
+
     return {
         vitePlugins,
         settings,
         routes,
         basePath,
         pagePathMapping
+    }
+}
+
+function sortSidebarGroups(sidebar: (SidebarRoute | Sidebar)[]) {
+    // Sort items within each SidebarRoute
+    for (const group of sidebar) {
+        if ('items' in group) {
+            group.items.sort((a, b) => {
+                // If both have numeric sort values, compare them
+                if (typeof a.sort === 'number' && typeof b.sort === 'number') {
+                    return a.sort - b.sort
+                }
+                // If only a has numeric sort, it comes first
+                if (typeof a.sort === 'number') {
+                    return -1
+                }
+                // If only b has numeric sort, it comes first
+                if (typeof b.sort === 'number') {
+                    return 1
+                }
+                // If neither has numeric sort, maintain original order
+                return 0
+            })
+        }
     }
 }
 

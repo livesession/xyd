@@ -11,7 +11,8 @@ import { FwSidebarGroupProps } from "../react";
 // mapSettingsToProps maps @xyd-js/core settings into xyd props
 export async function mapSettingsToProps(
     settings: Settings,
-    slug: string
+    pagePathMapping: { [key: string]: string },
+    slug: string,
 ): Promise<{
     groups: FwSidebarGroupProps[],
     breadcrumbs: IBreadcrumb[]
@@ -21,7 +22,7 @@ export async function mapSettingsToProps(
 }> {
     let uniqIndex = 0
     const filteredNav = filterNavigation(settings, slug)
-    const frontmatters = await pageFrontMatters(filteredNav) as MetadataMap
+    const frontmatters = await pageFrontMatters(filteredNav, pagePathMapping) as MetadataMap
 
     const slugFrontmatter = frontmatters[slug] || null
     const breadcrumbs: IBreadcrumb[] = []
@@ -135,7 +136,8 @@ export async function mapSettingsToProps(
             } as FwSidebarGroupProps
         }) || []
 
-    return {
+
+        return {
         groups,
         breadcrumbs,
         navlinks,

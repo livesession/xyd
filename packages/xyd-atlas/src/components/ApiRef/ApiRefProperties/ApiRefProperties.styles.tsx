@@ -1,22 +1,18 @@
-import {css} from "@linaria/core";
+import { css } from "@linaria/core";
 
 export const ApiRefPropertiesUlHost = css`
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-    gap: 16px;
-
-    padding: 0;
-    margin: 0;
 
     list-style: none;
-
     border: none;
 `;
 
 export const ApiRefPropertiesLiHost = css`
     margin: 0;
-    padding: 0;
+    padding: 20px 0px;
+    border-bottom: 1px solid var(--dark32);
 
     &:first-child {
         padding-top: 0;
@@ -24,6 +20,7 @@ export const ApiRefPropertiesLiHost = css`
 
     &:last-child {
         padding-bottom: 0;
+        border-bottom: none;
     }
 `;
 
@@ -140,4 +137,36 @@ export const ApiRefPropertiesPropToggleLink = css`
         transition: all ease-in .1s;
         color: var(--XydAtlas-Component-ApiRef-Properties__color--active);
     }
+`;
+
+export const globals = css`
+  :global() {
+    atlas-apiref-propmeta { // TODO: !!! BETTER API !!! - FOR CUSTOM COMPONENTS
+        font-size: var(--xyd-font-size-xsmall);
+        line-height: var(--xyd-line-height-xsmall);
+
+
+        code {
+            display: inline-flex;
+            padding: 4px 0;
+            border-radius: 4px;
+            color: var(--XydAtlas-Component-ApiRef-Properties__color-propType);
+        }
+        &[data-name="required"] {
+            code {
+                color: var(--xyd-text-color--error);
+            }
+        }
+
+        a {
+            color: var(--XydAtlas-Component-ApiRef-Properties__color--active);
+            text-decoration: underline;
+            
+            &:hover {
+                text-decoration: none;
+                color: var(--XydAtlas-Sys-Color-Primary--hover);
+            }
+        }
+    }
+  }
 `;

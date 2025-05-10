@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { mdxJsxFromMarkdown } from 'mdast-util-mdx-jsx';
 import * as React from 'react';
 import acornJsx from 'acorn-jsx';
@@ -13,7 +14,6 @@ export function componentLike(
     props: Record<string, any>,
     children: any[]
 ) {
-    // console.log(JSON.stringify(props), 999)
     console.time('componentLike:total');
     
     console.time('componentLike:createElement');

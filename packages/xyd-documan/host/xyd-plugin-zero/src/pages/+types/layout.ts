@@ -9,7 +9,7 @@ type Module = typeof import("../layout.js")
 
 export type Info = {
   parents: [Parent0],
-  id: "layout:/docs/rest"
+  id: "layout:/docs/api-reference"
   file: "../../../xyd-plugin-zero/src/pages/layout.tsx"
   path: "undefined"
   params: {} & { [key: string]: string | undefined }

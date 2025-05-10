@@ -1,6 +1,7 @@
-import type { Plugin, ResolvedConfig } from 'vite'
+import type { Plugin as VitePlugin, ResolvedConfig } from 'vite'
 
 import type { Settings } from '@xyd-js/core'
+import type { Plugin } from '@xyd-js/plugins'
 import { mapSettingsToDocSections, type DocSectionSchema } from '@xyd-js/content/md'
 
 import { DEFAULT_SUGGESTIONS } from './const'
@@ -8,69 +9,84 @@ import type { OramaPluginOptions, OramaCloudConfig, OramaSectionSchema } from '.
 
 export default function OramaPlugin(
     pluginOptions: OramaPluginOptions = {}
-) {
-    return function (xydSettings: Settings): Plugin {
-        const virtualModuleId = 'virtual:xyd-plugin-orama-data'
-        const resolvedVirtualModuleId = `\0${virtualModuleId}`
-
-        let resolveConfig: ResolvedConfig | null = null
-
+): Plugin {
+    return function (settings: Settings) {
         return {
-            name: 'xyd-plugin-orama',
-            enforce: 'pre',
+            name: "plugin-orama",
+            vite: [
+                vitePlugin(
+                    settings,
+                    pluginOptions,
+                )
+            ]
+        }
+    }
+}
 
-            config: () => ({
-                resolve: {
-                    alias: {
-                        'virtual-component:Search': new URL('./Search.tsx', import.meta.url).pathname
-                    }
+function vitePlugin(
+    settings: Settings,
+    pluginOptions: OramaPluginOptions = {}
+): VitePlugin {
+    const virtualModuleId = 'virtual:xyd-plugin-orama-data'
+    const resolvedVirtualModuleId = `\0${virtualModuleId}`
+
+    let resolveConfig: ResolvedConfig | null = null
+
+    return {
+        name: 'xyd-plugin-orama',
+        enforce: 'pre',
+
+        config: () => ({
+            resolve: {
+                alias: {
+                    'virtual-component:Search': new URL('./Search.tsx', import.meta.url).pathname
                 }
-            }),
+            }
+        }),
 
-            async configResolved(config: ResolvedConfig) {
-                if (resolveConfig) {
-                    return
+        async configResolved(config: ResolvedConfig) {
+            if (resolveConfig) {
+                return
+            }
+
+            resolveConfig = config
+        },
+
+        async resolveId(id) {
+            if (id === virtualModuleId) {
+                return resolvedVirtualModuleId
+            }
+        },
+
+        async load(this, id: string) {
+            if (id !== resolvedVirtualModuleId) {
+                return
+            }
+
+            let cloudConfig: OramaCloudConfig | null = null
+            if (pluginOptions.endpoint && pluginOptions.apiKey) {
+                cloudConfig = {
+                    endpoint: pluginOptions.endpoint,
+                    apiKey: pluginOptions.apiKey
                 }
+            }
 
-                resolveConfig = config
-            },
+            const sections = (await mapSettingsToDocSections(settings)).map(mapDocSectionsToOrama)
 
-            async resolveId(id) {
-                if (id === virtualModuleId) {
-                    return resolvedVirtualModuleId
-                }
-            },
-
-            async load(this, id: string) {
-                if (id !== resolvedVirtualModuleId) {
-                    return
-                }
-
-                let cloudConfig: OramaCloudConfig | null = null
-                if (pluginOptions.endpoint && pluginOptions.apiKey) {
-                    cloudConfig = {
-                        endpoint: pluginOptions.endpoint,
-                        apiKey: pluginOptions.apiKey
-                    }
-                }
-
-                const sections = (await mapSettingsToDocSections(xydSettings)).map(mapDocSectionsToOrama)
-
-                return `
+            return `
                 const docs = ${JSON.stringify(sections)};
                 const cloudConfig = ${JSON.stringify(cloudConfig)};
                 const suggestions = ${JSON.stringify(pluginOptions.suggestions || DEFAULT_SUGGESTIONS)};
 
                 export default { docs, cloudConfig, suggestions };
             `
-            }
         }
     }
 }
 
 function mapDocSectionsToOrama(doc: DocSectionSchema): OramaSectionSchema {
     return {
-        category: '', // TODO: finih
+        category: '', // TODO: finish
 
         path: doc.pageUrl,
 

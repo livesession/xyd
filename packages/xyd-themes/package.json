@@ -33,6 +33,7 @@
     "typescript": "5.6.2"
   },
   "dependencies": {
+    "html-to-jsx-transform": "^1.2.0",
     "marked": "^15.0.11"
   }
 }

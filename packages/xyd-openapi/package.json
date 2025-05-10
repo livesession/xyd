@@ -11,8 +11,9 @@
     "build:examples": "tsup --config tsup.examples-config.ts"
   },
   "dependencies": {
-    "@xyd-js/uniform": "workspace:*",
     "@readme/oas-to-snippet": "^26.0.1",
+    "@xyd-js/uniform": "workspace:*",
+    "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
     "json-schema-ref-parser": "^9.0.9",
     "oas": "^25.0.3",
@@ -21,7 +22,7 @@
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
-    "tsup": "^8.3.0",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0"
   }
 }

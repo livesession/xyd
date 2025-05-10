@@ -8,6 +8,10 @@ export function oapRequestBodyToDefinitionProperties(
     reqBody: OpenAPIV3.RequestBodyObject
 ): DefinitionProperty[] | null {
     // TODO: support other content types ???
+    if (!reqBody.content["application/json"]) {
+        return null
+    }
+
     const schema = reqBody.content['application/json'].schema as OpenAPIV3.SchemaObject
 
     let schemaObject: OpenAPIV3.SchemaObject | undefined

@@ -11,6 +11,7 @@ import {UniformPreset} from "../uniform"
 export interface sourcesPresetsOptions {
     urlPrefix?: string
     root?: string
+    disableFSWrite?: boolean    
 }
 
 function preset(
@@ -25,11 +26,15 @@ export const sourcesPreset = preset satisfies Preset<unknown>
 class SourceUniformPreset extends UniformPreset {
     private constructor(
         settings: Settings,
+        options: {
+            disableFSWrite?: boolean
+        }
     ) {
         super(
             "sources",
             settings.api?.sources || "",
             settings?.navigation?.sidebar || [],
+            options.disableFSWrite
         )
     }
 
@@ -37,7 +42,9 @@ class SourceUniformPreset extends UniformPreset {
         settings: Settings,
         options: sourcesPresetsOptions
     ) {
-        return new SourceUniformPreset(settings)
+        return new SourceUniformPreset(settings, {
+            disableFSWrite: options.disableFSWrite
+        })
             .urlPrefix(options.urlPrefix || "")
             .sourceTheme(true)
             .newUniformPreset()(settings, "sources")

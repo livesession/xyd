@@ -47,7 +47,7 @@ export function ApiRefSamples({ examples }: ApiRefSamplesProps) {
                         description={description?.title || ""}
                         codeblocks={codeblocks}
                         theme={syntaxHighlight || undefined}
-                        controlByMeta
+                        // controlByMeta
                     />
                 </div>
             })

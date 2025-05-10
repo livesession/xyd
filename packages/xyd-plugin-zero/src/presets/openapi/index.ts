@@ -8,6 +8,7 @@ import {UniformPreset} from "../uniform"
 export interface openapiPresetOptions {
     urlPrefix?: string
     root?: string
+    disableFSWrite?: boolean
 }
 
 function preset(
@@ -22,11 +23,15 @@ export const openapiPreset = preset satisfies Preset<unknown>
 class OpenAPIUniformPreset extends UniformPreset {
     private constructor(
         settings: Settings,
+        options: {
+            disableFSWrite?: boolean
+        }
     ) {
         super(
             "openapi",
             settings.api?.openapi || "",
             settings?.navigation?.sidebar || [],
+            options.disableFSWrite
         )
     }
 
@@ -34,7 +39,9 @@ class OpenAPIUniformPreset extends UniformPreset {
         settings: Settings,
         options: openapiPresetOptions
     ) {
-        return new OpenAPIUniformPreset(settings)
+        return new OpenAPIUniformPreset(settings, {
+            disableFSWrite: options.disableFSWrite
+        })
             .urlPrefix(options.urlPrefix || "")
             .newUniformPreset()(settings, "openapi")
     }

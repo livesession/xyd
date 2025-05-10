@@ -370,7 +370,7 @@ export function functionMatch(value: string, functionName: string): boolean {
  * @returns The resolved path or the original path if no alias is found
  */
 export function resolvePathAlias(inputPath: string, settings?: Settings, baseDir?: string): string {
-  if (!settings?.config?.paths) {
+  if (!settings?.engine?.paths) {
     return inputPath;
   }
 
@@ -378,7 +378,7 @@ export function resolvePathAlias(inputPath: string, settings?: Settings, baseDir
   let resolvedPath = inputPath;
   let longestMatch = '';
 
-  for (const [alias, aliasPaths] of Object.entries(settings.config.paths)) {
+  for (const [alias, aliasPaths] of Object.entries(settings.engine.paths)) {
     // Convert alias pattern to regex, replacing * with .*
     const aliasPattern = alias.replace(/\*/g, '.*');
     const aliasRegex = new RegExp(`^${aliasPattern}`);

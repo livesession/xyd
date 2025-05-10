@@ -177,52 +177,35 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
     </FwSidebarGroupContext>
 }
 
-type FlatTOC = {
-    depth: number
-    value: string
-    id: string
-}
-
 export function FwToc() {
     const toc = useToC()
-    const location = useLocation()
 
     if (!toc) {
         return null
     }
 
-    const flatToc: FlatTOC[] = []
+    let maxDepth = 2
 
-    const flatten = (toc?: Readonly<ITOC[]>) => {
-        if (!toc) {
-            return
+    const renderTocItems = (items: Readonly<ITOC[]>, depth: number = 0) => {
+        if (depth > maxDepth) {
+            maxDepth = depth
         }
 
-        toc.forEach(item => {
-            flatToc.push({
-                depth: item.depth,
-                value: item.value,
-                id: item.id
-            })
-
-            flatten(item.children)
-        })
+        return items.map((item) => (
+            <React.Fragment key={item.id}>
+                <Toc.Item
+                    id={item.id}
+                    depth={depth}
+                >
+                    {item.value}
+                </Toc.Item>
+                {item.children && item.children.length > 0 && renderTocItems(item.children, depth + 1)}
+            </React.Fragment>
+        ))
     }
 
-    flatten(toc);
-
-    // TODO: its temporary
-    const tocFinal = flatToc.filter(item => item.depth === 2)
-
-    return <Toc>
-        {
-            tocFinal.map((item, index) => <Toc.Item
-                key={index + item.id + item.depth}
-                id={item.id}
-            >
-                {item.value}
-            </Toc.Item>)
-        }
+    return <Toc maxDepth={maxDepth}>
+        {renderTocItems(toc)}
     </Toc>
 }
 

@@ -48,6 +48,7 @@ export const TocLi = css`
             color: var(--xyd-toc-item-color);
             text-wrap: pretty;
             transition: color .15s ease;
+            padding-left: 0;
 
             &:hover {
                 color: var(--xyd-toc-item-color--active);
@@ -57,6 +58,26 @@ export const TocLi = css`
         &[data-active="true"] [part="link"] {
             color: var(--xyd-toc-item-color--active);
             font-weight: 600;
+        }
+
+        &[data-depth="1"] [part="link"] {
+            padding-left: 16px;
+        }
+
+        &[data-depth="2"] [part="link"] {
+            padding-left: 32px;
+        }
+
+        &[data-depth="3"] [part="link"] {
+            padding-left: 48px;
+        }
+
+        &[data-depth="4"] [part="link"] {
+            padding-left: 64px;
+        }
+        
+        &[data-depth="5"] [part="link"] {
+            padding-left: 80px;
         }
     }
 `;

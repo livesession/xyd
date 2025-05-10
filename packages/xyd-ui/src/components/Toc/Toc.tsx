@@ -2,10 +2,13 @@ import React, { useState, useEffect, useRef, useCallback, createContext, useCont
 import { Link } from 'react-router'
 import * as cn from './Toc.styles'
 
+// TODO: better depth ui
+
 export interface TocProps {
   children: React.ReactNode
   defaultValue?: string
   className?: string
+  maxDepth?: number
 }
 
 interface TocContextType {
@@ -22,7 +25,7 @@ const Context = createContext<TocContextType>({
   unregisterActiveItem: () => {},
 })
 
-export function Toc({ children, defaultValue, className }: TocProps) {
+export function Toc({ children, defaultValue, className, maxDepth = 2 }: TocProps) {
   const [activeTrackHeight, setActiveTrackHeight] = useState(0)
   const [activeTrackTop, setActiveTrackTop] = useState(0)
   const [value, setValue] = useState(defaultValue || '')
@@ -62,7 +65,8 @@ export function Toc({ children, defaultValue, className }: TocProps) {
   }
 
   function updateHeadingsList() {
-    headingsRef.current = Array.from(document.querySelectorAll('h2')).map(h => h.id)
+    const selector = Array.from({ length: maxDepth }, (_, i) => `h${i + 2}`).join(',')
+    headingsRef.current = Array.from(document.querySelectorAll(selector)).map(h => h.id)
   }
 
   useEffect(() => {
@@ -144,9 +148,10 @@ export interface TocItemProps {
   children: React.ReactNode
   id: string
   className?: string
+  depth?: number
 }
 
-Toc.Item = function TocItem({ children, id, className }: TocItemProps) {
+Toc.Item = function TocItem({ children, id, className, depth }: TocItemProps) {
   const { value: activeId, onChange, registerActiveItem, unregisterActiveItem } = useContext(Context)
   const itemRef = useRef<HTMLLIElement>(null)
   const active = activeId === id
@@ -164,6 +169,7 @@ Toc.Item = function TocItem({ children, id, className }: TocItemProps) {
         ref={itemRef}
         className={`${cn.TocLi} ${className || ''}`}
         data-active={String(active)}
+        data-depth={depth}
       >
         <Link
           part="link"

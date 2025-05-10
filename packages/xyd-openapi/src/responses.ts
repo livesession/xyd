@@ -3,23 +3,37 @@ import {DefinitionProperty} from "@xyd-js/uniform";
 
 import {schemaObjectToDefinitionProperties} from "./properties";
 
+// TODO: add support for other statuses
+const supportedResponses = [
+    "default",
+    "200",
+    "201",
+]
 export function oapResponseToDefinitionProperties(
     responses: OpenAPIV3.ResponsesObject
 ): DefinitionProperty[] | null {
     let schemaObject: OpenAPIV3.SchemaObject | undefined
+    let responseObject: OpenAPIV3.ResponseObject | undefined
+
     // TODO: support another statuses
-    if (responses["default"]) {
-        const w = responses["default"] as OpenAPIV3.ResponseObject
+    for (const status of supportedResponses) {
+        if (responses[status]) {
+            responseObject = responses[status] as OpenAPIV3.ResponseObject
 
-        schemaObject = w?.content?.['application/json']?.schema as OpenAPIV3.SchemaObject
-    } else if (responses["200"]) {
-        const w = responses["200"] as OpenAPIV3.ResponseObject
+            schemaObject = responseObject?.content?.['application/json']?.schema as OpenAPIV3.SchemaObject
 
-        schemaObject = w?.content?.['application/json']?.schema as OpenAPIV3.SchemaObject
+            break
+        }
     }
 
     if (!schemaObject) {
-        return null
+        return [
+            {
+                description: responseObject?.description || "",
+                name: "",
+                type: ""
+            }
+        ]
     }
 
     switch (schemaObject.type) {

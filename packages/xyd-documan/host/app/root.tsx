@@ -1,8 +1,11 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
 // @ts-ignore
-import settings from "virtual:xyd-settings"; // TODO: !!!! TYPES !!!!!
+import virtualSettings from "virtual:xyd-settings";
+// @ts-ignore
+const {settings} = virtualSettings
 
+// const settings = globalThis.__xydSettings
 const DEFAULT_FAVICON_PATH = "/public/favicon.png";
 
 const faviconPath = settings?.theme?.favicon || DEFAULT_FAVICON_PATH

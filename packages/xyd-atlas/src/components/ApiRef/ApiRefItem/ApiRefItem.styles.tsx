@@ -1,4 +1,4 @@
-import {css} from "@linaria/core";
+import { css } from "@linaria/core";
 
 export const ApiRefItemTitleHost = css`
     font-weight: 400;
@@ -53,4 +53,3 @@ export const ApiRefItemSubtitleHost = css`
 export const ApiRefItemSubtitleLink = css`
     text-decoration: none;
 `;
-

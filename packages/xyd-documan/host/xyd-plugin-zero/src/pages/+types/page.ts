@@ -10,9 +10,9 @@ type Module = typeof import("../page.js")
 
 export type Info = {
   parents: [Parent0, Parent1],
-  id: "/docs/rest"
+  id: "/docs/api-reference"
   file: "../../../xyd-plugin-zero/src/pages/page.tsx"
-  path: "/docs/rest/*"
+  path: "/docs/api-reference/*"
   params: {"*": string} & { [key: string]: string | undefined }
   module: Module
   loaderData: T.CreateLoaderData<Module>

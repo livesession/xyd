@@ -28,7 +28,7 @@ const extensions = ['tsx', 'jsx', 'js', 'ts', 'json'];
 export async function readSettings(): Promise<Settings | string | null> {
     const dirPath = process.cwd();
     const baseFileName = 'xyd';
-    
+
     let settingsFilePath = '';
     let reactSettings = false;
 
@@ -61,6 +61,15 @@ export async function readSettings(): Promise<Settings | string | null> {
         return config.default as Settings;
     } else {
         const rawJsonSettings = await fs.readFile(settingsFilePath, 'utf-8');
-        return JSON.parse(rawJsonSettings);
+        try {
+            let json = JSON.parse(rawJsonSettings);
+
+
+            return json
+        } catch (e) {
+            console.error(e)
+
+            return null
+        }
     }
 }

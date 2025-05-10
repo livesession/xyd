@@ -9,13 +9,10 @@ import { compile as mdxCompile } from "@mdx-js/mdx";
 
 import { Metadata, Sidebar, MetadataMap, Header, PageURL, VirtualPage } from "@xyd-js/core";
 
-declare global {
-    var __xydPagePathMapping: { [key: string]: string }
-}
 // TODO: better algorithm + data structures - since it's on build time it's not a big deal nevertheless it should be changed in the future
 
 // pageFrontMatters gets frontmatters for given navigation
-export async function pageFrontMatters(navigation: Sidebar[]): Promise<MetadataMap> {
+export async function pageFrontMatters(navigation: Sidebar[], pagePathMapping: { [key: string]: string }): Promise<MetadataMap> {
     const frontmatters: MetadataMap = {}
 
     const promises: Promise<any>[] = []
@@ -23,14 +20,14 @@ export async function pageFrontMatters(navigation: Sidebar[]): Promise<MetadataM
     function mapPages(page: PageURL) {
         if (typeof page !== "string") {
             if ("virtual" in page) {
-                promises.push(job(page, frontmatters))
+                promises.push(job(page, frontmatters, pagePathMapping))
             } else {
                 page.pages?.forEach(mapPages)
             }
             return
         }
 
-        promises.push(job(page, frontmatters))
+        promises.push(job(page, frontmatters, pagePathMapping))
     }
 
     navigation.map(async (nav: Sidebar) => {
@@ -150,6 +147,10 @@ async function getFrontmatter(filePath: string): Promise<Metadata> {
 
     const matter: Metadata = frontmatter
 
+    if (!matter) {
+        throw new Error(`Frontmatter not found in ${filePath}`)
+    }
+
     let title = ""
     if (typeof matter.title === "string") {
         title = matter.title
@@ -167,15 +168,7 @@ async function getFrontmatter(filePath: string): Promise<Metadata> {
 }
 
 // TODO: indices map to not do like this - search for mdx if not then md
-async function job(page: string | VirtualPage, frontmatters: MetadataMap) {
-    let fileSource = ""
-
-    if (typeof page === "string") {
-        fileSource = page
-    } else {
-        fileSource = page.virtual
-    }
-
+async function job(page: string | VirtualPage, frontmatters: MetadataMap, pagePathMapping: { [key: string]: string }) {
     let pageName = ""
     if (typeof page === "string") {
         pageName = page
@@ -183,8 +176,11 @@ async function job(page: string | VirtualPage, frontmatters: MetadataMap) {
         pageName = page.page
     }
 
-    const pagePath = globalThis.__xydPagePathMapping[pageName] || ""
-    const filePath = path.join(process.cwd(), pagePath)
+    if (!pagePathMapping[pageName]) {
+        throw new Error(`Content file for page "${pageName}" does not exist. Please check if you added a content file correctly`)
+    }
+
+    const filePath = path.join(process.cwd(), pagePathMapping[pageName])
     
     const matter = await getFrontmatter(filePath)
 

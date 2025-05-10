@@ -1,22 +1,22 @@
 import React from "react";
 
-import {OpenAPIReferenceContext, Reference, ReferenceCategory} from "@xyd-js/uniform";
-import {Heading, Anchor} from "@xyd-js/components/writer";
+import { OpenAPIReferenceContext, Reference, ReferenceCategory } from "@xyd-js/uniform";
+import { Heading, Anchor } from "@xyd-js/components/writer";
 
-import {MDXReference, uniformChild, uniformValue} from "@/utils/mdx";
+import { MDXReference, uniformChild, uniformValue } from "@/utils/mdx";
 import {
     ApiRefProperties,
     ApiRefSamples
 } from "@/components/ApiRef";
 import * as cn from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
-import {Header} from "@xyd-js/website/src/app/components";
+import { Header } from "@xyd-js/website/src/app/components";
 
 export interface ApiRefItemProps {
     reference: MDXReference<Reference>
 }
 
 // TODO: context with current referene?
-export function ApiRefItem({reference}: ApiRefItemProps) {
+export function ApiRefItem({ reference }: ApiRefItemProps) {
     let topNavbar;
 
     switch (reference?.category?.title) {
@@ -37,40 +37,46 @@ export function ApiRefItem({reference}: ApiRefItemProps) {
     }
 
     return <atlas-apiref-item className={cn.ApiRefItemHost}>
-        <$Title title={uniformValue(reference.title)}/>
+        <$Title title={uniformValue(reference.title)} />
 
         {topNavbar}
 
         {uniformChild(reference.description)}
 
         <atlas-apiref-item-showcase className={cn.ApiRefItemGrid}>
-            <$Properties reference={reference}/>
+            <$Properties reference={reference} />
 
-            {reference.examples && <ApiRefSamples examples={reference.examples}/>}
+            {reference.examples && <ApiRefSamples examples={reference.examples} />}
         </atlas-apiref-item-showcase>
     </atlas-apiref-item>
 }
 
-function $Properties({reference}: ApiRefItemProps) {
+function $Properties({ reference }: ApiRefItemProps) {
     return <atlas-apiref-properties className={cn.ApiRefItemPropertiesHost}>
         {reference?.definitions?.map((definition, i) => <div key={i}>
             {
-                definition.properties?.length ? <div key={i} className={cn.ApiRefItemPropertiesItem}>
-                    <$Subtitle title={uniformValue(definition.title)}/>
+                definition?.title ? <div key={i} className={cn.ApiRefItemPropertiesItem}>
+                    <$Subtitle title={uniformValue(definition.title)} />
 
-                    <ApiRefProperties properties={definition.properties}/>
+                    {definition.description && <div>
+                        {uniformChild(definition.description)}
+                    </div>}
+
+                    {
+                        definition.properties?.length ? <ApiRefProperties properties={definition.properties} /> : null
+                    }
                 </div> : null
             }
         </div>)}
     </atlas-apiref-properties>
 }
 
-function $Navbar({label, subtitle}: { label: string, subtitle: string }) {
+function $Navbar({ label, subtitle }: { label: string, subtitle: string }) {
     return <>
         <div className={cn.ApiRefItemNavbarHost}>
             <span className={cn.ApiRefItemNavbarContainer}>
                 <span className={cn.ApiRefItemNavbarLabel}>
-                   {label.toUpperCase()}
+                    {label.toUpperCase()}
                 </span>
                 <span>
                     {subtitle}
@@ -80,7 +86,7 @@ function $Navbar({label, subtitle}: { label: string, subtitle: string }) {
     </>
 }
 
-function $Title({title}: { title: string }) {
+function $Title({ title }: { title: string }) {
     return <>
         <Heading size={2}>
             {title}
@@ -88,7 +94,7 @@ function $Title({title}: { title: string }) {
     </>
 }
 
-function $Subtitle({title}: { title: string }) {
+function $Subtitle({ title }: { title: string }) {
     return <>
         <Heading size={3}>
             {title}

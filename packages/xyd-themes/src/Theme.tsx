@@ -8,6 +8,7 @@ import { parse } from '@babel/parser';
 import { highlight, HighlightedCode, Token } from "codehike/code";
 import { marked } from 'marked';
 import { fromMarkdown } from 'mdast-util-from-markdown';
+import { htmlToJsx } from "html-to-jsx-transform";
 
 import { useMetadata, Surfaces } from "@xyd-js/framework/react";
 import { type AtlasProps } from "@xyd-js/atlas";
@@ -152,6 +153,7 @@ export abstract class Theme {
     vars: AtlasVars,
     treeChilds: readonly RootContent[]
   ) {
+    //@ts-ignore
     const outputVarExamples: ExampleRoot = {
       groups: []
     }
@@ -234,7 +236,8 @@ export abstract class Theme {
             props.references[0].title = firstChild.value;
           }
         } else {
-          const reactTree = jsxStringToReactTree(html)
+          const jsx = htmlToJsx(html);
+          const reactTree = jsxStringToReactTree(jsx);
           if (reactTree) {
             reactElements.push(reactTree)
           }
@@ -267,17 +270,28 @@ export abstract class Theme {
       }
     }
 
-    if (props.references?.[0]?.description) {
+    const propDescription = props.references?.[0]?.description
+    if (propDescription) {
       // Sanitize frontmatter description
-      if (typeof props.references[0].description === "string") {
+      if (typeof propDescription === "string") {
         // Remove frontmatter using regex
-        const content = props.references[0].description.replace(/^---[\s\S]*?---\n/, '');
-        props.references[0].description = content;
+        const content = propDescription.replace(/^---[\s\S]*?---\n/, '');
+        
+        const md = fromMarkdown(content)
+        const hast = toHast(md)
+        const html = toHtml(hast)
+        const jsx = htmlToJsx(html);
+        const reactTree = jsxStringToReactTree(jsx);
+        if (reactTree) {
+          props.references[0].description = reactTree;
+        } else {
+          props.references[0].description = content
+        }
       }
     }
 
     if (reactElements.length > 0) {
-      if (props.references?.[0]?.description && typeof props.references[0].description === "string") {
+      if (props.references?.[0]?.description) {
         reactElements.unshift(props.references[0].description)
       }
       // Create a combined React element from all the elements
@@ -447,14 +461,16 @@ function findJSX(node) {
   return null;
 }
 
-function jsxStringToReactTree(jsxString: string) {
+function jsxStringToReactTree(jsxString: string = "") {
   const ast = parse(jsxString, { sourceType: 'module', plugins: ['jsx'] });
   const rootJSX = findJSX(ast);
   if (!rootJSX) {
     return null
   }
 
-  return buildElement(rootJSX)
+  const reactTree = buildElement(rootJSX)
+
+  return reactTree
 }
 
 // Helper function to fix backslashes in tokens
@@ -491,6 +507,16 @@ function processDefinitionProperties(definitions: Definition[]): Definition[] {
       definition.properties = processDefinitionProperty(definition.properties);
     }
 
+    if(definition.description && typeof definition.description === "string") {
+      const md = fromMarkdown(definition.description)
+      const hast = toHast(md)
+      const html = toHtml(hast)
+      const jsx = htmlToJsx(html);
+      const reactTree = jsxStringToReactTree(jsx);
+      if (reactTree) {
+        definition.description = reactTree;
+      }
+    }
     return definition;
   });
 }
@@ -507,18 +533,15 @@ function processDefinitionProperty(properties: DefinitionProperty[]): Definition
 
   return properties.map(property => {
     const newProperty: DefinitionProperty = {
-      name: property.name,
-      type: property.type,
-      description: property.description,
-      context: property.context,
-      properties: property.properties
+      ...property,
     };
 
     if (typeof newProperty.description === 'string' && isMarkdownText(newProperty.description)) {
       const mdast = fromMarkdown(newProperty.description);
       const hast = toHast(mdast);
       const html = toHtml(hast);
-      const reactTree = jsxStringToReactTree(html);
+      const jsx = htmlToJsx(html);
+      const reactTree = jsxStringToReactTree(jsx);
       if (reactTree) {
         newProperty.description = reactTree;
       }

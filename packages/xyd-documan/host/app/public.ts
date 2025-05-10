@@ -20,7 +20,6 @@ const MIME_TYPES: Record<string, string> = {
 const BINARY_FILE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.ico'];
 
 export async function loader({ params }: any) {
-    console.log("PUBLIC HELLO")
     const filePath = path.join(process.cwd(), "public", params["*"])
     
     try {

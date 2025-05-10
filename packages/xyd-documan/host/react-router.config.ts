@@ -129,7 +129,6 @@ const prerenderPaths = [
     ...staticFiles,
     // ...docFiles,
 ];
-console.log(prerenderPaths, "prerenderPaths")
 const cwd = process.cwd();
 
 export default {

@@ -1,21 +1,28 @@
-import {Outlet, useLoaderData, useLocation, useNavigate, useNavigation} from "react-router";
+import { Outlet, useLoaderData, useLocation, useNavigate, useNavigation, type Route, isRouteErrorResponse } from "react-router";
 
-import {mapSettingsToProps} from "@xyd-js/framework/hydration";
+import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 
-import type {Metadata, MetadataMap, Theme as ThemeSettings} from "@xyd-js/core";
-import type {INavLinks, IBreadcrumb} from "@xyd-js/ui";
-import {Framework, FwLink, type FwSidebarGroupProps} from "@xyd-js/framework/react";
-import {ReactContent} from "@xyd-js/components/content";
-import {Atlas, AtlasContext} from "@xyd-js/atlas";
-import {Surfaces} from "@xyd-js/framework/react";
+import type { Metadata, MetadataMap, Theme as ThemeSettings } from "@xyd-js/core";
+import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
+import { Framework, FwLink, type FwSidebarGroupProps } from "@xyd-js/framework/react";
+import { ReactContent } from "@xyd-js/components/content";
+import { Atlas, AtlasContext } from "@xyd-js/atlas";
+import { Surfaces } from "@xyd-js/framework/react";
 
-import settings from "virtual:xyd-settings";
+// @ts-ignore
+import virtualSettings from "virtual:xyd-settings";
+// @ts-ignore
+const { settings } = virtualSettings
+// const settings = globalThis.__xydSettings
 import Theme from "virtual:xyd-theme";
 
+// @ts-ignore
 import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
 
-import {PageContext} from "./context";
+import { PageContext } from "./context";
+
+class ContentAbc {}
 
 interface LoaderData {
     sidebarGroups: FwSidebarGroupProps[]
@@ -36,15 +43,15 @@ const reactContent = new ReactContent(settings, {
     useNavigate,
     useNavigation
 })
-globalThis.themeSettings = settings.theme
+globalThis.themeSettings = settings?.theme
 globalThis.reactContent = reactContent
 globalThis.surfaces = surfaces
 
 const theme = new Theme()
 
-const {Layout: BaseThemeLayout} = theme
+const { Layout: BaseThemeLayout } = theme
 
-export async function loader({request}: { request: any }) {
+export async function loader({ request }: { request: any }) {
     const slug = getPathname(request.url || "index") || "index"
 
     const {
@@ -54,6 +61,7 @@ export async function loader({request}: { request: any }) {
         metadata
     } = await mapSettingsToProps(
         settings,
+        globalThis.__xydPagePathMapping,
         slug,
     )
 
@@ -65,6 +73,36 @@ export async function loader({request}: { request: any }) {
         metadata,
     } as LoaderData
 }
+
+// TODO: !!! better solution !!!
+// export function ErrorBoundary({
+//     error,
+//   }: Route.ErrorBoundaryProps) {
+//     if (isRouteErrorResponse(error)) {
+//       return (
+//         <>
+//           <h1>
+//             {error.status} {error.statusText}
+//           </h1>
+//           <p>{error.data}</p>
+//         </>
+//       );
+//     } else if (error instanceof Error) {
+//       return (
+//         <div>
+//           <h1>Application Error</h1>
+//           <pre style={{
+//                 padding: "2rem",
+//                 background: "hsla(10, 50%, 50%, 0.1)",
+//                 color: "red",
+//                 overflow: "auto",
+//           }}>{error.stack}</pre>
+//         </div>
+//       );
+//     } else {
+//       return <h1>Unknown Error</h1>;
+//     }
+//   }
 
 export default function Layout() {
     const loaderData = useLoaderData<LoaderData>()
@@ -82,8 +120,8 @@ export default function Layout() {
                 }}
             >
                 <BaseThemeLayout>
-                    <PageContext value={{theme}}>
-                        <Outlet/>
+                    <PageContext value={{ theme }}>
+                        <Outlet />
                     </PageContext>
                 </BaseThemeLayout>
             </AtlasContext>

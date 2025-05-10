@@ -6,6 +6,9 @@ declare module 'virtual:xyd-settings' {
 
     const settings: Settings;
     export default settings;
+    export {
+        settings as Settings
+    }
 }
 
 declare module 'virtual:xyd-theme' {

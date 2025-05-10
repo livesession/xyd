@@ -49,7 +49,7 @@ export async function build() {
             plugins: [
                 ...(xydContentVitePlugins({
                     toc: {
-                        minDepth: 2,
+                        maxDepth: resp.settings.theme?.maxTocDepth || 2,
                     },
                     settings: resp.settings,
                 }) as Plugin[]),
@@ -61,8 +61,14 @@ export async function build() {
                 include: ["react/jsx-runtime"],
             },
             define: {
-                'process.env.NODE_ENV': JSON.stringify('production')
-            }
+                'process.env.NODE_ENV': JSON.stringify('production'),
+                'process.env': {}
+            },
+            resolve: {
+                alias: {
+                  process: 'process/browser'
+                }
+            },
         });
 
         // Build the SSR bundle
@@ -75,7 +81,7 @@ export async function build() {
                 fixManifestPlugin(appRoot),
                 ...(xydContentVitePlugins({
                     toc: {
-                        minDepth: 2,
+                        maxDepth: resp.settings.theme?.maxTocDepth || 2,
                     },
                     settings: resp.settings,
                 }) as Plugin[]),
@@ -87,8 +93,14 @@ export async function build() {
                 include: ["react/jsx-runtime"],
             },
             define: {
-                'process.env.NODE_ENV': JSON.stringify('production')
-            }
+                'process.env.NODE_ENV': JSON.stringify('production'),
+                'process.env': {}
+            },
+            resolve: {
+                alias: {
+                  process: 'process/browser'
+                }
+            },
         });
 
         // console.log('Build completed successfully.'); // TODO: better message

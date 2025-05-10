@@ -1,4 +1,5 @@
 import path from "node:path";
+import fs from "node:fs";
 
 import * as React from "react";
 import {useMemo, useContext, useId} from "react";
@@ -11,12 +12,14 @@ import {mapSettingsToProps} from "@xyd-js/framework/hydration";
 import {FrameworkPage, type FwSidebarGroupProps} from "@xyd-js/framework/react";
 import type {IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
-import settings from "virtual:xyd-settings";
-
+// @ts-ignore
+import virtualSettings from "virtual:xyd-settings";
+// @ts-ignore
+const {settings} = virtualSettings
 import {PageContext} from "./context";
 
 const mdPlugins = markdownPlugins({
-    minDepth: 2, // TODO: configurable
+    maxDepth: settings?.theme?.maxTocDepth || 2, // TODO: configurable
 }, settings)
 
 const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
@@ -79,6 +82,7 @@ export async function loader({request}: { request: any }) {
     if (!globalThis.__xydPagePathMapping) {
         throw new Error("PagePathMapping not found")
     }
+
     const timedebug = timedebugLoader
 
     timedebug.total
@@ -99,11 +103,11 @@ export async function loader({request}: { request: any }) {
         metadata
     } = await mapSettingsToProps( // TOOD: we use mapSettingsToProps twice (in layout) - refactor
         settings,
+        globalThis.__xydPagePathMapping,
         slug,
     )
     timedebug.mapSettingsToPropsEnd
 
-    console.log(3333)
     function redirectFallback() {
         if (!sidebarGroups) {
             return
@@ -141,8 +145,6 @@ export async function loader({request}: { request: any }) {
     }
 
     timedebug.totalEnd
-
-    console.log("FINISHED")
 
     return {
         sidebarGroups,
@@ -269,7 +271,6 @@ const createElementWithKeys = (type: any, props: any) => {
 // TODO: move to content?
 function mdxExport(code: string) {
     // Create a wrapper around React.createElement that adds keys to elements in lists
-
     const scope = {
         Fragment: React.Fragment,
         jsxs: createElementWithKeys,
@@ -277,6 +278,7 @@ function mdxExport(code: string) {
         jsxDEV: createElementWithKeys,
     }
     const fn = new Function(...Object.keys(scope), code)
+
     return fn(scope)
 }
 

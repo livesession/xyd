@@ -27,10 +27,20 @@ export interface Definition {
     description?: string | React.ReactNode;
 }
 
+export interface Meta<T = string> {
+    name: T;
+
+    value?: string;
+}
+
+export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable">
+
 export interface DefinitionProperty {
     name: string;
 
     type: string;
+
+    meta?: DefinitionPropertyMeta[];
 
     description: string | React.ReactNode;
 
@@ -120,22 +130,24 @@ export enum ReferenceType {
     // end for code
 }
 
-export interface GraphQLReferenceContext {
+export interface BaseReferenceContext {
+    group?: string[];
+}
+
+export interface GraphQLReferenceContext extends BaseReferenceContext {
     graphqlTypeShort: string;
     graphqlName: string;
 }
 
 // TODO: custom value?
-export interface OpenAPIReferenceContext {
+export interface OpenAPIReferenceContext extends BaseReferenceContext {
     method: string;
-
     path: string;
-
     fullPath: string;
 }
 
 // Add TypeDocReferenceContext to the union type
-export interface TypeDocReferenceContext {
+export interface TypeDocReferenceContext extends BaseReferenceContext {
     packageName: string;
     fileName: string;
     fileFullPath: string;
@@ -151,7 +163,7 @@ export interface TypeDocReferenceContext {
     };
 }
 
-export type ReferenceContext = GraphQLReferenceContext | OpenAPIReferenceContext | TypeDocReferenceContext;
+export type ReferenceContext = GraphQLReferenceContext | OpenAPIReferenceContext | TypeDocReferenceContext
 
 export interface GraphQLExampleContext {
     schema?: any; // TODO:

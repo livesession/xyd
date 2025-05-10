@@ -1,4 +1,7 @@
-import { defineConfig, Options } from 'tsup';
+import {copyFile} from 'node:fs/promises';
+import {join} from 'node:path';
+
+import {defineConfig, Options} from 'tsup';
 
 import pkg from './package.json';
 
