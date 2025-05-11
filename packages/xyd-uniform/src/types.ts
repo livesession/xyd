@@ -33,7 +33,7 @@ export interface Meta<T = string> {
     value?: string;
 }
 
-export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable">
+export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum">
 
 export interface DefinitionProperty {
     name: string;

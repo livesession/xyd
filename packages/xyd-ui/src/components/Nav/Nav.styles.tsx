@@ -38,6 +38,7 @@ export const NavHost = css`
             display: flex;
             align-items: center;
             margin-right: auto;
+            width: 100%;
         }
 
         [part="list"] {

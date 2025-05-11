@@ -13,7 +13,7 @@ import {
     SidebarRoute,
     Metadata
 } from "@xyd-js/core";
-import uniform, { pluginNavigation, Reference, ReferenceType, OpenAPIReferenceContext, GraphQLReferenceContext, pluginOpenAIMeta } from "@xyd-js/uniform";
+import uniform, { pluginNavigation, Reference, ReferenceType, OpenAPIReferenceContext, GraphQLReferenceContext } from "@xyd-js/uniform";
 import {
     compile as compileMarkdown,
     referenceAST
@@ -213,9 +213,11 @@ async function uniformResolver(
 
     const apiFilePath = path.join(root, apiFile); // TODO: support https
     const uniformRefs = await uniformApiResolver(apiFilePath)
+    const plugins = globalThis.__xydUserUniformVitePlugins || []
+
     const uniformWithNavigation = uniform(uniformRefs, {
         plugins: [
-            pluginOpenAIMeta,
+            ...plugins,
             pluginNavigation(settings, {
                 urlPrefix,
             }),

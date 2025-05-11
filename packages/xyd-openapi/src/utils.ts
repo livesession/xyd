@@ -80,52 +80,13 @@ function schemaToRequestBody(schema: OpenAPIV3.SchemaObject): string {
     return JSON.stringify(requestBody);
 }
 
-// generateRequestInitFromOpenAPIObject generates a RequestInit object from an OpenAPI object
-export function generateRequestInitFromOapOperation(
-    urlPath: string,
-    operation: OpenAPIV3.OperationObject
-): { url: string, reqInit: RequestInit } {
-    const reqInit: RequestInit = {}
-    let queryParams = '';
-
-    if (operation.parameters) {
-        const parameters = operation.parameters as OpenAPIV3.ParameterObject[]
-
-        const params = new URLSearchParams(
-            Object.entries(parameters).map(([key, value]) => [key, String(value)])
-        ).toString();
-
-        queryParams += `?${params}`;
-    }
-
-    if (operation.requestBody) {
-        const reqBody = operation.requestBody as OpenAPIV3.RequestBodyObject;
-        const contentType = Object.keys(reqBody.content || {})[0];
-
-        if (contentType === "application/json") {
-            const schema = reqBody.content['application/json'].schema as OpenAPIV3.SchemaObject
-
-            reqInit.body = schemaToRequestBody(schema);
-            reqInit.headers = {
-                'Content-Type': 'application/json',
-            }
-        }
-    }
-
-    return {
-        url: `${urlPath}${queryParams}`,
-        reqInit,
-    };
-}
-
-
 export function objectPropMeta(objProp: OpenAPIV3.SchemaObject | OpenAPIV3.ParameterObject, name: string) {
     const meta: DefinitionPropertyMeta[] = []
     if (!objProp) {
         return meta
     }
 
-    if (typeof objProp.required === "boolean" && objProp.required) {
+    if (typeof objProp.required === "boolean" && objProp.required ) {
         meta.push({
             name: "required",
             value: "true"

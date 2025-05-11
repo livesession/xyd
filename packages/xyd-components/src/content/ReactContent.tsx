@@ -1,6 +1,6 @@
-import React, {createContext, useContext, useEffect, useRef, useState} from 'react'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 
-import {HighlightedCode} from 'codehike/code';
+import { HighlightedCode } from 'codehike/code';
 
 import {
     Settings
@@ -42,8 +42,8 @@ import {
     IconAppTemplate,
     IconQuote
 } from '../writer'
-import {CodeSample} from "../coder";
-import {GridDecorator} from './GridDecorator';
+import { CodeSample } from "../coder";
+import { GridDecorator } from './GridDecorator';
 
 interface ReactContentOptions {
     Link?: React.ElementType
@@ -73,7 +73,7 @@ export class ReactContent {
             contentDecorators
         ]
             .map(fn => fn.bind(this))
-            .reduce((acc, fn) => ({...acc, ...fn()}), {});
+            .reduce((acc, fn) => ({ ...acc, ...fn() }), {});
 
         return {
             ...builtInComponents,
@@ -100,6 +100,7 @@ export class ReactContent {
         return {
             ...noopBuiltInFlatComponents,
             ...noopNestedComponents,
+            React: NoopReactComponent,
         }
     }
 }
@@ -111,6 +112,10 @@ function NoopComponent() {
 NoopComponent.Item = () => null
 NoopComponent.Content = () => null
 
+function NoopReactComponent() { // TODO: !!!! in the future refactor but `html-to-jsx-transform` creates <React.Fragment> !!!
+    return null
+}
+NoopReactComponent.Fragment = React.Fragment
 
 export function stdContent(
     this: ReactContent,
@@ -184,11 +189,13 @@ export function stdContent(
             return <Hr {...props} />
         },
         a: (props) => {
-            return <$Link {...props} as={this?.options?.Link}/>
+            return <$Link {...props} as={this?.options?.Link} />
         },
         br: (props) => {
-            return <br/>
-        }
+            return <br />
+        },
+
+        React: NoopReactComponent,
     }
 }
 
@@ -198,7 +205,7 @@ interface HeadingContentProps {
     children: React.ReactNode
 }
 
-function $Heading({id, depth, children}: HeadingContentProps) {
+function $Heading({ id, depth, children }: HeadingContentProps) {
     // const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
     // const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
     const navigation = this?.options?.useNavigation() // TODO: !!!! BETTER API !!!!!
@@ -287,7 +294,7 @@ const UnderlineNavContentContext = createContext({
 function $UnderlineNavContentComponent(props) {
     const [value, setValue] = useState(props.value)
 
-    return <UnderlineNavContentContext value={{value, onChange: setValue}}>
+    return <UnderlineNavContentContext value={{ value, onChange: setValue }}>
         <UnderlineNav
             {...props}
             value={value}
@@ -299,7 +306,7 @@ function $UnderlineNavContentComponent(props) {
 }
 
 function $UnderlineNavContentContentComponent(this: ReactContent, props) {
-    const {onChange} = useContext(UnderlineNavContentContext)
+    const { onChange } = useContext(UnderlineNavContentContext)
     const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
 
     const search = location?.search
@@ -328,11 +335,11 @@ function $UnderlineNavContentContentComponent(this: ReactContent, props) {
         tabsMatch = undefined
     }
 
-    return <UnderlineNav.Content {...props} defaultActive={tabsMatch}/>
+    return <UnderlineNav.Content {...props} defaultActive={tabsMatch} />
 }
 
 function $UnderlineNavItemContentComponent(props) {
-    const {onChange} = useContext(UnderlineNavContentContext)
+    const { onChange } = useContext(UnderlineNavContentContext)
     const location = this?.options?.useLocation?.()
 
     const search = location?.search
@@ -455,12 +462,12 @@ interface LinkProps {
 }
 
 function $Link({
-                   href = '',
-                   as,
-                   newWindow,
-                   children,
-                   ...props
-               }: LinkProps) {
+    href = '',
+    as,
+    newWindow,
+    children,
+    ...props
+}: LinkProps) {
     const Link = as || Anchor
 
     return <Link

@@ -8,6 +8,12 @@
         border-right: 0.5px solid var(--dark32);
     }
 
+    xyd-subnav {
+        border-top: 1px solid var(--dark32);
+        border-radius: 0;
+        background: var(--white);
+    }
+
     xyd-layout-primary {
         &:not([data-layout="wide"]) {
             [part="page-container"] {

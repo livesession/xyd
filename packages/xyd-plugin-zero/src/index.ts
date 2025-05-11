@@ -1,16 +1,18 @@
-import {Navigation, Settings} from "@xyd-js/core";
-import type {Plugin as VitePlugin} from "vite";
-import {RouteConfigEntry} from "@react-router/dev/routes";
-import type {PageURL, Sidebar, SidebarRoute} from "@xyd-js/core";
+import { Navigation, Settings } from "@xyd-js/core";
+import type { Plugin as VitePlugin } from "vite";
+import { RouteConfigEntry } from "@react-router/dev/routes";
+import type { PageURL, Sidebar, SidebarRoute } from "@xyd-js/core";
 import fs from "fs";
 import path from "path";
 
-import {docsPreset} from "./presets/docs";
-import {graphqlPreset} from "./presets/graphql";
-import {openapiPreset} from "./presets/openapi";
-import {sourcesPreset} from "./presets/sources";
+import { docsPreset } from "./presets/docs";
+import { graphqlPreset } from "./presets/graphql";
+import { openapiPreset } from "./presets/openapi";
+import { sourcesPreset } from "./presets/sources";
 
-import type {PluginOutput, Plugin} from "./types";
+import type { PluginOutput, Plugin } from "./types";
+
+export { readSettings } from "./presets/docs/settings"
 
 export interface PluginZeroOptions {
     disableAPIGeneration?: boolean
@@ -154,7 +156,7 @@ export async function pluginZero(options?: PluginZeroOptions): Promise<PluginOut
         src.preinstall = src.preinstall || []
 
         let preinstallMerge = {
-            
+
         }
 
         for (const preinstall of src.preinstall) {
@@ -233,7 +235,7 @@ function mapNavigationToPagePathMapping(navigation: Navigation) {
     function getExistingFilePath(basePath: string): string | null {
         const mdPath = `${basePath}.md`
         const mdxPath = `${basePath}.mdx`
-        
+
         if (fs.existsSync(mdPath)) {
             return mdPath
         }
@@ -288,4 +290,3 @@ export type {
     Plugin,
     PluginOutput
 }
-

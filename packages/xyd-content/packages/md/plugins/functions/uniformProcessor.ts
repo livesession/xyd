@@ -10,7 +10,6 @@ import { gqlSchemaToReferences } from "@xyd-js/gql"
 import { oapSchemaToReferences, deferencedOpenAPI } from "@xyd-js/openapi"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
-import { pluginOpenAIMeta } from '@xyd-js/uniform';
 import uniform from '@xyd-js/uniform';
 // TODO: rewrite to async
 
@@ -46,9 +45,10 @@ export async function processUniformFunctionCall(
         return null
     }
 
+    const plugins = globalThis.__xydUserUniformVitePlugins || []
     const uniformRefs = uniform(references, {
         plugins: [
-            pluginOpenAIMeta // TODO: configurable plugins
+            ...plugins,
         ]
     })
 

@@ -1,25 +1,25 @@
 import path from "node:path";
-import fs from "node:fs";
 
 import * as React from "react";
-import {useMemo, useContext, useId} from "react";
-import {redirect, ScrollRestoration, useLocation} from "react-router";
+import { useMemo, useContext, useId } from "react";
+import { redirect, ScrollRestoration, useLocation } from "react-router";
+import { Icon } from '@iconify/react'
 
-import {MetadataMap, Metadata} from "@xyd-js/core"
-import {ContentFS} from "@xyd-js/content"
-import {markdownPlugins} from "@xyd-js/content/md"
-import {mapSettingsToProps} from "@xyd-js/framework/hydration";
-import {FrameworkPage, type FwSidebarGroupProps} from "@xyd-js/framework/react";
-import type {IBreadcrumb, INavLinks} from "@xyd-js/ui";
+import { MetadataMap, Metadata } from "@xyd-js/core"
+import { ContentFS } from "@xyd-js/content"
+import { markdownPlugins } from "@xyd-js/content/md"
+import { mapSettingsToProps } from "@xyd-js/framework/hydration";
+import { FrameworkPage, type FwSidebarGroupProps } from "@xyd-js/framework/react";
+import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
 // @ts-ignore
-const {settings} = virtualSettings
-import {PageContext} from "./context";
+const { settings } = virtualSettings
+import { PageContext } from "./context";
 
 const mdPlugins = markdownPlugins({
-    maxDepth: settings?.theme?.maxTocDepth || 2, // TODO: configurable
+    maxDepth: settings?.theme?.maxTocDepth || 2,
 }, settings)
 
 const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
@@ -78,7 +78,7 @@ class timedebugLoader {
     }
 }
 
-export async function loader({request}: { request: any }) {
+export async function loader({ request }: { request: any }) {
     if (!globalThis.__xydPagePathMapping) {
         throw new Error("PagePathMapping not found")
     }
@@ -179,7 +179,7 @@ export function meta(props: any) {
     } = props?.data?.metadata || {}
 
     const meta: MetaProps[] = [
-        {title: title},
+        { title: title },
         {
             name: "description",
             content: description,
@@ -234,7 +234,7 @@ const createElementWithKeys = (type: any, props: any) => {
         return childrenArray.map((child, index) => {
             // If the child is a React element and doesn't have a key, add one
             if (React.isValidElement(child) && !child.key) {
-                return React.cloneElement(child, {key: `mdx-${index}`});
+                return React.cloneElement(child, { key: `mdx-${index}` });
             }
             // If the child is an array, process it recursively
             if (Array.isArray(child)) {
@@ -252,7 +252,7 @@ const createElementWithKeys = (type: any, props: any) => {
             processedChildren = processChildren(props.children);
         } else if (React.isValidElement(props.children) && !props.children.key) {
             // Single child without key
-            processedChildren = React.cloneElement(props.children, {key: 'mdx-child'});
+            processedChildren = React.cloneElement(props.children, { key: 'mdx-child' });
         } else {
             // Single child with key or non-React element
             processedChildren = props.children;
@@ -305,9 +305,9 @@ export function MemoMDXComponent(codeComponent: any) {
     )
 }
 
-export default function DocsPage({loaderData}: { loaderData: loaderData }) {
+export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     const location = useLocation()
-    const {theme} = useContext(PageContext)
+    const { theme } = useContext(PageContext)
     if (!theme) {
         throw new Error("BaseTheme not found")
     }
@@ -316,7 +316,7 @@ export default function DocsPage({loaderData}: { loaderData: loaderData }) {
     const Content = MemoMDXComponent(content.component)
 
     const themeContentComponents = theme.reactContentComponents()
-    const {Page} = theme
+    const { Page } = theme
 
     return <FrameworkPage
         key={location.pathname}
@@ -328,8 +328,12 @@ export default function DocsPage({loaderData}: { loaderData: loaderData }) {
         ContentComponent={Content}
     >
         <Page>
-            <Content components={themeContentComponents}/>
-            <ScrollRestoration/>
+            <span className="icon logos-react">
+                Hello
+            </span>
+            <Icon icon="logos:react" width={24} height={24} />
+            <Content components={themeContentComponents} />
+            <ScrollRestoration />
         </Page>
     </FrameworkPage>
 }

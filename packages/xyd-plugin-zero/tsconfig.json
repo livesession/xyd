@@ -17,6 +17,9 @@
         "../xyd-framework/packages/react/index.ts"
       ]
     },
+    "types": [
+      "unplugin-icons/types/react"
+    ],
     "module": "esnext",
     "esModuleInterop": true,
     "moduleResolution": "bundler",

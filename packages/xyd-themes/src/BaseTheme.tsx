@@ -85,15 +85,7 @@ export abstract class BaseTheme extends Theme {
     }
 
     public reactContentComponents(): { [component: string]: (props: any) => React.JSX.Element | null } {
-        function ReactComponent() { // TODO: !!!! in the future refactor but `html-to-jsx-transform` creates <React.Fragment> !!!
-            return null
-        }
-        ReactComponent.Fragment = React.Fragment
-
-        return {
-            ...this.reactContent.components(),
-            React: ReactComponent
-        }
+        return this.reactContent.components()
     }
 
     protected Navbar() {

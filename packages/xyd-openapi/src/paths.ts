@@ -48,7 +48,7 @@ export function oapPathToReference(
     const description = matter.stringify({ content: metaDescription.content }, meta || {});
 
     const endpointRef: Reference = {
-        title: oapMethod?.summary || "",
+        title: oapMethod?.summary || oapMethod.operationId || "",
         canonical: oapMethod.operationId || slug(oapMethod?.summary || ""),
         description,
         type: mType,

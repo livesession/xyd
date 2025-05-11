@@ -1,17 +1,15 @@
-import {OpenAPIV3} from "openapi-types";
+import { OpenAPIV3 } from "openapi-types";
 import Oas from "oas";
 // @ts-ignore
-import {Operation} from 'oas/operation'; // TODO: fix ts
+import { Operation } from 'oas/operation'; // TODO: fix ts
 import oasToSnippet from "@readme/oas-to-snippet";
 import OpenAPISampler from "openapi-sampler";
-import type {JSONSchema7} from "json-schema";
+import type { JSONSchema7 } from "json-schema";
 
-import {ExampleGroup, Example} from "@xyd-js/uniform";
+import { ExampleGroup, Example } from "@xyd-js/uniform";
+import { SUPPORTED_CONTENT_TYPES } from "./const";
 
 // TODO: option with another languages
-// TODO: uniform plugins
-// TODO: fs uniform plugins
-// TODO: support different schemas not only application/json
 export function oapExamples(
     oas: Oas,
     operation: Operation
@@ -29,7 +27,14 @@ function reqBodyExmaples(operation: Operation, oas: Oas) {
 
     if (operation.schema.requestBody) {
         const body = operation?.schema?.requestBody as OpenAPIV3.RequestBodyObject
-        let schema = body.content?.["application/json"]?.schema as JSONSchema7
+
+        const findSupportedContent = Object.keys(body.content).find(key => SUPPORTED_CONTENT_TYPES[key])
+        if (!findSupportedContent) {
+            return exampleGroups
+        }
+
+        const content = body.content[findSupportedContent]
+        let schema = content?.schema as JSONSchema7
         if (!schema) {
             return exampleGroups
         }
@@ -39,11 +44,23 @@ function reqBodyExmaples(operation: Operation, oas: Oas) {
             return exampleGroups
         }
 
-        const fakeData = OpenAPISampler.sample(schema)
+        let requestData
+        // Check for examples in the request body content
+        if (content.examples) {
+            const requestExample = content.examples["request"]
+            if (requestExample && "value" in requestExample) {
+                requestData = requestExample.value
+            }
+        }
+
+        // If no example found, generate sample data from schema
+        if (!requestData) {
+            requestData = OpenAPISampler.sample(schema)
+        }
 
         // TODO: snippet languages options
-        const {code} = oasToSnippet(oas, operation, {
-            body: fakeData
+        const { code } = oasToSnippet(oas, operation, {
+            body: requestData
         }, null, "shell");
 
         const examples: Example[] = []
@@ -58,10 +75,12 @@ function reqBodyExmaples(operation: Operation, oas: Oas) {
             }
         })
 
-        exampleGroups.push({
-            description: "Example request",
-            examples
-        })
+        if (examples.length > 0) {
+            exampleGroups.push({
+                description: "Example request",
+                examples
+            })
+        }
     }
 
     return exampleGroups
@@ -77,13 +96,35 @@ function resBodyExmaples(operation: Operation, oas: Oas) {
 
         Object.entries(responses).forEach(([status, r]) => {
             const response = r as OpenAPIV3.ResponseObject
-            const schema = response?.content?.["application/json"]?.schema as JSONSchema7
+            if (!response.content) {
+                return
+            }
+
+            const findSupportedContent = Object.keys(response.content).find(key => SUPPORTED_CONTENT_TYPES[key])
+            if (!findSupportedContent) {
+                return
+            }
+
+            const content = response.content[findSupportedContent]
+            const schema = content?.schema as JSONSchema7
 
             if (!schema) {
                 return
             }
 
-            const fakeData = OpenAPISampler.sample(schema)
+            let responseData
+            // Check for examples in the response content
+            if (content.examples) {
+                const responseExample = content.examples["response"]
+                if (responseExample && "value" in responseExample) {
+                    responseData = responseExample.value
+                }
+            }
+
+            // If no example found, generate sample data from schema
+            if (!responseData) {
+                responseData = OpenAPISampler.sample(schema)
+            }
 
             examples.push({
                 codeblock: {
@@ -91,16 +132,18 @@ function resBodyExmaples(operation: Operation, oas: Oas) {
                     tabs: [{
                         title: "json",
                         language: "json",
-                        code: JSON.stringify(fakeData, null, 2) || "",
+                        code: JSON.stringify(responseData, null, 2) || "",
                     }]
                 }
             })
         })
 
-        exampleGroups.push({
-            description: "Response",
-            examples
-        })
+        if (examples.length > 0) {
+            exampleGroups.push({
+                description: "Example response",
+                examples
+            })
+        }
     }
 
     return exampleGroups
@@ -119,7 +162,7 @@ function resBodyExmaples(operation: Operation, oas: Oas) {
  * 
  */
 function fixAllOfBug(schema: JSONSchema7) {
-    const modifiedSchema = {...schema}
+    const modifiedSchema = { ...schema }
 
     if (schema?.allOf) {
         schema.allOf.forEach((prop, i) => {

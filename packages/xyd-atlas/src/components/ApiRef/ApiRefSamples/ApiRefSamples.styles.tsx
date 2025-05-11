@@ -1,8 +1,9 @@
 import {css} from "@linaria/core";
 
 export const ApiRefSamplesContainerHost = css`
+    height: 100vh;
     position: sticky;
-    top: 6rem;
+    top: 12px;
     display: flex;
     gap: 32px;
     flex-direction: column;

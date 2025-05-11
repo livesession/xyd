@@ -109,6 +109,8 @@ function PropMeta(props: PropMetaProps) {
             break
         case "nullable": 
             return null
+        case "enum":
+            return null
     }
 
     return <atlas-apiref-propmeta data-name={props.name} data-value={props.value}>

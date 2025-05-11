@@ -6,7 +6,7 @@ export const CodeSampleButtonsHost = css`
 `;
 
 export const CodeSampleButtonsContainer = css`
-    display: flex;
+    display: inline-flex;
     align-items: center;
     border-radius: 8px;
     background-color: var(--XydAtlas-Component-Code-SampleButtons__color-containerBackground);
@@ -26,6 +26,7 @@ export const CodeSampleButtonsArrowIcon = css`
 export const CodeSampleButtonsScrollerHost = css`
     overflow-x: auto;
     flex-grow: 1;
+    font-weight: 600;
 `;
 
 export const CodeSampleButtonsScrollerContainer = css`

@@ -2,7 +2,7 @@
     "theme": {
         "name": "opener",
         "logo": "/public/assets/logo.svg",
-        "favicon": "/public/assets/favicon.svg",
+        "favicon": "/public/assets/favicon.png",
         "maxTocDepth": 2
     },
     "integrations": {
@@ -66,8 +66,5 @@
                 "route": "docs/api-reference"
             }
         }
-    },
-    "plugins": [
-        "./plugins/pluginOasOpenai"
-    ]
+    }
 }

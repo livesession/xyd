@@ -2,16 +2,23 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 
+import { Parser } from 'acorn'
+import jsx from 'acorn-jsx'
+import { full } from 'acorn-walk'
+
 import { createServer, PluginOption, Plugin as VitePlugin, searchForWorkspaceRoot, ViteDevServer } from "vite";
+import AutoImport from 'unplugin-auto-import/vite'
+import IconsResolver from 'unplugin-icons/resolver'
+import Icons from 'unplugin-icons/vite'
 
 import { reactRouter } from "@react-router/dev/vite";
 
 
 import { vitePlugins as xydContentVitePlugins } from "@xyd-js/content/vite";
-import { pluginZero, PluginZeroOptions } from "@xyd-js/plugin-zero";
+import { readSettings, pluginZero, type PluginZeroOptions } from "@xyd-js/plugin-zero";
 import { API, APIFile, Integrations, Plugins, Settings } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
-import type { UniformPlugin } from "@xyd-js/uniform";
+import { type UniformPlugin } from "@xyd-js/uniform";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -77,7 +84,28 @@ export async function dev() {
             ...respPluginZero.vitePlugins,
 
             reactRouter(),
-
+            // iconify({
+            //     rotate: 3000,
+            //     local: [],
+            // }),
+            // Icons({
+            //     compiler: 'jsx',
+            //     jsx: 'react',
+            //   }),
+            //   AutoImport({
+            //     imports: ['react'],
+            //     dts: './src/auto-imports.d.ts',
+            //     // dirs: ['src/layouts', 'src/views'],
+            //     eslintrc: {
+            //       enabled: true,
+            //     },
+            //     defaultExportByFilename: true,
+            //     resolvers: [
+            //       IconsResolver({
+            //         componentPrefix: 'Icon',
+            //       }),
+            //     ],
+            // }),
             virtualComponentsPlugin(),
 
             ...userVitePlugins,
@@ -237,39 +265,59 @@ function resolveApiFilePaths(basePath: string, api: API): { [path: string]: bool
 
 
 async function appInit(options?: PluginZeroOptions) {
+    const readPreloadSettings = await readSettings() // TODO: in the future better solution - currently we load settings twice (pluginZero and here)
+    if (!readPreloadSettings) {
+        throw new Error("cannot preload settings")
+    }
+
+    const preloadSettings = typeof readPreloadSettings === "string" ? JSON.parse(readPreloadSettings) : readPreloadSettings
+
+    {
+        if (!preloadSettings.integrations?.search) {
+            preloadSettings.integrations = {
+                ...(preloadSettings.integrations || {}),
+                search: {
+                    orama: true
+                }
+            }
+        }
+
+        const plugins = integrationsToPlugins(preloadSettings.integrations)
+        if (preloadSettings.plugins) {
+            preloadSettings.plugins = [...plugins, ...preloadSettings.plugins]
+        } else {
+            preloadSettings.plugins = plugins
+        }
+    }
+
+    let resolvedPlugins: PluginConfig[] = []
+    {
+        resolvedPlugins = await loadPlugins(preloadSettings) || []
+        const userUniformVitePlugins: UniformPlugin<any>[] = []
+
+        resolvedPlugins?.forEach(p => {
+            if (p.uniform) {
+                userUniformVitePlugins.push(...p.uniform)
+            }
+        })
+        globalThis.__xydUserUniformVitePlugins = userUniformVitePlugins
+    }
+
     const respPluginZero = await pluginZero(options)
     if (!respPluginZero) {
         throw new Error("PluginZero not found")
     }
-
-    if (!respPluginZero.settings.integrations?.search) {
-        respPluginZero.settings.integrations = {
-            ...(respPluginZero.settings.integrations || {}),
-            search: {
-                orama: true
-            }
-        }
+    if (!respPluginZero.settings) {
+        throw new Error("Settings not found in respPluginZero")
     }
-
-    const plugins = integrationsToPlugins(respPluginZero.settings.integrations)
-    if (respPluginZero.settings.plugins) {
-        respPluginZero.settings.plugins = [...plugins, ...respPluginZero.settings.plugins]
-    } else {
-        respPluginZero.settings.plugins = plugins
-    }
-    const resolvedPlugins = await loadPlugins(respPluginZero.settings) || []
-
-    const userUniformVitePlugins: UniformPlugin<any>[] = []
-    resolvedPlugins?.forEach(p => {
-        if (p.uniform) {
-            userUniformVitePlugins.push(...p.uniform)
-        }
-    })
+    respPluginZero.settings.plugins = [
+        ...(respPluginZero.settings?.plugins || []),
+        ...(preloadSettings.plugins || [])
+    ]
 
     globalThis.__xydBasePath = respPluginZero.basePath
     globalThis.__xydSettings = respPluginZero.settings
     globalThis.__xydPagePathMapping = respPluginZero.pagePathMapping
-    globalThis.__xydUserUniformVitePlugins = userUniformVitePlugins
 
     return {
         respPluginZero,
@@ -341,7 +389,21 @@ async function loadPlugins(
             return []
         }
 
-        const mod = await import(pluginName)
+        let mod: any // TODO: fix type
+        try {
+            mod = await import(pluginName)
+        } catch (e) {
+            pluginName = path.join(process.cwd(), pluginName)
+
+            // TODO: find better solution? use this every time?
+            const pluginPreview = await createServer({
+                optimizeDeps: {
+                    include: [],
+                },
+            });
+            mod = await pluginPreview.ssrLoadModule(pluginName);
+        }
+
         if (!mod.default) {
             console.error(`Plugin ${plugin} has no default export`)
             continue
@@ -362,3 +424,4 @@ async function loadPlugins(
 
     return resolvedPlugins
 }
+

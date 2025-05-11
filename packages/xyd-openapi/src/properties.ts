@@ -28,7 +28,24 @@ export function schemaObjectToDefinitionProperties(v: OpenAPIV3.SchemaObject): D
             ...(objectPropMeta(objProp, name) || []),
             ...(objectPropMeta(v, name) || [])
         ]
-        
+
+        let nestedProps = objProp.properties ? schemaObjectToDefinitionProperties(objProp) : []
+        if (objProp.enum) {
+            nestedProps = schemaObjectToDefinitionProperties({
+                properties: objProp.enum.reduce((acc, enumName) => ({
+                    ...acc,
+                    [enumName]: {
+                        type: objProp.type,
+                    }
+                }), {})
+            })
+
+            meta.push({
+                name: "enum",
+                value: "true"
+            })
+        }
+
         return {
             name: name,
             type: objProp.type || "",
@@ -36,7 +53,7 @@ export function schemaObjectToDefinitionProperties(v: OpenAPIV3.SchemaObject): D
             properties: (
                 merged?.length
                     ? merged
-                    : objProp.properties ? schemaObjectToDefinitionProperties(objProp) : []
+                    : nestedProps
             ),
             meta
         }
