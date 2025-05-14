@@ -52,8 +52,8 @@
     "lucide-react": "^0.447.0"
   },
   "peerDependencies": {
-    "@code-hike/lighter": "file:/Users/zdunecki/Code/zdunecki/codehike-lighter/lib",
     "@xyd-js/core": "workspace:*",
+    "@code-hike/lighter": "^1.0.3",
     "react": "^19.0.0"
   },
   "devDependencies": {

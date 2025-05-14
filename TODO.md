@@ -5,4 +5,4 @@ better cli packages architecture
 node 20.19+ support
 
 3.
-optimized icons downloading
+iconsets + custom icons + optimized icons downloading

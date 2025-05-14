@@ -36,12 +36,15 @@ export function Framework(props: FrameworkProps) {
     const navigation = useNavigation()
     const [metadata, setMetadata] = useState<Metadata | undefined>(props.metadata)
 
-    return <FrameworkContext value={{
+    const v = {
         settings: Object.freeze({ ...props.settings }),
         sidebarGroups: Object.freeze([...props.sidebarGroups]),
         metadata: Object.freeze({ ...metadata }),
         setMetadata: setMetadata,
-    }}>
+    }
+    console.log("Framework", v)
+    
+    return <FrameworkContext value={v}>
         <SurfaceContext value={{
             surfaces: props.surfaces
         }}>
@@ -92,7 +95,7 @@ export function FrameworkPage(props: FrameworkPageProps) {
         metadata: Object.freeze(props.metadata),
         breadcrumbs: Object.freeze(props.breadcrumbs),
         rawPage: Object.freeze(props.rawPage),
-        toc: Object.freeze(props.toc),
+        toc: Object.freeze(props.toc || []),
         navlinks: Object.freeze(props.navlinks),
     }}>
         {props.children}
@@ -101,26 +104,30 @@ export function FrameworkPage(props: FrameworkPageProps) {
 
 export function useSidebarGroups() {
     const ctx = useContext(FrameworkContext)
+    console.log("useSidebarGroups", ctx.sidebarGroups)
 
     return ctx.sidebarGroups
 }
 
 export function useSettings() {
     const ctx = useContext(FrameworkContext)
+    console.log("useSettings", ctx.settings)
 
     return ctx.settings
 }
 
 export function useMetadata() {
     const ctx = useContext(FrameworkContext)
+    console.log("useMetadata", ctx.metadata)
 
     return ctx.metadata
 }
 
 export function useToC() {
     const ctx = useContext(FrameworkPageContext)
-
-    return ctx.toc
+    const toc = ctx.toc || [] // TODO: !!! `|| []` IS NEEDED CUZ ISSUES WITH HYDRATION !!!
+    console.log("useToC", toc)
+    return toc
 }
 
 export function useBreadcrumbs() {
@@ -131,6 +138,7 @@ export function useBreadcrumbs() {
 
 export function useNavLinks() {
     const ctx = useContext(FrameworkPageContext)
+    console.log("useNavLinks", ctx.navlinks)
 
     return ctx.navlinks
 }
@@ -138,12 +146,13 @@ export function useNavLinks() {
 
 export function useRawPage() {
     const ctx = useContext(FrameworkPageContext)
-
+    console.log("useRawPage", ctx.rawPage)
     return ctx.rawPage
 }
 
 export function useContentComponent() {
     const ctx = useContext(FrameworkPageContext)
-
+    console.log("useContentComponent", ctx.ContentComponent)
+    
     return ctx.ContentComponent
 }

@@ -19,22 +19,18 @@
     "watch": "tsup --watch"
   },
   "dependencies": {
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/content": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
+    "@xyd-js/plugins": "workspace:*",
+    "@xyd-js/plugin-docs": "workspace:*",
+    "@iconify-json/lucide": "^1.2.42",
     "@iconify/react": "^6.0.0",
     "@react-router/dev": "^7.5.0",
     "@react-router/node": "^7.5.0",
     "@react-router/serve": "^7.5.0",
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
-    "@xyd-js/components": "workspace:*",
-    "@xyd-js/content": "workspace:*",
-    "@xyd-js/context": "workspace:*",
-    "@xyd-js/plugin-algolia": "workspace:*",
-    "@xyd-js/plugin-orama": "workspace:*",
-    "@xyd-js/plugin-zero": "workspace:*",
-    "@xyd-js/theme-cosmo": "workspace:*",
-    "@xyd-js/theme-opener": "workspace:*",
-    "@xyd-js/theme-poetry": "workspace:*",
-    "@xyd-js/themes": "workspace:*",
     "codehike": "^1.0.3",
     "compression": "^1.7.5",
     "express": "^4.21.2",
@@ -56,6 +52,7 @@
     "vfile": "^6.0.3",
     "yaml": "^2.6.0"
   },
+  "optionalDependencies": {},
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.0",
     "@types/node": "^22.7.5",
@@ -66,7 +63,7 @@
     "postcss": "^8.4.47",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",
-    "vite": "^5.4.9",
+    "vite": "^6.1.0",
     "vite-tsconfig-paths": "^5.0.1"
   }
 }

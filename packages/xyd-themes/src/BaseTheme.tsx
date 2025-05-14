@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useLocation } from 'react-router'
 
 import { TocCard, VideoGuide } from '@xyd-js/components/writer';
 import { ContentDecorator } from "@xyd-js/components/content";
@@ -14,11 +15,12 @@ import {
 
     useMatchedSubNav,
     useMetadata,
+    useSettings,
 } from "@xyd-js/framework/react";
 
 import { Theme } from "./Theme";
 
-export abstract class BaseTheme extends Theme {
+export class BaseTheme extends Theme {
     constructor() {
         super()
 
@@ -56,21 +58,27 @@ export abstract class BaseTheme extends Theme {
             Sidebar: $Sidebar,
         } = this
 
+
+        const settings = useSettings()
+        const location = useLocation()
         const matchedSubNav = useMatchedSubNav()
         const meta = useMetadata()
 
         const subheader = matchedSubNav ? <FwSubNav /> : null
         const sidebar = <$Sidebar />
 
+        console.log("settings from basetheme1", settings)
         return <LayoutPrimary
             subheader={!!subheader}
             layout={meta?.layout}
+            scrollKey={location.pathname}
         >
             <LayoutPrimary.Header
                 header={<$Navbar />}
                 subheader={subheader}
             />
-            <LayoutPrimary.MobileAside
+            {children}
+            {/* <LayoutPrimary.MobileAside
                 aside={sidebar}
             />
 
@@ -80,7 +88,7 @@ export abstract class BaseTheme extends Theme {
                 </aside>
 
                 {children}
-            </main>
+            </main> */}
         </LayoutPrimary>
     }
 

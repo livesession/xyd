@@ -4,7 +4,7 @@ export const HeadingHost = css`
     @layer defaults {
         color: var(--xyd-heading-color);
         line-height: var(--xyd-line-height-xlarge);
-        font-weight: 600;
+        font-weight: var(--xyd-font-weight-semibold);
 
         position: relative;
         display: inline-block;
@@ -26,7 +26,7 @@ export const HeadingHost = css`
         &[data-kind="muted"] {
             color: var(--xyd-heading-color--muted);
             cursor: default;
-            font-weight: 500;
+            font-weight: var(--xyd-font-weight-medium);
         }
 
         &[data-size="1"] {

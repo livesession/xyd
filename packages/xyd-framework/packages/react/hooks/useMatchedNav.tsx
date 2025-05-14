@@ -1,4 +1,4 @@
-import {useLocation} from "react-router";
+import {useLocation, useMatches} from "react-router";
 
 import {useSettings} from "../contexts";
 
@@ -13,11 +13,13 @@ function normalizeHref(href: string) {
 // TODO: better data structures
 export function useMatchedSubNav() {
     const settings = useSettings()
-    const location = useLocation()
+    const matches = useMatches()
+
+    const lastMatchId = matches[matches.length - 1]?.id
 
     const matchedSubnav = settings.navigation?.header
         ?.filter(item => item.sub)
-        ?.find(item => normalizeHref(location.pathname).startsWith(normalizeHref(item.sub?.route || "")))
+        ?.find(item => item.sub?.items?.find(item => item.url === lastMatchId))
 
     if (!matchedSubnav) {
         return null

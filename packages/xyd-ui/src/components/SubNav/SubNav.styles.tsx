@@ -15,7 +15,7 @@ export const SubNavHost = css`
 
         [part="prefix"] {
             color: var(--xyd-subnav-prefix-color);
-            font-weight: 600;
+            font-weight: var(--xyd-font-weight-semibold);
             padding-left: 0.50rem;
             padding-right: 1.50rem;
             position: relative;
@@ -50,7 +50,7 @@ export const SubNavLi = css`
         position: relative;
 
         [data-state="active"] > & {
-            font-weight: 600;
+            font-weight: var(--xyd-font-weight-semibold);
 
             a {
                 color: var(--xyd-subnav-item-color--active);

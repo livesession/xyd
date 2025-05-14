@@ -7,7 +7,7 @@ export const ButtonHost = css`
         justify-content: center;
         border-radius: 6px;
         border: 1px solid transparent;
-        font-weight: 500;
+        font-weight: var(--xyd-font-weight-medium);
         transition: all 0.2s ease;
         cursor: pointer;
         user-select: none;

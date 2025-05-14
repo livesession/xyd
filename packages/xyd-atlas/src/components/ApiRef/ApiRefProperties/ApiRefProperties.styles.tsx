@@ -50,7 +50,7 @@ export const ApiRefPropertiesDlHost = css`
 export const ApiRefPropertiesPropNameCodeHost = css`
     display: inline-flex;
     padding: 4px 0;
-    font-weight: 600;
+    font-weight: var(--xyd-font-weight-semibold);
     color: var(--XydAtlas-Component-ApiRef-Properties__color-propName);
 `;
 

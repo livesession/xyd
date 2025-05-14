@@ -11,7 +11,7 @@ export const LayoutPrimaryHost = css`
         background: var(--xyd-page-body-bgcolor);
         display: block;
 
-        [part="header"] {
+        > [part="header"] {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -27,11 +27,11 @@ export const LayoutPrimaryHost = css`
             }
         }
 
-        &[data-hide-subheader="true"] [part="header"] {
-            transform: translateY(calc(-1 * var(--xyd-nav-height) + 3px));
+        &[data-hide-subheader="true"] > [part="header"] {
+            transform: translateY(calc(-1 * var(--xyd-nav-height) - 5px));
         }
 
-        &[data-subheader="true"] [part="header"] {
+        &[data-subheader="true"] > [part="header"] {
             flex-direction: column;
             height: var(--xyd-header-total-height);
             transition: transform 200ms;

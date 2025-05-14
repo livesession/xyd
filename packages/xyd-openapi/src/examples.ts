@@ -6,8 +6,10 @@ import oasToSnippet from "@readme/oas-to-snippet";
 import OpenAPISampler from "openapi-sampler";
 import type { JSONSchema7 } from "json-schema";
 
-import { ExampleGroup, Example } from "@xyd-js/uniform";
-import { SUPPORTED_CONTENT_TYPES } from "./const";
+import { ExampleGroup, Example, CodeBlockTab } from "@xyd-js/uniform";
+
+// TODO: custom snippet languages options
+const SUPPORTED_LANGUAGES = ["shell", "javascript", "python", "go"]
 
 // TODO: option with another languages
 export function oapExamples(
@@ -15,65 +17,98 @@ export function oapExamples(
     operation: Operation
 ): ExampleGroup[] {
     const exampleGroups = [
-        ...reqBodyExmaples(operation, oas),
+        ...reqExamples(operation, oas),
         ...resBodyExmaples(operation, oas),
     ]
 
     return exampleGroups
 }
 
-function reqBodyExmaples(operation: Operation, oas: Oas) {
+function reqExamples(operation: Operation, oas: Oas) {
     const exampleGroups: ExampleGroup[] = []
+    const examples: Example[] = []
+    const tabs: CodeBlockTab[] = []
 
+    // Create a single object with all parameters grouped by their location
+    const paramData = operation.schema.parameters
+        ? (operation.schema.parameters as OpenAPIV3.ParameterObject[]).reduce((acc, param) => {
+            const location = param.in || 'query'
+            if (!acc[location]) {
+                acc[location] = {}
+            }
+
+            let value = param.example
+            if (!value && param.schema) {
+                value = OpenAPISampler.sample(param.schema as JSONSchema7)
+            }
+            if (value !== undefined) {
+                acc[location][param.name] = value
+            }
+            return acc
+        }, {} as Record<string, Record<string, any>>)
+        : {}
+
+    // Get request body data if it exists
+    let bodyData = {}
     if (operation.schema.requestBody) {
-        const body = operation?.schema?.requestBody as OpenAPIV3.RequestBodyObject
+        const body = operation.schema.requestBody as OpenAPIV3.RequestBodyObject
+        const contentTypes = Object.keys(body.content)
 
-        const findSupportedContent = Object.keys(body.content).find(key => SUPPORTED_CONTENT_TYPES[key])
-        if (!findSupportedContent) {
-            return exampleGroups
-        }
+        if (contentTypes.length > 0) {
+            const contentType = contentTypes[contentTypes.length - 1]
+            const content = body.content[contentType]
+            let schema = content?.schema as JSONSchema7
 
-        const content = body.content[findSupportedContent]
-        let schema = content?.schema as JSONSchema7
-        if (!schema) {
-            return exampleGroups
-        }
-        schema = fixAllOfBug(schema)
+            if (schema) {
+                schema = fixAllOfBug(schema)
 
-        if (!schema) {
-            return exampleGroups
-        }
+                let requestData
+                if (content.examples) {
+                    const requestExample = content.examples["request"]
+                    if (requestExample && "value" in requestExample) {
+                        requestData = requestExample.value
+                    }
+                }
 
-        let requestData
-        // Check for examples in the request body content
-        if (content.examples) {
-            const requestExample = content.examples["request"]
-            if (requestExample && "value" in requestExample) {
-                requestData = requestExample.value
+                if (!requestData) {
+                    requestData = OpenAPISampler.sample(schema)
+                }
+
+                if (contentType === 'application/x-www-form-urlencoded') {
+                    bodyData = { formData: requestData }
+                } else {
+                    bodyData = { body: requestData }
+                }
             }
         }
+    }
 
-        // If no example found, generate sample data from schema
-        if (!requestData) {
-            requestData = OpenAPISampler.sample(schema)
-        }
+    // Check if we have parameters or request body
+    const hasRequestBody = operation.schema.requestBody !== undefined
+    const hasParameters = Object.keys(paramData).length > 0
 
-        // TODO: snippet languages options
-        const { code } = oasToSnippet(oas, operation, {
-            body: requestData
-        }, null, "shell");
+    // Generate examples if we have either parameters or request body, or if we have neither
+    if (hasParameters || hasRequestBody || (!hasRequestBody && !hasParameters)) {
+        SUPPORTED_LANGUAGES.forEach(lang => {
+            const { code } = oasToSnippet(oas, operation, {
+                ...paramData,
+                ...bodyData
+            }, null, lang)
 
-        const examples: Example[] = []
-
-        examples.push({
-            codeblock: {
-                tabs: [{
-                    title: "bash",
-                    language: "bash",
-                    code: code || "",
-                }]
-            }
+            tabs.push({
+                title: lang,
+                language: lang,
+                code: code || ""
+            })
         })
+
+        if (tabs.length > 0) {
+            examples.push({
+                codeblock: {
+                    tabs
+                }
+            })
+        }
 
         if (examples.length > 0) {
             exampleGroups.push({
@@ -100,10 +135,16 @@ function resBodyExmaples(operation: Operation, oas: Oas) {
                 return
             }
 
-            const findSupportedContent = Object.keys(response.content).find(key => SUPPORTED_CONTENT_TYPES[key])
-            if (!findSupportedContent) {
+            const contentTypes = Object.keys(response.content)
+            if (contentTypes.length === 0) {
                 return
             }
+
+            if (contentTypes.length > 1) {
+                console.warn(`Multiple content types are not supported for response body examples: ${contentTypes.join(", ")}`)
+            }
+
+            const findSupportedContent = contentTypes[contentTypes.length - 1]
 
             const content = response.content[findSupportedContent]
             const schema = content?.schema as JSONSchema7

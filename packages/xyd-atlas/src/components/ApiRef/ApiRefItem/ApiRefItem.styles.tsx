@@ -1,13 +1,14 @@
 import { css } from "@linaria/core";
 
 export const ApiRefItemTitleHost = css`
-    font-weight: 400;
+    font-weight: var(--xyd-font-weight-normal);
 `;
 
 export const ApiRefItemTitleLink = css`
 `;
 
 export const ApiRefItemNavbarHost = css`
+    margin-top: 8px;
 `;
 
 export const ApiRefItemNavbarContainer = css`
@@ -36,18 +37,47 @@ export const ApiRefItemGrid = css`
     gap: 100px;
 `;
 
-export const ApiRefItemPropertiesHost = css`
+export const ApiRefItemDefinitionsHost = css`
 `;
 
-export const ApiRefItemPropertiesItem = css`
+export const ApiRefItemDefinitionsItem = css`
     display: flex;
     flex-direction: column;
     gap: 25px;
     margin-bottom: 25px;
+
+    margin-top: var(--space-xxlarge);
+
+    [part="controls"] {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    > [part="header"] {
+        h2, h3, h4, h5, h6 {
+            margin: 0;
+        }
+
+        border-bottom: 1px solid var(--XydAtlas-Component-ApiRef-Item__color-border);
+
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 16px;
+
+        > :first-child {
+            justify-self: start;
+        }
+
+        > :not(:first-child) {
+            justify-self: end;
+        }
+    }
 `;
 
 export const ApiRefItemSubtitleHost = css`
-    font-weight: 600;
+    font-weight: var(--xyd-font-weight-semibold);
 `;
 
 export const ApiRefItemSubtitleLink = css`

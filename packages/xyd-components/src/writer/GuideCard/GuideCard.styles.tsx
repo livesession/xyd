@@ -76,7 +76,7 @@ export const GuideHost = css`
             display: flex;
             color: var(--xyd-guidecard-title-color);
             align-items: center;
-            font-weight: 600;
+            font-weight: var(--xyd-font-weight-semibold);
             transition: color .15s;
         }
 
@@ -86,7 +86,7 @@ export const GuideHost = css`
         }
 
         [part="body"] {
-            font-weight: 400;
+            font-weight: var(--xyd-font-weight-normal);
 
             color: var(--xyd-guidecard-color);
             white-space: normal;

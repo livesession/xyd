@@ -30,6 +30,7 @@ export function withCodeTabs(PreComponent) {
                 <TabsPrimitive.Root
                     part="root"
                     data-single={String(isSingle)}
+                    data-nodescription={!props.description ? "true" : undefined}
                     className={`${cn.CodeTabsRoot}`}
                     style={props.highlighted[0]?.style}
                     defaultValue={props.highlighted[0]?.meta}
@@ -67,11 +68,14 @@ function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
         className={`
         ${cn.CodeTabsLanguagesHost}
     `}>
-        <div part="description">
-            <div part="description-item">
-                {props.description}
+
+        {
+            props.description && <div part="description">
+                <div part="description-item">
+                    {props.description}
+                </div>
             </div>
-        </div>
+        }
 
         <TabsPrimitive.List part="languages-list">
             {props.highlighted?.map(({ meta }, i) => {

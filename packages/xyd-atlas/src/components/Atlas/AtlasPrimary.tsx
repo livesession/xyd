@@ -5,7 +5,6 @@ import { ApiRefItem } from "@/components/ApiRef";
 import { MDXCommonAtlasProps } from "./types";
 
 export function AtlasPrimary<T>(props: MDXCommonAtlasProps<T>) {
-    console.log(props.references, 999)
     return <>
         {
             props.references?.map((reference, i) =>

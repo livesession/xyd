@@ -26,7 +26,7 @@ export default {
     Th: css`
         @layer defaults {
             text-align: left;
-            font-weight: 500;
+            font-weight: var(--xyd-font-weight-medium);
             padding: 0.5rem 1rem;
             white-space: nowrap;
             vertical-align: middle;

@@ -1,20 +1,14 @@
-import {OpenAPIV3} from "openapi-types";
-import {DefinitionProperty} from "@xyd-js/uniform";
+import { OpenAPIV3 } from "openapi-types";
+import { DefinitionProperty } from "@xyd-js/uniform";
 
-import {schemaObjectToDefinitionProperties} from "./properties";
-import { SUPPORTED_CONTENT_TYPES } from "./const";
+import { schemaObjectToDefinitionProperties } from "./properties";
 
 // oapRequestBodyToDefinitionProperties converts OpenAPI request body to uniform DefinitionProperties
 export function oapRequestBodyToDefinitionProperties(
-    reqBody: OpenAPIV3.RequestBodyObject
+    reqBody: OpenAPIV3.RequestBodyObject,
+    contentType: string
 ): DefinitionProperty[] | null {
-      // TODO: support other content types ??? + multiple
-    const findSupportedContent = Object.keys(reqBody.content).find(key => SUPPORTED_CONTENT_TYPES[key])
-    if (!findSupportedContent) {
-        return null
-    }
-
-    const schema = reqBody.content[findSupportedContent].schema as OpenAPIV3.SchemaObject
+    const schema = reqBody.content[contentType].schema as OpenAPIV3.SchemaObject
     if (!schema) {
         return null
     }
@@ -25,7 +19,7 @@ export function oapRequestBodyToDefinitionProperties(
         return schema.allOf.reduce((acc, of) => {
             const fakeBody: OpenAPIV3.RequestBodyObject = {
                 content: {
-                    [findSupportedContent]: {
+                    [contentType]: {
                         schema: of
                     }
                 }
@@ -33,7 +27,7 @@ export function oapRequestBodyToDefinitionProperties(
 
             return [
                 ...acc,
-                ...oapRequestBodyToDefinitionProperties(fakeBody) || []
+                ...oapRequestBodyToDefinitionProperties(fakeBody, contentType) || []
             ]
         }, [] as DefinitionProperty[])
     }

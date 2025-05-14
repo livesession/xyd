@@ -5,7 +5,7 @@
       "path": "./packages/xyd-documan"
     },
     {
-      "path": "./packages/xyd-plugin-zero"
+      "path": "./packages/xyd-plugin-docs"
     }
     // Add other packages here
   ]

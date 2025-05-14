@@ -5,17 +5,19 @@ import {
     isSpecifiedScalarType,
     isIntrospectionType
 } from "graphql";
-import {OperationTypeNode} from "graphql/language/ast";
+import { OperationTypeNode } from "graphql/language/ast";
+import matter from 'gray-matter'
 
-import {getDocumentLoaders, loadSchema} from "@graphql-markdown/graphql";
-import {GraphQLScalarType} from "@graphql-markdown/types";
+import { getDocumentLoaders, loadSchema } from "@graphql-markdown/graphql";
+import { GraphQLScalarType } from "@graphql-markdown/types";
 
-import type {Reference} from "@xyd-js/uniform"
-import {ReferenceType} from "@xyd-js/uniform"
-import {gqlInputToUniformRef} from "./hydration/gql-input";
-import {gqlEnumToUniformRef, gqlScalarToUniformRef} from "./hydration/gql-types";
-import {gqlObjectToUniformRef} from "./hydration/gql-object";
-import {gqlOperationsToUniformRef} from "./utils";
+import type { Reference } from "@xyd-js/uniform"
+import { ReferenceType } from "@xyd-js/uniform"
+import { gqlInputToUniformRef } from "./hydration/gql-input";
+import { gqlEnumToUniformRef, gqlScalarToUniformRef } from "./hydration/gql-types";
+import { gqlObjectToUniformRef } from "./hydration/gql-object";
+import { gqlOperationsToUniformRef, groupReference } from "./utils";
+import { Metadata } from "@xyd-js/core";
 
 // TODO: support multi graphql files
 // TODO: !!! CIRCULAR_DEPENDENCY !!!
@@ -25,6 +27,8 @@ import {gqlOperationsToUniformRef} from "./utils";
 interface gqlSchemaToReferencesOptions {
     regions?: string[] // TODO: BETTER API - UNIFY FOR REST API / GRAPHQL ETC
 }
+
+const DEFAULT_GROUP = "Operations"
 
 export async function gqlSchemaToReferences(
     schemaLocation: string,
@@ -47,10 +51,10 @@ export async function gqlSchemaToReferences(
         // Filter query fields based on regions if provided
         const filteredQueryFields = filterFieldsByRegions(
             queryFields,
-            "Query",
+            "query",
             options?.regions
         );
-        
+
         references.push(...gqlOperationsToUniformRef(
             ReferenceType.GRAPHQL_QUERY,
             filteredQueryFields
@@ -64,10 +68,10 @@ export async function gqlSchemaToReferences(
         // Filter mutation fields based on regions if provided
         const filteredMutationFields = filterFieldsByRegions(
             mutationFields,
-            "Mutation",
+            "mutation",
             options?.regions
         );
-        
+
         references.push(...gqlOperationsToUniformRef(
             ReferenceType.GRAPHQL_MUTATION,
             filteredMutationFields
@@ -85,39 +89,41 @@ export async function gqlSchemaToReferences(
             continue;
         }
 
+        let ref: Reference | null = null
+
         switch (gqlType.constructor.name) {
             case 'GraphQLObjectType': {
                 const type = gqlType as GraphQLObjectType;
-                const regionKey = `Object.${type.name}`;
-                if (!options?.regions || options.regions.includes(regionKey)) {
-                    references.push(gqlObjectToUniformRef(type))
+                const regionKey = `object.${type.name}`;
+                if (!options?.regions || !options?.regions?.length || options.regions.includes(regionKey)) {
+                    ref = gqlObjectToUniformRef(type)
                 }
                 break
             }
 
             case 'GraphQLInputObjectType': {
                 const type = gqlType as GraphQLInputObjectType;
-                const regionKey = `Input.${type.name}`;
-                if (!options?.regions || options.regions.includes(regionKey)) {
-                    references.push(gqlInputToUniformRef(type))
+                const regionKey = `input.${type.name}`;
+                if (!options?.regions || !options?.regions?.length ||options.regions.includes(regionKey)) {
+                    ref = gqlInputToUniformRef(type)
                 }
                 break
             }
 
             case 'GraphQLEnumType': {
                 const type = gqlType as GraphQLEnumType;
-                const regionKey = `Enum.${type.name}`;
-                if (!options?.regions || options.regions.includes(regionKey)) {
-                    references.push(gqlEnumToUniformRef(type))
+                const regionKey = `enum.${type.name}`;
+                if (!options?.regions || !options?.regions?.length || options.regions.includes(regionKey)) {
+                    ref = gqlEnumToUniformRef(type)
                 }
                 break
             }
 
             case 'GraphQLScalarType': {
                 const type = gqlType as GraphQLScalarType;
-                const regionKey = `Scalar.${type.name}`;
-                if (!options?.regions || options.regions.includes(regionKey)) {
-                    references.push(gqlScalarToUniformRef(type))
+                const regionKey = `scalar.${type.name}`;
+                if (!options?.regions || !options?.regions?.length || options.regions.includes(regionKey)) {
+                    ref = gqlScalarToUniformRef(type)
                 }
                 break
             }
@@ -126,6 +132,32 @@ export async function gqlSchemaToReferences(
                 console.debug(`Unsupported type: ${gqlType.constructor.name}`)
             }
         }
+
+        if (ref) {
+            let description = ""
+            if (typeof ref.description === "string") {
+                description = ref.description
+            } else {
+                console.error("Unsupported description type", ref.title)
+            }
+
+            const metaDescription = matter(description)
+            const meta = metaDescription?.data as Metadata | undefined
+
+            let group = [DEFAULT_GROUP]
+            if (meta && meta.group) {
+                group = meta.group
+            }
+
+            if (ref.context) {
+                ref.context.group = group
+            } else {
+                console.error("No context found for ref", ref.title)
+            }
+
+            references.push(groupReference(ref))
+        }
+
     }
 
     return references

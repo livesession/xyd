@@ -99,6 +99,8 @@ function $TabsItem({ children, value }) {
 
 Tabs.Content = function TabsContent({ children, value }) {
     return <RadixTabs.Content asChild value={value}>
-        {children}
+        <div>
+            {children}
+        </div>
     </RadixTabs.Content>
 }

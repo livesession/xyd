@@ -40,7 +40,8 @@
                     {
                         "group": "Get Started",
                         "pages": [
-                            "docs/overview"
+                            "docs/overview",
+                            "docs/overview2"
                         ]
                     }
                 ]

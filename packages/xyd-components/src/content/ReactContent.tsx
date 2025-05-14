@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
-
 import { HighlightedCode } from 'codehike/code';
 
 import {
@@ -24,6 +23,7 @@ import {
     UnderlineNav,
     Text,
 
+    Icon,
     IconCode,
     IconCustomEvent,
     IconFunnels,
@@ -40,7 +40,7 @@ import {
     IconReactRouter,
     IconNextJS,
     IconAppTemplate,
-    IconQuote
+    IconQuote,
 } from '../writer'
 import { CodeSample } from "../coder";
 import { GridDecorator } from './GridDecorator';
@@ -369,6 +369,9 @@ function $UnderlineNavItemContentComponent(props) {
 // TODO: better system for icons + should work with .md like icon="session-replay" etc.
 export function iconContent() {
     return {
+        Icon,
+
+        // TODO: remove below and use iconset system
         IconSessionReplay,
         IconMetrics,
         IconFunnels,

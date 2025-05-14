@@ -16,7 +16,7 @@ export function gqlEnumToUniformRef(gqlType: GraphQLEnumType): Reference {
         title: gqlType.name,
         description: gqlType.description || "",
         canonical: `enums/${gqlType.name}`, // TODO: better solution
-        context: {
+        context: { 
             graphqlName: gqlType.name,
             graphqlTypeShort: "enum" // TODO: better solution
         },

@@ -3,4 +3,5 @@ packages:
   - 'apps/docs/.xyd/build'
   - 'packages/*'
   - 'cli'
+  - '.xyd/host'
   - '!hack/**'

@@ -53,13 +53,13 @@ export const TextHost = css`
         }
 
         &[data-weight="normal"] { 
-            font-weight: 400;
+            font-weight: var(--xyd-font-weight-normal);
         }
         &[data-weight="bold"] { 
-            font-weight: 500;
+            font-weight: var(--xyd-font-weight-medium);
         }
         &[data-weight="extra-bold"] { 
-            font-weight: 600;
+            font-weight: var(--xyd-font-weight-semibold);
         }
     }
 `;

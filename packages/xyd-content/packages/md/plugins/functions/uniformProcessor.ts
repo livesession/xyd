@@ -125,7 +125,7 @@ async function processUniformFile(
                 }
 
                 case 'graphql': {
-                    const references = gqlSchemaToReferences(resolvedFilePath, {
+                    const references = await gqlSchemaToReferences(resolvedFilePath, {
                         regions: regions.map(region => region.name)
                     });
 

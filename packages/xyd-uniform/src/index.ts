@@ -4,8 +4,9 @@ import { Reference } from "./types";
 // Define the new PluginV type with a callback function that returns another function
 export type UniformPluginArgs = {
     defer: (defer: () => any) => void;
-    // TODO: better type
-    visit: (selector: string | "[method] [path]", callback: (...args: any[]) => void) => void;
+    
+    // TODO: maybe in the future
+    // visit: (selector: string | "[method] [path]", callback: (...args: any[]) => void) => void;
 }
 export type UniformPlugin<T> = (args: UniformPluginArgs) => (ref: Reference) => void;
 
@@ -49,9 +50,8 @@ export default function uniform<T extends UniformPlugin<any>[]>(
                     finishCallbacks.add(cb);
                 }
             },
-            visit: (pattern, callback) => {
-                console.log(5)
-            }
+            // visit: (pattern, callback) => {
+            // }
         })
 
         references.map((ref) => {

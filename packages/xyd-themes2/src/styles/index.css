@@ -1,0 +1,55 @@
+/* CSS Layer Hierarchy
+ * @layer reset - Base style resets to normalize browser defaults
+ * @layer defaults - Basic component styles for UI, writer, and coder components
+ * @layer components - Composite styles built on top of base components
+ * @layer templates - Template-specific styles like Atlas
+ * @layer themes - Theme-level CSS modifications
+ * @layer overrides - Final override layer for styles not applicable in other layers
+ */
+@layer reset, defaults, components, templates, themes, overrides;
+
+@import "@xyd-js/ui/dist/index.css";
+@import "@xyd-js/components/dist/index.css";
+@import "@xyd-js/atlas/dist/tokens.css";
+@import "@xyd-js/atlas/dist/index.css";
+
+@import "./tokens.css";
+@import "./reset.css";
+
+@layer defaults {
+    body {
+        font-size: var(--xyd-font-size-small);
+        line-height: var(--xyd-line-height-small);
+    }
+
+    xyd-built-with {
+        display: flex;
+        gap: 8px;
+        padding: 15px;
+        justify-content: center;
+
+        [part="text"] {
+            font-size: var(--xyd-font-size-xsmall);
+            color: var(--dark48);
+            letter-spacing: 0.5px;
+        }
+
+        [part="logo"] {
+            a {
+                margin: 0;
+                padding: 0;
+            }
+            
+            svg {
+                width: 48px;
+                height: 100%;
+            }
+        }
+    }
+}
+
+@layer components {
+    xyd-nav xyd-search-button {
+        max-width: 200px;
+    }
+}

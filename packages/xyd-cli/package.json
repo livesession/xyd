@@ -14,8 +14,8 @@
     "postinstall.js"
   ],
   "scripts": {
-    "build": "tsup",
-    "postinstall": "node postinstall.js"
+    "build_FIX": "tsup",
+    "postinstall_FIX": "node postinstall.js"
   },
   "dependencies": {
     "@graphql-markdown/core": "^1.12.0",

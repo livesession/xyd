@@ -1,6 +1,18 @@
 import React from "react";
+import * as lucide from 'lucide-react' // TODO: better icon system
+
 
 // TODO: better icon system
+
+export function Icon({ name, size = 16, color, ...rest }) {
+    const LucideIcon = lucide[name]
+    if (!LucideIcon) {
+      console.warn(`Icon "${name}" does not exist in lucide-react`)
+      return null
+    }
+    
+    return <LucideIcon size={size} color={color} {...rest} />
+}
 
 export function IconSessionReplay() {
     return <svg

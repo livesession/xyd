@@ -57,7 +57,7 @@ export const TocLi = css`
 
         &[data-active="true"] [part="link"] {
             color: var(--xyd-toc-item-color--active);
-            font-weight: 600;
+            font-weight: var(--xyd-font-weight-semibold);
         }
 
         &[data-depth="1"] [part="link"] {

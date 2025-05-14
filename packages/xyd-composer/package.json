@@ -1,0 +1,40 @@
+{
+  "name": "@xyd-js/composer",
+  "version": "0.0.0",
+  "description": "xyd composer API",
+  "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.27.2",
+    "codehike": "^1.0.7",
+    "hast-util-to-html": "^9.0.5",
+    "html-to-jsx-transform": "^1.2.0",
+    "marked": "^15.0.11",
+    "mdast": "^3.0.0",
+    "mdast-util-from-markdown": "^2.0.2",
+    "mdast-util-mdx": "^3.0.0",
+    "mdast-util-to-hast": "^13.2.0",
+    "mdast-util-to-markdown": "^2.1.2"
+  },
+  "peerDependencies": {
+    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/content": "workspace:*",
+    "@xyd-js/context": "workspace:*",
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "5.6.2"
+  }
+}

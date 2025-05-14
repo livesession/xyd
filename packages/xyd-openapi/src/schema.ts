@@ -1,13 +1,13 @@
 import path from "node:path";
 
-import {OpenAPIV3} from "openapi-types";
+import { OpenAPIV3 } from "openapi-types";
 import Oas from "oas";
 
-import type {Reference, OpenAPIReferenceContext, ReferenceContext} from "@xyd-js/uniform";
+import type { Reference, OpenAPIReferenceContext, ReferenceContext } from "@xyd-js/uniform";
 
-import {SUPPORTED_HTTP_METHODS} from "./const";
-import {oapPathToReference} from "./paths";
-import {oapExamples} from "./examples";
+import { SUPPORTED_HTTP_METHODS } from "./const";
+import { oapPathToReference } from "./paths";
+import { oapExamples } from "./examples";
 
 // TODO: support one-of
 // TODO: support $ref - currently we use $refParser.dereference that converts $ref into objects
@@ -66,13 +66,33 @@ export function oapSchemaToReferences(
                 const operation = oas.operation(endpointPath, httpMethod);
                 reference.examples.groups = oapExamples(oas, operation)
 
+                const scopes: string[] = []
+                const oapMethod = oapPath?.[httpMethod] as OpenAPIV3.OperationObject
+                if (oapMethod?.security) {
+                    for (const security of oapMethod.security) {
+                        for (const securityKey of Object.keys(security)) {
+                            const securityScheme = schema?.components?.securitySchemes?.[securityKey]
+
+                            // TODO: support other scope-like security schemes
+                            if (securityScheme && "type" in securityScheme && securityScheme.type === "oauth2") {
+                                const methodScopes = security[securityKey]
+                                if (Array.isArray(methodScopes)) {
+                                    scopes.push(...methodScopes)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                ctx.scopes = scopes
+
                 references.push(reference)
             }
         })
     })
     const tags = oas.getTags()
     sortReferencesByTags(references, tags)
-    
+
     return references
 }
 
@@ -85,7 +105,7 @@ function sortReferencesByTags(references: Reference[], tags: string[]) {
         for (const tag of tags) {
             const aIndex = aTags.indexOf(tag)
             const bIndex = bTags.indexOf(tag)
-            
+
             if (aIndex !== -1 && bIndex !== -1) {
                 return aIndex - bIndex
             }

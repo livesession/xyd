@@ -37,7 +37,11 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
 
     badge: true,
 
-    grid: "GridDecorator"
+    grid: "GridDecorator",
+}
+
+const supportedTextDirectives: MarkdownComponentDirectiveMap = {
+    icon: true,
 }
 
 const tableComponents: MarkdownComponentDirectiveMap = {
@@ -75,7 +79,8 @@ export function mdComponentDirective(settings?: Settings): Plugin {
             console.time('plugin:mdComponentDirective');
             const promises: Promise<void>[] = [];
     
-            visit(tree, 'containerDirective', recreateComponent(file, promises, settings));
+            visit(tree, 'containerDirective', recreateComponent(file, promises, supportedDirectives, settings));
+            visit(tree, 'textDirective', recreateComponent(file, promises, supportedTextDirectives, settings));
     
             await Promise.all(promises);
             console.timeEnd('plugin:mdComponentDirective');
@@ -86,16 +91,17 @@ export function mdComponentDirective(settings?: Settings): Plugin {
 function recreateComponent(
     file: VFile,
     promises: Promise<void>[],
-    settings?: Settings
+    directivesMap: MarkdownComponentDirectiveMap,
+    settings?: Settings,
 ) {
     return function (node: any) {
-        if (!supportedDirectives[node.name]) {
+        if (!directivesMap[node.name]) {
             return;
         }
 
         const attributes: any[] = [];
 
-        const componentName = getComponentName(node.name, supportedDirectives);
+        const componentName = getComponentName(node.name, directivesMap);
 
         const isNavLike = navComponents[node.name];
         const isTableLike = tableComponents[node.name];
@@ -103,22 +109,22 @@ function recreateComponent(
         const isCodeLike = codeComponents[node.name];
 
         if (isNavLike) {
-            mdNav(node);
+            mdNav(node, directivesMap);
             return;
         }
 
         if (isStepsLike) {
-            mdSteps(node);
+            mdSteps(node, directivesMap);
             return;
         }
 
         if (isTableLike) {
-            mdTable(node);
+            mdTable(node, directivesMap);
             return;
         }
 
         if (isCodeLike) {
-            mdCode(node, promises, settings);
+            mdCode(node, promises, directivesMap, settings);
             return
         }
 
@@ -144,8 +150,8 @@ function recreateComponent(
     }
 }
 
-function mdNav(node: any) {
-    const componentName = getComponentName(node.name, supportedDirectives);
+function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap) {
+    const componentName = getComponentName(node.name, directivesMap);
 
     // Parse the nav directive content to extract tabs and their content
     const tabItems: any[] = [];
@@ -234,8 +240,8 @@ function mdNav(node: any) {
     return;
 }
 
-function mdSteps(node: any) {
-    const componentName = getComponentName(node.name, supportedDirectives);
+function mdSteps(node: any, directivesMap: MarkdownComponentDirectiveMap) {
+    const componentName = getComponentName(node.name, directivesMap);
 
     const steps = node.children.map((child: any) => {
         if (child.type !== "list") {
@@ -265,12 +271,12 @@ function mdSteps(node: any) {
 
     Object.assign(node, jsxNode);
 
-    return;
+    return; 
 }
 
 // TODO: support tsx tables like: [<>`Promise<Reference[]>`</>] ?
-function mdTable(node: any) {
-    const componentName = getComponentName(node.name, supportedDirectives);
+function mdTable(node: any, directivesMap: MarkdownComponentDirectiveMap) {
+    const componentName = getComponentName(node.name, directivesMap);
     const tableData = JSON.parse(node.children[0].value);
     const [header, ...rows] = tableData;
 
@@ -317,8 +323,8 @@ function mdTable(node: any) {
     return;
 }
 
-function mdCode(node: any, promises: Promise<any>[], settings?: Settings) {
-    const componentName = getComponentName(node.name, supportedDirectives);
+function mdCode(node: any, promises: Promise<any>[], directivesMap: MarkdownComponentDirectiveMap, settings?: Settings) {
+    const componentName = getComponentName(node.name, directivesMap);
 
     const description = node.attributes?.title || '';
     const codeblocks: any[] = [];

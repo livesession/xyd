@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "paths": {
-      "@xyd-js/plugin-zero": [
-        "../xyd-plugin-zero/src"
+      "@xyd-js/plugin-docs": [
+        "../xyd-plugin-docs/src"
       ]
     },
     "module": "esnext",
@@ -37,7 +37,7 @@
   ],
   "references": [
     {
-      "path": "../xyd-plugin-zero"
+      "path": "../xyd-plugin-docs"
     }
   ]
 }

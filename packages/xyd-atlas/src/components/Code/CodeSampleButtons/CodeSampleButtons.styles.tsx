@@ -26,7 +26,7 @@ export const CodeSampleButtonsArrowIcon = css`
 export const CodeSampleButtonsScrollerHost = css`
     overflow-x: auto;
     flex-grow: 1;
-    font-weight: 600;
+    font-weight: var(--xyd-font-weight-semibold);
 `;
 
 export const CodeSampleButtonsScrollerContainer = css`

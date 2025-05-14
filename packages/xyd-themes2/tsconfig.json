@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@xyd-js/framework/react": [
+        "../xyd-framework/packages/react/index.ts"
+      ],
+      "@xyd-js/context": [
+        "../xyd-context/src/index.ts"
+      ],
+      "@xyd-js/core": [
+        "../xyd-core/src/index.ts"
+      ]
+    },
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "target": "ES6",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "incremental": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strictNullChecks": true,
+    "typeRoots": [
+      "./types.d.ts"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "types.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

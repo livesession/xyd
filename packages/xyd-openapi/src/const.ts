@@ -8,9 +8,3 @@ export const SUPPORTED_HTTP_METHODS: string[] = [
     // 'head',
     // 'trace'
 ];
-
-export const SUPPORTED_CONTENT_TYPES: {[key: string]: boolean} = {
-    "application/json": true,
-
-    "application/x-www-form-urlencoded": true,
-}

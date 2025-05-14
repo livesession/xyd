@@ -35,7 +35,7 @@ export const ItemHost = css`
         [part="link"] {
             display: flex;
             width: 100%;
-            font-weight: 500;
+            font-weight: var(--xyd-font-weight-medium);
         }
 
         [part="first-item"] {
@@ -59,7 +59,7 @@ export const ItemHost = css`
             background: var(--xyd-sidebar-item-bgcolor--active);
             border-radius: 4px;
             position: relative;
-            font-weight: 600;
+            font-weight: var(--xyd-font-weight-semibold);
             color: var(--xyd-sidebar-item-color--active);
             
             &::before {
@@ -75,12 +75,12 @@ export const ItemHost = css`
             }
         }
         [part="first-item"][data-parent-active="true"] {
-            font-weight: 600;
+            font-weight: var(--xyd-font-weight-semibold);
             background: transparent;
         } 
         &[data-theme="secondary"] [part="first-item"][data-active="true"] {
             background: unset;
-            font-weight: 500;
+            font-weight: var(--xyd-font-weight-medium);
         }
 
         [part="item-button"] {
@@ -100,7 +100,7 @@ export const TreeHost = css`
 export const ItemHeaderHost = css`
     @layer defaults {
         font-size: var(--xyd-font-size-xsmall);
-        font-weight: 800;
+        font-weight: var(--xyd-font-weight-extrabold);
         text-transform: uppercase;
         letter-spacing: 0.25px;
         color: var( --xyd-sidebar-item-header-color);

@@ -15,6 +15,12 @@ export const CodeTabsRoot = css`
         &[data-single="true"] [part="pre"] {
             border: none;
         }
+
+        &[data-nodescription="true"] {
+            xyd-codetabs-languages [part="languages-list"] {
+                justify-content: flex-start;
+            }
+        }
     }
 `;
 
@@ -31,7 +37,7 @@ export const CodeTabsLanguagesHost = css`
 
         min-width: 0;
 
-        font-weight: 600;
+        font-weight: var(--xyd-font-weight-semibold);
         font-size: var(--xyd-font-size-xsmall);
 
         &[data-single="true"] {

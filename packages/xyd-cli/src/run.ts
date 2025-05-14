@@ -1,6 +1,7 @@
 import arg from "arg";
 import semver from "semver";
 import colors from "picocolors";
+import { version } from "../package.json";
 
 import * as commands from "./commands";
 
@@ -38,8 +39,8 @@ export async function run(argv: string[] = process.argv.slice(2)) {
     process.env.XYD_CLI = "true"
 
     // Check the node version
-    let versions = process.versions;
-    let MINIMUM_NODE_VERSION = 20;
+    const versions = process.versions;
+    const MINIMUM_NODE_VERSION = 22;
     if (
         versions &&
         versions.node &&
@@ -80,7 +81,6 @@ export async function run(argv: string[] = process.argv.slice(2)) {
         return;
     }
     if (flags.version) {
-        let version = require("../package.json").version;
         console.log(version);
         return;
     }

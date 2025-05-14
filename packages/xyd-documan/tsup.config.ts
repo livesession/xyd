@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup';
+import {defineConfig} from 'tsup';
 
 import pkg from './package.json';
 
@@ -15,22 +15,22 @@ const deps = [
     "@xyd-js/openapi",
     "@xyd-js/uniform",
     "@xyd-js/theme-gusto",
-    // "@xyd-js/plugin-zero", // TODO: because plugin-zero has react-router dependency
+    "@xyd-js/theme-opener",
+    "@xyd-js/theme-poetry",
+    "@xyd-js/theme-cosmo",
 ].indexOf(dep) === -1)
 
 export default defineConfig({
     entry: {
         index: 'src/index.ts',
-        dev: 'src/commands/dev.ts',
-        build: 'src/commands/build.ts',
-        serve: 'src/commands/serve.ts',
+        dev: 'packages/dev/dev.ts',
+        build: 'packages/dev/build.ts',
     },
     dts: {
         entry: {
             index: 'src/index.ts',
-            dev: 'src/commands/dev.ts',
-            build: 'src/commands/build.ts',
-            serve: 'src/commands/serve.ts',
+            dev: 'packages/dev/dev.ts',
+            build: 'packages/dev/build.ts',
         },
         resolve: true, // Resolve external types
     },
@@ -45,7 +45,7 @@ export default defineConfig({
     external: [
         ...deps,
 
-        // needed by @xyd-js/plugin-zero
+        // needed by @xyd-js/plugin-docs
         "react-router",
         "@react-router/dev",
         "@react-router/express",

@@ -1,39 +1,24 @@
-import {OpenAPIV3} from "openapi-types";
-import {DefinitionProperty} from "@xyd-js/uniform";
+import { OpenAPIV3 } from "openapi-types";
+import { DefinitionProperty } from "@xyd-js/uniform";
 
-import {schemaObjectToDefinitionProperties} from "./properties";
-import { SUPPORTED_CONTENT_TYPES } from "./const";
-
-// TODO: add support for other statuses
-const supportedResponses = [
-    "default",
-    "200",
-    "201",
-]
+import { schemaObjectToDefinitionProperties } from "./properties";
 
 export function oapResponseToDefinitionProperties(
-    responses: OpenAPIV3.ResponsesObject
+    responses: OpenAPIV3.ResponsesObject,
+    code: string,
+    contentType: string,
 ): DefinitionProperty[] | null {
     let schemaObject: OpenAPIV3.SchemaObject | undefined
     let responseObject: OpenAPIV3.ResponseObject | undefined
 
     // TODO: support another statuses
-    for (const status of supportedResponses) {
-        if (responses[status]) {
-            responseObject = responses[status] as OpenAPIV3.ResponseObject
-            if (!responseObject?.content) {
-                continue
-            }
-
-            const findSupportedContent = Object.keys(responseObject.content).find(key => SUPPORTED_CONTENT_TYPES[key])
-            if (!findSupportedContent) {
-                continue
-            }
-
-            schemaObject = responseObject?.content[findSupportedContent]?.schema as OpenAPIV3.SchemaObject
-
-            break
+    if (responses[code]) {
+        responseObject = responses[code] as OpenAPIV3.ResponseObject
+        if (!responseObject?.content) {
+            return null
         }
+
+        schemaObject = responseObject?.content[contentType]?.schema as OpenAPIV3.SchemaObject
     }
 
     if (!schemaObject) {

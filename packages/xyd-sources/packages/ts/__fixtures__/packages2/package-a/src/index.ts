@@ -142,7 +142,7 @@ export interface FontDetailsType {
 }
 
 /** Available theme preset names */
-export type ThemePresetName = "gusto" | "poetry" | "picasso" | "cosmo"
+export type ThemePresetName = "poetry" | "cosmo" | "opener"
 
 /** Search bar location options */
 export type SearchType = "side" | "top"

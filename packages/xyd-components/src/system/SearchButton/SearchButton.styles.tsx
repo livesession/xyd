@@ -8,7 +8,7 @@ export const SearchButton = css`
         color: var(--text-primary);
         background: var(--dark16);
         font-size: var(--xyd-font-size-small);
-        font-weight: 600;
+        font-weight: var(--xyd-font-weight-semibold);
         height: 36px;
         justify-content: space-between;
         display: flex;
@@ -46,7 +46,7 @@ export const SearchButton = css`
             display: block !important;
             font-size: var(--xyd-font-size-small);
             color: var(--dark48);
-            font-weight: 400;
+            font-weight: var(--xyd-font-weight-normal);
         }
 
         [part="icon"] {

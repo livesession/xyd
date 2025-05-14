@@ -1,0 +1,131 @@
+import { Outlet, useLoaderData, useLocation, useNavigate, useNavigation, type Route, isRouteErrorResponse } from "react-router";
+
+import { mapSettingsToProps } from "@xyd-js/framework/hydration";
+
+import type { Metadata, MetadataMap, Theme as ThemeSettings } from "@xyd-js/core";
+import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
+import { Framework, FwLink, useSettings, type FwSidebarGroupProps } from "@xyd-js/framework/react";
+import { ReactContent } from "@xyd-js/components/content";
+import { Atlas, AtlasContext } from "@xyd-js/atlas";
+import { Surfaces } from "@xyd-js/framework/react";
+import { CheckSettingsExternal } from "@xyd-js/example-package";
+import { Composer } from "@xyd-js/composer";
+import { BaseTheme } from "@xyd-js/themes";
+
+// @ts-ignore
+import virtualSettings from "virtual:xyd-settings";
+// @ts-ignore
+const { settings: getSettings } = virtualSettings
+// const settings = globalThis.__xydSettings
+import Theme from "virtual:xyd-theme";
+
+// @ts-ignore
+import "virtual:xyd-theme/index.css"
+import "virtual:xyd-theme-override/index.css"
+
+import { PageContext } from "./context";
+
+globalThis.__xydSettings = getSettings
+
+new Composer() // TODO: better API
+const settings = globalThis.__xydSettings
+
+const surfaces = new Surfaces()
+const reactContent = new ReactContent(settings, {
+    Link: FwLink,
+    components: {
+        Atlas
+    },
+    useLocation, // // TODO: !!!! BETTER API !!!!!
+    useNavigate,
+    useNavigation
+})
+globalThis.__xydThemeSettings = settings?.theme
+globalThis.__xydReactContent = reactContent
+globalThis.__xydSurfaces = surfaces
+
+const theme = new Theme()
+
+const { Layout: BaseThemeLayout } = theme
+
+interface LoaderData {
+    sidebarGroups: FwSidebarGroupProps[]
+    breadcrumbs: IBreadcrumb[],
+    toc: MetadataMap,
+    slug: string
+    metadata: Metadata | null
+    navlinks?: INavLinks,
+}
+
+export async function loader({ request }: { request: any }) {
+    const slug = getPathname(request.url || "index") || "index"
+
+    const {
+        groups: sidebarGroups,
+        breadcrumbs,
+        navlinks,
+        metadata
+    } = await mapSettingsToProps(
+        settings,
+        globalThis.__xydPagePathMapping,
+        slug,
+    )
+
+    return {
+        sidebarGroups,
+        breadcrumbs,
+        navlinks,
+        slug,
+        metadata,
+    } as LoaderData
+}
+
+export default function Layout() {
+    const loaderData = useLoaderData<LoaderData>()
+
+    console.log("Layout settings", settings || globalThis.__xydSettings)
+
+    const { Layout } = new BaseTheme()
+
+    return <>
+        <Framework
+            settings={settings || globalThis.__xydSettings}
+            sidebarGroups={loaderData.sidebarGroups || []}
+            metadata={loaderData.metadata || {}}
+            surfaces={surfaces}
+        >
+            <AtlasContext
+                value={{
+                    syntaxHighlight: settings?.theme?.markdown?.syntaxHighlight || null
+                }}
+            >
+                <CheckSettingsExternal>
+                    <CheckSettings>
+                        <Layout>
+                            <BaseThemeLayout>
+                                <PageContext value={{ theme }}>
+                                    <Outlet />
+                                </PageContext>
+                            </BaseThemeLayout>
+                        </Layout>
+                    </CheckSettings>
+                </CheckSettingsExternal>
+            </AtlasContext>
+        </Framework>
+    </>
+}
+
+function getPathname(url: string) {
+    const parsedUrl = new URL(url);
+    return parsedUrl.pathname.replace(/^\//, '');
+}
+
+
+function CheckSettings({ children }: { children: React.ReactNode }) {
+    const settings = useSettings()
+
+    console.log("CheckSettings", settings)
+    return <div>
+        {children}
+    </div>
+}

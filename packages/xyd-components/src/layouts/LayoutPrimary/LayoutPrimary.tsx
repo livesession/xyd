@@ -11,6 +11,7 @@ export interface LayoutPrimaryProps {
     subheader?: boolean;
     className?: string;
     layout?: PageLayout
+    scrollKey?: string
 }
 
 const LayoutPrimaryContext = React.createContext<{
@@ -26,10 +27,8 @@ const LayoutPrimaryContext = React.createContext<{
 // TODO: move scroller to xyd-foo
 export function LayoutPrimary(props: LayoutPrimaryProps) {
     const scrollRef = useRef<HTMLDivElement>(null)
-
     const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
-
-    const { hideMainHeader } = props.subheader ? useSubHeader(scrollRef) : { hideMainHeader: false }
+    const { hideMainHeader } = useSubHeader(props.subheader ? scrollRef : null, props.scrollKey)
 
     return <LayoutPrimaryContext value={{
         scrollRef,
@@ -146,11 +145,22 @@ function $HamburgerLine({ active }: { active: boolean }) {
 }
 
 // TODO: move to `xyd-foo` or somewhere else
-function useSubHeader(ref?: React.RefObject<HTMLDivElement | null>) {
+// TODO  better solution than `key`
+function useSubHeader(ref: React.RefObject<HTMLDivElement | null> | null, key?: any) {
     const [hideMainHeader, setHideMainHeader] = useState(false)
     const [scrollTop, setScrollTop] = useState(0)
     const [controlScrollPos, setControlScrollPos] = useState(0)
     const [lastScrollDirection, setLastScrollDirection] = useState<'up' | 'down' | null>(null)
+
+    function reset() {
+        setHideMainHeader(false)
+        setScrollTop(0)
+        setControlScrollPos(0)
+    }
+
+    useEffect(() => {
+        reset()
+    }, [key])
 
     useEffect(() => {
         if (scrollTop === controlScrollPos) {
@@ -217,7 +227,7 @@ function useSubHeader(ref?: React.RefObject<HTMLDivElement | null>) {
             ref.current?.removeEventListener("scroll", onScroll)
             ref.current?.removeEventListener("scrollend", onScrollFinish)
         }
-    }, []);
+    }, [ref, key]);
 
     return {
         hideMainHeader,

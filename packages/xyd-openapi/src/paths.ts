@@ -2,7 +2,7 @@ import { OpenAPIV3 } from "openapi-types";
 import matter from 'gray-matter'
 
 import { Metadata } from "@xyd-js/core";
-import { Definition, ExampleGroup, Reference, ReferenceCategory, OpenAPIReferenceContext } from "@xyd-js/uniform";
+import { Definition, ExampleGroup, Reference, ReferenceCategory, OpenAPIReferenceContext, DefinitionVariant, DefinitionOpenAPIMeta, Meta } from "@xyd-js/uniform";
 
 import { oapParametersToDefinitionProperties } from "./parameters";
 import { oapRequestBodyToDefinitionProperties } from "./requestBody";
@@ -11,6 +11,8 @@ import {
     httpMethodToUniformMethod,
     slug
 } from "./utils";
+import { ResponseDefinitionVariant } from "./types";
+
 
 // oapPathToReference converts an OpenAPI path to a uniform Reference
 export function oapPathToReference(
@@ -29,7 +31,6 @@ export function oapPathToReference(
     const exampleGroups: ExampleGroup[] = []
 
     const oapMethod = oapPath?.[httpMethod] as OpenAPIV3.OperationObject
-
     if (!oapMethod) {
         return null
     }
@@ -45,7 +46,7 @@ export function oapPathToReference(
         }
     }
 
-    const description = matter.stringify({ content: metaDescription.content }, meta || {});
+    const description = matter.stringify({ content: metaDescription.content || oapMethod.summary || "" }, meta || {})
 
     const endpointRef: Reference = {
         title: oapMethod?.summary || oapMethod.operationId || "",
@@ -83,7 +84,7 @@ export function oapPathToReference(
                     title = "Query parameters"
                     break
                 case 'header':
-                    title = "Header"
+                    title = "Headers"
                     break
                 default:
                     console.error(`Unsupported parameter type: ${key} for ${httpMethod} ${path}`)
@@ -101,26 +102,84 @@ export function oapPathToReference(
     if (oapMethod.requestBody) {
         const reqBody = oapMethod.requestBody as OpenAPIV3.RequestBodyObject
 
+        const contentTypes = Object.keys(reqBody.content)
+        if (contentTypes.length > 1) {
+            console.warn("Multiple content types are not supported yet")
+        }
+
+        const findSupportedContent = contentTypes[contentTypes.length - 1]
+        if (!findSupportedContent) {
+            return null
+        }
+
+        const meta: DefinitionOpenAPIMeta[] = [
+            {
+                name: "contentType",
+                value: findSupportedContent,
+            }
+        ]
+
         definitions.push({
             title: 'Request body',
-            properties: oapRequestBodyToDefinitionProperties(reqBody) || []
+            properties: oapRequestBodyToDefinitionProperties(reqBody, findSupportedContent) || [],
+            meta,
         })
     }
 
     if (oapMethod.responses) {
         const responses = oapMethod.responses as OpenAPIV3.ResponsesObject
 
+        const variants: ResponseDefinitionVariant[] = []
+
+        Object.keys(responses).forEach((code) => {
+            const responseObject = responses[code] as OpenAPIV3.ResponseObject
+            if (!responseObject?.content) {
+                return null
+            }
+
+            const contentTypes = Object.keys(responseObject.content)
+            if (contentTypes.length > 1) {
+                console.warn("Multiple content types are not supported yet for responses")
+            }
+
+            const findSupportedContent = contentTypes[contentTypes.length - 1]
+            if (!findSupportedContent) {
+                return null
+            }
+
+            const properties = oapResponseToDefinitionProperties(responses, code, findSupportedContent) || []
+
+            variants.push({
+                title: code,
+                properties,
+                meta: [
+                    {
+                        name: "status",
+                        value: code,
+                    },
+                    {
+                        name: "contentType",
+                        value: findSupportedContent,
+                    }
+                ]
+            })
+        })
+
         definitions.push({
             title: 'Response',
-            properties: oapResponseToDefinitionProperties(responses) || []
+            variants,
+            properties: []
         })
     }
 
-    // @ts-ignore
-    endpointRef.__UNSAFE_selector = {
-        // @ts-ignore
-        ...endpointRef.__UNSAFE_selector || {},
-        "[method] [path]": oapMethod
+    // TODO: !!!! better api !!!!
+    endpointRef.__UNSAFE_selector = function __UNSAFE_selector(selector: string) {
+        switch (selector) {
+            case "[method] [path]":
+                return oapMethod
+            default:
+                return null
+        }
     }
 
     return endpointRef

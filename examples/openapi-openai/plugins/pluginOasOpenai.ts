@@ -1,5 +1,5 @@
 import { Settings } from "@xyd-js/core";
-import { CodeBlockTab, Example, ExampleGroup, Reference } from "@xyd-js/uniform";
+import { CodeBlockTab, Example, ExampleGroup, Reference, UniformPluginArgs } from "@xyd-js/uniform";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 
 
@@ -17,11 +17,11 @@ export function uniformOpenAIMeta() {
         /// TODO: !!!! BETTER !!! MORE STREAM LIKE
         // @ts-ignore
         const selector = ref.__UNSAFE_selector
-        if (!selector) {
+        if (!selector || typeof selector !== "function") {
             return
         }
 
-        const methodPath = selector["[method] [path]"]
+        const methodPath = selector("[method] [path]")
         if (!methodPath) {
             return
         }

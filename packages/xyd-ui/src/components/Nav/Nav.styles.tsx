@@ -88,7 +88,7 @@ export const ItemHost = css`
 
         [part="title2"] {
             visibility: hidden;
-            font-weight: 600;
+            font-weight: var(--xyd-font-weight-semibold);
         }
     }
 `;

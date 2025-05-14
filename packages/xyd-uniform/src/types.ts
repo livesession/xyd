@@ -10,21 +10,58 @@ export interface Reference<C = ReferenceContext> {
     definitions: Definition[]
     examples: ExampleRoot
 
+    /**
+     * @unsafe
+     */
     category?: ReferenceCategory; // TODO: do we need that?
+    /**
+     * @unsafe
+     */
     type?: ReferenceType; // TODO: do we need that?
+    /**
+     * @unsafe
+     */
     context?: C;
+
+    /**
+     * TODO: !!!! BETTER !!!!
+     * @unsafe
+     */
+    __UNSAFE_selector?: (selector: string) => any;
 }
 
-export interface Definition {
+export type DefinitionOpenAPIMeta = Meta<"contentType">;
+
+export type DefinitionMeta = DefinitionOpenAPIMeta
+
+export interface Definition<V = any> {
     title: string;
 
     properties: DefinitionProperty[];
 
-    type?: string;
-
-    id?: string;
+    variants?: DefinitionVariant<V>[];
 
     description?: string | React.ReactNode;
+
+    meta?: DefinitionMeta[];
+
+    /**
+     * @unsafe
+     */
+    id?: string;
+
+    /**
+     * @unsafe
+     */
+    type?: string;
+}
+
+export interface DefinitionVariant<T = any> {
+    title: string;
+
+    properties: DefinitionProperty[];
+
+    meta?: Meta<T>[];
 }
 
 export interface Meta<T = string> {
@@ -132,6 +169,8 @@ export enum ReferenceType {
 
 export interface BaseReferenceContext {
     group?: string[];
+ 
+    scopes?: string[];
 }
 
 export interface GraphQLReferenceContext extends BaseReferenceContext {

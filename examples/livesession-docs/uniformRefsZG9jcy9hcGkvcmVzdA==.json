@@ -1,0 +1,3916 @@
+[
+  {
+    "title": "Get Sessions",
+    "canonical": "get-sessions",
+    "description": "---\ntitle: List sessions\ngroup:\n  - Endpoints\n---\n\nList of all sessions\n",
+    "type": "rest_get",
+    "category": "rest",
+    "context": {
+      "method": "get",
+      "path": "/sessions",
+      "fullPath": "https:/api.livesession.io/v1/sessions",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "users.sessions:read"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"total\": 0,\n  \"page\": {\n    \"num\": 0,\n    \"size\": 0\n  },\n  \"sessions\": [\n    {\n      \"id\": \"string\",\n      \"website_id\": \"string\",\n      \"session_url\": \"string\",\n      \"creation_timestamp\": 0,\n      \"duration\": 0,\n      \"end_timestamp\": 0,\n      \"active_time\": 0,\n      \"end_url\": \"string\",\n      \"expiration_timestamp\": 0,\n      \"last_event_timestamp\": 0,\n      \"product\": \"string\",\n      \"device\": \"string\",\n      \"tags\": [\n        \"string\"\n      ],\n      \"last_seen_page_view_id\": \"string\",\n      \"seen\": true,\n      \"referrer\": \"string\",\n      \"start_url\": \"string\",\n      \"visitor_first_session\": true,\n      \"engagment_score\": 0,\n      \"visitor\": {\n        \"id\": \"string\",\n        \"ip\": \"string\",\n        \"geolocation\": {\n          \"country_code\": \"string\",\n          \"city\": \"string\",\n          \"region\": \"string\"\n        },\n        \"name\": \"string\",\n        \"email\": \"string\",\n        \"email_hash\": \"string\",\n        \"params\": [\n          {\n            \"name\": \"string\",\n            \"value\": \"string\"\n          }\n        ],\n        \"last_session_timestamp\": 0,\n        \"first_session_timestamp\": 0\n      },\n      \"resolution\": {\n        \"height\": 0,\n        \"width\": 0,\n        \"resolution\": \"string\"\n      },\n      \"os\": {\n        \"name\": \"string\",\n        \"version\": \"string\"\n      },\n      \"browser\": {\n        \"description\": \"string\",\n        \"name\": \"string\",\n        \"version\": \"string\"\n      },\n      \"utm\": {\n        \"source\": \"string\",\n        \"medium\": \"string\",\n        \"campaign\": \"string\",\n        \"term\": \"string\",\n        \"content\": \"string\"\n      },\n      \"page_views_statistics\": {\n        \"count\": 0\n      },\n      \"events_statistics\": {\n        \"clicks\": 0,\n        \"error_clicks\": 0,\n        \"rage_clicks\": 0,\n        \"error_logs\": 0,\n        \"net_errors\": 0\n      }\n    }\n  ]\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Query parameters",
+        "properties": [
+          {
+            "name": "page",
+            "type": "integer",
+            "description": "The number of page to start with (default 0, max 10000).",
+            "meta": []
+          },
+          {
+            "name": "size",
+            "type": "integer",
+            "description": "The number of page's size (default 25, max 100).",
+            "meta": []
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "description": "The email address that you have associated with a session via [identify](/docs/api/browser/methods#identify).",
+            "meta": []
+          },
+          {
+            "name": "visitor_id",
+            "type": "string",
+            "description": "The visitor ID.",
+            "meta": []
+          },
+          {
+            "name": "tz",
+            "type": "string",
+            "description": "IANA timezone. Default Europe/London if RelativeDateString is applied.",
+            "meta": []
+          },
+          {
+            "name": "date_from",
+            "type": "",
+            "description": "[ISO 8601](https://wikipedia.org/wiki/ISO_8601) string or [RelativeDateString](/docs/api/rest/RelativeDateString).\n",
+            "meta": []
+          },
+          {
+            "name": "date_to",
+            "type": "",
+            "description": "[ISO 8601](https://wikipedia.org/wiki/ISO_8601) string or [RelativeDateString](/docs/api/rest/RelativeDateString).\n",
+            "meta": []
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "properties": [
+              {
+                "name": "total",
+                "type": "integer",
+                "description": "Total number of sessions matching the query",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "page",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "num",
+                    "type": "integer",
+                    "description": "Current page number",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "size",
+                    "type": "integer",
+                    "description": "Number of items per page",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              },
+              {
+                "name": "sessions",
+                "type": "array",
+                "description": "List of session objects",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "Unique identifier for the session",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "website_id",
+                    "type": "string",
+                    "description": "ID of the website where the session was recorded",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "session_url",
+                    "type": "string",
+                    "description": "URL to view the session in LiveSession dashboard",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "creation_timestamp",
+                    "type": "integer",
+                    "description": "Unix timestamp when the session was created",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "duration",
+                    "type": "integer",
+                    "description": "Total duration of the session in seconds",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "end_timestamp",
+                    "type": "integer",
+                    "description": "Unix timestamp when the session ended",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "active_time",
+                    "type": "integer",
+                    "description": "Total time the user was actively interacting with the page in seconds",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "end_url",
+                    "type": "string",
+                    "description": "The last URL visited during the session",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "expiration_timestamp",
+                    "type": "integer",
+                    "description": "Unix timestamp when the session recording will expire",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "last_event_timestamp",
+                    "type": "integer",
+                    "description": "Unix timestamp of the last event recorded in the session",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "product",
+                    "type": "string",
+                    "description": "Product identifier associated with the session",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "device",
+                    "type": "string",
+                    "description": "Device type (e.g., desktop, mobile, tablet)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "tags",
+                    "type": "array",
+                    "description": "Custom tags associated with the session",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "last_seen_page_view_id",
+                    "type": "string",
+                    "description": "ID of the last page view in the session",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "seen",
+                    "type": "boolean",
+                    "description": "Whether the session has been viewed in the dashboard",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "referrer",
+                    "type": "string",
+                    "description": "URL where the user came from before starting the session",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "start_url",
+                    "type": "string",
+                    "description": "First URL visited during the session",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "visitor_first_session",
+                    "type": "boolean",
+                    "description": "Whether this is the visitor's first session",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "engagment_score",
+                    "type": "number",
+                    "description": "Calculated engagement score for the session (0-100)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "visitor",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "id",
+                        "type": "string",
+                        "description": "Unique identifier for the visitor",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "ip",
+                        "type": "string",
+                        "description": "IP address of the visitor",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "geolocation",
+                        "type": "object",
+                        "description": "",
+                        "properties": [
+                          {
+                            "name": "country_code",
+                            "type": "string",
+                            "description": "Two-letter country code (ISO 3166-1 alpha-2)",
+                            "properties": [],
+                            "meta": []
+                          },
+                          {
+                            "name": "city",
+                            "type": "string",
+                            "description": "City name",
+                            "properties": [],
+                            "meta": []
+                          },
+                          {
+                            "name": "region",
+                            "type": "string",
+                            "description": "Region or state name",
+                            "properties": [],
+                            "meta": []
+                          }
+                        ],
+                        "meta": []
+                      },
+                      {
+                        "name": "name",
+                        "type": "string",
+                        "description": "Name of the visitor if identified",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "email",
+                        "type": "string",
+                        "description": "Email address of the visitor if identified",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "email_hash",
+                        "type": "string",
+                        "description": "Hashed version of the visitor's email for privacy",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "params",
+                        "type": "array",
+                        "description": "Custom parameters associated with the visitor",
+                        "properties": [
+                          {
+                            "name": "name",
+                            "type": "string",
+                            "description": "Parameter name",
+                            "properties": [],
+                            "meta": []
+                          },
+                          {
+                            "name": "value",
+                            "type": "string",
+                            "description": "Parameter value",
+                            "properties": [],
+                            "meta": []
+                          }
+                        ],
+                        "meta": []
+                      },
+                      {
+                        "name": "last_session_timestamp",
+                        "type": "integer",
+                        "description": "Unix timestamp of the visitor's last session",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "first_session_timestamp",
+                        "type": "integer",
+                        "description": "Unix timestamp of the visitor's first session",
+                        "properties": [],
+                        "meta": []
+                      }
+                    ],
+                    "meta": []
+                  },
+                  {
+                    "name": "resolution",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "height",
+                        "type": "integer",
+                        "description": "Screen height in pixels",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "width",
+                        "type": "integer",
+                        "description": "Screen width in pixels",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "resolution",
+                        "type": "string",
+                        "description": "Screen resolution (e.g., \"1920x1080\")",
+                        "properties": [],
+                        "meta": []
+                      }
+                    ],
+                    "meta": []
+                  },
+                  {
+                    "name": "os",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "name",
+                        "type": "string",
+                        "description": "Operating system name (e.g., Windows, macOS, iOS)",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "version",
+                        "type": "string",
+                        "description": "Operating system version",
+                        "properties": [],
+                        "meta": []
+                      }
+                    ],
+                    "meta": []
+                  },
+                  {
+                    "name": "browser",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "description",
+                        "type": "string",
+                        "description": "Full browser description string",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "name",
+                        "type": "string",
+                        "description": "Browser name (e.g., Chrome, Firefox, Safari)",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "version",
+                        "type": "string",
+                        "description": "Browser version",
+                        "properties": [],
+                        "meta": []
+                      }
+                    ],
+                    "meta": []
+                  },
+                  {
+                    "name": "utm",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "source",
+                        "type": "string",
+                        "description": "UTM source parameter (e.g., google, facebook)",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "medium",
+                        "type": "string",
+                        "description": "UTM medium parameter (e.g., cpc, social)",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "campaign",
+                        "type": "string",
+                        "description": "UTM campaign parameter",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "term",
+                        "type": "string",
+                        "description": "UTM term parameter (search keywords)",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "content",
+                        "type": "string",
+                        "description": "UTM content parameter",
+                        "properties": [],
+                        "meta": []
+                      }
+                    ],
+                    "meta": []
+                  },
+                  {
+                    "name": "page_views_statistics",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "count",
+                        "type": "integer",
+                        "description": "Total number of page views in the session",
+                        "properties": [],
+                        "meta": []
+                      }
+                    ],
+                    "meta": []
+                  },
+                  {
+                    "name": "events_statistics",
+                    "type": "object",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "clicks",
+                        "type": "integer",
+                        "description": "Total number of clicks during the session",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "error_clicks",
+                        "type": "integer",
+                        "description": "Number of clicks on error elements",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "rage_clicks",
+                        "type": "integer",
+                        "description": "Number of rapid clicks indicating user frustration",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "error_logs",
+                        "type": "integer",
+                        "description": "Number of JavaScript errors logged",
+                        "properties": [],
+                        "meta": []
+                      },
+                      {
+                        "name": "net_errors",
+                        "type": "integer",
+                        "description": "Number of network errors encountered",
+                        "properties": [],
+                        "meta": []
+                      }
+                    ],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Get all alerts",
+    "canonical": "get-all-alerts",
+    "description": "---\ntitle: List alerts\ngroup:\n  - Endpoints\n---\n\nList of all alerts\n",
+    "type": "rest_get",
+    "category": "rest",
+    "context": {
+      "method": "get",
+      "path": "/alerts",
+      "fullPath": "https:/api.livesession.io/v1/alerts",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "alerts:read"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "[\n  {\n    \"alert_id\": \"string\",\n    \"name\": \"string\",\n    \"events\": [\n      {\n        \"kind\": 0,\n        \"value\": \"string\"\n      }\n    ],\n    \"provider\": \"slack\",\n    \"slack_channel_id\": \"string\",\n    \"webhook_id\": \"string\",\n    \"enabled\": true,\n    \"creation_date\": \"string\"\n  }\n]"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "properties": [
+              {
+                "name": "alert_id",
+                "type": "string",
+                "description": "Unique identifier for the alert",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "description": "Name of the alert",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "events",
+                "type": "array",
+                "description": "List of events that trigger the alert",
+                "properties": [
+                  {
+                    "name": "kind",
+                    "type": "integer",
+                    "description": "Kind of event, more info [here](/docs/api/rest/EventKind)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "value",
+                    "type": "string",
+                    "description": "Value or threshold that triggers the alert",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              },
+              {
+                "name": "provider",
+                "type": "string",
+                "description": "Notification provider for the alert",
+                "properties": [
+                  {
+                    "name": "slack",
+                    "type": "string",
+                    "description": "",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "webhooks",
+                    "type": "string",
+                    "description": "",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": [
+                  {
+                    "name": "enum",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "slack_channel_id",
+                "type": "string",
+                "description": "Slack channel ID for notifications",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "webhook_id",
+                "type": "string",
+                "description": "Webhook ID for notifications",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "enabled",
+                "type": "boolean",
+                "description": "Whether the alert is currently active",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "creation_date",
+                "type": "string",
+                "description": "[ISO 8601](https://wikipedia.org/wiki/ISO_8601) timestamp when the alert was created\n",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Create an alert",
+    "canonical": "create-an-alert",
+    "description": "---\ntitle: Create alert\ngroup:\n  - Endpoints\n---\n\nCreate alert\n",
+    "type": "rest_post",
+    "category": "rest",
+    "context": {
+      "method": "post",
+      "path": "/alerts",
+      "fullPath": "https:/api.livesession.io/v1/alerts",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "alerts:write"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "shell",
+                    "language": "shell",
+                    "code": "curl --request POST \\\n     --url https://api.livesession.io/v1/alerts \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"name\": \"string\",\n  \"events\": [\n    {\n      \"kind\": 0,\n      \"value\": \"string\"\n    }\n  ],\n  \"provider\": \"slack\",\n  \"slack_channel_id\": \"string\",\n  \"webhook_id\": \"string\"\n}\n'"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const options = {\n  method: 'POST',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({\n    name: 'string',\n    events: [{kind: 0, value: 'string'}],\n    provider: 'slack',\n    slack_channel_id: 'string',\n    webhook_id: 'string'\n  })\n};\n\nfetch('https://api.livesession.io/v1/alerts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                  },
+                  {
+                    "title": "python",
+                    "language": "python",
+                    "code": "import requests\n\nurl = \"https://api.livesession.io/v1/alerts\"\n\npayload = {\n    \"name\": \"string\",\n    \"events\": [\n        {\n            \"kind\": 0,\n            \"value\": \"string\"\n        }\n    ],\n    \"provider\": \"slack\",\n    \"slack_channel_id\": \"string\",\n    \"webhook_id\": \"string\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\nprint(response.text)"
+                  },
+                  {
+                    "title": "go",
+                    "language": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.livesession.io/v1/alerts\"\n\n\tpayload := strings.NewReader(\"{\\\"name\\\":\\\"string\\\",\\\"events\\\":[{\\\"kind\\\":0,\\\"value\\\":\\\"string\\\"}],\\\"provider\\\":\\\"slack\\\",\\\"slack_channel_id\\\":\\\"string\\\",\\\"webhook_id\\\":\\\"string\\\"}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "201",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"alert_id\": \"string\",\n  \"name\": \"string\",\n  \"events\": [\n    {\n      \"kind\": 0,\n      \"value\": \"string\"\n    }\n  ],\n  \"provider\": \"slack\",\n  \"slack_channel_id\": \"string\",\n  \"webhook_id\": \"string\",\n  \"enabled\": true,\n  \"creation_date\": \"string\"\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Request body",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "Name of the alert for easy identification",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "events",
+            "type": "array",
+            "description": "List of events that will trigger the alert",
+            "properties": [
+              {
+                "name": "kind",
+                "type": "integer",
+                "description": "Kind of event, more info [here](/docs/api/rest/EventKind)",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "value",
+                "type": "string",
+                "description": "Value or threshold that triggers the alert",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "provider",
+            "type": "string",
+            "description": "Notification provider for the alert, `slack` or `webhooks`",
+            "properties": [
+              {
+                "name": "slack",
+                "type": "string",
+                "description": "",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "webhooks",
+                "type": "string",
+                "description": "",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "enum",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "slack_channel_id",
+            "type": "string",
+            "description": "Slack channel ID where notifications will be sent (required if provider is `slack`)",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "webhook_id",
+            "type": "string",
+            "description": "Webhook ID where notifications will be sent (required if provider is `webhooks`)",
+            "properties": [],
+            "meta": []
+          }
+        ],
+        "meta": [
+          {
+            "name": "contentType",
+            "value": "application/json"
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "201",
+            "properties": [
+              {
+                "name": "alert_id",
+                "type": "string",
+                "description": "Unique identifier for the alert",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "description": "Name of the alert",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "events",
+                "type": "array",
+                "description": "List of events that trigger the alert",
+                "properties": [
+                  {
+                    "name": "kind",
+                    "type": "integer",
+                    "description": "Kind of event, more info [here](/docs/api/rest/EventKind)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "value",
+                    "type": "string",
+                    "description": "Value or threshold that triggers the alert",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              },
+              {
+                "name": "provider",
+                "type": "string",
+                "description": "Notification provider for the alert",
+                "properties": [
+                  {
+                    "name": "slack",
+                    "type": "string",
+                    "description": "",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "webhooks",
+                    "type": "string",
+                    "description": "",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": [
+                  {
+                    "name": "enum",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "slack_channel_id",
+                "type": "string",
+                "description": "Slack channel ID for notifications",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "webhook_id",
+                "type": "string",
+                "description": "Webhook ID for notifications",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "enabled",
+                "type": "boolean",
+                "description": "Whether the alert is currently active",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "creation_date",
+                "type": "string",
+                "description": "[ISO 8601](https://wikipedia.org/wiki/ISO_8601) timestamp when the alert was created\n",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "201"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Update an alert by ID",
+    "canonical": "update-an-alert-by-id",
+    "description": "---\ntitle: Update alert\ngroup:\n  - Endpoints\n---\n\nUpdate alert by ID\n",
+    "type": "rest_put",
+    "category": "rest",
+    "context": {
+      "method": "put",
+      "path": "/alerts/{id}",
+      "fullPath": "https:/api.livesession.io/v1/alerts/{id}",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "alerts:write"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "shell",
+                    "language": "shell",
+                    "code": "curl --request PUT \\\n     --url https://api.livesession.io/v1/alerts/id \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"name\": \"string\",\n  \"events\": [\n    {\n      \"kind\": 0,\n      \"value\": \"string\"\n    }\n  ],\n  \"provider\": \"slack\",\n  \"slack_channel_id\": \"string\",\n  \"webhook_id\": \"string\"\n}\n'"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({\n    name: 'string',\n    events: [{kind: 0, value: 'string'}],\n    provider: 'slack',\n    slack_channel_id: 'string',\n    webhook_id: 'string'\n  })\n};\n\nfetch('https://api.livesession.io/v1/alerts/id', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                  },
+                  {
+                    "title": "python",
+                    "language": "python",
+                    "code": "import requests\n\nurl = \"https://api.livesession.io/v1/alerts/id\"\n\npayload = {\n    \"name\": \"string\",\n    \"events\": [\n        {\n            \"kind\": 0,\n            \"value\": \"string\"\n        }\n    ],\n    \"provider\": \"slack\",\n    \"slack_channel_id\": \"string\",\n    \"webhook_id\": \"string\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)"
+                  },
+                  {
+                    "title": "go",
+                    "language": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.livesession.io/v1/alerts/id\"\n\n\tpayload := strings.NewReader(\"{\\\"name\\\":\\\"string\\\",\\\"events\\\":[{\\\"kind\\\":0,\\\"value\\\":\\\"string\\\"}],\\\"provider\\\":\\\"slack\\\",\\\"slack_channel_id\\\":\\\"string\\\",\\\"webhook_id\\\":\\\"string\\\"}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"alert_id\": \"string\",\n  \"name\": \"string\",\n  \"events\": [\n    {\n      \"kind\": 0,\n      \"value\": \"string\"\n    }\n  ],\n  \"provider\": \"slack\",\n  \"slack_channel_id\": \"string\",\n  \"webhook_id\": \"string\",\n  \"enabled\": true,\n  \"creation_date\": \"string\"\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Path parameters",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "description": "Unique identifier of the alert to update",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Request body",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "New name for the alert",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "events",
+            "type": "array",
+            "description": "Updated list of events that will trigger the alert",
+            "properties": [
+              {
+                "name": "kind",
+                "type": "integer",
+                "description": "Kind of event, more info [here](/docs/api/rest/EventKind)",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "value",
+                "type": "string",
+                "description": "Value or threshold that triggers the alert",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": []
+          },
+          {
+            "name": "provider",
+            "type": "string",
+            "description": "Updated notification provider for the alert",
+            "properties": [
+              {
+                "name": "slack",
+                "type": "string",
+                "description": "",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "webhooks",
+                "type": "string",
+                "description": "",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "enum",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "slack_channel_id",
+            "type": "string",
+            "description": "Updated Slack channel ID for notifications",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "webhook_id",
+            "type": "string",
+            "description": "Updated webhook ID for notifications",
+            "properties": [],
+            "meta": []
+          }
+        ],
+        "meta": [
+          {
+            "name": "contentType",
+            "value": "application/json"
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "properties": [
+              {
+                "name": "alert_id",
+                "type": "string",
+                "description": "Unique identifier for the alert",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "description": "Name of the alert",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "events",
+                "type": "array",
+                "description": "List of events that trigger the alert",
+                "properties": [
+                  {
+                    "name": "kind",
+                    "type": "integer",
+                    "description": "Kind of event, more info [here](/docs/api/rest/EventKind)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "value",
+                    "type": "string",
+                    "description": "Value or threshold that triggers the alert",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              },
+              {
+                "name": "provider",
+                "type": "string",
+                "description": "Notification provider for the alert",
+                "properties": [
+                  {
+                    "name": "slack",
+                    "type": "string",
+                    "description": "",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "webhooks",
+                    "type": "string",
+                    "description": "",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": [
+                  {
+                    "name": "enum",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "slack_channel_id",
+                "type": "string",
+                "description": "Slack channel ID for notifications",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "webhook_id",
+                "type": "string",
+                "description": "Webhook ID for notifications",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "enabled",
+                "type": "boolean",
+                "description": "Whether the alert is currently active",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "creation_date",
+                "type": "string",
+                "description": "[ISO 8601](https://wikipedia.org/wiki/ISO_8601) timestamp when the alert was created\n",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Delete an alert by ID",
+    "canonical": "delete-an-alert-by-id",
+    "description": "---\ntitle: Delete alert\ngroup:\n  - Endpoints\n---\n\nDelete alert by ID\n",
+    "type": "rest_delete",
+    "category": "rest",
+    "context": {
+      "method": "delete",
+      "path": "/alerts/{id}",
+      "fullPath": "https:/api.livesession.io/v1/alerts/{id}",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "alerts:write"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"alert_id\": \"string\",\n  \"deleted\": true\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Path parameters",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "description": "Unique identifier of the alert to delete",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "properties": [
+              {
+                "name": "alert_id",
+                "type": "string",
+                "description": "ID of the alert that was deleted",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "deleted",
+                "type": "boolean",
+                "description": "Indicates whether the alert was successfully deleted",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Get a list of webhooks",
+    "canonical": "get-a-list-of-webhooks",
+    "description": "---\ntitle: List webhooks\ngroup:\n  - Endpoints\n---\n\nList of all webhooks\n",
+    "type": "rest_get",
+    "category": "rest",
+    "context": {
+      "method": "get",
+      "path": "/webhooks",
+      "fullPath": "https:/api.livesession.io/v1/webhooks",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "webhooks:read"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "[\n  {\n    \"webhook_id\": \"string\",\n    \"url\": \"string\",\n    \"website\": \"string\",\n    \"website_id\": \"string\",\n    \"version\": \"string\",\n    \"enabled\": true,\n    \"created_date\": 0,\n    \"created_by\": \"string\"\n  }\n]"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "properties": [
+              {
+                "name": "webhook_id",
+                "type": "string",
+                "description": "Webhook ID",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "url",
+                "type": "string",
+                "description": "URL for the webhook",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "website",
+                "type": "string",
+                "description": "Website name",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "website_id",
+                "type": "string",
+                "description": "Website ID",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "version",
+                "type": "string",
+                "description": "API version",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "enabled",
+                "type": "boolean",
+                "description": "Webhook enabled status",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "created_date",
+                "type": "integer",
+                "description": "Unix timestamp for creation date",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "created_by",
+                "type": "string",
+                "description": "Creator of the webhook",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Create a webhook",
+    "canonical": "create-a-webhook",
+    "description": "---\ntitle: Create webhook\ngroup:\n  - Endpoints\n---\n\nCreate a webhook\n",
+    "type": "rest_post",
+    "category": "rest",
+    "context": {
+      "method": "post",
+      "path": "/webhooks",
+      "fullPath": "https:/api.livesession.io/v1/webhooks",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "webhooks:write"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "shell",
+                    "language": "shell",
+                    "code": "curl --request POST \\\n     --url https://api.livesession.io/v1/webhooks \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"url\": \"string\",\n  \"website_id\": \"string\",\n  \"version\": \"string\"\n}\n'"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const options = {\n  method: 'POST',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({url: 'string', website_id: 'string', version: 'string'})\n};\n\nfetch('https://api.livesession.io/v1/webhooks', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                  },
+                  {
+                    "title": "python",
+                    "language": "python",
+                    "code": "import requests\n\nurl = \"https://api.livesession.io/v1/webhooks\"\n\npayload = {\n    \"url\": \"string\",\n    \"website_id\": \"string\",\n    \"version\": \"string\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\nprint(response.text)"
+                  },
+                  {
+                    "title": "go",
+                    "language": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.livesession.io/v1/webhooks\"\n\n\tpayload := strings.NewReader(\"{\\\"url\\\":\\\"string\\\",\\\"website_id\\\":\\\"string\\\",\\\"version\\\":\\\"string\\\"}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"webhook_id\": \"string\",\n  \"url\": \"string\",\n  \"website\": \"string\",\n  \"website_id\": \"string\",\n  \"version\": \"string\",\n  \"enabled\": true,\n  \"created_date\": 0,\n  \"created_by\": \"string\"\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Request body",
+        "properties": [
+          {
+            "name": "url",
+            "type": "string",
+            "description": "URL for the webhook",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "website_id",
+            "type": "string",
+            "description": "Website ID",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "version",
+            "type": "string",
+            "description": "API version (e.g., v1.0)",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "meta": [
+          {
+            "name": "contentType",
+            "value": "application/json"
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "properties": [
+              {
+                "name": "webhook_id",
+                "type": "string",
+                "description": "Webhook ID",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "url",
+                "type": "string",
+                "description": "URL for the webhook",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "website",
+                "type": "string",
+                "description": "Website name",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "website_id",
+                "type": "string",
+                "description": "Website ID",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "version",
+                "type": "string",
+                "description": "API version",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "enabled",
+                "type": "boolean",
+                "description": "Webhook enabled status",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "created_date",
+                "type": "integer",
+                "description": "Unix timestamp for creation date",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "created_by",
+                "type": "string",
+                "description": "Creator of the webhook",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Update a webhook",
+    "canonical": "update-a-webhook",
+    "description": "---\ntitle: Update webhook\ngroup:\n  - Endpoints\n---\n\nUpdate a webhook\n",
+    "type": "rest_put",
+    "category": "rest",
+    "context": {
+      "method": "put",
+      "path": "/webhooks/{id}",
+      "fullPath": "https:/api.livesession.io/v1/webhooks/{id}",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "webhooks:write"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "shell",
+                    "language": "shell",
+                    "code": "curl --request PUT \\\n     --url https://api.livesession.io/v1/webhooks/id \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"url\": \"string\",\n  \"website_id\": \"string\",\n  \"version\": \"string\"\n}\n'"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({url: 'string', website_id: 'string', version: 'string'})\n};\n\nfetch('https://api.livesession.io/v1/webhooks/id', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                  },
+                  {
+                    "title": "python",
+                    "language": "python",
+                    "code": "import requests\n\nurl = \"https://api.livesession.io/v1/webhooks/id\"\n\npayload = {\n    \"url\": \"string\",\n    \"website_id\": \"string\",\n    \"version\": \"string\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)"
+                  },
+                  {
+                    "title": "go",
+                    "language": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.livesession.io/v1/webhooks/id\"\n\n\tpayload := strings.NewReader(\"{\\\"url\\\":\\\"string\\\",\\\"website_id\\\":\\\"string\\\",\\\"version\\\":\\\"string\\\"}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"webhook_id\": \"string\",\n  \"url\": \"string\",\n  \"website\": \"string\",\n  \"website_id\": \"string\",\n  \"version\": \"string\",\n  \"enabled\": true,\n  \"created_date\": 0,\n  \"created_by\": \"string\"\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Path parameters",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "description": "ID of the webhook to update",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Query parameters",
+        "properties": [
+          {
+            "name": "version",
+            "type": "string",
+            "description": "API version",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Request body",
+        "properties": [
+          {
+            "name": "url",
+            "type": "string",
+            "description": "URL for the webhook",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "website_id",
+            "type": "string",
+            "description": "Website ID",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "version",
+            "type": "string",
+            "description": "API version (e.g., v1.0)",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "meta": [
+          {
+            "name": "contentType",
+            "value": "application/json"
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "properties": [
+              {
+                "name": "webhook_id",
+                "type": "string",
+                "description": "Webhook ID",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "url",
+                "type": "string",
+                "description": "URL for the webhook",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "website",
+                "type": "string",
+                "description": "Website name",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "website_id",
+                "type": "string",
+                "description": "Website ID",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "version",
+                "type": "string",
+                "description": "API version",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "enabled",
+                "type": "boolean",
+                "description": "Webhook enabled status",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "created_date",
+                "type": "integer",
+                "description": "Unix timestamp for creation date",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "created_by",
+                "type": "string",
+                "description": "Creator of the webhook",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Delete a webhook",
+    "canonical": "delete-a-webhook",
+    "description": "---\ntitle: Delete webhook\ngroup:\n  - Endpoints\n---\n\nDelete a webhook \n",
+    "type": "rest_delete",
+    "category": "rest",
+    "context": {
+      "method": "delete",
+      "path": "/webhooks/{id}",
+      "fullPath": "https:/api.livesession.io/v1/webhooks/{id}",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "webhooks:write"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"webhook_id\": \"string\",\n  \"deleted\": true\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Path parameters",
+        "properties": [
+          {
+            "name": "id",
+            "type": "string",
+            "description": "ID of the webhook to delete",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "properties": [
+              {
+                "name": "webhook_id",
+                "type": "string",
+                "description": "Webhook ID",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "deleted",
+                "type": "boolean",
+                "description": "Indicates if the webhook was deleted",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Get a list of websites",
+    "canonical": "get-a-list-of-websites",
+    "description": "---\ntitle: List websites\ngroup:\n  - Endpoints\n---\n\nList of all websites\n",
+    "type": "rest_get",
+    "category": "rest",
+    "context": {
+      "method": "get",
+      "path": "/websites",
+      "fullPath": "https:/api.livesession.io/v1/websites",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "websites:read"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "[\n  {\n    \"website_id\": \"string\",\n    \"host\": \"string\"\n  }\n]"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "properties": [
+              {
+                "name": "website_id",
+                "type": "string",
+                "description": "Unique identifier for the website",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "host",
+                "type": "string",
+                "description": "Domain name or hostname of the website (e.g., example.com)",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Create a website",
+    "canonical": "create-a-website",
+    "description": "---\ntitle: Create website\ngroup:\n  - Endpoints\n---\n\nCreate a website\n",
+    "type": "rest_post",
+    "category": "rest",
+    "context": {
+      "method": "post",
+      "path": "/websites",
+      "fullPath": "https:/api.livesession.io/v1/websites",
+      "group": [
+        "Endpoints"
+      ],
+      "scopes": [
+        "websites:write"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "shell",
+                    "language": "shell",
+                    "code": "curl --request POST \\\n     --url https://api.livesession.io/v1/websites \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"host\": \"string\",\n  \"description\": \"string\"\n}\n'"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const options = {\n  method: 'POST',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({host: 'string', description: 'string'})\n};\n\nfetch('https://api.livesession.io/v1/websites', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                  },
+                  {
+                    "title": "python",
+                    "language": "python",
+                    "code": "import requests\n\nurl = \"https://api.livesession.io/v1/websites\"\n\npayload = {\n    \"host\": \"string\",\n    \"description\": \"string\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\nprint(response.text)"
+                  },
+                  {
+                    "title": "go",
+                    "language": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.livesession.io/v1/websites\"\n\n\tpayload := strings.NewReader(\"{\\\"host\\\":\\\"string\\\",\\\"description\\\":\\\"string\\\"}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"website_id\": \"string\",\n  \"host\": \"string\"\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "500",
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"error\": {\n    \"type\": \"string\",\n    \"code\": \"string\",\n    \"param\": \"string\",\n    \"message\": \"string\",\n    \"http_status_code\": 0,\n    \"request_id\": \"string\"\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Request body",
+        "properties": [
+          {
+            "name": "host",
+            "type": "string",
+            "description": "Domain name or hostname of the website to track",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "Optional description of the website for organization purposes",
+            "properties": [],
+            "meta": []
+          }
+        ],
+        "meta": [
+          {
+            "name": "contentType",
+            "value": "application/json"
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "properties": [
+              {
+                "name": "website_id",
+                "type": "string",
+                "description": "Unique identifier for the website",
+                "properties": [],
+                "meta": []
+              },
+              {
+                "name": "host",
+                "type": "string",
+                "description": "Domain name or hostname of the website (e.g., example.com)",
+                "properties": [],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "400",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          },
+          {
+            "title": "500",
+            "properties": [
+              {
+                "name": "error",
+                "type": "object",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "Type of error (e.g., validation_error, authentication_error)",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "code",
+                    "type": "string",
+                    "description": "Machine-readable error code",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "param",
+                    "type": "string",
+                    "description": "Name of the parameter that caused the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "message",
+                    "type": "string",
+                    "description": "Human-readable error message",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "http_status_code",
+                    "type": "integer",
+                    "description": "HTTP status code associated with the error",
+                    "properties": [],
+                    "meta": []
+                  },
+                  {
+                    "name": "request_id",
+                    "type": "string",
+                    "description": "Unique identifier for the request that caused the error",
+                    "properties": [],
+                    "meta": []
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "500"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  }
+]

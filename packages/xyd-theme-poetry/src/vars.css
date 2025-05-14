@@ -26,3 +26,17 @@
     --xyd-coder-code-mark-bgcolor: var(--xyd-codetabs-color--hover);
     --xyd-coder-code-mark-border-color: var(--color-primary);
 }
+
+:root {
+    --XydAtlas-Ref-Palette-Primary-60: var(--color-primary);
+    --XydAtlas-Ref-Palette-Primary-70: var(--color-primary--active);
+    --XydAtlas-Ref-Palette-Primary-80: var(--color-primary--active);
+
+    --XydAtlas-Ref-Palette-Neutral-10: var(--dark8);
+    --XydAtlas-Ref-Palette-Neutral-20: var(--dark16);
+    --XydAtlas-Ref-Palette-Neutral-30: var(--dark32);
+    --XydAtlas-Ref-Palette-Neutral-40: var(--dark40);
+    --XydAtlas-Ref-Palette-Neutral-70: var(--dark48);
+    --XydAtlas-Ref-Palette-Neutral-80: var(--dark60);
+    --XydAtlas-Ref-Palette-Neutral-100: var(--dark80);
+}

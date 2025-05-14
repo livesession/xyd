@@ -11,6 +11,8 @@ import {
 import { gqlArgToUniformDefinitionProperty } from "./hydration/gql-arg";
 import { gqlFieldToUniformDefinitionProperty } from "./hydration/gql-field";
 import { simpleGraphqlExample } from "./samples";
+import { Metadata } from "@xyd-js/core";
+import matter from "gray-matter";
 
 // gqlOperationsToUniformRef is a helper function to create a list of xyd reference for a GraphQL query or mutation.
 export function gqlOperationsToUniformRef(
@@ -96,7 +98,7 @@ function graphqlReference(
     examples: ExampleGroup[],
     definitions: Definition[],
 ): Reference {
-    return {
+    return groupReference({
         title,
         canonical,
         description,
@@ -112,5 +114,32 @@ function graphqlReference(
             graphqlTypeShort: operationType === ReferenceType.GRAPHQL_QUERY ? "query" : "mutation",
             graphqlName: operationName,
         }
+    })
+}
+
+const DEFAULT_GROUP = "Operations"
+
+export function groupReference(ref: Reference) {
+    let description = ""
+    if (typeof ref.description === "string") {
+        description = ref.description
+    } else {
+        console.error("Unsupported description type", ref.title)
     }
+
+    const metaDescription = matter(description)
+    const meta = metaDescription?.data as Metadata | undefined
+
+    let group = [DEFAULT_GROUP]
+    if (meta && meta.group) {
+        group = meta.group
+    }
+
+    if (ref.context) {
+        ref.context.group = group
+    } else {
+        console.error("No context found for ref", ref.title)
+    }
+
+    return ref
 }

@@ -17,7 +17,7 @@ export const DetailsHost = css`
         [part="summary"] {
             padding: 16px 14px 16px 0;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: var(--xyd-font-weight-medium);
             font-variant-numeric: tabular-nums;
             transition: color 0.3s;
             display: flex;
@@ -56,7 +56,7 @@ export const DetailsHost = css`
             text-transform: none;
             letter-spacing: .08em;
             margin-left: 8px;
-            font-weight: 700;
+            font-weight: var(--xyd-font-weight-bold);
 
             code {
                 background: var(--xyd-details-summary-code-bgcolor);

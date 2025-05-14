@@ -38,10 +38,13 @@
     "rehype-stringify": "^10.0.0"
   },
   "devDependencies": {
-    "vite": "^5.0.0",
+    "vite": "^6.1.0",
     "@vitest/coverage-v8": "^1.6.1",
     "rimraf": "^3.0.2",
     "tsup": "^8.4.0",
     "vitest": "^1.6.1"
+  },
+  "xyd": {
+    "version": "workspace:*"
   }
 }

@@ -28,7 +28,7 @@ export const StepsLi = css`
             color: var(--xyd-steps-marker-color);
             font-size: var(--xyd-font-size-xsmall);
             line-height: var(--xyd-line-height-medium);
-            font-weight: 500;
+            font-weight: var(--xyd-font-weight-medium);
             text-align: center;
             height: 24px;
             width: 24px;

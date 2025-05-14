@@ -26,19 +26,18 @@
   },
   "dependencies": {
     "@xyd-js/uniform": "workspace:*",
-    "@code-hike/lighter": "file:/Users/zdunecki/Code/zdunecki/codehike-lighter/lib",
+    "@xyd-js/components": "workspace:*",
+    "@code-hike/lighter": "^1.0.3",
     "@radix-ui/react-tabs": "^1.1.1",
     "codehike": "^1.0.2",
     "lucide-react": "^0.447.0"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "@xyd-js/components": "workspace:*"
+    "react": "^19.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@xyd-js/gql": "workspace:*",
     "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0",
     "@babel/preset-typescript": "^7.26.0",

@@ -52,7 +52,7 @@
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.0.0",
     "typescript": "5.6.2",
-    "vite": "^5.4.5",
+    "vite": "^6.1.0",
     "tsup": "^8.3.0"
   }
 }

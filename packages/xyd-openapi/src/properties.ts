@@ -49,7 +49,7 @@ export function schemaObjectToDefinitionProperties(v: OpenAPIV3.SchemaObject): D
         return {
             name: name,
             type: objProp.type || "",
-            description: objProp.description || "",
+            description: objProp.description || v.description || "",
             properties: (
                 merged?.length
                     ? merged
