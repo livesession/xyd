@@ -1,0 +1,174 @@
+[
+  {
+    "title": "Interface ComponentProps",
+    "canonical": "@xyd-sources-examples/react/interfaces/ComponentProps",
+    "description": "The props type for \nComponent\n.\n",
+    "context": {
+      "packageName": "@xyd-sources-examples/react",
+      "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+      "fileFullPath": "src/Component.tsx",
+      "line": 8,
+      "col": 17,
+      "signatureText": {
+        "code": "export interface ComponentProps extends PropsWithChildren {\n}",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export interface ComponentProps extends PropsWithChildren {\n    /** The theme of the card. Defaults to `primary`. */\n    variant: \"primary\" | \"secondary\" | \"success\" | \"danger\" | \"light\" | \"dark\" | VariantGhost | 10\n}",
+        "lang": "ts"
+      },
+      "group": [
+        "@xyd-sources-examples",
+        "react",
+        "Interfaces"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Properties",
+        "properties": [
+          {
+            "name": "children",
+            "type": "<React.ReactNode>",
+            "description": ""
+          },
+          {
+            "name": "variant",
+            "type": "\"ghost\" | \"primary\" | \"secondary\" | \"success\" | \"danger\" | \"light\" | \"dark\" | 10",
+            "description": "The theme of the card. Defaults to \n`primary`\n.\n"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Interface ComponentProps2",
+    "canonical": "@xyd-sources-examples/react/interfaces/ComponentProps2",
+    "description": "",
+    "context": {
+      "packageName": "@xyd-sources-examples/react",
+      "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+      "fileFullPath": "src/Component.tsx",
+      "line": 13,
+      "col": 17,
+      "signatureText": {
+        "code": "export interface ComponentProps2 extends PropsWithChildren {\n}",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export interface ComponentProps2 extends PropsWithChildren {\n    /** The theme of the card. Defaults to `primary`. */\n    otherVariant: \"other\"\n}",
+        "lang": "ts"
+      }
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Properties",
+        "properties": [
+          {
+            "name": "children",
+            "type": "<React.ReactNode>",
+            "description": ""
+          },
+          {
+            "name": "otherVariant",
+            "type": "\"other\"",
+            "description": "The theme of the card. Defaults to \n`primary`\n.\n"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Type UnionProps",
+    "canonical": "@xyd-sources-examples/react/types/UnionProps",
+    "description": "The union type for \nComponentProps\n and \nComponentProps2\n.\n",
+    "context": {
+      "packageName": "@xyd-sources-examples/react",
+      "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+      "fileFullPath": "src/Component.tsx",
+      "line": 21,
+      "col": 12,
+      "signatureText": {
+        "code": "export type UnionProps = ComponentProps | ComponentProps2;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export type UnionProps = ComponentProps | ComponentProps2",
+        "lang": "ts"
+      },
+      "group": [
+        "@xyd-sources-examples",
+        "react",
+        "Types"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Type Definition",
+        "properties": [
+          {
+            "name": "",
+            "type": "<ComponentProps> | <ComponentProps2>",
+            "description": "The union type for \nComponentProps\n and \nComponentProps2\n.\n"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Function Component",
+    "canonical": "@xyd-sources-examples/react/functions/Component",
+    "description": "",
+    "context": {
+      "packageName": "@xyd-sources-examples/react",
+      "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+      "fileFullPath": "src/Component.tsx",
+      "line": 28,
+      "col": 16,
+      "signatureText": {
+        "code": "export function Component(props: UnionProps): ReactElement;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function Component(props: UnionProps): ReactElement {\n    return <div className={`card card-`}>{props.children}</div>;\n}",
+        "lang": "ts"
+      }
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "<React.ReactElement>",
+            "description": "",
+            "properties": []
+          }
+        ]
+      },
+      {
+        "title": "Parameters",
+        "properties": [
+          {
+            "name": "props",
+            "type": "<UnionProps>",
+            "description": "",
+            "properties": []
+          }
+        ]
+      }
+    ]
+  }
+]

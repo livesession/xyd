@@ -1,0 +1,481 @@
+{
+  "schemaVersion": "2.0",
+  "id": 11,
+  "name": "@xyd-sources-examples/react",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 12,
+      "name": "ComponentProps",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "The props type for "
+          },
+          {
+            "kind": "inline-tag",
+            "tag": "@link",
+            "text": "Component",
+            "target": 19
+          },
+          {
+            "kind": "text",
+            "text": "."
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 13,
+          "name": "children",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isExternal": true,
+            "isOptional": true,
+            "isInherited": true
+          },
+          "sources": [
+            {
+              "fileName": "node_modules/.pnpm/@types+react@19.1.4/node_modules/@types/react/index.d.ts",
+              "line": 1398,
+              "character": 48
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ReactNode"
+            },
+            "name": "ReactNode",
+            "package": "@types/react",
+            "qualifiedName": "React.ReactNode"
+          },
+          "inheritedFrom": {
+            "type": "reference",
+            "target": -1,
+            "name": "PropsWithChildren.children"
+          }
+        },
+        {
+          "id": 14,
+          "name": "variant",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The theme of the card. Defaults to "
+              },
+              {
+                "kind": "code",
+                "text": "`primary`"
+              },
+              {
+                "kind": "text",
+                "text": "."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+              "line": 10,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "literal",
+                "value": "ghost"
+              },
+              {
+                "type": "literal",
+                "value": "primary"
+              },
+              {
+                "type": "literal",
+                "value": "secondary"
+              },
+              {
+                "type": "literal",
+                "value": "success"
+              },
+              {
+                "type": "literal",
+                "value": "danger"
+              },
+              {
+                "type": "literal",
+                "value": "light"
+              },
+              {
+                "type": "literal",
+                "value": "dark"
+              },
+              {
+                "type": "literal",
+                "value": 10
+              }
+            ]
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            13,
+            14
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+          "line": 8,
+          "character": 17
+        }
+      ],
+      "extendedTypes": [
+        {
+          "type": "reference",
+          "target": {
+            "packageName": "@types/react",
+            "packagePath": "index.d.ts",
+            "qualifiedName": "React.PropsWithChildren"
+          },
+          "name": "PropsWithChildren",
+          "package": "@types/react",
+          "qualifiedName": "React.PropsWithChildren"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "ComponentProps2",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "children": [
+        {
+          "id": 16,
+          "name": "children",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isExternal": true,
+            "isOptional": true,
+            "isInherited": true
+          },
+          "sources": [
+            {
+              "fileName": "node_modules/.pnpm/@types+react@19.1.4/node_modules/@types/react/index.d.ts",
+              "line": 1398,
+              "character": 48
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ReactNode"
+            },
+            "name": "ReactNode",
+            "package": "@types/react",
+            "qualifiedName": "React.ReactNode"
+          },
+          "inheritedFrom": {
+            "type": "reference",
+            "target": -1,
+            "name": "PropsWithChildren.children"
+          }
+        },
+        {
+          "id": 17,
+          "name": "otherVariant",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The theme of the card. Defaults to "
+              },
+              {
+                "kind": "code",
+                "text": "`primary`"
+              },
+              {
+                "kind": "text",
+                "text": "."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+              "line": 15,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "literal",
+            "value": "other"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            16,
+            17
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+          "line": 13,
+          "character": 17
+        }
+      ],
+      "extendedTypes": [
+        {
+          "type": "reference",
+          "target": {
+            "packageName": "@types/react",
+            "packagePath": "index.d.ts",
+            "qualifiedName": "React.PropsWithChildren"
+          },
+          "name": "PropsWithChildren",
+          "package": "@types/react",
+          "qualifiedName": "React.PropsWithChildren"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "name": "UnionProps",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "The union type for "
+          },
+          {
+            "kind": "inline-tag",
+            "tag": "@link",
+            "text": "ComponentProps",
+            "target": 12
+          },
+          {
+            "kind": "text",
+            "text": " and "
+          },
+          {
+            "kind": "inline-tag",
+            "tag": "@link",
+            "text": "ComponentProps2",
+            "target": 15
+          },
+          {
+            "kind": "text",
+            "text": "."
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+          "line": 21,
+          "character": 12
+        }
+      ],
+      "type": {
+        "type": "union",
+        "types": [
+          {
+            "type": "reference",
+            "target": 12,
+            "name": "ComponentProps",
+            "package": "@xyd-sources-examples/react"
+          },
+          {
+            "type": "reference",
+            "target": 15,
+            "name": "ComponentProps2",
+            "package": "@xyd-sources-examples/react"
+          }
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "name": "Component",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "sources": [
+        {
+          "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+          "line": 28,
+          "character": 16
+        }
+      ],
+      "signatures": [
+        {
+          "id": 20,
+          "name": "Component",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+              "line": 28,
+              "character": 16
+            }
+          ],
+          "parameters": [
+            {
+              "id": 21,
+              "name": "props",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {},
+              "type": {
+                "type": "reference",
+                "target": 18,
+                "name": "UnionProps",
+                "package": "@xyd-sources-examples/react"
+              }
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ReactElement"
+            },
+            "name": "ReactElement",
+            "package": "@types/react",
+            "qualifiedName": "React.ReactElement"
+          }
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "title": "Interfaces",
+      "children": [
+        12,
+        15
+      ]
+    },
+    {
+      "title": "Type Aliases",
+      "children": [
+        18
+      ]
+    },
+    {
+      "title": "Functions",
+      "children": [
+        19
+      ]
+    }
+  ],
+  "packageName": "@xyd-js/sources",
+  "readme": [
+    {
+      "kind": "text",
+      "text": "# @xyd-js/sources\n\nAutomatic documentation from code sources, for xyd."
+    }
+  ],
+  "symbolIdMap": {
+    "11": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/index.ts",
+      "qualifiedName": ""
+    },
+    "12": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/Component.tsx",
+      "qualifiedName": "ComponentProps"
+    },
+    "13": {
+      "packageName": "@types/react",
+      "packagePath": "index.d.ts",
+      "qualifiedName": "__type.children"
+    },
+    "14": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/Component.tsx",
+      "qualifiedName": "ComponentProps.variant"
+    },
+    "15": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/Component.tsx",
+      "qualifiedName": "ComponentProps2"
+    },
+    "16": {
+      "packageName": "@types/react",
+      "packagePath": "index.d.ts",
+      "qualifiedName": "__type.children"
+    },
+    "17": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/Component.tsx",
+      "qualifiedName": "ComponentProps2.otherVariant"
+    },
+    "18": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/Component.tsx",
+      "qualifiedName": "UnionProps"
+    },
+    "19": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/Component.tsx",
+      "qualifiedName": "Component"
+    },
+    "20": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/Component.tsx",
+      "qualifiedName": "Component"
+    },
+    "21": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/Component.tsx",
+      "qualifiedName": "props"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "react-a/src/index.ts"
+    },
+    "reflections": {
+      "1": 11
+    }
+  }
+}

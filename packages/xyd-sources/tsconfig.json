@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
     "paths": {
       "@xyd-js/uniform": [
         "../xyd-uniform"
@@ -21,7 +22,8 @@
     // Add this line
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "node_modules",

@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import type { Reference, Definition, TypeDocReferenceContext } from "@xyd-js/uniform";
+import type { Reference, Definition, TypeDocReferenceContext, DefinitionProperty } from "@xyd-js/uniform";
 
 import type {
     JSONOutput,
@@ -10,6 +10,7 @@ import type {
     SomeType,
     ReflectionSymbolId,
     Comment,
+    UnionType,
 } from 'typedoc';
 import { ReflectionKind } from "typedoc";
 
@@ -356,7 +357,7 @@ function jsClassToUniformRef(
 
     const ref: Reference = {
         title: `Class ${dec.name}`,
-        canonical: `class-${dec.name}`,
+        canonical: "",
         description: '',
         context: undefined,
         examples: {
@@ -372,18 +373,20 @@ function jsClassToUniformRef(
             ...declarationCtx
         }
     }
+    ref.canonical = uniformCanonical(dec, declarationCtx)
 
     if (dec.comment) {
         const description = commentToUniform(dec.comment)
-        const group = (declarationCtx?.packageName.split('/') || [])
-            .map(name => `"${name}"`)
-            .join(",")
+        const group = uniformGroup(declarationCtx)
 
-        ref.description = `---
-title: ${dec.name} 
-group: [${group}, Classes]
----
-${description}`
+        if (ref.context) {
+            ref.context.group = [
+                ...group,
+                "Classes"
+            ]
+        }
+
+        ref.description = description
     }
 
     // handle constructor
@@ -408,7 +411,7 @@ ${description}`
                 }
                 constructorDef.properties.push({
                     name: param.name,
-                    type: someTypeToUniformType(param.type),
+                    type: someTypeToUniform(param.type),
                     description
                 })
             }
@@ -439,7 +442,7 @@ ${description}`
 
                 methodsDef.properties.push({
                     name: method.name,
-                    type: methodSign.type ? someTypeToUniformType(methodSign.type) : "void",
+                    type: methodSign.type ? someTypeToUniform(methodSign.type) : "void",
                     description: methodDesc
                 })
             }
@@ -458,7 +461,7 @@ function jsFunctionToUniformRef(
     const definitions: Definition[] = []
     const ref: Reference = {
         title: `Function ${dec.name}`,
-        canonical: `fn-${dec.name}`,
+        canonical: "",
         description: '',
         context: undefined,
         examples: {
@@ -474,6 +477,7 @@ function jsFunctionToUniformRef(
             ...declarationCtx
         }
     }
+    ref.canonical = uniformCanonical(dec, declarationCtx)
 
     const signatures = dec.signatures || []
     if (signatures.length > 1) {
@@ -485,15 +489,16 @@ function jsFunctionToUniformRef(
         {
             if (sign.comment) {
                 const description = commentToUniform(sign.comment)
-                const group = (declarationCtx?.packageName.split('/') || [])
-                    .map(name => `"${name}"`)
-                    .join(",")
+                const group = uniformGroup(declarationCtx)
 
-                ref.description = `---
-title: ${dec.name}
-group: [${group}, Functions]
----
-${description}`
+                if (ref.context) {
+                    ref.context.group = [
+                        ...group,
+                        "Functions"
+                    ]
+                }
+
+                ref.description = description
             }
         }
 
@@ -510,10 +515,13 @@ ${description}`
                 if (sign.comment) {
                     desc = returnCommentToUniform(sign.comment) || ""
                 }
+                const uniformType = someTypeToUniform(sign.type)
+
                 returnsUniformDef.properties.push({
                     name: "",
-                    type: someTypeToUniformType(sign.type),
-                    description: desc
+                    type: typeof uniformType === "string" ? uniformType : "",
+                    description: desc,
+                    properties: typeof uniformType === "object" && "properties" in uniformType ? uniformType.properties : []
                 })
             }
 
@@ -537,11 +545,22 @@ ${description}`
                 if (param.comment) {
                     description = commentToUniform(param.comment)
                 }
-                parametersUniformDef.properties.push({
+                const uniformType = someTypeToUniform(param.type)
+                const prop = {
                     name: param.name,
-                    type: someTypeToUniformType(param.type),
-                    description
-                })
+                    type: typeof uniformType === "string" ? uniformType : "",
+                    description,
+                    properties: typeof uniformType === "object" && "properties" in uniformType ? uniformType.properties : []
+                }
+
+                switch (prop.name) {
+                    case "__namedParameters": {
+                        prop.name = ""
+                        prop.type = "param"
+                        break
+                    }
+                }
+                parametersUniformDef.properties.push(prop)
             }
 
             ref.definitions.push(parametersUniformDef)
@@ -559,7 +578,7 @@ function jsInterfaceToUniformRef(
 
     const ref: Reference = {
         title: `Interface ${dec.name}`,
-        canonical: `interface-${dec.name}`,
+        canonical: "",
         description: '',
         context: undefined,
         examples: {
@@ -575,18 +594,20 @@ function jsInterfaceToUniformRef(
             ...declarationCtx
         }
     }
+    ref.canonical = uniformCanonical(dec, declarationCtx)
 
     if (dec.comment) {
         const description = commentToUniform(dec.comment)
-        const group = (declarationCtx?.packageName.split('/') || [])
-            .map(name => `"${name}"`)
-            .join(",")
+        const group = uniformGroup(declarationCtx)
 
-        ref.description = `---
-title: ${dec.name} 
-group: [${group}, Interfaces]
----
-${description}`
+        if (ref.context) {
+            ref.context.group = [
+                ...group,
+                "Interfaces"
+            ]
+        }
+
+        ref.description = description
     }
 
     // handle properties
@@ -612,11 +633,16 @@ ${description}`
                     description = commentToUniform(prop.comment)
                 }
 
-                propertiesDef.properties.push({
-                    name: prop.name,
-                    type: someTypeToUniformType(prop.type),
-                    description
-                })
+                switch (prop.type.type) {
+                    default: {
+                        propertiesDef.properties.push({
+                            name: prop.name,
+                            type: someTypeToUniform(prop.type),
+                            description
+                        })
+                        break
+                    }
+                }
             }
 
             definitions.push(propertiesDef)
@@ -646,7 +672,7 @@ ${description}`
 
                 methodsDef.properties.push({
                     name: method.name,
-                    type: methodSign.type ? someTypeToUniformType(methodSign.type) : "void",
+                    type: methodSign.type ? someTypeToUniform(methodSign.type) : "void",
                     description: methodDesc
                 })
             }
@@ -666,7 +692,7 @@ function jsTypeAliasToUniformRef(
 
     const ref: Reference = {
         title: `Type ${dec.name}`,
-        canonical: `type-${dec.name}`,
+        canonical: "",
         description: '',
         context: undefined,
         examples: {
@@ -682,18 +708,20 @@ function jsTypeAliasToUniformRef(
             ...declarationCtx
         }
     }
+    ref.canonical = uniformCanonical(dec, declarationCtx)
 
     if (dec.comment) {
         const description = commentToUniform(dec.comment)
-        const group = (declarationCtx?.packageName.split('/') || [])
-            .map(name => `"${name}"`)
-            .join(",")
+        const group = uniformGroup(declarationCtx)
 
-        ref.description = `---
-title: ${dec.name} 
-group: [${group}, Types]
----
-${description}`
+        if (ref.context) {
+            ref.context.group = [
+                ...group,
+                "Types"
+            ]
+        }
+
+        ref.description = description
     }
 
     // handle type definition
@@ -704,10 +732,16 @@ ${description}`
                 properties: []
             }
 
+            let comment = ""
+
+            if (dec.comment) {
+                comment = commentToUniform(dec.comment)
+            }
+
             typeDef.properties.push({
                 name: "",
-                type: someTypeToUniformType(dec.type),
-                description: ""
+                type: someTypeToUniform(dec.type),
+                description: comment
             })
 
             definitions.push(typeDef)
@@ -725,7 +759,7 @@ function jsEnumToUniformRef(
 
     const ref: Reference = {
         title: `Enum ${dec.name}`,
-        canonical: `enum-${dec.name}`,
+        canonical: "",
         description: '',
         context: undefined,
         examples: {
@@ -741,18 +775,20 @@ function jsEnumToUniformRef(
             ...declarationCtx
         }
     }
+    ref.canonical = uniformCanonical(dec, declarationCtx)
 
     if (dec.comment) {
         const description = commentToUniform(dec.comment)
-        const group = (declarationCtx?.packageName.split('/') || [])
-            .map(name => `"${name}"`)
-            .join(",")
+        const group = uniformGroup(declarationCtx)
 
-        ref.description = `---
-title: ${dec.name} 
-group: [${group}, Enums]
----
-${description}`
+        if (ref.context) {
+            ref.context.group = [
+                ...group,
+                "Enums"
+            ]
+        }
+
+        ref.description = description
     }
 
     // handle enum members
@@ -879,24 +915,41 @@ function declarationUniformContext(
     }
 }
 
-function someTypeToUniformType(someType: SomeType) {
-    if (!("name" in someType)) {
-        console.warn('SomeType does not have name property', someType.type)
-        return ""
-    }
-
+function someTypeToUniform(someType: SomeType): string | {properties: DefinitionProperty[]} {
     switch (someType.type) {
         case "reference": {
             // TODO: abstract definition properties like GenericDefinitionProperty extends DefinitionProperty?
-            return `<${someType.name}>`
+            return `<${someType.qualifiedName || someType.name}>`
+        }
+        case "union": {
+            return someType.types.map(t => someTypeToUniform(t)).join(" | ")
+        }
+        case "literal": {
+            if (typeof someType.value === "string") {
+                return `"${someType.value}"`
+            }
+
+            return (someType.value || "").toString()
+        }
+        case "reflection": {
+            const properties = uniformProperties(someType.declaration)
+
+            return {
+                properties
+            }
         }
         default: {
+            if (!("name" in someType)) {
+                console.warn('SomeType does not have name property', someType.type)
+                return ""
+            }
+
             return someType.name
         }
     }
 }
 
-function commentToUniform(comment: Comment) {
+function commentToUniform(comment: Comment): string {
     let desc = ""
 
     for (const summary of comment?.summary || []) {
@@ -906,9 +959,9 @@ function commentToUniform(comment: Comment) {
     return desc
 }
 
-function returnCommentToUniform(comment: Comment) {
+function returnCommentToUniform(comment: Comment): string {
     if (!comment.blockTags || !comment.blockTags.length) {
-        return
+        return ""
     }
 
     let desc = ""
@@ -921,4 +974,87 @@ function returnCommentToUniform(comment: Comment) {
     }
 
     return desc
+}
+
+// TODO: recursive
+function uniformProperties(dec: DeclarationReflection) {
+    const properties: DefinitionProperty[] = []
+
+    for (const child of dec.children || []) {
+        switch (child.kind) {
+            case ReflectionKind.Property: {
+                const prop = child
+
+                if (!prop.type) {
+                    console.warn('(jsInterfaceToUniformRef): Property type not found', prop.name)
+                    continue
+                }
+
+                let description = ""
+                if (prop.comment) {
+                    description = commentToUniform(prop.comment)
+                }
+
+                const uniformType = someTypeToUniform(prop.type)
+                properties.push({
+                    name: prop.name,
+                    type: typeof uniformType === "string" ? uniformType : "",
+                    description,
+                    properties: typeof uniformType === "object" && "properties" in uniformType ? uniformType.properties : []
+                })
+
+                break
+            }
+            default: {
+                console.warn('(uniformProperties): Unsupported child kind', child.kind)
+            }
+        }
+    }
+
+    return properties
+}
+
+function uniformGroup(ctx?: TypeDocReferenceContext): string[] {
+    if (!ctx) {
+        return []
+    }
+
+    const group = ctx.packageName.split("/")
+
+    return group
+}
+
+function uniformCanonical(dec: DeclarationReflection, ctx: TypeDocReferenceContext): string {
+    const parts: string[] = []
+    if (ctx.packageName) {
+        parts.push(ctx.packageName)
+    }
+
+    switch (dec.kind) {
+        case ReflectionKind.Class: {
+            parts.push("classes", dec.name)
+            break
+        }
+        case ReflectionKind.Interface: {
+            parts.push("interfaces", dec.name)
+            break
+        }
+        case ReflectionKind.Function: {
+            parts.push("functions", dec.name)
+            break
+        }
+        case ReflectionKind.TypeAlias: {
+            parts.push("types", dec.name)
+            break
+        }
+        case ReflectionKind.Enum: {
+            parts.push("enums", dec.name)
+            break
+        }
+        default: {
+            return ""
+        }
+    }
+
+    return parts.join("/")
 }

@@ -1,0 +1,1231 @@
+{
+    "api": {
+        "templates_content": {
+            "featureFlag": null,
+            "name": "CartForm",
+            "category": "components",
+            "isVisualComponent": false,
+            "related": [],
+            "description": "Creates a form for managing cart operations. Use `CartActionInput` to accept form inputs of known type.",
+            "type": "component",
+            "defaultExample": {
+                "description": "This is the default example",
+                "codeblock": {
+                    "tabs": [
+                        {
+                            "title": "JavaScript",
+                            "code": "import {data} from '@remix-run/server-runtime';\nimport {CartForm} from '@shopify/hydrogen';\nimport invariant from 'tiny-invariant';\n\nexport default function Cart() {\n  return (\n    \u0026lt;CartForm\n      action={CartForm.ACTIONS.LinesUpdate}\n      inputs={{\n        lines: [\n          {\n            id: 'gid://shopify/CartLine/123456789',\n            quantity: 3,\n          },\n        ],\n        other: 'data',\n      }}\n    \u0026gt;\n      \u0026lt;button\u0026gt;Quantity up\u0026lt;/button\u0026gt;\n    \u0026lt;/CartForm\u0026gt;\n  );\n}\n\nexport async function action({request, context}) {\n  const {cart} = context;\n\n  const formData = await request.formData();\n  const {action, inputs} = CartForm.getFormInput(formData);\n\n  let status = 200;\n  let result;\n\n  if (action === CartForm.ACTIONS.LinesUpdate) {\n    result = await cart.updateLines(inputs.lines);\n  } else {\n    invariant(false, `${action} cart action is not defined`);\n  }\n\n  const headers = cart.setCartId(result.cart.id);\n\n  return data(result, {status, headers});\n}\n",
+                            "language": "js"
+                        },
+                        {
+                            "title": "TypeScript",
+                            "code": "import {type ActionFunctionArgs, data} from '@remix-run/server-runtime';\nimport {\n  type CartQueryDataReturn,\n  type HydrogenCart,\n  CartForm,\n} from '@shopify/hydrogen';\nimport invariant from 'tiny-invariant';\n\nexport default function Cart() {\n  return (\n    \u0026lt;CartForm\n      action={CartForm.ACTIONS.LinesUpdate}\n      inputs={{\n        lines: [\n          {\n            id: 'gid://shopify/CartLine/123456789',\n            quantity: 3,\n          },\n        ],\n        other: 'data',\n      }}\n    \u0026gt;\n      \u0026lt;button\u0026gt;Quantity up\u0026lt;/button\u0026gt;\n    \u0026lt;/CartForm\u0026gt;\n  );\n}\n\nexport async function action({request, context}: ActionFunctionArgs) {\n  const cart = context.cart as HydrogenCart;\n  // cart is type HydrogenCart or HydrogenCartCustom\n  // Declare cart type in remix.env.d.ts for interface AppLoadContext to avoid type casting\n  // const {cart} = context;\n\n  const formData = await request.formData();\n  const {action, inputs} = CartForm.getFormInput(formData);\n\n  let status = 200;\n  let result: CartQueryDataReturn;\n\n  if (action === CartForm.ACTIONS.LinesUpdate) {\n    result = await cart.updateLines(inputs.lines);\n  } else {\n    invariant(false, `${action} cart action is not defined`);\n  }\n\n  const headers = cart.setCartId(result.cart.id);\n\n  return data(result, {status, headers});\n}\n",
+                            "language": "ts"
+                        }
+                    ],
+                    "title": "example"
+                },
+                "image": null
+            },
+            "definitions": [
+                {
+                    "title": "Props",
+                    "description": "",
+                    "type": "CartFormProps",
+                    "typeDefinitions": {
+                        "CartFormProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartFormProps",
+                            "value": "CartActionInputProps \u0026 CartFormCommonProps",
+                            "description": ""
+                        },
+                        "CartActionInputProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartActionInputProps",
+                            "value": "CartAttributesUpdateProps | CartBuyerIdentityUpdateProps | CartCreateProps | CartDiscountCodesUpdateProps | CartGiftCardCodesUpdateProps | CartLinesAddProps | CartLinesUpdateProps | CartLinesRemoveProps | CartNoteUpdateProps | CartSelectedDeliveryOptionsUpdateProps | CartMetafieldsSetProps | CartMetafieldDeleteProps | CartCustomProps",
+                            "description": ""
+                        },
+                        "CartAttributesUpdateProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartAttributesUpdateProps",
+                            "value": "{\n  action: 'AttributesUpdateInput';\n  inputs?: {\n    attributes: AttributeInput[];\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"AttributesUpdateInput\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ attributes: AttributeInput[]; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "AttributeInput": {
+                            "description": "",
+                            "name": "AttributeInput",
+                            "value": "AttributeInput",
+                            "members": [],
+                            "override": "[AttributeInput](/docs/api/storefront/2025-01/input-objects/AttributeInput) - Storefront API type"
+                        },
+                        "OtherFormData": {
+                            "description": "",
+                            "name": "OtherFormData",
+                            "value": "OtherFormData",
+                            "members": [],
+                            "override": "Any `\u003ckey: string, value: unknown\u003e` pair"
+                        },
+                        "CartBuyerIdentityUpdateProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartBuyerIdentityUpdateProps",
+                            "value": "{\n  action: 'BuyerIdentityUpdate';\n  inputs?: {\n    buyerIdentity: CartBuyerIdentityInput;\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"BuyerIdentityUpdate\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ buyerIdentity: CartBuyerIdentityInput; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "CartBuyerIdentityInput": {
+                            "description": "",
+                            "name": "CartBuyerIdentityInput",
+                            "value": "CartBuyerIdentityInput",
+                            "members": [],
+                            "override": "[CartBuyerIdentityInput](/docs/api/storefront/2025-01/input-objects/CartBuyerIdentityInput) - Storefront API type"
+                        },
+                        "CartCreateProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartCreateProps",
+                            "value": "{\n  action: 'Create';\n  inputs?: {\n    input: CartInput;\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"Create\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ input: CartInput; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "CartInput": {
+                            "description": "",
+                            "name": "CartInput",
+                            "value": "CartInput",
+                            "members": [],
+                            "override": "[CartInput](/docs/api/storefront/2025-01/input-objects/CartInput) - Storefront API type"
+                        },
+                        "CartDiscountCodesUpdateProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartDiscountCodesUpdateProps",
+                            "value": "{\n  action: 'DiscountCodesUpdate';\n  inputs?: {\n    discountCodes: string[];\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"DiscountCodesUpdate\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ discountCodes: string[]; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "CartGiftCardCodesUpdateProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartGiftCardCodesUpdateProps",
+                            "value": "{\n  action: 'GiftCardCodesUpdate';\n  inputs?: {\n    giftCardCodes: string[];\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"GiftCardCodesUpdate\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ giftCardCodes: string[]; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "CartLinesAddProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartLinesAddProps",
+                            "value": "{\n  action: 'LinesAdd';\n  inputs?: {\n    lines: Array\u003cOptimisticCartLineInput\u003e;\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"LinesAdd\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ lines: OptimisticCartLineInput[]; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "OptimisticCartLineInput": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "OptimisticCartLineInput",
+                            "value": "CartLineInput \u0026 {\n  selectedVariant?: unknown;\n}",
+                            "description": ""
+                        },
+                        "CartLineInput": {
+                            "description": "",
+                            "name": "CartLineInput",
+                            "value": "CartLineInput",
+                            "members": [],
+                            "override": "[CartLineInput](/docs/api/storefront/2025-01/input-objects/CartLineInput) - Storefront API type"
+                        },
+                        "CartLinesUpdateProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartLinesUpdateProps",
+                            "value": "{\n  action: 'LinesUpdate';\n  inputs?: {\n    lines: CartLineUpdateInput[];\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"LinesUpdate\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ lines: CartLineUpdateInput[]; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "CartLineUpdateInput": {
+                            "description": "",
+                            "name": "CartLineUpdateInput",
+                            "value": "CartLineUpdateInput",
+                            "members": [],
+                            "override": "[CartLineUpdateInput](/docs/api/storefront/2025-01/input-objects/CartLineUpdateInput) - Storefront API type"
+                        },
+                        "CartLinesRemoveProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartLinesRemoveProps",
+                            "value": "{\n  action: 'LinesRemove';\n  inputs?: {\n    lineIds: string[];\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"LinesRemove\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ lineIds: string[]; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "CartNoteUpdateProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartNoteUpdateProps",
+                            "value": "{\n  action: 'NoteUpdate';\n  inputs?: {\n    note: string;\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"NoteUpdate\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ note: string; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "CartSelectedDeliveryOptionsUpdateProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartSelectedDeliveryOptionsUpdateProps",
+                            "value": "{\n  action: 'SelectedDeliveryOptionsUpdate';\n  inputs?: {\n    selectedDeliveryOptions: CartSelectedDeliveryOptionInput[];\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"SelectedDeliveryOptionsUpdate\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ selectedDeliveryOptions: CartSelectedDeliveryOptionInput[]; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "CartSelectedDeliveryOptionInput": {
+                            "description": "",
+                            "name": "CartSelectedDeliveryOptionInput",
+                            "value": "CartSelectedDeliveryOptionInput",
+                            "members": [],
+                            "override": "[CartSelectedDeliveryOptionInput](/docs/api/storefront/2025-01/input-objects/CartSelectedDeliveryOptionInput) - Storefront API type"
+                        },
+                        "CartMetafieldsSetProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartMetafieldsSetProps",
+                            "value": "{\n  action: 'MetafieldsSet';\n  inputs?: {\n    metafields: MetafieldWithoutOwnerId[];\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"MetafieldsSet\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ metafields: MetafieldWithoutOwnerId[]; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "MetafieldWithoutOwnerId": {
+                            "description": "",
+                            "name": "MetafieldWithoutOwnerId",
+                            "value": "MetafieldWithoutOwnerId",
+                            "members": [],
+                            "override": "Same as [CartMetafieldsSetInput](https://shopify.dev/docs/api/storefront/2025-01/input-objects/CartMetafieldsSetInput) Storefront API type but without `ownerId`. `ownerId` is always set to the cart id."
+                        },
+                        "CartMetafieldDeleteProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartMetafieldDeleteProps",
+                            "value": "{\n  action: 'MetafieldsDelete';\n  inputs?: {\n    key: Scalars['String']['input'];\n  } \u0026 OtherFormData;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "\"MetafieldsDelete\"",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "{ key: string; } \u0026 OtherFormData",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "CartCustomProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartCustomProps",
+                            "value": "{\n  action: `Custom${string}`;\n  inputs?: Record\u003cstring, unknown\u003e;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "action",
+                                    "value": "`Custom${string}`",
+                                    "description": ""
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "inputs",
+                                    "value": "Record\u003cstring, unknown\u003e",
+                                    "description": "",
+                                    "isOptional": true
+                                }
+                            ]
+                        },
+                        "CartFormCommonProps": {
+                            "filePath": "src/cart/CartForm.tsx",
+                            "syntaxKind": "TypeAliasDeclaration",
+                            "name": "CartFormCommonProps",
+                            "value": "{\n  /**\n   * Children nodes of CartForm.\n   * Children can be a render prop that receives the fetcher.\n   */\n  children: ReactNode | ((fetcher: FetcherWithComponents\u003cany\u003e) =\u003e ReactNode);\n  /**\n   * The route to submit the form to. Defaults to the current route.\n   */\n  route?: string;\n  /**\n   * Optional key to use for the fetcher.\n   * @see https://remix.run/hooks/use-fetcher#key\n   */\n  fetcherKey?: string;\n}",
+                            "description": "",
+                            "members": [
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "children",
+                                    "value": "ReactNode | ((fetcher: FetcherWithComponents\u003cany\u003e) =\u003e ReactNode)",
+                                    "description": "Children nodes of CartForm. Children can be a render prop that receives the fetcher."
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "fetcherKey",
+                                    "value": "string",
+                                    "description": "Optional key to use for the fetcher.",
+                                    "isOptional": true
+                                },
+                                {
+                                    "filePath": "src/cart/CartForm.tsx",
+                                    "syntaxKind": "PropertySignature",
+                                    "name": "route",
+                                    "value": "string",
+                                    "description": "The route to submit the form to. Defaults to the current route.",
+                                    "isOptional": true
+                                }
+                            ]
+                        }
+                    }
+                }
+            ],
+            "examples": {
+                "description": "Examples of various ways to use the `CartForm` component.",
+                "exampleGroups": [
+                    {
+                        "title": "CartForm using HTML input tags as form inputs",
+                        "examples": [
+                            {
+                                "description": "Use HTML input tags with CartForm to accept form inputs.",
+                                "codeblock": {
+                                    "title": "Example",
+                                    "tabs": [
+                                        {
+                                            "title": "JavaScript",
+                                            "code": "import {data} from '@remix-run/server-runtime';\nimport {CartForm} from '@shopify/hydrogen';\nimport invariant from 'tiny-invariant';\n\nexport default function Note() {\n  return (\n    \u0026lt;CartForm action={CartForm.ACTIONS.NoteUpdate}\u0026gt;\n      \u0026lt;input type=\"text\" name=\"note\" /\u0026gt;\n      \u0026lt;button\u0026gt;Update Note\u0026lt;/button\u0026gt;\n    \u0026lt;/CartForm\u0026gt;\n  );\n}\n\nexport async function action({request, context}) {\n  const cart = context.cart;\n\n  const formData = await request.formData();\n  const {action, inputs} = CartForm.getFormInput(formData);\n\n  let status = 200;\n  let result;\n\n  if (action === CartForm.ACTIONS.NoteUpdate) {\n    result = await cart.updateNote(inputs.note);\n  } else {\n    invariant(false, `${action} cart action is not defined`);\n  }\n\n  const headers = cart.setCartId(result.cart.id);\n\n  return data(result, {status, headers});\n}\n",
+                                            "language": "jsx"
+                                        },
+                                        {
+                                            "title": "TypeScript",
+                                            "code": "import {type ActionFunctionArgs, data} from '@remix-run/server-runtime';\nimport {\n  type CartQueryDataReturn,\n  type HydrogenCart,\n  CartForm,\n} from '@shopify/hydrogen';\nimport invariant from 'tiny-invariant';\n\nexport default function Note() {\n  return (\n    \u0026lt;CartForm action={CartForm.ACTIONS.NoteUpdate}\u0026gt;\n      \u0026lt;input type=\"text\" name=\"note\" /\u0026gt;\n      \u0026lt;button\u0026gt;Update Note\u0026lt;/button\u0026gt;\n    \u0026lt;/CartForm\u0026gt;\n  );\n}\n\nexport async function action({request, context}: ActionFunctionArgs) {\n  const cart = context.cart as HydrogenCart;\n  // cart is type HydrogenCart or HydrogenCartCustom\n  // Declare cart type in remix.env.d.ts for interface AppLoadContext to avoid type casting\n  // const {cart} = context;\n\n  const formData = await request.formData();\n  const {action, inputs} = CartForm.getFormInput(formData);\n\n  let status = 200;\n  let result: CartQueryDataReturn;\n\n  if (action === CartForm.ACTIONS.NoteUpdate) {\n    result = await cart.updateNote(inputs.note);\n  } else {\n    invariant(false, `${action} cart action is not defined`);\n  }\n\n  const headers = cart.setCartId(result.cart.id);\n\n  return data(result, {status, headers});\n}\n",
+                                            "language": "tsx"
+                                        }
+                                    ]
+                                },
+                                "image": null
+                            }
+                        ]
+                    },
+                    {
+                        "title": "Custom actions",
+                        "examples": [
+                            {
+                                "description": "Create custom actions to accept form inputs of unknown type. Just prepend `Custom` in front of your custom action name.",
+                                "codeblock": {
+                                    "title": "Example",
+                                    "tabs": [
+                                        {
+                                            "title": "JavaScript",
+                                            "code": "import {data} from '@remix-run/server-runtime';\nimport {CartForm} from '@shopify/hydrogen';\nimport invariant from 'tiny-invariant';\n\nexport default function Cart() {\n  return (\n    \u0026lt;CartForm\n      action=\"CustomEditInPlace\"\n      inputs={{\n        addLines: [\n          {\n            merchandiseId: 'gid://shopify/Product/123456789',\n            quantity: 1,\n          },\n        ],\n        removeLines: ['gid://shopify/CartLine/123456789'],\n      }}\n    \u0026gt;\n      \u0026lt;button\u0026gt;Green color swatch\u0026lt;/button\u0026gt;\n    \u0026lt;/CartForm\u0026gt;\n  );\n}\n\nexport async function action({request, context}) {\n  const {cart} = context;\n\n  const formData = await request.formData();\n  const {action, inputs} = CartForm.getFormInput(formData);\n\n  let status = 200;\n  let result;\n\n  if (action === 'CustomEditInPlace') {\n    result = await cart.addLines(inputs.addLines);\n    result = await cart.removeLines(inputs.removeLines);\n  } else {\n    invariant(false, `${action} cart action is not defined`);\n  }\n\n  const headers = cart.setCartId(result.cart.id);\n\n  return data(result, {status, headers});\n}\n",
+                                            "language": "jsx"
+                                        },
+                                        {
+                                            "title": "TypeScript",
+                                            "code": "import {type ActionFunctionArgs, data} from '@remix-run/server-runtime';\nimport {\n  type CartQueryDataReturn,\n  type HydrogenCart,\n  CartForm,\n} from '@shopify/hydrogen';\nimport {type CartLineInput} from '@shopify/hydrogen-react/storefront-api-types';\nimport invariant from 'tiny-invariant';\n\nexport default function Cart() {\n  return (\n    \u0026lt;CartForm\n      action=\"CustomEditInPlace\"\n      inputs={{\n        addLines: [\n          {\n            merchandiseId: 'gid://shopify/Product/123456789',\n            quantity: 1,\n          },\n        ],\n        removeLines: ['gid://shopify/CartLine/123456789'],\n      }}\n    \u0026gt;\n      \u0026lt;button\u0026gt;Green color swatch\u0026lt;/button\u0026gt;\n    \u0026lt;/CartForm\u0026gt;\n  );\n}\n\nexport async function action({request, context}: ActionFunctionArgs) {\n  const cart = context.cart as HydrogenCart;\n  // cart is type HydrogenCart or HydrogenCartCustom\n  // Declare cart type in remix.env.d.ts for interface AppLoadContext to avoid type casting\n  // const {cart} = context;\n\n  const formData = await request.formData();\n  const {action, inputs} = CartForm.getFormInput(formData);\n\n  let status = 200;\n  let result: CartQueryDataReturn;\n\n  if (action === 'CustomEditInPlace') {\n    result = await cart.addLines(inputs.addLines as CartLineInput[]);\n    result = await cart.removeLines(inputs.removeLines as string[]);\n  } else {\n    invariant(false, `${action} cart action is not defined`);\n  }\n\n  const headers = cart.setCartId(result.cart.id);\n\n  return data(result, {status, headers});\n}\n",
+                                            "language": "tsx"
+                                        }
+                                    ]
+                                },
+                                "image": null
+                            }
+                        ]
+                    },
+                    {
+                        "title": "CartForm with fetcher",
+                        "examples": [
+                            {
+                                "description": "Use `CartForm` with a fetcher to manually submit the form. An example usage is to submit the form on changes to the state of a checkbox.\n\nWhen using fetcher to submit, make sure to have a `CartForm.INPUT_NAME` data key and its data should be a JSON stringify object.",
+                                "codeblock": {
+                                    "title": "Example",
+                                    "tabs": [
+                                        {
+                                            "title": "JavaScript",
+                                            "code": "import {useFetcher} from '@remix-run/react';\nimport {data} from '@remix-run/server-runtime';\nimport {CartForm} from '@shopify/hydrogen';\nimport invariant from 'tiny-invariant';\n\nexport function ThisIsGift({metafield}) {\n  const fetcher = useFetcher();\n\n  const buildFormInput = (event) =\u0026gt; ({\n    action: CartForm.ACTIONS.MetafieldsSet,\n    inputs: {\n      metafields: [\n        {\n          key: 'custom.gift',\n          type: 'boolean',\n          value: event.target.checked.toString(),\n        },\n      ],\n    },\n  });\n\n  return (\n    \u0026lt;div\u0026gt;\n      \u0026lt;input\n        checked={metafield?.value === 'true'}\n        type=\"checkbox\"\n        id=\"isGift\"\n        onChange={(event) =\u0026gt; {\n          fetcher.submit(\n            {\n              [CartForm.INPUT_NAME]: JSON.stringify(buildFormInput(event)),\n            },\n            {method: 'POST', action: '/cart'},\n          );\n        }}\n      /\u0026gt;\n      \u0026lt;label htmlFor=\"isGift\"\u0026gt;This is a gift\u0026lt;/label\u0026gt;\n    \u0026lt;/div\u0026gt;\n  );\n}\n\nexport async function action({request, context}) {\n  const {cart} = context;\n\n  const formData = await request.formData();\n  const {action, inputs} = CartForm.getFormInput(formData);\n\n  let status = 200;\n  let result;\n\n  if (action === CartForm.ACTIONS.MetafieldsSet) {\n    result = await cart.setMetafields(inputs.metafields);\n  } else {\n    invariant(false, `${action} cart action is not defined`);\n  }\n\n  const headers = cart.setCartId(result.cart.id);\n\n  return data(result, {status, headers});\n}\n",
+                                            "language": "jsx"
+                                        },
+                                        {
+                                            "title": "TypeScript",
+                                            "code": "import {useFetcher} from '@remix-run/react';\nimport {type ActionFunctionArgs, data} from '@remix-run/server-runtime';\nimport {\n  type CartQueryDataReturn,\n  type HydrogenCart,\n  CartForm,\n  type CartActionInput,\n} from '@shopify/hydrogen';\nimport invariant from 'tiny-invariant';\nimport type {Cart} from '@shopify/hydrogen/storefront-api-types';\n\nexport function ThisIsGift({metafield}: {metafield: Cart['metafield']}) {\n  const fetcher = useFetcher();\n\n  const buildFormInput: (\n    event: React.ChangeEvent\u0026lt;HTMLInputElement\u0026gt;,\n  ) =\u0026gt; CartActionInput = (event) =\u0026gt; ({\n    action: CartForm.ACTIONS.MetafieldsSet,\n    inputs: {\n      metafields: [\n        {\n          key: 'custom.gift',\n          type: 'boolean',\n          value: event.target.checked.toString(),\n        },\n      ],\n    },\n  });\n\n  return (\n    \u0026lt;div\u0026gt;\n      \u0026lt;input\n        checked={metafield?.value === 'true'}\n        type=\"checkbox\"\n        id=\"isGift\"\n        onChange={(event) =\u0026gt; {\n          fetcher.submit(\n            {\n              [CartForm.INPUT_NAME]: JSON.stringify(buildFormInput(event)),\n            },\n            {method: 'POST', action: '/cart'},\n          );\n        }}\n      /\u0026gt;\n      \u0026lt;label htmlFor=\"isGift\"\u0026gt;This is a gift\u0026lt;/label\u0026gt;\n    \u0026lt;/div\u0026gt;\n  );\n}\n\nexport async function action({request, context}: ActionFunctionArgs) {\n  const cart = context.cart as HydrogenCart;\n  // cart is type HydrogenCart or HydrogenCartCustom\n  // Declare cart type in remix.env.d.ts for interface AppLoadContext to avoid type casting\n  // const {cart} = context;\n\n  const formData = await request.formData();\n  const {action, inputs} = CartForm.getFormInput(formData);\n\n  let status = 200;\n  let result: CartQueryDataReturn;\n\n  if (action === CartForm.ACTIONS.MetafieldsSet) {\n    result = await cart.setMetafields(inputs.metafields);\n  } else {\n    invariant(false, `${action} cart action is not defined`);\n  }\n\n  const headers = cart.setCartId(result.cart.id);\n\n  return data(result, {status, headers});\n}\n",
+                                            "language": "tsx"
+                                        }
+                                    ]
+                                },
+                                "image": null
+                            }
+                        ]
+                    }
+                ],
+                "examples": null
+            },
+            "reference_name": "hydrogen",
+            "version": "2025-01",
+            "release_candidate": false,
+            "id": "cartform",
+            "categoryLabel": "Components",
+            "subCategoryLabel": null,
+            "subCategory": null,
+            "thumbnail": null
+        },
+        "templates_sidenav": {
+            "displayName": "Hydrogen",
+            "referenceName": "hydrogen",
+            "sidebarOrder": [],
+            "disabledCategories": [
+                "components",
+                "utilities",
+                "hooks"
+            ],
+            "mainContent": [
+                {
+                    "key": "analytics-cartview",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Analytics",
+                    "subCategory": "analytics",
+                    "label": "Analytics.CartView"
+                },
+                {
+                    "key": "analytics-collectionview",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Analytics",
+                    "subCategory": "analytics",
+                    "label": "Analytics.CollectionView"
+                },
+                {
+                    "key": "analytics-customview",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Analytics",
+                    "subCategory": "analytics",
+                    "label": "Analytics.CustomView"
+                },
+                {
+                    "key": "analytics-provider",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Analytics",
+                    "subCategory": "analytics",
+                    "label": "Analytics.Provider"
+                },
+                {
+                    "key": "analytics-productview",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Analytics",
+                    "subCategory": "analytics",
+                    "label": "Analytics.ProductView"
+                },
+                {
+                    "key": "analytics-searchview",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Analytics",
+                    "subCategory": "analytics",
+                    "label": "Analytics.SearchView"
+                },
+                {
+                    "key": "getshopanalytics",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "getShopAnalytics"
+                },
+                {
+                    "key": "useanalytics",
+                    "categoryLabel": "Hooks",
+                    "category": "hooks",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "useAnalytics"
+                },
+                {
+                    "key": "cachecustom",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Caching",
+                    "subCategory": "caching",
+                    "label": "CacheCustom"
+                },
+                {
+                    "key": "cachelong",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Caching",
+                    "subCategory": "caching",
+                    "label": "CacheLong"
+                },
+                {
+                    "key": "cachenone",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Caching",
+                    "subCategory": "caching",
+                    "label": "CacheNone"
+                },
+                {
+                    "key": "cacheshort",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Caching",
+                    "subCategory": "caching",
+                    "label": "CacheShort"
+                },
+                {
+                    "key": "inmemorycache",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Caching",
+                    "subCategory": "caching",
+                    "label": "InMemoryCache"
+                },
+                {
+                    "key": "createwithcache",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Caching",
+                    "subCategory": "caching",
+                    "label": "createWithCache"
+                },
+                {
+                    "key": "generatecachecontrolheader",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Caching",
+                    "subCategory": "caching",
+                    "label": "generateCacheControlHeader"
+                },
+                {
+                    "key": "cartform",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "CartForm"
+                },
+                {
+                    "key": "cartgetiddefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartGetIdDefault"
+                },
+                {
+                    "key": "cartsetiddefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartSetIdDefault"
+                },
+                {
+                    "key": "createcarthandler",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "createCartHandler"
+                },
+                {
+                    "key": "useoptimisticcart",
+                    "categoryLabel": "Hooks",
+                    "category": "hooks",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "useOptimisticCart"
+                },
+                {
+                    "key": "cartattributesupdatedefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartAttributesUpdateDefault"
+                },
+                {
+                    "key": "cartbuyeridentityupdatedefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartBuyerIdentityUpdateDefault"
+                },
+                {
+                    "key": "cartcreatedefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartCreateDefault"
+                },
+                {
+                    "key": "cartdiscountcodesupdatedefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartDiscountCodesUpdateDefault"
+                },
+                {
+                    "key": "cartgetdefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartGetDefault"
+                },
+                {
+                    "key": "cartgiftcardcodesupdatedefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartGiftCardCodesUpdateDefault"
+                },
+                {
+                    "key": "cartlinesadddefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartLinesAddDefault"
+                },
+                {
+                    "key": "cartlinesremovedefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartLinesRemoveDefault"
+                },
+                {
+                    "key": "cartlinesupdatedefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartLinesUpdateDefault"
+                },
+                {
+                    "key": "cartmetafielddeletedefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartMetafieldDeleteDefault"
+                },
+                {
+                    "key": "cartmetafieldssetdefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartMetafieldsSetDefault"
+                },
+                {
+                    "key": "cartnoteupdatedefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartNoteUpdateDefault"
+                },
+                {
+                    "key": "cartselecteddeliveryoptionsupdatedefault",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": "Cart",
+                    "subCategory": "cart",
+                    "label": "cartSelectedDeliveryOptionsUpdateDefault"
+                },
+                {
+                    "key": "createhydrogencontext",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "createHydrogenContext"
+                },
+                {
+                    "key": "createstorefrontclient",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "createStorefrontClient"
+                },
+                {
+                    "key": "script",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "Script"
+                },
+                {
+                    "key": "createcontentsecuritypolicy",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "createContentSecurityPolicy"
+                },
+                {
+                    "key": "usenonce",
+                    "categoryLabel": "Hooks",
+                    "category": "hooks",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "useNonce"
+                },
+                {
+                    "key": "usecustomerprivacy",
+                    "categoryLabel": "Hooks",
+                    "category": "hooks",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "useCustomerPrivacy"
+                },
+                {
+                    "key": "createcustomeraccountclient",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "createCustomerAccountClient"
+                },
+                {
+                    "key": "optimisticinput",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "OptimisticInput"
+                },
+                {
+                    "key": "useoptimisticdata",
+                    "categoryLabel": "Hooks",
+                    "category": "hooks",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "useOptimisticData"
+                },
+                {
+                    "key": "pagination",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "Pagination"
+                },
+                {
+                    "key": "getpaginationvariables",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "getPaginationVariables"
+                },
+                {
+                    "key": "variantselector",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "VariantSelector"
+                },
+                {
+                    "key": "getselectedproductoptions",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "getSelectedProductOptions"
+                },
+                {
+                    "key": "useoptimisticvariant",
+                    "categoryLabel": "Hooks",
+                    "category": "hooks",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "useOptimisticVariant"
+                },
+                {
+                    "key": "graphiqlloader",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "graphiqlLoader"
+                },
+                {
+                    "key": "storefrontredirect",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "storefrontRedirect"
+                },
+                {
+                    "key": "getseometa",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "getSeoMeta"
+                },
+                {
+                    "key": "seo",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "Seo"
+                },
+                {
+                    "key": "getsitemap",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "getSitemap"
+                },
+                {
+                    "key": "getsitemapindex",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "getSitemapIndex"
+                },
+                {
+                    "key": "image",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Media",
+                    "subCategory": "media",
+                    "label": "Image"
+                },
+                {
+                    "key": "externalvideo",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Media",
+                    "subCategory": "media",
+                    "label": "ExternalVideo"
+                },
+                {
+                    "key": "mediafile",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Media",
+                    "subCategory": "media",
+                    "label": "MediaFile"
+                },
+                {
+                    "key": "money",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "Money"
+                },
+                {
+                    "key": "modelviewer",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Media",
+                    "subCategory": "media",
+                    "label": "ModelViewer"
+                },
+                {
+                    "key": "shoppaybutton",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "ShopPayButton"
+                },
+                {
+                    "key": "richtext",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "RichText"
+                },
+                {
+                    "key": "video",
+                    "categoryLabel": "Components",
+                    "category": "components",
+                    "subCategoryLabel": "Media",
+                    "subCategory": "media",
+                    "label": "Video"
+                },
+                {
+                    "key": "usemoney",
+                    "categoryLabel": "Hooks",
+                    "category": "hooks",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "useMoney"
+                },
+                {
+                    "key": "useloadscript",
+                    "categoryLabel": "Hooks",
+                    "category": "hooks",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "useLoadScript"
+                },
+                {
+                    "key": "useshopifycookies",
+                    "categoryLabel": "Hooks",
+                    "category": "hooks",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "useShopifyCookies"
+                },
+                {
+                    "key": "decodeencodedvariant",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "decodeEncodedVariant"
+                },
+                {
+                    "key": "flattenconnection",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "flattenConnection"
+                },
+                {
+                    "key": "getadjacentandfirstavailablevariants",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "getAdjacentAndFirstAvailableVariants"
+                },
+                {
+                    "key": "getclientbrowserparameters",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "getClientBrowserParameters"
+                },
+                {
+                    "key": "getproductoptions",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "getProductOptions"
+                },
+                {
+                    "key": "getshopifycookies",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "getShopifyCookies"
+                },
+                {
+                    "key": "isoptionvaluecombinationinencodedvariant",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "isOptionValueCombinationInEncodedVariant"
+                },
+                {
+                    "key": "mapselectedproductoptiontoobject",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "mapSelectedProductOptionToObject"
+                },
+                {
+                    "key": "parsegid",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "parseGid"
+                },
+                {
+                    "key": "parsemetafield",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "parseMetafield"
+                },
+                {
+                    "key": "sendshopifyanalytics",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "sendShopifyAnalytics"
+                },
+                {
+                    "key": "useselectedoptioninurlparam",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "useSelectedOptionInUrlParam"
+                },
+                {
+                    "key": "storefrontapicustomscalars",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "storefrontApiCustomScalars"
+                },
+                {
+                    "key": "storefront-schema",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "Storefront Schema"
+                },
+                {
+                    "key": "storefront-api-types",
+                    "categoryLabel": "Utilities",
+                    "category": "utilities",
+                    "subCategoryLabel": null,
+                    "subCategory": null,
+                    "label": "Storefront API Types"
+                }
+            ],
+            "staticPages": [],
+            "staticAnchorLinks": [
+                {
+                    "label": "Setup",
+                    "key": "setup"
+                },
+                {
+                    "label": "Authentication",
+                    "key": "authentication"
+                },
+                {
+                    "label": "Versioning",
+                    "key": "versioning"
+                },
+                {
+                    "label": "How Hydrogen works with Hydrogen React",
+                    "key": "hydrogen_react"
+                },
+                {
+                    "label": "Resources",
+                    "key": "resources"
+                }
+            ]
+        },
+        "selectable_versions": [
+            "2025-04",
+            "2025-01",
+            "2024-10",
+            "2024-07",
+            "2024-04",
+            "2024-01",
+            "2023-10",
+            "2023-07",
+            "2023-04"
+        ],
+        "uses_standard_versioning": null,
+        "templates_hide_types": null,
+        "current_stable_version": "2025-04",
+        "version_cookie_name": "api_version",
+        "base_path": "/docs/api"
+    }
+}

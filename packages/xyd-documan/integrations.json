@@ -1,0 +1,5 @@
+{
+    "dependencies": {
+        "@pluganalytics/provider-livesession": "0.0.0-pre.7"
+    }
+}

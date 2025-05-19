@@ -5,8 +5,10 @@ import * as fs from 'node:fs';
 import { sourcesToUniform } from '..';
 
 describe('SignatureText', () => {
-    const testFilePath = path.join(__dirname, 'test-file.ts');
-    const outputFilePath = path.join(__dirname, 'references-output.json');
+    const fixturesBasePath = path.resolve("packages/ts/__fixtures__")
+
+    const testFilePath = path.join(fixturesBasePath, 'test-file.ts');
+    const outputFilePath = path.join(fixturesBasePath, 'references-output.json');
 
     // Create a temporary test file
     beforeAll(() => {
@@ -30,18 +32,34 @@ export class TestClass {
     });
 
     describe('sourcesToUniform', () => {
-        it('should return a reference to the test class', async () => {
-            const basePath = path.resolve("src/__fixtures__/packages2")
+        // it('should return a reference to the test class', async () => {
+        //     const basePath = path.resolve(fixturesBasePath, "packages2")
+
+        //     const references = await sourcesToUniform(basePath,
+        //         [
+        //             path.resolve(basePath, "package-a"),
+        //             // path.resolve(basePath, "package-b"),
+        //         ]
+        //     );
+
+        //     fs.writeFileSync(outputFilePath, JSON.stringify(references, null, 2));
+        //     // Save references to a file for inspection
+        //     console.log(`References saved to: ${outputFilePath}`);
+        // });
+
+        it('should return a reference to react component', async () => {
+            const basePath = path.resolve(fixturesBasePath, "react")
 
             const references = await sourcesToUniform(basePath,
                 [
-                    path.resolve(basePath, "package-a"),
-                    // path.resolve(basePath, "package-b"),
+                    path.resolve(basePath, "react-a"),
                 ]
             );
-        
+
+            fs.writeFileSync(outputFilePath, JSON.stringify(references, null, 2));
             // Save references to a file for inspection
             console.log(`References saved to: ${outputFilePath}`);
         });
     });
+
 }); 

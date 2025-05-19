@@ -1,0 +1,46 @@
+{
+  "name": "@xyd-js/analytics",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "package.json",
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf build",
+    "prebuild": "pnpm clean",
+    "build": "tsup",
+    "watch": "tsup --watch",
+    "playground": "cd playground && pnpm dev"
+  },
+  "author": "",
+  "dependencies": {
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/uniform": "workspace:*"
+  },
+  "peerDependencies": {
+    "openux-js": "0.0.0-pre.0",
+    "pluganalytics": "0.0.0-pre.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router": "^7.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.5.5",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0",
+    "typescript": "5.6.2",
+    "vite": "^6.1.0"
+  }
+}

@@ -5,7 +5,8 @@ import type { Reference, ReferenceContext } from "@xyd-js/uniform";
 import {
     typedocToUniform
 } from "./TypeDocTransformer"
-
+import path from 'node:path';
+import fs from 'node:fs';
 // TODO: SUPPORT GET FROM URL + VIRTUAL FS (OR NO FS JUST SET NEEDED OPTIONS VIA CODE)
 export async function sourcesToUniform(
     root: string,
@@ -33,6 +34,8 @@ export async function sourcesToUniform(
         console.error('Failed to generate documentation.');
         return
     }
+
+    fs.writeFileSync(path.join(root, "project.json"), JSON.stringify(projectJson, null, 2));
 
     const ref = typedocToUniform(root, projectJson)
     if (!ref) {
