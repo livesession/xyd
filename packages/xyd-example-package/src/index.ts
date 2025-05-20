@@ -1,1 +1,0 @@
-export { CheckSettingsExternal } from "./Check" 

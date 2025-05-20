@@ -1,0 +1,5596 @@
+{
+  "schemaVersion": "2.0",
+  "id": 158,
+  "name": "@xyd-js/core",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 159,
+      "name": "Anchor",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Anchor configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 160,
+          "name": "icon",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The Font Awesome or JSX icon used to feature the anchor"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 282,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L282"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 161,
+          "name": "name",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The name of the anchor label"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 285,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L285"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 162,
+          "name": "url",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The start of the URL that marks what pages go in the anchor. \nGenerally, this is the name of the folder you put your pages in."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 291,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L291"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            160,
+            161,
+            162
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 280,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L280"
+        }
+      ]
+    },
+    {
+      "id": 163,
+      "name": "AnchorRoot",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Anchor root configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 164,
+          "name": "bottom",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Bottom anchors"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 299,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L299"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "reference",
+              "target": 159,
+              "name": "Anchor",
+              "package": "@xyd-js/core"
+            }
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            164
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 297,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L297"
+        }
+      ]
+    },
+    {
+      "id": 165,
+      "name": "API",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "API configuration interface"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 166,
+          "name": "graphql",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "GraphQL configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 318,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L318"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 287,
+            "name": "APIFile",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 167,
+          "name": "openapi",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "OpenAPI configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 313,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L313"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 287,
+            "name": "APIFile",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 168,
+          "name": "sources",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Sources configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 323,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L323"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 287,
+            "name": "APIFile",
+            "package": "@xyd-js/core"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            166,
+            167,
+            168
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 309,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L309"
+        }
+      ]
+    },
+    {
+      "id": 169,
+      "name": "APIAuth",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "API authentication configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 170,
+          "name": "method",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The authentication strategy used for all API endpoints"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 390,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L390"
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "literal",
+                "value": "bearer"
+              },
+              {
+                "type": "literal",
+                "value": "basic"
+              },
+              {
+                "type": "literal",
+                "value": "key"
+              }
+            ]
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            170
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 388,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L388"
+        }
+      ]
+    },
+    {
+      "id": 171,
+      "name": "APIInfo",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "API information configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 172,
+          "name": "auth",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Authentication information"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 364,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L364"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 169,
+            "name": "APIAuth",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 173,
+          "name": "baseUrl",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The base url for all API endpoints. If baseUrl is an array, it will enable \nfor multiple base url options that the user can toggle."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 361,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L361"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 174,
+          "name": "inputPrefix",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The default value that's designed to be a prefisx for the authentication input field.\nE.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 376,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L376"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 175,
+          "name": "name",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The name of the authentication parameter used in the API playground.\nIf method is basic, the format should be [usernameName]:[passwordName]"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 370,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L370"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 176,
+          "name": "playground",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Configurations for the API playground"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 379,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L379"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 182,
+            "name": "APIPlayground",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 177,
+          "name": "request",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Request configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 382,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L382"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 178,
+            "name": "APIInfoRequest",
+            "package": "@xyd-js/core"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            172,
+            173,
+            174,
+            175,
+            176,
+            177
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 356,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L356"
+        }
+      ]
+    },
+    {
+      "id": 178,
+      "name": "APIInfoRequest",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "API request configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 179,
+          "name": "example",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Configurations for the auto-generated API request examples"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 406,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L406"
+            }
+          ],
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "id": 180,
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "flags": {},
+              "children": [
+                {
+                  "id": 181,
+                  "name": "languages",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {
+                    "isOptional": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 412,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L412"
+                    }
+                  ],
+                  "type": {
+                    "type": "array",
+                    "elementType": {
+                      "type": "intrinsic",
+                      "name": "string"
+                    }
+                  }
+                }
+              ],
+              "groups": [
+                {
+                  "title": "Properties",
+                  "children": [
+                    181
+                  ]
+                }
+              ],
+              "sources": [
+                {
+                  "fileName": "settings.ts",
+                  "line": 406,
+                  "character": 14,
+                  "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L406"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            179
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 404,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L404"
+        }
+      ]
+    },
+    {
+      "id": 182,
+      "name": "APIPlayground",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "API playground configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 183,
+          "name": "mode",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Playground display mode"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 398,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L398"
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "literal",
+                "value": "show"
+              },
+              {
+                "type": "literal",
+                "value": "simple"
+              },
+              {
+                "type": "literal",
+                "value": "hide"
+              }
+            ]
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            183
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 396,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L396"
+        }
+      ]
+    },
+    {
+      "id": 184,
+      "name": "Colors",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Color configuration interface"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 185,
+          "name": "background",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The color of the background in both light and dark mode"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 121,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L121"
+            }
+          ],
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "id": 186,
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "flags": {},
+              "children": [
+                {
+                  "id": 187,
+                  "name": "dark",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "Dark mode background color"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 126,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L126"
+                    }
+                  ],
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                },
+                {
+                  "id": 188,
+                  "name": "light",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "Light mode background color"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 123,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L123"
+                    }
+                  ],
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "groups": [
+                {
+                  "title": "Properties",
+                  "children": [
+                    187,
+                    188
+                  ]
+                }
+              ],
+              "sources": [
+                {
+                  "fileName": "settings.ts",
+                  "line": 121,
+                  "character": 17,
+                  "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L121"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": 189,
+          "name": "dark",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The primary color for important buttons"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 118,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L118"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 190,
+          "name": "light",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The primary color for dark mode. Used most often for highlighted content, section headers, accents, in dark mode"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 115,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L115"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 191,
+          "name": "primary",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The primary color. Used most often for highlighted content, section headers, accents, in light mode"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 112,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L112"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            185,
+            189,
+            190,
+            191
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 110,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L110"
+        }
+      ]
+    },
+    {
+      "id": 192,
+      "name": "Engine",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Config configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 193,
+          "name": "paths",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Path aliases for imports. Avoid long relative paths by creating shortcuts."
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```json\n{\n  \"paths\": {\n    \"@my-package/*\": [\"../my-package/src/*\"],\n    \"@livesession-go/*\": [\"https://github.com/livesession/livesession-go/*\"]\n  }\n}\n```"
+                  },
+                  {
+                    "kind": "text",
+                    "text": "\n\nUsage:\n"
+                  },
+                  {
+                    "kind": "code",
+                    "text": "```typescript\n// Instead of\n@importCode(\"../../../my-package/src/components/Badge.tsx\")\n\n// Use\n@importCode(\"@my-package/src/components/Badge.tsx\")\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 570,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L570"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@xyd-js/core",
+              "packagePath": "src/types/settings.ts",
+              "qualifiedName": "EnginePaths"
+            },
+            "name": "EnginePaths",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 194,
+          "name": "uniform",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [],
+            "blockTags": [
+              {
+                "tag": "@unsafe",
+                "content": [
+                  {
+                    "kind": "text",
+                    "text": "Uniform configuration"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 578,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L578"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@xyd-js/core",
+              "packagePath": "src/types/settings.ts",
+              "qualifiedName": "EngineUniform"
+            },
+            "name": "EngineUniform",
+            "package": "@xyd-js/core"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            193,
+            194
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 547,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L547"
+        }
+      ]
+    },
+    {
+      "id": 195,
+      "name": "FontDetailsType",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Font details configuration interface"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 196,
+          "name": "family",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The font family name. Custom fonts and all Google Fonts are supported. \ne.g. \"Open Sans\", \"Playfair Display\""
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 138,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L138"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 197,
+          "name": "format",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The font format. Required if using a custom font source (url)"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 150,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L150"
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "literal",
+                "value": "woff"
+              },
+              {
+                "type": "literal",
+                "value": "woff2"
+              }
+            ]
+          }
+        },
+        {
+          "id": 198,
+          "name": "url",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The URL to the font file. Can be used to specify a font that is not from Google Fonts"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 147,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L147"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 199,
+          "name": "weight",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The font weight. Precise values such as 560 are also supported for variable fonts. \nCheck under the Styles section for your Google Font for the available weights."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 144,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L144"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "number"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            196,
+            197,
+            198,
+            199
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 133,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L133"
+        }
+      ]
+    },
+    {
+      "id": 200,
+      "name": "Header",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Header configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 201,
+          "name": "name",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The name of the button"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 268,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L268"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 202,
+          "name": "sub",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Sub-header configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 274,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L274"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 277,
+            "name": "SubHeader",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 203,
+          "name": "url",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The url once you click on the button. Example: https://mintlify.com/contact"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 271,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L271"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            201,
+            202,
+            203
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 266,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L266"
+        }
+      ]
+    },
+    {
+      "id": 204,
+      "name": "IntegrationAnalytics",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Analytics configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 205,
+          "name": "livesession",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Livesession analytics configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 442,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L442"
+            }
+          ],
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "id": 206,
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "flags": {},
+              "children": [
+                {
+                  "id": 207,
+                  "name": "trackId",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "Livesession's TrackID"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 444,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L444"
+                    }
+                  ],
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "groups": [
+                {
+                  "title": "Properties",
+                  "children": [
+                    207
+                  ]
+                }
+              ],
+              "sources": [
+                {
+                  "fileName": "settings.ts",
+                  "line": 442,
+                  "character": 17,
+                  "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L442"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            205
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 440,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L440"
+        }
+      ]
+    },
+    {
+      "id": 208,
+      "name": "Integrations",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Integrations configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 209,
+          "name": "analytics",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Configurations to add third-party analytics integrations. \nSee full list of supported analytics here."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 428,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L428"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 204,
+            "name": "IntegrationAnalytics",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 210,
+          "name": "search",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Configurations to add third-party search integrations. \nSee full list of supported search here."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 434,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L434"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 211,
+            "name": "IntegrationSearch",
+            "package": "@xyd-js/core"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            209,
+            210
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 423,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L423"
+        }
+      ]
+    },
+    {
+      "id": 211,
+      "name": "IntegrationSearch",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Search configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 212,
+          "name": "algolia",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Algolia search configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 453,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L453"
+            }
+          ],
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "id": 213,
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "flags": {},
+              "children": [
+                {
+                  "id": 214,
+                  "name": "apiKey",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "Algolia API key"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 458,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L458"
+                    }
+                  ],
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                },
+                {
+                  "id": 215,
+                  "name": "appId",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "Algolia application ID"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 455,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L455"
+                    }
+                  ],
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "groups": [
+                {
+                  "title": "Properties",
+                  "children": [
+                    214,
+                    215
+                  ]
+                }
+              ],
+              "sources": [
+                {
+                  "fileName": "settings.ts",
+                  "line": 453,
+                  "character": 14,
+                  "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L453"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": 216,
+          "name": "orama",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 461,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L461"
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "intrinsic",
+                "name": "boolean"
+              },
+              {
+                "type": "reflection",
+                "declaration": {
+                  "id": 217,
+                  "name": "__type",
+                  "variant": "declaration",
+                  "kind": 65536,
+                  "flags": {},
+                  "children": [
+                    {
+                      "id": 218,
+                      "name": "apiKey",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {},
+                      "comment": {
+                        "summary": [
+                          {
+                            "kind": "text",
+                            "text": "Orama API key"
+                          }
+                        ]
+                      },
+                      "sources": [
+                        {
+                          "fileName": "settings.ts",
+                          "line": 466,
+                          "character": 8,
+                          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L466"
+                        }
+                      ],
+                      "type": {
+                        "type": "intrinsic",
+                        "name": "string"
+                      }
+                    },
+                    {
+                      "id": 219,
+                      "name": "endpoint",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {},
+                      "comment": {
+                        "summary": [
+                          {
+                            "kind": "text",
+                            "text": "Orama endpoint"
+                          }
+                        ]
+                      },
+                      "sources": [
+                        {
+                          "fileName": "settings.ts",
+                          "line": 463,
+                          "character": 8,
+                          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L463"
+                        }
+                      ],
+                      "type": {
+                        "type": "intrinsic",
+                        "name": "string"
+                      }
+                    },
+                    {
+                      "id": 220,
+                      "name": "suggestions",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {
+                        "isOptional": true
+                      },
+                      "comment": {
+                        "summary": [
+                          {
+                            "kind": "text",
+                            "text": "Orama suggestions"
+                          }
+                        ]
+                      },
+                      "sources": [
+                        {
+                          "fileName": "settings.ts",
+                          "line": 469,
+                          "character": 8,
+                          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L469"
+                        }
+                      ],
+                      "type": {
+                        "type": "array",
+                        "elementType": {
+                          "type": "intrinsic",
+                          "name": "string"
+                        }
+                      }
+                    }
+                  ],
+                  "groups": [
+                    {
+                      "title": "Properties",
+                      "children": [
+                        218,
+                        219,
+                        220
+                      ]
+                    }
+                  ],
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 461,
+                      "character": 12,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L461"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            212,
+            216
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 451,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L451"
+        }
+      ]
+    },
+    {
+      "id": 221,
+      "name": "Logo",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Logo configuration interface"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 222,
+          "name": "dark",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Path to the logo in dark mode. For example: "
+              },
+              {
+                "kind": "code",
+                "text": "`/path/to/logo.svg`"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 101,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L101"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 223,
+          "name": "href",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Where clicking on the logo links you to"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 104,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L104"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 224,
+          "name": "light",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Path to the logo in light mode. For example: "
+              },
+              {
+                "kind": "code",
+                "text": "`/path/to/logo.svg`"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 98,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L98"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            222,
+            223,
+            224
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 96,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L96"
+        }
+      ]
+    },
+    {
+      "id": 225,
+      "name": "Markdown",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Markdown configuration interface"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 226,
+          "name": "syntaxHighlight",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Syntax highlighting configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 90,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L90"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@code-hike/lighter",
+              "packagePath": "dist/index.d.ts",
+              "qualifiedName": "Theme"
+            },
+            "name": "Theme",
+            "package": "@code-hike/lighter"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            226
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 88,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L88"
+        }
+      ]
+    },
+    {
+      "id": 227,
+      "name": "Metadata",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Represents metadata for a content page.\nUsually used as md/mdx frontmatter."
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 228,
+          "name": "component",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The type of component to render this content with"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 28,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L28"
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "literal",
+                "value": "page"
+              },
+              {
+                "type": "literal",
+                "value": "docs"
+              },
+              {
+                "type": "literal",
+                "value": "atlas"
+              }
+            ]
+          }
+        },
+        {
+          "id": 229,
+          "name": "componentProps",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional properties specific to the component type"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 31,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L31"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 248,
+            "name": "P",
+            "package": "@xyd-js/core",
+            "qualifiedName": "Metadata.P",
+            "refersToTypeParameter": true
+          }
+        },
+        {
+          "id": 230,
+          "name": "description",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional disply description for SEO purposes"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 16,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L16"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 231,
+          "name": "graphql",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional 'graphql' for graphql references"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 40,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L40"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 232,
+          "name": "group",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional 'group' for sidebar navigation"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 34,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L34"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "intrinsic",
+              "name": "string"
+            }
+          }
+        },
+        {
+          "id": 233,
+          "name": "hidden",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional 'hidden' for content visibility"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 46,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L46"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "boolean"
+          }
+        },
+        {
+          "id": 234,
+          "name": "icon",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional icon identifier for the navigation item"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 22,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L22"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 235,
+          "name": "layout",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional layout type for the content display"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 25,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L25"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 300,
+            "name": "PageLayout",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 236,
+          "name": "openapi",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional 'openapi' for openapi references"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 43,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L43"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 237,
+          "name": "sidebarTitle",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional title to display in the sidebar navigation"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 19,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L19"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 238,
+          "name": "title",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The main title of the content - by default visible in navigation and page title"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 10,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L10"
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "intrinsic",
+                "name": "string"
+              },
+              {
+                "type": "reflection",
+                "declaration": {
+                  "id": 239,
+                  "name": "__type",
+                  "variant": "declaration",
+                  "kind": 65536,
+                  "flags": {},
+                  "children": [
+                    {
+                      "id": 240,
+                      "name": "code",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {},
+                      "sources": [
+                        {
+                          "fileName": "metadata.ts",
+                          "line": 12,
+                          "character": 8,
+                          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L12"
+                        }
+                      ],
+                      "type": {
+                        "type": "intrinsic",
+                        "name": "string"
+                      }
+                    },
+                    {
+                      "id": 241,
+                      "name": "title",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {},
+                      "sources": [
+                        {
+                          "fileName": "metadata.ts",
+                          "line": 11,
+                          "character": 8,
+                          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L11"
+                        }
+                      ],
+                      "type": {
+                        "type": "intrinsic",
+                        "name": "string"
+                      }
+                    }
+                  ],
+                  "groups": [
+                    {
+                      "title": "Properties",
+                      "children": [
+                        240,
+                        241
+                      ]
+                    }
+                  ],
+                  "sources": [
+                    {
+                      "fileName": "metadata.ts",
+                      "line": 10,
+                      "character": 21,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L10"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": 242,
+          "name": "tocGithub",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional 'tocGithub' for github references"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@optional",
+                "content": []
+              },
+              {
+                "tag": "@unsafe",
+                "content": [
+                  {
+                    "kind": "text",
+                    "text": "@todo: !!! IN THE FUTURE COMPOSE API !!!"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```\ntocGithub: {\n    link: \"https://github.com/livesession/livesession-browser\",\n    title: \"Checkout the code\",\n    description: \"Check how to use the LiveSession Browser SDK\",\n}\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 63,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L63"
+            }
+          ],
+          "type": {
+            "type": "reflection",
+            "declaration": {
+              "id": 243,
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "flags": {},
+              "children": [
+                {
+                  "id": 244,
+                  "name": "description",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "'description' for github references"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "metadata.ts",
+                      "line": 71,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L71"
+                    }
+                  ],
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                },
+                {
+                  "id": 245,
+                  "name": "link",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "'link' for github references"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "metadata.ts",
+                      "line": 65,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L65"
+                    }
+                  ],
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                },
+                {
+                  "id": 246,
+                  "name": "title",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "'title' for github references"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "metadata.ts",
+                      "line": 68,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L68"
+                    }
+                  ],
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "groups": [
+                {
+                  "title": "Properties",
+                  "children": [
+                    244,
+                    245,
+                    246
+                  ]
+                }
+              ],
+              "sources": [
+                {
+                  "fileName": "metadata.ts",
+                  "line": 63,
+                  "character": 16,
+                  "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L63"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": 247,
+          "name": "uniform",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional 'uniform' for component references"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 37,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L37"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            228,
+            229,
+            230,
+            231,
+            232,
+            233,
+            234,
+            235,
+            236,
+            237,
+            238,
+            242,
+            247
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "metadata.ts",
+          "line": 8,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L8"
+        }
+      ],
+      "typeParameters": [
+        {
+          "id": 248,
+          "name": "P",
+          "variant": "typeParam",
+          "kind": 131072,
+          "flags": {},
+          "default": {
+            "type": "intrinsic",
+            "name": "void"
+          }
+        }
+      ]
+    },
+    {
+      "id": 249,
+      "name": "Navigation",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Navigation configuration interface"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 250,
+          "name": "anchors",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Anchors, includes the icon, name, and url"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 180,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L180"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 163,
+            "name": "AnchorRoot",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 251,
+          "name": "header",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Array of headers"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 171,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L171"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "reference",
+              "target": 200,
+              "name": "Header",
+              "package": "@xyd-js/core"
+            }
+          }
+        },
+        {
+          "id": 252,
+          "name": "sidebar",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Definition of sidebar - an array of groups with all the pages within that group"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 168,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L168"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "union",
+              "types": [
+                {
+                  "type": "reference",
+                  "target": 274,
+                  "name": "SidebarRoute",
+                  "package": "@xyd-js/core"
+                },
+                {
+                  "type": "reference",
+                  "target": 267,
+                  "name": "Sidebar",
+                  "package": "@xyd-js/core"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            250,
+            251,
+            252
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 166,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L166"
+        }
+      ]
+    },
+    {
+      "id": 253,
+      "name": "Redirects",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Redirects configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 254,
+          "name": "destination",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Destination path to redirect to"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 530,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L530"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 255,
+          "name": "source",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Source path to redirect from"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 527,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L527"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            254,
+            255
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 525,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L525"
+        }
+      ]
+    },
+    {
+      "id": 256,
+      "name": "SEO",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "SEO configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 257,
+          "name": "indexHiddenPages",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Whether to index hidden pages"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 538,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L538"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "boolean"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            257
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 536,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L536"
+        }
+      ]
+    },
+    {
+      "id": 258,
+      "name": "Settings",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Main settings interface for the application"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 259,
+          "name": "api",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "API configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 16,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L16"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 165,
+            "name": "API",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 260,
+          "name": "engine",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Engine configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 38,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L38"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 192,
+            "name": "Engine",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 261,
+          "name": "integrations",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Integrations configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 19,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L19"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 208,
+            "name": "Integrations",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 262,
+          "name": "navigation",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Navigation configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 13,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L13"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 249,
+            "name": "Navigation",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 263,
+          "name": "plugins",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Plugins configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 22,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L22"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 305,
+            "name": "Plugins",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 264,
+          "name": "redirects",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [],
+            "blockTags": [
+              {
+                "tag": "@unsafe",
+                "content": [
+                  {
+                    "kind": "text",
+                    "text": "Redirects configuration"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 29,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L29"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "reference",
+              "target": 253,
+              "name": "Redirects",
+              "package": "@xyd-js/core"
+            }
+          }
+        },
+        {
+          "id": 265,
+          "name": "seo",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [],
+            "blockTags": [
+              {
+                "tag": "@unsafe",
+                "content": [
+                  {
+                    "kind": "text",
+                    "text": "SEO configuration"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 35,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L35"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 256,
+            "name": "SEO",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 266,
+          "name": "theme",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Theme configuration for the application"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 10,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L10"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 281,
+            "name": "Theme",
+            "package": "@xyd-js/core"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            259,
+            260,
+            261,
+            262,
+            263,
+            264,
+            265,
+            266
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 8,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L8"
+        }
+      ]
+    },
+    {
+      "id": 267,
+      "name": "Sidebar",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Sidebar configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 268,
+          "name": "group",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The name of the group"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 199,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L199"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 269,
+          "name": "pages",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 205,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L205"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "reference",
+              "target": 301,
+              "name": "PageURL",
+              "package": "@xyd-js/core"
+            }
+          }
+        },
+        {
+          "id": 270,
+          "name": "sort",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The sort order of the group."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 210,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L210"
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "intrinsic",
+                "name": "number"
+              },
+              {
+                "type": "reflection",
+                "declaration": {
+                  "id": 271,
+                  "name": "__type",
+                  "variant": "declaration",
+                  "kind": 65536,
+                  "flags": {},
+                  "children": [
+                    {
+                      "id": 272,
+                      "name": "after",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {},
+                      "sources": [
+                        {
+                          "fileName": "settings.ts",
+                          "line": 213,
+                          "character": 8,
+                          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L213"
+                        }
+                      ],
+                      "type": {
+                        "type": "intrinsic",
+                        "name": "string"
+                      }
+                    },
+                    {
+                      "id": 273,
+                      "name": "before",
+                      "variant": "declaration",
+                      "kind": 1024,
+                      "flags": {},
+                      "sources": [
+                        {
+                          "fileName": "settings.ts",
+                          "line": 211,
+                          "character": 8,
+                          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L211"
+                        }
+                      ],
+                      "type": {
+                        "type": "intrinsic",
+                        "name": "string"
+                      }
+                    }
+                  ],
+                  "groups": [
+                    {
+                      "title": "Properties",
+                      "children": [
+                        272,
+                        273
+                      ]
+                    }
+                  ],
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 210,
+                      "character": 20,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L210"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            268,
+            269,
+            270
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 197,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L197"
+        }
+      ]
+    },
+    {
+      "id": 274,
+      "name": "SidebarRoute",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Sidebar multi-group configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 275,
+          "name": "items",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Sidebar items within this group"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 191,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L191"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "reference",
+              "target": 267,
+              "name": "Sidebar",
+              "package": "@xyd-js/core"
+            }
+          }
+        },
+        {
+          "id": 276,
+          "name": "route",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Route for this sidebar group"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 188,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L188"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            275,
+            276
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 186,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L186"
+        }
+      ]
+    },
+    {
+      "id": 277,
+      "name": "SubHeader",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Sub-header configuration"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 278,
+          "name": "items",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Items within this sub-header"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 260,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L260"
+            }
+          ],
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "reference",
+              "target": 200,
+              "name": "Header",
+              "package": "@xyd-js/core"
+            }
+          }
+        },
+        {
+          "id": 279,
+          "name": "name",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Name of this sub-header"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 257,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L257"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 280,
+          "name": "route",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Route for this sub-header"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 254,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L254"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            278,
+            279,
+            280
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 252,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L252"
+        }
+      ]
+    },
+    {
+      "id": 281,
+      "name": "Theme",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Theme configuration that changes the look and feel of the project"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 282,
+          "name": "favicon",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Path to the favicon image. For example: /path/to/favicon.svg"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 64,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L64"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 283,
+          "name": "logo",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to. \nSVG format is recommended as it does not pixelate and the file size is generally smaller."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 61,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L61"
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "intrinsic",
+                "name": "string"
+              },
+              {
+                "type": "reference",
+                "target": 221,
+                "name": "Logo",
+                "package": "@xyd-js/core"
+              },
+              {
+                "type": "reference",
+                "target": {
+                  "packageName": "@types/react",
+                  "packagePath": "index.d.ts",
+                  "qualifiedName": "React.JSX.Element"
+                },
+                "name": "Element",
+                "package": "@types/react",
+                "qualifiedName": "React.JSX.Element"
+              }
+            ]
+          }
+        },
+        {
+          "id": 284,
+          "name": "markdown",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Markdown configuration for the theme, including options like syntax highlighting"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 55,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L55"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 225,
+            "name": "Markdown",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 285,
+          "name": "maxTocDepth",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "The defult level of the table of contents."
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 67,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L67"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "number"
+          }
+        },
+        {
+          "id": 286,
+          "name": "name",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isReadonly": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "A preset theme configuration that changes the look and feel of the project. \nA theme is a set of default styling configurations. \nExamples: cosmo, gusto, poetry, picasso"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 52,
+              "character": 13,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L52"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            282,
+            283,
+            284,
+            285,
+            286
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 46,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L46"
+        }
+      ]
+    },
+    {
+      "id": 287,
+      "name": "APIFile",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 329,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L329"
+        }
+      ],
+      "type": {
+        "type": "union",
+        "types": [
+          {
+            "type": "intrinsic",
+            "name": "string"
+          },
+          {
+            "type": "array",
+            "elementType": {
+              "type": "intrinsic",
+              "name": "string"
+            }
+          },
+          {
+            "type": "reference",
+            "target": 288,
+            "name": "APIFileAdvanced",
+            "package": "@xyd-js/core"
+          },
+          {
+            "type": "reference",
+            "target": 291,
+            "name": "APIFileMap",
+            "package": "@xyd-js/core"
+          }
+        ]
+      }
+    },
+    {
+      "id": 288,
+      "name": "APIFileAdvanced",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "API file advanced type"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 289,
+          "name": "info",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "API information configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 343,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L343"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": 171,
+            "name": "APIInfo",
+            "package": "@xyd-js/core"
+          }
+        },
+        {
+          "id": 290,
+          "name": "route",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Route configuration"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 346,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L346"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            289,
+            290
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 341,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L341"
+        }
+      ]
+    },
+    {
+      "id": 291,
+      "name": "APIFileMap",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "API file map type"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 334,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L334"
+        }
+      ],
+      "type": {
+        "type": "reflection",
+        "declaration": {
+          "id": 292,
+          "name": "__type",
+          "variant": "declaration",
+          "kind": 65536,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "settings.ts",
+              "line": 334,
+              "character": 25,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L334"
+            }
+          ],
+          "indexSignatures": [
+            {
+              "id": 293,
+              "name": "__index",
+              "variant": "signature",
+              "kind": 8192,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "settings.ts",
+                  "line": 335,
+                  "character": 4,
+                  "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L335"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 294,
+                  "name": "name",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "type": {
+                "type": "intrinsic",
+                "name": "string"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": 295,
+      "name": "MetadataMap",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "sources": [
+        {
+          "fileName": "metadata.ts",
+          "line": 75,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L75"
+        }
+      ],
+      "typeParameters": [
+        {
+          "id": 296,
+          "name": "P",
+          "variant": "typeParam",
+          "kind": 131072,
+          "flags": {},
+          "default": {
+            "type": "intrinsic",
+            "name": "void"
+          }
+        }
+      ],
+      "type": {
+        "type": "reflection",
+        "declaration": {
+          "id": 297,
+          "name": "__type",
+          "variant": "declaration",
+          "kind": 65536,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "metadata.ts",
+              "line": 75,
+              "character": 36,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L75"
+            }
+          ],
+          "indexSignatures": [
+            {
+              "id": 298,
+              "name": "__index",
+              "variant": "signature",
+              "kind": 8192,
+              "flags": {},
+              "sources": [
+                {
+                  "fileName": "metadata.ts",
+                  "line": 75,
+                  "character": 38,
+                  "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L75"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 299,
+                  "name": "page",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": 227,
+                "typeArguments": [
+                  {
+                    "type": "reference",
+                    "target": 296,
+                    "name": "P",
+                    "package": "@xyd-js/core",
+                    "refersToTypeParameter": true
+                  }
+                ],
+                "name": "Metadata",
+                "package": "@xyd-js/core"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": 300,
+      "name": "PageLayout",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "sources": [
+        {
+          "fileName": "metadata.ts",
+          "line": 77,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/metadata.ts#L77"
+        }
+      ],
+      "type": {
+        "type": "union",
+        "types": [
+          {
+            "type": "literal",
+            "value": "wide"
+          },
+          {
+            "type": "literal",
+            "value": "page"
+          },
+          {
+            "type": "literal",
+            "value": "center"
+          }
+        ]
+      }
+    },
+    {
+      "id": 301,
+      "name": "PageURL",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Page URL type"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 220,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L220"
+        }
+      ],
+      "type": {
+        "type": "union",
+        "types": [
+          {
+            "type": "intrinsic",
+            "name": "string"
+          },
+          {
+            "type": "reference",
+            "target": 308,
+            "name": "VirtualPage",
+            "package": "@xyd-js/core"
+          },
+          {
+            "type": "reference",
+            "target": 267,
+            "name": "Sidebar",
+            "package": "@xyd-js/core"
+          }
+        ]
+      }
+    },
+    {
+      "id": 302,
+      "name": "PluginConfig",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 513,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L513"
+        }
+      ],
+      "typeParameters": [
+        {
+          "id": 303,
+          "name": "PluginName",
+          "variant": "typeParam",
+          "kind": 131072,
+          "flags": {},
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          },
+          "default": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 304,
+          "name": "PluginArgs",
+          "variant": "typeParam",
+          "kind": 131072,
+          "flags": {},
+          "type": {
+            "type": "array",
+            "elementType": {
+              "type": "intrinsic",
+              "name": "unknown"
+            }
+          },
+          "default": {
+            "type": "array",
+            "elementType": {
+              "type": "intrinsic",
+              "name": "unknown"
+            }
+          }
+        }
+      ],
+      "type": {
+        "type": "tuple",
+        "elements": [
+          {
+            "type": "reference",
+            "target": 303,
+            "name": "PluginName",
+            "package": "@xyd-js/core",
+            "refersToTypeParameter": true
+          },
+          {
+            "type": "rest",
+            "elementType": {
+              "type": "reference",
+              "target": 304,
+              "name": "PluginArgs",
+              "package": "@xyd-js/core",
+              "refersToTypeParameter": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 305,
+      "name": "Plugins",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Plugin configuration\n\nExample:\n1)\n{\n plugins: [\n   \"livesession\",\n ]\n}\n\nor 2)\n{\n plugins: [\n   [\n     \"livesession\",\n     \"accountID.websiteID\",\n     {\n         keystrokes: true \n     }\n   ]\n ]\n}\n\nyou can also use the type to define the plugin config in your code:\n\nconst livesessionPlugin: PluginConfig<\"livesession\", [string, { keystrokes: boolean }]> = [\n   \"livesession\",\n   \"accountID.websiteID\",\n   {\n       keystrokes: true \n   }\n]"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 511,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L511"
+        }
+      ],
+      "type": {
+        "type": "array",
+        "elementType": {
+          "type": "union",
+          "types": [
+            {
+              "type": "intrinsic",
+              "name": "string"
+            },
+            {
+              "type": "reference",
+              "target": 302,
+              "name": "PluginConfig",
+              "package": "@xyd-js/core"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": 306,
+      "name": "SearchType",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Search bar location options"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 157,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L157"
+        }
+      ],
+      "type": {
+        "type": "union",
+        "types": [
+          {
+            "type": "literal",
+            "value": "side"
+          },
+          {
+            "type": "literal",
+            "value": "top"
+          }
+        ]
+      }
+    },
+    {
+      "id": 307,
+      "name": "ThemePresetName",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Available theme preset names"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 154,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L154"
+        }
+      ],
+      "type": {
+        "type": "union",
+        "types": [
+          {
+            "type": "literal",
+            "value": "poetry"
+          },
+          {
+            "type": "literal",
+            "value": "cosmo"
+          },
+          {
+            "type": "literal",
+            "value": "opener"
+          }
+        ]
+      }
+    },
+    {
+      "id": 308,
+      "name": "VirtualPage",
+      "variant": "declaration",
+      "kind": 2097152,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Virtual page type\n\nVirtual pages are composition of pages, needed for templating e.g in uniform\n\nExample:\n\n{\n pages: [\n   \".xyd/.cache/.content/docs/rest/todo:docs/rest/todo\",\n ]\n}\n\nabove will be rendered as docs/rest/todo.md using composition from xyd's "
+          },
+          {
+            "kind": "code",
+            "text": "`.content`"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "fileName": "settings.ts",
+          "line": 237,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L237"
+        }
+      ],
+      "type": {
+        "type": "union",
+        "types": [
+          {
+            "type": "intrinsic",
+            "name": "string"
+          },
+          {
+            "type": "reflection",
+            "declaration": {
+              "id": 309,
+              "name": "__type",
+              "variant": "declaration",
+              "kind": 65536,
+              "flags": {},
+              "children": [
+                {
+                  "id": 310,
+                  "name": "page",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The page to use for the page"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 242,
+                      "character": 4,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L242"
+                    }
+                  ],
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                },
+                {
+                  "id": 311,
+                  "name": "templates",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {
+                    "isOptional": true
+                  },
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The template to use for the page"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 245,
+                      "character": 4,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L245"
+                    }
+                  ],
+                  "type": {
+                    "type": "union",
+                    "types": [
+                      {
+                        "type": "intrinsic",
+                        "name": "string"
+                      },
+                      {
+                        "type": "array",
+                        "elementType": {
+                          "type": "intrinsic",
+                          "name": "string"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": 312,
+                  "name": "virtual",
+                  "variant": "declaration",
+                  "kind": 1024,
+                  "flags": {},
+                  "comment": {
+                    "summary": [
+                      {
+                        "kind": "text",
+                        "text": "The virtual page to use for the page"
+                      }
+                    ]
+                  },
+                  "sources": [
+                    {
+                      "fileName": "settings.ts",
+                      "line": 239,
+                      "character": 4,
+                      "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L239"
+                    }
+                  ],
+                  "type": {
+                    "type": "intrinsic",
+                    "name": "string"
+                  }
+                }
+              ],
+              "groups": [
+                {
+                  "title": "Properties",
+                  "children": [
+                    310,
+                    311,
+                    312
+                  ]
+                }
+              ],
+              "sources": [
+                {
+                  "fileName": "settings.ts",
+                  "line": 237,
+                  "character": 35,
+                  "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-core/src/types/settings.ts#L237"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "groups": [
+    {
+      "title": "Interfaces",
+      "children": [
+        159,
+        163,
+        165,
+        169,
+        171,
+        178,
+        182,
+        184,
+        192,
+        195,
+        200,
+        204,
+        208,
+        211,
+        221,
+        225,
+        227,
+        249,
+        253,
+        256,
+        258,
+        267,
+        274,
+        277,
+        281
+      ]
+    },
+    {
+      "title": "Type Aliases",
+      "children": [
+        287,
+        288,
+        291,
+        295,
+        300,
+        301,
+        302,
+        305,
+        306,
+        307,
+        308
+      ]
+    }
+  ],
+  "packageName": "@xyd-js/project",
+  "readme": [
+    {
+      "kind": "text",
+      "text": "# xyd\n\nxyd is a framework for building ambitious docs easier for everyone.\n\n- **Developer Experience** - designed to be easy to use, with a focus on developer experience. Just put content files and xyd will do the rest.\n\n- **Customization** - customize every part of your documentation. From the layout, to the colors, to the custom logic.\n\n- **Built-in Standards** - content management, components, integrations and much more are built-in with a seamless API you can access.\n\n- **Ecosystem** - a living ecosystem of content, tools, and integrations that work together seamlessly.\n\n## Installation\nUse the initialization CLI to create your docs:\n"
+    },
+    {
+      "kind": "code",
+      "text": "```bash\nnpm i @xyd-js/cli\n```"
+    },
+    {
+      "kind": "text",
+      "text": "\n\n## Contributing\n### [Development]("
+    },
+    {
+      "kind": "relative-link",
+      "text": "./DEVELOPMENT.md",
+      "target": 2
+    },
+    {
+      "kind": "text",
+      "text": ")\nDevelopment guide with setup instructions, available scripts, and contribution guidelines.\n\n## Resources\n### [Storybook](https://sb.xyd.dev)\nCollection of built-in components.\n\n## License\nxyd is a MIT license."
+    }
+  ],
+  "symbolIdMap": {
+    "158": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "index.ts",
+      "qualifiedName": ""
+    },
+    "159": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Anchor"
+    },
+    "160": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Anchor.icon"
+    },
+    "161": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Anchor.name"
+    },
+    "162": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Anchor.url"
+    },
+    "163": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "AnchorRoot"
+    },
+    "164": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "AnchorRoot.bottom"
+    },
+    "165": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "API"
+    },
+    "166": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "API.graphql"
+    },
+    "167": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "API.openapi"
+    },
+    "168": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "API.sources"
+    },
+    "169": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIAuth"
+    },
+    "170": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIAuth.method"
+    },
+    "171": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIInfo"
+    },
+    "172": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIInfo.auth"
+    },
+    "173": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIInfo.baseUrl"
+    },
+    "174": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIInfo.inputPrefix"
+    },
+    "175": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIInfo.name"
+    },
+    "176": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIInfo.playground"
+    },
+    "177": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIInfo.request"
+    },
+    "178": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIInfoRequest"
+    },
+    "179": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIInfoRequest.example"
+    },
+    "180": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type"
+    },
+    "181": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.languages"
+    },
+    "182": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIPlayground"
+    },
+    "183": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIPlayground.mode"
+    },
+    "184": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Colors"
+    },
+    "185": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Colors.background"
+    },
+    "186": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type"
+    },
+    "187": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.dark"
+    },
+    "188": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.light"
+    },
+    "189": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Colors.dark"
+    },
+    "190": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Colors.light"
+    },
+    "191": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Colors.primary"
+    },
+    "192": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Engine"
+    },
+    "193": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Engine.paths"
+    },
+    "194": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Engine.uniform"
+    },
+    "195": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "FontDetailsType"
+    },
+    "196": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "FontDetailsType.family"
+    },
+    "197": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "FontDetailsType.format"
+    },
+    "198": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "FontDetailsType.url"
+    },
+    "199": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "FontDetailsType.weight"
+    },
+    "200": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Header"
+    },
+    "201": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Header.name"
+    },
+    "202": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Header.sub"
+    },
+    "203": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Header.url"
+    },
+    "204": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "IntegrationAnalytics"
+    },
+    "205": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "IntegrationAnalytics.livesession"
+    },
+    "206": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type"
+    },
+    "207": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.trackId"
+    },
+    "208": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Integrations"
+    },
+    "209": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Integrations.analytics"
+    },
+    "210": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Integrations.search"
+    },
+    "211": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "IntegrationSearch"
+    },
+    "212": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "IntegrationSearch.algolia"
+    },
+    "213": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type"
+    },
+    "214": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.apiKey"
+    },
+    "215": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.appId"
+    },
+    "216": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "IntegrationSearch.orama"
+    },
+    "217": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type"
+    },
+    "218": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.apiKey"
+    },
+    "219": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.endpoint"
+    },
+    "220": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.suggestions"
+    },
+    "221": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Logo"
+    },
+    "222": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Logo.dark"
+    },
+    "223": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Logo.href"
+    },
+    "224": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Logo.light"
+    },
+    "225": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Markdown"
+    },
+    "226": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Markdown.syntaxHighlight"
+    },
+    "227": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata"
+    },
+    "228": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.component"
+    },
+    "229": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.componentProps"
+    },
+    "230": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.description"
+    },
+    "231": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.graphql"
+    },
+    "232": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.group"
+    },
+    "233": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.hidden"
+    },
+    "234": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.icon"
+    },
+    "235": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.layout"
+    },
+    "236": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.openapi"
+    },
+    "237": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.sidebarTitle"
+    },
+    "238": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.title"
+    },
+    "239": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "__type"
+    },
+    "240": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "__type.code"
+    },
+    "241": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "__type.title"
+    },
+    "242": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.tocGithub"
+    },
+    "243": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "__type"
+    },
+    "244": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "__type.description"
+    },
+    "245": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "__type.link"
+    },
+    "246": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "__type.title"
+    },
+    "247": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.uniform"
+    },
+    "248": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "Metadata.P"
+    },
+    "249": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Navigation"
+    },
+    "250": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Navigation.anchors"
+    },
+    "251": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Navigation.header"
+    },
+    "252": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Navigation.sidebar"
+    },
+    "253": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Redirects"
+    },
+    "254": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Redirects.destination"
+    },
+    "255": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Redirects.source"
+    },
+    "256": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "SEO"
+    },
+    "257": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "SEO.indexHiddenPages"
+    },
+    "258": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Settings"
+    },
+    "259": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Settings.api"
+    },
+    "260": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Settings.engine"
+    },
+    "261": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Settings.integrations"
+    },
+    "262": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Settings.navigation"
+    },
+    "263": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Settings.plugins"
+    },
+    "264": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Settings.redirects"
+    },
+    "265": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Settings.seo"
+    },
+    "266": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Settings.theme"
+    },
+    "267": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Sidebar"
+    },
+    "268": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Sidebar.group"
+    },
+    "269": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Sidebar.pages"
+    },
+    "270": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Sidebar.sort"
+    },
+    "271": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type"
+    },
+    "272": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.after"
+    },
+    "273": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.before"
+    },
+    "274": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "SidebarRoute"
+    },
+    "275": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "SidebarRoute.items"
+    },
+    "276": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "SidebarRoute.route"
+    },
+    "277": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "SubHeader"
+    },
+    "278": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "SubHeader.items"
+    },
+    "279": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "SubHeader.name"
+    },
+    "280": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "SubHeader.route"
+    },
+    "281": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Theme"
+    },
+    "282": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Theme.favicon"
+    },
+    "283": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Theme.logo"
+    },
+    "284": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Theme.markdown"
+    },
+    "285": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Theme.maxTocDepth"
+    },
+    "286": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Theme.name"
+    },
+    "287": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIFile"
+    },
+    "288": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIFileAdvanced"
+    },
+    "289": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.info"
+    },
+    "290": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.route"
+    },
+    "291": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "APIFileMap"
+    },
+    "292": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type"
+    },
+    "293": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.__index"
+    },
+    "295": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "MetadataMap"
+    },
+    "296": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "P"
+    },
+    "297": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "__type"
+    },
+    "298": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "__type.__index"
+    },
+    "300": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/metadata.ts",
+      "qualifiedName": "PageLayout"
+    },
+    "301": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "PageURL"
+    },
+    "302": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "PluginConfig"
+    },
+    "303": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "PluginName"
+    },
+    "304": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "PluginArgs"
+    },
+    "305": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "Plugins"
+    },
+    "306": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "SearchType"
+    },
+    "307": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "ThemePresetName"
+    },
+    "308": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "VirtualPage"
+    },
+    "309": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type"
+    },
+    "310": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.page"
+    },
+    "311": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.templates"
+    },
+    "312": {
+      "packageName": "@xyd-js/core",
+      "packagePath": "src/types/settings.ts",
+      "qualifiedName": "__type.virtual"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "index.ts",
+      "2": "../../DEVELOPMENT.md"
+    },
+    "reflections": {
+      "1": 158
+    }
+  }
+}

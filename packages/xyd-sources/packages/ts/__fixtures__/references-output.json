@@ -4,6 +4,9 @@
     "canonical": "@xyd-sources-examples/react/interfaces/ComponentProps",
     "description": "The props type for \nComponent\n.\n",
     "context": {
+      "symbolId": "12",
+      "symbolName": "ComponentProps",
+      "symbolKind": 256,
       "packageName": "@xyd-sources-examples/react",
       "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
       "fileFullPath": "src/Component.tsx",
@@ -32,13 +35,14 @@
         "properties": [
           {
             "name": "children",
-            "type": "<React.ReactNode>",
+            "type": "",
             "description": ""
           },
           {
             "name": "variant",
             "type": "\"ghost\" | \"primary\" | \"secondary\" | \"success\" | \"danger\" | \"light\" | \"dark\" | 10",
-            "description": "The theme of the card. Defaults to \n`primary`\n.\n"
+            "description": "The theme of the card. Defaults to \n`primary`\n.\n",
+            "typeDef": {}
           }
         ]
       }
@@ -49,6 +53,9 @@
     "canonical": "@xyd-sources-examples/react/interfaces/ComponentProps2",
     "description": "",
     "context": {
+      "symbolId": "15",
+      "symbolName": "ComponentProps2",
+      "symbolKind": 256,
       "packageName": "@xyd-sources-examples/react",
       "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
       "fileFullPath": "src/Component.tsx",
@@ -72,12 +79,12 @@
         "properties": [
           {
             "name": "children",
-            "type": "<React.ReactNode>",
+            "type": "",
             "description": ""
           },
           {
             "name": "otherVariant",
-            "type": "\"other\"",
+            "type": "",
             "description": "The theme of the card. Defaults to \n`primary`\n.\n"
           }
         ]
@@ -89,6 +96,9 @@
     "canonical": "@xyd-sources-examples/react/types/UnionProps",
     "description": "The union type for \nComponentProps\n and \nComponentProps2\n.\n",
     "context": {
+      "symbolId": "18",
+      "symbolName": "UnionProps",
+      "symbolKind": 2097152,
       "packageName": "@xyd-sources-examples/react",
       "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
       "fileFullPath": "src/Component.tsx",
@@ -118,7 +128,17 @@
           {
             "name": "",
             "type": "<ComponentProps> | <ComponentProps2>",
-            "description": "The union type for \nComponentProps\n and \nComponentProps2\n.\n"
+            "description": "The union type for \nComponentProps\n and \nComponentProps2\n.\n",
+            "typeDef": {
+              "union": [
+                {
+                  "symbolId": "12"
+                },
+                {
+                  "symbolId": "15"
+                }
+              ]
+            }
           }
         ]
       }
@@ -127,8 +147,11 @@
   {
     "title": "Function Component",
     "canonical": "@xyd-sources-examples/react/functions/Component",
-    "description": "",
+    "description": "Component is a React component that renders a card.\n",
     "context": {
+      "symbolId": "19",
+      "symbolName": "Component",
+      "symbolKind": 64,
       "packageName": "@xyd-sources-examples/react",
       "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
       "fileFullPath": "src/Component.tsx",
@@ -141,7 +164,13 @@
       "sourcecode": {
         "code": "export function Component(props: UnionProps): ReactElement {\n    return <div className={`card card-`}>{props.children}</div>;\n}",
         "lang": "ts"
-      }
+      },
+      "category": "Component",
+      "group": [
+        "@xyd-sources-examples",
+        "react",
+        "Functions"
+      ]
     },
     "examples": {
       "groups": []
@@ -153,8 +182,13 @@
           {
             "name": "",
             "type": "<React.ReactElement>",
-            "description": "",
-            "properties": []
+            "description": ""
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "returns"
           }
         ]
       },
@@ -165,7 +199,15 @@
             "name": "props",
             "type": "<UnionProps>",
             "description": "",
-            "properties": []
+            "typeDef": {
+              "symbolId": "18"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "parameters"
           }
         ]
       }

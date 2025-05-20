@@ -58,8 +58,6 @@ export class BaseTheme extends Theme {
             Sidebar: $Sidebar,
         } = this
 
-
-        const settings = useSettings()
         const location = useLocation()
         const matchedSubNav = useMatchedSubNav()
         const meta = useMetadata()
@@ -67,7 +65,6 @@ export class BaseTheme extends Theme {
         const subheader = matchedSubNav ? <FwSubNav /> : null
         const sidebar = <$Sidebar />
 
-        console.log("settings from basetheme1", settings)
         return <LayoutPrimary
             subheader={!!subheader}
             layout={meta?.layout}
@@ -77,8 +74,7 @@ export class BaseTheme extends Theme {
                 header={<$Navbar />}
                 subheader={subheader}
             />
-            {children}
-            {/* <LayoutPrimary.MobileAside
+            <LayoutPrimary.MobileAside
                 aside={sidebar}
             />
 
@@ -88,7 +84,7 @@ export class BaseTheme extends Theme {
                 </aside>
 
                 {children}
-            </main> */}
+            </main>
         </LayoutPrimary>
     }
 

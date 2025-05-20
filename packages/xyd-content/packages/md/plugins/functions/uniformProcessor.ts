@@ -4,13 +4,13 @@ import os from 'node:os';
 import { VFile } from 'vfile';
 
 import { Metadata, Settings } from '@xyd-js/core';
-import { sourcesToUniform, type TypeDocReferenceContext } from '@xyd-js/sources/ts';
-import { reactDocgenToUniform } from '@xyd-js/sources/react';
+import { sourcesToUniform, sourcesToUniformV2, type TypeDocReferenceContext } from '@xyd-js/sources/ts';
+import { reactDocgenToUniform, uniformToReactUniform } from '@xyd-js/sources/react';
 import { gqlSchemaToReferences } from "@xyd-js/gql"
 import { oapSchemaToReferences, deferencedOpenAPI } from "@xyd-js/openapi"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
-import uniform from '@xyd-js/uniform';
+import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
 // TODO: rewrite to async
 
 /**
@@ -67,7 +67,7 @@ async function processUniformFile(
             // TODO: openapi + graphql
             throw new Error(`Unsupported file type: ${filePath}`);
         }
-        
+
         let ext = extension(filePath);
 
         const matter = file.data?.matter as Metadata
@@ -80,7 +80,8 @@ async function processUniformFile(
             const resolvedFilePath = path.resolve(baseDir, filePath);
 
             switch (ext) {
-                case 'ts': {
+                case 'ts':
+                case 'tsx': {
                     const packageDir = findClosestPackageJsonDir(
                         baseDir,
                         filePath,
@@ -92,19 +93,39 @@ async function processUniformFile(
                         const absoluteFilePath = path.join(packageDir, relativeFilePath);
 
                         try {
-                            // return []
-                            // Process the content using sourcesToUniform
-                            const references = await sourcesToUniform(
-                                packageDir,
-                                [packageDir]
-                            ) || []
+                            let references: Reference<ReferenceContext>[] = []
 
-                            // TODO: in the future via xyd-source? some issues with 
-                            return references.filter(ref => {
+                            switch (ext) {
+                                case 'ts': {
+                                    references = await sourcesToUniform(
+                                        packageDir,
+                                        [packageDir]
+                                    ) || []
+                                    break
+                                }
+                                case 'tsx': {
+                                    const resp = await sourcesToUniformV2(
+                                        packageDir,
+                                        [packageDir]
+                                    )
+                                    if (!resp || !resp.references || !resp.projectJson) {
+                                        console.error("Failed to process uniform file", filePath)
+                                        return null
+                                    }
+
+                                    references = uniformToReactUniform(resp.references, resp.projectJson)
+
+                                    break
+                                }
+                            }
+
+                            const resp = references.filter(ref => {
                                 const ctx = ref?.context as TypeDocReferenceContext
 
                                 return ctx?.fileFullPath === relativeFilePath
                             })
+                            
+                            return resp
                         } finally {
                             // Clean up the temporary directory when done
                             // cleanupTempFolder(tempDir);
@@ -114,15 +135,15 @@ async function processUniformFile(
                     }
                 }
 
-                case 'tsx': {
-                    const code = fs.readFileSync(resolvedFilePath, 'utf8');
-                    const references = reactDocgenToUniform(
-                        code,
-                        filePath
-                    );
+                // case 'tsx': {
+                //     const code = fs.readFileSync(resolvedFilePath, 'utf8');
+                //     const references = reactDocgenToUniform(
+                //         code,
+                //         filePath
+                //     );
 
-                    return references;
-                }
+                //     return references;
+                // }
 
                 case 'graphql': {
                     const references = await gqlSchemaToReferences(resolvedFilePath, {

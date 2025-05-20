@@ -91,7 +91,8 @@
             {
               "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
               "line": 10,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx#L10"
             }
           ],
           "type": {
@@ -146,7 +147,8 @@
         {
           "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
           "line": 8,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx#L8"
         }
       ],
       "extendedTypes": [
@@ -230,7 +232,8 @@
             {
               "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
               "line": 15,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx#L15"
             }
           ],
           "type": {
@@ -252,7 +255,8 @@
         {
           "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
           "line": 13,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx#L13"
         }
       ],
       "extendedTypes": [
@@ -307,7 +311,8 @@
         {
           "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
           "line": 21,
-          "character": 12
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx#L21"
         }
       ],
       "type": {
@@ -338,7 +343,8 @@
         {
           "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
           "line": 28,
-          "character": 16
+          "character": 16,
+          "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx#L28"
         }
       ],
       "signatures": [
@@ -348,11 +354,31 @@
           "variant": "signature",
           "kind": 4096,
           "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Component is a React component that renders a card."
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@category",
+                "content": [
+                  {
+                    "kind": "text",
+                    "text": "Component"
+                  }
+                ]
+              }
+            ]
+          },
           "sources": [
             {
               "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
               "line": 28,
-              "character": 16
+              "character": 16,
+              "url": "https://github.com/livesession/xyd/blob/bd357dca921fa23b903d75c4b2f3ef1dca0432a3/packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx#L28"
             }
           ],
           "parameters": [
@@ -403,6 +429,22 @@
       "title": "Functions",
       "children": [
         19
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "title": "Component",
+      "children": [
+        19
+      ]
+    },
+    {
+      "title": "Other",
+      "children": [
+        12,
+        15,
+        18
       ]
     }
   ],

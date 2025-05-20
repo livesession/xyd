@@ -1,0 +1,97 @@
+[
+  {
+    "title": "Function Component",
+    "canonical": "@xyd-sources-examples/react/functions/Component",
+    "description": "Component is a React component that renders a card.\n",
+    "context": {
+      "symbolId": "19",
+      "symbolName": "Component",
+      "symbolKind": 64,
+      "packageName": "@xyd-sources-examples/react",
+      "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
+      "fileFullPath": "src/Component.tsx",
+      "line": 28,
+      "col": 16,
+      "signatureText": {
+        "code": "export function Component(props: UnionProps): ReactElement;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function Component(props: UnionProps): ReactElement {\n    return <div className={`card card-`}>{props.children}</div>;\n}",
+        "lang": "ts"
+      },
+      "category": "Component",
+      "group": [
+        "@xyd-sources-examples",
+        "react",
+        "Functions"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "<React.ReactElement>",
+            "description": ""
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "returns"
+          }
+        ]
+      },
+      {
+        "title": "Parameters",
+        "properties": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "parameters"
+          }
+        ],
+        "variants": [
+          {
+            "title": "ComponentProps",
+            "properties": [
+              {
+                "name": "children",
+                "type": "",
+                "description": ""
+              },
+              {
+                "name": "variant",
+                "type": "\"ghost\" | \"primary\" | \"secondary\" | \"success\" | \"danger\" | \"light\" | \"dark\" | 10",
+                "description": "The theme of the card. Defaults to \n`primary`\n.\n",
+                "typeDef": {}
+              }
+            ],
+            "meta": []
+          },
+          {
+            "title": "ComponentProps2",
+            "properties": [
+              {
+                "name": "children",
+                "type": "",
+                "description": ""
+              },
+              {
+                "name": "otherVariant",
+                "type": "",
+                "description": "The theme of the card. Defaults to \n`primary`\n.\n"
+              }
+            ],
+            "meta": []
+          }
+        ]
+      }
+    ]
+  }
+]

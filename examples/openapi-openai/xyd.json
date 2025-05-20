@@ -1,6 +1,6 @@
 {
     "theme": {
-        "name": "opener",
+        "name": "poetry",
         "logo": "/public/assets/logo.svg",
         "favicon": "/public/assets/favicon.svg",
         "maxTocDepth": 2

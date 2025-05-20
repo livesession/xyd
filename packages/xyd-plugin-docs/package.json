@@ -29,9 +29,7 @@
   },
   "peerDependencies": {
     "@xyd-js/framework": "workspace:*",
-    "@xyd-js/example-package": "workspace:*",
     "@xyd-js/composer": "workspace:*",
-    "@xyd-js/themes2": "workspace:*",
     "@xyd-js/themes": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/content": "workspace:*",

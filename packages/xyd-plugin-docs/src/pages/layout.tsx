@@ -8,7 +8,6 @@ import { Framework, FwLink, useSettings, type FwSidebarGroupProps } from "@xyd-j
 import { ReactContent } from "@xyd-js/components/content";
 import { Atlas, AtlasContext } from "@xyd-js/atlas";
 import { Surfaces } from "@xyd-js/framework/react";
-import { CheckSettingsExternal } from "@xyd-js/example-package";
 import { Composer } from "@xyd-js/composer";
 import { BaseTheme } from "@xyd-js/themes";
 
@@ -83,10 +82,6 @@ export async function loader({ request }: { request: any }) {
 export default function Layout() {
     const loaderData = useLoaderData<LoaderData>()
 
-    console.log("Layout settings", settings || globalThis.__xydSettings)
-
-    const { Layout } = new BaseTheme()
-
     return <>
         <Framework
             settings={settings || globalThis.__xydSettings}
@@ -99,17 +94,11 @@ export default function Layout() {
                     syntaxHighlight: settings?.theme?.markdown?.syntaxHighlight || null
                 }}
             >
-                <CheckSettingsExternal>
-                    <CheckSettings>
-                        <Layout>
-                            <BaseThemeLayout>
-                                <PageContext value={{ theme }}>
-                                    <Outlet />
-                                </PageContext>
-                            </BaseThemeLayout>
-                        </Layout>
-                    </CheckSettings>
-                </CheckSettingsExternal>
+                <BaseThemeLayout>
+                    <PageContext value={{ theme }}>
+                        <Outlet />
+                    </PageContext>
+                </BaseThemeLayout>
             </AtlasContext>
         </Framework>
     </>
@@ -120,12 +109,3 @@ function getPathname(url: string) {
     return parsedUrl.pathname.replace(/^\//, '');
 }
 
-
-function CheckSettings({ children }: { children: React.ReactNode }) {
-    const settings = useSettings()
-
-    console.log("CheckSettings", settings)
-    return <div>
-        {children}
-    </div>
-}

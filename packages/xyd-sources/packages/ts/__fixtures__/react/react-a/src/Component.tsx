@@ -20,11 +20,11 @@ export interface ComponentProps2 extends PropsWithChildren {
  */
 export type UnionProps = ComponentProps | ComponentProps2
 
-// /**
-//  * Component is a React component that renders a card.
-//  * 
-//  * @category Component
-//  */
+/**
+ * Component is a React component that renders a card.
+ * 
+ * @category Component
+ */
 export function Component(props: UnionProps): ReactElement {
     return <div className={`card card-`}>{props.children}</div>;
 }

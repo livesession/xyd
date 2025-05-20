@@ -23,7 +23,6 @@ export default class ThemeOpener extends BaseTheme {
     constructor() {
         super()
 
-        console.log("ThemeOpener", this.settings)
         if (this.settings.markdown) {
             this.settings.markdown.syntaxHighlight = "dark-plus";
         } else {

@@ -10,12 +10,11 @@
     "xyd": ".cli/bin.js"
   },
   "files": [
-    ".cli",
-    "postinstall.js"
+    "dist",
+    "package.json"
   ],
   "scripts": {
-    "build_FIX": "tsup",
-    "postinstall_FIX": "node postinstall.js"
+    "build": "tsup"
   },
   "dependencies": {
     "@graphql-markdown/core": "^1.12.0",

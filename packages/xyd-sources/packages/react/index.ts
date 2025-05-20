@@ -20,3 +20,5 @@
 // console.log(JSON.stringify(uniformRef, null, 2));
 
 export { reactDocgenToUniform } from './ReactDocgenTransformer';
+
+export { uniformToReactUniform } from './uniformToReactUniform';

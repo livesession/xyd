@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import type { Reference, Definition, TypeDocReferenceContext, DefinitionProperty } from "@xyd-js/uniform";
+import type { Reference, Definition, TypeDocReferenceContext, DefinitionProperty, DefinitionPropertyTypeDef, DefinitionTypeDocMeta } from "@xyd-js/uniform";
 
 import type {
     JSONOutput,
@@ -409,10 +409,17 @@ function jsClassToUniformRef(
                 if (param.comment) {
                     description = commentToUniform(param.comment)
                 }
+                let uniformType = someTypeToUniform(param.type)
+                let someTypeProps = {}
+                if (typeof uniformType === "object") {
+                    someTypeProps = uniformType
+                }
+
                 constructorDef.properties.push({
                     name: param.name,
-                    type: someTypeToUniform(param.type),
-                    description
+                    type: typeof uniformType === "string" ? uniformType : "",
+                    description,
+                    ...someTypeProps
                 })
             }
             definitions.push(constructorDef)
@@ -439,11 +446,23 @@ function jsClassToUniformRef(
                 if (methodSign.comment) {
                     methodDesc = commentToUniform(methodSign.comment)
                 }
+                let type = ""
+                let someTypeProps = {}
+                if (methodSign.type) {          
+                    if (typeof methodSign.type === "object") {
+                        someTypeProps = methodSign.type
+                    }
+
+                    type = typeof methodSign.type === "string" ? methodSign.type : ""
+                } else {
+                    type = "void"
+                }
 
                 methodsDef.properties.push({
                     name: method.name,
-                    type: methodSign.type ? someTypeToUniform(methodSign.type) : "void",
-                    description: methodDesc
+                    type,
+                    description: methodDesc,
+                    ...someTypeProps
                 })
             }
 
@@ -504,9 +523,17 @@ function jsFunctionToUniformRef(
 
         // handle returns
         {
+            const meta: DefinitionTypeDocMeta[] = [
+                {
+                    name: "type",
+                    value: "returns"
+                }
+            ]
+
             const returnsUniformDef: Definition = {
                 title: 'Returns',
                 properties: [],
+                meta
             }
 
             if (sign.type) {
@@ -515,13 +542,18 @@ function jsFunctionToUniformRef(
                 if (sign.comment) {
                     desc = returnCommentToUniform(sign.comment) || ""
                 }
+
                 const uniformType = someTypeToUniform(sign.type)
+                let someTypeProps = {}
+                if (typeof uniformType === "object") {
+                    someTypeProps = uniformType
+                }
 
                 returnsUniformDef.properties.push({
                     name: "",
                     type: typeof uniformType === "string" ? uniformType : "",
                     description: desc,
-                    properties: typeof uniformType === "object" && "properties" in uniformType ? uniformType.properties : []
+                    ...someTypeProps
                 })
             }
 
@@ -530,9 +562,17 @@ function jsFunctionToUniformRef(
 
         // handle parameters
         {
+            const meta: DefinitionTypeDocMeta[] = [
+                {
+                    name: "type",
+                    value: "parameters"
+                }
+            ]
+            
             const parametersUniformDef: Definition = {
                 title: 'Parameters',
                 properties: [],
+                meta
             }
 
             for (const param of sign.parameters || []) {
@@ -545,12 +585,18 @@ function jsFunctionToUniformRef(
                 if (param.comment) {
                     description = commentToUniform(param.comment)
                 }
+
                 const uniformType = someTypeToUniform(param.type)
+                let someTypeProps = {}
+                if (typeof uniformType === "object") {
+                    someTypeProps = uniformType
+                }
+
                 const prop = {
                     name: param.name,
                     type: typeof uniformType === "string" ? uniformType : "",
                     description,
-                    properties: typeof uniformType === "object" && "properties" in uniformType ? uniformType.properties : []
+                    ...someTypeProps
                 }
 
                 switch (prop.name) {
@@ -560,6 +606,7 @@ function jsFunctionToUniformRef(
                         break
                     }
                 }
+
                 parametersUniformDef.properties.push(prop)
             }
 
@@ -633,12 +680,19 @@ function jsInterfaceToUniformRef(
                     description = commentToUniform(prop.comment)
                 }
 
+                const uniformType = someTypeToUniform(prop.type)
+                let someTypeProps = {}
+                if (typeof uniformType === "object") {
+                    someTypeProps = uniformType
+                }
+
                 switch (prop.type.type) {
                     default: {
                         propertiesDef.properties.push({
                             name: prop.name,
-                            type: someTypeToUniform(prop.type),
-                            description
+                            type: typeof prop.type === "string" ? prop.type : "",
+                            description,
+                            ...someTypeProps
                         })
                         break
                     }
@@ -669,11 +723,24 @@ function jsInterfaceToUniformRef(
                 if (methodSign.comment) {
                     methodDesc = commentToUniform(methodSign.comment)
                 }
+                
+                let type = ""
+                let someTypeProps = {}
+                if (methodSign.type) {          
+                    if (typeof methodSign.type === "object") {
+                        someTypeProps = methodSign.type
+                    }
+
+                    type = typeof methodSign.type === "string" ? methodSign.type : ""
+                } else {
+                    type = "void"
+                }
 
                 methodsDef.properties.push({
                     name: method.name,
-                    type: methodSign.type ? someTypeToUniform(methodSign.type) : "void",
-                    description: methodDesc
+                    type,
+                    description: methodDesc,
+                    ...someTypeProps
                 })
             }
 
@@ -738,10 +805,17 @@ function jsTypeAliasToUniformRef(
                 comment = commentToUniform(dec.comment)
             }
 
+            const uniformType = someTypeToUniform(dec.type)
+            let someTypeProps = {}
+            if (typeof uniformType === "object") {
+                someTypeProps = uniformType
+            }
+
             typeDef.properties.push({
                 name: "",
-                type: someTypeToUniform(dec.type),
-                description: comment
+                type: typeof dec.type === "string" ? dec.type : "",
+                description: comment,
+                ...someTypeProps
             })
 
             definitions.push(typeDef)
@@ -898,7 +972,10 @@ function declarationUniformContext(
     // Use the packagePath directly as it's already relative to the module root
     const fileFullPath = symbolMap.packagePath
 
-    return {
+    const ctx: TypeDocReferenceContext = {
+        symbolId: dec.id?.toString(),
+        symbolName: dec.name,
+        symbolKind: dec.kind,
         packageName: symbolMap.packageName,
         fileName: source.fileName,
         fileFullPath,
@@ -913,22 +990,71 @@ function declarationUniformContext(
             lang: "ts"
         }
     }
+
+    const category = uniformCategory(dec)
+    if (category) {
+        ctx.category = category
+    }
+
+    return ctx
 }
 
-function someTypeToUniform(someType: SomeType): string | {properties: DefinitionProperty[]} {
+type SomeTypeUniform = string | {
+    type?: string;
+    typeDef?: DefinitionPropertyTypeDef;
+    properties?: DefinitionProperty[]
+}
+
+function someTypeToUniform(someType: SomeType): SomeTypeUniform {
     switch (someType.type) {
         case "reference": {
+            let refType = `<${someType.qualifiedName || someType.name}>`
+
+            if ("target" in someType && typeof someType.target === "number") {
+                return {
+                    type: refType,
+                    typeDef: {
+                        symbolId: someType.target?.toString()
+                    }
+                }
+            }
+
             // TODO: abstract definition properties like GenericDefinitionProperty extends DefinitionProperty?
-            return `<${someType.qualifiedName || someType.name}>`
+            return refType
         }
         case "union": {
-            return someType.types.map(t => someTypeToUniform(t)).join(" | ")
+            let types: string[] = []
+            let typeDefs: DefinitionPropertyTypeDef = {}
+
+            for (const t of someType.types) {
+                const tUniform = someTypeToUniform(t)
+
+                if (typeof tUniform === "object") {
+                    types.push(tUniform.type || "")
+                    if (!typeDefs.union) {
+                        typeDefs.union = []
+                    }
+
+                    if (tUniform?.typeDef?.symbolId) {
+                        typeDefs.union.push({
+                            symbolId: tUniform.typeDef?.symbolId
+                        })
+                    }
+                } else {
+                    types.push(tUniform)
+                }
+            }
+
+            return {
+                type: types.join(" | "),
+                typeDef: typeDefs
+            }
         }
         case "literal": {
             if (typeof someType.value === "string") {
                 return `"${someType.value}"`
             }
-
+            
             return (someType.value || "").toString()
         }
         case "reflection": {
@@ -957,6 +1083,30 @@ function commentToUniform(comment: Comment): string {
     }
 
     return desc
+}
+
+function uniformCategory(dec?: DeclarationReflection): string {
+    if (!dec) {
+        return ""
+    }
+
+    let category = ""
+    for (const signature of dec.signatures || []) {
+        if (signature.comment) {
+            const comment = signature.comment
+            if (comment.blockTags) {
+                for (const tag of comment.blockTags) {
+                    if (tag.tag === "@category") {
+                        for (const content of tag.content || []) {
+                            category += content.text
+                        }
+                    }
+                }
+            }
+        }
+    }
+   
+    return category
 }
 
 function returnCommentToUniform(comment: Comment): string {
@@ -996,11 +1146,16 @@ function uniformProperties(dec: DeclarationReflection) {
                 }
 
                 const uniformType = someTypeToUniform(prop.type)
+                let someTypeProps = {}
+                if (typeof uniformType === "object") {
+                    someTypeProps = uniformType
+                }
+
                 properties.push({
                     name: prop.name,
                     type: typeof uniformType === "string" ? uniformType : "",
                     description,
-                    properties: typeof uniformType === "object" && "properties" in uniformType ? uniformType.properties : []
+                    ...someTypeProps
                 })
 
                 break

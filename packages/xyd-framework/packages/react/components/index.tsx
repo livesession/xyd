@@ -53,9 +53,8 @@ export function FwNav({ kind }: { kind?: "middle" }) {
         >
             {item.name}
         </Nav.Item>
-        )
+    )
 
-    console.log("FwNav", navWithoutSub, active)
     return <Nav
         value={active?.url || ""}
         kind={kind}

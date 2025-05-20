@@ -42,7 +42,6 @@ export function Framework(props: FrameworkProps) {
         metadata: Object.freeze({ ...metadata }),
         setMetadata: setMetadata,
     }
-    console.log("Framework", v)
     
     return <FrameworkContext value={v}>
         <SurfaceContext value={{
@@ -104,21 +103,18 @@ export function FrameworkPage(props: FrameworkPageProps) {
 
 export function useSidebarGroups() {
     const ctx = useContext(FrameworkContext)
-    console.log("useSidebarGroups", ctx.sidebarGroups)
 
     return ctx.sidebarGroups
 }
 
 export function useSettings() {
     const ctx = useContext(FrameworkContext)
-    console.log("useSettings", ctx.settings)
 
     return ctx.settings
 }
 
 export function useMetadata() {
     const ctx = useContext(FrameworkContext)
-    console.log("useMetadata", ctx.metadata)
 
     return ctx.metadata
 }
@@ -126,7 +122,7 @@ export function useMetadata() {
 export function useToC() {
     const ctx = useContext(FrameworkPageContext)
     const toc = ctx.toc || [] // TODO: !!! `|| []` IS NEEDED CUZ ISSUES WITH HYDRATION !!!
-    console.log("useToC", toc)
+
     return toc
 }
 
@@ -138,7 +134,6 @@ export function useBreadcrumbs() {
 
 export function useNavLinks() {
     const ctx = useContext(FrameworkPageContext)
-    console.log("useNavLinks", ctx.navlinks)
 
     return ctx.navlinks
 }
@@ -146,13 +141,12 @@ export function useNavLinks() {
 
 export function useRawPage() {
     const ctx = useContext(FrameworkPageContext)
-    console.log("useRawPage", ctx.rawPage)
+
     return ctx.rawPage
 }
 
 export function useContentComponent() {
     const ctx = useContext(FrameworkPageContext)
-    console.log("useContentComponent", ctx.ContentComponent)
     
     return ctx.ContentComponent
 }

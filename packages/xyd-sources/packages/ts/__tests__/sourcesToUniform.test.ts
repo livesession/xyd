@@ -2,14 +2,15 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { SignatureTextLoader, MultiSignatureLoader } from '../SignatureText';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { sourcesToUniform } from '..';
+import { sourcesToUniform, sourcesToUniformV2 } from '..';
+import { uniformToReactUniform } from '../../react/uniformToReactUniform';
 
 describe('SignatureText', () => {
     const fixturesBasePath = path.resolve("packages/ts/__fixtures__")
 
     const testFilePath = path.join(fixturesBasePath, 'test-file.ts');
     const outputFilePath = path.join(fixturesBasePath, 'references-output.json');
-
+    const outputFilePathReact = path.join(fixturesBasePath, 'references-output-react.json');
     // Create a temporary test file
     beforeAll(() => {
         const testContent = `
@@ -50,13 +51,19 @@ export class TestClass {
         it('should return a reference to react component', async () => {
             const basePath = path.resolve(fixturesBasePath, "react")
 
-            const references = await sourcesToUniform(basePath,
+            const resp = await sourcesToUniformV2(basePath,
                 [
                     path.resolve(basePath, "react-a"),
                 ]
             );
+            if (!resp || !resp.references || !resp.projectJson) {
+                throw new Error("Failed to generate documentation.")
+            }
 
-            fs.writeFileSync(outputFilePath, JSON.stringify(references, null, 2));
+            const reactUniform = uniformToReactUniform(resp.references, resp.projectJson)
+
+            fs.writeFileSync(outputFilePath, JSON.stringify(resp?.references, null, 2));
+            fs.writeFileSync(outputFilePathReact, JSON.stringify(reactUniform, null, 2));
             // Save references to a file for inspection
             console.log(`References saved to: ${outputFilePath}`);
         });

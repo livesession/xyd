@@ -31,8 +31,9 @@ export interface Reference<C = ReferenceContext> {
 }
 
 export type DefinitionOpenAPIMeta = Meta<"contentType">;
+export type DefinitionTypeDocMeta = Meta<"type">;
 
-export type DefinitionMeta = DefinitionOpenAPIMeta
+export type DefinitionMeta = DefinitionOpenAPIMeta | DefinitionTypeDocMeta
 
 export interface Definition<V = any> {
     title: string;
@@ -72,14 +73,23 @@ export interface Meta<T = string> {
 
 export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum">
 
+export type DefinitionPropertyTypeDef = {
+    symbolId?: string;
+    union?: {
+        symbolId: string;
+    }[]
+}
+
 export interface DefinitionProperty {
     name: string;
 
     type: string;
 
-    meta?: DefinitionPropertyMeta[];
+    typeDef?: DefinitionPropertyTypeDef
 
     description: string | React.ReactNode;
+
+    meta?: DefinitionPropertyMeta[];
 
     context?: any // TODO: better type
 
@@ -187,6 +197,9 @@ export interface OpenAPIReferenceContext extends BaseReferenceContext {
 
 // Add TypeDocReferenceContext to the union type
 export interface TypeDocReferenceContext extends BaseReferenceContext {
+    symbolId: string;
+    symbolName: string;
+    symbolKind: number;
     packageName: string;
     fileName: string;
     fileFullPath: string;
@@ -200,6 +213,7 @@ export interface TypeDocReferenceContext extends BaseReferenceContext {
         code: string;
         lang: string;
     };
+    category?: string;
 }
 
 export type ReferenceContext = GraphQLReferenceContext | OpenAPIReferenceContext | TypeDocReferenceContext
