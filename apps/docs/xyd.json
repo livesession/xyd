@@ -80,15 +80,22 @@
                     {
                         "group": "Components",
                         "pages": [
+                            "docs/components/text",
+                            "docs/components/heading",
+                            "docs/components/callouts",
+                            "docs/components/details",
                             "docs/components/guide-card",
-                            "docs/components/guide-example"
+                            "docs/components/tables",
+                            "docs/components/steps",
+                            "docs/components/tabs",
+                            "docs/components/grid"
                         ]
                     }
                 ]
             }
         ]
     },
-    "config": {
+    "engine": {
         "paths": {
             "@components/*": [
                 "../../packages/xyd-components/src/*"

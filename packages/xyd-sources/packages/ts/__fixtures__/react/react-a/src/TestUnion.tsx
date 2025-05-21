@@ -3,7 +3,7 @@ import type { PropsWithChildren, ReactElement, ReactNode } from "react";
 type VariantGhost = "ghost"
 
 /**
- * The props type for {@link Component}.
+ * The props type for {@link TestUnionComponent}.
  */
 export interface ComponentProps extends PropsWithChildren {
     /** The theme of the card. Defaults to `primary`. */
@@ -13,6 +13,8 @@ export interface ComponentProps extends PropsWithChildren {
 export interface ComponentProps2 extends PropsWithChildren {
     /** The theme of the card. Defaults to `primary`. */
     otherVariant: "other"
+
+    label: string
 }
 
 /**
@@ -21,19 +23,10 @@ export interface ComponentProps2 extends PropsWithChildren {
 export type UnionProps = ComponentProps | ComponentProps2
 
 /**
- * Component is a React component that renders a card.
+ * TestUnionComponent is a React component that uses a union type for its props.
  * 
  * @category Component
  */
-export function Component(props: UnionProps): ReactElement {
-    return <div className={`card card-`}>{props.children}</div>;
+export function TestUnionComponent(props: UnionProps): ReactElement {
+    return <div>{props.children}</div>;
 }
-
-/**
- * Component is a React component that renders a card.
- * 
- * @category Component
- */
-// export function Component({ children, variant }: { children: ReactNode, variant: string }): ReactElement {
-//     return <div className={`card card-${variant}`}>{children}</div>;
-// }

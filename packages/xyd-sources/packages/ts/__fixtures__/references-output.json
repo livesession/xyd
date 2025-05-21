@@ -1,23 +1,23 @@
 [
   {
-    "title": "Interface ComponentProps",
-    "canonical": "@xyd-sources-examples/react/interfaces/ComponentProps",
-    "description": "The props type for \nComponent\n.\n",
+    "title": "Interface GuideCardProps",
+    "canonical": "@xyd-sources-examples/react/interfaces/GuideCardProps",
+    "description": "Props for the GuideCard component\n",
     "context": {
-      "symbolId": "12",
-      "symbolName": "ComponentProps",
+      "symbolId": "9",
+      "symbolName": "GuideCardProps",
       "symbolKind": 256,
       "packageName": "@xyd-sources-examples/react",
-      "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
-      "fileFullPath": "src/Component.tsx",
-      "line": 8,
+      "fileName": "TestAbc.tsx",
+      "fileFullPath": "src/TestAbc.tsx",
+      "line": 4,
       "col": 17,
       "signatureText": {
-        "code": "export interface ComponentProps extends PropsWithChildren {\n}",
+        "code": "export interface GuideCardProps {\n}",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface ComponentProps extends PropsWithChildren {\n    /** The theme of the card. Defaults to `primary`. */\n    variant: \"primary\" | \"secondary\" | \"success\" | \"danger\" | \"light\" | \"dark\" | VariantGhost | 10\n}",
+        "code": "export interface GuideCardProps {\n    /** Content to be displayed in the card body */\n    children: React.ReactNode;\n\n    /** URL the card links to */\n    href: string\n\n    /** Title displayed at the top of the card */\n    title: string;\n\n    /** Optional icon displayed to the left of the content */\n    icon?: React.ReactNode;\n\n    /** Visual style variant of the card */\n    kind?: \"secondary\"\n\n    /** Size variant of the card */\n    size?: \"sm\" | \"md\"\n\n    /** Additional CSS class names to apply to the card */\n    className?: string\n\n    /** Additional props to pass to the link element */\n    as?: React.ElementType\n}",
         "lang": "ts"
       },
       "group": [
@@ -34,142 +34,76 @@
         "title": "Properties",
         "properties": [
           {
-            "name": "children",
-            "type": "",
-            "description": ""
+            "name": "as",
+            "type": "<React.ElementType>",
+            "description": "Additional props to pass to the link element\n"
           },
           {
-            "name": "variant",
-            "type": "\"ghost\" | \"primary\" | \"secondary\" | \"success\" | \"danger\" | \"light\" | \"dark\" | 10",
-            "description": "The theme of the card. Defaults to \n`primary`\n.\n",
+            "name": "children",
+            "type": "<React.ReactNode>",
+            "description": "Content to be displayed in the card body\n"
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "description": "Additional CSS class names to apply to the card\n"
+          },
+          {
+            "name": "href",
+            "type": "string",
+            "description": "URL the card links to\n"
+          },
+          {
+            "name": "icon",
+            "type": "<React.ReactNode>",
+            "description": "Optional icon displayed to the left of the content\n"
+          },
+          {
+            "name": "kind",
+            "type": "\"secondary\"",
+            "description": "Visual style variant of the card\n"
+          },
+          {
+            "name": "size",
+            "type": "\"sm\" | \"md\"",
+            "description": "Size variant of the card\n",
             "typeDef": {}
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Interface ComponentProps2",
-    "canonical": "@xyd-sources-examples/react/interfaces/ComponentProps2",
-    "description": "",
-    "context": {
-      "symbolId": "15",
-      "symbolName": "ComponentProps2",
-      "symbolKind": 256,
-      "packageName": "@xyd-sources-examples/react",
-      "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
-      "fileFullPath": "src/Component.tsx",
-      "line": 13,
-      "col": 17,
-      "signatureText": {
-        "code": "export interface ComponentProps2 extends PropsWithChildren {\n}",
-        "lang": "ts"
-      },
-      "sourcecode": {
-        "code": "export interface ComponentProps2 extends PropsWithChildren {\n    /** The theme of the card. Defaults to `primary`. */\n    otherVariant: \"other\"\n}",
-        "lang": "ts"
-      }
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Properties",
-        "properties": [
-          {
-            "name": "children",
-            "type": "",
-            "description": ""
           },
           {
-            "name": "otherVariant",
-            "type": "",
-            "description": "The theme of the card. Defaults to \n`primary`\n.\n"
+            "name": "title",
+            "type": "string",
+            "description": "Title displayed at the top of the card\n"
           }
         ]
       }
     ]
   },
   {
-    "title": "Type UnionProps",
-    "canonical": "@xyd-sources-examples/react/types/UnionProps",
-    "description": "The union type for \nComponentProps\n and \nComponentProps2\n.\n",
+    "title": "Function GuideCard",
+    "canonical": "@xyd-sources-examples/react/functions/GuideCard",
+    "description": "A card component that displays content with a title and optional icon.\nThe entire card is clickable and links to the specified URL.\n",
     "context": {
-      "symbolId": "18",
-      "symbolName": "UnionProps",
-      "symbolKind": 2097152,
-      "packageName": "@xyd-sources-examples/react",
-      "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
-      "fileFullPath": "src/Component.tsx",
-      "line": 21,
-      "col": 12,
-      "signatureText": {
-        "code": "export type UnionProps = ComponentProps | ComponentProps2;",
-        "lang": "ts"
-      },
-      "sourcecode": {
-        "code": "export type UnionProps = ComponentProps | ComponentProps2",
-        "lang": "ts"
-      },
-      "group": [
-        "@xyd-sources-examples",
-        "react",
-        "Types"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Type Definition",
-        "properties": [
-          {
-            "name": "",
-            "type": "<ComponentProps> | <ComponentProps2>",
-            "description": "The union type for \nComponentProps\n and \nComponentProps2\n.\n",
-            "typeDef": {
-              "union": [
-                {
-                  "symbolId": "12"
-                },
-                {
-                  "symbolId": "15"
-                }
-              ]
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Function Component",
-    "canonical": "@xyd-sources-examples/react/functions/Component",
-    "description": "Component is a React component that renders a card.\n",
-    "context": {
-      "symbolId": "19",
-      "symbolName": "Component",
+      "symbolId": "1",
+      "symbolName": "GuideCard",
       "symbolKind": 64,
       "packageName": "@xyd-sources-examples/react",
-      "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
-      "fileFullPath": "src/Component.tsx",
-      "line": 28,
+      "fileName": "TestAbc.tsx",
+      "fileFullPath": "src/TestAbc.tsx",
+      "line": 36,
       "col": 16,
       "signatureText": {
-        "code": "export function Component(props: UnionProps): ReactElement;",
+        "code": "export function GuideCard({ children, href, icon, title, kind, size, className, as, }: GuideCardProps);",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export function Component(props: UnionProps): ReactElement {\n    return <div className={`card card-`}>{props.children}</div>;\n}",
+        "code": "export function GuideCard({\n    children,\n    href,\n    icon,\n    title,\n    kind,\n    size,\n    className,\n    as,\n}: GuideCardProps) {\n\n    return <div>\n        {children}\n    </div>\n}",
         "lang": "ts"
       },
       "category": "Component",
       "group": [
         "@xyd-sources-examples",
         "react",
-        "Functions"
+        "Component"
       ]
     },
     "examples": {
@@ -181,7 +115,7 @@
         "properties": [
           {
             "name": "",
-            "type": "<React.ReactElement>",
+            "type": "<React.JSX.Element>",
             "description": ""
           }
         ],
@@ -196,11 +130,11 @@
         "title": "Parameters",
         "properties": [
           {
-            "name": "props",
-            "type": "<UnionProps>",
+            "name": "",
+            "type": "param",
             "description": "",
             "typeDef": {
-              "symbolId": "18"
+              "symbolId": "9"
             }
           }
         ],

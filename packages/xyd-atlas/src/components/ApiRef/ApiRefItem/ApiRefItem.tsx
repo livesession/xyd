@@ -135,8 +135,11 @@ function $ContentType({ definition }: { definition: MDXReference<Definition> }) 
 
 }
 
+const variantToggleKey = "symbolName" // TODO: BETTER API
+const defaultVariantValue = "200"
+
 function $VariantsProvider({ definition, children }: { definition: MDXReference<Definition>, children: React.ReactNode }) {
-    const firstVariant = (definition.variants || []).find(v => v.meta?.find(m => m.name === "status" && m.value === "200")) || (definition.variants || [])[0];
+    const firstVariant = (definition.variants || []).find(v => v.meta?.find(m => m.name === variantToggleKey && m.value === defaultVariantValue)) || (definition.variants || [])[0];
     const [variant, setVariant] = useState<DefinitionVariant | undefined>(firstVariant);
 
     return <VariantContext value={{ variant, setVariant }}>
@@ -149,10 +152,11 @@ function $VariantSelect({ variants }: { variants: MDXReference<DefinitionVariant
 
     function onChange(e: React.ChangeEvent<HTMLSelectElement>) {
         const foundVariant = variants.find(variant => {
-            const status = (variant?.meta || []).find(m => m.name === "status");
+            const status = (variant?.meta || []).find(m => m.name === variantToggleKey);
 
             return status?.value === e.target.value;
         })
+        console.log("foundVariant", foundVariant, e.target.value, variants)
         if (!foundVariant) {
             return
         }
@@ -160,13 +164,13 @@ function $VariantSelect({ variants }: { variants: MDXReference<DefinitionVariant
         setVariant(foundVariant);
     }
 
-    const status = (variant?.meta || []).find(m => m.name === "status");
+    const status = (variant?.meta || []).find(m => m.name === variantToggleKey);
 
     return variants?.length ? <select value={status?.value} onChange={onChange}>
         {
             variants?.map((variant, i) => {
                 // TODO: support custom component by status
-                const status = (variant?.meta || []).find(m => m.name === "status");
+                const status = (variant?.meta || []).find(m => m.name === variantToggleKey);
 
                 const value = status?.value || variant.title;
 

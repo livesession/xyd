@@ -90,42 +90,44 @@ async function processUniformFile(
                     if (packageDir) {
                         // Extract the relative file path from the package directory
                         const relativeFilePath = path.relative(packageDir, resolvedFilePath);
-                        const absoluteFilePath = path.join(packageDir, relativeFilePath);
 
                         try {
-                            let references: Reference<ReferenceContext>[] = []
+                            let references: Reference[] = []
 
                             switch (ext) {
                                 case 'ts': {
-                                    references = await sourcesToUniform(
+                                    const typedocRefs = await sourcesToUniform(
                                         packageDir,
                                         [packageDir]
-                                    ) || []
+                                    ) || [] as Reference<TypeDocReferenceContext>[]
+
+                                    references = typedocRefs.filter(ref => {
+                                        const ctx = ref?.context;
+        
+                                        return ctx?.fileFullPath === relativeFilePath
+                                    })
                                     break
                                 }
                                 case 'tsx': {
                                     const resp = await sourcesToUniformV2(
                                         packageDir,
-                                        [packageDir]
+                                        [relativeFilePath]
                                     )
                                     if (!resp || !resp.references || !resp.projectJson) {
                                         console.error("Failed to process uniform file", filePath)
                                         return null
                                     }
+                                    const typedocRefs = resp.references as Reference<TypeDocReferenceContext>[]
+                                    console.log(" TYPEOD REFS", typedocRefs)
 
-                                    references = uniformToReactUniform(resp.references, resp.projectJson)
+                                    references = uniformToReactUniform(typedocRefs, resp.projectJson)
+                                    console.log(" REACT REFS", references)
 
                                     break
                                 }
                             }
 
-                            const resp = references.filter(ref => {
-                                const ctx = ref?.context as TypeDocReferenceContext
-
-                                return ctx?.fileFullPath === relativeFilePath
-                            })
-                            
-                            return resp
+                            return references
                         } finally {
                             // Clean up the temporary directory when done
                             // cleanupTempFolder(tempDir);

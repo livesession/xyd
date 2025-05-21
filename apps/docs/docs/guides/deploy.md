@@ -16,7 +16,7 @@ You must follow the following steps to deploy your `xyd` docs:
 
 ## Build and test
 
-:::nav
+:::tabs
 1. [CLI](tab=cli)
     :::steps
     1. Run this command to build the docs:

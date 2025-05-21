@@ -3,20 +3,40 @@ import * as RadixTabs from "@radix-ui/react-tabs";
 
 import * as cn from "./UnderlineNav.styles"
 
+/**
+ * Context for managing the navigation direction in the UnderlineNav component
+ */
 const UnderlineContext = createContext<{
     direction: 'forward' | 'backward'
 }>({
     direction: 'forward'
 });
 
+/**
+ * Props for the UnderlineNav component
+ */
 export interface TabsProps {
+    /** Child elements to be rendered within the navigation */
     children: React.ReactNode
+
+    /** The currently selected tab value */
     value?: string
+
+    /** Callback function triggered when a tab is selected */
     onChange?: (value: string) => void
+
+    /** Whether to enable sliding animation between tabs */
     slide?: boolean
+
+    /** Additional CSS class name for the component */
     className?: string
 }
 
+/**
+ * A navigation component that displays tabs with an underline indicator
+ * 
+ * @category Component
+ */
 export function UnderlineNav({
     children,
     value: controlledValue,
@@ -65,14 +85,31 @@ export function UnderlineNav({
     );
 }
 
+/**
+ * Props for the UnderlineNav.Item component
+ */
 export interface UnderlineNavItemProps {
+    /** Child elements to be rendered within the navigation item */
     children: React.ReactNode
+
+    /** Unique identifier for the navigation item */
     value: string
+
+    /** URL for the navigation item link */
     href?: string
+
+    /** Custom component to render as the link element */
     as?: React.ElementType
+
+    /** Whether this item should be active by default */
     defaultActive?: boolean
 }
 
+/**
+ * Individual navigation item component
+ * 
+ * @category Component
+ */
 UnderlineNav.Item = function UnderlineNavItem({ children, value, href, as, defaultActive }: UnderlineNavItemProps) {
     const Link = as || $Link;
     const controlByItem = typeof defaultActive === "boolean"
@@ -101,12 +138,25 @@ UnderlineNav.Item = function UnderlineNavItem({ children, value, href, as, defau
     );
 }
 
+/**
+ * Props for the UnderlineNav.Content component
+ */
 export interface UnderlineNavContentProps {
+    /** Child elements to be rendered within the content area */
     children: React.ReactNode
+
+    /** Unique identifier for the content section */
     value: string
+
+    /** Whether this content should be active by default */
     defaultActive?: boolean
 }
 
+/**
+ * Content section component for the UnderlineNav
+ * 
+ * @category Component
+ */
 UnderlineNav.Content = function UnderlineNavContent({
     children,
     value,
@@ -148,7 +198,13 @@ UnderlineNav.Content = function UnderlineNavContent({
     );
 }
 
-// Custom hook to handle value changes and direction
+/**
+ * Custom hook to handle value changes and determine navigation direction
+ * @param controlledValue - The controlled value from props
+ * @param onChange - Callback function for value changes
+ * @param navItems - Array of navigation items
+ * @returns Tuple containing direction, current value, and change handler
+ */
 function useValueChange(
     controlledValue: string | undefined,
     onChange: ((value: string) => void) | undefined,
@@ -200,6 +256,11 @@ function useValueChange(
     return [direction, value, handleValueChange] as const;
 }
 
+/**
+ * Default link component used when no custom link component is provided
+ * @param props - The component props
+ * @returns A React component
+ */
 function $Link({ ...props }) {
     return <a {...props}>{props.children}</a>
 }

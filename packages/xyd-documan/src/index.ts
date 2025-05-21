@@ -1,5 +1,6 @@
-export {build} from "./build"
+export { build } from "./build"
 
-export {dev} from "./dev"
+export { dev } from "./dev"
 
-export {serve} from "./serve"
+export { install } from "./install"
+

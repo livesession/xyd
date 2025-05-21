@@ -2,18 +2,44 @@ import React, { } from "react"
 
 import * as cn from "./Heading.styles";
 
+/**
+ * Props for the Heading component
+ * @interface HeadingProps
+ */
 export interface HeadingProps {
+    /** Content to be rendered inside the heading */
     children: React.ReactNode
+
+    /** The size of the heading (1-6, corresponding to h1-h6) */
     size: 1 | 2 | 3 | 4 | 5 | 6
+
+    /** Optional HTML element to render as (div or span) */
     as?: "div" | "span"
+
+    /** Optional ID for the heading element */
     id?: string
+
+    /** Optional visual style variant */
     kind?: "muted"
+
+    /** Optional click handler */
     onClick?: () => void
+
+    /** Optional additional CSS class name */
     className?: string
+
+    /** Optional active state */
     active?: boolean
+    
+    /** Optional ref for the heading element */
     ref?: React.RefObject<HTMLHeadingElement>
 }
 
+/**
+ * A flexible heading component that can render as any heading level (h1-h6) or as a div/span
+ * 
+ * @category Component
+ */
 export function Heading({
     children,
     size = 1,

@@ -1,7 +1,6 @@
 import React from "react"
 
 import * as cn from "./GuideCard.styles";
-import { Anchor } from "../Anchor/Anchor";
 
 /**
  * Props for the GuideCard component
@@ -35,6 +34,8 @@ export interface GuideCardProps {
 /**
  * A card component that displays content with a title and optional icon.
  * The entire card is clickable and links to the specified URL.
+ * 
+ * @category Component
  */
 export function GuideCard({
     children,

@@ -2,11 +2,23 @@ import React from "react"
 
 import * as cn from "./Callout.styles";
 
+/**
+ * Props for the Callout component
+ */
 export interface CalloutProps {
+    /** Additional CSS class name to be applied to the callout */
     className?: string;
+    
+    /** Content to be displayed inside the callout */
     children: React.ReactNode;
 }
 
+/**
+ * A Callout component that displays important information or notices in a visually distinct way.
+ * It includes an info icon and a message area for content.
+ * 
+ * @category Component
+ */
 export function Callout({ className, children }: CalloutProps) {
     return <xyd-callout
         className={`${cn.CalloutHost} ${className || ''}`}

@@ -2,12 +2,16 @@ import React from "react";
 import { HighlightedCode } from "codehike/code";
 
 // TODO: type, and category also as generic?
-export interface Reference<C = ReferenceContext> {
+export interface Reference<
+    C = ReferenceContext,
+    M extends DefinitionMeta = DefinitionMeta,
+    VM extends DefinitionVariantMeta = DefinitionVariantMeta
+> {
     title: string;
     description: string | React.ReactNode;
     canonical: string;
 
-    definitions: Definition[]
+    definitions: Definition<M, VM>[] // TODO: in the future from generic?
     examples: ExampleRoot
 
     /**
@@ -35,16 +39,19 @@ export type DefinitionTypeDocMeta = Meta<"type">;
 
 export type DefinitionMeta = DefinitionOpenAPIMeta | DefinitionTypeDocMeta
 
-export interface Definition<V = any> {
+export interface Definition<
+    M extends DefinitionMeta = DefinitionMeta,
+    VM extends DefinitionVariantMeta = DefinitionVariantMeta
+> {
     title: string;
 
     properties: DefinitionProperty[];
 
-    variants?: DefinitionVariant<V>[];
+    variants?: DefinitionVariant<VM>[];
 
     description?: string | React.ReactNode;
 
-    meta?: DefinitionMeta[];
+    meta?: M[];
 
     /**
      * @unsafe
@@ -57,12 +64,19 @@ export interface Definition<V = any> {
     type?: string;
 }
 
-export interface DefinitionVariant<T = any> {
+export type DefinitionVariantOpenAPIMeta = Meta<"">;
+export type DefinitionVariantTypeDocMeta = Meta<"symbolName">;
+
+export type DefinitionVariantMeta = DefinitionVariantOpenAPIMeta | DefinitionVariantTypeDocMeta
+
+export interface DefinitionVariant<
+    M extends DefinitionVariantMeta = DefinitionVariantMeta
+> {
     title: string;
 
     properties: DefinitionProperty[];
 
-    meta?: Meta<T>[];
+    meta?: M[];
 }
 
 export interface Meta<T = string> {
@@ -179,7 +193,7 @@ export enum ReferenceType {
 
 export interface BaseReferenceContext {
     group?: string[];
- 
+
     scopes?: string[];
 }
 

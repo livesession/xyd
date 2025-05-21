@@ -87,7 +87,7 @@ export default class ThemeOpener extends BaseTheme {
 }
 
 function isDefaultContent(meta: Metadata) {
-    return meta?.openapi || meta?.graphql || meta.component === "atlas"
+    return meta?.openapi || meta?.graphql || meta.component === "atlas" || meta.uniform
 }
 
 function _Search() {

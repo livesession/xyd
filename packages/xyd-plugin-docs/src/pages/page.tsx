@@ -99,7 +99,6 @@ export async function loader({ request }: { request: any }) {
 
     timedebug.mapSettingsToProps
 
-    console.log(settings || globalThis.__xydSettings, 1111)
     const {
         groups: sidebarGroups,
         breadcrumbs,

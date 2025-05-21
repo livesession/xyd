@@ -142,6 +142,10 @@ class Transformer {
             const filePath = path.join(dir, file);
             const stat = fs.statSync(filePath);
             if (stat && stat.isDirectory()) {
+                // Skip node_modules directory
+                if (file === 'node_modules') {
+                    continue;
+                }
                 results = results.concat(this.findPackageJsonPaths(filePath));
             } else if (file === 'package.json') {
                 results.push(filePath);
@@ -205,6 +209,7 @@ export function typedocToUniform(
                         ...ref.context,
                         packageName: container.name,
                     } as TypeDocReferenceContext;
+
                     references.push(ref)
                 }
 
@@ -490,6 +495,7 @@ function jsFunctionToUniformRef(
     }
 
     const declarationCtx = declarationUniformContext.call(this, dec)
+    console.log(22222, declarationCtx)
     if (declarationCtx) {
         ref.context = {
             ...ref.context,
@@ -686,17 +692,12 @@ function jsInterfaceToUniformRef(
                     someTypeProps = uniformType
                 }
 
-                switch (prop.type.type) {
-                    default: {
-                        propertiesDef.properties.push({
-                            name: prop.name,
-                            type: typeof prop.type === "string" ? prop.type : "",
-                            description,
-                            ...someTypeProps
-                        })
-                        break
-                    }
-                }
+                propertiesDef.properties.push({
+                    name: prop.name,
+                    type: typeof uniformType === "string" ? uniformType : "",
+                    description,
+                    ...someTypeProps
+                })
             }
 
             definitions.push(propertiesDef)
@@ -813,7 +814,7 @@ function jsTypeAliasToUniformRef(
 
             typeDef.properties.push({
                 name: "",
-                type: typeof dec.type === "string" ? dec.type : "",
+                type: typeof uniformType === "string" ? uniformType : "",
                 description: comment,
                 ...someTypeProps
             })
@@ -941,33 +942,25 @@ function declarationUniformContext(
     if (!dec.sources || !dec.sources.length) {
         return
     }
-
+    
     if (dec.sources.length > 1) {
         console.warn('(declarationUniformContext): Multiple sources not supported for function declaration', dec.name)
-        return
     }
-
+    
     const source = dec.sources[0]
-    if (!source.fileName) {
-        return
-    }
-
+ 
     const signTxt = this.signatureTextLoader.signatureText(
         dec.id,
-        source.line
+        source?.line
     ) || ""
 
     const sourceCode = this.signatureTextLoader.signatureSourceCode(
         dec.id,
-        source.line
+        source?.line
     ) || ""
 
     // Get the symbol map to find the package path
     const symbolMap = this.project.symbolIdMap[dec.id] as ReflectionSymbolId
-    if (!symbolMap) {
-        console.warn('(declarationUniformContext): Symbol not found', dec.id)
-        return
-    }
 
     // Use the packagePath directly as it's already relative to the module root
     const fileFullPath = symbolMap.packagePath
@@ -976,7 +969,7 @@ function declarationUniformContext(
         symbolId: dec.id?.toString(),
         symbolName: dec.name,
         symbolKind: dec.kind,
-        packageName: symbolMap.packageName,
+        packageName: symbolMap?.packageName,
         fileName: source.fileName,
         fileFullPath,
         line: source.line,
@@ -1179,9 +1172,9 @@ function uniformGroup(ctx?: TypeDocReferenceContext): string[] {
     return group
 }
 
-function uniformCanonical(dec: DeclarationReflection, ctx: TypeDocReferenceContext): string {
+function uniformCanonical(dec: DeclarationReflection, ctx?: TypeDocReferenceContext): string {
     const parts: string[] = []
-    if (ctx.packageName) {
+    if (ctx?.packageName) {
         parts.push(ctx.packageName)
     }
 

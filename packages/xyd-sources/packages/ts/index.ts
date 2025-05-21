@@ -49,6 +49,7 @@ export async function sourcesToUniform(
     return ref
 }
 
+// TODO: in the future typedoc options?
 export async function sourcesToUniformV2(
     root: string,
     entryPoints: string[]
@@ -58,12 +59,28 @@ export async function sourcesToUniformV2(
 } | undefined> {
     // TODO: support another strategies
     // TODO: support entry points from github?
-    const options = {
-        entryPoints,
-        entryPointStrategy: TypeDoc.EntryPointStrategy.Packages,
-    } satisfies Partial<TypeDocOptions>;
+    const options: Partial<TypeDocOptions> = {
+        entryPoints: entryPoints?.map(ep => path.resolve(root, ep)),
+        exclude: ["**/*.test.ts", "**/*.test.tsx"],
+        // @ts-ignore // TODO: for some reason on build types mismatch
+        excludePrivate: true,
+        // @ts-ignore
+        excludeProtected: true,
+        // @ts-ignore
+        excludeExternals: true,
+        // @ts-ignore
+        includeVersion: true,
+        // @ts-ignore
+        hideGenerator: true,
+        // @ts-ignore
+        skipErrorChecking: true,
+    }
+    const everySingleFile = entryPoints?.every(ep => !!path.extname(ep))
+    if (!everySingleFile) {
+        options.entryPointStrategy = TypeDoc.EntryPointStrategy.Packages
+    }
 
-    const app = await TypeDoc.Application.bootstrapWithPlugins(options);
+    const app = await TypeDoc.Application.bootstrapWithPlugins(options, []);
     const project = await app.convert()
     if (!project) {
         console.error('Failed to generate documentation.');
@@ -84,7 +101,6 @@ export async function sourcesToUniformV2(
         console.error('Failed to generate documentation.');
         return
     }
-
     return {
         references,
         projectJson

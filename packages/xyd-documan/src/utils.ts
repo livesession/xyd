@@ -2,6 +2,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
+import crypto from "node:crypto";
 
 import { createServer, PluginOption as VitePluginOption, Plugin as VitePlugin } from "vite";
 import Icons from 'unplugin-icons/vite'
@@ -100,6 +101,45 @@ export function virtualComponentsPlugin(): VitePluginOption {
     }
 }
 
+export function virtualProvidersPlugin(
+    settings: Settings
+): VitePluginOption {
+    return {
+        name: 'xyd-plugin-virtual-providers',
+        enforce: 'pre',
+        resolveId(id) {
+            if (id === 'virtual:xyd-analytics-providers') {
+                return id
+            }
+        },
+        async load(id) {
+            if (id === 'virtual:xyd-analytics-providers') {
+                const providers = Object.keys(settings?.integrations?.analytics || {})
+                const imports = providers.map(provider => 
+                    `import { default as ${provider}Provider } from '@pluganalytics/provider-${provider}'`
+                ).join('\n')
+
+                const cases = providers.map(provider =>
+                    `case '${provider}': return ${provider}Provider`
+                ).join('\n')
+
+                return `
+                    ${imports}
+
+                    export const loadProvider = async (provider) => {
+                        switch (provider) {
+                            ${cases}
+                            default:
+                                console.error(\`Provider \${provider} not found\`)
+                                return null
+                        }
+                    }
+                `
+            }
+        }
+    }
+}
+
 export function commonVitePlugins(
     respPluginDocs: PluginOutput,
     resolvedPlugins: PluginConfig[],
@@ -123,20 +163,23 @@ export function commonVitePlugins(
         }) as VitePlugin,
 
         virtualComponentsPlugin(),
+        virtualProvidersPlugin(respPluginDocs.settings),
 
         ...userVitePlugins,
     ]
 }
 
 export function getHostPath() {
-    let v = ""
     if (process.env.XYD_DEV_MODE) {
-        v = path.join(__dirname, "../../../", HOST_FOLDER_PATH)
-    } else {
-        v = path.join(process.cwd(), HOST_FOLDER_PATH)
+        if (process.env.XYD_HOST) {
+            return path.resolve(process.env.XYD_HOST)
+        }
+
+
+        return path.join(__dirname, "../../../", HOST_FOLDER_PATH)
     }
 
-    return v
+    return path.join(process.cwd(), HOST_FOLDER_PATH)
 }
 
 export function getAppRoot() {
@@ -240,7 +283,18 @@ function integrationsToPlugins(integrations: Integrations) {
     return plugins
 }
 
-export async function preWorkspaceSetup() {
+export async function preWorkspaceSetup(options: {
+    force?: boolean
+} = {}) {
+    await ensureFoldersExist()
+
+    // Check if we can skip the setup
+    if (!options.force) {
+        if (await shouldSkipHostSetup()) {
+            return true
+        }
+    }
+
     const hostTemplate = process.env.XYD_DEV_MODE
         ? path.resolve(__dirname, "../../xyd-host")
         : await downloadPackage("@xyd-js/host", HOST_VERSION)
@@ -251,8 +305,9 @@ export async function preWorkspaceSetup() {
 
     const hostPath = getHostPath()
 
-    await ensureFoldersExist()
     await copyHostTemplate(hostTemplate, hostPath)
+
+    // Calculate and store new checksum after setup
 
     // Handle plugin-docs pages
     let pluginDocsPath: string | Error
@@ -292,6 +347,67 @@ export async function preWorkspaceSetup() {
     }
 }
 
+export function calculateFolderChecksum(folderPath: string): string {
+    const hash = crypto.createHash('sha256');
+    const ignorePatterns = [...getGitignorePatterns(folderPath), '.xydchecksum'];
+
+    function processFile(filePath: string) {
+        const relativePath = path.relative(folderPath, filePath);
+        const content = fs.readFileSync(filePath);
+        hash.update(relativePath);
+        hash.update(content);
+    }
+
+    function processDirectory(dirPath: string) {
+        const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+
+        // Sort entries to ensure consistent order
+        entries.sort((a, b) => a.name.localeCompare(b.name));
+
+        for (const entry of entries) {
+            const sourceEntry = path.join(dirPath, entry.name)
+
+            // Skip if the entry matches any ignore pattern
+            if (shouldIgnoreEntry(entry.name, ignorePatterns)) {
+                continue
+            }
+
+            // Skip .git directory
+            if (entry.name === '.git') {
+                continue
+            }
+
+            if (entry.isDirectory()) {
+                processDirectory(sourceEntry)
+            } else {
+                processFile(sourceEntry)
+            }
+        }
+    }
+
+    processDirectory(folderPath);
+    return hash.digest('hex');
+}
+
+function getGitignorePatterns(folderPath: string): string[] {
+    const gitignorePath = path.join(folderPath, '.gitignore')
+    if (fs.existsSync(gitignorePath)) {
+        const gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8')
+        return gitignoreContent
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line && !line.startsWith('#'))
+    }
+    return []
+}
+
+function shouldIgnoreEntry(entryName: string, ignorePatterns: string[]): boolean {
+    return ignorePatterns.some(pattern => {
+        const regex = new RegExp(pattern.replace(/\*/g, '.*'))
+        return regex.test(entryName)
+    })
+}
+
 async function downloadPackage(packageName: string, version: string): Promise<string | Error> {
     const tempDir = path.join(process.cwd(), CACHE_FOLDER_PATH, 'temp')
     const packageDir = path.join(tempDir, packageName.replace('/', '-'))
@@ -327,16 +443,7 @@ async function copyHostTemplate(sourcePath: string, targetPath: string) {
     // Create target directory
     fs.mkdirSync(targetPath, { recursive: true })
 
-    // Check for .gitignore in the current directory
-    const gitignorePath = path.join(sourcePath, '.gitignore')
-    let ignorePatterns: string[] = []
-    if (fs.existsSync(gitignorePath)) {
-        const gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8')
-        ignorePatterns = gitignoreContent
-            .split('\n')
-            .map(line => line.trim())
-            .filter(line => line && !line.startsWith('#'))
-    }
+    const ignorePatterns = getGitignorePatterns(sourcePath)
 
     // Copy all files and directories recursively
     const entries = fs.readdirSync(sourcePath, { withFileTypes: true })
@@ -346,10 +453,7 @@ async function copyHostTemplate(sourcePath: string, targetPath: string) {
         const targetEntry = path.join(targetPath, entry.name)
 
         // Skip if the entry matches any ignore pattern
-        if (ignorePatterns.some(pattern => {
-            const regex = new RegExp(pattern.replace(/\*/g, '.*'))
-            return regex.test(entry.name)
-        })) {
+        if (shouldIgnoreEntry(entry.name, ignorePatterns)) {
             continue
         }
 
@@ -371,7 +475,6 @@ async function copyHostTemplate(sourcePath: string, targetPath: string) {
 
                 fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
             }
-
         }
     }
 }
@@ -443,7 +546,8 @@ export async function postWorkspaceSetup(settings: Settings) {
             } else {
                 console.warn(`no host package.json found in: ${hostPath}`)
             }
-        } else {
+        } else if (!pluginName.startsWith('.') && !pluginName.startsWith('/')) {
+            // Only warn if it's not a local file path (doesn't start with . or /)
             console.warn(`invalid plugin name: ${pluginName}`)
         }
     }
@@ -456,7 +560,14 @@ export async function postWorkspaceSetup(settings: Settings) {
 
 function nodeInstallPackages(hostPath: string) {
     const cmd = process.env.XYD_DEV_MODE ? 'pnpm i' : 'npm i'
-    execSync(cmd, { cwd: hostPath, stdio: 'inherit' })
+    execSync(cmd, {
+        cwd: hostPath,
+        stdio: 'inherit',
+        env: {
+            ...process.env,
+            NODE_ENV: "" // since 'production' does not install it well
+        }
+    })
 }
 
 function nodeDownloadPackage(
@@ -486,3 +597,45 @@ function nodeDownloadPackage(
     // Clean up tarball
     fs.unlinkSync(path.join(extractDir, tarball))
 }
+
+async function shouldSkipHostSetup(): Promise<boolean> {
+    const hostPath = getHostPath();
+
+    // If host folder doesn't exist, we need to set it up
+    if (!fs.existsSync(hostPath)) {
+        return false;
+    }
+
+    const currentChecksum = calculateFolderChecksum(hostPath);
+    const storedChecksum = getStoredChecksum();
+
+    // If no stored checksum or checksums don't match, we need to set up
+    if (!storedChecksum || storedChecksum !== currentChecksum) {
+        return false;
+    }
+
+    return true;
+}
+
+function getStoredChecksum(): string | null {
+    const checksumPath = path.join(getHostPath(), '.xydchecksum');
+    if (!fs.existsSync(checksumPath)) {
+        return null;
+    }
+    try {
+        return fs.readFileSync(checksumPath, 'utf-8').trim();
+    } catch (error) {
+        console.error('Error reading checksum file:', error);
+        return null;
+    }
+}
+
+export function storeChecksum(checksum: string): void {
+    const checksumPath = path.join(getHostPath(), '.xydchecksum');
+    try {
+        fs.writeFileSync(checksumPath, checksum);
+    } catch (error) {
+        console.error('Error writing checksum file:', error);
+    }
+}
+

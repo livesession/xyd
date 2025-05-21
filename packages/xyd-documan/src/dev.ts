@@ -5,7 +5,7 @@ import { createServer, searchForWorkspaceRoot, ViteDevServer } from "vite";
 
 import { API, APIFile, } from "@xyd-js/core";
 
-import { appInit, commonVitePlugins, getAppRoot, getDocsPluginBasePath, getHostPath, getPublicPath, postWorkspaceSetup, preWorkspaceSetup } from "./utils";
+import { appInit, calculateFolderChecksum, commonVitePlugins, getAppRoot, getDocsPluginBasePath, getHostPath, getPublicPath, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
 import { CACHE_FOLDER_PATH, SUPPORTED_WATCH_FILES } from "./const";
 
 // TODO: !!! BETTER TIMER / DEBUG API !!!
@@ -20,15 +20,19 @@ interface DevOptions {
     port?: number
 }
 export async function dev(options?: DevOptions) {
-    // Ensure required folders exist
-    await preWorkspaceSetup()
+    const skip = await preWorkspaceSetup()
 
     const { respPluginDocs, resolvedPlugins } = await appInit()
     const allowCwd = searchForWorkspaceRoot(process.cwd())
     const appRoot = getAppRoot()
     const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)
 
-    await postWorkspaceSetup(respPluginDocs.settings)
+    if (!skip) {
+        await postWorkspaceSetup(respPluginDocs.settings)
+
+        const newChecksum = calculateFolderChecksum(getHostPath());
+        storeChecksum(newChecksum);
+    }
 
     let server: ViteDevServer | null = null
 
@@ -95,6 +99,7 @@ export async function dev(options?: DevOptions) {
         if (respPluginDocs?.settings?.api) {
             apiPaths = resolveApiFilePaths(process.cwd(), respPluginDocs.settings.api)
         }
+
         const apiChanged = !!apiPaths[filePath]
 
         if (filePath.includes(getPublicPath())) {
@@ -174,35 +179,62 @@ export async function dev(options?: DevOptions) {
     });
 }
 
-// TODO: !!! in the future it should be created at different level !!!
-function resolveApiFilePaths(basePath: string, api: API): { [path: string]: boolean } {
-    const paths: { [path: string]: boolean } = {}
 
-    const addPaths = (pathOrPaths: APIFile | undefined) => {
-        if (!pathOrPaths) return
-        if (typeof pathOrPaths === 'string') {
-            paths[path.resolve(basePath, pathOrPaths)] = true
-        } else if (Array.isArray(pathOrPaths)) {
-            pathOrPaths.forEach(p => {
-                if (typeof p === 'string') {
-                    paths[path.resolve(basePath, p)] = true
-                }
-            })
-        } else if (typeof pathOrPaths === 'object') {
-            Object.entries(pathOrPaths).forEach(([_, p]) => {
-                if (typeof p === 'string') {
-                    paths[path.resolve(basePath, p)] = true
-                }
-            })
-        }
-    }
+/**
+ * @todo: !!! in the future it should be created at different level !!!
+ * 
+ * Walks api.*, 
+ * resolves all referenced files under `basePath`,
+ * and returns a set of absolute paths.
+ */
+export function resolveApiFilePaths(
+    basePath: string,
+    api: API
+): Record<string, true> {
+    const result: Record<string, true> = {}
 
-    addPaths(api.openapi)
-    addPaths(api.graphql)
-    addPaths(api.sources)
+    const apis = [api.openapi, api.graphql, api.sources].filter((s): s is APIFile => s !== undefined)
 
-    return paths
+    apis.forEach(section => {
+        flattenApiFile(section).forEach(p => {
+            const apiAbsPath = path.resolve(basePath, p)
+            result[apiAbsPath] = true
+        })
+    })
+
+    return result
 }
 
 
+/**
+ * Given any APIFile-ish value, returns an array of the raw source-paths.
+ */
+function flattenApiFile(file?: APIFile): string[] {
+    if (!file) return []
 
+    // single string
+    if (typeof file === 'string') {
+        return [file]
+    }
+
+    // array of anything
+    if (Array.isArray(file)) {
+        return file.flatMap(flattenApiFile)
+    }
+
+    // object: either a nested config, or a map of name→file
+    if (typeof file === 'object') {
+        const obj = file as Record<string, any>
+
+        // explicit nested entry
+        if (typeof obj.source === 'string') {
+            return [obj.source]
+        }
+
+        // fallback: treat as { key: APIFile } map
+        return Object.values(obj).flatMap(flattenApiFile)
+    }
+
+    // everything else (e.g. numbers, booleans) gets dropped
+    return []
+}

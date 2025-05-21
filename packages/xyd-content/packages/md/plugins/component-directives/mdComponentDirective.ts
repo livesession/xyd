@@ -31,7 +31,7 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
 
     "code-group": "DirectiveCodeGroup", 
 
-    nav: "UnderlineNav",
+    tabs: "UnderlineNav",
 
     atlas: true,
 
@@ -59,7 +59,7 @@ const codeComponents: MarkdownComponentDirectiveMap = {
 }
 
 const navComponents: MarkdownComponentDirectiveMap = {
-    nav: "UnderlineNav",
+    tabs: "UnderlineNav",
 }
 
 const parseMarkdown = (content: string) => {

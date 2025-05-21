@@ -889,12 +889,6 @@ importers:
       morgan:
         specifier: ^1.10.0
         version: 1.10.0
-      react:
-        specifier: ^19.0.0
-        version: 19.0.0
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.0.0(react@19.0.0)
       react-router:
         specifier: ^7.5.0
         version: 7.6.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)

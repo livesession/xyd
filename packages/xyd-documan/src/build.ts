@@ -1,19 +1,25 @@
 import path from "node:path";
 import fs from "node:fs";
 
-import {build as viteBuild, Plugin as VitePlugin} from 'vite';
+import { build as viteBuild, Plugin as VitePlugin } from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
 
-import {appInit, commonVitePlugins, getAppRoot, getBuildPath} from "./utils";
+import { appInit, calculateFolderChecksum, commonVitePlugins, getAppRoot, getBuildPath, getHostPath, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
 
 // Define the main function to run the builds
 export async function build() {
-    // Set NODE_ENV to production
-    process.env.NODE_ENV = 'production';
+    const skip = await preWorkspaceSetup()
 
-    const {respPluginDocs, resolvedPlugins} = await appInit()
+    const { respPluginDocs, resolvedPlugins } = await appInit()
     const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)
     const appRoot = getAppRoot();
+
+    if (!skip) {
+        await postWorkspaceSetup(respPluginDocs.settings)
+
+        const newChecksum = calculateFolderChecksum(getHostPath());
+        storeChecksum(newChecksum);
+    }
 
     {
         setupInstallableEnvironmentV2() // TODO: fix in the future
@@ -22,6 +28,7 @@ export async function build() {
     try {
         // Build the client-side bundle
         await viteBuild({
+            mode: "production",
             root: appRoot,
             plugins: [
                 ...commonRunVitePlugins,
@@ -44,9 +51,10 @@ export async function build() {
 
         // Build the SSR bundle
         await viteBuild({
+            mode: "production",
             root: appRoot,
             build: {
-                ssr: true,
+                ssr: true
             },
             plugins: [
                 fixManifestPlugin(appRoot),
@@ -65,8 +73,6 @@ export async function build() {
                 }
             },
         });
-
-        // console.log('Build completed successfully.'); // TODO: better message
     } catch (error) {
         console.error('Build failed:', error);  // TODO: better message
     }
@@ -91,7 +97,7 @@ function setupInstallableEnvironmentV2() {
 
     // Ensure the build directory exists
     if (!fs.existsSync(buildDir)) {
-        fs.mkdirSync(buildDir, {recursive: true});
+        fs.mkdirSync(buildDir, { recursive: true });
     }
 
     // Write the package.json file

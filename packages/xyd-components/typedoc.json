@@ -1,0 +1,16 @@
+{
+    "out": "./docs",
+    "entryPoints": [
+        "src/writer/GuideCard/GuideCard.tsx"
+    ],
+    "exclude": [
+        "**/*.test.ts",
+        "**/*.test.tsx"
+    ],
+    "excludePrivate": "true",
+    "excludeProtected": "true",
+    "excludeExternals": "true",
+    "includeVersion": "true",
+    "hideGenerator": "true",
+    "skipErrorChecking": "true"
+}

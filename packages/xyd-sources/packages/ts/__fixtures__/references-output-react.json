@@ -1,30 +1,30 @@
 [
   {
-    "title": "Function Component",
-    "canonical": "@xyd-sources-examples/react/functions/Component",
-    "description": "Component is a React component that renders a card.\n",
+    "title": "GuideCard",
+    "canonical": "@xyd-sources-examples/react/components/GuideCard",
+    "description": "A card component that displays content with a title and optional icon.\nThe entire card is clickable and links to the specified URL.\n",
     "context": {
-      "symbolId": "19",
-      "symbolName": "Component",
+      "symbolId": "1",
+      "symbolName": "GuideCard",
       "symbolKind": 64,
       "packageName": "@xyd-sources-examples/react",
-      "fileName": "packages/xyd-sources/packages/ts/__fixtures__/react/react-a/src/Component.tsx",
-      "fileFullPath": "src/Component.tsx",
-      "line": 28,
+      "fileName": "TestAbc.tsx",
+      "fileFullPath": "src/TestAbc.tsx",
+      "line": 36,
       "col": 16,
       "signatureText": {
-        "code": "export function Component(props: UnionProps): ReactElement;",
+        "code": "export function GuideCard({ children, href, icon, title, kind, size, className, as, }: GuideCardProps);",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export function Component(props: UnionProps): ReactElement {\n    return <div className={`card card-`}>{props.children}</div>;\n}",
+        "code": "export function GuideCard({\n    children,\n    href,\n    icon,\n    title,\n    kind,\n    size,\n    className,\n    as,\n}: GuideCardProps) {\n\n    return <div>\n        {children}\n    </div>\n}",
         "lang": "ts"
       },
       "category": "Component",
       "group": [
         "@xyd-sources-examples",
         "react",
-        "Functions"
+        "Component"
       ]
     },
     "examples": {
@@ -32,65 +32,57 @@
     },
     "definitions": [
       {
-        "title": "Returns",
+        "title": "Props",
         "properties": [
           {
-            "name": "",
-            "type": "<React.ReactElement>",
-            "description": ""
+            "name": "as",
+            "type": "<React.ElementType>",
+            "description": "Additional props to pass to the link element\n"
+          },
+          {
+            "name": "children",
+            "type": "<React.ReactNode>",
+            "description": "Content to be displayed in the card body\n"
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "description": "Additional CSS class names to apply to the card\n"
+          },
+          {
+            "name": "href",
+            "type": "string",
+            "description": "URL the card links to\n"
+          },
+          {
+            "name": "icon",
+            "type": "<React.ReactNode>",
+            "description": "Optional icon displayed to the left of the content\n"
+          },
+          {
+            "name": "kind",
+            "type": "\"secondary\"",
+            "description": "Visual style variant of the card\n"
+          },
+          {
+            "name": "size",
+            "type": "\"sm\" | \"md\"",
+            "description": "Size variant of the card\n",
+            "typeDef": {}
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "description": "Title displayed at the top of the card\n"
           }
         ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "returns"
-          }
-        ]
-      },
-      {
-        "title": "Parameters",
-        "properties": [],
         "meta": [
           {
             "name": "type",
             "value": "parameters"
           }
         ],
-        "variants": [
-          {
-            "title": "ComponentProps",
-            "properties": [
-              {
-                "name": "children",
-                "type": "",
-                "description": ""
-              },
-              {
-                "name": "variant",
-                "type": "\"ghost\" | \"primary\" | \"secondary\" | \"success\" | \"danger\" | \"light\" | \"dark\" | 10",
-                "description": "The theme of the card. Defaults to \n`primary`\n.\n",
-                "typeDef": {}
-              }
-            ],
-            "meta": []
-          },
-          {
-            "title": "ComponentProps2",
-            "properties": [
-              {
-                "name": "children",
-                "type": "",
-                "description": ""
-              },
-              {
-                "name": "otherVariant",
-                "type": "",
-                "description": "The theme of the card. Defaults to \n`primary`\n.\n"
-              }
-            ],
-            "meta": []
-          }
-        ]
+        "variants": []
       }
     ]
   }

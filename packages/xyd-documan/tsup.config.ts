@@ -22,15 +22,11 @@ const deps = [
 
 export default defineConfig({
     entry: {
-        index: 'src/index.ts',
-        dev: 'packages/dev/dev.ts',
-        build: 'packages/dev/build.ts',
+        index: 'src/index.ts'
     },
     dts: {
         entry: {
-            index: 'src/index.ts',
-            dev: 'packages/dev/dev.ts',
-            build: 'packages/dev/build.ts',
+            index: 'src/index.ts'
         },
         resolve: true, // Resolve external types
     },

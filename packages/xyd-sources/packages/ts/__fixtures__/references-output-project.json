@@ -1,0 +1,626 @@
+{
+  "schemaVersion": "2.0",
+  "id": 0,
+  "name": "@xyd-sources-examples/react",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 9,
+      "name": "GuideCardProps",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Props for the GuideCard component"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 17,
+          "name": "as",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Additional props to pass to the link element"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "TestAbc.tsx",
+              "line": 27,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ElementType"
+            },
+            "name": "ElementType",
+            "package": "@types/react",
+            "qualifiedName": "React.ElementType"
+          }
+        },
+        {
+          "id": 10,
+          "name": "children",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Content to be displayed in the card body"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "TestAbc.tsx",
+              "line": 6,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ReactNode"
+            },
+            "name": "ReactNode",
+            "package": "@types/react",
+            "qualifiedName": "React.ReactNode"
+          }
+        },
+        {
+          "id": 16,
+          "name": "className",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Additional CSS class names to apply to the card"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "TestAbc.tsx",
+              "line": 24,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 11,
+          "name": "href",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "URL the card links to"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "TestAbc.tsx",
+              "line": 9,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 13,
+          "name": "icon",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional icon displayed to the left of the content"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "TestAbc.tsx",
+              "line": 15,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ReactNode"
+            },
+            "name": "ReactNode",
+            "package": "@types/react",
+            "qualifiedName": "React.ReactNode"
+          }
+        },
+        {
+          "id": 14,
+          "name": "kind",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Visual style variant of the card"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "TestAbc.tsx",
+              "line": 18,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "literal",
+            "value": "secondary"
+          }
+        },
+        {
+          "id": 15,
+          "name": "size",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Size variant of the card"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "TestAbc.tsx",
+              "line": 21,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "literal",
+                "value": "sm"
+              },
+              {
+                "type": "literal",
+                "value": "md"
+              }
+            ]
+          }
+        },
+        {
+          "id": 12,
+          "name": "title",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Title displayed at the top of the card"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "TestAbc.tsx",
+              "line": 12,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            17,
+            10,
+            16,
+            11,
+            13,
+            14,
+            15,
+            12
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "TestAbc.tsx",
+          "line": 4,
+          "character": 17
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "GuideCard",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "children": [
+        {
+          "id": 4,
+          "name": "List",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "TestAbc.tsx",
+              "line": 56,
+              "character": 10
+            }
+          ],
+          "signatures": [
+            {
+              "id": 5,
+              "name": "List",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "A container component for grouping multiple GuideCard components.\nProvides consistent spacing and layout for a list of guide cards."
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "TestAbc.tsx",
+                  "line": 56,
+                  "character": 26
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 6,
+                  "name": "__namedParameters",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 7,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {},
+                      "children": [
+                        {
+                          "id": 8,
+                          "name": "children",
+                          "variant": "declaration",
+                          "kind": 1024,
+                          "flags": {},
+                          "sources": [
+                            {
+                              "fileName": "TestAbc.tsx",
+                              "line": 56,
+                              "character": 56
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": {
+                              "packageName": "@types/react",
+                              "packagePath": "index.d.ts",
+                              "qualifiedName": "React.ReactNode"
+                            },
+                            "name": "ReactNode",
+                            "package": "@types/react",
+                            "qualifiedName": "React.ReactNode"
+                          }
+                        }
+                      ],
+                      "groups": [
+                        {
+                          "title": "Properties",
+                          "children": [
+                            8
+                          ]
+                        }
+                      ],
+                      "sources": [
+                        {
+                          "fileName": "TestAbc.tsx",
+                          "line": 56,
+                          "character": 54
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "@types/react",
+                  "packagePath": "index.d.ts",
+                  "qualifiedName": "React.JSX.Element"
+                },
+                "name": "Element",
+                "package": "@types/react",
+                "qualifiedName": "React.JSX.Element"
+              }
+            }
+          ]
+        }
+      ],
+      "groups": [
+        {
+          "title": "Methods",
+          "children": [
+            4
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "TestAbc.tsx",
+          "line": 36,
+          "character": 16
+        },
+        {
+          "fileName": "TestAbc.tsx",
+          "line": 56,
+          "character": 0
+        }
+      ],
+      "signatures": [
+        {
+          "id": 2,
+          "name": "GuideCard",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "A card component that displays content with a title and optional icon.\nThe entire card is clickable and links to the specified URL."
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@category",
+                "content": [
+                  {
+                    "kind": "text",
+                    "text": "Component"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "TestAbc.tsx",
+              "line": 36,
+              "character": 16
+            }
+          ],
+          "parameters": [
+            {
+              "id": 3,
+              "name": "__namedParameters",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {},
+              "type": {
+                "type": "reference",
+                "target": 9,
+                "name": "GuideCardProps",
+                "package": "@xyd-sources-examples/react"
+              }
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.JSX.Element"
+            },
+            "name": "Element",
+            "package": "@types/react",
+            "qualifiedName": "React.JSX.Element"
+          }
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "title": "Interfaces",
+      "children": [
+        9
+      ]
+    },
+    {
+      "title": "Functions",
+      "children": [
+        1
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "title": "Component",
+      "children": [
+        1
+      ]
+    },
+    {
+      "title": "Other",
+      "children": [
+        9
+      ]
+    }
+  ],
+  "packageName": "@xyd-sources-examples/react",
+  "symbolIdMap": {
+    "0": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": ""
+    },
+    "1": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCard"
+    },
+    "2": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCard"
+    },
+    "3": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "__0"
+    },
+    "4": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCard.List"
+    },
+    "5": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCard.List"
+    },
+    "6": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "__0"
+    },
+    "7": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "__type"
+    },
+    "8": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "__type.children"
+    },
+    "9": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCardProps"
+    },
+    "10": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCardProps.children"
+    },
+    "11": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCardProps.href"
+    },
+    "12": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCardProps.title"
+    },
+    "13": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCardProps.icon"
+    },
+    "14": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCardProps.kind"
+    },
+    "15": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCardProps.size"
+    },
+    "16": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCardProps.className"
+    },
+    "17": {
+      "packageName": "@xyd-sources-examples/react",
+      "packagePath": "src/TestAbc.tsx",
+      "qualifiedName": "GuideCardProps.as"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "src/TestAbc.tsx"
+    },
+    "reflections": {
+      "1": 0
+    }
+  }
+}

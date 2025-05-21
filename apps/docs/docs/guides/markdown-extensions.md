@@ -178,7 +178,7 @@ For creating steps you can use such us syntax:
 ### Navigation
 For creating tabbed navigation interfaces, you can use the following syntax:
 ~~~
-:::nav
+:::tabs
 1. [CLI](tab=cli)
     Content for the CLI tab
 
