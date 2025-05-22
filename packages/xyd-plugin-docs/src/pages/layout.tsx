@@ -10,6 +10,9 @@ import { Atlas, AtlasContext } from "@xyd-js/atlas";
 import { Surfaces } from "@xyd-js/framework/react";
 import { Composer } from "@xyd-js/composer";
 import { BaseTheme } from "@xyd-js/themes";
+import parse from 'html-react-parser';
+// @ts-ignore
+import { iconSet } from 'virtual:xyd-icon-set';
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
@@ -23,17 +26,44 @@ import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
 
 import { PageContext } from "./context";
+import { ReactElement, SVGProps } from "react";
+import React from "react";
 
 globalThis.__xydSettings = getSettings
-
+    
 new Composer() // TODO: better API
 const settings = globalThis.__xydSettings
+
+// TODO: better place for that? - it should be managed by framework?
+function Icon({name, width = 24, height = 24}: {name: string, width?: number, height?: number}) {
+    if (!iconSet) {
+        return null
+    }
+
+    const ico = iconSet[name]
+    if (!ico || !ico.svg) {
+        return null
+    }
+
+    const icon = parse(ico.svg) as ReactElement<SVGProps<SVGSVGElement>>
+    if (React.isValidElement(icon)) {
+        return React.cloneElement(icon, {
+            width,
+            height,
+            style: { width, height }
+        })
+    }
+
+    return null
+}
+
 
 const surfaces = new Surfaces()
 const reactContent = new ReactContent(settings, {
     Link: FwLink,
     components: {
-        Atlas
+        Atlas,
+        Icon
     },
     useLocation, // // TODO: !!!! BETTER API !!!!!
     useNavigate,
@@ -88,6 +118,7 @@ export default function Layout() {
             sidebarGroups={loaderData.sidebarGroups || []}
             metadata={loaderData.metadata || {}}
             surfaces={surfaces}
+            IconComponent={Icon}
         >
             <AtlasContext
                 value={{

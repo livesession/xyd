@@ -1,8 +1,11 @@
 ---
 title: Tables
+icon: Table
 layout: wide
 uniform: "@components/writer/Table/Table.tsx"
 ---
+
+### Examples
 
 <<<examples
 ```tsx

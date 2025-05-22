@@ -1,5 +1,6 @@
 ---
 title: Themes
+icon: swatch-book
 ---
 
 # Themes

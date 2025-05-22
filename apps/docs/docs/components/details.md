@@ -1,9 +1,11 @@
 ---
 title: Details
+icon: ChevronDown
 layout: wide
 uniform: "@components/writer/Details/Details.tsx"
 ---
 
+### Examples
 :::grid
 - 
     - 

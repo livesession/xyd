@@ -2,12 +2,12 @@ import React, { isValidElement } from "react";
 import { Link, useLocation, useMatches, type To } from "react-router";
 
 import type { ITOC } from "@xyd-js/ui";
-import { Breadcrumbs, NavLinks, Anchor, IconCopy, IconCheck, Button } from "@xyd-js/components/writer";
+import { Breadcrumbs, NavLinks, Anchor, IconCopy, IconCheck, Button, Icon } from "@xyd-js/components/writer";
 import { Toc, SubNav, UISidebar, Nav } from "@xyd-js/ui"
 
 import { Surface } from "./Surfaces";
 
-import { useBreadcrumbs, useNavLinks, useRawPage, useSettings, useSidebarGroups, useToC } from "../contexts";
+import { useBreadcrumbs, useIconComponent, useNavLinks, useRawPage, useSettings, useSidebarGroups, useToC } from "../contexts";
 import { FwSidebarItemGroup, FwSidebarGroupContext, FwSidebarItemProps } from "./Sidebar";
 
 import { manualHydration } from "../utils/manualHydration";
@@ -109,40 +109,9 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
     const settings = useSettings()
 
     const footerItems = settings.navigation?.anchors?.bottom?.map(anchor => {
-        let icon
+        const IconComponent = useIconComponent() || Icon
 
-        // TODO: refactor this !!!
-        if (typeof anchor.icon === "string") {
-            switch (anchor.icon) {
-                case "icon-cookbook": {
-                    icon = <IconCookbook />
-                    break
-                }
-
-                case "icon-community": {
-                    icon = <IconCommunity />
-                    break
-                }
-
-                case "icon-marketplace": {
-                    icon = <IconMarketplace />
-                    break
-                }
-
-                case "icon-sdk": {
-                    icon = <IconSDK />
-                    break
-                }
-
-                default: {
-                    icon = null
-                }
-            }
-        } else {
-            icon = isValidElement(anchor.icon) ? anchor.icon : manualHydration(anchor.icon)
-        }
-
-        return <UISidebar.FooterItem href={anchor.url} icon={icon}>
+        return <UISidebar.FooterItem href={anchor.url} icon={<IconComponent name={anchor.icon || ""} />}>
             {anchor.name}
         </UISidebar.FooterItem>
     })

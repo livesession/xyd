@@ -1,8 +1,11 @@
 ---
 title: Steps
+icon: ListChecks
 layout: wide
 uniform: "@components/writer/Steps/Steps.tsx"
 ---
+
+### Examples
 
 <<<examples
 ```tsx

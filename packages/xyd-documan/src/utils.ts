@@ -5,12 +5,13 @@ import { execSync } from "node:child_process";
 import crypto from "node:crypto";
 
 import { createServer, PluginOption as VitePluginOption, Plugin as VitePlugin } from "vite";
-import Icons from 'unplugin-icons/vite'
 import { reactRouter } from "@react-router/dev/vite";
+import { IconSet } from '@iconify/tools';
 
 import { readSettings, pluginDocs, type PluginDocsOptions, PluginOutput } from "@xyd-js/plugin-docs";
 import { vitePlugins as xydContentVitePlugins } from "@xyd-js/content/vite";
 import { Integrations, Plugins, Settings } from "@xyd-js/core";
+import type { IconLibrary } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
 
@@ -20,6 +21,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const HOST_VERSION = "0.1.0-xyd.0"
+
+interface IconifyIcon {
+    body: string;
+    width: number;
+    height: number;
+}
 
 export async function appInit(options?: PluginDocsOptions) {
     const readPreloadSettings = await readSettings() // TODO: in the future better solution - currently we load settings twice (pluginDocs and here)
@@ -115,7 +122,7 @@ export function virtualProvidersPlugin(
         async load(id) {
             if (id === 'virtual:xyd-analytics-providers') {
                 const providers = Object.keys(settings?.integrations?.analytics || {})
-                const imports = providers.map(provider => 
+                const imports = providers.map(provider =>
                     `import { default as ${provider}Provider } from '@pluganalytics/provider-${provider}'`
                 ).join('\n')
 
@@ -156,17 +163,108 @@ export function commonVitePlugins(
         ...respPluginDocs.vitePlugins,
 
         reactRouter(),
-        Icons({
-            autoInstall: true,
-            compiler: 'jsx',
-            jsx: 'react',
-        }) as VitePlugin,
 
         virtualComponentsPlugin(),
         virtualProvidersPlugin(respPluginDocs.settings),
+        pluginIconSet(respPluginDocs.settings),
 
         ...userVitePlugins,
     ]
+}
+
+export function pluginIconSet(settings: Settings): VitePluginOption {
+    const DEFAULT_ICON_SET = "lucide";
+
+    async function fetchIconSet(name: string, version?: string): Promise<{ icons: any, iconSet: IconSet }> {
+        const url = version
+            ? `https://cdn.jsdelivr.net/npm/@iconify-json/${name}@${version}/icons.json`
+            : `https://cdn.jsdelivr.net/npm/@iconify-json/${name}/icons.json`;
+
+        const iconsResp = await fetch(url);
+        const iconsData = await iconsResp.json();
+        const iconSet = new IconSet(iconsData);
+
+        return { icons: iconsData, iconSet };
+    }
+
+    async function processIconSet(iconSet: IconSet, icons: any, noPrefix?: boolean): Promise<Map<string, { svg: string }>> {
+        const resp = new Map<string, { svg: string }>();
+
+        for (const icon of Object.keys(icons.icons)) {
+            const svg = iconSet.toSVG(icon);
+            if (!svg) continue;
+
+            let prefix = noPrefix ? undefined : iconSet.prefix;
+            // If prefix is undefined, it means this is the default set and should not have a prefix
+            const iconName = prefix ? `${prefix}:${icon}` : icon;
+            resp.set(iconName, { svg: svg.toString() });
+        }
+
+        return resp;
+    }
+
+    async function addIconsToMap(resp: Map<string, { svg: string }>, name: string, version?: string, noPrefix?: boolean): Promise<void> {
+        const { icons, iconSet } = await fetchIconSet(name, version);
+        const newIcons = await processIconSet(iconSet, icons, noPrefix);
+        newIcons.forEach((value, key) => resp.set(key, value));
+    }
+
+    async function processIconLibrary(library: string | IconLibrary | (string | IconLibrary)[]): Promise<Map<string, { svg: string }>> {
+        const resp = new Map<string, { svg: string }>();
+
+        if (typeof library === 'string') {
+            // Single icon set as default
+            await addIconsToMap(resp, library);
+        } else if (Array.isArray(library)) {
+            // Multiple icon sets
+            for (const item of library) {
+                if (typeof item === 'string') {
+                    // String items are treated as default set
+                    await addIconsToMap(resp, item);
+                } else {
+                    // IconLibrary configuration
+                    const { name, version, default: isDefault, noprefix } = item;
+                    const noPrefix = isDefault || noprefix;
+                    await addIconsToMap(resp, name, version, noPrefix);
+                }
+            }
+        } else {
+            // Single IconLibrary configuration
+            const { name, version, default: isDefault, noprefix } = library;
+            const prefix = (isDefault || noprefix) ? undefined : name;
+            await addIconsToMap(resp, name, version, prefix);
+        }
+
+        return resp;
+    }
+
+    return {
+        name: 'xyd-plugin-icon-set',
+        enforce: 'pre',
+        resolveId(id) {
+            if (id === 'virtual:xyd-icon-set') {
+                return id;
+            }
+        },
+        async load(id) {
+            if (id === 'virtual:xyd-icon-set') {
+                let resp: Map<string, { svg: string }>;
+
+                // Handle theme icons configuration
+                if (settings.theme?.icons?.library) {
+                    resp = await processIconLibrary(settings.theme.icons.library);
+                } else {
+                    // If no icons configured, use default
+                    resp = new Map<string, { svg: string }>();
+                    await addIconsToMap(resp, DEFAULT_ICON_SET);
+                }
+
+                return `
+                    export const iconSet = ${JSON.stringify(Object.fromEntries(resp))};
+                `;
+            }
+        }
+    } as VitePlugin
 }
 
 export function getHostPath() {

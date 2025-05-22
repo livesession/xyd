@@ -2,7 +2,16 @@
     "theme": {
         "name": "opener",
         "logo": "/public/assets/logo.svg",
-        "favicon": "/public/assets/logo.svg"
+        "favicon": "/public/assets/logo.svg",
+        "icons": {
+            "library": [
+                {
+                    "name": "lucide",
+                    "default": true
+                },
+                "logos"
+            ]
+        }
     },
     "integrations": {
         "search": {
@@ -18,6 +27,10 @@
             {
                 "name": "Components",
                 "url": "/docs/components"
+            },
+            {
+                "name": "Reference",
+                "url": "/docs/reference"
             }
         ],
         "sidebar": [
@@ -54,7 +67,8 @@
                         "pages": [
                             "docs/guides/customization-introduction",
                             "docs/guides/extending-default-theme",
-                            "docs/guides/custom-theme"
+                            "docs/guides/custom-theme",
+                            "docs/guides/plugins"
                         ]
                     },
                     {
@@ -62,6 +76,19 @@
                         "pages": [
                             "docs/guides/sdk-quickstart",
                             "docs/guides/opensdk"
+                        ]
+                    },
+                    {
+                        "group": "Integrations",
+                        "pages": [
+                            {
+                                "group": "Analytics",
+                                "icon": "chart-line",
+                                "pages": [
+                                    "docs/guides/integrations/analytics/analytics-integrations",
+                                    "docs/guides/integrations/analytics/livesession"
+                                ]
+                            }
                         ]
                     },
                     {
@@ -92,6 +119,19 @@
                         ]
                     }
                 ]
+            },
+            {
+                "route": "docs/reference",
+                "items": [
+                    {
+                        "group": "Functions",
+                        "pages": [
+                            "docs/reference/functions/overview",
+                            "docs/reference/functions/importCode",
+                            "docs/reference/functions/uniform"
+                        ]
+                    }
+                ]
             }
         ]
     },
@@ -99,17 +139,10 @@
         "paths": {
             "@components/*": [
                 "../../packages/xyd-components/src/*"
+            ],
+            "@core/*": [
+                "../../packages/xyd-core/src/*"
             ]
         }
-    },
-    "redirects": [
-        {
-            "source": "",
-            "destination": "/docs/guides/introduction"
-        },
-        {
-            "source": "/",
-            "destination": "/docs/guides/introduction"
-        }
-    ]
+    }
 }

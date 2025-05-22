@@ -1,5 +1,6 @@
 ---
 title: Contributing
+icon: git-pull-request-arrow
 ---
 
 # Contributing

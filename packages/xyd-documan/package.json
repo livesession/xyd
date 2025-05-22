@@ -18,18 +18,17 @@
     "watch": "tsup --watch"
   },
   "dependencies": {
-    "@xyd-js/core": "workspace:*",
-    "@xyd-js/content": "workspace:*",
-    "@xyd-js/uniform": "workspace:*",
-    "@xyd-js/plugins": "workspace:*",
-    "@xyd-js/plugin-docs": "workspace:*",
-    "@iconify-json/lucide": "^1.2.42",
-    "@iconify/react": "^6.0.0",
+    "@iconify/tools": "^4.1.2",
     "@react-router/dev": "^7.5.0",
     "@react-router/node": "^7.5.0",
     "@react-router/serve": "^7.5.0",
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
+    "@xyd-js/content": "workspace:*",
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/plugin-docs": "workspace:*",
+    "@xyd-js/plugins": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
     "codehike": "^1.0.3",
     "compression": "^1.7.5",
     "express": "^4.21.2",
@@ -49,7 +48,6 @@
     "vfile": "^6.0.3",
     "yaml": "^2.6.0"
   },
-  "optionalDependencies": {},
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.0",
     "@types/node": "^22.7.5",

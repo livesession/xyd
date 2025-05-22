@@ -1,25 +1,21 @@
 import path from "node:path";
 
 import * as React from "react";
-import { useMemo, useContext, useId } from "react";
-import { redirect, ScrollRestoration, useLocation, useNavigate, useNavigation } from "react-router";
-// import { Icon } from '@iconify/react'
+import { useMemo, useContext, ReactElement, SVGProps } from "react";
+import { redirect, ScrollRestoration, useLocation } from "react-router";
 
 import { MetadataMap, Metadata } from "@xyd-js/core"
 import { ContentFS } from "@xyd-js/content"
 import { markdownPlugins } from "@xyd-js/content/md"
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
-import { FrameworkPage, FwLink, Surfaces, type FwSidebarGroupProps } from "@xyd-js/framework/react";
+import { FrameworkPage, type FwSidebarGroupProps } from "@xyd-js/framework/react";
 import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
-import { Atlas, AtlasContext } from "@xyd-js/atlas";
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
 // @ts-ignore
 const { settings } = virtualSettings
 import { PageContext } from "./context";
-// import Theme from "virtual:xyd-theme";
-// import { ReactContent } from "@xyd-js/components/content";
 
 const mdPlugins = markdownPlugins({
     maxDepth: settings?.theme?.maxTocDepth || 2,

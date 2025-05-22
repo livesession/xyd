@@ -1,5 +1,6 @@
 ---
 title: Routing
+icon: waypoints
 ---
 
 # Routing

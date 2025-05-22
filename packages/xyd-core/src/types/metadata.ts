@@ -7,16 +7,13 @@
  */
 export interface Metadata<P = void> {
     /** The main title of the content - by default visible in navigation and page title */
-    title?: string | {
-        title: string
-        code: string // TODO: delete
-    }
-
-    /** Optional disply description for SEO purposes */
-    description?: string
+    title?: string
 
     /** Optional title to display in the sidebar navigation */
     sidebarTitle?: string
+
+    /** Optional disply description for SEO purposes */
+    description?: string
 
     /** Optional icon identifier for the navigation item */
     icon?: string

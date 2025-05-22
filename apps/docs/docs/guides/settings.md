@@ -1,5 +1,6 @@
 ---
 title: Settings
+icon: settings
 ---
 
 # Settings

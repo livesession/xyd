@@ -1,8 +1,11 @@
 ---
 title: Guide Card
+icon: SquareMousePointer
 layout: wide
 uniform: "@components/writer/GuideCard/GuideCard.tsx"
 ---
+
+### Examples
 
 :::grid
 - 

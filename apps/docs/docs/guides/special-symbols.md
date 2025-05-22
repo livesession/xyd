@@ -1,5 +1,6 @@
 ---
 title: Special symbols
+icon: omega
 ---
 
 # Special Symbols

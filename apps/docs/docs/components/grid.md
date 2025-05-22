@@ -1,5 +1,6 @@
 ---
 title: Grid
+icon: Grid2x2
 layout: wide
 uniform: "@components/content/GridDecorator.tsx"
 ---

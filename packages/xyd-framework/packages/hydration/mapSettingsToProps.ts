@@ -87,8 +87,10 @@ export async function mapSettingsToProps(
             console.error("Title not found for page", pageName)
         }
 
+        const meta = frontmatters[pageName]
+
         // TODO: better data structures - for example flat array of filtered nav
-        if (slugFrontmatter && (slugFrontmatter === frontmatters[pageName])) {
+        if (slugFrontmatter && (slugFrontmatter === meta)) {
             const nlinks = mapNavToLinks(pageName, currentNav, nav, frontmatters, hiddenPages)
 
             if (nlinks) {
@@ -113,6 +115,8 @@ export async function mapSettingsToProps(
             href: safePageLink(pageName),
             active: false,
             uniqIndex: uniqIndex++,
+            icon: meta?.icon || "",
+            sidebarTitle: meta?.sidebarTitle || ""
         }
     }
 
@@ -267,18 +271,6 @@ function mapNavToLinks(
 
         let prevTitle = prev ? frontmatters[prev]?.title || "" : ""
         let nextTitle = next ? frontmatters[next]?.title || "" : ""
-
-        if (typeof prevTitle !== "string") {
-            if (prevTitle?.title) {
-                prevTitle = prevTitle.title
-            }
-        }
-
-        if (typeof nextTitle !== "string") {
-            if (nextTitle?.title) {
-                nextTitle = nextTitle.title
-            }
-        }
 
         if (typeof prevTitle !== "string") {
             console.error("currently navlink 'prev' must be a string")

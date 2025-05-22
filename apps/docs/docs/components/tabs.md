@@ -1,5 +1,6 @@
 ---
 title: Tabs
+icon: PanelTop
 layout: wide
 uniform: "@components/writer/UnderlineNav/UnderlineNav.tsx"
 ---

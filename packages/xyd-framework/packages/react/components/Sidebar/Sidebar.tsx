@@ -1,17 +1,18 @@
-import React, {} from "react"
+import React, { } from "react"
 
-import {Badge} from "@xyd-js/components/writer"
-import {UISidebar} from "@xyd-js/ui";
+import { UISidebar } from "@xyd-js/ui";
 
-import {useGroup} from "./SidebarGroup";
+import { useGroup } from "./SidebarGroup";
+import { useIconComponent } from "../../contexts";
+import { Icon } from "@xyd-js/components/writer";
 
 // TODO: custom hooks for active onclick handler etc?
 
 export interface FwSidebarGroupProps {
     group: string
-    
+
     groupIndex: number
-    
+
     items: FwSidebarItemProps[]
 }
 
@@ -28,21 +29,25 @@ export function FwSidebarItemGroup(props: FwSidebarGroupProps) {
             itemIndex={index}
             key={index + item.href}
             title={item.title}
+            sidebarTitle={item.sidebarTitle}
             href={item.href}
             items={item.items}
             active={item.active}
+            icon={item.icon}
         />)}
     </>
 }
 
 export interface FwSidebarItemProps {
-    title: string | {
-        code: string
-    }
+    title: string
 
     href: string
 
     uniqIndex: number
+
+    icon?: string
+
+    sidebarTitle?: string
 
     items?: FwSidebarItemProps[]
 
@@ -55,58 +60,14 @@ export interface FwSidebarItemProps {
     // internal
 }
 
-// TODO: move to @xyd-js/components/content
-const components = {
-    Frontmatter: {
-        // TODO: css
-        Title: ({children}) => <div style={{
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
-            gap: "10px",
-        }}>
-            {children}
-        </div>,
-    },
-    Badge: ({children, ...rest}) => <Badge {...rest}>
-        {children}
-    </Badge>
-}
-
-function mdxExport(code: string, components: any) {
-    const scope = {
-        Fragment: React.Fragment,
-        jsxs: React.createElement,
-        jsx: React.createElement,
-        jsxDEV: React.createElement,
-        _jsxs: React.createElement,
-        _jsx: React.createElement,
-        ...components
-    }
-    const fn = new Function(...Object.keys(scope), `return ${code}`)
-    return fn(...Object.values(scope))
-}
-
 function FwSidebarItem(props: FwSidebarItemProps) {
-    const {active} = useGroup()
+    const { active } = useGroup()
     const [isActive, setActive] = active(props)
 
-    let Title: any
-
-    if (typeof props.title === "object" && "code" in props.title) {
-        const code = props.title.code
-
-        Title = () => mdxExport(
-            code.replace("() => ", ""),
-            components
-        )
-    } else {
-        Title = () => props.title
-    }
-
+    const title = props.sidebarTitle || props.title || ""
     const nested = !!props.items?.length
 
-    const handleClick = () => {
+    function handleClick() {
         if (!nested) {
             return
         }
@@ -122,11 +83,14 @@ function FwSidebarItem(props: FwSidebarItemProps) {
             return subItemActive && subItem.href
         })
     })
-    
+
     // An item should only be considered active if it's the final target (has href)
     const isActiveItem = !!(isActive && props.href)
     // Only mark as parent active if it's a parent of an active item with href
     const isParentActive = hasActiveChild
+
+    const IconComponent = useIconComponent() || Icon
+    const icon = <IconComponent name={props.icon || ""} width={16} />
 
     return <UISidebar.Item
         button={nested}
@@ -134,8 +98,9 @@ function FwSidebarItem(props: FwSidebarItemProps) {
         active={isActiveItem}
         isParentActive={isParentActive}
         onClick={handleClick}
+        icon={icon}
     >
-        <Title/>
+        {title}
 
         {
             props.items?.length && <UISidebar.SubTree isOpen={isActive}>

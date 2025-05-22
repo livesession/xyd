@@ -1,5 +1,6 @@
 ---
 title: Changelog
+icon: clock-arrow-up
 ---
 
 # Changelog

@@ -13,13 +13,16 @@ export interface IFramework {
     sidebarGroups: Readonly<FwSidebarGroupProps[]>
     metadata: Readonly<Metadata>
     setMetadata: (metadata: Metadata) => void
+
+    IconComponent: React.ComponentType<{ name: string, width?: number, height?: number }>
 }
 
 const framework: IFramework = {
     settings: {},
     metadata: {},
     sidebarGroups: [],
-    setMetadata: () => { }
+    setMetadata: () => { },
+    IconComponent: () => null
 }
 const FrameworkContext = createContext<IFramework>(framework)
 
@@ -29,21 +32,21 @@ export interface FrameworkProps {
     settings: Settings,
     metadata: Metadata,
     sidebarGroups: FwSidebarGroupProps[],
-    surfaces: Surfaces
+    surfaces: Surfaces,
+    IconComponent: React.ComponentType<{ name: string, width?: number, height?: number }>
 }
 
 export function Framework(props: FrameworkProps) {
     const navigation = useNavigation()
     const [metadata, setMetadata] = useState<Metadata | undefined>(props.metadata)
-
-    const v = {
+    
+    return <FrameworkContext value={{
         settings: Object.freeze({ ...props.settings }),
         sidebarGroups: Object.freeze([...props.sidebarGroups]),
         metadata: Object.freeze({ ...metadata }),
         setMetadata: setMetadata,
-    }
-    
-    return <FrameworkContext value={v}>
+        IconComponent: props.IconComponent
+    }}>
         <SurfaceContext value={{
             surfaces: props.surfaces
         }}>
@@ -99,6 +102,12 @@ export function FrameworkPage(props: FrameworkPageProps) {
     }}>
         {props.children}
     </FrameworkPageContext>
+}
+
+export function useIconComponent() {
+    const ctx = useContext(FrameworkContext)
+
+    return ctx.IconComponent
 }
 
 export function useSidebarGroups() {

@@ -1,5 +1,6 @@
 ---
 title: Introduction
+icon: text
 ---
 
 # Customization Introduction

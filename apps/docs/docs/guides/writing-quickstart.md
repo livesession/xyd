@@ -1,5 +1,6 @@
 ---
 title: Writing quickstart
+icon: letter-text
 ---
 
 # Writing Quickstart

@@ -1,5 +1,6 @@
 ---
 title: Extending the Default Theme
+icon: pencil-ruler
 ---
 
 # Extending the Default Theme

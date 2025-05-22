@@ -1,5 +1,6 @@
 ---
 title: Heading
+icon: Heading1
 layout: wide
 uniform: "@components/writer/Heading/Heading.tsx"
 ---

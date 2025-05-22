@@ -156,12 +156,7 @@ async function getFrontmatter(filePath: string): Promise<Metadata> {
         title = matter.title
     }
     if (reactFrontmatter) {
-        if (typeof reactFrontmatter?.title === "function") {
-            matter.title = {
-                title,
-                code: reactFrontmatter.title.toString()
-            }
-        }
+        console.error("currently react frontmatter is not supported")
     }
 
     return matter

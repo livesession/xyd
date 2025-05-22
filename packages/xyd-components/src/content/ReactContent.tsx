@@ -23,7 +23,7 @@ import {
     UnderlineNav,
     Text,
 
-    Icon,
+    // Icon,
     IconCode,
     IconCustomEvent,
     IconFunnels,
@@ -369,7 +369,7 @@ function $UnderlineNavItemContentComponent(props) {
 // TODO: better system for icons + should work with .md like icon="session-replay" etc.
 export function iconContent() {
     return {
-        Icon,
+        // Icon,
 
         // TODO: remove below and use iconset system
         IconSessionReplay,

@@ -66,6 +66,9 @@ export interface Theme {
     /** The defult level of the table of contents. */
     maxTocDepth?: number
 
+    /** The iconify library */
+    icons?: Icons
+
     /** Hex color codes for your global theme */
     // colors?: Colors TODO: maybe in the future
 
@@ -102,6 +105,26 @@ export interface Logo {
 
     /** Where clicking on the logo links you to */
     href?: string;
+}
+
+
+export interface IconLibrary {
+     /** The iconify library name */
+     name: string
+
+     /** The iconify library version */
+     version?: string
+
+     /** The default iconify icon name */
+     default?: boolean
+
+     /** Merge icons from the library into the default iconify library */
+     noprefix?: boolean
+}
+
+export interface Icons {
+    /** The iconify library */
+    library: string | string[] | IconLibrary | IconLibrary[]
 }
 
 /**
@@ -278,7 +301,7 @@ export interface Header {
  * Anchor configuration
  */
 export interface Anchor {
-    /** The Font Awesome or JSX icon used to feature the anchor */
+    /** The iconify icon name */
     icon?: string
 
     /** The name of the anchor label */
@@ -434,6 +457,7 @@ export interface Integrations {
     search?: IntegrationSearch
 }
 
+// #region IntegrationAnalytics
 /**
  * Analytics configuration
  */
@@ -444,6 +468,7 @@ export interface IntegrationAnalytics {
         trackId: string
     }
 }
+// #endregion IntegrationAnalytics
 
 /**
  * Search configuration

@@ -1,5 +1,6 @@
 ---
 title: Markdown extensions
+icon: logos:markdown
 ---
 
 # Markdown Extensions

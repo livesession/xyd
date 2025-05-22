@@ -1,13 +1,17 @@
 ---
 title: Introduction
+icon: book-open
 og:title: "Og title"
 description: Documentation platform built for developers
 ---
 
-
 # Why `xyd`?
+:::subtitle
+Learn how to use
+:::
 
 Welcome to `xyd`, the documentation platform built for developers who value simplicity and power. We're redefining the documentation experience by making it intuitive, flexible, and enjoyable.
+
 
 ## Features at a Glance
 

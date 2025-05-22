@@ -1,5 +1,6 @@
 ---
 title: Deploy
+icon: container
 ---
 
 # Deploy your `xyd` docs

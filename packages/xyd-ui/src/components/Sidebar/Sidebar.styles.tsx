@@ -40,6 +40,8 @@ export const ItemHost = css`
 
         [part="first-item"] {
             display: flex;
+            align-items: center;
+            gap: 8px;
             width: 100%;
             padding: 6px 12px 6px var(--xyd-sidebar-item-padding-left);
             margin-bottom: 4px;

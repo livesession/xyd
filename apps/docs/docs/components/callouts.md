@@ -1,9 +1,15 @@
 ---
 title: Callouts
+icon: Info
 layout: wide
 uniform: "@components/writer/Callout/Callout.tsx"
 ---
 
+
+### Examples
+:::callout
+Note that you must have an Admin or Owner role to manage webhook settings.
+:::
 
 <<<examples
 ```tsx

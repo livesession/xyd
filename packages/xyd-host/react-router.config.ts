@@ -131,8 +131,6 @@ const prerenderPaths = [
 ];
 const cwd = process.cwd();
 
-console.log("prerenderPaths", prerenderPaths)
-
 export default {
     ssr: false,
     prerender: prerenderPaths,

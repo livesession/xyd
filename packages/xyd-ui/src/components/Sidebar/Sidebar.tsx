@@ -1,5 +1,7 @@
 import React from "react"
-import { Link, useLinkClickHandler } from "react-router"
+import { Link } from "react-router"
+
+import { Icon } from "@xyd-js/components/writer"
 
 import * as cn from "./Sidebar.styles";
 import { UICollapse } from "./Collapse";
@@ -36,9 +38,9 @@ export interface UISidebarItemProps {
     activeTheme?: "secondary";
     isParentActive?: boolean;
     anchor?: boolean;
+    icon?: React.ReactNode;
     onClick?: (v: any) => void
 }
-
 
 
 UISidebar.Item = function SidebarItem({
@@ -49,6 +51,7 @@ UISidebar.Item = function SidebarItem({
     activeTheme,
     isParentActive,
     anchor,
+    icon,
     onClick,
 }: UISidebarItemProps) {
     const [firstChild, ...restChilds] = React.Children.toArray(children)
@@ -74,7 +77,11 @@ UISidebar.Item = function SidebarItem({
                 data-active={active}
                 data-anchor={anchor ? String(anchor) : undefined}
             >
-                {firstChild}
+                <>
+                    {icon}
+
+                    {firstChild}
+                </>
             </div>
         </ButtonOrAnchor>
         {restChilds}
