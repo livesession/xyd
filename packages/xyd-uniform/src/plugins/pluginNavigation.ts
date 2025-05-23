@@ -2,8 +2,8 @@ import path from 'node:path';
 
 import type { Sidebar, Metadata, MetadataMap, Settings, PageURL } from "@xyd-js/core";
 
-import type { UniformPluginArgs, UniformPlugin } from "./index";
-import { CodeBlockTab, Example, ExampleGroup, Reference } from "./types";
+import type { UniformPluginArgs, UniformPlugin } from "../index";
+import { CodeBlockTab, Example, ExampleGroup, Reference } from "../types";
 
 const DEFAULT_VIRTUAL_FOLDER = ".xyd/.cache/.content" // TODO: share this + .xyd/.build/.content for build
 
@@ -21,10 +21,15 @@ export interface pluginNavigationOptions {
     defaultGroup?: string
 }
 
+type pluginNavigationOutput = {
+    pageFrontMatter: MetadataMap;
+    sidebar: Sidebar[];
+}
+
 export function pluginNavigation(
     settings: Settings,
     options: pluginNavigationOptions
-): UniformPlugin<{ pageFrontMatter: MetadataMap; sidebar: Sidebar[] }> {
+): UniformPlugin<pluginNavigationOutput> {
     if (!options.urlPrefix) {
         throw new Error("urlPrefix is required")
     }
@@ -121,6 +126,7 @@ function convertGroupMapsToSidebar(settings: Settings, groupMaps: GroupMap): Sid
     return nav
 }
 
+// TODO: in the future xyd settings must be removed cuz uniform will be part of opendocs
 // example usage:
 // const response = uniform([/* references */], {
 //     plugins: [pluginNavigation({}, {

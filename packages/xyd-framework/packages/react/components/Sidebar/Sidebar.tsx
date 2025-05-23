@@ -14,6 +14,8 @@ export interface FwSidebarGroupProps {
     groupIndex: number
 
     items: FwSidebarItemProps[]
+
+    icon?: string
 }
 
 export function FwSidebarItemGroup(props: FwSidebarGroupProps) {

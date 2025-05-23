@@ -3,6 +3,6 @@ title: SDK quickstart
 icon: baseline
 ---
 
-# SDK quickstart
+# SDK quickstart {label="Coming soon"}
 
 

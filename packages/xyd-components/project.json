@@ -1,0 +1,677 @@
+{
+  "schemaVersion": "2.0",
+  "id": 11481,
+  "name": "@xyd-js/components",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 11482,
+      "name": "GuideCardProps",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Props for the GuideCard component"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 11483,
+          "name": "as",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Additional props to pass to the link element"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "GuideCard.tsx",
+              "line": 31,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L31"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ElementType"
+            },
+            "typeArguments": [
+              {
+                "type": "intrinsic",
+                "name": "any"
+              },
+              {
+                "type": "unknown",
+                "name": "keyof IntrinsicElements"
+              }
+            ],
+            "name": "ElementType",
+            "package": "@types/react",
+            "qualifiedName": "React.ElementType"
+          }
+        },
+        {
+          "id": 11484,
+          "name": "children",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Content to be displayed in the card body"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "GuideCard.tsx",
+              "line": 10,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L10"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ReactNode"
+            },
+            "name": "ReactNode",
+            "package": "@types/react",
+            "qualifiedName": "React.ReactNode"
+          }
+        },
+        {
+          "id": 11485,
+          "name": "className",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Additional CSS class names to apply to the card"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "GuideCard.tsx",
+              "line": 28,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L28"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 11486,
+          "name": "href",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "URL the card links to"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "GuideCard.tsx",
+              "line": 13,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L13"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 11487,
+          "name": "icon",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Optional icon displayed to the left of the content"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "GuideCard.tsx",
+              "line": 19,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L19"
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.ReactNode"
+            },
+            "name": "ReactNode",
+            "package": "@types/react",
+            "qualifiedName": "React.ReactNode"
+          }
+        },
+        {
+          "id": 11488,
+          "name": "kind",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Visual style variant of the card"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "GuideCard.tsx",
+              "line": 22,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L22"
+            }
+          ],
+          "type": {
+            "type": "literal",
+            "value": "secondary"
+          }
+        },
+        {
+          "id": 11489,
+          "name": "size",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {
+            "isOptional": true
+          },
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Size variant of the card"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "GuideCard.tsx",
+              "line": 25,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L25"
+            }
+          ],
+          "type": {
+            "type": "union",
+            "types": [
+              {
+                "type": "literal",
+                "value": "sm"
+              },
+              {
+                "type": "literal",
+                "value": "md"
+              }
+            ]
+          }
+        },
+        {
+          "id": 11490,
+          "name": "title",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Title displayed at the top of the card"
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "GuideCard.tsx",
+              "line": 16,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L16"
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            11483,
+            11484,
+            11485,
+            11486,
+            11487,
+            11488,
+            11489,
+            11490
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "GuideCard.tsx",
+          "line": 8,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L8"
+        }
+      ]
+    },
+    {
+      "id": 11491,
+      "name": "GuideCard",
+      "variant": "declaration",
+      "kind": 64,
+      "flags": {},
+      "children": [
+        {
+          "id": 11492,
+          "name": "List",
+          "variant": "declaration",
+          "kind": 2048,
+          "flags": {},
+          "sources": [
+            {
+              "fileName": "GuideCard.tsx",
+              "line": 82,
+              "character": 10,
+              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L82"
+            }
+          ],
+          "signatures": [
+            {
+              "id": 11493,
+              "name": "List",
+              "variant": "signature",
+              "kind": 4096,
+              "flags": {},
+              "comment": {
+                "summary": [
+                  {
+                    "kind": "text",
+                    "text": "A container component for grouping multiple GuideCard components.\nProvides consistent spacing and layout for a list of guide cards."
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "fileName": "GuideCard.tsx",
+                  "line": 82,
+                  "character": 26,
+                  "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L82"
+                }
+              ],
+              "parameters": [
+                {
+                  "id": 11494,
+                  "name": "__namedParameters",
+                  "variant": "param",
+                  "kind": 32768,
+                  "flags": {},
+                  "type": {
+                    "type": "reflection",
+                    "declaration": {
+                      "id": 11495,
+                      "name": "__type",
+                      "variant": "declaration",
+                      "kind": 65536,
+                      "flags": {},
+                      "children": [
+                        {
+                          "id": 11496,
+                          "name": "children",
+                          "variant": "declaration",
+                          "kind": 1024,
+                          "flags": {},
+                          "sources": [
+                            {
+                              "fileName": "GuideCard.tsx",
+                              "line": 82,
+                              "character": 56,
+                              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L82"
+                            }
+                          ],
+                          "type": {
+                            "type": "reference",
+                            "target": {
+                              "packageName": "@types/react",
+                              "packagePath": "index.d.ts",
+                              "qualifiedName": "React.ReactNode"
+                            },
+                            "name": "ReactNode",
+                            "package": "@types/react",
+                            "qualifiedName": "React.ReactNode"
+                          }
+                        }
+                      ],
+                      "groups": [
+                        {
+                          "title": "Properties",
+                          "children": [
+                            11496
+                          ]
+                        }
+                      ],
+                      "sources": [
+                        {
+                          "fileName": "GuideCard.tsx",
+                          "line": 82,
+                          "character": 54,
+                          "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L82"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ],
+              "type": {
+                "type": "reference",
+                "target": {
+                  "packageName": "@types/react",
+                  "packagePath": "index.d.ts",
+                  "qualifiedName": "React.JSX.Element"
+                },
+                "name": "Element",
+                "package": "@types/react",
+                "qualifiedName": "React.JSX.Element"
+              }
+            }
+          ]
+        }
+      ],
+      "groups": [
+        {
+          "title": "Methods",
+          "children": [
+            11492
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "GuideCard.tsx",
+          "line": 40,
+          "character": 16,
+          "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L40"
+        },
+        {
+          "fileName": "GuideCard.tsx",
+          "line": 82,
+          "character": 0,
+          "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L82"
+        }
+      ],
+      "signatures": [
+        {
+          "id": 11497,
+          "name": "GuideCard",
+          "variant": "signature",
+          "kind": 4096,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "A card component that displays content with a title and optional icon.\nThe entire card is clickable and links to the specified URL."
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@category",
+                "content": [
+                  {
+                    "kind": "text",
+                    "text": "Component"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "GuideCard.tsx",
+              "line": 40,
+              "character": 16,
+              "url": "https://github.com/livesession/xyd/blob/ca7cb367f8c45ce1390c8da13db8ad4e33525af7/packages/xyd-components/src/writer/GuideCard/GuideCard.tsx#L40"
+            }
+          ],
+          "parameters": [
+            {
+              "id": 11498,
+              "name": "__namedParameters",
+              "variant": "param",
+              "kind": 32768,
+              "flags": {},
+              "type": {
+                "type": "reference",
+                "target": 11482,
+                "name": "GuideCardProps",
+                "package": "@xyd-js/components"
+              }
+            }
+          ],
+          "type": {
+            "type": "reference",
+            "target": {
+              "packageName": "@types/react",
+              "packagePath": "index.d.ts",
+              "qualifiedName": "React.JSX.Element"
+            },
+            "name": "Element",
+            "package": "@types/react",
+            "qualifiedName": "React.JSX.Element"
+          }
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "title": "Interfaces",
+      "children": [
+        11482
+      ]
+    },
+    {
+      "title": "Functions",
+      "children": [
+        11491
+      ]
+    }
+  ],
+  "categories": [
+    {
+      "title": "Component",
+      "children": [
+        11491
+      ]
+    },
+    {
+      "title": "Other",
+      "children": [
+        11482
+      ]
+    }
+  ],
+  "packageName": "@xyd-js/project",
+  "packageVersion": "0.1.0-xyd.11",
+  "readme": [
+    {
+      "kind": "text",
+      "text": "# xyd\n\nxyd is a framework for building ambitious docs easier for everyone.\n\n- **Developer Experience** - designed to be easy to use, with a focus on developer experience. Just put content files and xyd will do the rest.\n\n- **Customization** - customize every part of your documentation. From the layout, to the colors, to the custom logic.\n\n- **Built-in Standards** - content management, components, integrations and much more are built-in with a seamless API you can access.\n\n- **Ecosystem** - a living ecosystem of content, tools, and integrations that work together seamlessly.\n\n## Installation\nUse the initialization CLI to create your docs:\n"
+    },
+    {
+      "kind": "code",
+      "text": "```bash\nnpm i @xyd-js/cli\n```"
+    },
+    {
+      "kind": "text",
+      "text": "\n\n## Contributing\n### [Development]("
+    },
+    {
+      "kind": "relative-link",
+      "text": "./DEVELOPMENT.md",
+      "target": 2
+    },
+    {
+      "kind": "text",
+      "text": ")\nDevelopment guide with setup instructions, available scripts, and contribution guidelines.\n\n## Resources\n### [Storybook](https://sb.xyd.dev)\nCollection of built-in components.\n\n## License\nxyd is a MIT license."
+    }
+  ],
+  "symbolIdMap": {
+    "11481": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": ""
+    },
+    "11482": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCardProps"
+    },
+    "11483": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCardProps.as"
+    },
+    "11484": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCardProps.children"
+    },
+    "11485": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCardProps.className"
+    },
+    "11486": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCardProps.href"
+    },
+    "11487": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCardProps.icon"
+    },
+    "11488": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCardProps.kind"
+    },
+    "11489": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCardProps.size"
+    },
+    "11490": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCardProps.title"
+    },
+    "11491": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCard"
+    },
+    "11492": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCard.List"
+    },
+    "11493": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCard.List"
+    },
+    "11494": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "__0"
+    },
+    "11495": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "__type"
+    },
+    "11496": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "__type.children"
+    },
+    "11497": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "GuideCard"
+    },
+    "11498": {
+      "packageName": "@xyd-js/components",
+      "packagePath": "src/writer/GuideCard/GuideCard.tsx",
+      "qualifiedName": "__0"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "src/writer/GuideCard/GuideCard.tsx",
+      "2": "../../DEVELOPMENT.md"
+    },
+    "reflections": {
+      "1": 11481
+    }
+  }
+}

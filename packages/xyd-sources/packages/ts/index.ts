@@ -2,53 +2,14 @@ import path from 'node:path';
 import fs from 'node:fs';
 
 import * as TypeDoc from 'typedoc';
-import type { TypeDocOptions } from "typedoc";
+import type {NormalizedPath, TypeDocOptions} from "typedoc";
 
 import type { Reference, ReferenceContext } from "@xyd-js/uniform";
 import {
     typedocToUniform
 } from "./TypeDocTransformer"
 
-
 // TODO: SUPPORT GET FROM URL + VIRTUAL FS (OR NO FS JUST SET NEEDED OPTIONS VIA CODE)
-export async function sourcesToUniform(
-    root: string,
-    entryPoints: string[]
-): Promise<Reference<ReferenceContext>[] | undefined> {
-    // TODO: support another strategies
-    // TODO: support entry points from github?
-    const options = {
-        entryPoints,
-        entryPointStrategy: TypeDoc.EntryPointStrategy.Packages,
-    } satisfies Partial<TypeDocOptions>;
-
-    const app = await TypeDoc.Application.bootstrapWithPlugins(options);
-    const project = await app.convert()
-    if (!project) {
-        console.error('Failed to generate documentation.');
-        return
-    }
-
-    const jsonOutput = await app.serializer.projectToObject(project, root);
-    const projectJson = jsonOutput as unknown as TypeDoc.JSONOutput.ProjectReflection;
-
-    // TODO: do better validation
-    if (!projectJson.schemaVersion || !projectJson.children || !projectJson.children.length) {
-        console.error('Failed to generate documentation.');
-        return
-    }
-
-    fs.writeFileSync(path.join(root, "project.json"), JSON.stringify(projectJson, null, 2));
-
-    const ref = typedocToUniform(root, projectJson)
-    if (!ref) {
-        console.error('Failed to generate documentation.');
-        return
-    }
-
-    return ref
-}
-
 // TODO: in the future typedoc options?
 export async function sourcesToUniformV2(
     root: string,
@@ -59,8 +20,9 @@ export async function sourcesToUniformV2(
 } | undefined> {
     // TODO: support another strategies
     // TODO: support entry points from github?
-    const options: Partial<TypeDocOptions> = {
-        entryPoints: entryPoints?.map(ep => path.resolve(root, ep)),
+    const commonOptions: Partial<TypeDocOptions> = {
+        // entryPoints,
+        // entryPointStrategy: TypeDoc.EntryPointStrategy.Packages,
         exclude: ["**/*.test.ts", "**/*.test.tsx"],
         // @ts-ignore // TODO: for some reason on build types mismatch
         excludePrivate: true,
@@ -74,20 +36,36 @@ export async function sourcesToUniformV2(
         hideGenerator: true,
         // @ts-ignore
         skipErrorChecking: true,
+
+        // @ts-ignore
+        sort: ['source-order'], 
+        // @ts-ignore
+        sortEntryPoints: false
+    }
+    const options = {
+        ...commonOptions,
     }
     const everySingleFile = entryPoints?.every(ep => !!path.extname(ep))
-    if (!everySingleFile) {
+    
+    if (everySingleFile) {
+        options.entryPoints = entryPoints?.map(ep => path.resolve(root, ep))
+    } else {
         options.entryPointStrategy = TypeDoc.EntryPointStrategy.Packages
+        options.entryPoints = entryPoints
+        options.packageOptions = {
+            ...commonOptions,
+        }
     }
 
-    const app = await TypeDoc.Application.bootstrapWithPlugins(options, []);
+    // TOOD: if react will not work then add []
+    const app = await TypeDoc.Application.bootstrapWithPlugins(options);
     const project = await app.convert()
     if (!project) {
         console.error('Failed to generate documentation.');
         return
     }
 
-    const jsonOutput = await app.serializer.projectToObject(project, root);
+    const jsonOutput = await app.serializer.projectToObject(project, root as NormalizedPath);
     const projectJson = jsonOutput as unknown as TypeDoc.JSONOutput.ProjectReflection;
 
     // TODO: do better validation

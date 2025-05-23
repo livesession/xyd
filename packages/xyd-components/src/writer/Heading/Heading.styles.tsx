@@ -7,7 +7,7 @@ export const HeadingHost = css`
         font-weight: var(--xyd-font-weight-semibold);
 
         position: relative;
-        display: inline-block;
+        display: table;
         margin: 0;
         padding: 0 24px 0 0;
         scroll-margin-top: 30px;
@@ -15,6 +15,15 @@ export const HeadingHost = css`
 
         &[id] {
             cursor: pointer;
+        }
+        &[data-noanchor="true"] {
+            cursor: default;
+        }
+
+        &[data-has-label="true"] {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         &:hover {

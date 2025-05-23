@@ -26,9 +26,7 @@ export default {
                 }
             }
             
-            h1 {
-                display: table;
-                
+            h1 {                
                 xyd-badge {
                     font-size: var(--xyd-font-size-xsmall);
                     line-height: var(--xyd-line-height-xsmall);
@@ -37,7 +35,6 @@ export default {
             }
             h2,h3,h4,h5,h6 {
                 margin-top: var(--space-xxlarge);
-                display: table;
                 &[data-kind="muted"] {
                     display: block;
                 }

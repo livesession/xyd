@@ -1,6 +1,6 @@
 ---
 title: Details
-icon: ChevronDown
+icon: chevron-down
 layout: wide
 uniform: "@components/writer/Details/Details.tsx"
 ---

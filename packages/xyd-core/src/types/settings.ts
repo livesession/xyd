@@ -66,6 +66,9 @@ export interface Theme {
     /** The defult level of the table of contents. */
     maxTocDepth?: number
 
+    /** Head configuration */
+    head?: HeadConfig[]
+
     /** The iconify library */
     icons?: Icons
 
@@ -84,6 +87,15 @@ export interface Theme {
     // search?: SearchType TODO: maybe in the future
 }
 // #endregion Theme
+
+/**
+ * Configuration type for head elements that can be added to the HTML head.
+ * Format: [tagName, attributes]
+ *
+ * @example: ['script', { src: 'https://example.com/script.js', defer: true }]
+ */
+type HeadConfig =
+    | [string, Record<string, string | boolean>]
 
 /**
  * Markdown configuration interface
@@ -193,7 +205,10 @@ export interface Navigation {
     /** Array of headers */
     header?: Header[]
 
-    /** 
+    /** Array of sub headers */
+    subheader?: SubHeader[]
+
+    /**
      * Array of version names. Only use this if you want to show different versions of docs 
      * with a dropdown in the navigation bar.
      */
@@ -226,6 +241,11 @@ export interface Sidebar {
      * Note: groups are recursive, so to add a sub-folder add another group object in the page array.
      */
     pages?: PageURL[]
+
+    /**
+     * The icon of the group.
+     */
+    icon?: string
 
     /**
      * The sort order of the group.
@@ -286,15 +306,15 @@ export interface SubHeader {
 /**
  * Header configuration
  */
-export interface Header {
+export type Header = {
     /** The name of the button */
     name?: string
 
-    /** The url once you click on the button. Example: https://mintlify.com/contact */
+    /** The url once you click on the button */
     url?: string
 
-    /** Sub-header configuration */
-    sub?: SubHeader
+    /** Float the header to the right */
+    float?: "right"
 }
 
 /**
@@ -319,7 +339,7 @@ export interface Anchor {
  */
 export interface AnchorRoot {
     /** Bottom anchors */
-    bottom: Anchor[]
+    bottom?: Anchor[]
 }
 
 // ------ END  setting for structure END ------
@@ -559,8 +579,15 @@ export interface Redirects {
  * SEO configuration
  */
 export interface SEO {
-    /** Whether to index hidden pages */
-    indexHiddenPages: boolean
+    /**
+     * Domain name
+     */
+    domain?: string
+
+    /**
+     * Meta tags
+     */
+    metatags: {[tag: string]: string} // TODO: in the future type-safe
 }
 
 // ------ END  setting for redirects END ------

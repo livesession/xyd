@@ -1,6 +1,7 @@
 import React, { } from "react"
 
 import * as cn from "./Heading.styles";
+import { Badge } from "writer";
 
 /**
  * Props for the Heading component
@@ -30,7 +31,13 @@ export interface HeadingProps {
 
     /** Optional active state */
     active?: boolean
-    
+
+    /** Optional label for the heading */
+    label?: string
+
+    /** Optional to hide the anchor icon */
+    noanchor?: boolean
+
     /** Optional ref for the heading element */
     ref?: React.RefObject<HTMLHeadingElement>
 }
@@ -49,7 +56,9 @@ export function Heading({
     className,
     kind,
     active,
-    ref
+    label,
+    noanchor,
+    ref,
 }: HeadingProps) {
     let HeadingComponent = as ? as : `h${size}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 
@@ -57,14 +66,18 @@ export function Heading({
         className={` ${cn.HeadingHost}  ${className || ''}`}
         data-size={size}
         data-kind={kind}
+        data-has-label={String(label ? "true" : "false")}
+        data-noanchor={String(noanchor || "false")}
         data-active={String(active || "false")}
-        onClick={onClick}
+        onClick={noanchor ? undefined : onClick}
         id={id}
         ref={ref}
     >
         {children}
+        
+        {label && <Badge size="sm">{label}</Badge>}
 
-        {id && <$Anchor />}
+        {id && !noanchor && <$Anchor />}
     </HeadingComponent>
 }
 

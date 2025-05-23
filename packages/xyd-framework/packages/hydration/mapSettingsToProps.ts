@@ -58,6 +58,7 @@ export async function mapSettingsToProps(
                 href: "",
                 active: false,
                 uniqIndex: uniqIndex++,
+                icon: page.icon,
                 items,
             }
         }
@@ -140,8 +141,7 @@ export async function mapSettingsToProps(
             } as FwSidebarGroupProps
         }) || []
 
-
-        return {
+    return {
         groups,
         breadcrumbs,
         navlinks,

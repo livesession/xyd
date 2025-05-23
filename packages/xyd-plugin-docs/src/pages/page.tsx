@@ -16,6 +16,7 @@ import virtualSettings from "virtual:xyd-settings";
 // @ts-ignore
 const { settings } = virtualSettings
 import { PageContext } from "./context";
+import { SUPPORTED_META_TAGS } from "./metatags";
 
 const mdPlugins = markdownPlugins({
     maxDepth: settings?.theme?.maxTocDepth || 2,
@@ -157,7 +158,7 @@ export async function loader({ request }: { request: any }) {
     } as loaderData
 }
 
-interface MetaProps {
+interface MetaTag {
     title?: string
 
     name?: string
@@ -167,18 +168,14 @@ interface MetaProps {
     content?: string
 }
 
-// TODO: better SEO
+// TODO: better SEO (use https://github.com/unjs/unhead?)
 export function meta(props: any) {
     const {
         title = "",
         description = "",
-
-        ["og:title"]: ogTitle = "",
-        ["og:description"]: ogDescription = "",
-        ["og:image"]: ogImage = "",
     } = props?.data?.metadata || {}
 
-    const meta: MetaProps[] = [
+    const metaTags: MetaTag[] = [
         { title: title },
         {
             name: "description",
@@ -186,28 +183,45 @@ export function meta(props: any) {
         },
     ]
 
-    {
-        if (ogTitle) {
-            meta.push({
-                property: "og:title",
-                content: ogTitle,
-            })
+    const metaTagsMap: {[key: string]: MetaTag} = {}
+
+    for (const key in settings?.seo?.metatags) {
+        const metaType = SUPPORTED_META_TAGS[key]
+        if (!metaType) {
+            continue
         }
-        if (ogDescription) {
-            meta.push({
-                property: "og:description",
-                content: ogDescription,
-            })
-        }
-        if (ogImage) {
-            meta.push({
-                property: "og:image",
-                content: ogImage,
-            })
+        
+        metaTagsMap[key] = {
+            [metaType]: key,
+            content: settings?.seo?.metatags[key],
         }
     }
 
-    return meta
+    // TOOD: filter?
+    for (const key in props?.data?.metadata) {
+        const metaType = SUPPORTED_META_TAGS[key]
+        if (!metaType) {
+            continue
+        }
+
+        metaTagsMap[key] = {
+            [metaType]: key,
+            content: props?.data?.metadata[key],
+        }
+    }
+
+    if (props?.data?.metadata?.noindex) {
+        metaTagsMap["robots"] = {
+            name: "robots",
+            content: "noindex",
+        }
+    }
+
+    for (const key in metaTagsMap) {
+        metaTags.push(metaTagsMap[key])
+    }
+
+    return metaTags
 }
 
 function findFirstUrl(items: any = []): string {

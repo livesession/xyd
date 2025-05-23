@@ -2,7 +2,8 @@ import { visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
 
 import { Settings } from '@xyd-js/core'
-;
+import uniform, { pluginJsonView } from "@xyd-js/uniform"
+
 import { FunctionName } from "./types";
 import {
     FunctionOptions,
@@ -41,7 +42,12 @@ export function mdFunctionUniform(settings?: Settings) {
                         if (references) {
                             node.type = 'code';
                             node.lang = 'json';
-                            node.value = JSON.stringify(references, null, 2);
+                            const jsonViewRefs = uniform(references, {
+                                plugins: [pluginJsonView()]
+                            })
+
+                            // TODO: support multiple json views
+                            node.value = jsonViewRefs.out.jsonViews[0]
                             node.children = undefined;
                         }
                     } catch (error) {

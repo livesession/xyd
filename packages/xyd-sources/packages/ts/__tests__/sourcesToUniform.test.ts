@@ -40,7 +40,7 @@ export class TestClass {
         // it('should return a reference to the test class', async () => {
         //     const basePath = path.resolve(fixturesBasePath, "packages2")
 
-        //     const references = await sourcesToUniform(basePath,
+        //     const references = await sourcesToUniformV2(basePath,
         //         [
         //             path.resolve(basePath, "package-a"),
         //             // path.resolve(basePath, "package-b"),
@@ -53,6 +53,7 @@ export class TestClass {
         // });
 
         it('should return a reference to react component', async () => {
+            return
             const packagePath = path.resolve(fixturesBasePath, "react/react-a")
 
             const resp = await sourcesToUniformV2(packagePath,
@@ -75,6 +76,20 @@ export class TestClass {
             // Save references to a file for inspection
             console.log(`References saved to: ${outputFilePath}`);
             console.log(`React Uniform saved to: ${outputFilePathReact}`);
+        });
+
+
+        it('should return a reference to react component', async () => {
+            const packagePath = path.resolve(fixturesBasePath, "packages3")
+
+            const resp = await sourcesToUniformV2(packagePath,
+                [
+                    path.join(packagePath, "package-a"),
+                ]
+            );
+
+            fs.writeFileSync(outputFilePath, JSON.stringify(resp?.references, null, 2));
+            fs.writeFileSync(outputFilePathProject, JSON.stringify(resp?.projectJson, null, 2));
         });
     });
 

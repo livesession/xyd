@@ -13,37 +13,36 @@ Automatically send data about your documentation engagement to your third party 
 :::grid
 - 
   - 
-    :::guide-card{kind="secondary" title="LiveSession" icon="<IconCode/>" href="/guides/customization-introduction"}
-    Explore how to customize and extend XYD to match your needs.
-    :::
-    
-  - 
-    :::guide-card{kind="secondary" title="LiveSession" icon="<IconCode/>" href="/guides/customization-introduction"}
-    Explore how to customize and extend XYD to match your needs.
+    :::guide-card{kind="secondary" title="LiveSession" icon="<IconCode/>" href="/docs/guides/integrations/analytics/livesession"}
+    Learn how to add send analytics events to LiveSession
     :::
 
-- 
-  - 
-    :::guide-card{kind="secondary" title="LiveSession" icon="<IconCode/>" href="/guides/customization-introduction"}
-    Explore how to customize and extend XYD to match your needs.
-    :::
-    
-  - 
-    :::guide-card{kind="secondary" title="LiveSession" icon="<IconCode/>" href="/guides/customization-introduction"}
-    Explore how to customize and extend XYD to match your needs.
-    :::
 :::
 
 
 ## Enable analytics
-Set your analytics keys in `xyd.json`. You can add an unlimited number of analytics integrations for free.
+Set your analytics keys in `xyd.json` under the `integrations.analytics` section. 
+The syntax for `xyd.json` is below.
 
-The syntax for `xyd.json` is below. You only need to include entries for the platforms you want to connect.
+You only need to include entries for the platforms you want to connect:
 
-
-@uniform "@core/types/settings.ts#IntegrationAnalytics"
-
-<!-- :::atlas{kind="secondary" references="@uniform('@core/types/settings.ts#IntegrationAnalytics')"}
-::: -->
+```json xyd.json
+{
+    "integrations": {
+        "analytics": {
+            "livesession": {
+                "trackId": "required"
+            }
+        }
+    }
+}
+```
 
 ## Supported events
+* `CodeExampleChange`
+
+*  `CodeTabChange`
+
+*  `CodeCopy`
+
+*  `CopyPage`

@@ -1,6 +1,6 @@
 ---
 title: Guide Card
-icon: SquareMousePointer
+icon: square-mouse-pointer
 layout: wide
 uniform: "@components/writer/GuideCard/GuideCard.tsx"
 ---

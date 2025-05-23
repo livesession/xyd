@@ -142,6 +142,9 @@
     --xyd-codetabs-color--hover: var(--dark32);
 
     /* Badge */
+    --xyd-badge-color--default: var(--xyd-text-color);
+    --xyd-badge-bgcolor--default: var(--dark32);
+
     --xyd-badge-color--warning: var(--xyd-page-body-color);
     --xyd-badge-bgcolor--warning: var(--yellow80);
     --xyd-badge-color--info: var(--color-bg);

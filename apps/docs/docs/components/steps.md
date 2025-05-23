@@ -1,6 +1,6 @@
 ---
 title: Steps
-icon: ListChecks
+icon: list-checks
 layout: wide
 uniform: "@components/writer/Steps/Steps.tsx"
 ---

@@ -125,7 +125,7 @@ export function stdContent(
 
     return {
         h1: (props) => {
-            return <$$Heading depth={1} {...props} />
+            return <$$Heading depth={1} {...props} noanchor />
         },
         h2: props => {
             return <$$Heading depth={2} {...props} />
@@ -203,9 +203,11 @@ interface HeadingContentProps {
     id: string
     depth: 1 | 2 | 3 | 4 | 5 | 6
     children: React.ReactNode
+    label?: string
+    noanchor?: boolean
 }
 
-function $Heading({ id, depth, children }: HeadingContentProps) {
+function $Heading({ id, depth, children, label, noanchor }: HeadingContentProps) {
     // const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
     // const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
     const navigation = this?.options?.useNavigation() // TODO: !!!! BETTER API !!!!!
@@ -233,18 +235,26 @@ function $Heading({ id, depth, children }: HeadingContentProps) {
         }
     }, [])
 
-    return <Heading ref={ref} id={id} size={depth} active={active} onClick={() => {
-        // navigate({
-        //     hash: id
-        // })
+    return <Heading
+        ref={ref}
+        id={id}
+        size={depth}
+        active={active}
+        onClick={() => {
+            // navigate({
+            //     hash: id
+            // })
 
-        // TODO: !!! in the future we should use react-router but some issues with the hash !!!
-        const url = new URL(window.location.href)
-        url.hash = id
-        history.replaceState(null, '', url)
+            // TODO: !!! in the future we should use react-router but some issues with the hash !!!
+            const url = new URL(window.location.href)
+            url.hash = id
+            history.replaceState(null, '', url)
 
-        document.querySelector(`#${id}`)?.scrollIntoView()
-    }}>
+            document.querySelector(`#${id}`)?.scrollIntoView()
+        }}
+        label={label}
+        noanchor={noanchor}
+    >
         {children}
     </Heading>
 }

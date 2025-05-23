@@ -1,14 +1,14 @@
 {
   "schemaVersion": "2.0",
-  "id": 0,
-  "name": "@xyd-sources-examples/react",
+  "id": 87,
+  "name": "@xyd-sources-examples/package-a",
   "variant": "project",
   "kind": 1,
   "flags": {},
   "children": [
     {
-      "id": 9,
-      "name": "GuideCardProps",
+      "id": 88,
+      "name": "MetaTags",
       "variant": "declaration",
       "kind": 256,
       "flags": {},
@@ -16,49 +16,14 @@
         "summary": [
           {
             "kind": "text",
-            "text": "Props for the GuideCard component"
+            "text": "Interface representing all possible meta tags that can be used in HTML documents.\nThis includes standard meta tags, Open Graph tags, Twitter cards, and various other\nspecialized meta tags for different content types."
           }
         ]
       },
       "children": [
         {
-          "id": 17,
-          "name": "as",
-          "variant": "declaration",
-          "kind": 1024,
-          "flags": {
-            "isOptional": true
-          },
-          "comment": {
-            "summary": [
-              {
-                "kind": "text",
-                "text": "Additional props to pass to the link element"
-              }
-            ]
-          },
-          "sources": [
-            {
-              "fileName": "TestAbc.tsx",
-              "line": 27,
-              "character": 4
-            }
-          ],
-          "type": {
-            "type": "reference",
-            "target": {
-              "packageName": "@types/react",
-              "packagePath": "index.d.ts",
-              "qualifiedName": "React.ElementType"
-            },
-            "name": "ElementType",
-            "package": "@types/react",
-            "qualifiedName": "React.ElementType"
-          }
-        },
-        {
-          "id": 10,
-          "name": "children",
+          "id": 89,
+          "name": "robots",
           "variant": "declaration",
           "kind": 1024,
           "flags": {},
@@ -66,186 +31,45 @@
             "summary": [
               {
                 "kind": "text",
-                "text": "Content to be displayed in the card body"
+                "text": "Standard meta tag for controlling search engine crawling and indexing"
               }
-            ]
-          },
-          "sources": [
-            {
-              "fileName": "TestAbc.tsx",
-              "line": 6,
-              "character": 4
-            }
-          ],
-          "type": {
-            "type": "reference",
-            "target": {
-              "packageName": "@types/react",
-              "packagePath": "index.d.ts",
-              "qualifiedName": "React.ReactNode"
-            },
-            "name": "ReactNode",
-            "package": "@types/react",
-            "qualifiedName": "React.ReactNode"
-          }
-        },
-        {
-          "id": 16,
-          "name": "className",
-          "variant": "declaration",
-          "kind": 1024,
-          "flags": {
-            "isOptional": true
-          },
-          "comment": {
-            "summary": [
+            ],
+            "blockTags": [
               {
-                "kind": "text",
-                "text": "Additional CSS class names to apply to the card"
-              }
-            ]
-          },
-          "sources": [
-            {
-              "fileName": "TestAbc.tsx",
-              "line": 24,
-              "character": 4
-            }
-          ],
-          "type": {
-            "type": "intrinsic",
-            "name": "string"
-          }
-        },
-        {
-          "id": 11,
-          "name": "href",
-          "variant": "declaration",
-          "kind": 1024,
-          "flags": {},
-          "comment": {
-            "summary": [
-              {
-                "kind": "text",
-                "text": "URL the card links to"
-              }
-            ]
-          },
-          "sources": [
-            {
-              "fileName": "TestAbc.tsx",
-              "line": 9,
-              "character": 4
-            }
-          ],
-          "type": {
-            "type": "intrinsic",
-            "name": "string"
-          }
-        },
-        {
-          "id": 13,
-          "name": "icon",
-          "variant": "declaration",
-          "kind": 1024,
-          "flags": {
-            "isOptional": true
-          },
-          "comment": {
-            "summary": [
-              {
-                "kind": "text",
-                "text": "Optional icon displayed to the left of the content"
-              }
-            ]
-          },
-          "sources": [
-            {
-              "fileName": "TestAbc.tsx",
-              "line": 15,
-              "character": 4
-            }
-          ],
-          "type": {
-            "type": "reference",
-            "target": {
-              "packageName": "@types/react",
-              "packagePath": "index.d.ts",
-              "qualifiedName": "React.ReactNode"
-            },
-            "name": "ReactNode",
-            "package": "@types/react",
-            "qualifiedName": "React.ReactNode"
-          }
-        },
-        {
-          "id": 14,
-          "name": "kind",
-          "variant": "declaration",
-          "kind": 1024,
-          "flags": {
-            "isOptional": true
-          },
-          "comment": {
-            "summary": [
-              {
-                "kind": "text",
-                "text": "Visual style variant of the card"
-              }
-            ]
-          },
-          "sources": [
-            {
-              "fileName": "TestAbc.tsx",
-              "line": 18,
-              "character": 4
-            }
-          ],
-          "type": {
-            "type": "literal",
-            "value": "secondary"
-          }
-        },
-        {
-          "id": 15,
-          "name": "size",
-          "variant": "declaration",
-          "kind": 1024,
-          "flags": {
-            "isOptional": true
-          },
-          "comment": {
-            "summary": [
-              {
-                "kind": "text",
-                "text": "Size variant of the card"
-              }
-            ]
-          },
-          "sources": [
-            {
-              "fileName": "TestAbc.tsx",
-              "line": 21,
-              "character": 4
-            }
-          ],
-          "type": {
-            "type": "union",
-            "types": [
-              {
-                "type": "literal",
-                "value": "sm"
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"index, follow\"\n```"
+                  }
+                ]
               },
               {
-                "type": "literal",
-                "value": "md"
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"noindex, nofollow\"\n```"
+                  }
+                ]
               }
             ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 17,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
           }
         },
         {
-          "id": 12,
-          "name": "title",
+          "id": 90,
+          "name": "charset",
           "variant": "declaration",
           "kind": 1024,
           "flags": {},
@@ -253,14 +77,3204 @@
             "summary": [
               {
                 "kind": "text",
-                "text": "Title displayed at the top of the card"
+                "text": "Character encoding for the document"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"UTF-8\"\n```"
+                  }
+                ]
               }
             ]
           },
           "sources": [
             {
-              "fileName": "TestAbc.tsx",
-              "line": 12,
+              "fileName": "index.ts",
+              "line": 22,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 91,
+          "name": "viewport",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Viewport settings for responsive design"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"width=device-width, initial-scale=1\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"width=device-width, initial-scale=1, maximum-scale=1\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 28,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 92,
+          "name": "description",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Brief description of the page content"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"A comprehensive guide to web development\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 33,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 93,
+          "name": "keywords",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Keywords relevant to the page content"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"web development, javascript, typescript\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 38,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 94,
+          "name": "author",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Author of the page content"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"John Doe\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 43,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 95,
+          "name": "googlebot",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Google-specific crawling instructions"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"index, follow\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"noarchive\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 49,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 96,
+          "name": "google",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Google-specific settings"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"notranslate\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 54,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 97,
+          "name": "google-site-verification",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Google Search Console verification token"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"verification_token\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 59,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 98,
+          "name": "generator",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Software used to generate the page"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Next.js\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"WordPress\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 65,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 99,
+          "name": "theme-color",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Theme color for browser UI"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"#ffffff\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"#000000\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 71,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 100,
+          "name": "color-scheme",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Color scheme preference"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"light dark\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"light\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 77,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 101,
+          "name": "format-detection",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Format detection settings"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"telephone=no\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"date=no\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 83,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 102,
+          "name": "referrer",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Referrer policy"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"origin\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"no-referrer\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 89,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 103,
+          "name": "refresh",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Page refresh settings"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"0;url=https://example.com\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 94,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 104,
+          "name": "rating",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Content rating"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"general\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"mature\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 100,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 105,
+          "name": "revisit-after",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Crawl frequency suggestion"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"7 days\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 105,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 106,
+          "name": "language",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Page language"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"en-US\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"fr-FR\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 111,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 107,
+          "name": "copyright",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Copyright information"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Copyright 2024\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 116,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 108,
+          "name": "reply-to",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Reply-to email address"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"contact@example.com\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 121,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 109,
+          "name": "distribution",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Content distribution scope"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"global\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 126,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 110,
+          "name": "coverage",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Content coverage area"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Worldwide\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 131,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 111,
+          "name": "category",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Content category"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Technology\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 136,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 112,
+          "name": "target",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Target audience"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"all\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 141,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 113,
+          "name": "HandheldFriendly",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Mobile device compatibility"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"true\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 146,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 114,
+          "name": "MobileOptimized",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Mobile optimization settings"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"width\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 151,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 115,
+          "name": "apple-mobile-web-app-capable",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "iOS web app capability"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"yes\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 160,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 116,
+          "name": "apple-mobile-web-app-status-bar-style",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "iOS status bar style"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"black\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"black-translucent\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 166,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 117,
+          "name": "apple-mobile-web-app-title",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "iOS web app title"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"App Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 171,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 118,
+          "name": "application-name",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Web application name"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"My App\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 176,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 119,
+          "name": "msapplication-TileColor",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Windows tile color"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"#2b5797\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 185,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 120,
+          "name": "msapplication-TileImage",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Windows tile image"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"/mstile-144x144.png\"a\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 190,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 121,
+          "name": "msapplication-config",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Windows browser config"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"/browserconfig.xml\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 195,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 122,
+          "name": "og:title",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Open Graph title"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Page Title\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 204,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 123,
+          "name": "og:type",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Open Graph content type"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"website\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"article\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 210,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 124,
+          "name": "og:url",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Open Graph URL"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"https://example.com\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 215,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 125,
+          "name": "og:image",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Open Graph image"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"https://example.com/image.jpg\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 220,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 126,
+          "name": "og:description",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Open Graph description"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"A brief description for social media\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 225,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 127,
+          "name": "og:site_name",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Open Graph site name"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Site Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 230,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 128,
+          "name": "og:locale",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Open Graph locale"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"en_US\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 235,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 129,
+          "name": "og:video",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Open Graph video"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"https://example.com/video.mp4\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 240,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 130,
+          "name": "og:audio",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Open Graph audio"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"https://example.com/audio.mp3\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 245,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 131,
+          "name": "twitter:card",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter card type"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"summary_large_image\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"summary\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 255,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 132,
+          "name": "twitter:site",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter site handle"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"@username\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 260,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 133,
+          "name": "twitter:creator",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter creator handle"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"@author\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 265,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 134,
+          "name": "twitter:title",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter title"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Page Title\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 270,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 135,
+          "name": "twitter:description",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter description"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"A brief description for Twitter\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 275,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 136,
+          "name": "twitter:image",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter image"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"https://example.com/image.jpg\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 280,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 137,
+          "name": "twitter:image:alt",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter image alt text"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Image description\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 285,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 138,
+          "name": "twitter:player",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter player URL"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"https://example.com/player\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 290,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 139,
+          "name": "twitter:player:width",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter player width"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"480\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 295,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 140,
+          "name": "twitter:player:height",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter player height"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"480\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 300,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 141,
+          "name": "twitter:app:name:iphone",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter iOS app name"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"App Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 305,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 142,
+          "name": "twitter:app:id:iphone",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter iOS app ID"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"123456789\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 310,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 143,
+          "name": "twitter:app:url:iphone",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Twitter iOS app URL"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"app://\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 315,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 144,
+          "name": "article:published_time",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Article publication time"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"2024-03-20T12:00:00Z\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 324,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 145,
+          "name": "article:modified_time",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Article modification time"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"2024-03-21T15:30:00Z\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 329,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 146,
+          "name": "article:expiration_time",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Article expiration time"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"2024-04-20T12:00:00Z\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 334,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 147,
+          "name": "article:author",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Article author"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"John Doe\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 339,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 148,
+          "name": "article:section",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Article section"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Technology\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 344,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 149,
+          "name": "article:tag",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Article tags"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Web Development\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 349,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 150,
+          "name": "book:author",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Book author"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Jane Smith\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 358,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 151,
+          "name": "book:isbn",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Book ISBN"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"978-3-16-148410-0\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 363,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 152,
+          "name": "book:release_date",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Book release date"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"2024-01-01\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 368,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 153,
+          "name": "book:tag",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Book tags"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Fiction\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 373,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 154,
+          "name": "profile:first_name",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Profile first name"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"John\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 382,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 155,
+          "name": "profile:last_name",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Profile last name"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Doe\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 387,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 156,
+          "name": "profile:username",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Profile username"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"johndoe\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 392,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 157,
+          "name": "profile:gender",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Profile gender"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"male\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 397,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 158,
+          "name": "music:duration",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Music duration in seconds"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"180\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 406,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 159,
+          "name": "music:album",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Music album name"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Album Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 411,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 160,
+          "name": "music:album:disc",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Music album disc number"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"1\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 416,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 161,
+          "name": "music:album:track",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Music album track number"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"1\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 421,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 162,
+          "name": "music:musician",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Music musician/artist"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Artist Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 426,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 163,
+          "name": "music:song",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Music song name"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Song Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 431,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 164,
+          "name": "music:song:disc",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Music song disc number"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"1\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 436,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 165,
+          "name": "music:song:track",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Music song track number"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"1\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 441,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 166,
+          "name": "video:actor",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Video actor name"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Actor Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 450,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 167,
+          "name": "video:actor:role",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Video actor role"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Character Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 455,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 168,
+          "name": "video:director",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Video director"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Director Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 460,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 169,
+          "name": "video:writer",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Video writer"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Writer Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 465,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 170,
+          "name": "video:duration",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Video duration in seconds"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"120\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 470,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 171,
+          "name": "video:release_date",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Video release date"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"2024-01-01\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 475,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 172,
+          "name": "video:tag",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Video tags"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Action\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 480,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 173,
+          "name": "video:series",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Video series name"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"Series Name\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 485,
               "character": 4
             }
           ],
@@ -274,222 +3288,99 @@
         {
           "title": "Properties",
           "children": [
-            17,
-            10,
-            16,
-            11,
-            13,
-            14,
-            15,
-            12
+            89,
+            90,
+            91,
+            92,
+            93,
+            94,
+            95,
+            96,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127,
+            128,
+            129,
+            130,
+            131,
+            132,
+            133,
+            134,
+            135,
+            136,
+            137,
+            138,
+            139,
+            140,
+            141,
+            142,
+            143,
+            144,
+            145,
+            146,
+            147,
+            148,
+            149,
+            150,
+            151,
+            152,
+            153,
+            154,
+            155,
+            156,
+            157,
+            158,
+            159,
+            160,
+            161,
+            162,
+            163,
+            164,
+            165,
+            166,
+            167,
+            168,
+            169,
+            170,
+            171,
+            172,
+            173
           ]
         }
       ],
       "sources": [
         {
-          "fileName": "TestAbc.tsx",
-          "line": 4,
+          "fileName": "index.ts",
+          "line": 8,
           "character": 17
-        }
-      ]
-    },
-    {
-      "id": 1,
-      "name": "GuideCard",
-      "variant": "declaration",
-      "kind": 64,
-      "flags": {},
-      "children": [
-        {
-          "id": 4,
-          "name": "List",
-          "variant": "declaration",
-          "kind": 2048,
-          "flags": {},
-          "sources": [
-            {
-              "fileName": "TestAbc.tsx",
-              "line": 56,
-              "character": 10
-            }
-          ],
-          "signatures": [
-            {
-              "id": 5,
-              "name": "List",
-              "variant": "signature",
-              "kind": 4096,
-              "flags": {},
-              "comment": {
-                "summary": [
-                  {
-                    "kind": "text",
-                    "text": "A container component for grouping multiple GuideCard components.\nProvides consistent spacing and layout for a list of guide cards."
-                  }
-                ]
-              },
-              "sources": [
-                {
-                  "fileName": "TestAbc.tsx",
-                  "line": 56,
-                  "character": 26
-                }
-              ],
-              "parameters": [
-                {
-                  "id": 6,
-                  "name": "__namedParameters",
-                  "variant": "param",
-                  "kind": 32768,
-                  "flags": {},
-                  "type": {
-                    "type": "reflection",
-                    "declaration": {
-                      "id": 7,
-                      "name": "__type",
-                      "variant": "declaration",
-                      "kind": 65536,
-                      "flags": {},
-                      "children": [
-                        {
-                          "id": 8,
-                          "name": "children",
-                          "variant": "declaration",
-                          "kind": 1024,
-                          "flags": {},
-                          "sources": [
-                            {
-                              "fileName": "TestAbc.tsx",
-                              "line": 56,
-                              "character": 56
-                            }
-                          ],
-                          "type": {
-                            "type": "reference",
-                            "target": {
-                              "packageName": "@types/react",
-                              "packagePath": "index.d.ts",
-                              "qualifiedName": "React.ReactNode"
-                            },
-                            "name": "ReactNode",
-                            "package": "@types/react",
-                            "qualifiedName": "React.ReactNode"
-                          }
-                        }
-                      ],
-                      "groups": [
-                        {
-                          "title": "Properties",
-                          "children": [
-                            8
-                          ]
-                        }
-                      ],
-                      "sources": [
-                        {
-                          "fileName": "TestAbc.tsx",
-                          "line": 56,
-                          "character": 54
-                        }
-                      ]
-                    }
-                  }
-                }
-              ],
-              "type": {
-                "type": "reference",
-                "target": {
-                  "packageName": "@types/react",
-                  "packagePath": "index.d.ts",
-                  "qualifiedName": "React.JSX.Element"
-                },
-                "name": "Element",
-                "package": "@types/react",
-                "qualifiedName": "React.JSX.Element"
-              }
-            }
-          ]
-        }
-      ],
-      "groups": [
-        {
-          "title": "Methods",
-          "children": [
-            4
-          ]
-        }
-      ],
-      "sources": [
-        {
-          "fileName": "TestAbc.tsx",
-          "line": 36,
-          "character": 16
-        },
-        {
-          "fileName": "TestAbc.tsx",
-          "line": 56,
-          "character": 0
-        }
-      ],
-      "signatures": [
-        {
-          "id": 2,
-          "name": "GuideCard",
-          "variant": "signature",
-          "kind": 4096,
-          "flags": {},
-          "comment": {
-            "summary": [
-              {
-                "kind": "text",
-                "text": "A card component that displays content with a title and optional icon.\nThe entire card is clickable and links to the specified URL."
-              }
-            ],
-            "blockTags": [
-              {
-                "tag": "@category",
-                "content": [
-                  {
-                    "kind": "text",
-                    "text": "Component"
-                  }
-                ]
-              }
-            ]
-          },
-          "sources": [
-            {
-              "fileName": "TestAbc.tsx",
-              "line": 36,
-              "character": 16
-            }
-          ],
-          "parameters": [
-            {
-              "id": 3,
-              "name": "__namedParameters",
-              "variant": "param",
-              "kind": 32768,
-              "flags": {},
-              "type": {
-                "type": "reference",
-                "target": 9,
-                "name": "GuideCardProps",
-                "package": "@xyd-sources-examples/react"
-              }
-            }
-          ],
-          "type": {
-            "type": "reference",
-            "target": {
-              "packageName": "@types/react",
-              "packagePath": "index.d.ts",
-              "qualifiedName": "React.JSX.Element"
-            },
-            "name": "Element",
-            "package": "@types/react",
-            "qualifiedName": "React.JSX.Element"
-          }
         }
       ]
     }
@@ -498,129 +3389,461 @@
     {
       "title": "Interfaces",
       "children": [
-        9
-      ]
-    },
-    {
-      "title": "Functions",
-      "children": [
-        1
+        88
       ]
     }
   ],
-  "categories": [
+  "packageName": "@xyd-js/sources",
+  "packageVersion": "0.1.1-xyd.3",
+  "readme": [
     {
-      "title": "Component",
-      "children": [
-        1
-      ]
-    },
-    {
-      "title": "Other",
-      "children": [
-        9
-      ]
+      "kind": "text",
+      "text": "# @xyd-js/sources\n\nAutomatic documentation from code sources, for xyd."
     }
   ],
-  "packageName": "@xyd-sources-examples/react",
   "symbolIdMap": {
-    "0": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
+    "87": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
       "qualifiedName": ""
     },
-    "1": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCard"
+    "88": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags"
     },
-    "2": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCard"
+    "89": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.robots"
     },
-    "3": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "__0"
+    "90": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.charset"
     },
-    "4": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCard.List"
+    "91": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.viewport"
     },
-    "5": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCard.List"
+    "92": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.description"
     },
-    "6": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "__0"
+    "93": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.keywords"
     },
-    "7": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "__type"
+    "94": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.author"
     },
-    "8": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "__type.children"
+    "95": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.googlebot"
     },
-    "9": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCardProps"
+    "96": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.google"
     },
-    "10": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCardProps.children"
+    "97": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.google-site-verification"
     },
-    "11": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCardProps.href"
+    "98": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.generator"
     },
-    "12": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCardProps.title"
+    "99": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.theme-color"
     },
-    "13": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCardProps.icon"
+    "100": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.color-scheme"
     },
-    "14": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCardProps.kind"
+    "101": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.format-detection"
     },
-    "15": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCardProps.size"
+    "102": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.referrer"
     },
-    "16": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCardProps.className"
+    "103": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.refresh"
     },
-    "17": {
-      "packageName": "@xyd-sources-examples/react",
-      "packagePath": "src/TestAbc.tsx",
-      "qualifiedName": "GuideCardProps.as"
+    "104": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.rating"
+    },
+    "105": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.revisit-after"
+    },
+    "106": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.language"
+    },
+    "107": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.copyright"
+    },
+    "108": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.reply-to"
+    },
+    "109": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.distribution"
+    },
+    "110": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.coverage"
+    },
+    "111": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.category"
+    },
+    "112": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.target"
+    },
+    "113": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.HandheldFriendly"
+    },
+    "114": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.MobileOptimized"
+    },
+    "115": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.apple-mobile-web-app-capable"
+    },
+    "116": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.apple-mobile-web-app-status-bar-style"
+    },
+    "117": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.apple-mobile-web-app-title"
+    },
+    "118": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.application-name"
+    },
+    "119": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.msapplication-TileColor"
+    },
+    "120": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.msapplication-TileImage"
+    },
+    "121": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.msapplication-config"
+    },
+    "122": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.og:title"
+    },
+    "123": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.og:type"
+    },
+    "124": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.og:url"
+    },
+    "125": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.og:image"
+    },
+    "126": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.og:description"
+    },
+    "127": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.og:site_name"
+    },
+    "128": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.og:locale"
+    },
+    "129": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.og:video"
+    },
+    "130": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.og:audio"
+    },
+    "131": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:card"
+    },
+    "132": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:site"
+    },
+    "133": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:creator"
+    },
+    "134": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:title"
+    },
+    "135": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:description"
+    },
+    "136": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:image"
+    },
+    "137": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:image:alt"
+    },
+    "138": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:player"
+    },
+    "139": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:player:width"
+    },
+    "140": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:player:height"
+    },
+    "141": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:app:name:iphone"
+    },
+    "142": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:app:id:iphone"
+    },
+    "143": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.twitter:app:url:iphone"
+    },
+    "144": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.article:published_time"
+    },
+    "145": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.article:modified_time"
+    },
+    "146": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.article:expiration_time"
+    },
+    "147": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.article:author"
+    },
+    "148": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.article:section"
+    },
+    "149": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.article:tag"
+    },
+    "150": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.book:author"
+    },
+    "151": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.book:isbn"
+    },
+    "152": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.book:release_date"
+    },
+    "153": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.book:tag"
+    },
+    "154": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.profile:first_name"
+    },
+    "155": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.profile:last_name"
+    },
+    "156": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.profile:username"
+    },
+    "157": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.profile:gender"
+    },
+    "158": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.music:duration"
+    },
+    "159": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.music:album"
+    },
+    "160": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.music:album:disc"
+    },
+    "161": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.music:album:track"
+    },
+    "162": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.music:musician"
+    },
+    "163": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.music:song"
+    },
+    "164": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.music:song:disc"
+    },
+    "165": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.music:song:track"
+    },
+    "166": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.video:actor"
+    },
+    "167": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.video:actor:role"
+    },
+    "168": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.video:director"
+    },
+    "169": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.video:writer"
+    },
+    "170": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.video:duration"
+    },
+    "171": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.video:release_date"
+    },
+    "172": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.video:tag"
+    },
+    "173": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.video:series"
     }
   },
   "files": {
     "entries": {
-      "1": "src/TestAbc.tsx"
+      "1": "package-a/src/index.ts"
     },
     "reflections": {
-      "1": 0
+      "1": 87
     }
   }
 }

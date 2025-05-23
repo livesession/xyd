@@ -59,7 +59,8 @@
                             "docs/guides/writing-quickstart",
                             "docs/guides/special-symbols",
                             "docs/guides/markdown-extensions",
-                            "docs/guides/developer-content"
+                            "docs/guides/developer-content",
+                            "docs/guides/seo"
                         ]
                     },
                     {
@@ -87,6 +88,15 @@
                                 "pages": [
                                     "docs/guides/integrations/analytics/analytics-integrations",
                                     "docs/guides/integrations/analytics/livesession"
+                                ]
+                            },
+                            {
+                                "group": "Search",
+                                "icon": "text-search",
+                                "pages": [
+                                    "docs/guides/integrations/search/search-integrations",
+                                    "docs/guides/integrations/search/algolia",
+                                    "docs/guides/integrations/search/orama"
                                 ]
                             }
                         ]

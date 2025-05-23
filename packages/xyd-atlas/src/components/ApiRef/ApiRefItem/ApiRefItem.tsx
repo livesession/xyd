@@ -156,7 +156,6 @@ function $VariantSelect({ variants }: { variants: MDXReference<DefinitionVariant
 
             return status?.value === e.target.value;
         })
-        console.log("foundVariant", foundVariant, e.target.value, variants)
         if (!foundVariant) {
             return
         }

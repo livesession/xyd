@@ -32,8 +32,6 @@ export function Atlas<T>(props: AtlasProps<T>) {
         }
     }
 
-    console.log("Atlas", references) 
-       
     return <AtlasDecorator>
         <div className={cn.AtlasHost}>
             <AtlasComponent references={references} />

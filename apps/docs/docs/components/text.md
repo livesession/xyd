@@ -1,6 +1,6 @@
 ---
 title: Text
-icon: LetterText
+icon: letter-text
 layout: wide
 uniform: "@components/writer/Text/Text.tsx"
 ---

@@ -14,6 +14,10 @@ export const BadgeHost = css`
         }
         
         /* Kind variants */
+        &[data-kind="default"] {
+            color: var(--xyd-badge-color--default);
+            background-color: var(--xyd-badge-bgcolor--default);
+        }
         &[data-kind="warning"] {
             color: var(--xyd-badge-color--warning);
             background-color: var(--xyd-badge-bgcolor--warning);

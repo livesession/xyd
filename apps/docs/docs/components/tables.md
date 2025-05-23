@@ -1,6 +1,6 @@
 ---
 title: Tables
-icon: Table
+icon: table
 layout: wide
 uniform: "@components/writer/Table/Table.tsx"
 ---

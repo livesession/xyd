@@ -1,4 +1,6 @@
+import { renderToStaticMarkup } from 'react-dom/server';
 import { css } from "@linaria/core";
+import ChevronIcon from './chevronIcon.svg';
 
 export const SidebarHost = css`
     @layer defaults {
@@ -86,8 +88,44 @@ export const ItemHost = css`
         }
 
         [part="item-button"] {
+            &:has(+ [part="subtree"] xyd-collapse) {
+                position: relative;
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    right: 8px;
+                    top: 0;
+                    bottom: 0;
+                    width: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: var(--xyd-sidebar-item-color);
+                    // TODO: IN THE FUTURE IN THE COMPONENTS BUT CURRENTLY IT DOES ITEM DOES NOT HAVE ENOUGH STATE KNOWLEDGE
+                    -webkit-mask-image: url(${ChevronIcon});
+                    mask-image: url(${ChevronIcon});
+                    -webkit-mask-size: contain;
+                    mask-size: contain;
+                    -webkit-mask-repeat: no-repeat;
+                    mask-repeat: no-repeat;
+                    -webkit-mask-position: center;
+                    mask-position: center;
+                    transition: transform 0.2s ease, background-color 0.2s ease;
+                    transform: rotate(-90deg);
+                }
+
+                &:hover::after {
+                    background-color: var(--xyd-sidebar-item-color--active);
+                }
+            }
+
             &:has(+ [part="subtree"] xyd-collapse[data-open="true"]) {
                 font-weight: bold;
+                
+                &::after {
+                    transform: rotate(0deg);
+                }
             }
         }
     }

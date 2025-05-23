@@ -381,7 +381,7 @@ function jsClassToUniformRef(
     ref.canonical = uniformCanonical(dec, declarationCtx)
 
     if (dec.comment) {
-        const description = commentToUniform(dec.comment)
+        const description = commentToUniformDescription(dec.comment)
         const group = uniformGroup(declarationCtx)
 
         if (ref.context) {
@@ -412,7 +412,7 @@ function jsClassToUniformRef(
 
                 let description = ""
                 if (param.comment) {
-                    description = commentToUniform(param.comment)
+                    description = commentToUniformDescription(param.comment)
                 }
                 let uniformType = someTypeToUniform(param.type)
                 let someTypeProps = {}
@@ -449,7 +449,7 @@ function jsClassToUniformRef(
                 const methodSign = method.signatures[0]
                 let methodDesc = ""
                 if (methodSign.comment) {
-                    methodDesc = commentToUniform(methodSign.comment)
+                    methodDesc = commentToUniformDescription(methodSign.comment)
                 }
                 let type = ""
                 let someTypeProps = {}
@@ -463,12 +463,21 @@ function jsClassToUniformRef(
                     type = "void"
                 }
 
-                methodsDef.properties.push({
+                const property: DefinitionProperty = {
                     name: method.name,
                     type,
                     description: methodDesc,
                     ...someTypeProps
-                })
+                }
+
+                if (method.comment) {
+                    const examples = commentToUniformExamples(method.comment)
+                    if (examples.length > 0) {
+                        property.examples = examples
+                    }
+                }
+
+                methodsDef.properties.push(property)
             }
 
             definitions.push(methodsDef)
@@ -495,7 +504,6 @@ function jsFunctionToUniformRef(
     }
 
     const declarationCtx = declarationUniformContext.call(this, dec)
-    console.log(22222, declarationCtx)
     if (declarationCtx) {
         ref.context = {
             ...ref.context,
@@ -513,7 +521,7 @@ function jsFunctionToUniformRef(
     for (const sign of dec.signatures || []) {
         {
             if (sign.comment) {
-                const description = commentToUniform(sign.comment)
+                const description = commentToUniformDescription(sign.comment)
                 const group = uniformGroup(declarationCtx)
 
                 if (ref.context) {
@@ -589,7 +597,7 @@ function jsFunctionToUniformRef(
 
                 let description = ""
                 if (param.comment) {
-                    description = commentToUniform(param.comment)
+                    description = commentToUniformDescription(param.comment)
                 }
 
                 const uniformType = someTypeToUniform(param.type)
@@ -598,7 +606,7 @@ function jsFunctionToUniformRef(
                     someTypeProps = uniformType
                 }
 
-                const prop = {
+                const prop: DefinitionProperty = {
                     name: param.name,
                     type: typeof uniformType === "string" ? uniformType : "",
                     description,
@@ -610,6 +618,13 @@ function jsFunctionToUniformRef(
                         prop.name = ""
                         prop.type = "param"
                         break
+                    }
+                }
+
+                if (param.comment) {
+                    const examples = commentToUniformExamples(param.comment)
+                    if (examples.length > 0) {
+                        prop.examples = examples
                     }
                 }
 
@@ -650,7 +665,7 @@ function jsInterfaceToUniformRef(
     ref.canonical = uniformCanonical(dec, declarationCtx)
 
     if (dec.comment) {
-        const description = commentToUniform(dec.comment)
+        const description = commentToUniformDescription(dec.comment)
         const group = uniformGroup(declarationCtx)
 
         if (ref.context) {
@@ -683,7 +698,7 @@ function jsInterfaceToUniformRef(
 
                 let description = ""
                 if (prop.comment) {
-                    description = commentToUniform(prop.comment)
+                    description = commentToUniformDescription(prop.comment)
                 }
 
                 const uniformType = someTypeToUniform(prop.type)
@@ -692,12 +707,21 @@ function jsInterfaceToUniformRef(
                     someTypeProps = uniformType
                 }
 
-                propertiesDef.properties.push({
+                const property: DefinitionProperty = {
                     name: prop.name,
                     type: typeof uniformType === "string" ? uniformType : "",
                     description,
                     ...someTypeProps
-                })
+                }
+
+                if (prop.comment) {
+                    const examples = commentToUniformExamples(prop.comment)
+                    if (examples.length > 0) {
+                        property.examples = examples
+                    }
+                }
+
+                propertiesDef.properties.push(property)
             }
 
             definitions.push(propertiesDef)
@@ -722,7 +746,7 @@ function jsInterfaceToUniformRef(
                 const methodSign = method.signatures[0]
                 let methodDesc = ""
                 if (methodSign.comment) {
-                    methodDesc = commentToUniform(methodSign.comment)
+                    methodDesc = commentToUniformDescription(methodSign.comment)
                 }
                 
                 let type = ""
@@ -737,12 +761,21 @@ function jsInterfaceToUniformRef(
                     type = "void"
                 }
 
-                methodsDef.properties.push({
+                const property: DefinitionProperty = {
                     name: method.name,
                     type,
                     description: methodDesc,
                     ...someTypeProps
-                })
+                }
+
+                if (method.comment) {
+                    const examples = commentToUniformExamples(method.comment)
+                    if (examples.length > 0) {
+                        property.examples = examples
+                    }
+                }
+
+                methodsDef.properties.push(property)
             }
 
             definitions.push(methodsDef)
@@ -779,7 +812,7 @@ function jsTypeAliasToUniformRef(
     ref.canonical = uniformCanonical(dec, declarationCtx)
 
     if (dec.comment) {
-        const description = commentToUniform(dec.comment)
+        const description = commentToUniformDescription(dec.comment)
         const group = uniformGroup(declarationCtx)
 
         if (ref.context) {
@@ -803,7 +836,7 @@ function jsTypeAliasToUniformRef(
             let comment = ""
 
             if (dec.comment) {
-                comment = commentToUniform(dec.comment)
+                comment = commentToUniformDescription(dec.comment)
             }
 
             const uniformType = someTypeToUniform(dec.type)
@@ -853,7 +886,7 @@ function jsEnumToUniformRef(
     ref.canonical = uniformCanonical(dec, declarationCtx)
 
     if (dec.comment) {
-        const description = commentToUniform(dec.comment)
+        const description = commentToUniformDescription(dec.comment)
         const group = uniformGroup(declarationCtx)
 
         if (ref.context) {
@@ -889,7 +922,7 @@ function jsEnumToUniformRef(
             for (const member of sortedMembers) {
                 let description = ""
                 if (member.comment) {
-                    description = commentToUniform(member.comment)
+                    description = commentToUniformDescription(member.comment)
                 }
 
                 // Extract the enum member value
@@ -1068,7 +1101,7 @@ function someTypeToUniform(someType: SomeType): SomeTypeUniform {
     }
 }
 
-function commentToUniform(comment: Comment): string {
+function commentToUniformDescription(comment: Comment): string {
     let desc = ""
 
     for (const summary of comment?.summary || []) {
@@ -1076,6 +1109,28 @@ function commentToUniform(comment: Comment): string {
     }
 
     return desc
+}
+
+function commentToUniformExamples(comment: Comment): string[] {
+    if (!comment.blockTags || !comment.blockTags.length) {
+        return []
+    }
+
+    const examples: string[] = []
+
+    for (const tag of comment.blockTags) {
+        if (tag.tag === "@example") {
+            for (const content of tag.content || []) {
+                if (content.kind === "code") {
+                    // Remove the ```ts and ``` markers from the code block
+                    const code = content.text.replace(/```ts\n|\n```/g, '')
+                    examples.push(code)
+                }
+            }
+        }
+    }
+
+    return examples
 }
 
 function uniformCategory(dec?: DeclarationReflection): string {
@@ -1135,7 +1190,7 @@ function uniformProperties(dec: DeclarationReflection) {
 
                 let description = ""
                 if (prop.comment) {
-                    description = commentToUniform(prop.comment)
+                    description = commentToUniformDescription(prop.comment)
                 }
 
                 const uniformType = someTypeToUniform(prop.type)
@@ -1144,12 +1199,21 @@ function uniformProperties(dec: DeclarationReflection) {
                     someTypeProps = uniformType
                 }
 
-                properties.push({
+                const property: DefinitionProperty = {
                     name: prop.name,
                     type: typeof uniformType === "string" ? uniformType : "",
                     description,
                     ...someTypeProps
-                })
+                }
+
+                if (prop.comment) {
+                    const examples = commentToUniformExamples(prop.comment)
+                    if (examples.length > 0) {
+                        property.examples = examples
+                    }
+                }
+
+                properties.push(property)
 
                 break
             }

@@ -1,16 +1,17 @@
-import React, { isValidElement } from "react";
+import React, { isValidElement, useState } from "react";
 import { Link, useLocation, useMatches, type To } from "react-router";
 
+import { Header } from "@xyd-js/core";
 import type { ITOC } from "@xyd-js/ui";
 import { Breadcrumbs, NavLinks, Anchor, IconCopy, IconCheck, Button, Icon } from "@xyd-js/components/writer";
 import { Toc, SubNav, UISidebar, Nav } from "@xyd-js/ui"
+import { useEvents } from "@xyd-js/analytics"
 
 import { Surface } from "./Surfaces";
 
 import { useBreadcrumbs, useIconComponent, useNavLinks, useRawPage, useSettings, useSidebarGroups, useToC } from "../contexts";
 import { FwSidebarItemGroup, FwSidebarGroupContext, FwSidebarItemProps } from "./Sidebar";
 
-import { manualHydration } from "../utils/manualHydration";
 import { useMatchedSubNav } from "../hooks";
 
 function FwNavLogo() {
@@ -34,9 +35,9 @@ export function FwNav({ kind }: { kind?: "middle" }) {
 
     const lastMatch = matches[matches.length - 1]
 
-    const navWithoutSub = settings?.navigation?.header?.filter(item => !item.sub) || []
+    const header = settings?.navigation?.header || []
 
-    const active = navWithoutSub.find(item => {
+    const active = header.find(item => {
         if (matchedSubnav) {
             return item.url?.startsWith(matchedSubnav?.route || "")
         }
@@ -44,26 +45,47 @@ export function FwNav({ kind }: { kind?: "middle" }) {
         return item.url === lastMatch?.id
     })
 
-    const navItems = navWithoutSub
-        .map((item, index) => <Nav.Item
-            key={index + (item.url || "") + item.name}
+    function createHeader(item: Header) {
+        return <Nav.Item
+            key={(item.url || "") + item.name}
             href={item?.url || ""}
             value={item.url || ""}
             as={$Link}
         >
             {item.name}
         </Nav.Item>
-    )
+    }
 
+    const headerMap = header.reduce<Record<string, React.ReactNode[]>>((acc, item) => {
+        const float = item.float || "default";
+        return {
+            ...acc,
+            [float]: [...(acc[float] || []), createHeader(item)]
+        };
+    }, {});
+
+    const rightHeaderExists = headerMap["right"]?.length > 0
+
+    // TODO: in the future better floating system - just pure css?
     return <Nav
         value={active?.url || ""}
         kind={kind}
         logo={<FwNavLogo />}
-        onChange={() => {
-        }}
-        rightSurface={<Surface target="nav.right" />}
+        rightSurface={<>
+            {
+                rightHeaderExists
+                    ? <Nav.Tab
+                        value={active?.url || ""}
+                    >
+                        {headerMap["right"]}
+                    </Nav.Tab>
+                    : null
+            }
+
+            <Surface target="nav.right" />
+        </>}
     >
-        {navItems}
+        {headerMap["default"]}
     </Nav>
 }
 
@@ -234,12 +256,16 @@ export function FwLink({ children, ...rest }) {
 }
 
 export function FwCopyPage() {
+    const [isCopied, setIsCopied] = useState(false)
+
     const rawPage = useRawPage()
-    const [isCopied, setIsCopied] = React.useState(false)
+    // const events = useEvents()
 
     const handleCopy = () => {
         navigator.clipboard.writeText(rawPage || "")
         setIsCopied(true)
+        // events.CopyPage({}) TODO: finish this
+
         setTimeout(() => setIsCopied(false), 2000)
     }
 

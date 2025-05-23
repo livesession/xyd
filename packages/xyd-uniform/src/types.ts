@@ -99,9 +99,12 @@ export interface DefinitionProperty {
 
     type: string;
 
-    typeDef?: DefinitionPropertyTypeDef
-
     description: string | React.ReactNode;
+
+    // TODO: in the future more advanced examples?
+    examples?: string | string[];
+
+    typeDef?: DefinitionPropertyTypeDef
 
     meta?: DefinitionPropertyMeta[];
 

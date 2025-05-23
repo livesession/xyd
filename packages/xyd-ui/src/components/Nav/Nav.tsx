@@ -35,6 +35,20 @@ export function Nav({ children, value, onChange, logo, kind, className, rightSur
     </RadixTabs.Root>
 }
 
+interface TabProps {
+    children: React.ReactNode
+    value: string
+    onChange?: (value: string) => void
+}
+
+Nav.Tab = function Tab({ children, value, onChange }: TabProps) {
+    return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
+        <RadixTabs.List >
+            {children}
+        </RadixTabs.List>
+    </RadixTabs.Root>
+}
+
 export interface NavItemProps {
     children: React.ReactNode;
     href: string;

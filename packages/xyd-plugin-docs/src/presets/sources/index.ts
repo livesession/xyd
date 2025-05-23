@@ -3,7 +3,7 @@ import fs from "fs/promises";
 
 import type {Reference} from "@xyd-js/uniform";
 import {Settings} from "@xyd-js/core";
-import {sourcesToUniform} from "@xyd-js/sources/ts"
+import {sourcesToUniformV2} from "@xyd-js/sources/ts"
 
 import {Preset} from "../../types"
 import {UniformPreset} from "../uniform"
@@ -58,12 +58,17 @@ class SourceUniformPreset extends UniformPreset {
 
         const packages = await fs.readdir(filePath)
 
-        const ref = await sourcesToUniform(
+        const ref = await sourcesToUniformV2(
             filePath,
             packages.map(p => path.join(filePath, p))
         )
 
-        return ref || []
+        if (!ref || !ref.references) {
+            console.error("Failed to generate documentation.", filePath)
+            return []
+        }
+
+        return ref.references
     }
 }
 

@@ -7,18 +7,21 @@ export interface BadgeProps {
      * The class name of the badge.
      */
     className?: string;
+
     /**
      * The children of the badge.
      */
     children?: React.ReactNode;
+
     /**
      * The size of the badge.
      */
     size?: "sm"
+
     /**
      * The kind of the badge.
      */
-    kind?: "warning" | "info"
+    kind?: "warning" | "info" | "default"
 }
 
 /**
@@ -30,7 +33,7 @@ export function Badge({
     className,
     children,
     size = "sm",
-    kind = "warning"
+    kind = "default"
 }: BadgeProps) {
     return <xyd-badge
         className={`${cn.BadgeHost} ${className || ''}`}

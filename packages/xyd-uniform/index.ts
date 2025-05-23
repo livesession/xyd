@@ -1,3 +1,4 @@
+export * from "./src/types"
 export type {
     UniformPlugin,
     UniformPluginArgs
@@ -6,8 +7,8 @@ export type {
 export { default } from "./src/index"
 
 export {
+    pluginJsonView,
     pluginNavigation,
 } from "./src/plugins"
 
-export * from "./src/types"
 

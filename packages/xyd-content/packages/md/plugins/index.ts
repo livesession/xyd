@@ -10,6 +10,7 @@ import { remarkInjectCodeMeta } from "./mdCode";
 import { extractThemeSettings } from "./mdThemeSettings";
 import { extractPage } from "./mdPage";
 import { mdHeading } from "./mdHeading";
+import { rehypeHeading } from "./rehypeHeading";
 import { mdComponentDirective } from "./component-directives";
 import { mdFunctionImportCode, mdFunctionUniform } from "./functions"
 import { mdServerHighlight } from "./developer-writing";
@@ -24,7 +25,6 @@ export function defaultRemarkPlugins(
     return [
         ...thirdPartyRemarkPlugins(),
         ...remarkPlugins(toc, settings),
-
     ]
 }
 
@@ -58,12 +58,13 @@ function remarkPlugins(
 function remarkFunctionPlugins(settings?: Settings) {
     return [
         mdFunctionImportCode(settings),
-        mdFunctionUniform(settings)
+        mdFunctionUniform(settings),
     ]
 }
 
 export function defaultRehypePlugins(settings?: Settings) {
     return [
+        rehypeHeading,
         mdServerHighlight(settings)
     ]
 }

@@ -2,7 +2,6 @@ import { Settings } from "@xyd-js/core";
 import { CodeBlockTab, Example, ExampleGroup, Reference, UniformPluginArgs } from "@xyd-js/uniform";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 
-
 export default function pluginOasOpenai(settings: Settings): PluginConfig {
     return {
         name: "oas-openai",

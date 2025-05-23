@@ -127,6 +127,9 @@ globalThis.__xydStaticFiles = staticFiles
 const prerenderPaths = [
     ...navigationPaths,
     ...staticFiles,
+
+    "/sitemap.xml",
+    "/robots.txt",
     // ...docFiles,
 ];
 const cwd = process.cwd();

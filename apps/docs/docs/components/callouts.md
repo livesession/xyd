@@ -1,6 +1,6 @@
 ---
 title: Callouts
-icon: Info
+icon: info
 layout: wide
 uniform: "@components/writer/Callout/Callout.tsx"
 ---

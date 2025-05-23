@@ -96,18 +96,36 @@ async function processUniformFile(
 
                             switch (ext) {
                                 case 'ts': {
-                                    const typedocRefs = await sourcesToUniform(
+                                    const typedocRefs = await sourcesToUniformV2(
                                         packageDir,
                                         [packageDir]
-                                    ) || [] as Reference<TypeDocReferenceContext>[]
+                                    )
 
-                                    references = typedocRefs.filter(ref => {
-                                        const ctx = ref?.context;
+                                    if (!typedocRefs || !typedocRefs.references) {
+                                        console.error("Failed to process uniform file", filePath)
+                                        break
+                                    }
+
+                                    references = typedocRefs.references.filter(ref => {
+                                        const ctx = ref?.context as TypeDocReferenceContext
         
-                                        return ctx?.fileFullPath === relativeFilePath
+                                        const pathMatch = ctx?.fileFullPath === relativeFilePath
+                                        
+
+                                        if (regions.length > 0) {
+                                            const regionMatch = regions.some(region => {
+                                                return region.name === ctx?.symbolName // TODO: BETTER REGION API FOR TYPEDOC
+                                            })
+
+                                            return pathMatch && regionMatch
+                                        }
+
+                                        return pathMatch
                                     })
+
                                     break
                                 }
+                                
                                 case 'tsx': {
                                     const resp = await sourcesToUniformV2(
                                         packageDir,
@@ -118,10 +136,8 @@ async function processUniformFile(
                                         return null
                                     }
                                     const typedocRefs = resp.references as Reference<TypeDocReferenceContext>[]
-                                    console.log(" TYPEOD REFS", typedocRefs)
 
                                     references = uniformToReactUniform(typedocRefs, resp.projectJson)
-                                    console.log(" REACT REFS", references)
 
                                     break
                                 }
@@ -188,7 +204,7 @@ async function processUniformFile(
             const tempPackageDir = path.join(tempDir, 'packages', 'package');
 
             // Process the content using sourcesToUniform
-            const references = await sourcesToUniform(
+            const references = await sourcesToUniformV2(
                 tempDir,
                 [tempPackageDir]
             );

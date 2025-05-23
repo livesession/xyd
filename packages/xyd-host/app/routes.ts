@@ -43,6 +43,10 @@ const docsRoutes = getDocsRoutes(navigation)
 // TODO: !!!! if not routes found then '*' !!!
 export const routes = [
     ...docsRoutes,
+
+    // TODO: in the future better sitemap + robots.txt
+    route("/sitemap.xml", "./sitemap.ts"),
+    route("/robots.txt", "./robots.ts")
 ]
 
 if (globalThis.__xydStaticFiles?.length) {

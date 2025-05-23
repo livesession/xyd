@@ -1,4 +1,6 @@
-export const SUPPORTED_META_TAGS = {
+import { MetaTags } from "@xyd-js/core";
+
+export const SUPPORTED_META_TAGS: MetaTags = {
     "robots": "name",
     "charset": "name",
     "viewport": "name",
@@ -91,4 +93,4 @@ export const SUPPORTED_META_TAGS = {
     "video:release_date": "property",
     "video:tag": "property",
     "video:series": "property"
-} as const;
+}
