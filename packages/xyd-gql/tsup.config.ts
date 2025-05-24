@@ -1,3 +1,6 @@
+import { copyFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import {defineConfig} from 'tsup';
 
 export default defineConfig({
@@ -16,4 +19,12 @@ export default defineConfig({
         options.external = ['node:fs/promises']; // Mark 'node:fs/promises' as external
         options.loader = {'.js': 'jsx'}; // Ensure proper handling of .js files
     },
+    onSuccess: async () => {
+        // Copy opendocs.graphql to dist
+        copyFileSync(
+            join('src', 'opendocs.graphql'),
+            join('dist', 'opendocs.graphql')
+        );
+        return Promise.resolve();
+    }
 });

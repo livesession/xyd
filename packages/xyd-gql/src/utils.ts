@@ -1,145 +1,170 @@
-import { GraphQLFieldMap } from "graphql/type";
 import {
-    Reference,
-    ReferenceCategory,
-    ReferenceType,
-    ExampleGroup,
-    Definition,
-    Example,
-} from "@xyd-js/uniform";
+    GraphQLArgument,
+    GraphQLEnumType,
+    GraphQLEnumValue,
+    GraphQLInputObjectType,
+    GraphQLInterfaceType,
+    GraphQLObjectType,
+    GraphQLScalarType,
+    GraphQLUnionType,
+    GraphQLField
+} from "graphql/type/definition";
+import GithubSlugger from 'github-slugger';
 
-import { gqlArgToUniformDefinitionProperty } from "./hydration/gql-arg";
-import { gqlFieldToUniformDefinitionProperty } from "./hydration/gql-field";
-import { simpleGraphqlExample } from "./samples";
-import { Metadata } from "@xyd-js/core";
-import matter from "gray-matter";
+import {Definition, ExampleGroup, Reference, ReferenceCategory, ReferenceType} from "@xyd-js/uniform";
 
-// gqlOperationsToUniformRef is a helper function to create a list of xyd reference for a GraphQL query or mutation.
-export function gqlOperationsToUniformRef(
-    operationType: ReferenceType.GRAPHQL_MUTATION | ReferenceType.GRAPHQL_QUERY,
-    fieldsMap: GraphQLFieldMap<any, any>
-) {
-    const references: Reference[] = []
-
-    for (const [operationName, operationField] of Object.entries(fieldsMap)) {
-        const definitions: Definition[] = []
-
-        const args = gqlArgToUniformDefinitionProperty(operationField.args)
-        const returns = gqlFieldToUniformDefinitionProperty(operationName, operationField)
-        const returnProperties = returns.properties || []
-
-        definitions.push({
-            title: "Arguments",
-            properties: args,
-        })
-        definitions.push({
-            title: "Returns",
-            properties: returnProperties
-        })
-
-        const exampleQuery = simpleGraphqlExample(
-            operationType,
-            operationName,
-            args,
-            returnProperties
-        )
-        const examples: Example[] = [
-            {
-                codeblock: {
-                    tabs: [
-                        {
-                            title: "graphql",
-                            language: "graphql",
-                            code: exampleQuery,
-                        }
-                    ]
-                }
-            }
-        ]
-
-        const exampleGroup = {
-            description: "Example request",
-            examples,
-        }
-
-        let description = operationField.description || ""
-
-        let canonical = ""
-
-        if (operationType === ReferenceType.GRAPHQL_QUERY) {
-            canonical = `queries/${operationName}`
-        } else if (operationType === ReferenceType.GRAPHQL_MUTATION) {
-            canonical = `mutations/${operationName}`
-        } else {
-            throw new Error(`Invalid operation type: ${operationType}`)
-        }
-
-        references.push(graphqlReference(
-            operationType,
-            operationName,
-            operationName,
-            canonical,
-            description,
-            [exampleGroup],
-            definitions,
-        ))
-    }
-
-    return references
-}
-
-// graphqlReference is a helper function to create a Reference object for a GraphQL query or mutation.
-function graphqlReference(
-    operationType: ReferenceType.GRAPHQL_QUERY | ReferenceType.GRAPHQL_MUTATION,
-    operationName: string,
-    title: string, // TODO: in the future custom canonical
-    canonical: string, // TODO: in the future custom canonical
-    description: string,
-    examples: ExampleGroup[],
-    definitions: Definition[],
-): Reference {
-    return groupReference({
-        title,
-        canonical,
-        description,
-
-        category: ReferenceCategory.GRAPHQL,
-        type: operationType,
-
-        examples: {
-            groups: examples,
-        },
-        definitions,
-        context: {
-            graphqlTypeShort: operationType === ReferenceType.GRAPHQL_QUERY ? "query" : "mutation",
-            graphqlName: operationName,
-        }
-    })
-}
+import {GraphqlOperation} from "./types";
 
 const DEFAULT_GROUP = "Operations"
 
-export function groupReference(ref: Reference) {
-    let description = ""
-    if (typeof ref.description === "string") {
-        description = ref.description
-    } else {
-        console.error("Unsupported description type", ref.title)
+type GraphqlASTNodeType =
+    | GraphQLScalarType
+    | GraphQLObjectType
+    | GraphQLField<any, any>
+    | GraphQLArgument
+    | GraphQLInterfaceType
+    | GraphQLUnionType
+    | GraphQLEnumType
+    | GraphQLEnumValue
+    | GraphQLInputObjectType
+
+/**
+ * Helper function to filter fields based on region patterns
+ * @param fields - The fields to filter
+ * @param prefix - The prefix for the region key (e.g., "Query" or "Mutation")
+ * @param regions - The regions to filter by
+ * @returns Filtered fields object
+ */
+export function filterFieldsByRegions<T>(
+    fields: Record<string, T>,
+    prefix: string,
+    regions?: string[]
+): Record<string, T> {
+    if (!regions || regions.length === 0) {
+        return fields;
     }
 
-    const metaDescription = matter(description)
-    const meta = metaDescription?.data as Metadata | undefined
+    const filteredFields: Record<string, T> = {};
+    for (const [fieldName, field] of Object.entries(fields)) {
+        const regionKey = `${prefix}.${fieldName}`;
+        if (regions.some(region => region === regionKey)) {
+            filteredFields[fieldName] = field;
+        }
+    }
+    return filteredFields;
+}
 
-    let group = [DEFAULT_GROUP]
-    if (meta && meta.group) {
-        group = meta.group
+type GraphqlUniformReferenceType =
+    | GraphQLScalarType
+    | GraphQLObjectType
+    | GraphQLInterfaceType
+    | GraphQLUnionType
+    | GraphQLEnumType
+    | GraphQLInputObjectType
+    | GraphqlOperation
+
+export function uniformify(
+    gqlType: GraphqlUniformReferenceType,
+    definitions: Definition[],
+    examples: ExampleGroup[]
+): Reference {
+    let canonicalPrefix = ""
+    let graphqlTypeShort = ""
+    let refType: ReferenceType | undefined = undefined
+
+    if (gqlType instanceof GraphQLScalarType) {
+        canonicalPrefix = "scalars"
+        graphqlTypeShort = "scalar"
+        refType = ReferenceType.GRAPHQL_SCALAR
+    } else if (gqlType instanceof GraphQLObjectType) {
+        canonicalPrefix = "objects"
+        graphqlTypeShort = "object"
+        refType = ReferenceType.GRAPHQL_OBJECT
+    } else if (gqlType instanceof GraphQLInterfaceType) {
+        canonicalPrefix = "interfaces"
+        graphqlTypeShort = "interface"
+        refType = ReferenceType.GRAPHQL_INTERFACE
+    } else if (gqlType instanceof GraphQLUnionType) {
+        canonicalPrefix = "unions"
+        graphqlTypeShort = "union"
+        refType = ReferenceType.GRAPHQL_UNION
+    } else if (gqlType instanceof GraphQLEnumType) {
+        canonicalPrefix = "enums"
+        graphqlTypeShort = "enum"
+        refType = ReferenceType.GRAPHQL_ENUM
+    } else if (gqlType instanceof GraphQLInputObjectType) {
+        canonicalPrefix = "inputs"
+        graphqlTypeShort = "input"
+        refType = ReferenceType.GRAPHQL_INPUT
+    } else if (gqlType instanceof GraphqlOperation) {
+        switch (gqlType._operationType) {
+            case "query": {
+                canonicalPrefix = "queries"
+                graphqlTypeShort = "query"
+                refType = ReferenceType.GRAPHQL_QUERY
+                break;
+            }
+            case "mutation": {
+                canonicalPrefix = "mutations"
+                graphqlTypeShort = "mutation"
+                refType = ReferenceType.GRAPHQL_MUTATION
+                break;
+            }
+        }
     }
 
-    if (ref.context) {
-        ref.context.group = group
-    } else {
-        console.error("No context found for ref", ref.title)
+    const slugger = new GithubSlugger();
+    const slug = slugger.slug(gqlType.name);
+
+    return {
+        title: gqlType.name,
+        description: gqlType.description || "",
+        canonical: `${canonicalPrefix}/${slug}`,
+
+        category: ReferenceCategory.GRAPHQL,
+        type: refType,
+
+        context: {
+            graphqlTypeShort: graphqlTypeShort,
+            graphqlName: gqlType.name,
+            group: gqlASTNodeTypeToUniformGroup(gqlType),
+        },
+
+        examples: {
+            groups: examples || [],
+        },
+
+        definitions,
+    }
+}
+
+function gqlASTNodeTypeToUniformGroup(
+    astNodeType: GraphqlASTNodeType
+): string[] {
+    let groups: string[] = []
+
+    if (!astNodeType.astNode?.directives) {
+        return groups
     }
 
-    return ref
+    for (const directive of astNodeType.astNode.directives) {
+        switch (directive.name.value) {
+            // TODO IN THE FUTURE !!! OPEN DOCS SPEC !!!
+            case "opendocs": {
+                const groupArg = directive.arguments?.find(arg => arg.name.value === 'group')
+                if (groupArg?.value.kind === 'ListValue') {
+                    groups = groupArg.value.values
+                        .filter(v => v.kind === 'StringValue')
+                        .map(v => (v as any).value)
+                }
+                break
+            }
+        }
+    }
+
+    if (!groups?.length) {
+        groups = [DEFAULT_GROUP]
+    }
+
+    return groups
 }

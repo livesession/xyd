@@ -1,0 +1,17 @@
+input OpenDocsExampleInput {
+    """
+    The name of the code
+    """
+    code: String!
+}
+
+directive @opendocs(
+    group: [String!],
+    example: OpenDocsExampleInput
+) on QUERY |
+    MUTATION |
+    SUBSCRIPTION |
+    OBJECT |
+    INPUT_OBJECT |
+    ENUM |
+    SCALAR

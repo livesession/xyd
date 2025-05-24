@@ -187,6 +187,14 @@ export enum ReferenceType {
     // ---
     GRAPHQL_QUERY = "graphql_query",
     GRAPHQL_MUTATION = "graphql_mutation",
+    GRAPHQL_SUBSCRIPTION = "graphql_subscription",
+
+    GRAPHQL_SCALAR = "graphql_scalar",
+    GRAPHQL_OBJECT = "graphql_object",
+    GRAPHQL_INTERFACE = "graphql_interface",
+    GRAPHQL_UNION = "graphql_union",
+    GRAPHQL_ENUM = "graphql_enum",
+    GRAPHQL_INPUT = "graphql_input",
     // end for API
 
     // for code

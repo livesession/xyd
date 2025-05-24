@@ -1,0 +1,205 @@
+[
+  {
+    "title": "Author",
+    "description": "",
+    "canonical": "objects/author",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Author",
+      "group": [
+        "Operations"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "title",
+            "type": "String!",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "title",
+              "graphqlTypeFlat": "String",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "books",
+            "type": "[Book!]!",
+            "context": {
+              "graphqlBuiltInType": false,
+              "graphqlName": "books",
+              "graphqlTypeFlat": "Book!",
+              "graphqlTypeShort": ""
+            },
+            "description": "",
+            "properties": [
+              {
+                "name": "title",
+                "type": "String!",
+                "context": {
+                  "graphqlBuiltInType": true,
+                  "graphqlName": "title",
+                  "graphqlTypeFlat": "String",
+                  "graphqlTypeShort": "scalar"
+                },
+                "description": "",
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "author",
+                "type": "Author!",
+                "context": {
+                  "graphqlBuiltInType": false,
+                  "graphqlName": "author",
+                  "graphqlTypeFlat": "Author",
+                  "graphqlTypeShort": "object"
+                },
+                "description": "",
+                "properties": [
+                  {
+                    "name": "title",
+                    "type": "String!",
+                    "context": {},
+                    "description": ""
+                  },
+                  {
+                    "name": "books",
+                    "type": "[Book!]!",
+                    "context": {},
+                    "description": ""
+                  }
+                ],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              }
+            ],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Book",
+    "description": "",
+    "canonical": "objects/book",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Book",
+      "group": [
+        "Operations"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "title",
+            "type": "String!",
+            "context": {},
+            "description": ""
+          },
+          {
+            "name": "author",
+            "type": "Author!",
+            "context": {},
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "getBookByTitle",
+    "description": "",
+    "canonical": "queries/getbookbytitle",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "getBookByTitle",
+      "group": [
+        "Operations"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "graphql",
+                    "language": "graphql",
+                    "code": ""
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": []
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "title",
+            "type": "String!",
+            "context": {},
+            "description": ""
+          },
+          {
+            "name": "author",
+            "type": "Author!",
+            "context": {},
+            "description": ""
+          }
+        ]
+      }
+    ]
+  }
+]
