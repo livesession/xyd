@@ -1,53 +1,85 @@
-import {GraphQLArgument} from "graphql/type/definition";
-import {GraphQLInputObjectType} from "graphql/type";
+import { GraphQLArgument, GraphQLInputObjectType } from "graphql";
 
-import {DefinitionProperty} from "@xyd-js/uniform";
+import { DefinitionProperty, DefinitionPropertyMeta } from "@xyd-js/uniform";
 
-import {gqlInputToUniformDefinitionProperty} from "./gql-input";
+import { gqlInputToUniformDefinitionProperty } from "./gql-input";
+import {NestedGraphqlType} from "../types";
+import {Context} from "./context";
 
 // gqlArgToUniformDefinitionProperty converts GraphQL arguments into xyd 'uniform' definition properties
 export function gqlArgToUniformDefinitionProperty(
-    args: readonly GraphQLArgument[]
+    ctx: Context,
+    args: readonly GraphQLArgument[],
 ): DefinitionProperty[] {
     const resp: DefinitionProperty[] = []
 
     args.forEach(arg => {
-        let obj: GraphQLInputObjectType | null = null
+        let type = arg.type;
+        const meta: DefinitionPropertyMeta[] = [];
 
-        switch (arg.type.constructor.name) {
-            case "GraphQLNonNull": {
-                if ("ofType" in arg.type) {
-                    const ofType = arg.type?.ofType
+        // Handle non-null types
+        if (type.constructor.name === "GraphQLNonNull" && "ofType" in type) {
+            meta.push({
+                name: "required",
+                value: "true"
+            });
+            type = type.ofType;
+        }
 
-                    if (ofType?.constructor.name === "GraphQLInputObjectType") {
-                        obj = ofType as GraphQLInputObjectType
-                    }
-                }
-                break
+        // Handle list types
+        if (type.constructor.name === "GraphQLList" && "ofType" in type) {
+            type = type.ofType;
+
+            if (type.constructor.name === "GraphQLNonNull" && "ofType" in type) {
+                type = type.ofType;
             }
+        }
 
-            case "GraphQLInputObjectType" : {
-                obj = arg.type as GraphQLInputObjectType
-
-                break
+        // TODO: something similar to uniformPropsify but for properties?
+        switch (type.constructor.name) {
+            case "GraphQLInputObjectType": {
+                resp.push(gqlInputToUniformDefinitionProperty(
+                    ctx,
+                    arg.name,
+                    arg.description || "",
+                    type as GraphQLInputObjectType,
+                ));
+                break;
             }
-
+            case "GraphQLScalarType": {
+                resp.push({
+                    name: arg.name,
+                    type: arg.type.toJSON(),
+                    description: arg.description || "",
+                    context: {
+                        graphqlName: arg.name,
+                        graphqlTypeFlat: type.toJSON(),
+                        graphqlTypeShort: "scalar"
+                    },
+                    meta
+                });
+                break;
+            }
+            case "GraphQLEnumType": {
+                resp.push({
+                    name: arg.name,
+                    type: arg.type.toJSON(),
+                    description: arg.description || "",
+                    context: {
+                        graphqlName: arg.name,
+                        graphqlTypeFlat: type.toJSON(),
+                        graphqlTypeShort: "enum"
+                    },
+                    meta
+                });
+                break;
+            }
             default: {
+                console.error("unsupported argument type", type.constructor.name);
             }
         }
+    });
 
-        if (!obj) {
-            console.error("unsupported argument type", arg.type.constructor.name)
-            return
-        }
-
-        resp.push(gqlInputToUniformDefinitionProperty(
-            arg.name,
-            arg.description || "",
-            obj
-        ))
-    })
-
-    return resp
+    return resp;
 }
 

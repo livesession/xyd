@@ -1,5 +1,5 @@
-import type {GraphQLSchema} from "graphql/type";
-import {OperationTypeNode} from "graphql/language/ast";
+import type {GraphQLSchema} from "graphql";
+import {OperationTypeNode} from "graphql";
 
 import {Reference, ReferenceType} from "@xyd-js/uniform";
 
@@ -9,7 +9,7 @@ import {gqlOperationToUniformRef} from "./gql-operation";
 
 export function graphqlQueriesToUniformReferences(
     schema: GraphQLSchema,
-    options?: GQLSchemaToReferencesOptions
+    options?: GQLSchemaToReferencesOptions,
 ): Reference[] {
     const references: Reference[] = []
 
@@ -26,7 +26,8 @@ export function graphqlQueriesToUniformReferences(
 
         references.push(...gqlOperationToUniformRef(
             ReferenceType.GRAPHQL_QUERY,
-            filteredQueryFields
+            filteredQueryFields,
+            options
         ))
     }
 

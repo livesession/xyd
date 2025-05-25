@@ -2,9 +2,11 @@ import {GraphQLEnumType} from "graphql";
 
 import type {DefinitionProperty, Reference} from "@xyd-js/uniform";
 import {uniformify} from "../utils";
+import {NestedGraphqlType} from "../types";
+import {Context} from "./context";
 
 // gqlEnumToUniformRef is a helper function to convert a GraphQL enum type into a 'uniform' reference.
-export function gqlEnumToUniformRef(gqlType: GraphQLEnumType): Reference {
+export function gqlEnumToUniformRef(ctx: Context, gqlType: GraphQLEnumType): Reference {
     const props: DefinitionProperty[] = gqlType.getValues().map(value => ({
         name: value.name,
         type: "string",

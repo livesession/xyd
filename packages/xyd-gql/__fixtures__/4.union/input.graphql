@@ -1,0 +1,19 @@
+type Discount {
+    id: ID!
+}
+
+type Coupon {
+    id: ID!
+}
+
+type Refund {
+    id: ID!
+}
+
+union Offer = Discount | Coupon | Refund
+
+type Order {
+    id: ID!
+
+    offer: Offer
+}

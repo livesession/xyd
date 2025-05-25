@@ -8,51 +8,12 @@ import {
     GraphQLScalarType,
     GraphQLUnionType,
     GraphQLField
-} from "graphql/type/definition";
+} from "graphql";
 import GithubSlugger from 'github-slugger';
 
 import {Definition, ExampleGroup, Reference, ReferenceCategory, ReferenceType} from "@xyd-js/uniform";
 
 import {GraphqlOperation} from "./types";
-
-const DEFAULT_GROUP = "Operations"
-
-type GraphqlASTNodeType =
-    | GraphQLScalarType
-    | GraphQLObjectType
-    | GraphQLField<any, any>
-    | GraphQLArgument
-    | GraphQLInterfaceType
-    | GraphQLUnionType
-    | GraphQLEnumType
-    | GraphQLEnumValue
-    | GraphQLInputObjectType
-
-/**
- * Helper function to filter fields based on region patterns
- * @param fields - The fields to filter
- * @param prefix - The prefix for the region key (e.g., "Query" or "Mutation")
- * @param regions - The regions to filter by
- * @returns Filtered fields object
- */
-export function filterFieldsByRegions<T>(
-    fields: Record<string, T>,
-    prefix: string,
-    regions?: string[]
-): Record<string, T> {
-    if (!regions || regions.length === 0) {
-        return fields;
-    }
-
-    const filteredFields: Record<string, T> = {};
-    for (const [fieldName, field] of Object.entries(fields)) {
-        const regionKey = `${prefix}.${fieldName}`;
-        if (regions.some(region => region === regionKey)) {
-            filteredFields[fieldName] = field;
-        }
-    }
-    return filteredFields;
-}
 
 type GraphqlUniformReferenceType =
     | GraphQLScalarType
@@ -138,6 +99,43 @@ export function uniformify(
     }
 }
 
+/**
+ * Helper function to filter fields based on region patterns
+ * @param fields - The fields to filter
+ * @param prefix - The prefix for the region key (e.g., "Query" or "Mutation")
+ * @param regions - The regions to filter by
+ * @returns Filtered fields object
+ */
+export function filterFieldsByRegions<T>(
+    fields: Record<string, T>,
+    prefix: string,
+    regions?: string[]
+): Record<string, T> {
+    if (!regions || regions.length === 0) {
+        return fields;
+    }
+
+    const filteredFields: Record<string, T> = {};
+    for (const [fieldName, field] of Object.entries(fields)) {
+        const regionKey = `${prefix}.${fieldName}`;
+        if (regions.some(region => region === regionKey)) {
+            filteredFields[fieldName] = field;
+        }
+    }
+    return filteredFields;
+}
+
+type GraphqlASTNodeType =
+    | GraphQLScalarType
+    | GraphQLObjectType
+    | GraphQLField<any, any>
+    | GraphQLArgument
+    | GraphQLInterfaceType
+    | GraphQLUnionType
+    | GraphQLEnumType
+    | GraphQLEnumValue
+    | GraphQLInputObjectType
+
 function gqlASTNodeTypeToUniformGroup(
     astNodeType: GraphqlASTNodeType
 ): string[] {
@@ -163,7 +161,46 @@ function gqlASTNodeTypeToUniformGroup(
     }
 
     if (!groups?.length) {
-        groups = [DEFAULT_GROUP]
+        if (astNodeType instanceof GraphQLObjectType) {
+            groups = [
+                "Objects"
+            ]
+        } else if (astNodeType instanceof GraphQLInterfaceType) {
+            groups = [
+                "Interfaces"
+            ]
+        } else if (astNodeType instanceof GraphQLUnionType) {
+            groups = [
+                "Unions"
+            ]
+        } else if (astNodeType instanceof GraphQLEnumType) {
+            groups = [
+                "Enums"
+            ]
+        } else if (astNodeType instanceof GraphQLInputObjectType) {
+            groups = [
+                "Inputs"
+            ]
+        } else if (astNodeType instanceof GraphQLScalarType) {
+            groups = [
+                "Scalars"
+            ]
+        } else if (astNodeType instanceof GraphqlOperation) {
+            switch (astNodeType._operationType) {
+                case "query": {
+                    groups = [
+                        "Queries"
+                    ]
+                    break;
+                }
+                case "mutation": {
+                    groups = [
+                        "Mutations"
+                    ]
+                    break;
+                }
+            }
+        }
     }
 
     return groups

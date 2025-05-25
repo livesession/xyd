@@ -1,29 +1,33 @@
-import {GraphQLFieldMap} from "graphql/type";
-import {
-    Reference,
-    ReferenceType,
-    Definition,
-    Example,
-} from "@xyd-js/uniform";
+import {GraphQLFieldMap, OperationTypeNode} from "graphql";
+import {Definition, Example, Reference, ReferenceType,} from "@xyd-js/uniform";
 
-import {GraphqlOperation} from "../types";
+import {type GQLSchemaToReferencesOptions, GraphqlOperation, NestedGraphqlType} from "../types";
 import {gqlArgToUniformDefinitionProperty} from "./gql-arg";
 import {gqlFieldToUniformDefinitionProperty} from "./gql-field";
 import {simpleGraphqlExample} from "./gql-sample";
 import {uniformify} from "../utils";
+import {Context} from "./context";
 
 // gqlOperationToUniformRef is a helper function to create a list of xyd reference for a GraphQL operation (query or mutation).
 export function gqlOperationToUniformRef(
     operationType: ReferenceType.GRAPHQL_MUTATION | ReferenceType.GRAPHQL_QUERY,
-    fieldsMap: GraphQLFieldMap<any, any>
+    fieldsMap: GraphQLFieldMap<any, any>,
+    options?: GQLSchemaToReferencesOptions,
 ) {
     const references: Reference[] = []
-
+ 
     for (const [operationName, operationField] of Object.entries(fieldsMap)) {
         const definitions: Definition[] = []
 
-        const args = gqlArgToUniformDefinitionProperty(operationField.args)
-        const returns = gqlFieldToUniformDefinitionProperty(operationName, operationField)
+        const args = gqlArgToUniformDefinitionProperty(new Context(
+            new Set(),
+            options
+        ), operationField.args)
+        
+        const returns = gqlFieldToUniformDefinitionProperty(new Context(
+            new Set(),
+            options
+        ), operationName, operationField)
         const returnProperties = returns.properties || []
 
         definitions.push({
@@ -63,11 +67,11 @@ export function gqlOperationToUniformRef(
         const operation = new GraphqlOperation(operationField)
         switch (operationType) {
             case ReferenceType.GRAPHQL_QUERY: {
-                operation.__operationType = "query";
+                operation.__operationType = OperationTypeNode.QUERY;
                 break;
             }
             case ReferenceType.GRAPHQL_MUTATION: {
-                operation.__operationType = "mutation";
+                operation.__operationType = OperationTypeNode.MUTATION;
                 break;
             }
             default: {

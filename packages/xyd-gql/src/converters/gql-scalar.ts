@@ -3,9 +3,11 @@ import {GraphQLScalarType} from "@graphql-markdown/types";
 import type {Reference} from "@xyd-js/uniform";
 
 import {uniformify} from "../utils";
+import {NestedGraphqlType} from "../types";
+import {Context} from "./context";
 
 // gqlScalarToUniformRef is a helper function to convert a GraphQL scalar type into a 'uniform' reference.
-export function gqlScalarToUniformRef(gqlType: GraphQLScalarType): Reference {
+export function gqlScalarToUniformRef(ctx: Context, gqlType: GraphQLScalarType): Reference {
     return uniformify(
         gqlType,
         [],

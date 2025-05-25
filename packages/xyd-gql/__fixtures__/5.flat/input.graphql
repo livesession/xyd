@@ -1,0 +1,15 @@
+type Author {
+    id: ID!
+
+    name: String!
+
+    details: AuthorDetails!
+}
+
+type AuthorDetails {
+    birthDate: String
+}
+
+type Query {
+    author(id: ID!): Author
+}

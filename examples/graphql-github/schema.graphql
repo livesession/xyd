@@ -1,3 +1,7 @@
+extend schema @od_schema(
+    flattenTypes: true
+)
+
 """
 Marks an element of a GraphQL schema as only available via a preview header
 """

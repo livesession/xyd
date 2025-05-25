@@ -4,13 +4,14 @@ import fs from "node:fs";
 import {expect} from "vitest";
 
 import {gqlSchemaToReferences} from "../src";
+import {GQLSchemaToReferencesOptions} from "../src/types";
 
 // Helper function to run a test with a specific fixture
-export async function testGqlSchemaToReferences(fixtureName: string) {
+export async function testGqlSchemaToReferences(fixtureName: string, options?: GQLSchemaToReferencesOptions) {
     const schemaLocation = fullFixturePath(`${fixtureName}/input.graphql`)
     const expectedOutput = readFixtureOutput(`${fixtureName}/output.json`);
 
-    const result = await gqlSchemaToReferences(schemaLocation);
+    const result = await gqlSchemaToReferences(schemaLocation, options);
 
     expect(result).toEqual(expectedOutput);
 }
