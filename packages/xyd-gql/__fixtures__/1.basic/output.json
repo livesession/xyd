@@ -21,9 +21,9 @@
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "graphql",
+                    "title": "Query reference",
                     "language": "graphql",
-                    "code": ""
+                    "code": "{\n  getBookByTitle(title: \"example-title\") {\n    # getBookByTitle fields\n  }\n}"
                   }
                 ]
               }
@@ -58,7 +58,8 @@
             "description": "The book info input",
             "context": {
               "graphqlName": "info",
-              "graphqlTypeShort": "input"
+              "graphqlTypeShort": "input",
+              "graphqlTypeFlat": "BookInfoInput"
             },
             "properties": [
               {
@@ -79,7 +80,8 @@
                   }
                 ]
               }
-            ]
+            ],
+            "meta": []
           }
         ]
       },
@@ -113,7 +115,7 @@
               "graphqlTypeFlat": "String",
               "graphqlTypeShort": "scalar"
             },
-            "description": "@sidebar: [\"objects\"]\n@deprecated\n\nThe author of the book",
+            "description": "The author of the book",
             "properties": [],
             "meta": [
               {
@@ -185,9 +187,9 @@
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "graphql",
+                    "title": "Mutation reference",
                     "language": "graphql",
-                    "code": ""
+                    "code": "mutation addBook($input: BookInput!) {\n  addBook(input: $input) {\n    # addBook fields\n  }\n}"
                   }
                 ]
               }
@@ -202,11 +204,12 @@
         "properties": [
           {
             "name": "input",
-            "type": "BookInput",
+            "type": "BookInput!",
             "description": "",
             "context": {
               "graphqlName": "input",
-              "graphqlTypeShort": "input"
+              "graphqlTypeShort": "input",
+              "graphqlTypeFlat": "BookInput"
             },
             "properties": [
               {
@@ -264,6 +267,12 @@
                   }
                 ]
               }
+            ],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
             ]
           }
         ]
@@ -298,7 +307,7 @@
               "graphqlTypeFlat": "String",
               "graphqlTypeShort": "scalar"
             },
-            "description": "@sidebar: [\"objects\"]\n@deprecated\n\nThe author of the book",
+            "description": "The author of the book",
             "properties": [],
             "meta": [
               {
@@ -370,9 +379,9 @@
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "graphql",
+                    "title": "Mutation reference",
                     "language": "graphql",
-                    "code": ""
+                    "code": "mutation addAuthor($name: String!) {\n  addAuthor(name: $name) {\n    # addAuthor fields\n  }\n}"
                   }
                 ]
               }
@@ -488,7 +497,7 @@
               "graphqlTypeFlat": "String",
               "graphqlTypeShort": "scalar"
             },
-            "description": "@sidebar: [\"objects\"]\n@deprecated\n\nThe author of the book",
+            "description": "The author of the book",
             "properties": [],
             "meta": [
               {

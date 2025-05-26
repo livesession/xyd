@@ -21,9 +21,9 @@
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "graphql",
+                    "title": "Query reference",
                     "language": "graphql",
-                    "code": ""
+                    "code": "{\n  getBookByTitle(title: \"example-title\") {\n    # getBookByTitle fields\n  }\n}"
                   }
                 ]
               }

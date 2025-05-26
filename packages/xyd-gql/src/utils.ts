@@ -7,11 +7,19 @@ import {
     GraphQLObjectType,
     GraphQLScalarType,
     GraphQLUnionType,
-    GraphQLField
+    GraphQLField,
+    GraphQLInputField,
 } from "graphql";
 import GithubSlugger from 'github-slugger';
 
-import {Definition, ExampleGroup, Reference, ReferenceCategory, ReferenceType} from "@xyd-js/uniform";
+import {
+    Definition,
+    type DefinitionPropertyMeta,
+    ExampleGroup,
+    Reference,
+    ReferenceCategory,
+    ReferenceType
+} from "@xyd-js/uniform";
 
 import {GraphqlOperation} from "./types";
 
@@ -204,4 +212,65 @@ function gqlASTNodeTypeToUniformGroup(
     }
 
     return groups
+}
+
+export function gqlFieldToUniformMeta(
+    field: GraphQLField<any, any> | GraphQLInputField
+): DefinitionPropertyMeta[] {
+    const meta: DefinitionPropertyMeta[] = []
+
+    // Check if field is required (non-null)
+    if (isNonNullField(field.type) || isListOfNonNullItems(field.type)) {
+        meta.push({
+            name: "required",
+            value: "true"
+        })
+    }
+
+    // Handle directives
+    if (field.astNode?.directives) {
+        for (const directive of field.astNode.directives) {
+            // Handle @deprecated directive
+            if (directive.name.value === "deprecated") {
+                let foundDeprecatedReason = false
+                for (const arg of directive.arguments || []) {
+                    if (arg.name.value === "reason") {
+                        foundDeprecatedReason = true
+                        meta.push({
+                            name: "deprecated",
+                            value: arg.value.kind === 'StringValue' ? arg.value.value : "true"
+                        })
+                    }
+                }
+
+                if (!foundDeprecatedReason) {
+                    meta.push({
+                        name: "deprecated",
+                        value: "true"
+                    })
+                }
+            }
+        }
+    }
+
+    if ("defaultValue" in field && field.defaultValue !== undefined) {
+        meta.push({
+            name: "defaults",
+            value: field.defaultValue
+        })
+    }
+
+    return meta
+}
+
+// TODO: fix any
+function isNonNullField(type: any): boolean {
+    return type.constructor.name === "GraphQLNonNull"
+}
+
+// TODO: fix any
+function isListOfNonNullItems(type: any): boolean {
+    return "ofType" in type &&
+        type.constructor.name === "GraphQLList" &&
+        type.ofType.constructor.name === "GraphQLNonNull"
 }

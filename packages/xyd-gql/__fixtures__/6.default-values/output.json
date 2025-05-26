@@ -1,0 +1,953 @@
+[
+  {
+    "title": "getData",
+    "description": "",
+    "canonical": "queries/getdata",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "getData",
+      "group": [
+        "Queries"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "Query reference",
+                    "language": "graphql",
+                    "code": "query getData($input: DataInput!) {\n  getData(input: $input) {\n    # getData fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "input",
+            "type": "DataInput!",
+            "description": "",
+            "context": {
+              "graphqlName": "input",
+              "graphqlTypeShort": "input",
+              "graphqlTypeFlat": "DataInput"
+            },
+            "properties": [
+              {
+                "name": "name",
+                "type": "String",
+                "context": {
+                  "graphqlBuiltInType": true,
+                  "graphqlName": "name",
+                  "graphqlTypeFlat": "String",
+                  "graphqlTypeShort": "scalar"
+                },
+                "description": "",
+                "meta": [
+                  {
+                    "name": "defaults",
+                    "value": "default"
+                  }
+                ]
+              },
+              {
+                "name": "count",
+                "type": "Int",
+                "context": {
+                  "graphqlBuiltInType": true,
+                  "graphqlName": "count",
+                  "graphqlTypeFlat": "Int",
+                  "graphqlTypeShort": "scalar"
+                },
+                "description": "",
+                "meta": [
+                  {
+                    "name": "defaults",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "name": "isActive",
+                "type": "Boolean",
+                "context": {
+                  "graphqlBuiltInType": true,
+                  "graphqlName": "isActive",
+                  "graphqlTypeFlat": "Boolean",
+                  "graphqlTypeShort": "scalar"
+                },
+                "description": "",
+                "meta": [
+                  {
+                    "name": "defaults",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "name": "role",
+                "type": "Role",
+                "context": {
+                  "graphqlName": "role",
+                  "graphqlTypeFlat": null,
+                  "graphqlTypeShort": ""
+                },
+                "description": "",
+                "meta": [
+                  {
+                    "name": "defaults",
+                    "value": "USER"
+                  }
+                ]
+              },
+              {
+                "name": "tags",
+                "type": "[String!]",
+                "context": {
+                  "graphqlBuiltInType": true,
+                  "graphqlName": "tags",
+                  "graphqlTypeFlat": "String",
+                  "graphqlTypeShort": "scalar"
+                },
+                "description": "",
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  },
+                  {
+                    "name": "defaults",
+                    "value": [
+                      "tag1",
+                      "tag2"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "metadata",
+                "type": "MetadataInput",
+                "context": {
+                  "graphqlBuiltInType": false,
+                  "graphqlName": "metadata",
+                  "graphqlTypeFlat": "MetadataInput",
+                  "graphqlTypeShort": "input"
+                },
+                "description": "",
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "Boolean",
+                    "context": {
+                      "graphqlBuiltInType": true,
+                      "graphqlName": "active",
+                      "graphqlTypeFlat": "Boolean",
+                      "graphqlTypeShort": "scalar"
+                    },
+                    "description": "",
+                    "meta": [
+                      {
+                        "name": "defaults",
+                        "value": false
+                      }
+                    ]
+                  },
+                  {
+                    "name": "tags",
+                    "type": "[String!]",
+                    "context": {
+                      "graphqlBuiltInType": true,
+                      "graphqlName": "tags",
+                      "graphqlTypeFlat": "String",
+                      "graphqlTypeShort": "scalar"
+                    },
+                    "description": "",
+                    "properties": [],
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      },
+                      {
+                        "name": "defaults",
+                        "value": [
+                          "default"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "meta": [
+                  {
+                    "name": "defaults",
+                    "value": {
+                      "active": true,
+                      "tags": [
+                        "default"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "name",
+            "type": "String!",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "metadata",
+            "type": "Metadata!",
+            "context": {
+              "graphqlBuiltInType": false,
+              "graphqlName": "metadata",
+              "graphqlTypeFlat": "Metadata",
+              "graphqlTypeShort": "object"
+            },
+            "description": "",
+            "properties": [
+              {
+                "name": "active",
+                "type": "Boolean!",
+                "context": {
+                  "graphqlBuiltInType": true,
+                  "graphqlName": "active",
+                  "graphqlTypeFlat": "Boolean",
+                  "graphqlTypeShort": "scalar"
+                },
+                "description": "",
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "tags",
+                "type": "[String!]!",
+                "context": {
+                  "graphqlBuiltInType": false,
+                  "graphqlName": "tags",
+                  "graphqlTypeFlat": "String!",
+                  "graphqlTypeShort": ""
+                },
+                "description": "",
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              }
+            ],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "getDataList",
+    "description": "",
+    "canonical": "queries/getdatalist",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "getDataList",
+      "group": [
+        "Queries"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "Query reference",
+                    "language": "graphql",
+                    "code": "{\n  getDataList(limit: 10) {\n    # getDataList fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "limit",
+            "type": "Int!",
+            "description": "",
+            "context": {
+              "graphqlName": "limit",
+              "graphqlTypeFlat": "Int",
+              "graphqlTypeShort": "scalar"
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "defaults",
+                "value": 10
+              }
+            ]
+          },
+          {
+            "name": "offset",
+            "type": "Int",
+            "description": "",
+            "context": {
+              "graphqlName": "offset",
+              "graphqlTypeFlat": "Int",
+              "graphqlTypeShort": "scalar"
+            },
+            "meta": [
+              {
+                "name": "defaults",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "name": "page",
+            "type": "Int",
+            "description": "",
+            "context": {
+              "graphqlName": "page",
+              "graphqlTypeFlat": "Int",
+              "graphqlTypeShort": "scalar"
+            },
+            "meta": []
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "name",
+            "type": "String!",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "metadata",
+            "type": "Metadata!",
+            "context": {
+              "graphqlBuiltInType": false,
+              "graphqlName": "metadata",
+              "graphqlTypeFlat": "Metadata",
+              "graphqlTypeShort": "object"
+            },
+            "description": "",
+            "properties": [
+              {
+                "name": "active",
+                "type": "Boolean!",
+                "context": {
+                  "graphqlBuiltInType": true,
+                  "graphqlName": "active",
+                  "graphqlTypeFlat": "Boolean",
+                  "graphqlTypeShort": "scalar"
+                },
+                "description": "",
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "tags",
+                "type": "[String!]!",
+                "context": {
+                  "graphqlBuiltInType": false,
+                  "graphqlName": "tags",
+                  "graphqlTypeFlat": "String!",
+                  "graphqlTypeShort": ""
+                },
+                "description": "",
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              }
+            ],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Data",
+    "description": "",
+    "canonical": "objects/data",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Data",
+      "group": [
+        "Objects"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "name",
+            "type": "String!",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "metadata",
+            "type": "Metadata!",
+            "context": {
+              "graphqlBuiltInType": false,
+              "graphqlName": "metadata",
+              "graphqlTypeFlat": "Metadata",
+              "graphqlTypeShort": "object"
+            },
+            "description": "",
+            "properties": [
+              {
+                "name": "active",
+                "type": "Boolean!",
+                "context": {
+                  "graphqlBuiltInType": true,
+                  "graphqlName": "active",
+                  "graphqlTypeFlat": "Boolean",
+                  "graphqlTypeShort": "scalar"
+                },
+                "description": "",
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "tags",
+                "type": "[String!]!",
+                "context": {
+                  "graphqlBuiltInType": false,
+                  "graphqlName": "tags",
+                  "graphqlTypeFlat": "String!",
+                  "graphqlTypeShort": ""
+                },
+                "description": "",
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              }
+            ],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Metadata",
+    "description": "",
+    "canonical": "objects/metadata",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Metadata",
+      "group": [
+        "Objects"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "active",
+            "type": "Boolean!",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "active",
+              "graphqlTypeFlat": "Boolean",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "tags",
+            "type": "[String!]!",
+            "context": {
+              "graphqlBuiltInType": false,
+              "graphqlName": "tags",
+              "graphqlTypeFlat": "String!",
+              "graphqlTypeShort": ""
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Role",
+    "description": "",
+    "canonical": "enums/role",
+    "category": "graphql",
+    "type": "graphql_enum",
+    "context": {
+      "graphqlTypeShort": "enum",
+      "graphqlName": "Role",
+      "group": [
+        "Enums"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Valid values",
+        "properties": [
+          {
+            "name": "USER",
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "ADMIN",
+            "type": "string",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "DataInput",
+    "description": "",
+    "canonical": "inputs/datainput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "DataInput",
+      "group": [
+        "Inputs"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "name",
+            "type": "String",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "meta": [
+              {
+                "name": "defaults",
+                "value": "default"
+              }
+            ]
+          },
+          {
+            "name": "count",
+            "type": "Int",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "count",
+              "graphqlTypeFlat": "Int",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "meta": [
+              {
+                "name": "defaults",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "name": "isActive",
+            "type": "Boolean",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "isActive",
+              "graphqlTypeFlat": "Boolean",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "meta": [
+              {
+                "name": "defaults",
+                "value": true
+              }
+            ]
+          },
+          {
+            "name": "role",
+            "type": "Role",
+            "context": {
+              "graphqlName": "role",
+              "graphqlTypeFlat": null,
+              "graphqlTypeShort": ""
+            },
+            "description": "",
+            "meta": [
+              {
+                "name": "defaults",
+                "value": "USER"
+              }
+            ]
+          },
+          {
+            "name": "tags",
+            "type": "[String!]",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "tags",
+              "graphqlTypeFlat": "String",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "defaults",
+                "value": [
+                  "tag1",
+                  "tag2"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "metadata",
+            "type": "MetadataInput",
+            "context": {
+              "graphqlBuiltInType": false,
+              "graphqlName": "metadata",
+              "graphqlTypeFlat": "MetadataInput",
+              "graphqlTypeShort": "input"
+            },
+            "description": "",
+            "properties": [
+              {
+                "name": "active",
+                "type": "Boolean",
+                "context": {
+                  "graphqlBuiltInType": true,
+                  "graphqlName": "active",
+                  "graphqlTypeFlat": "Boolean",
+                  "graphqlTypeShort": "scalar"
+                },
+                "description": "",
+                "meta": [
+                  {
+                    "name": "defaults",
+                    "value": false
+                  }
+                ]
+              },
+              {
+                "name": "tags",
+                "type": "[String!]",
+                "context": {
+                  "graphqlBuiltInType": true,
+                  "graphqlName": "tags",
+                  "graphqlTypeFlat": "String",
+                  "graphqlTypeShort": "scalar"
+                },
+                "description": "",
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  },
+                  {
+                    "name": "defaults",
+                    "value": [
+                      "default"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "meta": [
+              {
+                "name": "defaults",
+                "value": {
+                  "active": true,
+                  "tags": [
+                    "default"
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "MetadataInput",
+    "description": "",
+    "canonical": "inputs/metadatainput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "MetadataInput",
+      "group": [
+        "Inputs"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "active",
+            "type": "Boolean",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "active",
+              "graphqlTypeFlat": "Boolean",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "meta": [
+              {
+                "name": "defaults",
+                "value": false
+              }
+            ]
+          },
+          {
+            "name": "tags",
+            "type": "[String!]",
+            "context": {
+              "graphqlBuiltInType": true,
+              "graphqlName": "tags",
+              "graphqlTypeFlat": "String",
+              "graphqlTypeShort": "scalar"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "defaults",
+                "value": [
+                  "default"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

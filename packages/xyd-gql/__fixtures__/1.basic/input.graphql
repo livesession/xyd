@@ -33,9 +33,6 @@ A book type
 """
 type Book {
     """
-    @sidebar: ["objects"]
-    @deprecated
-
     The author of the book
     """
     author_name: String!

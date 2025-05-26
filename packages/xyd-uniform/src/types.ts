@@ -36,8 +36,9 @@ export interface Reference<
 
 export type DefinitionOpenAPIMeta = Meta<"contentType">;
 export type DefinitionTypeDocMeta = Meta<"type">;
+export type DefinitionGraphqlMeta = Meta<"type" | "graphqlName">;
 
-export type DefinitionMeta = DefinitionOpenAPIMeta | DefinitionTypeDocMeta
+export type DefinitionMeta = DefinitionOpenAPIMeta | DefinitionTypeDocMeta | DefinitionGraphqlMeta
 
 export interface Definition<
     M extends DefinitionMeta = DefinitionMeta,
@@ -82,10 +83,10 @@ export interface DefinitionVariant<
 export interface Meta<T = string> {
     name: T;
 
-    value?: string;
+    value?: unknown; // TODO: better type?
 }
 
-export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum">
+export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum" | "flat">
 
 export type DefinitionPropertyTypeDef = {
     symbolId?: string;

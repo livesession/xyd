@@ -9,22 +9,22 @@ const tests: {
         flat?: boolean;
     };
 }[] = [
-    // {
-    //     name: "1.basic",
-    //     description: "A basic example",
-    // },
-    // {
-    //     name: "2.circular",
-    //     description: "A circular dependency reference example",
-    // },
-    // {
-    //     name: "3.opendocs",
-    //     description: "An opendocs directive example",
-    // },
-    // {
-    //     name: "4.union",
-    //     description: "An opendocs directive example",
-    // },
+    {
+        name: "1.basic",
+        description: "A basic example",
+    },
+    {
+        name: "2.circular",
+        description: "A circular dependency reference example",
+    },
+    {
+        name: "3.opendocs",
+        description: "An opendocs directive example",
+    },
+    {
+        name: "4.union",
+        description: "An opendocs directive example",
+    },
     {
         name: "5.flat",
         description: "Flat generation only via code options",
@@ -32,13 +32,21 @@ const tests: {
             flat: true
         }
     },
+    {
+        name: "6.default-values",
+        description: "Default values example",
+    },
+    {
+        name: "7.type-args",
+        description: "Type args",
+    },
 
-    // {
-    //     name: "-1.od_gqls.flat",
-    //     description: "OpenDocs GraphQL Schema directive example with flat generation",
-    // },
+    {
+        name: "-1.od_gqls.flat",
+        description: "OpenDocs GraphQL Schema directive example with flat generation",
+    },
 
-
+    // TODO: uncomment when ready
     // {
     //     name: "-2.complex.monday",
     //     description: "Monday.com GraphQL API example",

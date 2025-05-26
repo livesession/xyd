@@ -44,7 +44,8 @@ export function gqlInputToUniformDefinitionProperty(
         description: description || "",
         context: {
             graphqlName: name,
-            graphqlTypeShort: "input"
+            graphqlTypeShort: "input",
+            graphqlTypeFlat: obj.toJSON(),
         },
         properties: nestedProps,
     }

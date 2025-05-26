@@ -14,11 +14,12 @@ import {
     isSpecifiedScalarType
 } from "graphql";
 
-import type {DefinitionProperty, DefinitionPropertyMeta} from "@xyd-js/uniform";
+import type {DefinitionProperty} from "@xyd-js/uniform";
 
 import {gqlUnionToUniformDefinitionProperties} from "./gql-union";
 import {NestedGraphqlType} from "../types";
 import {Context} from "./context";
+import {gqlFieldToUniformMeta} from "../utils";
 
 // TODO: better processedTypes without set through all functions?
 
@@ -28,36 +29,52 @@ export function gqlFieldToUniformDefinitionProperty(
     fieldName: string,
     field: GraphQLField<any, any> | GraphQLInputField,
 ): DefinitionProperty {
-    const fieldConverter = new GQLFieldConverter()
-
-    return fieldConverter.convert(ctx, fieldName, field);
+    return GQLFieldConverter.convert(ctx, fieldName, field);
 }
 
 // TODO: !!! `processedTypes` is SINGLETON !!! PASS FROM FIRST CHAIN CUZ IT MAY SOME ISSUES IF CALLED IN PARALLEL !!! + RESET !!!
 export class GQLFieldConverter {
-    constructor() {
+    private constructor(private ctx: Context) {
     }
 
-    public convert(
+    public static convert(
         ctx: Context,
+        fieldName: string,
+        field: GraphQLField<any, any> | GraphQLInputField,
+    ): DefinitionProperty {
+        return new GQLFieldConverter(ctx).convert(fieldName, field);
+    }
+
+    private convert(
         fieldName: string,
         field: GraphQLField<any, any> | GraphQLInputField,
         parent?: NestedGraphqlType,
     ): DefinitionProperty {
-        if (parent && ctx.options?.flat) {
-            return {
-                name: fieldName,
-                type: field.type.toJSON(),
-                context: {
-                    graphqlName: fieldName,
-                    graphqlTypeFlat: field.type.toJSON(),
-                    graphqlTypeShort: getGraphqlTypeShort(field),
-                },
-                description: field.description || "",
-                properties: [],
-                meta: this.fieldMeta(field)
+        if (this.ctx.options?.flat) {
+            const shortType =  getGraphqlTypeShort(field)
+
+            if (["object", "input"].includes(shortType)) {
+                return {
+                    name: fieldName,
+                    type: field.type.toJSON(),
+                    context: {
+                        graphqlName: fieldName,
+                        graphqlTypeFlat: field.type.toJSON(),
+                        graphqlTypeShort: getGraphqlTypeShort(field),
+                    },
+                    description: field.description || "",
+                    properties: [],
+                    meta: [
+                        ...gqlFieldToUniformMeta(field),
+                        {
+                            name: "flat",
+                            value: "true"
+                        }
+                    ]
+                }
             }
         }
+
         let properties
         let graphqlTypeFlat: GraphQLNamedType | null = null
 
@@ -69,7 +86,7 @@ export class GQLFieldConverter {
                         case "GraphQLObjectType": {
                             const objectType = field.type.ofType as GraphQLObjectType
 
-                            properties = this.nestedProperties(ctx, objectType)
+                            properties = this.nestedProperties(objectType)
                             graphqlTypeFlat = objectType
 
                             break
@@ -78,14 +95,14 @@ export class GQLFieldConverter {
                         case "GraphQLInputObjectType": {
                             const inputObjectType = field.type.ofType as GraphQLInputObjectType
 
-                            properties = this.nestedProperties(ctx, inputObjectType)
+                            properties = this.nestedProperties(inputObjectType)
                             graphqlTypeFlat = inputObjectType
 
                             break
                         }
 
                         case "GraphQLScalarType": {
-                            properties = this.definitionPropsFromNestedObj(ctx, field) || []
+                            properties = this.definitionPropsFromNestedObj(field) || []
                             graphqlTypeFlat = field.type.ofType as GraphQLNamedType
 
                             break
@@ -94,14 +111,14 @@ export class GQLFieldConverter {
                         case "GraphQLUnionType": {
                             const unionType = field.type.ofType as GraphQLUnionType
 
-                            properties = gqlUnionToUniformDefinitionProperties(ctx, unionType)
+                            properties = gqlUnionToUniformDefinitionProperties(this.ctx, unionType)
                             graphqlTypeFlat = unionType
 
                             break
                         }
 
                         case "GraphQLNonNull": {
-                            properties = this.definitionPropsFromNestedObj(ctx, field) || []
+                            properties = this.definitionPropsFromNestedObj(field) || []
                             if ("ofType" in field.type.ofType) {
                                 graphqlTypeFlat = field.type.ofType.ofType as GraphQLNamedType
                             }
@@ -112,7 +129,7 @@ export class GQLFieldConverter {
                         case "GraphQLInterfaceType": {
                             const interfaceType = field.type.ofType as GraphQLInterfaceType
 
-                            properties = this.nestedProperties(ctx, interfaceType)
+                            properties = this.nestedProperties(interfaceType)
                             graphqlTypeFlat = interfaceType
 
                             break
@@ -127,7 +144,7 @@ export class GQLFieldConverter {
                 }
 
                 case "GraphQLNonNull": {
-                    properties = this.definitionPropsFromNestedObj(ctx, field) || []
+                    properties = this.definitionPropsFromNestedObj(field) || []
                     graphqlTypeFlat = field.type.ofType as GraphQLNamedType
 
                     break
@@ -143,12 +160,12 @@ export class GQLFieldConverter {
         else if (field.type.constructor.name === "GraphQLObjectType") {
             const objectType = field.type as GraphQLObjectType
 
-            properties = this.nestedProperties(ctx, objectType)
+            properties = this.nestedProperties(objectType)
             graphqlTypeFlat = field.type
         } else if (field.type.constructor.name === "GraphQLInputObjectType") {
             const objectType = field.type as GraphQLInputObjectType
 
-            properties = this.nestedProperties(ctx, objectType)
+            properties = this.nestedProperties(objectType)
             graphqlTypeFlat = field.type
         } else if (field.type.constructor.name === "GraphQLScalarType") {
             graphqlTypeFlat = field.type
@@ -188,7 +205,7 @@ export class GQLFieldConverter {
                 graphqlTypeShort = "union"
                 const unionType = graphqlTypeFlat as GraphQLUnionType
 
-                properties = gqlUnionToUniformDefinitionProperties(ctx, unionType)
+                properties = gqlUnionToUniformDefinitionProperties(this.ctx, unionType)
 
                 break
             }
@@ -205,14 +222,13 @@ export class GQLFieldConverter {
             },
             description: field.description || "",
             properties,
-            meta: this.fieldMeta(field)
+            meta: gqlFieldToUniformMeta(field)
         }
 
         if (graphqlTypeFlat) {
             const nestedType = graphqlTypeFlat as NestedGraphqlType
             nestedType.__definitionProperties = resp.properties
         }
-
         if (parent) {
             parent.__definitionProperties = resp.properties
         }
@@ -222,20 +238,20 @@ export class GQLFieldConverter {
 
     // TODO: fix any + another more safety solution?
     // definitionPropsFromNestedObj converts graphql nested obj into xyd 'uniform' definition properties
-    private definitionPropsFromNestedObj(ctx: Context, obj: any): DefinitionProperty[] | null {
+    private definitionPropsFromNestedObj(obj: any): DefinitionProperty[] | null {
         if (!obj) {
             return null
         }
         if (obj.getFields) {
-            return this.nestedProperties(ctx, obj)
+            return this.nestedProperties(obj)
         }
 
         if (obj.ofType) {
-            return this.definitionPropsFromNestedObj(ctx, obj.ofType)
+            return this.definitionPropsFromNestedObj(obj.ofType)
         }
 
         if (obj.type) {
-            return this.definitionPropsFromNestedObj(ctx, obj.type)
+            return this.definitionPropsFromNestedObj(obj.type)
         }
 
         return null
@@ -243,7 +259,6 @@ export class GQLFieldConverter {
 
     // deepFieldMap iterates over GraphQL field (field or input fields) maps
     private deepFieldMap(
-        ctx: Context,
         fieldsMap: GraphQLFieldMap<any, any> | GraphQLInputFieldMap,
         parent: NestedGraphqlType
     ): DefinitionProperty[] {
@@ -251,7 +266,6 @@ export class GQLFieldConverter {
 
         for (const [name, field] of Object.entries(fieldsMap)) {
             const prop = this.convert(
-                ctx,
                 name,
                 field,
                 parent
@@ -266,13 +280,9 @@ export class GQLFieldConverter {
     }
 
     // nestedProperties get fields from object or input object types and iterates over them
-    private nestedProperties(ctx: Context, objectType: NestedGraphqlType) {
-        // if (ctx?.options?.flat) {
-        //     return []
-        // }
-
+    private nestedProperties(objectType: NestedGraphqlType) {
         // Check if we've already processed this type to prevent circular dependencies
-        if (ctx.processedTypes.has(objectType)) {
+        if (this.ctx.processedTypes.has(objectType)) {
             if (objectType?.__definitionProperties) {
                 return objectType.__definitionProperties || []
             }
@@ -281,63 +291,12 @@ export class GQLFieldConverter {
         }
 
         // Mark this type as being processed
-        ctx.processedTypes.add(objectType)
+        this.ctx.processedTypes.add(objectType)
 
         const nestedFields = objectType?.getFields?.()
-        const result = this.deepFieldMap(ctx, nestedFields, objectType)
+        const result = this.deepFieldMap(nestedFields, objectType)
 
         return result
-    }
-
-    private fieldMeta(field: GraphQLField<any, any> | GraphQLInputField): DefinitionPropertyMeta[] {
-        const meta: DefinitionPropertyMeta[] = []
-
-        // Check if field is required (non-null)
-        if (this.isNonNullField(field.type) || this.isListOfNonNullItems(field.type)) {
-            meta.push({
-                name: "required",
-                value: "true"
-            })
-        }
-
-        // Handle directives
-        if (field.astNode?.directives) {
-            for (const directive of field.astNode.directives) {
-                // Handle @deprecated directive
-                if (directive.name.value === "deprecated") {
-                    let foundDeprecatedReason = false
-                    for (const arg of directive.arguments || []) {
-                        if (arg.name.value === "reason") {
-                            foundDeprecatedReason = true
-                            meta.push({
-                                name: "deprecated",
-                                value: arg.value.kind === 'StringValue' ? arg.value.value : "true"
-                            })
-                        }
-                    }
-
-                    if (!foundDeprecatedReason) {
-                        meta.push({
-                            name: "deprecated",
-                            value: "true"
-                        })
-                    }
-                }
-            }
-        }
-
-        return meta
-    }
-
-    // Helper functions to check field types
-    private isNonNullField(type: any): boolean {
-        return type.constructor.name === "GraphQLNonNull"
-    }
-
-    private isListOfNonNullItems(type: any): boolean {
-        return "ofType" in type &&
-            type.constructor.name === "GraphQLList" &&
-            type.ofType.constructor.name === "GraphQLNonNull"
     }
 }
 
@@ -418,18 +377,13 @@ function getGraphqlTypeShort(field: GraphQLField<any, any> | GraphQLInputField,)
     }
     // if regular object type
     else if (field.type.constructor.name === "GraphQLObjectType") {
-        const objectType = field.type as GraphQLObjectType
-
         graphqlTypeFlat = field.type
     } else if (field.type.constructor.name === "GraphQLInputObjectType") {
-        const objectType = field.type as GraphQLInputObjectType
-
         graphqlTypeFlat = field.type
     } else if (field.type.constructor.name === "GraphQLScalarType") {
         graphqlTypeFlat = field.type
     } else if (field.type.constructor.name === "GraphQLUnionType") {
-        const unionType = field.type as GraphQLUnionType
-        graphqlTypeFlat = unionType
+        graphqlTypeFlat = field.type
     }
 
     let graphqlTypeShort = ""
@@ -437,7 +391,7 @@ function getGraphqlTypeShort(field: GraphQLField<any, any> | GraphQLInputField,)
     switch (graphqlTypeFlat?.constructor?.name) {
         case "GraphQLList": {
             if ("ofType" in graphqlTypeFlat) {
-                graphqlTypeFlat = graphqlTypeFlat.ofType as GraphQLNamedType
+                graphqlTypeFlat = graphqlTypeFlat.ofType
             }
         }
     }
@@ -457,7 +411,6 @@ function getGraphqlTypeShort(field: GraphQLField<any, any> | GraphQLInputField,)
         }
         case "GraphQLUnionType": {
             graphqlTypeShort = "union"
-            const unionType = graphqlTypeFlat as GraphQLUnionType
 
             break
         }

@@ -1,10 +1,11 @@
-import { GraphQLArgument, GraphQLInputObjectType } from "graphql";
+import {GraphQLArgument, GraphQLInputObjectType} from "graphql";
 
-import { DefinitionProperty, DefinitionPropertyMeta } from "@xyd-js/uniform";
+import {DefinitionProperty, DefinitionPropertyMeta} from "@xyd-js/uniform";
 
-import { gqlInputToUniformDefinitionProperty } from "./gql-input";
+import {gqlInputToUniformDefinitionProperty} from "./gql-input";
 import {NestedGraphqlType} from "../types";
 import {Context} from "./context";
+import {gqlFieldToUniformMeta, uniformify} from "../utils";
 
 // gqlArgToUniformDefinitionProperty converts GraphQL arguments into xyd 'uniform' definition properties
 export function gqlArgToUniformDefinitionProperty(
@@ -15,14 +16,9 @@ export function gqlArgToUniformDefinitionProperty(
 
     args.forEach(arg => {
         let type = arg.type;
-        const meta: DefinitionPropertyMeta[] = [];
 
         // Handle non-null types
         if (type.constructor.name === "GraphQLNonNull" && "ofType" in type) {
-            meta.push({
-                name: "required",
-                value: "true"
-            });
             type = type.ofType;
         }
 
@@ -35,17 +31,30 @@ export function gqlArgToUniformDefinitionProperty(
             }
         }
 
+        const meta = gqlFieldToUniformMeta(arg)
+
         // TODO: something similar to uniformPropsify but for properties?
         switch (type.constructor.name) {
             case "GraphQLInputObjectType": {
-                resp.push(gqlInputToUniformDefinitionProperty(
+                // TODO gqlInputToUniformDefinitionProperty should have meta itself?
+                const prop = gqlInputToUniformDefinitionProperty(
                     ctx,
                     arg.name,
                     arg.description || "",
                     type as GraphQLInputObjectType,
-                ));
+                )
+
+                resp.push({
+                    ...prop,
+                    type: arg.type.toJSON(),
+                    meta: [
+                        ...prop.meta || [],
+                        ...meta || []
+                    ],
+                });
                 break;
             }
+
             case "GraphQLScalarType": {
                 resp.push({
                     name: arg.name,
@@ -60,6 +69,7 @@ export function gqlArgToUniformDefinitionProperty(
                 });
                 break;
             }
+
             case "GraphQLEnumType": {
                 resp.push({
                     name: arg.name,
@@ -74,6 +84,7 @@ export function gqlArgToUniformDefinitionProperty(
                 });
                 break;
             }
+
             default: {
                 console.error("unsupported argument type", type.constructor.name);
             }

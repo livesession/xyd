@@ -21,9 +21,9 @@
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "graphql",
+                    "title": "Query reference",
                     "language": "graphql",
-                    "code": ""
+                    "code": "query author($id: ID!) {\n  author(id: $id) {\n    # author fields\n  }\n}"
                   }
                 ]
               }
@@ -56,7 +56,25 @@
       },
       {
         "title": "Returns",
-        "properties": []
+        "properties": [
+          {
+            "name": "author",
+            "type": "Author",
+            "context": {
+              "graphqlName": "author",
+              "graphqlTypeFlat": "Author",
+              "graphqlTypeShort": "object"
+            },
+            "description": "",
+            "properties": [],
+            "meta": [
+              {
+                "name": "flat",
+                "value": "true"
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -120,9 +138,8 @@
             "name": "details",
             "type": "AuthorDetails!",
             "context": {
-              "graphqlBuiltInType": false,
               "graphqlName": "details",
-              "graphqlTypeFlat": "AuthorDetails",
+              "graphqlTypeFlat": "AuthorDetails!",
               "graphqlTypeShort": "object"
             },
             "description": "",
@@ -130,6 +147,10 @@
             "meta": [
               {
                 "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "flat",
                 "value": "true"
               }
             ]

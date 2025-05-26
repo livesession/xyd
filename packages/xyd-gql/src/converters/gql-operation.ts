@@ -15,7 +15,7 @@ export function gqlOperationToUniformRef(
     options?: GQLSchemaToReferencesOptions,
 ) {
     const references: Reference[] = []
- 
+
     for (const [operationName, operationField] of Object.entries(fieldsMap)) {
         const definitions: Definition[] = []
 
@@ -23,12 +23,15 @@ export function gqlOperationToUniformRef(
             new Set(),
             options
         ), operationField.args)
-        
+
         const returns = gqlFieldToUniformDefinitionProperty(new Context(
             new Set(),
             options
         ), operationName, operationField)
-        const returnProperties = returns.properties || []
+        let returnProperties = returns.properties || []
+        if (options?.flat) {
+            returnProperties = [returns]
+        }
 
         definitions.push({
             title: "Arguments",
@@ -36,7 +39,7 @@ export function gqlOperationToUniformRef(
         })
         definitions.push({
             title: "Returns",
-            properties: returnProperties
+            properties: returnProperties,
         })
 
         const exampleQuery = simpleGraphqlExample(
@@ -45,12 +48,29 @@ export function gqlOperationToUniformRef(
             args,
             returnProperties
         )
+
+        let exampleQueryTitle = ""
+
+        switch (operationType) {
+            case ReferenceType.GRAPHQL_QUERY: {
+                exampleQueryTitle = `Query reference`;
+                break;
+            }
+            case ReferenceType.GRAPHQL_MUTATION: {
+                exampleQueryTitle = `Mutation reference`;
+                break;
+            }
+            default: {
+                console.error(`Invalid operation type: ${operationType}`);
+            }
+        }
+
         const examples: Example[] = [
             {
                 codeblock: {
                     tabs: [
                         {
-                            title: "graphql",
+                            title: exampleQueryTitle,
                             language: "graphql",
                             code: exampleQuery,
                         }

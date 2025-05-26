@@ -1,0 +1,19 @@
+type Book {
+    authors(
+        first: Int
+        after: String
+        limit: Int!
+    ): [Author!]!
+
+    libraries(
+        limit: Int!
+    ): [Library!]!
+}
+
+type Author {
+    name: String!
+}
+
+type Library {
+    name: String!
+}

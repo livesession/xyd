@@ -19,7 +19,7 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
                 {
                     propName || propValue ?
                         <dl className={cn.ApiRefPropertiesDlHost}>
-                            <PropName value={propName} />
+                            <PropName value={propName} meta={property.meta || []} />
                             <PropType
                                 value={propValue}
                                 meta={property.meta || []}
@@ -44,10 +44,22 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
     </ul>
 }
 
-function PropName({ value }: { value: string }) {
+function hideName(meta: DefinitionPropertyMeta[]): boolean {
+    if (!meta) {
+        return false
+    }
+    return meta.some(m => m.name === "flat")
+}
+
+function PropName({ value, meta }: { value: string, meta: DefinitionPropertyMeta[] }) {
     if (!value) {
         return null
     }
+
+    if (hideName(meta)) {
+        return null
+    }
+
     return <atlas-apiref-propname>
         <dd>
             <code className={cn.ApiRefPropertiesPropNameCodeHost}>{value}</code>
@@ -111,6 +123,8 @@ function PropMeta(props: PropMetaProps) {
             return null
         case "enum":
             return null
+        case "flat":
+            return null
     }
 
     return <atlas-apiref-propmeta data-name={props.name} data-value={props.value}>
@@ -172,7 +186,7 @@ function SubProperties({ properties }: { properties: MDXReference<DefinitionProp
                                 {
                                     propName || propValue ?
                                         <dl className={cn.ApiRefPropertiesDlHost}>
-                                            <PropName value={propName} />
+                                            <PropName meta={prop.meta || []} value={propName} />
                                             <PropType
                                                 value={propValue}
                                                 meta={prop.meta || []}

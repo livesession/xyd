@@ -21,9 +21,9 @@
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "graphql",
+                    "title": "Query reference",
                     "language": "graphql",
-                    "code": ""
+                    "code": "query checkout($id: ID!) {\n  checkout(id: $id) {\n    # checkout fields\n  }\n}"
                   }
                 ]
               }
@@ -123,9 +123,9 @@
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "graphql",
+                    "title": "Query reference",
                     "language": "graphql",
-                    "code": ""
+                    "code": "query checkoutLine($id: ID!) {\n  checkoutLine(id: $id) {\n    # checkoutLine fields\n  }\n}"
                   }
                 ]
               }

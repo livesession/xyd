@@ -13,7 +13,14 @@ export async function testGqlSchemaToReferences(fixtureName: string, options?: G
 
     const result = await gqlSchemaToReferences(schemaLocation, options);
 
-    expect(result).toEqual(expectedOutput);
+    try {
+        expect(result).toEqual(expectedOutput);
+    } catch (error) {
+        if (result?.length > 100) {
+            throw new Error(`FAILED: The diff result is too long (${result.length} items) to show.`);
+        }
+        throw error;
+    }
 }
 
 // Helper function to read fixture output
