@@ -1,0 +1,136 @@
+[
+  {
+    "title": "books",
+    "description": "",
+    "canonical": "queries/books",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "books",
+      "group": [
+        "Queries"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "Query reference",
+                    "language": "graphql",
+                    "code": "query books($book_id: ID!) {\n  books(book_id: $book_id) {\n    # books fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "book_id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "book_id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "books",
+            "type": "[Book!]!",
+            "description": "",
+            "context": {
+              "graphqlName": "books",
+              "graphqlTypeFlat": "Book",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "flat",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": "objects/book"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Book",
+    "description": "",
+    "canonical": "objects/book",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Book",
+      "group": [
+        "Objects"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "book_id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "book_id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

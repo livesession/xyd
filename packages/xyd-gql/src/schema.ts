@@ -1,6 +1,6 @@
 import fs from "node:fs";
 
-import {buildSchema, GraphQLSchema, print} from "graphql";
+import {buildSchema, print} from "graphql";
 import {mergeTypeDefs} from '@graphql-tools/merge';
 
 import type {Reference} from "@xyd-js/uniform"
@@ -11,12 +11,7 @@ import {DEFAULT_SORT_ORDER} from "./types";
 import {graphqlTypesToUniformReferences} from "./converters/gql-types";
 import {graphqlQueriesToUniformReferences} from "./converters/gql-query";
 import {graphqlMutationsToUniformReferences} from "./converters/gql-mutation";
-
-interface SchemaExtensions {
-    od_gqls?: {
-        flat?: boolean;
-    };
-}
+import {openDocsExtensionsToOptions} from "./opendocs";
 
 // TODO: support multi graphql files
 // TODO: !!! CIRCULAR_DEPENDENCY !!!
@@ -52,7 +47,7 @@ export async function gqlSchemaToReferences(
 
     options = {
         ...options,
-        ...openDocsGqlExtensionsToOptions(schema)
+        ...openDocsExtensionsToOptions(schema)
     }
 
     // 5. Generate uniform references from the schema
@@ -107,33 +102,3 @@ function getTypeOrder(type: string, sortConfig: OpenDocsSortConfig): number {
     }
 }
 
-function openDocsGqlExtensionsToOptions(
-    schema: GraphQLSchema,
-) {
-    const options: GQLSchemaToReferencesOptions = {}
-
-    // Check for @od_schema directive in schema extensions
-    for (const extension of schema.extensionASTNodes || []) {
-        if (extension.kind === 'SchemaExtension') {
-            for (const directive of extension.directives || []) {
-                if (directive.name.value === 'od_schema') {
-                    for (const arg of directive.arguments || []) {
-                        if (arg.name.value === 'flattenTypes' && arg.value.kind === 'BooleanValue' && arg.value.value === true) {
-                            options.flat = true
-                        } else if (arg.name.value === 'sort' && arg.value.kind === 'ObjectValue') {
-                            const sortConfig: OpenDocsSortConfig = {};
-                            for (const field of arg.value.fields) {
-                                if (field.value.kind === 'IntValue') {
-                                    sortConfig[field.name.value as keyof OpenDocsSortConfig] = parseInt(field.value.value);
-                                }
-                            }
-                            options.sort = sortConfig;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return options;
-}

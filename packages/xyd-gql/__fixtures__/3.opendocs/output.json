@@ -43,14 +43,18 @@
             "context": {
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
+            "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       },
@@ -60,31 +64,32 @@
           {
             "name": "id",
             "type": "ID!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "checkoutId",
             "type": "String!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "checkoutId",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
@@ -95,7 +100,10 @@
                 "name": "deprecated",
                 "value": "Use `id` instead."
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }
@@ -145,14 +153,18 @@
             "context": {
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
+            "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       },
@@ -162,31 +174,32 @@
           {
             "name": "id",
             "type": "ID!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "checkoutLineId",
             "type": "String!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "checkoutLineId",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
@@ -197,7 +210,10 @@
                 "name": "deprecated",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }
@@ -226,31 +242,32 @@
           {
             "name": "id",
             "type": "ID!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "checkoutId",
             "type": "String!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "checkoutId",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
@@ -261,7 +278,10 @@
                 "name": "deprecated",
                 "value": "Use `id` instead."
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }
@@ -290,31 +310,32 @@
           {
             "name": "id",
             "type": "ID!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "checkoutLineId",
             "type": "String!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "checkoutLineId",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
@@ -325,7 +346,10 @@
                 "name": "deprecated",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }

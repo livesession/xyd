@@ -1,5 +1,5 @@
 import React from "react";
-import { HighlightedCode } from "codehike/code";
+import {HighlightedCode} from "codehike/code";
 
 // TODO: type, and category also as generic?
 export interface Reference<
@@ -65,7 +65,7 @@ export interface Definition<
     type?: string;
 }
 
-export type DefinitionVariantOpenAPIMeta = Meta<"">;
+export type DefinitionVariantOpenAPIMeta = Meta<"status" | "contentType">;
 export type DefinitionVariantTypeDocMeta = Meta<"symbolName">;
 
 export type DefinitionVariantMeta = DefinitionVariantOpenAPIMeta | DefinitionVariantTypeDocMeta
@@ -210,7 +210,11 @@ export interface BaseReferenceContext {
 }
 
 export interface GraphQLReferenceContext extends BaseReferenceContext {
+    /**
+     * @unsafe
+     */
     graphqlTypeShort: string;
+
     graphqlName: string;
 }
 

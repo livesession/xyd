@@ -10,6 +10,14 @@ type AuthorDetails {
     birthDate: String
 }
 
-type Query {
-    author(id: ID!): Author
+input AuthorDetailsInput {
+    birthDate: String
 }
+
+type Query {
+    author(
+        id: ID!
+        details: AuthorDetailsInput
+    ): Author
+}
+

@@ -43,45 +43,56 @@
             "context": {
               "graphqlName": "title",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
+            "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "info",
             "type": "BookInfoInput",
             "description": "The book info input",
             "context": {
-              "graphqlName": "info",
               "graphqlTypeShort": "input",
-              "graphqlTypeFlat": "BookInfoInput"
+              "graphqlName": "BookInfoInput",
+              "group": [
+                "Inputs"
+              ]
             },
             "properties": [
               {
                 "name": "date",
                 "type": "String!",
+                "description": "The date of the book",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "date",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "The date of the book",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               }
             ],
-            "meta": []
+            "meta": [],
+            "typeDef": {
+              "symbolId": "inputs/bookinfoinput"
+            }
           }
         ]
       },
@@ -91,67 +102,72 @@
           {
             "name": "title",
             "type": "String!",
+            "description": "The title of the book",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "title",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The title of the book",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "author_name",
             "type": "String!",
+            "description": "The author of the book",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "author_name",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The author of the book",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "info",
             "type": "BookInfo!",
+            "description": "The nested book information",
             "context": {
-              "graphqlBuiltInType": false,
               "graphqlName": "info",
               "graphqlTypeFlat": "BookInfo",
-              "graphqlTypeShort": "object"
+              "graphqlBuiltInType": false
             },
-            "description": "The nested book information",
             "properties": [
               {
                 "name": "date",
                 "type": "String!",
+                "description": "The date of the book",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "date",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "The date of the book",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               }
             ],
             "meta": [
@@ -159,7 +175,10 @@
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "objects/bookinfo"
+            }
           }
         ]
       }
@@ -207,57 +226,62 @@
             "type": "BookInput!",
             "description": "",
             "context": {
-              "graphqlName": "input",
               "graphqlTypeShort": "input",
-              "graphqlTypeFlat": "BookInput"
+              "graphqlName": "BookInput",
+              "group": [
+                "Inputs"
+              ]
             },
             "properties": [
               {
                 "name": "title",
                 "type": "String!",
+                "description": "The title of the book",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "title",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "The title of the book",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               },
               {
                 "name": "info",
                 "type": "BookInfoInput!",
+                "description": "The author of the book",
                 "context": {
-                  "graphqlBuiltInType": false,
                   "graphqlName": "info",
                   "graphqlTypeFlat": "BookInfoInput",
-                  "graphqlTypeShort": "input"
+                  "graphqlBuiltInType": false
                 },
-                "description": "The author of the book",
                 "properties": [
                   {
                     "name": "date",
                     "type": "String!",
+                    "description": "The date of the book",
                     "context": {
-                      "graphqlBuiltInType": true,
                       "graphqlName": "date",
                       "graphqlTypeFlat": "String",
-                      "graphqlTypeShort": "scalar"
+                      "graphqlBuiltInType": true
                     },
-                    "description": "The date of the book",
                     "properties": [],
                     "meta": [
                       {
                         "name": "required",
                         "value": "true"
                       }
-                    ]
+                    ],
+                    "typeDef": {
+                      "symbolId": ""
+                    }
                   }
                 ],
                 "meta": [
@@ -265,7 +289,10 @@
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": "inputs/bookinfoinput"
+                }
               }
             ],
             "meta": [
@@ -273,7 +300,10 @@
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "inputs/bookinput"
+            }
           }
         ]
       },
@@ -283,67 +313,72 @@
           {
             "name": "title",
             "type": "String!",
+            "description": "The title of the book",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "title",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The title of the book",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "author_name",
             "type": "String!",
+            "description": "The author of the book",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "author_name",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The author of the book",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "info",
             "type": "BookInfo!",
+            "description": "The nested book information",
             "context": {
-              "graphqlBuiltInType": false,
               "graphqlName": "info",
               "graphqlTypeFlat": "BookInfo",
-              "graphqlTypeShort": "object"
+              "graphqlBuiltInType": false
             },
-            "description": "The nested book information",
             "properties": [
               {
                 "name": "date",
                 "type": "String!",
+                "description": "The date of the book",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "date",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "The date of the book",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               }
             ],
             "meta": [
@@ -351,7 +386,10 @@
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "objects/bookinfo"
+            }
           }
         ]
       }
@@ -401,14 +439,18 @@
             "context": {
               "graphqlName": "name",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
+            "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       },
@@ -418,33 +460,37 @@
           {
             "name": "name",
             "type": "String!",
+            "description": "The name of the author",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "name",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The name of the author",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "books",
             "type": "[String]",
+            "description": "The books of the author",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "books",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The books of the author",
             "properties": [],
-            "meta": []
+            "meta": [],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }
@@ -473,67 +519,72 @@
           {
             "name": "title",
             "type": "String!",
+            "description": "The title of the book",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "title",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The title of the book",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "author_name",
             "type": "String!",
+            "description": "The author of the book",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "author_name",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The author of the book",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "info",
             "type": "BookInfo!",
+            "description": "The nested book information",
             "context": {
-              "graphqlBuiltInType": false,
               "graphqlName": "info",
               "graphqlTypeFlat": "BookInfo",
-              "graphqlTypeShort": "object"
+              "graphqlBuiltInType": false
             },
-            "description": "The nested book information",
             "properties": [
               {
                 "name": "date",
                 "type": "String!",
+                "description": "The date of the book",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "date",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "The date of the book",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               }
             ],
             "meta": [
@@ -541,7 +592,10 @@
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "objects/bookinfo"
+            }
           }
         ]
       }
@@ -570,20 +624,22 @@
           {
             "name": "date",
             "type": "String!",
+            "description": "The date of the book",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "date",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The date of the book",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }
@@ -612,33 +668,37 @@
           {
             "name": "name",
             "type": "String!",
+            "description": "The name of the author",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "name",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The name of the author",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "books",
             "type": "[String]",
+            "description": "The books of the author",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "books",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The books of the author",
             "properties": [],
-            "meta": []
+            "meta": [],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }
@@ -667,49 +727,52 @@
           {
             "name": "title",
             "type": "String!",
+            "description": "The title of the book",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "title",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The title of the book",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "info",
             "type": "BookInfoInput!",
+            "description": "The author of the book",
             "context": {
-              "graphqlBuiltInType": false,
               "graphqlName": "info",
               "graphqlTypeFlat": "BookInfoInput",
-              "graphqlTypeShort": "input"
+              "graphqlBuiltInType": false
             },
-            "description": "The author of the book",
             "properties": [
               {
                 "name": "date",
                 "type": "String!",
+                "description": "The date of the book",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "date",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "The date of the book",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               }
             ],
             "meta": [
@@ -717,7 +780,10 @@
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "inputs/bookinfoinput"
+            }
           }
         ]
       }
@@ -746,20 +812,22 @@
           {
             "name": "date",
             "type": "String!",
+            "description": "The date of the book",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "date",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "The date of the book",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }

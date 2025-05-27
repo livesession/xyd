@@ -3,6 +3,7 @@ import { DefinitionProperty, DefinitionPropertyMeta } from "@xyd-js/uniform";
 
 import { type MDXReference, uniformValue, uniformChild } from "@/utils/mdx"
 import * as cn from "./ApiRefProperties.styles";
+import { useBaseMatch } from "@/components/Atlas/AtlasContext";
 
 export interface ApiRefPropertiesProps {
     properties: MDXReference<DefinitionProperty[]>
@@ -21,7 +22,7 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
                         <dl className={cn.ApiRefPropertiesDlHost}>
                             <PropName value={propName} meta={property.meta || []} />
                             <PropType
-                                value={propValue}
+                                property={property}
                                 meta={property.meta || []}
                             />
                             <PropMetaList
@@ -68,18 +69,29 @@ function PropName({ value, meta }: { value: string, meta: DefinitionPropertyMeta
 }
 
 interface PropTypeProps {
-    value: string
-
-    href?: string
+    property: DefinitionProperty
 
     meta?: PropMetaProps[]
 }
-function PropType({ value, href, meta }: PropTypeProps) {
-    if (!value) {
+function PropType({ property, meta }: PropTypeProps) {
+    const baseMatch = useBaseMatch()
+
+    if (!property || !property.type) {
         return null
     }
 
+    const value = property.type
+
+    let href = ""
     let valueText = value
+
+    if (property?.typeDef?.symbolId) {
+        let symbolLink = property.typeDef.symbolId
+        if (!symbolLink.startsWith("/")) {
+            symbolLink = "/" + symbolLink
+        }
+        href = `${baseMatch}${symbolLink}`;
+    }
 
     const multipleTypes = [value]
     for (const m of meta || []) { // TODO: find better way to do this
@@ -94,7 +106,9 @@ function PropType({ value, href, meta }: PropTypeProps) {
             <code className={cn.ApiRefPropertiesPropTypeCodeHost}>
                 {
                     href
-                        ? <a className={cn.ApiRefPropertiesPropTypeCodeLink} href={href}>{valueText}</a>
+                        ? <>
+                            (<a className={cn.ApiRefPropertiesPropTypeCodeLink} href={href}>{valueText}</a>)
+                        </>
                         : valueText
                 }
             </code>
@@ -188,7 +202,7 @@ function SubProperties({ properties }: { properties: MDXReference<DefinitionProp
                                         <dl className={cn.ApiRefPropertiesDlHost}>
                                             <PropName meta={prop.meta || []} value={propName} />
                                             <PropType
-                                                value={propValue}
+                                                property={prop}
                                                 meta={prop.meta || []}
                                             />
                                             <PropMetaList

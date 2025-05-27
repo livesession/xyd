@@ -2,6 +2,7 @@ directive @opendocs(
     group: [String!],
     example: OpenDocsExampleInput
 ) on QUERY |
+    FIELD_DEFINITION |
     MUTATION |
     SUBSCRIPTION |
     OBJECT |

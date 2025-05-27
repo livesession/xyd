@@ -1,12 +1,12 @@
 import {GraphQLFieldMap, OperationTypeNode} from "graphql";
 import {Definition, Example, Reference, ReferenceType,} from "@xyd-js/uniform";
 
-import {type GQLSchemaToReferencesOptions, GraphqlOperation, NestedGraphqlType} from "../types";
+import {type GQLSchemaToReferencesOptions, GQLOperation} from "../types";
 import {gqlArgToUniformDefinitionProperty} from "./gql-arg";
 import {gqlFieldToUniformDefinitionProperty} from "./gql-field";
 import {simpleGraphqlExample} from "./gql-sample";
-import {uniformify} from "../utils";
-import {Context} from "./context";
+import {uniformify} from "../gql-core";
+import {Context} from "../context";
 
 // gqlOperationToUniformRef is a helper function to create a list of xyd reference for a GraphQL operation (query or mutation).
 export function gqlOperationToUniformRef(
@@ -18,16 +18,33 @@ export function gqlOperationToUniformRef(
 
     for (const [operationName, operationField] of Object.entries(fieldsMap)) {
         const definitions: Definition[] = []
+        let flatReturn = false
+        let flat = false
+        let argFlat = false
+
+        if (options?.flat) {
+            flatReturn = true
+            flat = true
+            argFlat = true
+        }
 
         const args = gqlArgToUniformDefinitionProperty(new Context(
             new Set(),
-            options
+            options,
+            {
+                flat,
+                argFlat,
+            }
         ), operationField.args)
+
 
         const returns = gqlFieldToUniformDefinitionProperty(new Context(
             new Set(),
-            options
-        ), operationName, operationField)
+            options,
+            {
+                flatReturn
+            }
+        ), operationField)
         let returnProperties = returns.properties || []
         if (options?.flat) {
             returnProperties = [returns]
@@ -84,7 +101,7 @@ export function gqlOperationToUniformRef(
             examples,
         }
 
-        const operation = new GraphqlOperation(operationField)
+        const operation = new GQLOperation(operationField)
         switch (operationType) {
             case ReferenceType.GRAPHQL_QUERY: {
                 operation.__operationType = OperationTypeNode.QUERY;

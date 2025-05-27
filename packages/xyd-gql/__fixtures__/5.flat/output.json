@@ -43,14 +43,35 @@
             "context": {
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
+            "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          },
+          {
+            "name": "details",
+            "type": "AuthorDetailsInput",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "input",
+              "graphqlName": "AuthorDetailsInput",
+              "group": [
+                "Inputs"
+              ]
+            },
+            "properties": [],
+            "meta": [],
+            "typeDef": {
+              "symbolId": "inputs/authordetailsinput"
+            }
           }
         ]
       },
@@ -60,19 +81,22 @@
           {
             "name": "author",
             "type": "Author",
+            "description": "",
             "context": {
               "graphqlName": "author",
               "graphqlTypeFlat": "Author",
-              "graphqlTypeShort": "object"
+              "graphqlBuiltInType": false
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "flat",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "objects/author"
+            }
           }
         ]
       }
@@ -101,59 +125,78 @@
           {
             "name": "id",
             "type": "ID!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "name",
             "type": "String!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "name",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "details",
             "type": "AuthorDetails!",
+            "description": "",
             "context": {
               "graphqlName": "details",
-              "graphqlTypeFlat": "AuthorDetails!",
-              "graphqlTypeShort": "object"
+              "graphqlTypeFlat": "AuthorDetails",
+              "graphqlBuiltInType": false
             },
-            "description": "",
-            "properties": [],
+            "properties": [
+              {
+                "name": "birthDate",
+                "type": "String",
+                "description": "",
+                "context": {
+                  "graphqlName": "birthDate",
+                  "graphqlTypeFlat": "String",
+                  "graphqlBuiltInType": true
+                },
+                "properties": [],
+                "meta": [],
+                "typeDef": {
+                  "symbolId": ""
+                }
+              }
+            ],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
-              },
-              {
-                "name": "flat",
-                "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "objects/authordetails"
+            }
           }
         ]
       }
@@ -182,16 +225,42 @@
           {
             "name": "birthDate",
             "type": "String",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "birthDate",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
-            "meta": []
+            "properties": [],
+            "meta": [],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
+      }
+    ]
+  },
+  {
+    "title": "AuthorDetailsInput",
+    "description": "",
+    "canonical": "inputs/authordetailsinput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "AuthorDetailsInput",
+      "group": [
+        "Inputs"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": []
       }
     ]
   }

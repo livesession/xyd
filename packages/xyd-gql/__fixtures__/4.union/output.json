@@ -22,20 +22,22 @@
           {
             "name": "id",
             "type": "ID!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }
@@ -64,20 +66,22 @@
           {
             "name": "id",
             "type": "ID!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }
@@ -106,20 +110,22 @@
           {
             "name": "id",
             "type": "ID!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }
@@ -148,121 +154,152 @@
           {
             "name": "id",
             "type": "ID!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "id",
               "graphqlTypeFlat": "ID",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "offer",
             "type": "Offer",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": false,
               "graphqlName": "offer",
               "graphqlTypeFlat": "Offer",
-              "graphqlTypeShort": "union"
+              "graphqlBuiltInType": false
             },
-            "description": "",
             "properties": [
               {
                 "name": "Discount",
                 "type": "Discount",
                 "description": "",
                 "context": {
+                  "graphqlTypeShort": "object",
                   "graphqlName": "Discount",
-                  "graphqlTypeShort": "object"
+                  "group": [
+                    "Objects"
+                  ]
                 },
                 "properties": [
                   {
                     "name": "id",
                     "type": "ID!",
+                    "description": "",
                     "context": {
-                      "graphqlBuiltInType": true,
                       "graphqlName": "id",
                       "graphqlTypeFlat": "ID",
-                      "graphqlTypeShort": "scalar"
+                      "graphqlBuiltInType": true
                     },
-                    "description": "",
                     "properties": [],
                     "meta": [
                       {
                         "name": "required",
                         "value": "true"
                       }
-                    ]
+                    ],
+                    "typeDef": {
+                      "symbolId": ""
+                    }
                   }
-                ]
+                ],
+                "meta": [],
+                "typeDef": {
+                  "symbolId": "objects/discount"
+                }
               },
               {
                 "name": "Coupon",
                 "type": "Coupon",
                 "description": "",
                 "context": {
+                  "graphqlTypeShort": "object",
                   "graphqlName": "Coupon",
-                  "graphqlTypeShort": "object"
+                  "group": [
+                    "Objects"
+                  ]
                 },
                 "properties": [
                   {
                     "name": "id",
                     "type": "ID!",
+                    "description": "",
                     "context": {
-                      "graphqlBuiltInType": true,
                       "graphqlName": "id",
                       "graphqlTypeFlat": "ID",
-                      "graphqlTypeShort": "scalar"
+                      "graphqlBuiltInType": true
                     },
-                    "description": "",
                     "properties": [],
                     "meta": [
                       {
                         "name": "required",
                         "value": "true"
                       }
-                    ]
+                    ],
+                    "typeDef": {
+                      "symbolId": ""
+                    }
                   }
-                ]
+                ],
+                "meta": [],
+                "typeDef": {
+                  "symbolId": "objects/coupon"
+                }
               },
               {
                 "name": "Refund",
                 "type": "Refund",
                 "description": "",
                 "context": {
+                  "graphqlTypeShort": "object",
                   "graphqlName": "Refund",
-                  "graphqlTypeShort": "object"
+                  "group": [
+                    "Objects"
+                  ]
                 },
                 "properties": [
                   {
                     "name": "id",
                     "type": "ID!",
+                    "description": "",
                     "context": {
-                      "graphqlBuiltInType": true,
                       "graphqlName": "id",
                       "graphqlTypeFlat": "ID",
-                      "graphqlTypeShort": "scalar"
+                      "graphqlBuiltInType": true
                     },
-                    "description": "",
                     "properties": [],
                     "meta": [
                       {
                         "name": "required",
                         "value": "true"
                       }
-                    ]
+                    ],
+                    "typeDef": {
+                      "symbolId": ""
+                    }
                   }
-                ]
+                ],
+                "meta": [],
+                "typeDef": {
+                  "symbolId": "objects/refund"
+                }
               }
             ],
-            "meta": []
+            "meta": [],
+            "typeDef": {
+              "symbolId": "unions/offer"
+            }
           }
         ]
       }
@@ -293,87 +330,114 @@
             "type": "Discount",
             "description": "",
             "context": {
+              "graphqlTypeShort": "object",
               "graphqlName": "Discount",
-              "graphqlTypeShort": "object"
+              "group": [
+                "Objects"
+              ]
             },
             "properties": [
               {
                 "name": "id",
                 "type": "ID!",
+                "description": "",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "id",
                   "graphqlTypeFlat": "ID",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               }
-            ]
+            ],
+            "meta": [],
+            "typeDef": {
+              "symbolId": "objects/discount"
+            }
           },
           {
             "name": "Coupon",
             "type": "Coupon",
             "description": "",
             "context": {
+              "graphqlTypeShort": "object",
               "graphqlName": "Coupon",
-              "graphqlTypeShort": "object"
+              "group": [
+                "Objects"
+              ]
             },
             "properties": [
               {
                 "name": "id",
                 "type": "ID!",
+                "description": "",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "id",
                   "graphqlTypeFlat": "ID",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               }
-            ]
+            ],
+            "meta": [],
+            "typeDef": {
+              "symbolId": "objects/coupon"
+            }
           },
           {
             "name": "Refund",
             "type": "Refund",
             "description": "",
             "context": {
+              "graphqlTypeShort": "object",
               "graphqlName": "Refund",
-              "graphqlTypeShort": "object"
+              "group": [
+                "Objects"
+              ]
             },
             "properties": [
               {
                 "name": "id",
                 "type": "ID!",
+                "description": "",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "id",
                   "graphqlTypeFlat": "ID",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               }
-            ]
+            ],
+            "meta": [],
+            "typeDef": {
+              "symbolId": "objects/refund"
+            }
           }
         ]
       }

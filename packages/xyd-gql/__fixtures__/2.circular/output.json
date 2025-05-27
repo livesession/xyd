@@ -43,14 +43,18 @@
             "context": {
               "graphqlName": "title",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
+            "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       },
@@ -60,67 +64,72 @@
           {
             "name": "title",
             "type": "String!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "title",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "author",
             "type": "Author!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": false,
               "graphqlName": "author",
               "graphqlTypeFlat": "Author",
-              "graphqlTypeShort": "object"
+              "graphqlBuiltInType": false
             },
-            "description": "",
             "properties": [
               {
                 "name": "title",
                 "type": "String!",
+                "description": "",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "title",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               },
               {
                 "name": "books",
                 "type": "[Book!]!",
-                "context": {
-                  "graphqlBuiltInType": false,
-                  "graphqlName": "books",
-                  "graphqlTypeFlat": "Book!",
-                  "graphqlTypeShort": ""
-                },
                 "description": "",
+                "context": {
+                  "graphqlName": "books",
+                  "graphqlTypeFlat": "Book",
+                  "graphqlBuiltInType": false
+                },
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": "objects/book"
+                }
               }
             ],
             "meta": [
@@ -128,7 +137,10 @@
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "objects/author"
+            }
           }
         ]
       }
@@ -157,96 +169,102 @@
           {
             "name": "title",
             "type": "String!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "title",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "books",
             "type": "[Book!]!",
-            "context": {
-              "graphqlBuiltInType": false,
-              "graphqlName": "books",
-              "graphqlTypeFlat": "Book!",
-              "graphqlTypeShort": ""
-            },
             "description": "",
+            "context": {
+              "graphqlName": "books",
+              "graphqlTypeFlat": "Book",
+              "graphqlBuiltInType": false
+            },
             "properties": [
               {
                 "name": "title",
                 "type": "String!",
+                "description": "",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "title",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               },
               {
                 "name": "author",
                 "type": "Author!",
+                "description": "",
                 "context": {
-                  "graphqlBuiltInType": false,
                   "graphqlName": "author",
                   "graphqlTypeFlat": "Author",
-                  "graphqlTypeShort": "object"
+                  "graphqlBuiltInType": false
                 },
-                "description": "",
                 "properties": [
                   {
                     "name": "title",
                     "type": "String!",
+                    "description": "",
                     "context": {
-                      "graphqlBuiltInType": true,
                       "graphqlName": "title",
                       "graphqlTypeFlat": "String",
-                      "graphqlTypeShort": "scalar"
+                      "graphqlBuiltInType": true
                     },
-                    "description": "",
                     "properties": [],
                     "meta": [
                       {
                         "name": "required",
                         "value": "true"
                       }
-                    ]
+                    ],
+                    "typeDef": {
+                      "symbolId": ""
+                    }
                   },
                   {
                     "name": "books",
                     "type": "[Book!]!",
-                    "context": {
-                      "graphqlBuiltInType": false,
-                      "graphqlName": "books",
-                      "graphqlTypeFlat": "Book!",
-                      "graphqlTypeShort": ""
-                    },
                     "description": "",
+                    "context": {
+                      "graphqlName": "books",
+                      "graphqlTypeFlat": "Book",
+                      "graphqlBuiltInType": false
+                    },
                     "properties": [],
                     "meta": [
                       {
                         "name": "required",
                         "value": "true"
                       }
-                    ]
+                    ],
+                    "typeDef": {
+                      "symbolId": "objects/book"
+                    }
                   }
                 ],
                 "meta": [
@@ -254,7 +272,10 @@
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": "objects/author"
+                }
               }
             ],
             "meta": [
@@ -262,7 +283,10 @@
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "objects/book"
+            }
           }
         ]
       }
@@ -291,67 +315,72 @@
           {
             "name": "title",
             "type": "String!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "title",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "author",
             "type": "Author!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": false,
               "graphqlName": "author",
               "graphqlTypeFlat": "Author",
-              "graphqlTypeShort": "object"
+              "graphqlBuiltInType": false
             },
-            "description": "",
             "properties": [
               {
                 "name": "title",
                 "type": "String!",
+                "description": "",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "title",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               },
               {
                 "name": "books",
                 "type": "[Book!]!",
-                "context": {
-                  "graphqlBuiltInType": false,
-                  "graphqlName": "books",
-                  "graphqlTypeFlat": "Book!",
-                  "graphqlTypeShort": ""
-                },
                 "description": "",
+                "context": {
+                  "graphqlName": "books",
+                  "graphqlTypeFlat": "Book",
+                  "graphqlBuiltInType": false
+                },
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": "objects/book"
+                }
               }
             ],
             "meta": [
@@ -359,7 +388,10 @@
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "objects/author"
+            }
           }
         ]
       }

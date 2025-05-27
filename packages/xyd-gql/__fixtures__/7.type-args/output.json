@@ -26,9 +26,13 @@
             "context": {
               "graphqlName": "first",
               "graphqlTypeFlat": "Int",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "meta": []
+            "properties": [],
+            "meta": [],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "after",
@@ -37,9 +41,13 @@
             "context": {
               "graphqlName": "after",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "meta": []
+            "properties": [],
+            "meta": [],
+            "typeDef": {
+              "symbolId": ""
+            }
           },
           {
             "name": "limit",
@@ -48,14 +56,18 @@
             "context": {
               "graphqlName": "limit",
               "graphqlTypeFlat": "Int",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
+            "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ],
         "meta": [
@@ -79,14 +91,18 @@
             "context": {
               "graphqlName": "limit",
               "graphqlTypeFlat": "Int",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
+            "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ],
         "meta": [
@@ -106,31 +122,32 @@
           {
             "name": "authors",
             "type": "[Author!]!",
-            "context": {
-              "graphqlBuiltInType": false,
-              "graphqlName": "authors",
-              "graphqlTypeFlat": "Author!",
-              "graphqlTypeShort": ""
-            },
             "description": "",
+            "context": {
+              "graphqlName": "authors",
+              "graphqlTypeFlat": "Author",
+              "graphqlBuiltInType": false
+            },
             "properties": [
               {
                 "name": "name",
                 "type": "String!",
+                "description": "",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "name",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               }
             ],
             "meta": [
@@ -138,36 +155,40 @@
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "objects/author"
+            }
           },
           {
             "name": "libraries",
             "type": "[Library!]!",
-            "context": {
-              "graphqlBuiltInType": false,
-              "graphqlName": "libraries",
-              "graphqlTypeFlat": "Library!",
-              "graphqlTypeShort": ""
-            },
             "description": "",
+            "context": {
+              "graphqlName": "libraries",
+              "graphqlTypeFlat": "Library",
+              "graphqlBuiltInType": false
+            },
             "properties": [
               {
                 "name": "name",
                 "type": "String!",
+                "description": "",
                 "context": {
-                  "graphqlBuiltInType": true,
                   "graphqlName": "name",
                   "graphqlTypeFlat": "String",
-                  "graphqlTypeShort": "scalar"
+                  "graphqlBuiltInType": true
                 },
-                "description": "",
                 "properties": [],
                 "meta": [
                   {
                     "name": "required",
                     "value": "true"
                   }
-                ]
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
               }
             ],
             "meta": [
@@ -175,7 +196,10 @@
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": "objects/library"
+            }
           }
         ]
       }
@@ -204,20 +228,22 @@
           {
             "name": "name",
             "type": "String!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "name",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }
@@ -246,20 +272,22 @@
           {
             "name": "name",
             "type": "String!",
+            "description": "",
             "context": {
-              "graphqlBuiltInType": true,
               "graphqlName": "name",
               "graphqlTypeFlat": "String",
-              "graphqlTypeShort": "scalar"
+              "graphqlBuiltInType": true
             },
-            "description": "",
             "properties": [],
             "meta": [
               {
                 "name": "required",
                 "value": "true"
               }
-            ]
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
           }
         ]
       }

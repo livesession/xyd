@@ -1,18 +1,25 @@
-import { OpenAPIV3 } from "openapi-types";
+import {OpenAPIV3} from "openapi-types";
 import matter from 'gray-matter'
 
-import { Metadata } from "@xyd-js/core";
-import { Definition, ExampleGroup, Reference, ReferenceCategory, OpenAPIReferenceContext, DefinitionVariant, DefinitionOpenAPIMeta, Meta } from "@xyd-js/uniform";
+import {Metadata} from "@xyd-js/core";
+import {
+    Definition,
+    ExampleGroup,
+    Reference,
+    ReferenceCategory,
+    OpenAPIReferenceContext,
+    DefinitionVariantOpenAPIMeta,
+    DefinitionVariant,
+    DefinitionOpenAPIMeta
+} from "@xyd-js/uniform";
 
-import { oapParametersToDefinitionProperties } from "./parameters";
-import { oapRequestBodyToDefinitionProperties } from "./requestBody";
-import { oapResponseToDefinitionProperties } from "./responses";
+import {oapParametersToDefinitionProperties} from "./parameters";
+import {oapRequestBodyToDefinitionProperties} from "./requestBody";
+import {oapResponseToDefinitionProperties} from "./responses";
 import {
     httpMethodToUniformMethod,
     slug
 } from "./utils";
-import { ResponseDefinitionVariant } from "./types";
-
 
 // oapPathToReference converts an OpenAPI path to a uniform Reference
 export function oapPathToReference(
@@ -46,7 +53,7 @@ export function oapPathToReference(
         }
     }
 
-    const description = matter.stringify({ content: metaDescription.content || oapMethod.summary || "" }, meta || {})
+    const description = matter.stringify({content: metaDescription.content || oapMethod.summary || ""}, meta || {})
 
     const endpointRef: Reference = {
         title: oapMethod?.summary || oapMethod.operationId || "",
@@ -129,7 +136,7 @@ export function oapPathToReference(
     if (oapMethod.responses) {
         const responses = oapMethod.responses as OpenAPIV3.ResponsesObject
 
-        const variants: ResponseDefinitionVariant[] = []
+        const variants: DefinitionVariant<DefinitionVariantOpenAPIMeta>[] = []
 
         Object.keys(responses).forEach((code) => {
             const responseObject = responses[code] as OpenAPIV3.ResponseObject
@@ -155,11 +162,11 @@ export function oapPathToReference(
                 meta: [
                     {
                         name: "status",
-                        value: code,
+                        value: code || "",
                     },
                     {
                         name: "contentType",
-                        value: findSupportedContent,
+                        value: findSupportedContent || "",
                     }
                 ]
             })

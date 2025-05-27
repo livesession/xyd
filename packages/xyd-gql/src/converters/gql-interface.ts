@@ -3,9 +3,9 @@ import {GraphQLInterfaceType, GraphQLField} from "graphql";
 import {Definition, DefinitionProperty, Reference} from "@xyd-js/uniform";
 
 import {gqlFieldToUniformDefinitionProperty} from "./gql-field";
-import {uniformify} from "../utils";
+import {uniformify} from "../gql-core";
 import {NestedGraphqlType} from "../types";
-import {Context} from "./context";
+import {Context} from "../context";
 
 export function gqlInterfaceToUniformRef(ctx: Context, interfaceType: GraphQLInterfaceType): Reference {
     const properties = gqlInterfaceToUniformDefinitionProperties(ctx, interfaceType)
@@ -28,7 +28,6 @@ export function gqlInterfaceToUniformDefinitionProperties(ctx: Context, interfac
     return Object.values(interfaceType.getFields()).map((field: GraphQLField<any, any>) => {
         return gqlFieldToUniformDefinitionProperty(
             ctx,
-            field.name,
             field,
         )
     })

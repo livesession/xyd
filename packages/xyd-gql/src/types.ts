@@ -1,6 +1,7 @@
+import type {GraphQLInputObjectType, GraphQLInterfaceType, GraphQLNamedType, GraphQLObjectType} from "graphql";
 import {GraphQLField, OperationTypeNode} from "graphql";
+
 import type {DefinitionProperty} from "@xyd-js/uniform";
-import type {GraphQLInputObjectType, GraphQLInterfaceType, GraphQLObjectType} from "graphql/index";
 
 export interface OpenDocsSortConfig {
     queries?: number;
@@ -39,7 +40,7 @@ export type NestedGraphqlType = {
 } & (GraphQLObjectType | GraphQLInputObjectType | GraphQLInterfaceType)
 
 // needed cuz GraphQLField does not have operation info?
-export class GraphqlOperation implements GraphQLField<any, any> {
+export class GQLOperation implements GraphQLField<any, any> {
     public _operationType!: OperationTypeNode
     field: GraphQLField<any, any>;
 
@@ -78,5 +79,9 @@ export class GraphqlOperation implements GraphQLField<any, any> {
     set __operationType(operationType: OperationTypeNode) {
         this._operationType = operationType;
     }
+}
+
+export interface GQLTypeInfo {
+    typeFlat?: GraphQLNamedType
 }
 

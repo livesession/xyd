@@ -1,4 +1,13 @@
-import { Outlet, useLoaderData, useLocation, useNavigate, useNavigation, type Route, isRouteErrorResponse } from "react-router";
+import {
+    Outlet,
+    useLoaderData,
+    useLocation,
+    useNavigate,
+    useNavigation,
+    type Route,
+    isRouteErrorResponse,
+    useMatches
+} from "react-router";
 
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 
@@ -111,6 +120,20 @@ export async function loader({ request }: { request: any }) {
 
 export default function Layout() {
     const loaderData = useLoaderData<LoaderData>()
+    const matches = useMatches()
+
+    const lastMatchId = matches[matches.length - 1]?.id || null
+
+    let atlasVariantToggleKey = ""
+    let atlasDefaultVariantValue = ""
+
+    // TODO: BETTER HANDLE THAT
+    if (loaderData.metadata?.openapi) {
+        atlasVariantToggleKey = "status"
+        atlasDefaultVariantValue = "200"
+    } else {
+        atlasVariantToggleKey = "symbolName"
+    }
 
     return <>
         <Framework
@@ -122,7 +145,10 @@ export default function Layout() {
         >
             <AtlasContext
                 value={{
-                    syntaxHighlight: settings?.theme?.markdown?.syntaxHighlight || null
+                    syntaxHighlight: settings?.theme?.markdown?.syntaxHighlight || null,
+                    baseMatch: lastMatchId || "",
+                    variantToggleKey: atlasVariantToggleKey,
+                    defaultVariantValue: atlasDefaultVariantValue
                 }}
             >
                 <BaseThemeLayout>

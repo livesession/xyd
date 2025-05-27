@@ -21,7 +21,7 @@ import {gqlEnumToUniformRef} from "./gql-enum";
 import {gqlScalarToUniformRef} from "./gql-scalar";
 import {gqlUnionToUniformRef} from "./gql-union";
 import {gqlInterfaceToUniformRef} from "./gql-interface";
-import {Context} from "./context";
+import {Context} from "../context";
 
 // TODO: missing types like interfaces, fragments.
 export function graphqlTypesToUniformReferences(
@@ -45,15 +45,24 @@ export function graphqlTypesToUniformReferences(
 
         let ref: Reference | null = null
 
+        let flat = false;
+        if (options?.flat) {
+            flat = true;
+        }
+
         switch (gqlType.constructor.name) {
             case 'GraphQLObjectType': {
                 const type = gqlType as GraphQLObjectType;
                 const regionKey = `object.${type.name}`;
                 if (!options?.regions || !options?.regions?.length || options.regions.includes(regionKey)) {
+
                     ref = gqlObjectToUniformRef(
                         new Context(
                             sharedProcessedTypes,
-                            options
+                            options,
+                            {
+                                flat,
+                            }
                         ),
                         type
                     )
@@ -68,7 +77,10 @@ export function graphqlTypesToUniformReferences(
                     ref = gqlInputToUniformRef(
                         new Context(
                             sharedProcessedTypes,
-                            options
+                            options,
+                            {
+                                flat
+                            }
                         ),
                         type
                     )

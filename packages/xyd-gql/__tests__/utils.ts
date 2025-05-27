@@ -9,9 +9,9 @@ import {GQLSchemaToReferencesOptions} from "../src/types";
 // Helper function to run a test with a specific fixture
 export async function testGqlSchemaToReferences(fixtureName: string, options?: GQLSchemaToReferencesOptions) {
     const schemaLocation = fullFixturePath(`${fixtureName}/input.graphql`)
-    const expectedOutput = readFixtureOutput(`${fixtureName}/output.json`);
-
     const result = await gqlSchemaToReferences(schemaLocation, options);
+    // saveResultAsOutput(fixtureName, result)
+    const expectedOutput = readFixtureOutput(`${fixtureName}/output.json`);
 
     try {
         expect(result).toEqual(expectedOutput);
@@ -31,4 +31,8 @@ function readFixtureOutput(name: string) {
 
 function fullFixturePath(name: string) {
     return path.join(__dirname, "../__fixtures__", name);
+}
+
+function saveResultAsOutput(fixtureName: string, result: any) {
+    fs.writeFileSync(fullFixturePath(fixtureName + "/output.json"), JSON.stringify(result, null, 2));
 }

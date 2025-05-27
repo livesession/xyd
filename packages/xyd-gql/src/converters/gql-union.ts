@@ -3,9 +3,8 @@ import {GraphQLUnionType} from "graphql";
 import {Definition, DefinitionProperty, Reference} from "@xyd-js/uniform";
 
 import {gqlObjectToUniformDefinitionProperty} from "./gql-object";
-import {uniformify} from "../utils";
-import {NestedGraphqlType} from "../types";
-import {Context} from "./context";
+import {uniformify} from "../gql-core";
+import {Context} from "../context";
 
 export function gqlUnionToUniformRef(ctx: Context, unionType: GraphQLUnionType): Reference {
     const properties = gqlUnionToUniformDefinitionProperties(ctx, unionType)
@@ -32,8 +31,6 @@ export function gqlUnionToUniformDefinitionProperties(
         if (type.constructor.name === "GraphQLObjectType") {
             return gqlObjectToUniformDefinitionProperty(
                 ctx,
-                type.name,
-                type.description || "",
                 type,
             )
         }

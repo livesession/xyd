@@ -95,6 +95,9 @@ export class ReactContent {
         const noopNestedComponents = {
             Steps: NoopComponent,
             UnderlineNav: NoopComponent,
+            Tabs: NoopComponent,
+            GuideCard: NoopComponent,
+            Table: NoopComponent,
         }
 
         return {
@@ -108,9 +111,15 @@ export class ReactContent {
 function NoopComponent() {
     return null
 }
-
 NoopComponent.Item = () => null
 NoopComponent.Content = () => null
+NoopComponent.List = () => null
+NoopComponent.Head = () => null
+NoopComponent.Td = () => null
+NoopComponent.Tr = () => null
+NoopComponent.Th = () => null
+NoopComponent.Cell = () => null
+
 
 function NoopReactComponent() { // TODO: !!!! in the future refactor but `html-to-jsx-transform` creates <React.Fragment> !!!
     return null

@@ -1,11 +1,10 @@
 import {GraphQLArgument, GraphQLInputObjectType} from "graphql";
 
-import {DefinitionProperty, DefinitionPropertyMeta} from "@xyd-js/uniform";
+import {DefinitionProperty} from "@xyd-js/uniform";
 
 import {gqlInputToUniformDefinitionProperty} from "./gql-input";
-import {NestedGraphqlType} from "../types";
-import {Context} from "./context";
-import {gqlFieldToUniformMeta, uniformify} from "../utils";
+import {Context} from "../context";
+import {gqlFieldToUniformMeta, gqlFieldTypeInfo, propsUniformify} from "../gql-core";
 
 // gqlArgToUniformDefinitionProperty converts GraphQL arguments into xyd 'uniform' definition properties
 export function gqlArgToUniformDefinitionProperty(
@@ -15,79 +14,35 @@ export function gqlArgToUniformDefinitionProperty(
     const resp: DefinitionProperty[] = []
 
     args.forEach(arg => {
-        let type = arg.type;
-
-        // Handle non-null types
-        if (type.constructor.name === "GraphQLNonNull" && "ofType" in type) {
-            type = type.ofType;
+        const fieldInfo = gqlFieldTypeInfo(arg);
+        if (!fieldInfo.typeFlat) {
+            console.error("gqlArgToUniformDefinitionProperty: no typeFlat for", arg.name);
+            return;
         }
 
-        // Handle list types
-        if (type.constructor.name === "GraphQLList" && "ofType" in type) {
-            type = type.ofType;
+        const flatType = fieldInfo.typeFlat
 
-            if (type.constructor.name === "GraphQLNonNull" && "ofType" in type) {
-                type = type.ofType;
-            }
-        }
+        if (flatType instanceof GraphQLInputObjectType) {
+            const inputObj = flatType
+            const meta = gqlFieldToUniformMeta(arg)
+            const defProperty = gqlInputToUniformDefinitionProperty(
+                ctx,
+                inputObj,
+            )
 
-        const meta = gqlFieldToUniformMeta(arg)
-
-        // TODO: something similar to uniformPropsify but for properties?
-        switch (type.constructor.name) {
-            case "GraphQLInputObjectType": {
-                // TODO gqlInputToUniformDefinitionProperty should have meta itself?
-                const prop = gqlInputToUniformDefinitionProperty(
-                    ctx,
-                    arg.name,
-                    arg.description || "",
-                    type as GraphQLInputObjectType,
-                )
-
-                resp.push({
-                    ...prop,
-                    type: arg.type.toJSON(),
-                    meta: [
-                        ...prop.meta || [],
-                        ...meta || []
-                    ],
-                });
-                break;
-            }
-
-            case "GraphQLScalarType": {
-                resp.push({
-                    name: arg.name,
-                    type: arg.type.toJSON(),
-                    description: arg.description || "",
-                    context: {
-                        graphqlName: arg.name,
-                        graphqlTypeFlat: type.toJSON(),
-                        graphqlTypeShort: "scalar"
-                    },
-                    meta
-                });
-                break;
-            }
-
-            case "GraphQLEnumType": {
-                resp.push({
-                    name: arg.name,
-                    type: arg.type.toJSON(),
-                    description: arg.description || "",
-                    context: {
-                        graphqlName: arg.name,
-                        graphqlTypeFlat: type.toJSON(),
-                        graphqlTypeShort: "enum"
-                    },
-                    meta
-                });
-                break;
-            }
-
-            default: {
-                console.error("unsupported argument type", type.constructor.name);
-            }
+            resp.push({
+                ...defProperty,
+                type: arg.type.toJSON(),
+                name: arg.name,
+                description: arg.description || "",
+                meta: [
+                    ...defProperty.meta || [],
+                    ...meta || []
+                ],
+            });
+        } else {
+            const defProperty = propsUniformify(arg)
+            resp.push(defProperty)
         }
     });
 

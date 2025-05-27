@@ -18,7 +18,7 @@ import uiPkg from '../xyd-ui/package.json';
 import uniformPkg from '../xyd-uniform/package.json';
 import sourcesPk from '../xyd-sources/package.json';
 
-const entry = ["index.ts"];
+const entry = ["index.ts", "build.ts"];
 
 const deps = {
     normal: {
@@ -33,7 +33,7 @@ const deps = {
         ...gqlPkg.dependencies,
         ...oapPkg.dependencies,
         ...pluginDocsPkg.dependencies,
-        ...themeGustoPkg.dependencies,
+        ...themeGustoPkg?.dependencies,
         ...themePoetryPkg.dependencies,
         ...themeOpenerPkg.dependencies,
         ...uiPkg.dependencies,

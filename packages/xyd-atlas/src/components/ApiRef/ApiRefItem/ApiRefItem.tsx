@@ -1,34 +1,42 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {createContext, useContext, useState} from "react";
 
-import { Definition, DefinitionVariant, Meta, OpenAPIReferenceContext, Reference, ReferenceCategory } from "@xyd-js/uniform";
-import { Heading, Code } from "@xyd-js/components/writer";
+import {
+    Definition,
+    DefinitionVariant,
+    Meta,
+    OpenAPIReferenceContext,
+    Reference,
+    ReferenceCategory
+} from "@xyd-js/uniform";
+import {Heading, Code} from "@xyd-js/components/writer";
 
-import { MDXReference, uniformChild, uniformValue } from "@/utils/mdx";
+import {MDXReference, uniformChild, uniformValue} from "@/utils/mdx";
 import {
     ApiRefProperties,
     ApiRefSamples
 } from "@/components/ApiRef";
 import * as cn from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
+import {useDefaultVariantValue, useVariantToggleKey} from "@/components/Atlas/AtlasContext";
 
 export interface ApiRefItemProps {
     reference: MDXReference<Reference>
 }
 
 // TODO: context with current referene?
-export function ApiRefItem({ reference }: ApiRefItemProps) {
+export function ApiRefItem({reference}: ApiRefItemProps) {
     return <atlas-apiref-item className={cn.ApiRefItemHost}>
         <atlas-apiref-item-showcase className={cn.ApiRefItemGrid}>
             <div>
-                <$IntroHeader reference={reference} />
-                <$Definitions reference={reference} />
+                <$IntroHeader reference={reference}/>
+                <$Definitions reference={reference}/>
             </div>
 
-            {reference.examples && <ApiRefSamples examples={reference.examples} />}
+            {reference.examples && <ApiRefSamples examples={reference.examples}/>}
         </atlas-apiref-item-showcase>
     </atlas-apiref-item>
 }
 
-function $IntroHeader({ reference }: ApiRefItemProps) {
+function $IntroHeader({reference}: ApiRefItemProps) {
     let topNavbar;
 
     switch (reference?.category) {
@@ -48,7 +56,7 @@ function $IntroHeader({ reference }: ApiRefItemProps) {
         }
     }
     return <>
-        <$Title title={uniformValue(reference.title)} />
+        <$Title title={uniformValue(reference.title)}/>
 
         {topNavbar}
 
@@ -56,7 +64,7 @@ function $IntroHeader({ reference }: ApiRefItemProps) {
     </>
 }
 
-function $Authorization({ reference }: ApiRefItemProps) {
+function $Authorization({reference}: ApiRefItemProps) {
     if (!reference.context) {
         return null;
     }
@@ -70,7 +78,7 @@ function $Authorization({ reference }: ApiRefItemProps) {
     return <div>
         <div className={cn.ApiRefItemDefinitionsItem}>
             <div part="header">
-                <$Subtitle title="Scopes" />
+                <$Subtitle title="Scopes"/>
             </div>
 
             <$DefinitionBody definition={{
@@ -84,44 +92,46 @@ function $Authorization({ reference }: ApiRefItemProps) {
 }
 
 const VariantContext = createContext<{
+    setVariant: (variant: DefinitionVariant) => void,
     variant?: DefinitionVariant,
-    setVariant: (variant: DefinitionVariant) => void
+    variantToggleKey?: string,
 }>({
     variant: undefined,
-    setVariant: () => { }
+    setVariant: () => {
+    }
 });
 
 
-function $Definitions({ reference }: ApiRefItemProps) {
+function $Definitions({reference}: ApiRefItemProps) {
     return <atlas-apiref-definitions className={cn.ApiRefItemDefinitionsHost}>
-        <$Authorization reference={reference} />
+        <$Authorization reference={reference}/>
 
         {reference?.definitions?.map((definition, i) => {
-            return <$VariantsProvider key={i} definition={definition}>
-                <div>
-                    {
-                        definition?.title ? <div key={i} className={cn.ApiRefItemDefinitionsItem}>
-                            <div part="header">
-                                <$Subtitle title={uniformValue(definition.title)} />
-                                <div part="controls">
-                                    <$VariantSelect variants={definition.variants} />
+                return <$VariantsProvider key={i} definition={definition}>
+                    <div>
+                        {
+                            definition?.title ? <div key={i} className={cn.ApiRefItemDefinitionsItem}>
+                                <div part="header">
+                                    <$Subtitle title={uniformValue(definition.title)}/>
+                                    <div part="controls">
+                                        <$VariantSelect variants={definition.variants}/>
 
-                                    <$ContentType definition={definition} />
+                                        <$ContentType definition={definition}/>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <$DefinitionBody definition={definition} />
-                        </div> : null
-                    }
-                </div>
-            </$VariantsProvider>
-        }
+                                <$DefinitionBody definition={definition}/>
+                            </div> : null
+                        }
+                    </div>
+                </$VariantsProvider>
+            }
         )}
     </atlas-apiref-definitions>
 }
 
-function $ContentType({ definition }: { definition: MDXReference<Definition> }) {
-    const { variant } = useContext(VariantContext);
+function $ContentType({definition}: { definition: MDXReference<Definition> }) {
+    const {variant} = useContext(VariantContext);
 
     if (!variant?.meta) {
         return <div>
@@ -135,20 +145,27 @@ function $ContentType({ definition }: { definition: MDXReference<Definition> }) 
 
 }
 
-const variantToggleKey = "symbolName" // TODO: BETTER API
-const defaultVariantValue = "200"
+function $VariantsProvider({definition, children}: {
+    definition: MDXReference<Definition>,
+    children: React.ReactNode
+}) {
+    const variantToggleKey = useVariantToggleKey()
+    const defaultVariantValue = useDefaultVariantValue()
 
-function $VariantsProvider({ definition, children }: { definition: MDXReference<Definition>, children: React.ReactNode }) {
     const firstVariant = (definition.variants || []).find(v => v.meta?.find(m => m.name === variantToggleKey && m.value === defaultVariantValue)) || (definition.variants || [])[0];
     const [variant, setVariant] = useState<DefinitionVariant | undefined>(firstVariant);
 
-    return <VariantContext value={{ variant, setVariant }}>
+    return <VariantContext value={{
+        variant,
+        setVariant,
+        variantToggleKey,
+    }}>
         {children}
     </VariantContext>
 }
 
-function $VariantSelect({ variants }: { variants: MDXReference<DefinitionVariant[]> }) {
-    const { variant, setVariant } = useContext(VariantContext);
+function $VariantSelect({variants}: { variants: MDXReference<DefinitionVariant[]> }) {
+    const {variant, setVariant, variantToggleKey} = useContext(VariantContext);
 
     function onChange(e: React.ChangeEvent<HTMLSelectElement>) {
         const foundVariant = variants.find(variant => {
@@ -180,8 +197,8 @@ function $VariantSelect({ variants }: { variants: MDXReference<DefinitionVariant
 }
 
 
-function $DefinitionBody({ definition }: { definition: MDXReference<Definition> }) {
-    const { variant } = useContext(VariantContext);
+function $DefinitionBody({definition}: { definition: MDXReference<Definition> }) {
+    const {variant} = useContext(VariantContext);
 
     return <div part="body">
         {
@@ -192,14 +209,14 @@ function $DefinitionBody({ definition }: { definition: MDXReference<Definition> 
 
         {
             variant && variant.properties?.length
-                ? <ApiRefProperties properties={variant.properties} />
-                : definition.properties?.length ? <ApiRefProperties properties={definition.properties} /> : null
+                ? <ApiRefProperties properties={variant.properties}/>
+                : definition.properties?.length ? <ApiRefProperties properties={definition.properties}/> : null
         }
 
     </div>
 }
 
-function $Navbar({ label, subtitle }: { label: string, subtitle: string }) {
+function $Navbar({label, subtitle}: { label: string, subtitle: string }) {
     return <>
         <div className={cn.ApiRefItemNavbarHost}>
             <span className={cn.ApiRefItemNavbarContainer}>
@@ -214,7 +231,7 @@ function $Navbar({ label, subtitle }: { label: string, subtitle: string }) {
     </>
 }
 
-function $Title({ title }: { title: string }) {
+function $Title({title}: { title: string }) {
     return <>
         <Heading size={1}>
             {title}
@@ -222,7 +239,7 @@ function $Title({ title }: { title: string }) {
     </>
 }
 
-function $Subtitle({ title }: { title: string }) {
+function $Subtitle({title}: { title: string }) {
     return <>
         <Heading size={3}>
             {title}
