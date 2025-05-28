@@ -1,0 +1,1372 @@
+extend schema @od_schema(
+    flattenTypes: true
+)
+
+#--- CORE
+
+"""
+A scalar representing date and time in ISO 8601 format.
+Used for precise timestamp tracking of user interactions and events.
+Example: "2024-03-20T15:30:00Z"
+"""
+scalar DateTime
+@opendocs(
+    group: ["GraphQL Types", "Scalars"]
+)
+
+"""
+A scalar representing Unix timestamp (seconds since epoch).
+Used for time-based analytics and event tracking.
+Example: 1710941400
+"""
+scalar UnixTimestamp # int64
+@opendocs(
+    group: ["GraphQL Types", "Scalars"]
+)
+
+"""
+A scalar representing a relative date for flexible time period selection.
+Supports the following values:
+- `TODAY`: Today since midnight
+- `YESTERDAY`: Yesterday since midnight
+- `BEGINNING_OF_WEEK`: Nearest monday since midnight
+- `BEGINNING_OF_MONTH`: 1st of the month since midnight
+- `BEGINNING_OF_PREV_MONTH`: Previous 1st of the month since midnight
+- `TODAY_MINUS_7_DAYS`: Exact 7 days ago since midnight
+- `TODAY_MINUS_30_DAYS`: Exact 30 days ago since midnight
+
+Used for dynamic date range selection in analytics queries.
+Example: `TODAY`, `BEGINNING_OF_MONTH`, `TODAY-7DAYS`
+"""
+scalar RelativeDate
+@opendocs(
+    group: ["GraphQL Types", "Scalars"]
+)
+
+"""
+Date range object for specifying time periods in analytics queries.
+Used to define the scope of data analysis and reporting.
+"""
+type DateRange @opendocs(
+    group: ["GraphQL Types", "Objects"]
+) {
+    """
+    Start of the date range in relative date format.
+    Example: `TODAY`, `BEGINNING_OF_MONTH`, `TODAY-7DAYS`
+    """
+    from: RelativeDate
+
+    """
+    End of the date range in relative date format.
+    Example: `TODAY`, `YESTERDAY`, `BEGINNING_OF_WEEK`  
+    """
+    to: RelativeDate
+}
+
+"""
+Cached response object for optimizing analytics query performance.
+Contains metadata about cached data freshness and validity.
+"""
+type CachedResponse @opendocs(
+    group: ["GraphQL Types", "Objects"]
+) {
+    """
+    Time-to-live of the cached response in seconds.
+    Example: "3600"
+    """
+    ttl: String!
+
+    """
+    Unique identifier for the cached response.
+    Used for cache invalidation and management.
+    """
+    id: String!
+
+    """
+    Unix timestamp when the data was last computed.
+    Used to determine cache freshness.
+    """
+    computed_at: UnixTimestamp!
+
+    """
+    Indicates whether the cached data is still fresh and valid.
+    False indicates the cache needs to be refreshed.
+    """
+    fresh: Boolean!
+}
+
+#--- CORE
+
+"""
+Funnel object representing a conversion funnel in LiveSession.
+Tracks user progression through defined steps in your application.
+Used for analyzing user journey and conversion rates.
+"""
+type Funnel @opendocs(
+    group: ["Core Resources", "Funnels", "Objects"]
+) {
+    """
+    Unique identifier for the funnel.
+    Used for referencing and managing the funnel.
+    """
+    funnel_id: ID!
+
+    """
+    ID of the agent who created the funnel.
+    Used for tracking funnel ownership and permissions.
+    """
+    created_by_agent_id: String!
+
+    """
+    Login of the user who created the funnel.
+    Used for display and audit purposes.
+    """
+    created_by_login: String!
+
+    """
+    Associated website identifier.
+    Links the funnel to a specific website in your account.
+    """
+    website_id: ID!
+
+    """
+    Display name of the funnel.
+    Used for identification in the UI and API.
+    """
+    name: String!
+
+    """
+    Detailed description of the funnel's purpose and configuration.
+    Helps other team members understand the funnel's intent.
+    """
+    description: String!
+
+    """
+    Associated segment identifier for filtering data.
+    Links the funnel to a specific user segment.
+    """
+    segment_id: String!
+
+    """
+    Computation settings and results for the funnel.
+    Contains the configuration and analysis results.
+    """
+    compute: ComputeFunnel
+
+    """
+    Whether the funnel is marked as favorite.
+    Used for quick access and organization.
+    """
+    is_favourite: Boolean!
+
+    """
+    Whether the current user owns this funnel.
+    Used for permission management.
+    """
+    is_owner: Boolean!
+
+    """
+    Whether the funnel is publicly accessible.
+    Controls visibility across your organization.
+    """
+    is_public: Boolean!
+}
+
+"""
+Compute funnel object containing funnel analysis configuration and results.
+Defines how the funnel should be calculated and what data to include.
+"""
+type ComputeFunnel @opendocs(
+    group: ["Core Resources", "Funnels", "Objects"]
+) {
+    """
+    Time period for funnel analysis.
+    Defines the date range for the funnel computation.
+    """
+    date_range: DateRange
+
+    """
+    Sequence of steps in the funnel.
+    Each step represents a stage in the user journey.
+    """
+    steps: [FunnelStep]!
+
+    """
+    Value tracking configuration for conversions.
+    Defines how to measure conversion value.
+    """
+    conversion_value: FunnelConversionValue
+
+    """
+    Type of funnel computation.
+    Example: "standard", "custom"
+    """
+    type: String
+
+    """
+    Additional filtering criteria for the funnel.
+    Used to refine the data included in the analysis.
+    """
+    filters: Filters
+}
+
+"""
+Funnel step object representing a single step in the conversion funnel.
+Defines what constitutes completion of this step in the user journey.
+"""
+type FunnelStep @opendocs(
+    group: ["Core Resources", "Funnels", "Objects"]
+){
+    """
+    Display name of the step.
+    Used for identification in the UI and reports.
+    """
+    name: String
+
+    """
+    Conditions that define step completion.
+    Used to determine when a user has completed this step.
+    """
+    filters: Filters
+}
+
+"""
+Input for writing funnel compute configuration.
+Used when creating or updating funnel computation settings.
+"""
+input FunnelComputeWriteInput @opendocs(
+    group: ["Core Resources", "Funnels", "Inputs"]
+) {
+    """
+    Type of funnel computation.
+    Example: "standard", "custom"
+    """
+    type: String
+
+    """
+    Time period for analysis.
+    Defines the date range for the funnel computation.
+    """
+    date_range: DateRangeInput!
+
+    """
+    Steps to track in the funnel.
+    Each step represents a stage in the user journey.
+    """
+    steps: [FunnelStepInput]!
+
+    """
+    Additional filtering criteria.
+    Used to refine the data included in the analysis.
+    """
+    filters: FiltersInput
+
+    """
+    Value tracking settings.
+    Defines how to measure conversion value.
+    """
+    conversion_value: FunnelConversionValueInput
+}
+
+"""
+Input for computing funnel analysis.
+Used when requesting funnel computation results.
+"""
+input FunnelComputeInput @opendocs(
+    group: ["Core Resources", "Funnels", "Inputs"]
+){
+    """
+    Time period for analysis.
+    Defines the date range for the funnel computation.
+    """
+    date_range: DateRangeInput!
+
+    """
+    Filtering criteria for the analysis.
+    Used to refine the data included in the computation.
+    """
+    filters: FiltersInput!
+
+    """
+    Steps to analyze in the funnel.
+    Each step represents a stage in the user journey.
+    """
+    steps: [FunnelStepInput]!
+
+    """
+    Value tracking settings.
+    Defines how to measure conversion value.
+    """
+    conversion_value: FunnelConversionValueInput
+
+    """
+    Type of funnel computation.
+    Example: "standard", "custom"
+    """
+    type: String
+}
+
+"""
+Input for funnel conversion value tracking.
+Defines how to measure and track conversion value.
+"""
+input FunnelConversionValueInput @opendocs(
+    group: ["Core Resources", "Funnels", "Inputs"]
+) {
+    """
+    Name of the property to track.
+    Example: "revenue", "order_value"
+    """
+    property_name: String!
+
+    """
+    Type of value being tracked.
+    Example: "revenue", "count"
+    """
+    value_type: String!
+
+    """
+    Display label for the value.
+    Used in reports and UI.
+    """
+    label: String!
+}
+
+"""
+Funnel conversion value object.
+Contains configuration for tracking conversion value.
+"""
+type FunnelConversionValue @opendocs(
+    group: ["Core Resources", "Funnels", "Objects"]
+){
+    """
+    Name of the tracked property.
+    Example: "revenue", "order_value"
+    """
+    property_name: String!
+
+    """
+    Type of value being tracked.
+    Example: "revenue", "count"
+    """
+    value_type: String!
+
+    """
+    Display label for the value.
+    Used in reports and UI.
+    """
+    label: String!
+}
+
+"""
+Funnel step compute object.
+Contains analytics results for a single funnel step.
+"""
+type FunnelStepCompute @opendocs(
+    group: ["Core Resources", "Funnels", "Objects"]
+) {
+    """
+    Number of sessions reaching this step.
+    Represents total sessions that completed this step.
+    """
+    sessions: Int!
+
+    """
+    Number of unique visitors reaching this step.
+    Represents unique users who completed this step.
+    """
+    visitors: Int!
+
+    """
+    Number of events in this step.
+    Represents total events tracked for this step.
+    """
+    events: Int!
+}
+
+"""
+Response for funnel compute operation.
+Contains complete funnel analysis results.
+"""
+type FunnelComputeResponse @opendocs(
+    group: ["Core Resources", "Funnels", "Objects"]
+){
+    """
+    Cache metadata for the response.
+    Contains information about data freshness.
+    """
+    cached_response: CachedResponse!
+
+    """
+    Total sessions in the funnel.
+    Represents all sessions that entered the funnel.
+    """
+    total_sessions: Int!
+
+    """
+    Total unique visitors in the funnel.
+    Represents all unique users who entered the funnel.
+    """
+    total_visitors: Int!
+
+    """
+    Total events tracked in the funnel.
+    Represents all events across all steps.
+    """
+    total_events: Int!
+
+    """
+    Value tracking results.
+    Contains computed conversion values.
+    """
+    conversion_value: FunnelConversionValueResponse
+
+    """
+    Results for each step in the funnel.
+    Contains detailed analytics for each step.
+    """
+    steps: [FunnelStepCompute]!
+}
+
+"""
+Response for funnel conversion value.
+Contains computed conversion value results.
+"""
+type FunnelConversionValueResponse @opendocs(
+    group: ["Core Resources", "Funnels", "Objects"]
+){
+    """
+    Computed conversion value.
+    Represents the total value of conversions.
+    """
+    value: Float!
+
+    """
+    Display label for the value.
+    Used in reports and UI.
+    """
+    label: String!
+}
+
+"""
+Input for setting funnel as favourite.
+Used to mark/unmark funnels as favorites.
+"""
+input FunnelSetFavouriteInput @opendocs(
+    group: ["Core Resources", "Funnels", "Inputs"]
+){
+    """
+    Whether to mark the funnel as favorite.
+    Used for quick access and organization.
+    """
+    is_favourite: Boolean!
+}
+
+"""
+Filters object for complex query filtering.
+Combines multiple filter conditions using boolean logic.
+"""
+type Filters @opendocs(
+    group: ["Core Resources", "Filters", "Objects"]
+){
+    """
+    Conditions that must be met (AND logic).
+    All conditions in this array must be satisfied.
+    """
+    must: [Filter]!
+
+    """
+    Conditions that should be met (OR logic).
+    At least one condition in this array must be satisfied.
+    """
+    should: [Filter]!
+
+    """
+    Conditions that must not be met (NOT logic).
+    None of the conditions in this array should be satisfied.
+    """
+    must_not: [Filter]!
+}
+
+"""
+Filter object for defining specific filtering conditions.
+Used to filter analytics data based on various criteria.
+"""
+type Filter @opendocs(
+    group: ["Core Resources", "Filters", "Objects"]
+){
+    """
+    Name of the filter.
+    Used for identification and display.
+    """
+    name: String!
+
+    """
+    Unit of measurement (if applicable).
+    Example: "px", "ms", "%"
+    """
+    unit: String
+
+    """
+    Grouping category for the filter.
+    Used for organization and display.
+    """
+    group: String
+
+    """
+    Filter criteria data.
+    Contains the actual filtering conditions.
+    """
+    data: FilterData!
+
+    """
+    Associated event ID.
+    Links the filter to a specific event type.
+    """
+    defined_event_id: String
+
+    """
+    Stable identifier for the filter.
+    Used for filter persistence and reference.
+    """
+    stable_id: String
+
+    """
+    Parent filter reference.
+    Used for hierarchical filter relationships.
+    """
+    parent_filter_stable_id: String
+}
+
+"""
+Filter data string object for string-based filtering conditions.
+Used to define string comparison operations in filters.
+"""
+type FilterDataString @opendocs(
+    group: ["Core Resources", "Filters", "Objects"]
+){
+    """
+    Single string value for comparison.
+    Used when comparing against a single value.
+    Example: "click", "submit", "page_view"
+    """
+    value: String
+
+    """
+    Array of string values for comparison.
+    Used when comparing against multiple possible values.
+    Example: ["click", "submit", "page_view"]
+    """
+    values: [String]
+
+    """
+    Comparison operator for the string value(s).
+    Supported operators: "equals", "contains", "starts_with", "ends_with", "in", "not_in"
+    """
+    operator: String!
+}
+
+"""
+Filter data int object for integer-based filtering conditions.
+Used to define numeric comparison operations in filters.
+"""
+type FilterDataInt @opendocs(
+    group: ["Core Resources", "Filters", "Objects"]
+){
+    """
+    Single integer value for comparison.
+    Used when comparing against a single numeric value.
+    Example: 100, 500, 1000
+    """
+    value: Int
+
+    """
+    Array of integer values for comparison.
+    Used when comparing against multiple possible values.
+    Example: [100, 200, 300]
+    """
+    values: [Int]
+
+    """
+    Comparison operator for the integer value(s).
+    Supported operators: "equals", "greater_than", "less_than", "in", "not_in"
+    """
+    operator: String!
+}
+
+"""
+Filter data float object for decimal number filtering conditions.
+Used to define floating-point comparison operations in filters.
+"""
+type FilterDataFloat @opendocs(
+    group: ["Core Resources", "Filters", "Objects"]
+){
+    """
+    Single float value for comparison.
+    Used when comparing against a single decimal value.
+    Example: 99.99, 149.50
+    """
+    value: Float!
+
+    """
+    Array of float values for comparison.
+    Used when comparing against multiple possible values.
+    Example: [99.99, 149.50, 199.99]
+    """
+    values: [Float!]
+
+    """
+    Comparison operator for the float value(s).
+    Supported operators: "equals", "greater_than", "less_than", "in", "not_in"
+    """
+    operator: String!
+}
+
+"""
+Filter data bool object for boolean filtering conditions.
+Used to define true/false comparison operations in filters.
+"""
+type FilterDataBool @opendocs(
+    group: ["Core Resources", "Filters", "Objects"]
+) {
+    """
+    Boolean value for comparison.
+    Used for true/false conditions.
+    Example: true, false
+    """
+    value: Boolean
+
+    """
+    Comparison operator for the boolean value.
+    Supported operators: "equals"
+    """
+    operator: String!
+}
+
+"""
+Filter data param object for parameter-based filtering.
+Used to filter based on custom parameters and their values.
+"""
+type FilterDataParam @opendocs(
+    group: ["Core Resources", "Filters", "Objects"]
+) {
+    """
+    Name of the parameter to filter on.
+    Example: "utm_source", "utm_campaign"
+    """
+    name: String!
+
+    """
+    String value configuration for the parameter.
+    Contains the value and comparison operator.
+    """
+    value: FilterDataString
+}
+
+"""
+Filter data event object for event-based filtering.
+Used to filter based on event properties and attributes.
+"""
+type FilterDataEvent @opendocs(
+    group: ["Core Resources", "Filters", "Objects"]
+) {
+    """
+    Type of the event to filter on.
+    Example: "click", "page_view", "form_submit"
+    """
+    type: String!
+
+    """
+    Group configuration for the event.
+    Used to filter events by their group.
+    """
+    group: FilterDataString
+
+    """
+    Element configuration for the event.
+    Used to filter events by the element they occurred on.
+    """
+    element: FilterDataString
+
+    """
+    Text content configuration for the event.
+    Used to filter events by their text content.
+    """
+    txt: FilterDataString
+
+    """
+    Element path configuration for the event.
+    Used to filter events by their DOM path.
+    """
+    element_path: FilterDataString
+
+    """
+    Location configuration for the event.
+    Used to filter events by their location.
+    """
+    location: FilterDataString
+
+    """
+    Value configuration for the event.
+    Used to filter events by their value.
+    """
+    value: FilterDataString
+
+    """
+    Height configuration for the event.
+    Used to filter events by element height.
+    """
+    height: FilterDataInt
+
+    """
+    Width configuration for the event.
+    Used to filter events by element width.
+    """
+    width: FilterDataInt
+
+    """
+    Timestamp configuration for the event.
+    Used to filter events by their timestamp.
+    """
+    timestamp: FilterDataInt
+
+    """
+    X coordinate configuration for the event.
+    Used to filter events by their X position.
+    """
+    x: FilterDataInt
+
+    """
+    Y coordinate configuration for the event.
+    Used to filter events by their Y position.
+    """
+    y: FilterDataInt
+}
+
+"""
+Filter data object that combines different types of filter data.
+Used to create complex filtering conditions.
+"""
+type FilterData @opendocs(
+    group: ["Core Resources", "Filters", "Objects"]
+) {
+    """
+    String-based filter configuration.
+    Used for text-based filtering conditions.
+    """
+    string: FilterDataString
+
+    """
+    Integer-based filter configuration.
+    Used for whole number filtering conditions.
+    """
+    int: FilterDataInt
+
+    """
+    Boolean-based filter configuration.
+    Used for true/false filtering conditions.
+    """
+    bool: FilterDataBool
+
+    """
+    Event-based filter configuration.
+    Used for filtering based on event properties.
+    """
+    event: FilterDataEvent
+
+    """
+    Parameter-based filter configuration.
+    Used for filtering based on custom parameters.
+    """
+    param: FilterDataParam
+
+    """
+    Custom event property configurations.
+    Used for filtering based on custom event properties.
+    """
+    event_properties: [FilterDataCustomEventProperty]
+}
+
+"""
+Filter data custom event property object.
+Used to define filtering conditions for custom event properties.
+"""
+type FilterDataCustomEventProperty @opendocs(
+    group: ["Core Resources", "Filters", "Objects"]
+) {
+    """
+    Name of the custom event property.
+    Example: "order_id", "product_category"
+    """
+    name: String!
+
+    """
+    String value configuration for the property.
+    Used when the property value is a string.
+    """
+    value_str: FilterDataString
+
+    """
+    Boolean value configuration for the property.
+    Used when the property value is a boolean.
+    """
+    value_bool: FilterDataBool
+
+    """
+    Integer value configuration for the property.
+    Used when the property value is an integer.
+    """
+    value_int: FilterDataInt
+
+    """
+    Float value configuration for the property.
+    Used when the property value is a decimal number.
+    """
+    value_float: FilterDataFloat
+}
+
+"""
+Input for funnel creation.
+Used to create a new funnel for tracking user conversion paths.
+"""
+input FunnelInput @opendocs(
+    group: ["Core Resources", "Funnels", "Inputs"]
+) {
+    """
+    Name of the funnel.
+    Used for identification in the UI and API.
+    Example: "Checkout Process", "Sign Up Flow"
+    """
+    name: String!
+
+    """
+    Detailed description of the funnel's purpose.
+    Helps other team members understand the funnel's intent.
+    Example: "Tracks user progression through the checkout process"
+    """
+    description: String
+
+    """
+    Associated website identifier.
+    Links the funnel to a specific website in your account.
+    """
+    website_id: ID
+
+    """
+    Associated segment identifier.
+    Links the funnel to a specific user segment.
+    """
+    segment_id: String!
+
+    """
+    Computation settings for the funnel.
+    Defines how the funnel should be calculated.
+    """
+    compute: FunnelComputeWriteInput!
+
+    """
+    Whether the funnel is publicly accessible.
+    Controls visibility across your organization.
+    Default: false
+    """
+    is_public: Boolean
+}
+
+"""
+Input for funnel step configuration.
+Used to define steps in a conversion funnel.
+"""
+input FunnelStepInput @opendocs(
+    group: ["Core Resources", "Funnels", "Inputs"]
+) {
+    """
+    Display name of the step.
+    Used for identification in the UI and reports.
+    Example: "Add to Cart", "Shipping Details"
+    """
+    name: String
+
+    """
+    Filtering conditions for the step.
+    Defines what constitutes completion of this step.
+    """
+    filters: FiltersInput
+}
+
+"""
+Input for filters configuration.
+Used to define complex filtering conditions.
+"""
+input FiltersInput @opendocs(
+    group: ["Core Resources", "Filters", "Inputs"]
+) {
+    """
+    Conditions that must be met (AND logic).
+    All conditions in this array must be satisfied.
+    """
+    must: [FilterInput]
+
+    """
+    Conditions that should be met (OR logic).
+    At least one condition in this array must be satisfied.
+    """
+    should: [FilterInput]
+
+    """
+    Conditions that must not be met (NOT logic).
+    None of the conditions in this array should be satisfied.
+    """
+    must_not: [FilterInput]
+}
+
+"""
+Input for filter configuration.
+Used to define specific filtering conditions.
+"""
+input FilterInput @opendocs(
+    group: ["Core Resources", "Filters", "Inputs"]
+) {
+    """
+    Name of the filter.
+    Used for identification and display.
+    Example: "Page View", "Button Click"
+    """
+    name: String!
+
+    """
+    Unit of measurement (if applicable).
+    Example: "px", "ms", "%"
+    """
+    unit: String
+
+    """
+    Grouping category for the filter.
+    Used for organization and display.
+    Example: "Navigation", "Forms"
+    """
+    group: String
+
+    """
+    Filter criteria data.
+    Contains the actual filtering conditions.
+    """
+    data: FilterDataInput!
+
+    """
+    Associated event ID.
+    Links the filter to a specific event type.
+    """
+    defined_event_id: String
+
+    """
+    Stable identifier for the filter.
+    Used for filter persistence and reference.
+    """
+    stable_id: String
+
+    """
+    Parent filter reference.
+    Used for hierarchical filter relationships.
+    """
+    parent_filter_stable_id: String
+}
+
+"""
+Input for filter data configuration.
+Used to define the type and conditions of filter data.
+"""
+input FilterDataInput @opendocs(
+    group: ["Core Resources", "Filters", "Inputs"]
+) {
+    """
+    String-based filter configuration.
+    Used for text-based filtering conditions.
+    """
+    string: FilterDataStringInput
+
+    """
+    Integer-based filter configuration.
+    Used for whole number filtering conditions.
+    """
+    int: FilterDataIntInput
+
+    """
+    Boolean-based filter configuration.
+    Used for true/false filtering conditions.
+    """
+    bool: FilterDataBoolInput
+
+    """
+    Event-based filter configuration.
+    Used for filtering based on event properties.
+    """
+    event: FilterDataEventInput
+
+    """
+    Parameter-based filter configuration.
+    Used for filtering based on custom parameters.
+    """
+    param: FilterDataParamInput
+
+    """
+    Custom event property configurations.
+    Used for filtering based on custom event properties.
+    """
+    event_properties: [FilterDataCustomEventPropertyInput]
+}
+
+"""
+Input for string-based filter data.
+Used to define string comparison operations.
+"""
+input FilterDataStringInput @opendocs(
+    group: ["Core Resources", "Filters", "Inputs"]
+) {
+    """
+    Single string value for comparison.
+    Used when comparing against a single value.
+    Example: "click", "submit", "page_view"
+    """
+    value: String
+
+    """
+    Array of string values for comparison.
+    Used when comparing against multiple possible values.
+    Example: ["click", "submit", "page_view"]
+    """
+    values: [String!]
+
+    """
+    Comparison operator for the string value(s).
+    Supported operators: "equals", "contains", "starts_with", "ends_with", "in", "not_in"
+    """
+    operator: String!
+}
+
+"""
+Input for integer-based filter data.
+Used to define numeric comparison operations.
+"""
+input FilterDataIntInput @opendocs(
+    group: ["Core Resources", "Filters", "Inputs"]
+) {
+    """
+    Single integer value for comparison.
+    Used when comparing against a single numeric value.
+    Example: 100, 500, 1000
+    """
+    value: Int
+
+    """
+    Array of integer values for comparison.
+    Used when comparing against multiple possible values.
+    Example: [100, 200, 300]
+    """
+    values: [Int!]
+
+    """
+    Comparison operator for the integer value(s).
+    Supported operators: "equals", "greater_than", "less_than", "in", "not_in"
+    """
+    operator: String!
+}
+
+"""
+Input for boolean-based filter data.
+Used to define true/false comparison operations.
+"""
+input FilterDataBoolInput @opendocs(
+    group: ["Core Resources", "Filters", "Inputs"]
+) {
+    """
+    Boolean value for comparison.
+    Used for true/false conditions.
+    Example: true, false
+    """
+    value: Boolean!
+
+    """
+    Comparison operator for the boolean value.
+    Supported operators: "equals"
+    """
+    operator: String!
+}
+
+"""
+Input for parameter-based filter data.
+Used to define parameter comparison operations.
+"""
+input FilterDataParamInput @opendocs(
+    group: ["Core Resources", "Filters", "Inputs"]
+) {
+    """
+    Name of the parameter to filter on.
+    Example: "utm_source", "utm_campaign"
+    """
+    name: String!
+
+    """
+    String value configuration for the parameter.
+    Contains the value and comparison operator.
+    """
+    value: FilterDataStringInput
+}
+
+"""
+Input for event-based filter data.
+Used to define event property comparison operations.
+"""
+input FilterDataEventInput @opendocs(
+    group: ["Core Resources", "Filters", "Inputs"]
+) {
+    """
+    Type of the event to filter on.
+    Example: "click", "page_view", "form_submit"
+    """
+    type: String!
+
+    """
+    Group configuration for the event.
+    Used to filter events by their group.
+    """
+    group: FilterDataStringInput
+
+    """
+    Element configuration for the event.
+    Used to filter events by the element they occurred on.
+    """
+    element: FilterDataStringInput
+
+    """
+    Text content configuration for the event.
+    Used to filter events by their text content.
+    """
+    txt: FilterDataStringInput
+
+    """
+    Element path configuration for the event.
+    Used to filter events by their DOM path.
+    """
+    element_path: FilterDataStringInput
+
+    """
+    Location configuration for the event.
+    Used to filter events by their location.
+    """
+    location: FilterDataStringInput
+
+    """
+    Value configuration for the event.
+    Used to filter events by their value.
+    """
+    value: FilterDataStringInput
+
+    """
+    Height configuration for the event.
+    Used to filter events by element height.
+    """
+    height: FilterDataIntInput
+
+    """
+    Width configuration for the event.
+    Used to filter events by element width.
+    """
+    width: FilterDataIntInput
+
+    """
+    Timestamp configuration for the event.
+    Used to filter events by their timestamp.
+    """
+    timestamp: FilterDataIntInput
+
+    """
+    X coordinate configuration for the event.
+    Used to filter events by their X position.
+    """
+    x: FilterDataIntInput
+
+    """
+    Y coordinate configuration for the event.
+    Used to filter events by their Y position.
+    """
+    y: FilterDataIntInput
+}
+
+"""
+Input for float-based filter data.
+Used to define decimal number comparison operations.
+"""
+input FilterDataFloatInput @opendocs(
+    group: ["Core Resources", "Filters", "Inputs"]
+) {
+    """
+    Array of float values for comparison.
+    Used when comparing against multiple possible values.
+    Example: [99.99, 149.50, 199.99]
+    """
+    values: [Float]
+
+    """
+    Single float value for comparison.
+    Used when comparing against a single decimal value.
+    Example: 99.99, 149.50
+    """
+    value: Float
+
+    """
+    Comparison operator for the float value(s).
+    Supported operators: "equals", "greater_than", "less_than", "in", "not_in"
+    """
+    operator: String!
+}
+
+"""
+Input for custom event property filter data.
+Used to define filtering conditions for custom event properties.
+"""
+input FilterDataCustomEventPropertyInput @opendocs(
+    group: ["Core Resources", "Filters", "Inputs"]
+) {
+    """
+    Name of the custom event property.
+    Example: "order_id", "product_category"
+    """
+    name: String!
+
+    """
+    String value configuration for the property.
+    Used when the property value is a string.
+    """
+    value_str: FilterDataStringInput
+
+    """
+    Integer value configuration for the property.
+    Used when the property value is an integer.
+    """
+    value_int: FilterDataIntInput
+
+    """
+    Boolean value configuration for the property.
+    Used when the property value is a boolean.
+    """
+    value_bool: FilterDataBoolInput
+
+    """
+    Float value configuration for the property.
+    Used when the property value is a decimal number.
+    """
+    value_float: FilterDataFloatInput
+}
+
+"""
+Input for date range configuration.
+Used to define time periods for analytics queries.
+"""
+input DateRangeInput @opendocs(
+    group: ["GraphQL Types", "Inputs"]
+) {
+    """
+    Start of the date range in relative date format.
+    Example: `TODAY`, `BEGINNING_OF_MONTH`, `TODAY-7DAYS`
+    """
+    from: RelativeDate
+
+    """
+    End of the date range in relative date format.
+    Example: `TODAY`, `YESTERDAY`, `BEGINNING_OF_WEEK`
+    """
+    to: RelativeDate
+}
+
+# Define the Mutation type
+"""
+The root mutation type.
+Contains all available mutations for modifying data.
+"""
+type Mutation {
+    """
+    Create a new funnel for tracking user conversion paths.
+    Returns the created funnel object.
+    """
+    funnelCreate(
+        """
+        Configuration for the new funnel.
+        Contains all necessary settings to create a funnel for tracking user conversion paths.
+        """
+        input: FunnelInput!
+    ): Funnel!
+    @opendocs(
+        group: ["Core Resources", "Funnels", "Mutations"]
+    )
+
+    """
+    Delete a funnel by its unique identifier.
+    Returns true if deletion was successful.
+    """
+    funnelDelete(
+        """
+        The unique identifier of the funnel to delete.
+        Example: "funnel_123"
+        """
+        funnel_id: ID!
+    ): Boolean!
+    @opendocs(
+        group: ["Core Resources", "Funnels", "Mutations"]
+    )
+
+    """
+    Update an existing funnel's configuration and settings.
+    Returns true if update was successful.
+    """
+    updateFunnel(
+        """
+        The unique identifier of the funnel to update.
+        Example: "funnel_123"
+        """
+        funnel_id: ID!
+    ): Boolean!
+    @opendocs(
+        group: ["Core Resources", "Funnels", "Mutations"]
+    )
+
+    """
+    Set or unset a funnel as favorite for quick access.
+    Returns true if the operation was successful.
+    """
+    funnelSetFavourite(
+        """
+        The unique identifier of the funnel to update.
+        Example: "funnel_123"
+        """
+        funnel_id: ID!,
+        """
+        Configuration for setting the favorite status.
+        Contains the is_favourite flag to set or unset the favorite status.
+        """
+        input: FunnelSetFavouriteInput!
+    ): Boolean!
+    @opendocs(
+        group: ["Core Resources", "Funnels", "Mutations"]
+    )
+
+    """
+    Compute funnel analysis results based on current data.
+    Returns the computed funnel analysis results.
+    """
+    funnelCompute(
+        """
+        Optional website identifier to scope the computation.
+        If not provided, the computation will use the default website context.
+        Example: "website_123"
+        """
+        website_id: ID,
+        """
+        Configuration for the funnel computation.
+        Contains all necessary settings to compute the funnel analysis, including date range, steps, and filters.
+        """
+        input: FunnelComputeInput!
+    ): FunnelComputeResponse!
+    @opendocs(
+        group: ["Core Resources", "Funnels", "Mutations"]
+    )
+}

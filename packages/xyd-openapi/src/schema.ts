@@ -8,14 +8,12 @@ import type { Reference, OpenAPIReferenceContext, ReferenceContext } from "@xyd-
 import { SUPPORTED_HTTP_METHODS } from "./const";
 import { oapPathToReference } from "./paths";
 import { oapExamples } from "./examples";
+import { oapSchemaToReferencesOptions } from "./types";
+import { processComponentSchemas } from "./componentSchemas";
 
 // TODO: support one-of
 // TODO: support $ref - currently we use $refParser.dereference that converts $ref into objects
 // TODO: better method check system - currently we need to manually check that in few methods
-
-interface oapSchemaToReferencesOptions {
-    regions?: string[] // Format: 'METHOD /path' e.g. 'GET /users'
-}
 
 // oapSchemaToReferences converts an OpenAPI schema to a list of uniform References
 export function oapSchemaToReferences(
@@ -47,12 +45,13 @@ export function oapSchemaToReferences(
             // Check if this method/path combination should be included based on regions
             if (options?.regions && options.regions.length > 0) {
                 const regionKey = `${eachMethod.toUpperCase()} ${endpointPath}`
-                if (!options.regions.some(region => region === regionKey)) {
+                    if (!options.regions.some(region => region === regionKey)) {
                     return
                 }
             }
 
             const reference = oapPathToReference(
+                schema,
                 httpMethod,
                 endpointPath,
                 oapPath as OpenAPIV3.PathItemObject
@@ -90,6 +89,13 @@ export function oapSchemaToReferences(
             }
         })
     })
+
+    const schemas = processComponentSchemas(
+        schema,
+        options
+    )
+    references.push(...schemas)
+
     const tags = oas.getTags()
     sortReferencesByTags(references, tags)
 

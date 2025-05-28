@@ -8,7 +8,9 @@
     "clean": "rimraf build",
     "prebuild": "pnpm clean",
     "build": "tsup",
-    "build:examples": "tsup --config tsup.examples-config.ts"
+    "build:examples": "tsup --config tsup.examples-config.ts",
+    "test": "vitest",
+    "ci:test": "vitest run"
   },
   "dependencies": {
     "@readme/oas-to-snippet": "^28.0.0",
@@ -24,6 +26,7 @@
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "rimraf": "^3.0.2",
-    "tsup": "^8.3.0"
+    "tsup": "^8.3.0",
+    "vitest": "^2.1.1"
   }
 }

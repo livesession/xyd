@@ -92,7 +92,7 @@ export function uniformify(
         }
     } else {
         const info = gqlFieldTypeInfo(gqlType)
-        if (!isBuiltInType(info?.typeFlat)) { // TODO: in the future options + check if defined in schema
+        if (info?.typeFlat && !isBuiltInType(info?.typeFlat)) { // TODO: in the future options + check if defined in schema
             if (info?.typeFlat) {
                 return uniformify(info.typeFlat, definitions, examples)
             }
@@ -152,7 +152,7 @@ export function propsUniformify(
             ...(meta || []),
         ],
         typeDef: {
-            symbolId: objRef.canonical,
+            symbolCanonical: objRef?.canonical,
         },
     }
 }
@@ -176,7 +176,7 @@ export function gqlObjectPropsUniformify(
             ...(meta || []),
         ],
         typeDef: {
-            symbolId: objRef.canonical,
+            symbolCanonical: objRef.canonical,
         },
     }
 

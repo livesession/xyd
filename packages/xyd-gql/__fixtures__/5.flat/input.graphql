@@ -19,5 +19,9 @@ type Query {
         id: ID!
         details: AuthorDetailsInput
     ): Author
+
+    authorDelete(
+        id: ID!
+    ): Boolean
 }
 

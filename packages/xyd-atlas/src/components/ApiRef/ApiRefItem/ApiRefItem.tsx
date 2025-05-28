@@ -101,7 +101,6 @@ const VariantContext = createContext<{
     }
 });
 
-
 function $Definitions({reference}: ApiRefItemProps) {
     return <atlas-apiref-definitions className={cn.ApiRefItemDefinitionsHost}>
         <$Authorization reference={reference}/>

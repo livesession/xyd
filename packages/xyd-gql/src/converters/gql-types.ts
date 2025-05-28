@@ -125,7 +125,11 @@ export function graphqlTypesToUniformReferences(
                     ref = gqlUnionToUniformRef(
                         new Context(
                             sharedProcessedTypes,
-                            options
+                            options,
+                            {
+                                flat,
+                                argFlat: flat || false
+                            }
                         ),
                         type,
                     )
@@ -141,7 +145,10 @@ export function graphqlTypesToUniformReferences(
                     ref = gqlInterfaceToUniformRef(
                         new Context(
                             new Set(),
-                            options
+                            options,
+                            {
+                                flat
+                            }
                         ),
                         type,
                     )

@@ -2,6 +2,8 @@ export * from "./const"
 
 export * from "./parameters"
 
+export * from "./paths"
+
 export * from "./properties"
 
 export * from "./requestBody"

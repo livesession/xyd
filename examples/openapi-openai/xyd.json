@@ -40,7 +40,7 @@
                     {
                         "group": "Get Started",
                         "pages": [
-                            "docs/overview"
+                            "docs/quickstart"
                         ]
                     }
                 ]

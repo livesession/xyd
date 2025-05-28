@@ -53,7 +53,7 @@
               }
             ],
             "typeDef": {
-              "symbolId": ""
+              "symbolCanonical": ""
             }
           },
           {
@@ -95,7 +95,88 @@
               }
             ],
             "typeDef": {
-              "symbolId": "objects/author"
+              "symbolCanonical": "objects/author"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "authorDelete",
+    "description": "",
+    "canonical": "queries/authordelete",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "authorDelete",
+      "group": [
+        "Queries"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "Query reference",
+                    "language": "graphql",
+                    "code": "query authorDelete($id: ID!) {\n  authorDelete(id: $id) {\n    # authorDelete fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolCanonical": ""
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "authorDelete",
+            "type": "Boolean",
+            "description": "",
+            "context": {
+              "graphqlName": "authorDelete",
+              "graphqlTypeFlat": "Boolean",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [],
+            "typeDef": {
+              "symbolCanonical": ""
             }
           }
         ]
@@ -139,7 +220,7 @@
               }
             ],
             "typeDef": {
-              "symbolId": ""
+              "symbolCanonical": ""
             }
           },
           {
@@ -159,7 +240,7 @@
               }
             ],
             "typeDef": {
-              "symbolId": ""
+              "symbolCanonical": ""
             }
           },
           {
@@ -171,23 +252,7 @@
               "graphqlTypeFlat": "AuthorDetails",
               "graphqlBuiltInType": false
             },
-            "properties": [
-              {
-                "name": "birthDate",
-                "type": "String",
-                "description": "",
-                "context": {
-                  "graphqlName": "birthDate",
-                  "graphqlTypeFlat": "String",
-                  "graphqlBuiltInType": true
-                },
-                "properties": [],
-                "meta": [],
-                "typeDef": {
-                  "symbolId": ""
-                }
-              }
-            ],
+            "properties": [],
             "meta": [
               {
                 "name": "required",
@@ -195,7 +260,7 @@
               }
             ],
             "typeDef": {
-              "symbolId": "objects/authordetails"
+              "symbolCanonical": "objects/authordetails"
             }
           }
         ]
@@ -234,7 +299,7 @@
             "properties": [],
             "meta": [],
             "typeDef": {
-              "symbolId": ""
+              "symbolCanonical": ""
             }
           }
         ]
@@ -260,7 +325,23 @@
     "definitions": [
       {
         "title": "Fields",
-        "properties": []
+        "properties": [
+          {
+            "name": "birthDate",
+            "type": "String",
+            "description": "",
+            "context": {
+              "graphqlName": "birthDate",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [],
+            "typeDef": {
+              "symbolCanonical": ""
+            }
+          }
+        ]
       }
     ]
   }

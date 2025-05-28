@@ -157,10 +157,10 @@ export class BaseTheme extends Theme {
 }
 
 function $BuiltWithXYD() {
-    return <xyd-built-with>
-        <div part="text">Built with</div>
-        <div part="logo">
-            <a href="https://xyd.dev" target="_blank">
+    return <a href="https://xyd.dev" target="_blank">
+        <xyd-built-with>
+            <div part="text">Built with</div>
+            <div part="logo">
                 <svg xmlns="http://www.w3.org/2000/svg" width={64} height={18} viewBox="0 0 64 18" fill="none">
                     <g clipPath="url(#clip0_3_18)">
                         <path fillRule="evenodd" clipRule="evenodd"
@@ -173,7 +173,7 @@ function $BuiltWithXYD() {
                         </clipPath>
                     </defs>
                 </svg>
-            </a>
-        </div>
-    </xyd-built-with>
+            </div>
+        </xyd-built-with>
+    </a>
 }

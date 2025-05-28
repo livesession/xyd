@@ -342,7 +342,11 @@ async function uniformResolver(
                 case "openapi": {
                     const ctx = ref.context as OpenAPIReferenceContext;
                     const method = (ctx?.method || "").toUpperCase()
-                    region = `${method} ${ctx?.path}`
+                    if (method && ctx?.path) {
+                        region = `${method} ${ctx?.path}`
+                    } else if (ctx.componentSchema) {
+                        region = "/components/schemas/" + ctx.componentSchema
+                    }
                     meta.openapi = `${resolvedApiFile}#${region}`
                     break
                 }

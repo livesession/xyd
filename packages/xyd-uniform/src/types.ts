@@ -86,13 +86,14 @@ export interface Meta<T = string> {
     value?: unknown; // TODO: better type?
 }
 
-export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum" | "flat">
+export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum" | "flat" | "merge">
 
 export type DefinitionPropertyTypeDef = {
     symbolId?: string;
     union?: {
         symbolId: string;
     }[]
+    symbolCanonical?: string;
 }
 
 export interface DefinitionProperty {
@@ -220,9 +221,13 @@ export interface GraphQLReferenceContext extends BaseReferenceContext {
 
 // TODO: custom value?
 export interface OpenAPIReferenceContext extends BaseReferenceContext {
-    method: string;
-    path: string;
-    fullPath: string;
+    method?: string;
+
+    path?: string;
+
+    fullPath?: string;
+
+    componentSchema?: string
 }
 
 // Add TypeDocReferenceContext to the union type

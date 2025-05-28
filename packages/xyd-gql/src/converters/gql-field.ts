@@ -43,7 +43,6 @@ export class GQLFieldConverter {
     ): DefinitionProperty {
         if (this.ctx.globalOptions?.flat && (this.ctx.config?.flatReturn || this.ctx.config?.flat)) {
             const info = gqlFieldTypeInfo(field)
-
             const meta: DefinitionPropertyMeta[] = []
 
             if (this.ctx.config?.flatReturn) {
@@ -53,12 +52,7 @@ export class GQLFieldConverter {
                 })
             }
 
-            switch (info?.typeFlat?.constructor) {
-                case GraphQLObjectType:
-                case GraphQLInputObjectType: {
-                    return propsUniformify(field, [], meta)
-                }
-            }
+            return propsUniformify(field, [], meta)
         }
 
         const fieldInfo = gqlFieldTypeInfo(field)

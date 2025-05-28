@@ -25,13 +25,13 @@ const tests: {
     //     name: "4.union",
     //     description: "An opendocs directive example",
     // },
-    // {
-    //     name: "5.flat",
-    //     description: "Flat generation only via code options",
-    //     options: {
-    //         flat: true
-    //     }
-    // },
+    {
+        name: "5.flat",
+        description: "Flat generation only via code options",
+        options: {
+            flat: true
+        }
+    },
     // {
     //     name: "6.default-values",
     //     description: "Default values example",
@@ -70,10 +70,10 @@ const tests: {
     //         flat: true
     //     }
     // }
-    {
-        name: "-2.complex.livesession",
-        description: "LiveSession GraphQL API example"
-    }
+    // {
+    //     name: "-2.complex.livesession",
+    //     description: "LiveSession GraphQL API example"
+    // }
 ]
 
 describe("gqlSchemaToReferences", () => {

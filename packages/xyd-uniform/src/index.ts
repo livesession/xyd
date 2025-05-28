@@ -1,14 +1,19 @@
 // Define the new PluginV type with a callback function that returns another function
-import { Reference } from "./types";
+import {Reference} from "./types";
 
 // Define the new PluginV type with a callback function that returns another function
 export type UniformPluginArgs = {
+    references: Reference[] | Reference,
     defer: (defer: () => any) => void;
-    
+
     // TODO: maybe in the future
     // visit: (selector: string | "[method] [path]", callback: (...args: any[]) => void) => void;
 }
-export type UniformPlugin<T> = (args: UniformPluginArgs) => (ref: Reference) => void;
+
+export type UniformPluginRestArgs = {
+    index: number;
+}
+export type UniformPlugin<T> = (args: UniformPluginArgs) => (ref: Reference, restArgs: UniformPluginRestArgs) => void;
 
 // Utility type to infer if a type is an array and avoid wrapping it into an array twice
 type NormalizeArray<T> = T extends Array<infer U> ? U[] : T;
@@ -41,27 +46,28 @@ export default function uniform<T extends UniformPlugin<any>[]>(
         out: {} as { [K in keyof ResultType]: ResultType[K] }
     };
 
-    const finishCallbacks = new Set();
-
     config.plugins.forEach((plugin) => {
+        let defer: any = undefined; // fix any
+
         const call = plugin({
+            references: references,
             defer: (cb) => {
                 if (typeof cb === "function") {
-                    finishCallbacks.add(cb);
+                    defer = cb
                 }
             },
             // visit: (pattern, callback) => {
             // }
         })
 
-        references.map((ref) => {
-            call(ref)
+        references.map((ref, i) => {
+            call(ref, {
+                index: i,
+            })
         });
-    })
 
-    finishCallbacks.forEach(cb => {
-        if (typeof cb === "function") {
-            const resp = cb()
+        if (typeof defer === "function") {
+            const resp = defer(references)
             if (typeof resp !== "object") {
                 throw new Error(`Invalid callback return type: ${typeof resp}`)
             }
@@ -70,10 +76,8 @@ export default function uniform<T extends UniformPlugin<any>[]>(
                 ...response.out,
                 ...resp
             }
-        } else {
-            throw new Error(`Invalid callback type: ${typeof cb}`)
         }
-    });
+    })
 
     return response;
 }

@@ -85,8 +85,8 @@ function PropType({ property, meta }: PropTypeProps) {
     let href = ""
     let valueText = value
 
-    if (property?.typeDef?.symbolId) {
-        let symbolLink = property.typeDef.symbolId
+    if (property?.typeDef?.symbolCanonical) {
+        let symbolLink = property.typeDef.symbolCanonical
         if (!symbolLink.startsWith("/")) {
             symbolLink = "/" + symbolLink
         }
@@ -225,6 +225,11 @@ function SubProperties({ properties }: { properties: MDXReference<DefinitionProp
             </div>
         </div>
     </>
+}
+
+
+function shouldSkipLevel(meta: DefinitionPropertyMeta[]): boolean {
+    return meta.some(m => m.name === "flat") && meta.some(m => m.name === "merge")
 }
 
 interface PropsToggleProps {

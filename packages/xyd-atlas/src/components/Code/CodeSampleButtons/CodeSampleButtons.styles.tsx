@@ -7,6 +7,7 @@ export const CodeSampleButtonsHost = css`
 
 export const CodeSampleButtonsContainer = css`
     display: inline-flex;
+    width: 100%;
     align-items: center;
     border-radius: 8px;
     background-color: var(--XydAtlas-Component-Code-SampleButtons__color-containerBackground);

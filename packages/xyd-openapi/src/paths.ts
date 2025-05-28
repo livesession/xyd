@@ -10,7 +10,7 @@ import {
     OpenAPIReferenceContext,
     DefinitionVariantOpenAPIMeta,
     DefinitionVariant,
-    DefinitionOpenAPIMeta
+    DefinitionOpenAPIMeta,
 } from "@xyd-js/uniform";
 
 import {oapParametersToDefinitionProperties} from "./parameters";
@@ -23,6 +23,7 @@ import {
 
 // oapPathToReference converts an OpenAPI path to a uniform Reference
 export function oapPathToReference(
+    schema: OpenAPIV3.Document,
     httpMethod: "get" | "put" | "post" | "delete" | "patch", // TODO: ts type
     path: string,
     oapPath: OpenAPIV3.PathItemObject,
@@ -134,56 +135,27 @@ export function oapPathToReference(
     }
 
     if (oapMethod.responses) {
-        const responses = oapMethod.responses as OpenAPIV3.ResponsesObject
-
-        const variants: DefinitionVariant<DefinitionVariantOpenAPIMeta>[] = []
-
-        Object.keys(responses).forEach((code) => {
-            const responseObject = responses[code] as OpenAPIV3.ResponseObject
-            if (!responseObject?.content) {
-                return null
-            }
-
-            const contentTypes = Object.keys(responseObject.content)
-            if (contentTypes.length > 1) {
-                console.warn("Multiple content types are not supported yet for responses")
-            }
-
-            const findSupportedContent = contentTypes[contentTypes.length - 1]
-            if (!findSupportedContent) {
-                return null
-            }
-
-            const properties = oapResponseToDefinitionProperties(responses, code, findSupportedContent) || []
-
-            variants.push({
-                title: code,
-                properties,
-                meta: [
-                    {
-                        name: "status",
-                        value: code || "",
-                    },
-                    {
-                        name: "contentType",
-                        value: findSupportedContent || "",
-                    }
-                ]
-            })
-        })
-
-        definitions.push({
-            title: 'Response',
-            variants,
-            properties: []
-        })
+        const definition = oapOperationToUniformDefinition(oapMethod)
+        definitions.push(definition)
     }
 
     // TODO: !!!! better api !!!!
     endpointRef.__UNSAFE_selector = function __UNSAFE_selector(selector: string) {
         switch (selector) {
-            case "[method] [path]":
+            case "[schema]": {
+                return schema
+            }
+            case "[method]": {
+                return {
+                    oapPath,
+                    httpMethod,
+                    path
+                }
+            }
+
+            case "[method] [path]": {
                 return oapMethod
+            }
             default:
                 return null
         }
@@ -192,6 +164,53 @@ export function oapPathToReference(
     return endpointRef
 }
 
+export function oapOperationToUniformDefinition(
+    oapOperation: OpenAPIV3.OperationObject,
+): Definition {
+    const responses = oapOperation.responses as OpenAPIV3.ResponsesObject
+
+    const variants: DefinitionVariant<DefinitionVariantOpenAPIMeta>[] = []
+
+    Object.keys(responses).forEach((code) => {
+        const responseObject = responses[code] as OpenAPIV3.ResponseObject
+        if (!responseObject?.content) {
+            return null
+        }
+
+        const contentTypes = Object.keys(responseObject.content)
+        if (contentTypes.length > 1) {
+            console.warn("Multiple content types are not supported yet for responses")
+        }
+
+        const findSupportedContent = contentTypes[contentTypes.length - 1]
+        if (!findSupportedContent) {
+            return null
+        }
+
+        const properties = oapResponseToDefinitionProperties(responses, code, findSupportedContent) || []
+
+        variants.push({
+            title: code,
+            properties,
+            meta: [
+                {
+                    name: "status",
+                    value: code || "",
+                },
+                {
+                    name: "contentType",
+                    value: findSupportedContent || "",
+                }
+            ]
+        })
+    })
+
+    return {
+        title: 'Response',
+        variants,
+        properties: []
+    }
+}
 
 function getFirstTag(oapMethod: OpenAPIV3.OperationObject) {
     for (const tag of oapMethod?.tags || []) {

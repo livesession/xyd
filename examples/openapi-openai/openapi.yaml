@@ -11286,7 +11286,7 @@ paths:
                 },
                 "user": null,
                 "metadata": {}
-              }      
+              }
           - title: Streaming
             request:
               curl: |
@@ -11803,7 +11803,7 @@ paths:
               const client = new OpenAI();
 
               const response = await client.responses.retrieve("resp_123");
-              console.log(response);  
+              console.log(response);
             python: |
               from openai import OpenAI
               client = OpenAI()
@@ -11906,7 +11906,7 @@ paths:
               const client = new OpenAI();
 
               const response = await client.responses.del("resp_123");
-              console.log(response);  
+              console.log(response);
             python: |
               from openai import OpenAI
               client = OpenAI()
@@ -12001,7 +12001,7 @@ paths:
               const response = await
               client.responses.inputItems.list("resp_123");
 
-              console.log(response.data);  
+              console.log(response.data);
             python: |
               from openai import OpenAI
               client = OpenAI()
@@ -20581,7 +20581,7 @@ components:
       title: JsonlRunDataSource
       description: >
         A JsonlRunDataSource object with that specifies a JSONL file that
-        matches the eval 
+        matches the eval
       properties:
         type:
           type: string
@@ -28700,7 +28700,7 @@ components:
         If successful, the server will respond with a
         `conversation.item.truncated` 
 
-        event. 
+        event.
       properties:
         event_id:
           type: string
