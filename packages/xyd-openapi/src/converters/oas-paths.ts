@@ -1,7 +1,5 @@
 import {OpenAPIV3} from "openapi-types";
-import matter from 'gray-matter'
 
-import {Metadata} from "@xyd-js/core";
 import {
     Definition,
     ExampleGroup,
@@ -11,55 +9,47 @@ import {
     DefinitionVariantOpenAPIMeta,
     DefinitionVariant,
     DefinitionOpenAPIMeta,
+    DefinitionTypeDef
 } from "@xyd-js/uniform";
 
-import {oapParametersToDefinitionProperties} from "./parameters";
-import {oapRequestBodyToDefinitionProperties} from "./requestBody";
-import {oapResponseToDefinitionProperties} from "./responses";
+import {oapParametersToDefinitionProperties} from "./oas-parameters";
+import {oapRequestBodyToDefinitionProperties} from "./oas-requestBody";
+import {oasResponseToDefinitionProperties} from "./oas-responses";
 import {
     httpMethodToUniformMethod,
     slug
-} from "./utils";
+} from "../utils";
+import {OasJSONSchema} from "../types";
 
 // oapPathToReference converts an OpenAPI path to a uniform Reference
 export function oapPathToReference(
     schema: OpenAPIV3.Document,
-    httpMethod: "get" | "put" | "post" | "delete" | "patch", // TODO: ts type
+    httpMethod: string,
     path: string,
     oapPath: OpenAPIV3.PathItemObject,
 ): Reference | null {
     const mType = httpMethodToUniformMethod(httpMethod)
 
     if (!mType) {
-        console.error(`Unsupported method v222: ${httpMethod}`)
+        console.error(`Unsupported method: ${httpMethod}`)
         return null
     }
 
     const definitions: Definition[] = []
     const exampleGroups: ExampleGroup[] = []
 
-    const oapMethod = oapPath?.[httpMethod] as OpenAPIV3.OperationObject
+    const oapMethod = oapPath?.[httpMethod as keyof OpenAPIV3.PathItemObject] as OpenAPIV3.OperationObject
     if (!oapMethod) {
         return null
     }
 
-    const metaDescription = matter(oapMethod?.description || "")
-    const meta = metaDescription?.data as Metadata | undefined
-
-    if (meta && !meta.group) {
-        const tag = getFirstTag(oapMethod)
-
-        if (tag) {
-            meta.group = [tag]
-        }
-    }
-
-    const description = matter.stringify({content: metaDescription.content || oapMethod.summary || ""}, meta || {})
+    const tag = getFirstTag(oapMethod)
+    const group = [tag]
 
     const endpointRef: Reference = {
         title: oapMethod?.summary || oapMethod.operationId || "",
         canonical: oapMethod.operationId || slug(oapMethod?.summary || ""),
-        description,
+        description: oapMethod?.description || oapMethod?.summary,
         type: mType,
         category: ReferenceCategory.REST,
 
@@ -67,7 +57,7 @@ export function oapPathToReference(
             method: httpMethod,
             path: `${encodeURIComponent(path)}`,
             fullPath: path,
-            group: meta?.group,
+            group,
         } as OpenAPIReferenceContext,
 
         examples: {
@@ -79,7 +69,7 @@ export function oapPathToReference(
     if (oapMethod.parameters) {
         const parameters = oapMethod.parameters as OpenAPIV3.ParameterObject[]
 
-        const paramtersMap = oapParametersToDefinitionProperties(parameters) // TODO: finish
+        const paramtersMap = oapParametersToDefinitionProperties(parameters)
 
         Object.entries(paramtersMap).forEach(([key, definitionProperties]) => {
             let title: string
@@ -106,7 +96,6 @@ export function oapPathToReference(
         })
     }
 
-
     if (oapMethod.requestBody) {
         const reqBody = oapMethod.requestBody as OpenAPIV3.RequestBodyObject
 
@@ -127,10 +116,18 @@ export function oapPathToReference(
             }
         ]
 
+        if (reqBody.required) {
+            meta.push({
+                name: "required",
+                value: "true",
+            })
+        }
+
         definitions.push({
             title: 'Request body',
             properties: oapRequestBodyToDefinitionProperties(reqBody, findSupportedContent) || [],
             meta,
+            typeDef: definitionPropertyTypeDef(schema),
         })
     }
 
@@ -187,10 +184,12 @@ export function oapOperationToUniformDefinition(
             return null
         }
 
-        const properties = oapResponseToDefinitionProperties(responses, code, findSupportedContent) || []
+        const properties = oasResponseToDefinitionProperties(responses, code, findSupportedContent) || []
+        const schema = responseObject.content[findSupportedContent]?.schema as OpenAPIV3.SchemaObject
 
         variants.push({
             title: code,
+            description: responseObject.description || "",
             properties,
             meta: [
                 {
@@ -201,7 +200,8 @@ export function oapOperationToUniformDefinition(
                     name: "contentType",
                     value: findSupportedContent || "",
                 }
-            ]
+            ],
+            typeDef: definitionPropertyTypeDef(schema),
         })
     })
 
@@ -210,6 +210,29 @@ export function oapOperationToUniformDefinition(
         variants,
         properties: []
     }
+}
+
+function definitionPropertyTypeDef(
+    schema: OpenAPIV3.SchemaObject | undefined,
+) {
+    if (!schema) {
+        return
+    }
+
+    let typeDef: DefinitionTypeDef | undefined
+    let oasSchema = schema as OasJSONSchema
+    if (oasSchema.type === "array") {
+        oasSchema = oasSchema.items as OasJSONSchema
+    }
+    if (oasSchema?.__internal_getRefPath) {
+        const symbolId = oasSchema.__internal_getRefPath()
+
+        typeDef = {
+            symbolId,
+        }
+    }
+
+    return typeDef
 }
 
 function getFirstTag(oapMethod: OpenAPIV3.OperationObject) {

@@ -1,7 +1,8 @@
 import { OpenAPIV3 } from "openapi-types";
+
 import { DefinitionProperty } from "@xyd-js/uniform";
 
-import { schemaObjectToDefinitionProperties } from "./properties";
+import {schemaObjectToUniformDefinitionProperties} from "../oas-core";
 
 // oapRequestBodyToDefinitionProperties converts OpenAPI request body to uniform DefinitionProperties
 export function oapRequestBodyToDefinitionProperties(
@@ -54,5 +55,5 @@ export function oapRequestBodyToDefinitionProperties(
         return null
     }
 
-    return schemaObjectToDefinitionProperties(schemaObject)
+    return schemaObjectToUniformDefinitionProperties(schemaObject)
 }

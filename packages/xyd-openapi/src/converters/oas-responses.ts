@@ -1,9 +1,9 @@
 import { OpenAPIV3 } from "openapi-types";
 import { DefinitionProperty } from "@xyd-js/uniform";
 
-import { schemaObjectToDefinitionProperties } from "./properties";
+import {schemaObjectToUniformDefinitionProperties} from "../oas-core";
 
-export function oapResponseToDefinitionProperties(
+export function oasResponseToDefinitionProperties(
     responses: OpenAPIV3.ResponsesObject,
     code: string,
     contentType: string,
@@ -11,7 +11,6 @@ export function oapResponseToDefinitionProperties(
     let schemaObject: OpenAPIV3.SchemaObject | undefined
     let responseObject: OpenAPIV3.ResponseObject | undefined
 
-    // TODO: support another statuses
     if (responses[code]) {
         responseObject = responses[code] as OpenAPIV3.ResponseObject
         if (!responseObject?.content) {
@@ -43,5 +42,5 @@ export function oapResponseToDefinitionProperties(
             break
     }
 
-    return schemaObjectToDefinitionProperties(schemaObject)
+    return schemaObjectToUniformDefinitionProperties(schemaObject)
 }

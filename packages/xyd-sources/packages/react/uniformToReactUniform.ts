@@ -77,6 +77,10 @@ export function uniformToReactUniform(
 
             for (const property of def.properties) {
                 const symbolId = property.typeDef?.symbolId
+                if (typeof symbolId != "string") {
+                    console.error(`symbolId is not a string: ${symbolId}`)
+                    continue
+                }
                 // TODO: handle not symbol types
                 if (!symbolId) {
                     if (property.type === "param" && property.properties?.length) {
@@ -142,6 +146,11 @@ export function uniformToReactUniform(
                         const symbolId = property.typeDef?.symbolId
                         if (!symbolId) {
                             console.error(`non-union property ${property.name} has no symbolId`)
+                            continue
+                        }
+
+                        if (typeof symbolId != "string") {
+                            console.error(`symbolId is not a string: ${symbolId}`)
                             continue
                         }
 

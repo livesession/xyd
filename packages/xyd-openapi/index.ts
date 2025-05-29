@@ -1,4 +1,4 @@
-export type {oapSchemaToReferencesOptions, SelectorMethod} from "./src/types";
+export type {uniformOasOptions, SelectorMethod} from "./src/types";
 
 export {
     deferencedOpenAPI,

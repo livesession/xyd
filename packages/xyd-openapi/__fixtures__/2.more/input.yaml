@@ -1,0 +1,64 @@
+openapi: 3.0.0
+paths:
+  /users:
+    get:
+      summary: Returns a list of users
+      description: Optional extended description in CommonMark or HTML.
+      responses:
+        '200':
+          description: A JSON array of users
+          content:
+            application/json:
+              schema:
+                # Response & User
+                oneOf:
+                  - $ref: '#/components/schemas/Response'
+                  - $ref: '#/components/schemas/User'
+#
+#                anyOf:
+#                  - $ref: '#/components/schemas/Response'
+#                  - $ref: '#/components/schemas/User'
+
+                 # Response | User
+#                oneOf:
+#                  - $ref: '#/components/schemas/Response'
+#                  - $ref: '#/components/schemas/User'
+
+#                type: array
+#                items:
+###                  $ref: '#/components/schemas/User'
+#                  allOf:
+#                    - $ref: '#/components/schemas/Response'
+#                    - $ref: '#/components/schemas/User'
+
+components:
+  schemas:
+    Response:
+      type: object
+      title: "Hello Response"
+      properties:
+        message:
+          type: string
+    User:
+      type: object
+      required:
+        - id
+        - username
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        status:
+          type: string
+          enum: [ active, inactive ]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

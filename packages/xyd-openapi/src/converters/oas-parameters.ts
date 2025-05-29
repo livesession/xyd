@@ -1,6 +1,8 @@
 import {OpenAPIV3} from "openapi-types";
+
 import {DefinitionProperty} from "@xyd-js/uniform";
-import { objectPropMeta } from "./utils";
+
+import { schemaObjectToUniformDefinitionPropertyMeta } from "../oas-core";
 
 // oapParametersToDefinitionProperties converts OpenAPI parameters to uniform DefinitionProperties
 export function oapParametersToDefinitionProperties(
@@ -16,8 +18,8 @@ export function oapParametersToDefinitionProperties(
         const schema = param.schema as OpenAPIV3.SchemaObject
 
         const meta = [
-            ...(objectPropMeta(schema, param.name) || []),
-            ...(objectPropMeta(param, param.name) || []),
+            ...(schemaObjectToUniformDefinitionPropertyMeta(schema, param.name) || []),
+            ...(schemaObjectToUniformDefinitionPropertyMeta(param, param.name) || []),
         ]
 
         let oapV2Type = ""

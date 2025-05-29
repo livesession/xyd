@@ -34,11 +34,27 @@ export interface Reference<
     __UNSAFE_selector?: (selector: string) => any;
 }
 
-export type DefinitionOpenAPIMeta = Meta<"contentType">;
+export type DefinitionOpenAPIMeta = Meta<"contentType" | "required">;
 export type DefinitionTypeDocMeta = Meta<"type">;
 export type DefinitionGraphqlMeta = Meta<"type" | "graphqlName">;
 
 export type DefinitionMeta = DefinitionOpenAPIMeta | DefinitionTypeDocMeta | DefinitionGraphqlMeta
+
+
+export type TypeDef = {
+    symbolId?: string | string[];
+    symbolCanonical?: string | string[];
+    union?: {
+        symbolId: string;
+        symbolCanonical?: string;
+    }[]
+    xor?: {
+        symbolId: string;
+        symbolCanonical?: string;
+    }
+}
+
+export type DefinitionTypeDef = TypeDef
 
 export interface Definition<
     M extends DefinitionMeta = DefinitionMeta,
@@ -53,6 +69,11 @@ export interface Definition<
     description?: string | React.ReactNode;
 
     meta?: M[];
+
+    /**
+     * @unsafe
+     */
+    typeDef?: DefinitionTypeDef;
 
     /**
      * @unsafe
@@ -77,6 +98,10 @@ export interface DefinitionVariant<
 
     properties: DefinitionProperty[];
 
+    description?: string | React.ReactNode;
+
+    typeDef?: DefinitionTypeDef
+
     meta?: M[];
 }
 
@@ -88,18 +113,18 @@ export interface Meta<T = string> {
 
 export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum" | "flat" | "merge">
 
-export type DefinitionPropertyTypeDef = {
-    symbolId?: string;
-    union?: {
-        symbolId: string;
-    }[]
-    symbolCanonical?: string;
+export type DefinitionPropertyTypeDef = TypeDef
+
+export enum DEFINED_DEFINITION_PROPERTY_TYPE {
+    UNION = "$$union",
+
+    XOR = "$$xor"
 }
 
 export interface DefinitionProperty {
     name: string;
 
-    type: string;
+    type: string | DEFINED_DEFINITION_PROPERTY_TYPE
 
     description: string | React.ReactNode;
 
@@ -181,11 +206,17 @@ export enum ReferenceType {
     // end for React
 
     // for API
+    // TODO: better type system for specific api typesl like gql or rest
     REST_HTTP_GET = "rest_get",
     REST_HTTP_POST = "rest_post",
     REST_HTTP_PUT = "rest_put",
     REST_HTTP_PATCH = "rest_patch",
     REST_HTTP_DELETE = "rest_delete",
+    REST_HTTP_OPTIONS = "rest_options",
+    REST_HTTP_HEAD = "rest_head",
+    REST_HTTP_TRACE = "rest_trace",
+
+    REST_COMPONENT_SCHEMA = "rest_component_schema",
     // ---
     GRAPHQL_QUERY = "graphql_query",
     GRAPHQL_MUTATION = "graphql_mutation",

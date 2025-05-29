@@ -5,11 +5,12 @@ import Oas from "oas";
 
 import type { Reference, OpenAPIReferenceContext, ReferenceContext } from "@xyd-js/uniform";
 
-import { SUPPORTED_HTTP_METHODS } from "./const";
-import { oapPathToReference } from "./paths";
-import { oapExamples } from "./examples";
-import { oapSchemaToReferencesOptions } from "./types";
-import { processComponentSchemas } from "./componentSchemas";
+import { SUPPORTED_HTTP_METHODS } from "../const";
+import { oapPathToReference } from "./oas-paths";
+import { oapExamples } from "./oas-examples";
+import { uniformOasOptions } from "../types";
+import { schemaComponentsToUniformReferences } from "./oas-componentSchemas";
+import {httpMethodToUniformMethod} from "../utils";
 
 // TODO: support one-of
 // TODO: support $ref - currently we use $refParser.dereference that converts $ref into objects
@@ -18,7 +19,7 @@ import { processComponentSchemas } from "./componentSchemas";
 // oapSchemaToReferences converts an OpenAPI schema to a list of uniform References
 export function oapSchemaToReferences(
     schema: OpenAPIV3.Document,
-    options?: oapSchemaToReferencesOptions
+    options?: uniformOasOptions
 ): Reference[] {
     const references: Reference[] = [];
     const oas = new Oas(schema as any);
@@ -27,19 +28,12 @@ export function oapSchemaToReferences(
 
     Object.entries(schema.paths).forEach(([endpointPath, oapPath]) => {
         SUPPORTED_HTTP_METHODS.forEach((eachMethod) => {
-            const httpMethod = eachMethod.toLowerCase()
+            const httpMethod = eachMethod.toLowerCase() as OpenAPIV3.HttpMethods
 
-            // Skip if method is not supported
-            switch (httpMethod) {
-                case 'get':
-                case 'put':
-                case 'post':
-                case 'delete':
-                case 'patch':
-                    break
-                default:
-                    console.error(`Unsupported method: ${httpMethod}`)
-                    return
+            const found = httpMethodToUniformMethod(httpMethod)
+            if (!found) {
+                console.warn(`Unsupported method: ${httpMethod} for path: ${endpointPath}`)
+                return
             }
 
             // Check if this method/path combination should be included based on regions
@@ -90,7 +84,7 @@ export function oapSchemaToReferences(
         })
     })
 
-    const schemas = processComponentSchemas(
+    const schemas = schemaComponentsToUniformReferences(
         schema,
         options
     )

@@ -1205,6 +1205,9 @@ importers:
 
   packages/xyd-openapi:
     dependencies:
+      '@apidevtools/json-schema-ref-parser':
+        specifier: ^12.0.2
+        version: 12.0.2
       '@readme/oas-to-snippet':
         specifier: ^28.0.0
         version: 28.0.0
@@ -1220,9 +1223,6 @@ importers:
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
-      json-schema-ref-parser:
-        specifier: ^9.0.9
-        version: 9.0.9
       oas:
         specifier: ^25.0.3
         version: 25.3.0
@@ -1242,6 +1242,9 @@ importers:
       tsup:
         specifier: ^8.3.0
         version: 8.5.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.4)(typescript@5.8.3)(yaml@2.8.0)
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.9(@types/node@22.15.21)(happy-dom@15.11.7)(lightningcss@1.30.1)(terser@5.39.2)
 
   packages/xyd-plugin-algolia:
     dependencies:
@@ -14564,14 +14567,6 @@ snapshots:
     optionalDependencies:
       vite: 5.4.19(@types/node@20.9.0)(lightningcss@1.30.1)(terser@5.39.2)
 
-  '@vitest/mocker@2.1.9(vite@5.4.19(@types/node@22.15.21)(lightningcss@1.30.1)(terser@5.39.2))':
-    dependencies:
-      '@vitest/spy': 2.1.9
-      estree-walker: 3.0.3
-      magic-string: 0.30.17
-    optionalDependencies:
-      vite: 5.4.19(@types/node@22.15.21)(lightningcss@1.30.1)(terser@5.39.2)
-
   '@vitest/pretty-format@2.0.5':
     dependencies:
       tinyrainbow: 1.2.0
@@ -21197,7 +21192,7 @@ snapshots:
   vitest@2.1.9(@types/node@22.15.21)(happy-dom@15.11.7)(lightningcss@1.30.1)(terser@5.39.2):
     dependencies:
       '@vitest/expect': 2.1.9
-      '@vitest/mocker': 2.1.9(vite@5.4.19(@types/node@22.15.21)(lightningcss@1.30.1)(terser@5.39.2))
+      '@vitest/mocker': 2.1.9(vite@5.4.19(@types/node@20.9.0)(lightningcss@1.30.1)(terser@5.39.2))
       '@vitest/pretty-format': 2.1.9
       '@vitest/runner': 2.1.9
       '@vitest/snapshot': 2.1.9
