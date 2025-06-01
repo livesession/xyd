@@ -76,7 +76,7 @@ export function uniformToReactUniform(
             }
 
             for (const property of def.properties) {
-                const symbolId = property.typeDef?.symbolId
+                const symbolId = property.symbolDef?.id
                 if (typeof symbolId != "string") {
                     console.error(`symbolId is not a string: ${symbolId}`)
                     continue
@@ -105,11 +105,10 @@ export function uniformToReactUniform(
 
                 // TODO: suppot `&` and combined like `&` and `|`
                 for (const symbolProp of symbolRefMainRef.properties) {
-                    const unionProp = symbolProp?.typeDef?.union
+                    const unionProp = symbolProp?.symbolDef?.id
 
                     if (unionProp) {
-                        for (const unionPropItem of unionProp) {
-                            const symbolId = unionPropItem.symbolId
+                        for (const symbolId of unionProp) {
                             const unionPropRef = refBySymbolId[symbolId]
                             if (!unionPropRef) {
                                 console.error(`unionProp: Reference for symbol ${symbolId} not found`)
@@ -143,7 +142,7 @@ export function uniformToReactUniform(
                             variants.push(variant)
                         }
                     } else {
-                        const symbolId = property.typeDef?.symbolId
+                        const symbolId = property.symbolDef?.id
                         if (!symbolId) {
                             console.error(`non-union property ${property.name} has no symbolId`)
                             continue

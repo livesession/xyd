@@ -10,24 +10,36 @@ paths:
           content:
             application/json:
               schema:
+                # Response
+#                $ref: '#/components/schemas/User'
                 # Response & User
-                oneOf:
-                  - $ref: '#/components/schemas/Response'
-                  - $ref: '#/components/schemas/User'
-#
+#                allOf:
+#                  - $ref: '#/components/schemas/Response'
+#                  - $ref: '#/components/schemas/User'
+#                # Response | User
 #                anyOf:
 #                  - $ref: '#/components/schemas/Response'
 #                  - $ref: '#/components/schemas/User'
-
-                 # Response | User
+#                # Response ^ User
 #                oneOf:
 #                  - $ref: '#/components/schemas/Response'
 #                  - $ref: '#/components/schemas/User'
 
-#                type: array
-#                items:
-###                  $ref: '#/components/schemas/User'
-#                  allOf:
+
+                type: array
+                items:
+                  # Response
+#                  $ref: '#/components/schemas/User'
+#                  # Response & User
+                  allOf:
+                    - $ref: '#/components/schemas/Response'
+                    - $ref: '#/components/schemas/User'
+#                  # Response | User
+#                  anyOf:
+#                    - $ref: '#/components/schemas/Response'
+#                    - $ref: '#/components/schemas/User'
+#                  # Response ^ User
+#                  oneOf:
 #                    - $ref: '#/components/schemas/Response'
 #                    - $ref: '#/components/schemas/User'
 

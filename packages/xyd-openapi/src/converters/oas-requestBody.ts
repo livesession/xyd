@@ -1,6 +1,6 @@
-import { OpenAPIV3 } from "openapi-types";
+import {OpenAPIV3} from "openapi-types";
 
-import { DefinitionProperty } from "@xyd-js/uniform";
+import {DefinitionProperty, DEFINED_DEFINITION_PROPERTY_TYPE} from "@xyd-js/uniform";
 
 import {schemaObjectToUniformDefinitionProperties} from "../oas-core";
 
@@ -8,7 +8,7 @@ import {schemaObjectToUniformDefinitionProperties} from "../oas-core";
 export function oapRequestBodyToDefinitionProperties(
     reqBody: OpenAPIV3.RequestBodyObject,
     contentType: string
-): DefinitionProperty[] | null {
+): DefinitionProperty[] | DefinitionProperty | null {
     const schema = reqBody.content[contentType].schema as OpenAPIV3.SchemaObject
     if (!schema) {
         return null
@@ -26,12 +26,19 @@ export function oapRequestBodyToDefinitionProperties(
                 }
             }
 
+            const properties = oapRequestBodyToDefinitionProperties(fakeBody, contentType) || []
+            if (!Array.isArray(properties)) {
+                return acc
+            }
+
             return [
                 ...acc,
-                ...oapRequestBodyToDefinitionProperties(fakeBody, contentType) || []
+                ...properties
             ]
         }, [] as DefinitionProperty[])
     }
+
+    let array = false
 
     switch (schema.type) {
         case 'object': {
@@ -40,10 +47,11 @@ export function oapRequestBodyToDefinitionProperties(
         }
         case 'array': {
             const arrSchema = schema as OpenAPIV3.ArraySchemaObject
-
             const items = arrSchema.items as OpenAPIV3.SchemaObject
 
             schemaObject = items
+            array = true
+
             break
         }
         default:
@@ -55,5 +63,13 @@ export function oapRequestBodyToDefinitionProperties(
         return null
     }
 
-    return schemaObjectToUniformDefinitionProperties(schemaObject)
+    const properties = schemaObjectToUniformDefinitionProperties(schemaObject)
+    if (array) {
+        return {
+            type: DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY,
+            properties,
+        } as DefinitionProperty
+    }
+
+    return properties
 }

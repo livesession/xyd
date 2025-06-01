@@ -11,27 +11,27 @@ const tests: {
     options?: uniformOasOptions
 }[] = [
     // TODO: uncomment when ready
-    // {
-    //     name: "-2.complex.openai",
-    //     description: "OpenAI OpenAPI API example",
-    //     plugins: [
-    //         uniformOpenAIMeta,
-    //     ],
-    //     options: {
-    //        // regions: [
-    //        //     "/components/schemas/ListAssistantsResponse"
-    //        // ]
-    //     }
-    // },
+    {
+        name: "-2.complex.openai",
+        description: "OpenAI OpenAPI API example",
+        plugins: [
+            uniformOpenAIMeta,
+        ],
+        options: {
+           // regions: [
+           //     "/components/schemas/ListAssistantsResponse"
+           // ]
+        }
+    },
 
     // {
     //     name: "1.basic",
     //     description: "Basic OpenAPI API example",
     // },
-    {
-        name: "2.more",
-        description: "More OpenAPI API example",
-    },
+    // {
+    //     name: "2.more",
+    //     description: "More OpenAPI API example",
+    // },
 ]
 
 describe("oapSchemaToReferences", () => {

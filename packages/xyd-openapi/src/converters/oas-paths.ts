@@ -9,7 +9,8 @@ import {
     DefinitionVariantOpenAPIMeta,
     DefinitionVariant,
     DefinitionOpenAPIMeta,
-    DefinitionTypeDef
+    SymbolDef,
+    DefinitionProperty
 } from "@xyd-js/uniform";
 
 import {oapParametersToDefinitionProperties} from "./oas-parameters";
@@ -123,11 +124,21 @@ export function oapPathToReference(
             })
         }
 
+        let properties: DefinitionProperty[] = []
+        let rootProperty: DefinitionProperty | undefined
+        let propertiesResp = oapRequestBodyToDefinitionProperties(reqBody, findSupportedContent) || []
+
+        if (Array.isArray(propertiesResp)) {
+            properties = propertiesResp
+        } else {
+            rootProperty = propertiesResp
+        }
         definitions.push({
             title: 'Request body',
-            properties: oapRequestBodyToDefinitionProperties(reqBody, findSupportedContent) || [],
+            properties,
+            rootProperty,
             meta,
-            typeDef: definitionPropertyTypeDef(schema),
+            symbolDef: definitionPropertyTypeDef(schema),
         })
     }
 
@@ -184,13 +195,20 @@ export function oapOperationToUniformDefinition(
             return null
         }
 
-        const properties = oasResponseToDefinitionProperties(responses, code, findSupportedContent) || []
+        let properties: DefinitionProperty[] = []
+        let rootProperty: DefinitionProperty | undefined
         const schema = responseObject.content[findSupportedContent]?.schema as OpenAPIV3.SchemaObject
-
+        const respProperties = oasResponseToDefinitionProperties(responses, code, findSupportedContent) || []
+        if (Array.isArray(respProperties)) {
+            properties = respProperties
+        } else {
+            rootProperty = respProperties
+        }
         variants.push({
             title: code,
             description: responseObject.description || "",
             properties,
+            rootProperty,
             meta: [
                 {
                     name: "status",
@@ -201,7 +219,7 @@ export function oapOperationToUniformDefinition(
                     value: findSupportedContent || "",
                 }
             ],
-            typeDef: definitionPropertyTypeDef(schema),
+            symbolDef: definitionPropertyTypeDef(schema),
         })
     })
 
@@ -219,7 +237,7 @@ function definitionPropertyTypeDef(
         return
     }
 
-    let typeDef: DefinitionTypeDef | undefined
+    let typeDef: SymbolDef | undefined
     let oasSchema = schema as OasJSONSchema
     if (oasSchema.type === "array") {
         oasSchema = oasSchema.items as OasJSONSchema
@@ -228,7 +246,7 @@ function definitionPropertyTypeDef(
         const symbolId = oasSchema.__internal_getRefPath()
 
         typeDef = {
-            symbolId,
+            id: symbolId,
         }
     }
 

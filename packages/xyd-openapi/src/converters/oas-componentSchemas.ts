@@ -5,10 +5,10 @@ import {
     Definition,
     DefinitionProperty,
     ReferenceType,
-    OpenAPIReferenceContext,
+    OpenAPIReferenceContext, SymbolDef,
 } from "@xyd-js/uniform";
 
-import {uniformOasOptions} from "../types";
+import {OasJSONSchema, uniformOasOptions} from "../types";
 import {schemaObjectToUniformDefinitionProperties} from "../oas-core";
 
 export function schemaComponentsToUniformReferences(
@@ -37,10 +37,28 @@ export function schemaComponentsToUniformReferences(
             continue; // Skip reference objects
         }
 
+        let properties: DefinitionProperty[] = [];
+        let rootProperty: DefinitionProperty | undefined = undefined;
+        const respProperties = schemaObjectToUniformDefinitionProperties(componentSchema) || [];
+        if (Array.isArray(respProperties)) {
+            properties = respProperties
+        } else {
+            rootProperty = respProperties
+        }
+
+        // symbolDef: {
+        //     id: "#/components/schemas/" + componentSchemaName
+        // },
+        //
+
+        const w = definitionPropertyTypeDef(componentSchema)
+
         const definition: Definition = {
             title: componentSchemaName,
-            properties: schemaObjectToUniformDefinitionProperties(componentSchema) || [],
-            meta: []
+            properties,
+            rootProperty,
+            meta: [],
+            symbolDef: w,
         };
 
         // Create reference
@@ -81,3 +99,25 @@ export function schemaComponentsToUniformReferences(
     return references;
 }
 
+function definitionPropertyTypeDef(
+    schema: OpenAPIV3.SchemaObject | undefined,
+) {
+    if (!schema) {
+        return
+    }
+
+    let typeDef: SymbolDef | undefined
+    let oasSchema = schema as OasJSONSchema
+    if (oasSchema.type === "array") {
+        oasSchema = oasSchema.items as OasJSONSchema
+    }
+    if (oasSchema?.__internal_getRefPath) {
+        const symbolId = oasSchema.__internal_getRefPath()
+
+        typeDef = {
+            id: symbolId,
+        }
+    }
+
+    return typeDef
+}

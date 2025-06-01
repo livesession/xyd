@@ -1,5 +1,5 @@
-import { OpenAPIV3 } from "openapi-types";
-import { DefinitionProperty } from "@xyd-js/uniform";
+import {OpenAPIV3} from "openapi-types";
+import {DefinitionProperty, DEFINED_DEFINITION_PROPERTY_TYPE} from "@xyd-js/uniform";
 
 import {schemaObjectToUniformDefinitionProperties} from "../oas-core";
 
@@ -7,7 +7,7 @@ export function oasResponseToDefinitionProperties(
     responses: OpenAPIV3.ResponsesObject,
     code: string,
     contentType: string,
-): DefinitionProperty[] | null {
+): DefinitionProperty[] | DefinitionProperty | null {
     let schemaObject: OpenAPIV3.SchemaObject | undefined
     let responseObject: OpenAPIV3.ResponseObject | undefined
 
@@ -30,17 +30,27 @@ export function oasResponseToDefinitionProperties(
         ]
     }
 
+    let array = false
+
     switch (schemaObject.type) {
         case 'array':
             const arrSchema = schemaObject as OpenAPIV3.ArraySchemaObject
-
             const items = arrSchema.items as OpenAPIV3.SchemaObject
 
             schemaObject = items
-            break
+            array = true
         default:
             break
     }
 
-    return schemaObjectToUniformDefinitionProperties(schemaObject)
+    const properties = schemaObjectToUniformDefinitionProperties(schemaObject, true)
+
+    if (array) {
+        return {
+            type: DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY,
+            properties,
+        } as DefinitionProperty
+    }
+
+    return properties
 }

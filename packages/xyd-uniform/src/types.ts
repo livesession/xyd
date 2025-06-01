@@ -40,21 +40,11 @@ export type DefinitionGraphqlMeta = Meta<"type" | "graphqlName">;
 
 export type DefinitionMeta = DefinitionOpenAPIMeta | DefinitionTypeDocMeta | DefinitionGraphqlMeta
 
+export type SymbolDef = {
+    id?: string | string[];
 
-export type TypeDef = {
-    symbolId?: string | string[];
-    symbolCanonical?: string | string[];
-    union?: {
-        symbolId: string;
-        symbolCanonical?: string;
-    }[]
-    xor?: {
-        symbolId: string;
-        symbolCanonical?: string;
-    }
+    canonical?: string | string[];
 }
-
-export type DefinitionTypeDef = TypeDef
 
 export interface Definition<
     M extends DefinitionMeta = DefinitionMeta,
@@ -63,6 +53,8 @@ export interface Definition<
     title: string;
 
     properties: DefinitionProperty[];
+
+    rootProperty?: DefinitionProperty
 
     variants?: DefinitionVariant<VM>[];
 
@@ -73,7 +65,7 @@ export interface Definition<
     /**
      * @unsafe
      */
-    typeDef?: DefinitionTypeDef;
+    symbolDef?: SymbolDef;
 
     /**
      * @unsafe
@@ -98,9 +90,11 @@ export interface DefinitionVariant<
 
     properties: DefinitionProperty[];
 
+    rootProperty?: DefinitionProperty
+
     description?: string | React.ReactNode;
 
-    typeDef?: DefinitionTypeDef
+    symbolDef?: SymbolDef;
 
     meta?: M[];
 }
@@ -113,12 +107,12 @@ export interface Meta<T = string> {
 
 export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum" | "flat" | "merge">
 
-export type DefinitionPropertyTypeDef = TypeDef
-
 export enum DEFINED_DEFINITION_PROPERTY_TYPE {
     UNION = "$$union",
 
-    XOR = "$$xor"
+    XOR = "$$xor",
+
+    ARRAY = "$$array",
 }
 
 export interface DefinitionProperty {
@@ -131,7 +125,7 @@ export interface DefinitionProperty {
     // TODO: in the future more advanced examples?
     examples?: string | string[];
 
-    typeDef?: DefinitionPropertyTypeDef
+    symbolDef?: SymbolDef;
 
     meta?: DefinitionPropertyMeta[];
 
