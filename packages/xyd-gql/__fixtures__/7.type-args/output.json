@@ -18,101 +18,107 @@
     "definitions": [
       {
         "title": "Arguments",
-        "properties": [
+        "properties": [],
+        "variants": [
           {
-            "name": "first",
-            "type": "Int",
-            "description": "",
-            "context": {
-              "graphqlName": "first",
-              "graphqlTypeFlat": "Int",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [],
-            "typeDef": {
-              "symbolId": ""
-            }
-          },
-          {
-            "name": "after",
-            "type": "String",
-            "description": "",
-            "context": {
-              "graphqlName": "after",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [],
-            "typeDef": {
-              "symbolId": ""
-            }
-          },
-          {
-            "name": "limit",
-            "type": "Int!",
-            "description": "",
-            "context": {
-              "graphqlName": "limit",
-              "graphqlTypeFlat": "Int",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
+            "title": "",
+            "properties": [
               {
-                "name": "required",
-                "value": "true"
+                "name": "first",
+                "type": "Int",
+                "description": "",
+                "context": {
+                  "graphqlName": "first",
+                  "graphqlTypeFlat": "Int",
+                  "graphqlBuiltInType": true
+                },
+                "properties": [],
+                "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                }
+              },
+              {
+                "name": "after",
+                "type": "String",
+                "description": "",
+                "context": {
+                  "graphqlName": "after",
+                  "graphqlTypeFlat": "String",
+                  "graphqlBuiltInType": true
+                },
+                "properties": [],
+                "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                }
+              },
+              {
+                "name": "limit",
+                "type": "Int!",
+                "description": "",
+                "context": {
+                  "graphqlName": "limit",
+                  "graphqlTypeFlat": "Int",
+                  "graphqlBuiltInType": true
+                },
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ],
+                "symbolDef": {
+                  "canonical": ""
+                }
               }
             ],
-            "typeDef": {
-              "symbolId": ""
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          },
-          {
-            "name": "graphqlName",
-            "value": "authors"
-          }
-        ]
-      },
-      {
-        "title": "Arguments",
-        "properties": [
-          {
-            "name": "limit",
-            "type": "Int!",
-            "description": "",
-            "context": {
-              "graphqlName": "limit",
-              "graphqlTypeFlat": "Int",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
             "meta": [
               {
-                "name": "required",
-                "value": "true"
+                "name": "type",
+                "value": "arguments"
+              },
+              {
+                "name": "symbolName",
+                "value": "authors"
               }
-            ],
-            "typeDef": {
-              "symbolId": ""
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
+            ]
           },
           {
-            "name": "graphqlName",
-            "value": "libraries"
+            "title": "",
+            "properties": [
+              {
+                "name": "limit",
+                "type": "Int!",
+                "description": "",
+                "context": {
+                  "graphqlName": "limit",
+                  "graphqlTypeFlat": "Int",
+                  "graphqlBuiltInType": true
+                },
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ],
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "meta": [
+              {
+                "name": "type",
+                "value": "arguments"
+              },
+              {
+                "name": "symbolName",
+                "value": "libraries"
+              }
+            ]
           }
         ]
       },
@@ -145,8 +151,8 @@
                     "value": "true"
                   }
                 ],
-                "typeDef": {
-                  "symbolId": ""
+                "symbolDef": {
+                  "canonical": ""
                 }
               }
             ],
@@ -156,8 +162,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": "objects/author"
+            "symbolDef": {
+              "canonical": "objects/author"
             }
           },
           {
@@ -186,8 +192,8 @@
                     "value": "true"
                   }
                 ],
-                "typeDef": {
-                  "symbolId": ""
+                "symbolDef": {
+                  "canonical": ""
                 }
               }
             ],
@@ -197,8 +203,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": "objects/library"
+            "symbolDef": {
+              "canonical": "objects/library"
             }
           }
         ]
@@ -223,6 +229,11 @@
     },
     "definitions": [
       {
+        "title": "Arguments",
+        "properties": [],
+        "variants": []
+      },
+      {
         "title": "Fields",
         "properties": [
           {
@@ -241,8 +252,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]
@@ -267,6 +278,11 @@
     },
     "definitions": [
       {
+        "title": "Arguments",
+        "properties": [],
+        "variants": []
+      },
+      {
         "title": "Fields",
         "properties": [
           {
@@ -285,8 +301,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]

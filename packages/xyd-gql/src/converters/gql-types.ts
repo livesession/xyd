@@ -79,7 +79,7 @@ export function graphqlTypesToUniformReferences(
                             sharedProcessedTypes,
                             options,
                             {
-                                flat
+                                flat,
                             }
                         ),
                         type
@@ -128,7 +128,7 @@ export function graphqlTypesToUniformReferences(
                             options,
                             {
                                 flat,
-                                argFlat: flat || false
+                                flatArg: flat || false
                             }
                         ),
                         type,

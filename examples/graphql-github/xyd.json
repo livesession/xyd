@@ -37,7 +37,7 @@
                 "route": "docs/api-reference",
                 "items": [
                     {
-                        "group": "API Reference",
+                        "group": "Overview",
                         "sort": 0,
                         "pages": [
                             "docs/api-reference/introduction"

@@ -151,8 +151,8 @@ export function propsUniformify(
             ...gqlFieldToUniformMeta(field),
             ...(meta || []),
         ],
-        typeDef: {
-            symbolCanonical: objRef?.canonical,
+        symbolDef: {
+            canonical: objRef?.canonical,
         },
     }
 }
@@ -175,12 +175,12 @@ export function gqlObjectPropsUniformify(
         meta: [
             ...(meta || []),
         ],
-        typeDef: {
-            symbolCanonical: objRef.canonical,
+        symbolDef: {
+            canonical: objRef.canonical,
         },
     }
 
-    if (!ctx?.config?.argFlat) {
+    if (!ctx?.config?.flatArg) {
         for (const [name, inputField] of Object.entries(inputFields)) {
             const prop = gqlFieldToUniformDefinitionProperty(
                 ctx,

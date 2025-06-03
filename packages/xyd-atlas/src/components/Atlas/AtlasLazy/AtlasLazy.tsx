@@ -2,12 +2,12 @@ import React, {useEffect, useRef} from "react";
 
 import {Reference} from "@xyd-js/uniform";
 
-import {MDXReference} from "@/utils/mdx";
 import {ApiRefItem} from "@/components/ApiRef";
+
 import * as cn from "./AtlasLazy.styles";
 
 export interface AtlasLazyProps {
-    references: MDXReference<Reference>[]
+    references: Reference[]
     urlPrefix: string
     slug: string,
     onLoaded?: () => void

@@ -79,9 +79,9 @@ export interface Definition<
 }
 
 export type DefinitionVariantOpenAPIMeta = Meta<"status" | "contentType">;
-export type DefinitionVariantTypeDocMeta = Meta<"symbolName">;
+export type CommonDefinitionVariantMeta = Meta<"symbolName">;
 
-export type DefinitionVariantMeta = DefinitionVariantOpenAPIMeta | DefinitionVariantTypeDocMeta
+export type DefinitionVariantMeta = CommonDefinitionVariantMeta | DefinitionVariantOpenAPIMeta
 
 export interface DefinitionVariant<
     M extends DefinitionVariantMeta = DefinitionVariantMeta
@@ -105,7 +105,7 @@ export interface Meta<T = string> {
     value?: unknown; // TODO: better type?
 }
 
-export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum" | "flat" | "merge">
+export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum-type"> // TODO: better solution than enum-type?
 
 export enum DEFINED_DEFINITION_PROPERTY_TYPE {
     UNION = "$$union",
@@ -113,6 +113,8 @@ export enum DEFINED_DEFINITION_PROPERTY_TYPE {
     XOR = "$$xor",
 
     ARRAY = "$$array",
+
+    ENUM = "$$enum",
 }
 
 export interface DefinitionProperty {

@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from "graphql";
 
-import {Definition, DefinitionProperty} from "@xyd-js/uniform";
+import {Definition, DefinitionProperty, DefinitionVariant} from "@xyd-js/uniform";
 
 import {gqlFieldToUniformDefinitionProperty} from "./gql-field";
 import {gqlObjectPropsUniformify, uniformify} from "../gql-core";
@@ -15,26 +15,39 @@ export function gqlObjectToUniformRef(
     const definitions: Definition[] = []
     const graphqlFields: DefinitionProperty[] = []
 
-    for (const [name, field] of Object.entries(gqlType.getFields())) {
-        if (field?.args?.length) {
-            const args = gqlArgToUniformDefinitionProperty(ctx, field.args)
+    const variants: DefinitionVariant[] = []
 
-            definitions.push({
-                title: "Arguments",
-                properties: args,
-                meta: [
-                    {
-                        name: "type",
-                        value: "arguments",
-                    },
-                    {
-                        name: "graphqlName",
-                        value: name,
-                    }
-                ]
-            })
-        }
+    const argumentDefinition: Definition = {
+        title: "Arguments",
+        properties: [],
+        variants,
+        meta: [
+            {
+                name: "type",
+                value: "arguments",
+            },
+        ]
     }
+
+    for (const [name, field] of Object.entries(gqlType.getFields())) {
+        if (!field?.args?.length) {
+         continue;
+        }
+
+        const args = gqlArgToUniformDefinitionProperty(ctx, field.args)
+
+        variants.push({
+            title: "",
+            properties: args,
+            meta: [
+                {
+                    name: "symbolName",
+                    value: name,
+                }
+            ]
+        })
+    }
+    definitions.push(argumentDefinition)
 
     for (const [name, field] of Object.entries(gqlType.getFields())) {
         const prop = gqlFieldToUniformDefinitionProperty(ctx, field)
@@ -44,7 +57,13 @@ export function gqlObjectToUniformRef(
 
     definitions.push({
         title: "Fields",
-        properties: graphqlFields
+        properties: graphqlFields,
+        meta: [
+            {
+                name: "type",
+                value: "fields",
+            }
+        ]
     })
 
     return uniformify(

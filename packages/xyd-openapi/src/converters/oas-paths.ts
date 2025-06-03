@@ -126,6 +126,9 @@ export function oapPathToReference(
 
         let properties: DefinitionProperty[] = []
         let rootProperty: DefinitionProperty | undefined
+        if ((oapMethod.operationId || slug(oapMethod?.summary || "")) === "createResponse") {
+            console.log(5)
+        }
         let propertiesResp = oapRequestBodyToDefinitionProperties(reqBody, findSupportedContent) || []
 
         if (Array.isArray(propertiesResp)) {
@@ -169,6 +172,10 @@ export function oapPathToReference(
         }
     }
 
+    // if ((oapMethod.operationId || slug(oapMethod?.summary || "")) === "createResponse") {
+    //     console.log(5)
+    // }
+
     return endpointRef
 }
 
@@ -186,41 +193,38 @@ export function oapOperationToUniformDefinition(
         }
 
         const contentTypes = Object.keys(responseObject.content)
-        if (contentTypes.length > 1) {
-            console.warn("Multiple content types are not supported yet for responses")
+
+        for (const contentType of contentTypes) {
+            let properties: DefinitionProperty[] = []
+            let rootProperty: DefinitionProperty | undefined
+            const schema = responseObject.content[contentType]?.schema as OpenAPIV3.SchemaObject
+            const respProperties = oasResponseToDefinitionProperties(responses, code, contentType) || []
+
+            if (Array.isArray(respProperties)) {
+                properties = respProperties
+            } else {
+                rootProperty = respProperties
+            }
+
+            variants.push({
+                title: code,
+                description: responseObject.description || "",
+                properties,
+                rootProperty,
+                meta: [
+                    {
+                        name: "status",
+                        value: code || "",
+                    },
+                    {
+                        name: "contentType",
+                        value: contentType || "",
+                    }
+                ],
+                symbolDef: definitionPropertyTypeDef(schema),
+            })
         }
 
-        const findSupportedContent = contentTypes[contentTypes.length - 1]
-        if (!findSupportedContent) {
-            return null
-        }
-
-        let properties: DefinitionProperty[] = []
-        let rootProperty: DefinitionProperty | undefined
-        const schema = responseObject.content[findSupportedContent]?.schema as OpenAPIV3.SchemaObject
-        const respProperties = oasResponseToDefinitionProperties(responses, code, findSupportedContent) || []
-        if (Array.isArray(respProperties)) {
-            properties = respProperties
-        } else {
-            rootProperty = respProperties
-        }
-        variants.push({
-            title: code,
-            description: responseObject.description || "",
-            properties,
-            rootProperty,
-            meta: [
-                {
-                    name: "status",
-                    value: code || "",
-                },
-                {
-                    name: "contentType",
-                    value: findSupportedContent || "",
-                }
-            ],
-            symbolDef: definitionPropertyTypeDef(schema),
-        })
     })
 
     return {

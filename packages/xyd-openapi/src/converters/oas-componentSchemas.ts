@@ -15,6 +15,7 @@ export function schemaComponentsToUniformReferences(
     openapi: OpenAPIV3.Document,
     options?: uniformOasOptions
 ): Reference[] {
+    return [] // TODO: !!! UNCOMMENT !!!
     const references: Reference[] = [];
 
     if (!openapi.components?.schemas) {
@@ -22,9 +23,6 @@ export function schemaComponentsToUniformReferences(
     }
 
     for (const [componentSchemaName, componentSchema] of Object.entries(openapi.components.schemas)) {
-        if (componentSchemaName === "Response") {
-            console.log(555)
-        }
         if (options?.regions && options.regions.length > 0) {
             if (!options.regions.some(region => region === "/components/schemas/" + componentSchemaName)) {
                 continue
@@ -46,19 +44,14 @@ export function schemaComponentsToUniformReferences(
             rootProperty = respProperties
         }
 
-        // symbolDef: {
-        //     id: "#/components/schemas/" + componentSchemaName
-        // },
-        //
-
-        const w = definitionPropertyTypeDef(componentSchema)
+        const symbolDef = definitionPropertyTypeDef(componentSchema)
 
         const definition: Definition = {
             title: componentSchemaName,
             properties,
             rootProperty,
             meta: [],
-            symbolDef: w,
+            symbolDef,
         };
 
         // Create reference

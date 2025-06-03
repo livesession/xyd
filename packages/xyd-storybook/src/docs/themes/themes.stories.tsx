@@ -6,7 +6,11 @@ import {
     LayoutPrimary
 } from '@xyd-js/components/layouts';
 
-import getContentComponents from "@xyd-js/components/content";
+import {ReactContent} from "@xyd-js/components/content";
+
+const reactContent = new ReactContent()
+const getContentComponents = reactContent.components
+
 import {
     Breadcrumbs,
     NavLinks

@@ -45,14 +45,17 @@ export class GQLFieldConverter {
             const info = gqlFieldTypeInfo(field)
             const meta: DefinitionPropertyMeta[] = []
 
+            const props = propsUniformify(field, [], meta)
             if (this.ctx.config?.flatReturn) {
-                meta.push({
-                    name: "flat",
-                    value: "true"
-                })
+                return {
+                    ...props,
+                    name: ""
+                }
             }
 
-            return propsUniformify(field, [], meta)
+            if (this.ctx.config?.flat) {
+                return props
+            }
         }
 
         const fieldInfo = gqlFieldTypeInfo(field)

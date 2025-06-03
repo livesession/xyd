@@ -1,7 +1,5 @@
-import React from "react"
+import React, { useEffect, useRef } from "react"
 import { Link } from "react-router"
-
-import { Icon } from "@xyd-js/components/writer"
 
 import * as cn from "./Sidebar.styles";
 import { UICollapse } from "./Collapse";
@@ -13,11 +11,34 @@ export interface UISidebarProps {
 }
 
 export function UISidebar({ children, footerItems, className }: UISidebarProps) {
+    const listRef = useRef<HTMLUListElement>(null);
+
+    useEffect(() => {
+        // TODO: in the future better solution to match with hydration
+        if (listRef.current) {
+            const activeElement = listRef.current.querySelector('[data-active="true"]');
+            if (activeElement) {
+                const containerHeight = listRef.current.clientHeight;
+                const elementTop = activeElement.getBoundingClientRect().top;
+                const elementHeight = activeElement.clientHeight;
+                const scrollTop = listRef.current.scrollTop;
+                
+                // Calculate the position to center the element
+                const targetScroll = scrollTop + elementTop - (containerHeight / 2) + (elementHeight / 2);
+                
+                listRef.current.scrollTo({
+                    top: targetScroll,
+                    behavior: 'auto'
+                });
+            }
+        }
+    }, []);
+
     // TODO: in the future theming api?
     return <xyd-sidebar
         className={`${cn.SidebarHost} ${className || ""}`}
     >
-        <ul part="list">
+        <ul part="list" ref={listRef}>
             {children}
         </ul>
         {

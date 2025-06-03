@@ -1,0 +1,48 @@
+openapi: 3.0.0
+paths:
+  /response:
+    get:
+      summary: Returns a response
+      description: Returns a response or a stream of responses
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+            text/event-stream:
+              schema:
+                $ref: "#/components/schemas/ResponseStream"
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      title: "ErrorResponse"
+      properties:
+        message:
+          type: string
+
+    Response:
+      type: object
+      title: "Hello Response"
+      properties:
+        message:
+          type: string
+
+    ResponseStream:
+      type: object
+      title: "Hello ResponseStream"
+      properties:
+        message:
+          type: string
+
+ 

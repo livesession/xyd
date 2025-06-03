@@ -10,7 +10,7 @@ import {GQLSchemaToReferencesOptions} from "../src/types";
 export async function testGqlSchemaToReferences(fixtureName: string, options?: GQLSchemaToReferencesOptions) {
     const schemaLocation = fullFixturePath(`${fixtureName}/input.graphql`)
     const result = await gqlSchemaToReferences(schemaLocation, options);
-    // saveResultAsOutput(fixtureName, result)
+    saveResultAsOutput(fixtureName, result)
     const expectedOutput = readFixtureOutput(`${fixtureName}/output.json`);
 
     try {

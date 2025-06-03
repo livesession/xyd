@@ -1,3 +1,6 @@
+import {OpenAPIV3} from "openapi-types";
+
+import { Settings } from "@xyd-js/core";
 import {
     CodeBlockTab,
     Example,
@@ -6,8 +9,17 @@ import {
     UniformPluginArgs,
     OpenAPIReferenceContext
 } from "@xyd-js/uniform";
+import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 
-import {OpenAPIV3} from "openapi-types";
+export default function pluginOasOpenai(settings: Settings): PluginConfig {
+    return {
+        name: "oas-openai",
+        uniform: [
+            uniformOpenAIMeta,
+        ]
+    }
+}
+
 
 interface NavigationGroup {
     id: string
@@ -34,7 +46,7 @@ interface GroupSection {
 
     key: string
 
-    path: string
+    path: "object" | "list" | "<auto>"
 }
 
 interface ComponentMeta {
@@ -82,6 +94,16 @@ export function uniformOpenAIMeta({
     } = {}
 
     defer(() => {
+        // @ts-ignore
+        if (typeof references.__internal_options === "function") {
+            // @ts-ignore
+            const options = references.__internal_options()
+
+            if (options?.regions?.length) {
+                return {}
+            }
+        }
+
         const output: Reference[] = []
         if (!schema) {
             return {}
@@ -210,7 +232,7 @@ export function uniformOpenAIMeta({
                     continue
                 }
 
-                if (section.path && section.path != "<auto>") {
+                if (section.path && section.path !== "<auto>") {
                     uniformRef.canonical = `${group.id}/${section.path}`
                 }
 
@@ -312,10 +334,12 @@ export function uniformOpenAIMeta({
             }
         }
 
-        refByOperationId[methodPath.operationId] = ref
+        if (methodPath.operationId === "") {
+
+        }
+        refByOperationId[methodPath.operationId || ""] = ref
     }
 }
-
 
 function oasOpenAiExamples(examples: Examples) {
     const groups: ExampleGroup[] = []

@@ -81,42 +81,44 @@ export function openDocsToGroup(
     }
 
     if (!groups?.length) {
+        groups.push("Reference")
+
         if (odGqlNode instanceof GraphQLObjectType) {
-            groups = [
+            groups.push(
                 "Objects"
-            ]
+            )
         } else if (odGqlNode instanceof GraphQLInterfaceType) {
-            groups = [
+            groups.push(
                 "Interfaces"
-            ]
+            )
         } else if (odGqlNode instanceof GraphQLUnionType) {
-            groups = [
+            groups.push(
                 "Unions"
-            ]
+            )
         } else if (odGqlNode instanceof GraphQLEnumType) {
-            groups = [
+            groups.push(
                 "Enums"
-            ]
+            )
         } else if (odGqlNode instanceof GraphQLInputObjectType) {
-            groups = [
+            groups.push(
                 "Inputs"
-            ]
+            )
         } else if (odGqlNode instanceof GraphQLScalarType) {
-            groups = [
+            groups.push(
                 "Scalars"
-            ]
+            )
         } else if (odGqlNode instanceof GQLOperation) {
             switch (odGqlNode._operationType) {
                 case "query": {
-                    groups = [
+                    groups.push(
                         "Queries"
-                    ]
+                    )
                     break;
                 }
                 case "mutation": {
-                    groups = [
+                    groups.push(
                         "Mutations"
-                    ]
+                    )
                     break;
                 }
             }

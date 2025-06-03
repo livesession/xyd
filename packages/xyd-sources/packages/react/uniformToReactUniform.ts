@@ -4,7 +4,7 @@ import type {
     Reference,
     Definition,
     DefinitionVariant,
-    DefinitionVariantTypeDocMeta,
+    CommonDefinitionVariantMeta,
     TypeDocReferenceContext
 } from "@xyd-js/uniform";
 
@@ -117,7 +117,7 @@ export function uniformToReactUniform(
 
                             const unionPropRefCtx = unionPropRef.context as TypeDocReferenceContext
 
-                            const meta: DefinitionVariantTypeDocMeta[] = [
+                            const meta: CommonDefinitionVariantMeta[] = [
                                 {
                                     name: "symbolName",
                                     value: unionPropRefCtx?.symbolName || "",

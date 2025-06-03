@@ -33,7 +33,7 @@ export function gqlOperationToUniformRef(
             options,
             {
                 flat,
-                argFlat,
+                flatArg: argFlat,
             }
         ), operationField.args)
 
@@ -66,28 +66,12 @@ export function gqlOperationToUniformRef(
             returnProperties
         )
 
-        let exampleQueryTitle = ""
-
-        switch (operationType) {
-            case ReferenceType.GRAPHQL_QUERY: {
-                exampleQueryTitle = `Query reference`;
-                break;
-            }
-            case ReferenceType.GRAPHQL_MUTATION: {
-                exampleQueryTitle = `Mutation reference`;
-                break;
-            }
-            default: {
-                console.error(`Invalid operation type: ${operationType}`);
-            }
-        }
-
         const examples: Example[] = [
             {
                 codeblock: {
                     tabs: [
                         {
-                            title: exampleQueryTitle,
+                            title: "",
                             language: "graphql",
                             code: exampleQuery,
                         }
@@ -97,7 +81,7 @@ export function gqlOperationToUniformRef(
         ]
 
         const exampleGroup = {
-            description: "Example request",
+            description: "",
             examples,
         }
 

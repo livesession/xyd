@@ -1,24 +1,23 @@
-import React, { useState, useMemo } from "react";
+import React, {useState, useMemo} from "react";
 
-import { Example, ExampleRoot } from "@xyd-js/uniform";
-import { CodeSample, type CodeThemeBlockProps } from "@xyd-js/components/coder";
+import {ExampleRoot} from "@xyd-js/uniform";
+import {CodeSample, type CodeThemeBlockProps} from "@xyd-js/components/coder";
 
-import { MDXReference } from "@/utils/mdx"
-import { CodeExampleButtons } from "@/components/Code";
-import { useSyntaxHighlight } from "@/components/Atlas/AtlasContext";
+import {CodeExampleButtons} from "@/components/Code";
+import {useSyntaxHighlight} from "@/components/Atlas/AtlasContext";
 
 import * as cn from "./ApiRefSamples.styles";
 
 export interface ApiRefSamplesProps {
-    examples: MDXReference<ExampleRoot>
+    examples: ExampleRoot
 }
 
-export function ApiRefSamples({ examples }: ApiRefSamplesProps) {
+export function ApiRefSamples({examples}: ApiRefSamplesProps) {
     const syntaxHighlight = useSyntaxHighlight()
 
     return <atlas-apiref-samples className={cn.ApiRefSamplesContainerHost}>
         {
-            examples.groups?.map(({ description, examples: example }, i) => {
+            examples.groups?.map(({description, examples: example}, i) => {
                 const [activeExampleIndex, setActiveExampleIndex] = useState(0)
                 const activeExample = example[activeExampleIndex]
 
@@ -44,7 +43,7 @@ export function ApiRefSamples({ examples }: ApiRefSamplesProps) {
                     }
                     <CodeSample
                         name={String(i)}
-                        description={description?.title || ""}
+                        description={description || ""}
                         codeblocks={codeblocks}
                         theme={syntaxHighlight || undefined}
                         // controlByMeta

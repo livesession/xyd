@@ -7,7 +7,7 @@ export class Context {
         public config?: {
             flatReturn?: boolean,
             flat?: boolean,
-            argFlat?: boolean,
+            flatArg?: boolean,
         }
     ) {
     }

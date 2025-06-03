@@ -2,15 +2,15 @@ import { createContext, useContext } from "react";
 
 import { type Theme } from "@code-hike/lighter";
 
-/*
-const variantToggleKey = "status"
-const defaultVariantValue = "200"
- */
+export interface VariantToggleConfig {
+    key: string;
+    defaultValue: string;
+}
+
 export const AtlasContext = createContext<{
     syntaxHighlight: Theme | null,
     baseMatch?: string,
-    variantToggleKey?: string, // TODO: BETTER API
-    defaultVariantValue?: string // TODO: BETTER API
+    variantToggles?: VariantToggleConfig[], // Array of toggle configurations
 }>({
     syntaxHighlight: null
 })
@@ -25,7 +25,6 @@ export function useSyntaxHighlight() {
     return context.syntaxHighlight
 }
 
-
 export function useBaseMatch() {
     const context = useContext(AtlasContext)
 
@@ -36,21 +35,12 @@ export function useBaseMatch() {
     return context.baseMatch
 }
 
-export function useVariantToggleKey() {
+export function useVariantToggles() {
     const context = useContext(AtlasContext)
 
     if (!context) {
-        throw new Error("useVariantToggleKey must be used within a AtlasContext")
+        throw new Error("useVariantToggles must be used within a AtlasContext")
     }
 
-    return context.variantToggleKey
-}
-export function useDefaultVariantValue() {
-    const context = useContext(AtlasContext)
-
-    if (!context) {
-        throw new Error("useDefaultVariantValue must be used within a AtlasContext")
-    }
-
-    return context.defaultVariantValue
+    return context.variantToggles || []
 }

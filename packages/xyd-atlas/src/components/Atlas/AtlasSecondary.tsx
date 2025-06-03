@@ -1,5 +1,7 @@
 import * as React from "react"
 
+import {type Theme} from "@code-hike/lighter";
+
 import {
     Heading,
     Table,
@@ -8,12 +10,10 @@ import {
 
     IconQuote
 } from "@xyd-js/components/writer";
+import {CodeSample} from "@xyd-js/components/coder";
 
-import { MDXCommonAtlasProps } from "@/components/Atlas/types";
-import { uniformValue, uniformChild } from "@/utils/mdx";
-import { CodeSample } from "@xyd-js/components/coder";
-import { useSyntaxHighlight } from "./AtlasContext";
-import { type Theme } from "@code-hike/lighter";
+import {MDXCommonAtlasProps} from "@/components/Atlas/types";
+import {useSyntaxHighlight} from "./AtlasContext";
 
 // TODO: interface should be imported from somewhere
 interface CodeSourceContext {
@@ -31,7 +31,7 @@ interface ReferenceItemProps {
 }
 
 
-export function AtlasSecondary({ references }: MDXCommonAtlasProps<CodeSourceContext>) {
+export function AtlasSecondary<T>({references}: MDXCommonAtlasProps<T>) {
     const syntaxHighlight = useSyntaxHighlight()
 
     if (!references) return null;
@@ -72,11 +72,11 @@ export function AtlasSecondary({ references }: MDXCommonAtlasProps<CodeSourceCon
     )
 }
 
-function $ReferenceItem({ reference, index, syntaxHighlight }: ReferenceItemProps) {
+function $ReferenceItem({reference, index, syntaxHighlight}: ReferenceItemProps) {
     return (
         <React.Fragment key={index}>
             <Heading size={3}>
-                {uniformValue(reference.title)}
+                {reference.title}
             </Heading>
 
             {/*<p>*/}
@@ -84,13 +84,13 @@ function $ReferenceItem({ reference, index, syntaxHighlight }: ReferenceItemProp
             {/*</p>*/}
 
             {
-                uniformValue(reference.context?.fileName) && <Details
+                reference.context?.fileName && <Details
                     label=""
                     kind="tertiary"
                     title={<>
-                        Source code in <Code>{uniformValue(reference.context.fileFullPath)}</Code>
+                        Source code in <Code>{reference.context.fileFullPath}</Code>
                     </>}
-                    icon={<IconQuote />}>
+                    icon={<IconQuote/>}>
                     <CodeSample
                         name={reference.context.fileName}
                         description={reference.context.sourcecode.description}
@@ -112,7 +112,7 @@ function $ReferenceItem({ reference, index, syntaxHighlight }: ReferenceItemProp
                     return (
                         <React.Fragment key={index}>
                             <Heading size={4}>
-                                {uniformValue(definition.title)}
+                                {definition.title}
                             </Heading>
                             <Table>
                                 <Table.Head>
@@ -126,13 +126,13 @@ function $ReferenceItem({ reference, index, syntaxHighlight }: ReferenceItemProp
                                     {definition.properties?.map((property: any, propIndex: number) => (
                                         <Table.Tr key={propIndex}>
                                             <Table.Td>
-                                                <Code>{uniformValue(property.name)}</Code>
+                                                <Code>{property.name}</Code>
                                             </Table.Td>
                                             <Table.Td>
-                                                <Code>{uniformValue(property.type)}</Code>
+                                                <Code>{property.type}</Code>
                                             </Table.Td>
                                             <Table.Td muted>
-                                                {uniformChild(property.description)}
+                                                {property.description}
                                             </Table.Td>
                                         </Table.Tr>
                                     ))}
@@ -143,7 +143,7 @@ function $ReferenceItem({ reference, index, syntaxHighlight }: ReferenceItemProp
                 })
             }
 
-            <br />
+            <br/>
         </React.Fragment>
     )
 }

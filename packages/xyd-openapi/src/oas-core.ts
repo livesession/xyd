@@ -7,6 +7,7 @@ import {
 } from "@xyd-js/uniform";
 
 import {OasJSONSchema} from "./types";
+import { BUILT_IN_PROPERTIES } from "./const";
 
 export function schemaObjectToUniformDefinitionProperties(
     schemaObject: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject,
@@ -17,6 +18,7 @@ export function schemaObjectToUniformDefinitionProperties(
 
         return null
     }
+
     const properties: DefinitionProperty[] = [];
 
     // Process schema properties
@@ -27,21 +29,9 @@ export function schemaObjectToUniformDefinitionProperties(
             if (rootProperty) {
                 return property
             }
+
             properties.push(property);
         }
-
-        // // Handle anyOf by merging properties from all schemas
-        // for (const schema of schemaObject.anyOf) {
-        //     if ('$ref' in schema) {
-        //         console.warn("$ref is not supported in anyOf schemas");
-        //         continue;
-        //     }
-        //
-        //     const schemaProperties = schemaObjectToUniformDefinitionProperties(schema);
-        //     if (Array.isArray(schemaProperties)) {
-        //         properties.push(...schemaProperties);
-        //     }
-        // }
     } else if ('oneOf' in schemaObject && schemaObject.oneOf) {
         const property = schemaObjectToUniformDefinitionProperty("", schemaObject, false)
 
@@ -49,20 +39,9 @@ export function schemaObjectToUniformDefinitionProperties(
             if (rootProperty) {
                 return property
             }
+
             properties.push(property);
         }
-        // // Handle oneOf by merging properties from all schemas
-        // for (const schema of schemaObject.oneOf) {
-        //     if ('$ref' in schema) {
-        //         console.warn("$ref is not supported in oneOf schemas");
-        //         continue;
-        //     }
-        //
-        //     const schemaProperties = schemaObjectToUniformDefinitionProperties(schema);
-        //     if (schemaProperties) {
-        //         properties.push(...schemaProperties);
-        //     }
-        // }
     } else if ('allOf' in schemaObject && schemaObject.allOf) {
         const componentPaths: string[] = []
 
@@ -79,6 +58,8 @@ export function schemaObjectToUniformDefinitionProperties(
                 const refPath = oasSchema.__internal_getRefPath();
                 if (typeof refPath === 'string') {
                     componentPaths.push(refPath);
+                } else if (Array.isArray(refPath)) {
+                    componentPaths.push(...refPath);
                 } else {
                     console.warn("Invalid refPath type in allOf schema", oasSchema);
                 }
@@ -86,6 +67,9 @@ export function schemaObjectToUniformDefinitionProperties(
 
             if ('properties' in schema && schema.properties) {
                 for (const [propName, propSchema] of Object.entries(schema.properties)) {
+                    if (BUILT_IN_PROPERTIES[propName]) {
+                        continue;
+                    }
                     if ('$ref' in propSchema) {
                         console.warn("$ref is not supported in allOf properties");
 
@@ -117,6 +101,9 @@ export function schemaObjectToUniformDefinitionProperties(
         oasSchema.__internal_getRefPath = () => componentPaths
     } else if ('properties' in schemaObject && schemaObject.properties) {
         for (const [propName, propSchema] of Object.entries(schemaObject.properties)) {
+            if (BUILT_IN_PROPERTIES[propName]) {
+                continue;
+            }
             if ('$ref' in propSchema) {
                 console.warn("$ref is not supported in properties");
 
@@ -157,6 +144,8 @@ export function schemaObjectToUniformDefinitionProperty(
                 const refPath = oasSchema.__internal_getRefPath();
                 if (typeof refPath === 'string') {
                     componentPaths.push(refPath);
+                } else if (Array.isArray(refPath)) {
+                    componentPaths.push(...refPath);
                 } else {
                     console.warn("Invalid refPath type in anyOf schema", oasSchema);
                 }
@@ -204,6 +193,8 @@ export function schemaObjectToUniformDefinitionProperty(
                 const refPath = oasSchema.__internal_getRefPath();
                 if (typeof refPath === 'string') {
                     componentPaths.push(refPath);
+                } else if (Array.isArray(refPath)) {
+                    componentPaths.push(...refPath);
                 } else {
                     console.warn("Invalid refPath type in allOf schema", oasSchema);
                 }
@@ -259,18 +250,28 @@ export function schemaObjectToUniformDefinitionProperty(
             return property;
         }
 
-        if (enumProperties && enumProperties.length) {
-            meta.push({
-                name: "enum",
-                value: "true"
-            })
-        }
+        meta.push({
+            name: "enum-type",
+            value: schema.type
+        })
 
-        property.properties = enumProperties || [];
+        const enumProperty: DefinitionProperty = {
+            name,
+            type: DEFINED_DEFINITION_PROPERTY_TYPE.ENUM,
+            description: schema.description || "",
+            meta,
+            properties: enumProperties || [],
+        };
+
+        return enumProperty
     } else {
         if ('properties' in schema && schema.properties) {
             property.properties = [];
+
             for (const [propName, propSchema] of Object.entries(schema.properties)) {
+                if (BUILT_IN_PROPERTIES[propName]) {
+                    continue;
+                }
                 if ('$ref' in propSchema) {
                     console.warn("$ref is not supported in properties");
 
@@ -283,7 +284,7 @@ export function schemaObjectToUniformDefinitionProperty(
                     schema.required?.includes(propName)
                 );
                 if (nestedProperty) {
-                    if (isMergeType(nestedProperty.type)) {
+                    if (!name && isMergeType(nestedProperty.type)) {
                         property.properties.push(...nestedProperty.properties || []);
                     } else {
                         property.properties.push(nestedProperty);
@@ -291,9 +292,8 @@ export function schemaObjectToUniformDefinitionProperty(
                 }
             }
         }
-
         // Handle array items
-        if (schema.type === "array" && schema.items && !('$ref' in schema.items)) {
+        else if (schema.type === "array" && schema.items && !('$ref' in schema.items)) {
             const itemsProperty = schemaObjectToUniformDefinitionProperty("items", schema.items);
             if (itemsProperty) {
                 if (isMergeType(itemsProperty.type)) {
@@ -303,6 +303,16 @@ export function schemaObjectToUniformDefinitionProperty(
                     property.properties = [itemsProperty];
                 }
             }
+
+            const arrayProperty: DefinitionProperty = {
+                name,
+                type: DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY,
+                description: schema.description || "",
+                meta,
+                properties: property.properties || [],
+            };
+
+            return arrayProperty
         }
     }
 

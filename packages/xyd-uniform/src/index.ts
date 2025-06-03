@@ -1,6 +1,8 @@
 // Define the new PluginV type with a callback function that returns another function
 import {Reference} from "./types";
 
+export * from "./types";
+
 // Define the new PluginV type with a callback function that returns another function
 export type UniformPluginArgs = {
     references: Reference[] | Reference,
@@ -9,6 +11,7 @@ export type UniformPluginArgs = {
     // TODO: maybe in the future
     // visit: (selector: string | "[method] [path]", callback: (...args: any[]) => void) => void;
 }
+
 
 export type UniformPluginRestArgs = {
     index: number;
@@ -67,7 +70,7 @@ export default function uniform<T extends UniformPlugin<any>[]>(
         });
 
         if (typeof defer === "function") {
-            const resp = defer(references)
+            const resp = defer()
             if (typeof resp !== "object") {
                 throw new Error(`Invalid callback return type: ${typeof resp}`)
             }

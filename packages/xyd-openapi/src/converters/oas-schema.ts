@@ -93,6 +93,10 @@ export function oapSchemaToReferences(
     const tags = oas.getTags()
     sortReferencesByTags(references, tags)
 
+    // TODO: in the future better API
+    // @ts-ignore
+    references.__internal_options = () => options
+
     return references
 }
 

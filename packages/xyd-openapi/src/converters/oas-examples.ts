@@ -8,6 +8,8 @@ import type { JSONSchema7 } from "json-schema";
 
 import { ExampleGroup, Example, CodeBlockTab } from "@xyd-js/uniform";
 
+import { BUILT_IN_PROPERTIES } from "../const";
+
 // TODO: custom snippet languages options
 const SUPPORTED_LANGUAGES = ["shell", "javascript", "python", "go"]
 
@@ -39,7 +41,7 @@ function reqExamples(operation: Operation, oas: Oas) {
 
             let value = param.example
             if (!value && param.schema) {
-                value = OpenAPISampler.sample(param.schema as JSONSchema7)
+                value = OpenAPISampler.sample(sanitizeSchema(param.schema as JSONSchema7))
             }
             if (value !== undefined) {
                 acc[location][param.name] = value
@@ -61,6 +63,7 @@ function reqExamples(operation: Operation, oas: Oas) {
 
             if (schema) {
                 schema = fixAllOfBug(schema)
+                schema = sanitizeSchema(schema)
 
                 let requestData
                 if (content.examples) {
@@ -140,43 +143,53 @@ function resBodyExmaples(operation: Operation, oas: Oas) {
                 return
             }
 
-            if (contentTypes.length > 1) {
-                console.warn(`Multiple content types are not supported for response body examples: ${contentTypes.join(", ")}`)
-            }
+            const tabs: CodeBlockTab[] = []
 
-            const findSupportedContent = contentTypes[contentTypes.length - 1]
+            for (const contentType of contentTypes) {
+                const content = response.content[contentType]
+                const schema = content?.schema as JSONSchema7
 
-            const content = response.content[findSupportedContent]
-            const schema = content?.schema as JSONSchema7
-
-            if (!schema) {
-                return
-            }
-
-            let responseData
-            // Check for examples in the response content
-            if (content.examples) {
-                const responseExample = content.examples["response"]
-                if (responseExample && "value" in responseExample) {
-                    responseData = responseExample.value
+                if (!schema) {
+                    continue
                 }
-            }
 
-            // If no example found, generate sample data from schema
-            if (!responseData) {
-                responseData = OpenAPISampler.sample(schema)
-            }
-
-            examples.push({
-                codeblock: {
-                    title: status,
-                    tabs: [{
-                        title: "json",
-                        language: "json",
-                        code: JSON.stringify(responseData, null, 2) || "",
-                    }]
+                let responseData
+                // Check for examples in the response content
+                if (content.examples) {
+                    const responseExample = content.examples["response"]
+                    if (responseExample && "value" in responseExample) {
+                        responseData = responseExample.value
+                    }
                 }
-            })
+
+                // If no example found, generate sample data from schema
+                if (!responseData) {
+                    responseData = OpenAPISampler.sample(sanitizeSchema(schema))
+                }
+
+                let extension = "text"
+                switch (contentType) {
+                    case "application/json": {
+                        extension = "json"
+                        break
+                    }
+                }
+
+                tabs.push({
+                    title: contentType,
+                    language: extension,
+                    code: JSON.stringify(responseData, null, 2) || "",
+                })
+            }
+
+            if (tabs.length > 0) {
+                examples.push({
+                    codeblock: {
+                        title: status,
+                        tabs
+                    }
+                })
+            }
         })
 
         if (examples.length > 0) {
@@ -216,4 +229,26 @@ function fixAllOfBug(schema: JSONSchema7) {
     }
 
     return modifiedSchema
+}
+
+
+/**
+ * Recursively removes __internal_getRefPath keys from schema objects
+ */
+function sanitizeSchema(schema: any): any {
+    if (!schema || typeof schema !== 'object') {
+        return schema;
+    }
+
+    if (Array.isArray(schema)) {
+        return schema.map(item => sanitizeSchema(item));
+    }
+
+    const cleaned: any = {};
+    for (const [key, value] of Object.entries(schema)) {
+        if (!BUILT_IN_PROPERTIES[key]) {
+            cleaned[key] = sanitizeSchema(value);
+        }
+    }
+    return cleaned;
 }

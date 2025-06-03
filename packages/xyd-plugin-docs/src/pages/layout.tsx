@@ -15,7 +15,7 @@ import type { Metadata, MetadataMap, Theme as ThemeSettings } from "@xyd-js/core
 import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
 import { Framework, FwLink, useSettings, type FwSidebarGroupProps } from "@xyd-js/framework/react";
 import { ReactContent } from "@xyd-js/components/content";
-import { Atlas, AtlasContext } from "@xyd-js/atlas";
+import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
 import { Surfaces } from "@xyd-js/framework/react";
 import { Composer } from "@xyd-js/composer";
 import { BaseTheme } from "@xyd-js/themes";
@@ -124,15 +124,18 @@ export default function Layout() {
 
     const lastMatchId = matches[matches.length - 1]?.id || null
 
-    let atlasVariantToggleKey = ""
-    let atlasDefaultVariantValue = ""
+    let atlasVariantToggles: VariantToggleConfig[] = [];
 
     // TODO: BETTER HANDLE THAT
     if (loaderData.metadata?.openapi) {
-        atlasVariantToggleKey = "status"
-        atlasDefaultVariantValue = "200"
+        atlasVariantToggles = [
+            { key: "status", defaultValue: "200" },
+            { key: "contentType", defaultValue: "application/json" }
+        ];
     } else {
-        atlasVariantToggleKey = "symbolName"
+        atlasVariantToggles = [
+            { key: "symbolName", defaultValue: "" }
+        ];
     }
 
     return <>
@@ -147,8 +150,7 @@ export default function Layout() {
                 value={{
                     syntaxHighlight: settings?.theme?.markdown?.syntaxHighlight || null,
                     baseMatch: lastMatchId || "",
-                    variantToggleKey: atlasVariantToggleKey,
-                    defaultVariantValue: atlasDefaultVariantValue
+                    variantToggles: atlasVariantToggles
                 }}
             >
                 <BaseThemeLayout>

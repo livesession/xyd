@@ -46,7 +46,7 @@ interface GroupSection {
 
     key: string
 
-    path: "object" | "list"
+    path: "object" | "list" | "<auto>"
 }
 
 interface ComponentMeta {
@@ -94,6 +94,16 @@ export function uniformOpenAIMeta({
     } = {}
 
     defer(() => {
+        // @ts-ignore
+        if (typeof references.__internal_options === "function") {
+            // @ts-ignore
+            const options = references.__internal_options()
+
+            if (options?.regions?.length) {
+                return {}
+            }
+        }
+
         const output: Reference[] = []
         if (!schema) {
             return {}
@@ -222,7 +232,7 @@ export function uniformOpenAIMeta({
                     continue
                 }
 
-                if (section.path && section.path != "<auto>") {
+                if (section.path && section.path !== "<auto>") {
                     uniformRef.canonical = `${group.id}/${section.path}`
                 }
 
@@ -324,10 +334,9 @@ export function uniformOpenAIMeta({
             }
         }
 
-        refByOperationId[methodPath.operationId] = ref
+        refByOperationId[methodPath.operationId || ""] = ref
     }
 }
-
 
 function oasOpenAiExamples(examples: Examples) {
     const groups: ExampleGroup[] = []
