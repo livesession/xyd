@@ -47,8 +47,8 @@ importers:
   apps/website:
     dependencies:
       '@code-hike/lighter':
-        specifier: file:/Users/zdunecki/Code/zdunecki/codehike-lighter/lib
-        version: file:../../zdunecki/codehike-lighter/lib
+        specifier: ^1.0.0
+        version: 1.0.3
       '@cosmocss/land':
         specifier: 0.0.0-alpha.0
         version: 0.0.0-alpha.0(@types/react-dom@19.1.5(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -69,7 +69,7 @@ importers:
         version: 0.49.0(@types/react-dom@19.1.5(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@xyd-js/components':
         specifier: ^0.1.0-xyd.3
-        version: 0.1.0-xyd.3(@code-hike/lighter@file:../../zdunecki/codehike-lighter/lib)(@types/react-dom@19.1.5(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+        version: 0.1.0-xyd.3(@code-hike/lighter@1.0.3)(@types/react-dom@19.1.5(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       codehike:
         specifier: ^1.0.4
         version: 1.0.7
@@ -2790,9 +2790,6 @@ packages:
   '@code-hike/lighter@1.0.3':
     resolution: {integrity: sha512-LU0TbZfu3L3fQZ7y9tZHttnxyFm7ewU96arGMFnjLbvFj+onYfVkznhQOmU1ZsQtv9rpQzZ313GRz6hCGDrlJQ==}
 
-  '@code-hike/lighter@file:../../zdunecki/codehike-lighter/lib':
-    resolution: {directory: ../../zdunecki/codehike-lighter/lib, type: directory}
-
   '@cosmocss/land@0.0.0-alpha.0':
     resolution: {integrity: sha512-rySgWyWu1Dq8qKQ9MTRhbDOJoS80dUAyNtWh61i/fmftnNGVJ09LTFlfHwbmAv6ptADeTdRFXSc1Ba9PSpCIUA==}
     engines: {node: '>=16.0.0', npm: '>=8.0.0'}
@@ -5218,7 +5215,6 @@ packages:
 
   '@xyd-js/components@0.1.0-xyd.3':
     resolution: {integrity: sha512-XuGWHsREP9yxa5vf3OM7F/t+zgNRmvFAIxfumtlKXg2ODDImkrIeJbVOsx9hjiLOyWODfCpyrk1r+36mWeJQSA==}
-    version: 0.1.0-xyd.3
     peerDependencies:
       '@code-hike/lighter': ^1.0.1
       react: ^19.0.0
@@ -11883,11 +11879,6 @@ snapshots:
       ansi-sequence-parser: 1.1.1
       tm-grammars: 1.23.26
 
-  '@code-hike/lighter@file:../../zdunecki/codehike-lighter/lib':
-    dependencies:
-      ansi-sequence-parser: 1.1.1
-      tm-grammars: 1.23.26
-
   '@cosmocss/land@0.0.0-alpha.0(@types/react-dom@19.1.5(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@oddbird/popover-polyfill': 0.5.2
@@ -14743,9 +14734,9 @@ snapshots:
       - supports-color
       - typescript
 
-  '@xyd-js/components@0.1.0-xyd.3(@code-hike/lighter@file:../../zdunecki/codehike-lighter/lib)(@types/react-dom@19.1.5(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
+  '@xyd-js/components@0.1.0-xyd.3(@code-hike/lighter@1.0.3)(@types/react-dom@19.1.5(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@code-hike/lighter': file:../../zdunecki/codehike-lighter/lib
+      '@code-hike/lighter': 1.0.3
       '@radix-ui/react-icons': 1.3.2(react@19.0.0)
       '@radix-ui/react-tabs': 1.1.12(@types/react-dom@19.1.5(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       codehike: 1.0.7

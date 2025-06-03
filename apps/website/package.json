@@ -8,7 +8,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@code-hike/lighter": "file:/Users/zdunecki/Code/zdunecki/codehike-lighter/lib",
+    "@code-hike/lighter": "^1.0.0",
     "@cosmocss/land": "0.0.0-alpha.0",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
