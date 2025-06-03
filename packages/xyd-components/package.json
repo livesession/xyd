@@ -32,6 +32,9 @@
     "./writer": {
       "import": "./dist/writer.js"
     },
+    "./system": {
+      "import": "./dist/system.js"
+    },
     "./coder/themes/*": {
       "import": "./dist/coder/themes/*"
     }
@@ -43,14 +46,14 @@
     "clean": "rimraf build"
   },
   "dependencies": {
-    "@livesession/design-system-colors": "0.0.6-alpha-refactor-and-typo.0",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-tabs": "^1.1.1",
     "codehike": "^1.0.3",
     "lucide-react": "^0.447.0"
   },
   "peerDependencies": {
-    "@code-hike/lighter": "^1.0.1",
+    "@xyd-js/core": "workspace:*",
+    "@code-hike/lighter": "^1.0.3",
     "react": "^19.0.0"
   },
   "devDependencies": {
@@ -65,6 +68,8 @@
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-typescript": "^12.1.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@wyw-in-js/rollup": "^0.5.5",
     "@wyw-in-js/vite": "^0.5.5",
     "autoprefixer": "^10.4.20",

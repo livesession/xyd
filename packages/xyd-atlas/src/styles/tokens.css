@@ -1,5 +1,7 @@
 :root {
   /* Ref tokens - Base values */
+  --XydAtlas-Ref-Palette-White: #FFFFFF;
+
   --XydAtlas-Ref-Palette-Primary-60: #7051d4;
   --XydAtlas-Ref-Palette-Primary-70: #6045b9;
   --XydAtlas-Ref-Palette-Primary-80: #4f399e;
@@ -51,7 +53,7 @@
 
   /* Code Sample Buttons */
   --XydAtlas-Component-Code-SampleButtons__color-containerBackground: var(--XydAtlas-Sys-Color-Surface);
-  --XydAtlas-Component-Code-SampleButtons__color-background--active: var(--XydAtlas-Sys-Color-Surface--active);
-  --XydAtlas-Component-Code-SampleButtons__color: var(--XydAtlas-Sys-Color-Text-Secondary);
+  --XydAtlas-Component-Code-SampleButtons__color-background--active: var(--XydAtlas-Ref-Palette-White);
+  --XydAtlas-Component-Code-SampleButtons__color: var(--XydAtlas-Ref-Palette-Neutral-40);
   --XydAtlas-Component-Code-SampleButtons__color--active: var(--XydAtlas-Sys-Color-Text-Primary);
 } 

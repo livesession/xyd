@@ -1,0 +1,27 @@
+type Checkout @opendocs(
+    group: ["Checkout"],
+) {
+    id: ID!
+
+    checkoutId: String!
+    @deprecated(reason: "Use `id` instead.")
+}
+
+type CheckoutLine @opendocs(
+    group: ["Checkout"],
+) {
+    id: ID!
+
+    checkoutLineId: String!
+    @deprecated
+}
+
+type Query {
+    checkout(
+        id: ID!
+    ): Checkout
+
+    checkoutLine(
+        id: ID!
+    ): CheckoutLine
+}

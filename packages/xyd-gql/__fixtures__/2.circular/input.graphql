@@ -1,0 +1,17 @@
+type Author {
+    title: String!
+
+    books: [Book!]!
+}
+
+type Book {
+    title: String!
+
+    author: Author!
+}
+
+type Query {
+    getBookByTitle(
+        title: String!
+    ): Book
+}

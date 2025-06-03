@@ -1,0 +1,118 @@
+"""
+A book type
+"""
+type Book {
+    """
+    The title of the book
+    """
+    title: String!
+
+    """
+    The author of the book
+    """
+    author_name: String!
+
+    """
+    The nested book information
+    """
+    info: BookInfo!
+}
+
+"""
+A book type
+"""
+type Book {
+    """
+    The author of the book
+    """
+    author_name: String!
+}
+
+"""
+A book type
+"""
+type Book {
+    """
+    The author of the book
+    """
+    author_name: String!
+}
+
+"""
+A nested book information type
+"""
+type BookInfo {
+    """
+    The date of the book
+    """
+    date: String!
+}
+
+"""
+An author type
+"""
+type Author {
+    """
+    The name of the author
+    """
+    name: String!
+
+    """
+    The books of the author
+    """
+    books: [String]
+}
+
+"""
+The input object for the getBook query
+"""
+input BookInput {
+    """
+    The title of the book
+    """
+    title: String!
+
+    """
+    The author of the book
+    """
+    info: BookInfoInput!
+}
+
+"""
+A nested book information input
+"""
+input BookInfoInput {
+    """
+    The date of the book
+    """
+    date: String!
+}
+
+type Query {
+    """
+    Get a book by title
+    """
+    getBookByTitle(
+        """
+        The title of the book
+        """
+        title: String!
+
+        """
+        The book info input
+        """
+        info: BookInfoInput
+    ): Book
+}
+
+type Mutation {
+    """
+    Add a book
+    """
+    addBook(input: BookInput!): Book!
+
+    """
+    Add an author
+    """
+    addAuthor(name: String!): Author!
+}

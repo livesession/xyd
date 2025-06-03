@@ -38,7 +38,7 @@
 }
 
 .card:focus {
-    z-index: 46 !important;
+    z-index: 46;
     transition: none;
 }
 
@@ -93,7 +93,6 @@
 
 .cardTitle {
     margin-top: 0.5rem;
-    font-size: 0.8125rem;
     font-weight: 500;
     color: rgb(255 255 255);
     opacity: 0;

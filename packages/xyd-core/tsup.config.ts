@@ -2,7 +2,7 @@ import {defineConfig, Options} from 'tsup';
 
 const config: Options = {
     entry: ['index.ts'],
-    format: ['esm', 'cjs'], // Output both ESM and CJS formats
+    format: ['esm'], // Output both ESM and CJS formats
     target: 'node16', // Ensure compatibility with Node.js 16
     dts: {
         entry: 'index.ts', // Specify the entry for DTS
@@ -16,6 +16,7 @@ const config: Options = {
         options.external = ['node:fs/promises']; // Mark 'node:fs/promises' as external
         options.loader = {'.js': 'jsx'}; // Ensure proper handling of .js files
     },
+    tsconfig: 'tsconfig.tsup.json',
     ignoreWatch: ['node_modules', 'dist', '.git', 'build'] // Exclude unnecessary directories
 }
 

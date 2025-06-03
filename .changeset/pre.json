@@ -2,30 +2,7 @@
   "mode": "pre",
   "tag": "xyd",
   "initialVersions": {
-    "@xyd-js/fable-wiki": "0.1.0-xyd.3",
-    "@xyd-js/xtokens": "0.1.0-xyd.1",
-    "@xyd-js/atlas": "0.1.0-xyd.6",
-    "@xyd-js/cli": "0.1.0-xyd.17",
-    "@xyd-js/components": "0.1.0-dev.0",
-    "@xyd-js/content": "0.1.0-xyd.4",
-    "@xyd-js/core": "0.1.0-xyd.3",
-    "@xyd-js/vite-dev": "0.0.0",
-    "@xyd-js/documan": "0.1.0-xyd.17",
-    "@xyd-js/documan-example": "0.0.0",
-    "@xyd-js/foo": "0.1.0-xyd.1",
-    "@xyd-js/framework": "0.1.0-xyd.20",
-    "@xyd-js/gql": "0.1.0-xyd.3",
-    "@xyd-js/openapi": "0.1.0-xyd.1",
-    "@xyd-js/plugin-zero": "0.1.0-xyd.11",
-    "@xyd-js/storybook": "0.0.0",
-    "@xyd-js/theme-gusto": "0.0.0",
-    "@xyd-js/theme-poetry": "0.1.0-xyd.15",
-    "@xyd-js/themes": "0.0.0",
-    "@xyd-js/ui": "0.1.0-xyd.6",
-    "@xyd-js/uniform": "0.1.0-xyd.5",
-    "@xyd-js/sources": "0.0.0",
-    "@xyd-js/documan-host": "0.0.0",
-    "@xyd-js/website": "0.0.0"
+  
   },
   "changesets": [
     "smart-regions-spend"

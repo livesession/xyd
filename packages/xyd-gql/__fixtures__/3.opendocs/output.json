@@ -1,0 +1,358 @@
+[
+  {
+    "title": "checkout",
+    "description": "",
+    "canonical": "queries/checkout",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "checkout",
+      "group": [
+        "Queries"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "Query reference",
+                    "language": "graphql",
+                    "code": "query checkout($id: ID!) {\n  checkout(id: $id) {\n    # checkout fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          },
+          {
+            "name": "checkoutId",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "checkoutId",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "deprecated",
+                "value": "Use `id` instead."
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "checkoutLine",
+    "description": "",
+    "canonical": "queries/checkoutline",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "checkoutLine",
+      "group": [
+        "Queries"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "Query reference",
+                    "language": "graphql",
+                    "code": "query checkoutLine($id: ID!) {\n  checkoutLine(id: $id) {\n    # checkoutLine fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          },
+          {
+            "name": "checkoutLineId",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "checkoutLineId",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "deprecated",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Checkout",
+    "description": "",
+    "canonical": "objects/checkout",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Checkout",
+      "group": [
+        "Checkout"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          },
+          {
+            "name": "checkoutId",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "checkoutId",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "deprecated",
+                "value": "Use `id` instead."
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "CheckoutLine",
+    "description": "",
+    "canonical": "objects/checkoutline",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "CheckoutLine",
+      "group": [
+        "Checkout"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          },
+          {
+            "name": "checkoutLineId",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "checkoutLineId",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "deprecated",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

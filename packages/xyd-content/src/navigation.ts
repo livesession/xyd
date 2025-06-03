@@ -1,31 +1,33 @@
-import {promises as fs} from 'fs';
-import fs2, {open} from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
 
 import React from "react";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
-import matter from 'gray-matter';
-import {VFile} from "vfile";
-import {compile as mdxCompile} from "@mdx-js/mdx";
+import { VFile } from "vfile";
+import { compile as mdxCompile } from "@mdx-js/mdx";
 
-import {FrontMatter, Sidebar, PageFrontMatter, Header} from "@xyd-js/core";
+import { Metadata, Sidebar, MetadataMap, Header, PageURL, VirtualPage } from "@xyd-js/core";
 
 // TODO: better algorithm + data structures - since it's on build time it's not a big deal nevertheless it should be changed in the future
 
 // pageFrontMatters gets frontmatters for given navigation
-export async function pageFrontMatters(navigation: Sidebar[]): Promise<PageFrontMatter> {
-    const frontmatters: PageFrontMatter = {}
+export async function pageFrontMatters(navigation: Sidebar[], pagePathMapping: { [key: string]: string }): Promise<MetadataMap> {
+    const frontmatters: MetadataMap = {}
 
     const promises: Promise<any>[] = []
 
-    function mapPages(page: string | Sidebar) {
+    function mapPages(page: PageURL) {
         if (typeof page !== "string") {
-            page.pages?.forEach(mapPages)
+            if ("virtual" in page) {
+                promises.push(job(page, frontmatters, pagePathMapping))
+            } else {
+                page.pages?.forEach(mapPages)
+            }
             return
         }
 
-        promises.push(job(page, frontmatters))
+        promises.push(job(page, frontmatters, pagePathMapping))
     }
 
     navigation.map(async (nav: Sidebar) => {
@@ -74,11 +76,20 @@ export function filterNavigationByLevels(
             const level = parseInt(levelStr)
             const findThisSlug = slug.split("/").filter(s => !!s).slice(0, level).join("/")
 
-            function findMatchedPage(page: string | Sidebar) {
+            function findMatchedPage(page: PageURL) {
                 if (typeof page !== "string") {
-                    page.pages?.forEach(findMatchedPage)
+                    if ("virtual" in page) {
+                        return matchPage(page.virtual)
+                    } else {
+                        page.pages?.forEach(findMatchedPage)
+                    }
                     return
                 }
+
+                return matchPage(page)
+            }
+
+            function matchPage(page: string) {
                 const findThisPage = page.split("/").filter(p => !!p).slice(0, level).join("/")
 
                 const set = topLevelTabMatcher[level]
@@ -107,7 +118,7 @@ function mdxExport(code: string) {
     return fn(scope)
 }
 
-async function getFrontmatter(filePath: string): Promise<FrontMatter> {
+async function getFrontmatter(filePath: string): Promise<Metadata> {
     const body = await fs.readFile(filePath, "utf-8");
 
     const vfile = new VFile({
@@ -134,39 +145,39 @@ async function getFrontmatter(filePath: string): Promise<FrontMatter> {
         frontmatter
     } = mdxExport(code)
 
-    const matter: FrontMatter = frontmatter
+    const matter: Metadata = frontmatter
+
+    if (!matter) {
+        throw new Error(`Frontmatter not found in ${filePath}`)
+    }
 
     let title = ""
-    if (typeof matter.title === "string" ) {
+    if (typeof matter.title === "string") {
         title = matter.title
     }
     if (reactFrontmatter) {
-        if (typeof reactFrontmatter?.title === "function") {
-            matter.title = {
-                title,
-                code: reactFrontmatter.title.toString()
-            }
-        }
+        console.error("currently react frontmatter is not supported")
     }
 
     return matter
 }
 
-async function job(page: string, frontmatters: PageFrontMatter) {
-    // TODO: it can be cwd because on build time it has entire path?
-    let filePath = path.join(process.cwd(), `${page}.mdx`) // TODO: support md toos
-    try {
-        await fs.access(filePath)
-    } catch (e) {
-        try {
-            const mdPath = filePath.replace(".mdx", ".md")
-            await fs.access(mdPath)
-            filePath = mdPath
-        } catch (e) {
-        }
+// TODO: indices map to not do like this - search for mdx if not then md
+async function job(page: string | VirtualPage, frontmatters: MetadataMap, pagePathMapping: { [key: string]: string }) {
+    let pageName = ""
+    if (typeof page === "string") {
+        pageName = page
+    } else {
+        pageName = page.page
     }
 
+    if (!pagePathMapping[pageName]) {
+        throw new Error(`Content file for page "${pageName}" does not exist. Please check if you added a content file correctly`)
+    }
+
+    const filePath = path.join(process.cwd(), pagePathMapping[pageName])
+    
     const matter = await getFrontmatter(filePath)
 
-    frontmatters[page] = matter
+    frontmatters[pageName] = matter
 }

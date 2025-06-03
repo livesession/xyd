@@ -1,379 +1,642 @@
 import React from "react";
 
+import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
+
+/**
+ * Main settings interface for the application
+ */
 export interface Settings {
-    // styling configurations for the documentation
-    styling?: Styling
+    /** Theme configuration for the application */
+    theme?: Theme
 
-    structure?: Structure
+    /** Navigation configuration */
+    navigation?: Navigation
 
+    /** API configuration */
     api?: API
 
+    /** Integrations configuration */
     integrations?: Integrations
 
+    /** Plugins configuration */
+    plugins?: Plugins
+
+    /**
+     * @unsafe
+     * 
+     * Redirects configuration
+     */
     redirects?: Redirects[]
 
+    /**
+     * @unsafe
+     * SEO configuration
+     */
     seo?: SEO
+
+    /** Engine configuration */
+    engine?: Engine
 }
 
-// ------ START  setting for styling START ------
-export interface Styling {
-    // Name of your company or project. Used for the global title.
-    name: string;
+// ------ START setting for theme START ------
+// #region Theme
+/**
+ * Theme configuration that changes the look and feel of the project
+ */
+export interface Theme {
+    /** 
+     * A preset theme configuration that changes the look and feel of the project. 
+     * A theme is a set of default styling configurations. 
+     * Examples: cosmo, gusto, poetry, picasso
+     */
+    readonly name: ThemePresetName | string
 
-    // Path to logo image or object with path to “light” and “dark” mode logo images, and where the logo links to. SVG format is recommended.
-    // It does not pixelate and the file size is generally smaller.
+    /** Markdown configuration for the theme, including options like syntax highlighting */
+    markdown?: Markdown
+
+    /** 
+     * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to. 
+     * SVG format is recommended as it does not pixelate and the file size is generally smaller.
+     */
     logo?: string | Logo | React.JSX.Element
 
-    // Path to the favicon image. For example: /path/to/favicon.svg
+    /** Path to the favicon image. For example: /path/to/favicon.svg */
     favicon?: string;
 
-    // Hex color codes for your global theme
-    colors?: Colors
+    /** The defult level of the table of contents. */
+    maxTocDepth?: number
 
-    // A preset theme configuration that changes the look and feel of the project. A theme is a set of default styling configurations. Examples: gusto, poetry, plato, picasso
-    theme?: ThemeType
+    /** Head configuration */
+    head?: HeadConfig[]
 
-    // The global layout style of the documentation.
-    layout?: LayoutType
+    /** The iconify library */
+    icons?: Icons
 
-    // Set a decorative background.
-    background?: Background
+    /** Hex color codes for your global theme */
+    // colors?: Colors TODO: maybe in the future
 
-    // Set a custom background image to be displayed behind every page.
-    backgroundImage?: string
+    /** Set a custom background image to be displayed behind every page */
+    // backgroundImage?: string TODO: maybe in the future
 
-    // Custom fonts. Apply globally or set different fonts for headings and the body text.
-    font?: FontDetailsType | { headings?: FontDetailsType, body?: FontDetailsType }
+    /** 
+     * Custom fonts. Apply globally or set different fonts for headings and the body text.
+     */
+    // font?: FontDetailsType | { headings?: FontDetailsType, body?: FontDetailsType } TODO: maybe in the future
 
-    // Customize the dark mode toggle.
-    modeToggle?: ModeToggle
+    /** The location of the search bar entry */
+    // search?: SearchType TODO: maybe in the future
+}
+// #endregion Theme
 
-    // Customize the styling of components within the sidebar.
-    sidebar?: StyleSidebar
+/**
+ * Configuration type for head elements that can be added to the HTML head.
+ * Format: [tagName, attributes]
+ *
+ * @example: ['script', { src: 'https://example.com/script.js', defer: true }]
+ */
+type HeadConfig =
+    | [string, Record<string, string | boolean>]
 
-    // Styling configurations for the topbar.
-    topbar?: Topbar
-
-    // The location of the search bar entry.
-    search?: SearchType
-
-    // The style of the rounded edges.
-    rounded?: Rounded
+/**
+ * Markdown configuration interface
+ */
+export interface Markdown {
+    /** Syntax highlighting configuration */
+    syntaxHighlight: SyntaxHighlight
 }
 
+/**
+ * Logo configuration interface
+ */
 export interface Logo {
-    // Path to the logo in light mode. For example: `/path/to/logo.svg`
+    /** Path to the logo in light mode. For example: `/path/to/logo.svg` */
     light?: string;
 
-    // Path to the logo in dark mode. For example: `/path/to/logo.svg`
+    /** Path to the logo in dark mode. For example: `/path/to/logo.svg` */
     dark?: string;
 
-    // Where clicking on the logo links you to
+    /** Where clicking on the logo links you to */
     href?: string;
 }
 
+
+export interface IconLibrary {
+     /** The iconify library name */
+     name: string
+
+     /** The iconify library version */
+     version?: string
+
+     /** The default iconify icon name */
+     default?: boolean
+
+     /** Merge icons from the library into the default iconify library */
+     noprefix?: boolean
+}
+
+export interface Icons {
+    /** The iconify library */
+    library: string | string[] | IconLibrary | IconLibrary[]
+}
+
+/**
+ * Color configuration interface
+ */
 export interface Colors {
-    // The primary color. Used most often for highlighted content, section headers, accents, in light mode
+    /** The primary color. Used most often for highlighted content, section headers, accents, in light mode */
     primary: string
 
-    // The primary color for dark mode. Used most often for highlighted content, section headers, accents, in dark mode
+    /** The primary color for dark mode. Used most often for highlighted content, section headers, accents, in dark mode */
     light?: string
 
-    // The primary color for important buttons
+    /** The primary color for important buttons */
     dark?: string
 
-    // The color of the background in both light and dark mode
+    /** The color of the background in both light and dark mode */
     background?: {
+        /** Light mode background color */
         light: string
 
+        /** Dark mode background color */
         dark: string
     }
 }
 
-export interface Background {
-    // The style of the decorative background.
-    style?: "gradient" | "grid" | "windows"
-}
-
-
+/**
+ * Font details configuration interface
+ */
 export interface FontDetailsType {
-    // The font family name. Custom fonts and all Google Fonts are supported. e.g. “Open Sans”, “Playfair Display”
+    /** 
+     * The font family name. Custom fonts and all Google Fonts are supported. 
+     * e.g. "Open Sans", "Playfair Display"
+     */
     family: string
 
-    // The font weight. Precise values such as 560 are also supported for variable fonts. Check under the Styles section for your Google Font for the available weights.
+    /** 
+     * The font weight. Precise values such as 560 are also supported for variable fonts. 
+     * Check under the Styles section for your Google Font for the available weights.
+     */
     weight?: number
 
-    // The URL to the font file. Can be used to specify a font that is not from Google Fonts.
+    /** The URL to the font file. Can be used to specify a font that is not from Google Fonts */
     url?: string
 
-    // The font format. Required if using a custom font source (url).
+    /** The font format. Required if using a custom font source (url) */
     format?: "woff" | "woff2"
-
 }
 
-export interface ModeToggle {
-    // Set if you always want to show light or dark mode for new users. When not set, we default to the same mode as the user’s operating system.
-    default?: "light" | "dark"
+/** Available theme preset names */
+export type ThemePresetName = "poetry" | "cosmo" | "opener"
 
-    // Set to true to hide the dark/light mode toggle. You can combine isHidden with default to force your docs to only use light or dark mode.
-    isHidden?: boolean
-}
-
-export interface StyleSidebar {
-    // The styling of the sidebar item.
-    items: "container" | "card" | "border" | "undecorated"
-}
-
-export interface Topbar {
-    // Styling configurations for the topbar.
-    style: "default" | "gradient"
-}
-
-export type ThemeType = "gusto" | "poetry" | "plato" | "picasso"
-
-export type LayoutType = "app" | "default"
-
+/** Search bar location options */
 export type SearchType = "side" | "top"
 
-export type Rounded = "default" | "sharp"
-// ------ END  setting for styling END ------
+// ------ END  setting for theme END ------
 
 
-// ------ START  setting for structure START ------
-export interface Structure {
-    // Definition of sidebar - an array of groups with all the pages within that group
-    sidebar: (SidebarMulti | Sidebar) []
+// ------ START  setting for navigation START ------
+/**
+ * Navigation configuration interface
+ */
+export interface Navigation {
+    /** Definition of sidebar - an array of groups with all the pages within that group */
+    sidebar: (SidebarRoute | Sidebar)[]
 
-    // Array of headers
+    /** Array of headers */
     header?: Header[]
 
-    // The call to action button in the topbar
-    topbarCtaButton?: CallToAction
+    /** Array of sub headers */
+    subheader?: SubHeader[]
 
-    // Array of version names. Only use this if you want to show different versions of docs with a dropdown in the navigation bar.
-    versions?: string[]
+    /**
+     * Array of version names. Only use this if you want to show different versions of docs 
+     * with a dropdown in the navigation bar.
+     */
+    // versions?: string[]
 
-    // Anchors, includes the icon, name, and url.
+    /** Anchors, includes the icon, name, and url */
     anchors?: AnchorRoot
-
-    // An object of social media accounts where the key:property pair represents the social media platform and the account url.
-    footerSocials?: FooterSocials
-
-    // Configurations to enable feedback buttons
-    feedback?: Feedback
-
-    // Configurations to change the search prompt
-    search?: Search
 }
 
-export interface SidebarMulti {
-    // routing match
-    match: string
+/**
+ * Sidebar multi-group configuration
+ */
+export interface SidebarRoute {
+    /** Route for this sidebar group */
+    route: string
 
-    // sidebar items
+    /** Sidebar items within this group */
     items: Sidebar[]
 }
 
+/**
+ * Sidebar configuration
+ */
 export interface Sidebar {
-    // The name of the group.
+    /** The name of the group */
     group?: string
 
-    // The relative paths to the markdown files that will serve as pages.
-    // Note: groups are recursive, so to add a sub-folder add another group object in the page array.
-    pages?: (string | Sidebar)[]
+    /** 
+     * The relative paths to the markdown files that will serve as pages.
+     * Note: groups are recursive, so to add a sub-folder add another group object in the page array.
+     */
+    pages?: PageURL[]
 
-    // The Fontawesome icon for the group. Note: this only applies to sub-folders.
+    /**
+     * The icon of the group.
+     */
     icon?: string
 
-    // The type of Fontawesome icon. Must be one of: brands, duotone, light, sharp-solid, solid, thin
-    iconType?: string
+    /**
+     * The sort order of the group.
+     */
+    sort?: number | {
+        before: string
+
+        after: string
+    }
 }
 
+/**
+ * Page URL type
+ */
+export type PageURL = string | VirtualPage | Sidebar
+
+/**
+ * Virtual page type
+ * 
+ * Virtual pages are composition of pages, needed for templating e.g in uniform
+ * 
+ * Example:
+ * 
+ * {
+ *  pages: [
+ *    ".xyd/.cache/.content/docs/rest/todo:docs/rest/todo",
+ *  ]
+ * }
+ * 
+ * above will be rendered as docs/rest/todo.md using composition from xyd's `.content`
+ */
+export type VirtualPage = string | {
+    /** The virtual page to use for the page */
+    virtual: string
+
+    /** The page to use for the page */
+    page: string
+
+    /** The template to use for the page */
+    templates?: string | string[]
+}
+
+
+/**
+ * Sub-header configuration
+ */
 export interface SubHeader {
-    match: string
+    /** Route for this sub-header */
+    route: string
+
+    /** Name of this sub-header */
     name: string
+
+    /** Items within this sub-header */
     items: Header[]
 }
 
-export interface Header {
-    // The name of the button.
+/**
+ * Header configuration
+ */
+export type Header = {
+    /** The name of the button */
     name?: string
 
-    // The url once you click on the button. Example: https://mintlify.com/contact
+    /** The url once you click on the button */
     url?: string
 
-    sub?: SubHeader
+    /** Float the header to the right */
+    float?: "right"
 }
 
-export interface CallToAction {
-    // Link shows a button. GitHub shows the repo information at the url provided including the number of GitHub stars.
-    type?: "link" | "github"
-
-    // If type is a link: What the button links to. If type is a github: Link to the repository to load GitHub information from.
-    url?: string
-
-    // Text inside the button. Only required if type is a link.
-    name?: string
-
-    // The style of the button.
-    style?: "pill" | "roundedRectangle"
-
-    // Whether to display the arrow
-    arrow?: boolean
-}
-
+/**
+ * Anchor configuration
+ */
 export interface Anchor {
-    // The Font Awesome or JSX icon used to feature the anchor.
-    icon?: string | React.JSX.Element
+    /** The iconify icon name */
+    icon?: string
 
-    // The name of the anchor label.
+    /** The name of the anchor label */
     name?: string
 
-    // The start of the URL that marks what pages go in the anchor. Generally, this is the name of the folder you put your pages in.
+    /** 
+     * The start of the URL that marks what pages go in the anchor. 
+     * Generally, this is the name of the folder you put your pages in.
+     */
     url?: string
 }
 
+/**
+ * Anchor root configuration
+ */
 export interface AnchorRoot {
-    bottom: Anchor[]
-}
-
-export interface FooterSocials {
-    // One of the following values website, facebook, x, youtube, discord, slack, github, linkedin, instagram, hacker-news
-    [key: string]: string
-
-    // The URL to the social platform.
-    property: string
-}
-
-export interface Feedback {
-    // Enables a rating system for users to indicate whether the page has been helpful
-    thumbsRating?: boolean
-
-    // Enables a button to allow users to suggest edits via pull requests
-    suggestEdit?: boolean
-
-    // Enables a button to allow users to raise an issue about the documentation
-    raiseIssue?: boolean
-}
-
-export interface Search {
-    // Set the prompt for the search bar. Default is Search...
-    prompt?: string
+    /** Bottom anchors */
+    bottom?: Anchor[]
 }
 
 // ------ END  setting for structure END ------
 
 
 // ------ START  setting for API START ------
-export type APIFile = string | string[] | { [id: string]: string }
-
+/**
+ * API configuration interface
+ */
 export interface API {
-    info?: APIInfo
-
-    // A string/array/map of strings of URL(s) or relative path(s) pointing to your OpenAPI file.
+    /** 
+     * OpenAPI configuration
+     */
     openapi?: APIFile
 
-    // A string or an array of strings of URL(s) or relative path(s) pointing to your GraphQL file.
+    /**
+     * GraphQL configuration
+     */
     graphql?: APIFile
 
-    // A string or an array of strings of URL(s) or relative path(s) pointing to your source code folder.
+    /**
+     * Sources configuration
+     */
     sources?: APIFile
-
-    // TODO: better in the future? -> move outside of API ?
-    match?: {
-        graphql?: string
-        openapi?: string
-    }
 }
 
+/**
+ * API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration
+ */
+export type APIFile = string | string[] | APIFileAdvanced | APIFileMap
+
+/**
+ * API file map type
+ */
+export type APIFileMap = { 
+    [name: string]: string
+}
+
+/**
+ * API file advanced type
+ */
+export type APIFileAdvanced = { 
+    /** API information configuration */
+    info?: APIInfo
+
+    /** Route configuration */
+    route: string
+}
+
+/**
+ * API file type - can be a string, array of strings, or a map of strings
+ */
+
+/**
+ * API information configuration
+ */
 export interface APIInfo {
-    // The base url for all API endpoints. If baseUrl is an array, it will enable for multiple base url options that the user can toggle.
+    /** 
+     * The base url for all API endpoints. If baseUrl is an array, it will enable 
+     * for multiple base url options that the user can toggle.
+     */
     baseUrl?: string
 
-    // auth info
+    /** Authentication information */
     auth?: APIAuth
 
-    // The name of the authentication parameter used in the API playground.
-    // If method is basic, the format should be [usernameName]:[passwordName]
+    /** 
+     * The name of the authentication parameter used in the API playground.
+     * If method is basic, the format should be [usernameName]:[passwordName]
+     */
     name?: string
 
-    /*
-    The default value that’s designed to be a prefix for the authentication input field.
-
-    E.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.
-    */
+    /**
+     * The default value that's designed to be a prefisx for the authentication input field.
+     * E.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.
+     */
     inputPrefix?: string
 
-    // Configurations for the API playground
+    /** Configurations for the API playground */
     playground?: APIPlayground
 
+    /** Request configuration */
     request?: APIInfoRequest
-
-    paramFields?: ApiParamFields
 }
 
+/**
+ * API authentication configuration
+ */
 export interface APIAuth {
-    // The authentication strategy used for all API endpoints.
+    /** The authentication strategy used for all API endpoints */
     method: "bearer" | "basic" | "key"
 }
 
+/**
+ * API playground configuration
+ */
 export interface APIPlayground {
+    /** Playground display mode */
     mode?: "show" | "simple" | "hide"
 }
 
+/**
+ * API request configuration
+ */
 export interface APIInfoRequest {
-    // Configurations for the auto-generated API request examples
+    /** Configurations for the auto-generated API request examples */
     example?: {
-        /*
-        An array of strings that determine the order of the languages of the auto-generated request examples.
-        You can either define custom languages utilizing x-codeSamples or use our default languages which include bash, python, javascript, php, go, java
-        */
+        /**
+         * An array of strings that determine the order of the languages of the auto-generated request examples.
+         * You can either define custom languages utilizing x-codeSamples or use our default languages which include 
+         * bash, python, javascript, php, go, java
+         */
         languages?: string[]
     }
-}
-
-export interface ApiParamFields {
-    /*
-    The default expanded state of expandable options in the API playground.
-
-    "all" - every expandable component is expanded
-
-    "topLevel" - every top-level expandable component is expanded
-
-    "topLevelOneOfs" - every top-level oneOf type is expanded
-
-    "none" - every expandable component is closed (default behavior)
-    */
-    expanded: "all" | "topLevel" | "topLevelOneOfs" | "none"
 }
 
 // ------ END  setting for API END ------
 
 
 // ------ START  setting for integrations START ------
+/**
+ * Integrations configuration
+ */
 export interface Integrations {
-    // Configurations to add third-party analytics integrations. See full list of supported analytics here.
-    analytics?: Analytics
+    /** 
+     * Configurations to add third-party analytics integrations. 
+     * See full list of supported analytics here.
+     */
+    analytics?: IntegrationAnalytics
+
+    /**
+     * Configurations to add third-party search integrations. 
+     * See full list of supported search here.
+     */
+    search?: IntegrationSearch
 }
 
-export interface Analytics {
+// #region IntegrationAnalytics
+/**
+ * Analytics configuration
+ */
+export interface IntegrationAnalytics {
+    /** Livesession analytics configuration */
     livesession: {
+        /** Livesession's TrackID */
         trackId: string
     }
+}
+// #endregion IntegrationAnalytics
+
+/**
+ * Search configuration
+ */
+export interface IntegrationSearch {
+    /** Algolia search configuration */
+    algolia?: {
+        /** Algolia application ID */
+        appId: string
+
+        /** Algolia API key */
+        apiKey: string
+    }
+
+    orama?: {
+        /** Orama endpoint */
+        endpoint: string
+
+        /** Orama API key */
+        apiKey: string
+
+        /** Orama suggestions */
+        suggestions?: string[]
+    } | boolean
 }
 
 // ------ END  setting for integrations END ------
 
+// ------ START  setting for plugins START ------
+
+/**
+ * Plugin configuration
+ * 
+ * Example:
+ * 1)
+ * {
+ *  plugins: [
+ *    "livesession",
+ *  ]
+ * }
+ * 
+ * or 2)
+ * {
+ *  plugins: [
+ *    [
+ *      "livesession",
+ *      "accountID.websiteID",
+ *      {
+ *          keystrokes: true 
+ *      }
+ *    ]
+ *  ]
+ * }
+ * 
+ * you can also use the type to define the plugin config in your code:
+ * 
+ * const livesessionPlugin: PluginConfig<"livesession", [string, { keystrokes: boolean }]> = [
+ *    "livesession",
+ *    "accountID.websiteID",
+ *    {
+ *        keystrokes: true 
+ *    }
+ * ]
+ */
+export type Plugins = (string | PluginConfig)[]
+
+export type PluginConfig<
+    PluginName extends string = string,
+    PluginArgs extends unknown[] = unknown[]
+> = [PluginName, ...PluginArgs]
+
+
+// ------ END  setting for plugins END ------
 
 // ------ START  setting for redirecs START ------
+/**
+ * Redirects configuration
+ */
 export interface Redirects {
+    /** Source path to redirect from */
     source: string
 
+    /** Destination path to redirect to */
     destination: string
 }
 
+/**
+ * SEO configuration
+ */
 export interface SEO {
-    indexHiddenPages: boolean
+    /**
+     * Domain name
+     */
+    domain?: string
+
+    /**
+     * Meta tags
+     */
+    metatags: {[tag: string]: string} // TODO: in the future type-safe
 }
 
 // ------ END  setting for redirects END ------
+
+// ------ START  setting for config START ------
+/**
+ * Config configuration
+ */
+export interface Engine {
+    /** 
+     * Path aliases for imports. Avoid long relative paths by creating shortcuts.
+     * 
+     * @example
+     * ```json
+     * {
+     *   "paths": {
+     *     "@my-package/*": ["../my-package/src/*"],
+     *     "@livesession-go/*": ["https://github.com/livesession/livesession-go/*"]
+     *   }
+     * }
+     * ```
+     * 
+     * Usage:
+     * ```typescript
+     * // Instead of
+     * @importCode("../../../my-package/src/components/Badge.tsx")
+     * 
+     * // Use
+     * @importCode("@my-package/src/components/Badge.tsx")
+     * ```
+     */
+    paths?: EnginePaths
+
+    /**
+     * @unsafe
+     * 
+     * Uniform configuration
+     * 
+     */
+    uniform?: EngineUniform
+}
+
+type EnginePaths = { [key: string]: string[] }
+
+type EngineUniform = {
+    /**
+     * If `true` then virtual pages will not created and generated content will be stored on disk
+     */
+    store: boolean
+}
+
+// ------ END  setting for config END ------

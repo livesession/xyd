@@ -1,0 +1,19 @@
+extend schema @od_schema(
+    flattenTypes: true
+)
+
+type Author {
+    id: ID!
+
+    name: String!
+
+    details: AuthorDetails!
+}
+
+type AuthorDetails {
+    birthDate: String
+}
+
+type Query {
+    author(id: ID!): Author
+}

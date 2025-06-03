@@ -1,0 +1,47 @@
+enum Role {
+    USER
+    ADMIN
+}
+
+type Data {
+    id: ID!
+    name: String!
+    metadata: Metadata!
+}
+
+type Metadata {
+    active: Boolean!
+    tags: [String!]!
+}
+
+input DataInput {
+    # Scalar types with defaults
+    name: String = "default"
+    count: Int = 0
+    isActive: Boolean = true
+    role: Role = USER
+
+    # Array with default
+    tags: [String!] = ["tag1", "tag2"]
+
+    # Nested input with defaults
+    metadata: MetadataInput = { active: true, tags: ["default"] }
+}
+
+input MetadataInput {
+    active: Boolean = false
+    tags: [String!] = ["default"]
+}
+
+type Query {
+    getData(input: DataInput!): Data
+
+    getDataList(
+        limit: Int! = 10,
+
+        offset: Int = 0,
+
+        page: Int
+    ): Data
+}
+

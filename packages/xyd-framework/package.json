@@ -37,9 +37,11 @@
     "@xyd-js/core": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router": "7.1.1"
+    "react-router": "^7.5.0"
   },
   "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@babel/preset-react": "^7.24.7",
     "@mdx-js/rollup": "^3.0.1",
     "@types/node": "22.5.5",
@@ -50,7 +52,7 @@
     "remark-frontmatter": "^5.0.0",
     "remark-mdx-frontmatter": "^5.0.0",
     "typescript": "5.6.2",
-    "vite": "^5.4.5",
+    "vite": "^6.1.0",
     "tsup": "^8.3.0"
   }
 }

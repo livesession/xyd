@@ -44,7 +44,6 @@ export const CodeSampleLanguagesButton = css`
     border-radius: 6px;
     padding: 6px;
 
-    font-size: 14px;
     color: var(--XydAtlas-Component-Code-Sample__color);
 
     &[data-state="active"] {
@@ -65,7 +64,6 @@ export const CodeSampleLanguagesDescription = css`
     align-items: center;
     gap: 4px;
 
-    font-size: 14px;
     color: var(--XydAtlas-Component-Code-Sample__color);
 
     margin-left: 4px;
@@ -99,8 +97,6 @@ export const CodeSampleCodeHost = css`
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 
-    font-size: 14px;
-    line-height: 20px;
     white-space: pre-wrap;
     word-break: break-all;
 

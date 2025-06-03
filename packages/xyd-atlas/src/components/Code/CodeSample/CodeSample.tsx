@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useMemo} from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs"; // TODO: remove and use separation
 import {
     AnnotationHandler,

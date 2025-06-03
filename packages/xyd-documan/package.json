@@ -6,8 +6,7 @@
     "./package.json": "./package.json",
     ".": "./dist/index.js",
     "./dev": "./dist/dev.js",
-    "./build": "./dist/build.js",
-    "./serve": "./dist/serve.js"
+    "./build": "./dist/build.js"
   },
   "files": [
     "dist",
@@ -19,12 +18,17 @@
     "watch": "tsup --watch"
   },
   "dependencies": {
+    "@iconify/tools": "^4.1.2",
+    "@react-router/dev": "^7.5.0",
+    "@react-router/node": "^7.5.0",
+    "@react-router/serve": "^7.5.0",
+    "@svgr/core": "^8.1.0",
+    "@svgr/plugin-jsx": "^8.1.0",
     "@xyd-js/content": "workspace:*",
-    "@xyd-js/plugin-zero": "workspace:*",
-    "@react-router/dev": "7.1.1",
-    "@react-router/node": "7.1.1",
-    "@react-router/serve": "7.1.1",
-    "@xyd-js/react-router-dev": "7.1.1-xyd.4",
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/plugin-docs": "workspace:*",
+    "@xyd-js/plugins": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
     "codehike": "^1.0.3",
     "compression": "^1.7.5",
     "express": "^4.21.2",
@@ -33,14 +37,14 @@
     "isbot": "^5.1.17",
     "lightningcss": "^1.27.0",
     "morgan": "^1.10.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router": "7.1.1",
+    "react-router": "^7.5.0",
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.0",
     "remark-mdx-frontmatter": "^5.0.0",
     "source-map-support": "^0.5.21",
     "typescript": "^5.6.3",
+    "unplugin-auto-import": "^19.2.0",
+    "unplugin-icons": "^22.1.0",
     "vfile": "^6.0.3",
     "yaml": "^2.6.0"
   },
@@ -54,7 +58,7 @@
     "postcss": "^8.4.47",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",
-    "vite": "^5.4.9",
+    "vite": "^6.1.0",
     "vite-tsconfig-paths": "^5.0.1"
   }
 }

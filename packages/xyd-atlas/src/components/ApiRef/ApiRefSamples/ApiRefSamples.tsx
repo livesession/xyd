@@ -1,45 +1,55 @@
-import {Example, ExampleRoot} from "@xyd-js/uniform";
-import React, {useState} from "react";
+import React, {useState, useMemo} from "react";
 
-import {MDXReference} from "@/utils/mdx"
-import {CodeExampleButtons, CodeSample} from "@/components/Code";
-import type {MDXCodeSampleBlock} from "@/components/Code/CodeSample/CodeSample";
+import {ExampleRoot} from "@xyd-js/uniform";
+import {CodeSample, type CodeThemeBlockProps} from "@xyd-js/components/coder";
+
+import {CodeExampleButtons} from "@/components/Code";
+import {useSyntaxHighlight} from "@/components/Atlas/AtlasContext";
 
 import * as cn from "./ApiRefSamples.styles";
 
 export interface ApiRefSamplesProps {
-    examples: MDXReference<ExampleRoot>
+    examples: ExampleRoot
 }
 
 export function ApiRefSamples({examples}: ApiRefSamplesProps) {
-    return <div className={cn.ApiRefSamplesContainerHost}>
-        {
-            examples.groups?.map(({description, examples}, i) => {
-                const [activeExample, setActiveExample] = useState<MDXReference<Example> | null>(examples?.[0])
+    const syntaxHighlight = useSyntaxHighlight()
 
-                const codeblocks = activeExample?.codeblock?.tabs?.map(tab => {
-                    return tab.code as unknown as MDXCodeSampleBlock // TODO: because atlas use mdx uniform reference - we need to unify it !!!
-                })
+    return <atlas-apiref-samples className={cn.ApiRefSamplesContainerHost}>
+        {
+            examples.groups?.map(({description, examples: example}, i) => {
+                const [activeExampleIndex, setActiveExampleIndex] = useState(0)
+                const activeExample = example[activeExampleIndex]
+
+                const codeblocks = activeExample?.codeblock?.tabs?.map(tab => ({
+                    value: String(tab.code || ""),
+                    lang: String(tab.language || ""),
+                    meta: String(tab.context || ""),
+                    highlighted: tab.highlighted
+                } as CodeThemeBlockProps)) || []
 
                 return <div key={i} className={cn.ApiRefSamplesGroupHost}>
                     {
-                        examples?.length > 1
+                        example?.length > 1
                             ? <CodeExampleButtons
                                 activeExample={activeExample}
-                                examples={examples}
-                                onClick={(example) => {
-                                    setActiveExample(example)
+                                examples={example}
+                                onClick={(ex) => {
+                                    const index = example.findIndex(e => e === ex)
+                                    setActiveExampleIndex(index)
                                 }}
                             />
                             : null
                     }
                     <CodeSample
                         name={String(i)}
-                        description={description?.title || ""}
-                        codeblocks={codeblocks || []}
+                        description={description || ""}
+                        codeblocks={codeblocks}
+                        theme={syntaxHighlight || undefined}
+                        // controlByMeta
                     />
                 </div>
             })
         }
-    </div>
+    </atlas-apiref-samples>
 }

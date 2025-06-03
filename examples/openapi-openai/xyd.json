@@ -1,0 +1,73 @@
+{
+    "theme": {
+        "name": "poetry",
+        "logo": "/public/assets/logo.svg",
+        "favicon": "/public/assets/favicon.svg",
+        "maxTocDepth": 2
+    },
+    "integrations": {
+        "search": {
+            "orama": true
+        }
+    },
+    "navigation": {
+        "header": [
+            {
+                "name": "Docs",
+                "url": "/docs"
+            },
+            {
+                "name": "API Reference",
+                "url": "/docs/api-reference"
+            },
+            {
+                "sub": {
+                    "route": "/docs/api",
+                    "name": "API",
+                    "items": [
+                        {
+                            "name": "REST API",
+                            "url": "/docs/api"
+                        }
+                    ]
+                }
+            }
+        ],
+        "sidebar": [
+            {
+                "route": "docs",
+                "items": [
+                    {
+                        "group": "Get Started",
+                        "pages": [
+                            "docs/quickstart"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/api-reference",
+                "items": [
+                    {
+                        "group": "API Reference",
+                        "sort": 0,
+                        "pages": [
+                            "docs/api-reference/introduction"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "api": {
+        "openapi": {
+            "rest": {
+                "source": "./openapi.yaml",
+                "route": "docs/api-reference"
+            }
+        }
+    },
+    "plugins": [
+        "./plugins/pluginOasOpenai"
+    ]
+}

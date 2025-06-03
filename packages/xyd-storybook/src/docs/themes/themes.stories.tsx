@@ -6,7 +6,11 @@ import {
     LayoutPrimary
 } from '@xyd-js/components/layouts';
 
-import getContentComponents from "@xyd-js/components/content";
+import {ReactContent} from "@xyd-js/components/content";
+
+const reactContent = new ReactContent()
+const getContentComponents = reactContent.components
+
 import {
     Breadcrumbs,
     NavLinks
@@ -19,7 +23,7 @@ import {
 } from "@xyd-js/ui"
 
 import {LiveSessionPlatformLogo} from "./logo";
-import Content from "../../content/hello-world.mdx";
+import Content from "../../__fixtures__/hello-world.mdx";
 
 export default {
     title: 'Themes/Default',

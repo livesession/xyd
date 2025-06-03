@@ -1,0 +1,21 @@
+{
+    "entryPointStrategy": "packages",
+    "entryPoints": ["./xyd-core"],
+  
+    // rendering‐time only:
+    "out": "docs",
+    "includeVersion": true,
+    "hideGenerator": true,
+  
+    // everything below here is passed into each-package conversion:
+    "packageOptions": {
+      "exclude": ["**/*.test.ts", "**/*.test.tsx"],
+      "excludePrivate": true,
+      "excludeProtected": true,
+      "excludeExternals": true,
+      "skipErrorChecking": true,
+      "sort": ["source-order"],
+      "sortEntryPoints": false
+    }
+  }
+  

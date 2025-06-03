@@ -7,6 +7,7 @@ import {
 import {
     type Lines,
     type Tokens,
+    highlight as lighterAsync,
     highlightSync as lighter,
     LANG_NAMES,
     type Theme
@@ -35,6 +36,43 @@ export function highlight(
         lang: lighterLang,
         style
     } = lighter(data.value, lang, theme as any, {
+        annotations: [],
+        scopes: false // true for better token transitions, but breaks css themes
+    });
+
+    const tokens = joinLines(lines);
+    // split surrounding whitespace for each token
+    const splitTokens = splitWhitespace(tokens);
+    // join consecutive whitespace tokens
+    const joinedTokens = joinWhitespace(splitTokens);
+
+    return {
+        ...data,
+        code: data.value,
+        tokens: joinedTokens,
+        lang: lighterLang,
+        annotations: [], // TODO: in the future
+        // annotations: compatAnnotations(annotations),
+        themeName: typeof theme === 'string' ? theme : theme?.name || 'unknown',
+        style
+    };
+}
+
+export async function highlightAsync(
+    data: RawCode,
+    theme: Theme,
+    lang: string
+): Promise<HighlightedCode> {
+    if (!LANG_NAMES.includes(lang)) {
+        console.warn(`Unknown language "${lang}"`);
+        lang = 'txt';
+    }
+
+    const {
+        lines,
+        lang: lighterLang,
+        style
+    } = await lighterAsync(data.value, lang, theme as any, {
         annotations: [],
         scopes: false // true for better token transitions, but breaks css themes
     });

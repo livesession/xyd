@@ -1,0 +1,5 @@
+{
+  "jsonViews": [
+    "{\n    \"charset\": UTF-8,\n    \"robots\": index, follow // or \\noindex, nofollow\\\"\"\n}"
+  ]
+}

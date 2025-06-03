@@ -6,7 +6,8 @@ export const CodeSampleButtonsHost = css`
 `;
 
 export const CodeSampleButtonsContainer = css`
-    display: flex;
+    display: inline-flex;
+    width: 100%;
     align-items: center;
     border-radius: 8px;
     background-color: var(--XydAtlas-Component-Code-SampleButtons__color-containerBackground);
@@ -26,6 +27,7 @@ export const CodeSampleButtonsArrowIcon = css`
 export const CodeSampleButtonsScrollerHost = css`
     overflow-x: auto;
     flex-grow: 1;
+    font-weight: var(--xyd-font-weight-semibold);
 `;
 
 export const CodeSampleButtonsScrollerContainer = css`
@@ -36,11 +38,8 @@ export const CodeSampleButtonsScrollerContainer = css`
 `;
 
 export const CodeSampleButtonsButtonHost = css`
-    padding: 0.5rem 1rem;
+    padding: 4px 16px;
     border-radius: 0.375rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    font-weight: 500;
     white-space: nowrap;
     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

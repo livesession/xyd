@@ -1,107 +1,104 @@
-import {
-    GraphQLInputObjectType,
-    GraphQLObjectType,
-    GraphQLEnumType,
-    isSpecifiedScalarType,
-    isIntrospectionType
-} from "graphql";
-import {OperationTypeNode} from "graphql/language/ast";
+import fs from "node:fs";
 
-import {getDocumentLoaders, loadSchema} from "@graphql-markdown/graphql";
-import {GraphQLScalarType} from "@graphql-markdown/types";
+import {buildSchema, print} from "graphql";
+import {mergeTypeDefs} from '@graphql-tools/merge';
 
 import type {Reference} from "@xyd-js/uniform"
-import {ReferenceType} from "@xyd-js/uniform"
-import {gqlInputToUniformRef} from "./hydration/gql-input";
-import {gqlEnumToUniformRef, gqlScalarToUniformRef} from "./hydration/gql-types";
-import {gqlObjectToUniformRef} from "./hydration/gql-object";
-import {gqlOperationsToUniformRef} from "./utils";
+import {ReferenceType} from "@xyd-js/uniform";
+
+import type {GQLSchemaToReferencesOptions, OpenDocsSortConfig} from "./types";
+import {DEFAULT_SORT_ORDER} from "./types";
+import {graphqlTypesToUniformReferences} from "./converters/gql-types";
+import {graphqlQueriesToUniformReferences} from "./converters/gql-query";
+import {graphqlMutationsToUniformReferences} from "./converters/gql-mutation";
+import {openDocsExtensionsToOptions} from "./opendocs";
 
 // TODO: support multi graphql files
 // TODO: !!! CIRCULAR_DEPENDENCY !!!
 // TODO: sort by tag??
-
+// TODO: support subscriptions
 export async function gqlSchemaToReferences(
-    schemaLocation: string
+    schemaLocation: string | string[],
+    options?: GQLSchemaToReferencesOptions
 ): Promise<Reference[]> {
-    const loadersList = {
-        ["GraphQLFileLoader"]: "@graphql-tools/graphql-file-loader",
-    }
-    const loaders = await getDocumentLoaders(loadersList);
+    // 1. Convert schemaLocation to array
+    const schemaLocations = Array.isArray(schemaLocation) ? schemaLocation : [schemaLocation];
 
-    // @ts-ignore TODO: but ts works in @graphql-markdown/core
-    const schema = await loadSchema(schemaLocation as string, loaders);
-
-    const references: Reference[] = []
-
-    const queries = schema.getRootType(OperationTypeNode.QUERY)
-    const queryFields = queries?.getFields?.()
-
-    if (queryFields) {
-        references.push(...gqlOperationsToUniformRef(
-            ReferenceType.GRAPHQL_QUERY,
-            queryFields
-        ))
-    }
-
-    const mutations = schema.getRootType(OperationTypeNode.MUTATION)
-    const mutationFields = mutations?.getFields?.()
-
-    if (mutationFields) {
-        references.push(...gqlOperationsToUniformRef(
-            ReferenceType.GRAPHQL_MUTATION,
-            mutationFields
-        ))
-    }
-
-    const typeMap = schema.getTypeMap();
-
-    for (const gqlType of Object.values(typeMap)) {
-        const builtInType = isSpecifiedScalarType(gqlType) ||
-            isIntrospectionType(gqlType) ||
-            gqlType.name === "Mutation"
-
-        if (builtInType) {
-            continue;
+    // 2. Read all schema contents
+    const schemaContents = schemaLocations.map(location => {
+        if (fs.existsSync(location)) {
+            return fs.readFileSync(location, 'utf-8');
         }
+        return location;
+    });
 
-        switch (gqlType.constructor.name) {
-            case 'GraphQLObjectType': {
-                const type = gqlType as GraphQLObjectType;
+    // 3. Merge all schema contents
+    const mergedTypeDefs = mergeTypeDefs(schemaContents);
+    const schemaString = print(mergedTypeDefs);
 
-                references.push(gqlObjectToUniformRef(type))
+    // 4. Build the schema
+    const schema = buildSchema(schemaString, {
+        assumeValid: true
+    });
 
-                break
-            }
-
-            case 'GraphQLInputObjectType': {
-                const type = gqlType as GraphQLInputObjectType;
-
-                references.push(gqlInputToUniformRef(type))
-                break
-            }
-
-            case 'GraphQLEnumType': {
-                const type = gqlType as GraphQLEnumType;
-
-                references.push(gqlEnumToUniformRef(type))
-
-                break
-            }
-
-            case 'GraphQLScalarType': {
-                const type = gqlType as GraphQLScalarType
-
-                references.push(gqlScalarToUniformRef(type))
-
-                break
-            }
-
-            default: {
-                console.debug(`Unsupported type: ${gqlType.constructor.name}`)
-            }
-        }
+    if (!options) {
+        options = {}
     }
+
+    options = {
+        ...options,
+        ...openDocsExtensionsToOptions(schema)
+    }
+
+    // 5. Generate uniform references from the schema
+    const references = [
+        // types
+        ...graphqlTypesToUniformReferences(schema, options),
+
+        // queries
+        ...graphqlQueriesToUniformReferences(schema, options),
+
+        // mutations
+        ...graphqlMutationsToUniformReferences(schema, options),
+
+        // subscriptions TODO: finish
+    ]
+
+    // Sort references using provided sort config or defaults
+    const sortConfig = options.sort ?? DEFAULT_SORT_ORDER;
+    references.sort((a, b) => {
+        const aType = a.type?.toString() ?? '';
+        const bType = b.type?.toString() ?? '';
+        const aOrder = getTypeOrder(aType, sortConfig);
+        const bOrder = getTypeOrder(bType, sortConfig);
+        return aOrder - bOrder;
+    });
 
     return references
 }
+
+function getTypeOrder(type: string, sortConfig: OpenDocsSortConfig): number {
+    switch (type) {
+        case ReferenceType.GRAPHQL_QUERY:
+            return sortConfig.queries ?? DEFAULT_SORT_ORDER.queries!;
+        case ReferenceType.GRAPHQL_MUTATION:
+            return sortConfig.mutations ?? DEFAULT_SORT_ORDER.mutations!;
+        case ReferenceType.GRAPHQL_SUBSCRIPTION:
+            return sortConfig.subscriptions ?? DEFAULT_SORT_ORDER.subscriptions!;
+        case ReferenceType.GRAPHQL_INTERFACE:
+            return sortConfig.interfaces ?? DEFAULT_SORT_ORDER.interfaces!;
+        case ReferenceType.GRAPHQL_OBJECT:
+            return sortConfig.objects ?? DEFAULT_SORT_ORDER.objects!;
+        case ReferenceType.GRAPHQL_INPUT:
+            return sortConfig.inputObjects ?? DEFAULT_SORT_ORDER.inputObjects!;
+        case ReferenceType.GRAPHQL_UNION:
+            return sortConfig.unions ?? DEFAULT_SORT_ORDER.unions!;
+        case ReferenceType.GRAPHQL_ENUM:
+            return sortConfig.enums ?? DEFAULT_SORT_ORDER.enums!;
+        case ReferenceType.GRAPHQL_SCALAR:
+            return sortConfig.scalars ?? DEFAULT_SORT_ORDER.scalars!;
+        default:
+            return Number.MAX_SAFE_INTEGER;
+    }
+}
+

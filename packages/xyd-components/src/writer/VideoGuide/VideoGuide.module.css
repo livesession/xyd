@@ -1,0 +1,105 @@
+@layer defaults {
+    .VideoPlayerHost {
+        z-index: var(--xyd-videoguide-miniature-z-index);
+        width: var(--xyd-videoguide-miniature-mini-width);
+        height: var(--xyd-videoguide-miniature-mini-height);
+        overflow: visible;
+
+        [part="shape"] {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+            box-shadow: var(--xyd-videoguide-miniature-shadow);
+            border-radius: var(--xyd-videoguide-miniature-radius);
+            box-sizing: border-box;
+            background-color: var(--xyd-videoguide-miniature-bgcolor);
+        }
+
+        [part="frame"] {
+            position: relative;
+            width: 100%;
+            height: var(--xyd-videoguide-miniature-mini-height);
+
+            background-color: var(--xyd-videoguide-miniature-bgcolor);
+            overflow: hidden;
+            border-radius: var(--xyd-videoguide-miniature-radius);
+            box-sizing: border-box;
+        }
+
+        [part="thumbnail"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url(https://xyd-land.netlify.app/docs-hero.png);
+            background-size: cover;
+            background-position: center;
+        }
+
+        [part="cover"] {
+            background-color: transparent;
+            backdrop-filter: brightness(60%) blur(10px);
+            -webkit-backdrop-filter: brightness(60%) blur(10px);
+
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            transition: backdrop-filter .1s ease-in-out, -webkit-backdrop-filter .1s ease-in-out, opacity .1s ease-in-out, background-color .1s ease-in-out;
+
+            overflow: hidden;
+
+            border-radius: var(--xyd-videoguide-miniature-radius);
+            box-sizing: border-box;
+        }
+
+        [part="controls"] {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            box-sizing: border-box;
+        }
+
+        [part="button"] {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        [part="icon"] {
+            color: var(--xyd-videoguide-miniature-color);
+            display: flex;
+            box-sizing: border-box;
+
+            svg {
+                fill: currentColor;
+            }
+        }
+
+        [part="description"] {
+            box-sizing: border-box;
+            margin-top: 8px;
+        }
+
+        [part="description-container"] {
+            box-sizing: border-box;
+            margin-top: 8px;
+        }
+
+        [part="description"] {
+            text-align: center;
+            color: var(--xyd-videoguide-miniature-color);
+            display: block;
+            white-space: normal;
+        }
+    }
+}

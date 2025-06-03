@@ -8,6 +8,7 @@ export {
     Code,
     CodeLoader,
 
+    highlightAsync,
     highlight
 } from "./Code"
 //
@@ -27,7 +28,6 @@ export {
 export type {CodeThemeProps, CodeThemeBlockProps} from "./CodeTheme";
 export {
     CodeTheme,
-    CodeThemeCSR,
 
     useCodeTheme
 } from "./CodeTheme";

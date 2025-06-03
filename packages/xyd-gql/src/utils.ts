@@ -1,100 +1,25 @@
-import {GraphQLFieldMap} from "graphql/type";
-import {
-    Reference,
-    ReferenceCategory,
-    ReferenceType,
-    ExampleGroup,
-    Definition,
-    Example,
-} from "@xyd-js/uniform";
+/**
+ * Helper function to filter fields based on region patterns
+ * @param fields - The fields to filter
+ * @param prefix - The prefix for the region key (e.g., "Query" or "Mutation")
+ * @param regions - The regions to filter by
+ * @returns Filtered fields object
+ */
+export function filterFieldsByRegions<T>(
+    fields: Record<string, T>,
+    prefix: string,
+    regions?: string[]
+): Record<string, T> {
+    if (!regions || regions.length === 0) {
+        return fields;
+    }
 
-import {gqlArgToUniformDefinitionProperty} from "./hydration/gql-arg";
-import {gqlFieldToUniformDefinitionProperty} from "./hydration/gql-field";
-import {simpleGraphqlExample} from "./samples";
-
-// gqlOperationsToUniformRef is a helper function to create a list of xyd reference for a GraphQL query or mutation.
-export function gqlOperationsToUniformRef(
-    operationType: ReferenceType.GRAPHQL_MUTATION | ReferenceType.GRAPHQL_QUERY,
-    fieldsMap: GraphQLFieldMap<any, any>
-) {
-    const references: Reference[] = []
-
-    for (const [operationName, operationField] of Object.entries(fieldsMap)) {
-        const definitions: Definition[] = []
-
-        const args = gqlArgToUniformDefinitionProperty(operationField.args)
-        const returns = gqlFieldToUniformDefinitionProperty(operationName, operationField)
-        const returnProperties = returns.properties || []
-
-        definitions.push({
-            title: "Arguments",
-            properties: args,
-        })
-        definitions.push({
-            title: "Returns",
-            properties: returnProperties
-        })
-
-        const exampleQuery = simpleGraphqlExample(
-            operationType,
-            operationName,
-            args,
-            returnProperties
-        )
-        const examples: Example[] = [
-            {
-                codeblock: {
-                    tabs: [
-                        {
-                            title: "graphql",
-                            language: "graphql",
-                            code: exampleQuery,
-                        }
-                    ]
-                }
-            }
-        ]
-
-        const exampleGroup = {
-            description: "Example request",
-            examples,
+    const filteredFields: Record<string, T> = {};
+    for (const [fieldName, field] of Object.entries(fields)) {
+        const regionKey = `${prefix}.${fieldName}`;
+        if (regions.some(region => region === regionKey)) {
+            filteredFields[fieldName] = field;
         }
-
-        let description = operationField.description || ""
-
-        references.push(graphqlReference(
-            operationType,
-            operationName,
-            operationName,
-            description,
-            [exampleGroup],
-            definitions,
-        ))
     }
-
-    return references
-}
-
-// graphqlReference is a helper function to create a Reference object for a GraphQL query or mutation.
-function graphqlReference(
-    operationType: ReferenceType.GRAPHQL_QUERY | ReferenceType.GRAPHQL_MUTATION,
-    title: string,
-    canonical: string,
-    description: string,
-    examples: ExampleGroup[],
-    definitions: Definition[],
-): Reference {
-    return {
-        title,
-        canonical,
-        description,
-
-        category: ReferenceCategory.GRAPHQL,
-        type: operationType,
-
-        examples: {
-            groups: examples,
-        },
-        definitions,
-    }
+    return filteredFields;
 }

@@ -1,0 +1,191 @@
+{
+    "type": "root",
+    "children": [
+        {
+            "type": "heading",
+            "depth": 1,
+            "children": [
+                {
+                    "type": "text",
+                    "value": "Heading 1",
+                    "position": {
+                        "start": {
+                            "line": 1,
+                            "column": 3,
+                            "offset": 2
+                        },
+                        "end": {
+                            "line": 1,
+                            "column": 12,
+                            "offset": 11
+                        }
+                    }
+                }
+            ],
+            "position": {
+                "start": {
+                    "line": 1,
+                    "column": 1,
+                    "offset": 0
+                },
+                "end": {
+                    "line": 1,
+                    "column": 12,
+                    "offset": 11
+                }
+            }
+        },
+        {
+            "type": "outputVars",
+            "name": "example",
+            "attributes": {},
+            "children": [
+                {
+                    "type": "code",
+                    "lang": "bash",
+                    "meta": "npm",
+                    "value": "npm i -g xyd-js",
+                    "position": {
+                        "start": {
+                            "line": 5,
+                            "column": 3,
+                            "offset": 27
+                        },
+                        "end": {
+                            "line": 7,
+                            "column": 6,
+                            "offset": 62
+                        }
+                    }
+                },
+                {
+                    "type": "code",
+                    "lang": "bash",
+                    "meta": "yarn",
+                    "value": "yarn global add xyd-js",
+                    "position": {
+                        "start": {
+                            "line": 9,
+                            "column": 3,
+                            "offset": 66
+                        },
+                        "end": {
+                            "line": 11,
+                            "column": 6,
+                            "offset": 109
+                        }
+                    }
+                },
+                {
+                    "type": "code",
+                    "lang": "bash",
+                    "meta": "pnpm",
+                    "value": "pnpm add -g xyd-js",
+                    "position": {
+                        "start": {
+                            "line": 13,
+                            "column": 3,
+                            "offset": 113
+                        },
+                        "end": {
+                            "line": 15,
+                            "column": 6,
+                            "offset": 152
+                        }
+                    }
+                }
+            ],
+            "position": {
+                "start": {
+                    "line": 4,
+                    "column": 1,
+                    "offset": 14
+                },
+                "end": {
+                    "line": 16,
+                    "column": 4,
+                    "offset": 156
+                }
+            }
+        },
+        {
+            "type": "heading",
+            "depth": 2,
+            "children": [
+                {
+                    "type": "text",
+                    "value": "Heading 2",
+                    "position": {
+                        "start": {
+                            "line": 18,
+                            "column": 4,
+                            "offset": 161
+                        },
+                        "end": {
+                            "line": 18,
+                            "column": 13,
+                            "offset": 170
+                        }
+                    }
+                }
+            ],
+            "position": {
+                "start": {
+                    "line": 18,
+                    "column": 1,
+                    "offset": 158
+                },
+                "end": {
+                    "line": 18,
+                    "column": 13,
+                    "offset": 170
+                }
+            }
+        },
+        {
+            "type": "paragraph",
+            "children": [
+                {
+                    "type": "text",
+                    "value": "Lorem ipsum",
+                    "position": {
+                        "start": {
+                            "line": 20,
+                            "column": 1,
+                            "offset": 172
+                        },
+                        "end": {
+                            "line": 20,
+                            "column": 12,
+                            "offset": 183
+                        }
+                    }
+                }
+            ],
+            "position": {
+                "start": {
+                    "line": 20,
+                    "column": 1,
+                    "offset": 172
+                },
+                "end": {
+                    "line": 20,
+                    "column": 12,
+                    "offset": 183
+                }
+            }
+        }
+    ],
+    "position": {
+        "start": {
+            "line": 1,
+            "column": 1,
+            "offset": 0
+        },
+        "end": {
+            "line": 23,
+            "column": 1,
+            "offset": 186
+        }
+    }
+}

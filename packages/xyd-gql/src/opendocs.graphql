@@ -1,0 +1,36 @@
+directive @opendocs(
+    group: [String!],
+    example: OpenDocsExampleInput
+) on QUERY |
+    FIELD_DEFINITION |
+    MUTATION |
+    SUBSCRIPTION |
+    OBJECT |
+    INPUT_OBJECT |
+    ENUM |
+    SCALAR
+
+directive @od_schema(
+    flattenTypes: Boolean!
+    sort: OpenDocsSortInput
+) on SCHEMA
+
+# TODO: finish
+input OpenDocsExampleInput {
+    """
+    The name of the code
+    """
+    code: String!
+}
+
+input OpenDocsSortInput {
+    queries: Int
+    mutations: Int
+    subscriptions: Int
+    interfaces: Int
+    objects: Int
+    inputObjects: Int
+    unions: Int
+    enums: Int
+    scalars: Int
+}

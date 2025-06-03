@@ -1,0 +1,131 @@
+# Function `gqlSchemaToReferences`
+
+:::code-group
+```ts
+function gqlSchemaToReferences(
+    schemaLocation: string
+): Promise<Reference[]>
+```
+:::
+
+Converts a GraphQL schema file to a list of uniform references.
+
+:::Details{kind="tertiary" title="<>Source code in <code>src/hello.ts</code></>" icon="<IconQuote/>"}
+```ts {from="index.ts"}
+export async function gqlSchemaToReferences(
+    schemaLocation: string
+): Promise<Reference[]> {
+    const loadersList = {
+        ["GraphQLFileLoader"]: "@graphql-tools/graphql-file-loader",
+    }
+    const loaders = await getDocumentLoaders(loadersList);
+
+    // @ts-ignore TODO: but ts works in @graphql-markdown/core
+    const schema = await loadSchema(schemaLocation as string, loaders);
+
+    const references: Reference[] = []
+
+    const queries = schema.getRootType(OperationTypeNode.QUERY)
+    const queryFields = queries?.getFields?.()
+
+    if (queryFields) {
+        references.push(...gqlOperationsToUniformRef(
+            ReferenceType.GRAPHQL_QUERY,
+            queryFields
+        ))
+    }
+
+    const mutations = schema.getRootType(OperationTypeNode.MUTATION)
+    const mutationFields = mutations?.getFields?.()
+
+    if (mutationFields) {
+        references.push(...gqlOperationsToUniformRef(
+            ReferenceType.GRAPHQL_MUTATION,
+            mutationFields
+        ))
+    }
+
+    const typeMap = schema.getTypeMap();
+
+    for (const gqlType of Object.values(typeMap)) {
+        const builtInType = isSpecifiedScalarType(gqlType) ||
+            isIntrospectionType(gqlType) ||
+            gqlType.name === "Mutation"
+
+        if (builtInType) {
+            continue;
+        }
+
+        switch (gqlType.constructor.name) {
+            case 'GraphQLObjectType': {
+                const type = gqlType as GraphQLObjectType;
+
+                references.push(gqlObjectToUniformRef(type))
+
+                break
+            }
+
+            case 'GraphQLInputObjectType': {
+                const type = gqlType as GraphQLInputObjectType;
+
+                references.push(gqlInputToUniformRef(type))
+                break
+            }
+
+            case 'GraphQLEnumType': {
+                const type = gqlType as GraphQLEnumType;
+
+                references.push(gqlEnumToUniformRef(type))
+
+                break
+            }
+
+            case 'GraphQLScalarType': {
+                const type = gqlType as GraphQLScalarType
+
+                references.push(gqlScalarToUniformRef(type))
+
+                break
+            }
+
+            default: {
+                console.debug(`Unsupported type: ${gqlType.constructor.name}`)
+            }
+        }
+    }
+
+    return references
+}
+```
+:::
+
+:::Table
+```ts
+[
+    ["See also", ""],
+    ["[`@xyd-js/atlas`](#)", ""]
+]
+```
+:::
+
+## Parameters
+:::Table
+```ts
+[
+    ["Name", "Type", "Description"],
+    ["`schemaLocation`", "`string`", "The location of the GraphQL schema file."]
+]
+```
+:::
+
+## Returns
+:::Table
+```ts
+[
+    ["Type", "Description"],
+    ["`Promise<Resolve[]>`", "The list of uniform references."]
+]
+```
+:::
+
+

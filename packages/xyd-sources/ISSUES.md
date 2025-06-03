@@ -1,0 +1,1 @@
+1. for some reason tsconfig passing to typedoc does not respect that (still respect tsconfig.json more)

@@ -1,0 +1,31 @@
+{
+  "name": "@xyd-js/context",
+  "version": "0.1.0-xyd.0",
+  "description": "shared xyd context",
+  "main": "./dist/index.js",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "clean": "rimraf build",
+    "prebuild": "pnpm clean",
+    "build": "tsup",
+    "watch": "tsup --watch",
+    "test": "vitest",
+    "test:watch": "vitest watch"
+  },
+  "dependencies": {
+    "@xyd-js/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.3",
+    "@types/node": "^22.14.1",
+    "@vitest/coverage-v8": "^1.3.1",
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0",
+    "typescript": "^4.5.5",
+    "vitest": "^1.3.1"
+  }
+} 

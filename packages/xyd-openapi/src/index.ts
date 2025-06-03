@@ -1,13 +1,15 @@
 export * from "./const"
 
-export * from "./parameters"
+export * from "./converters/oas-parameters"
 
-export * from "./properties"
+export * from "./converters/oas-paths"
 
-export * from "./requestBody"
+export * from "./oas-core"
 
-export * from "./responses"
+export * from "./converters/oas-requestBody"
 
-export * from "./schema"
+export * from "./converters/oas-responses"
+
+export * from "./converters/oas-schema"
 
 export * from "./utils"

@@ -1,0 +1,52 @@
+{
+    "theme": {
+        "name": "opener",
+        "maxTocDepth": 2
+    },
+    "integrations": {
+        "search": {
+            "orama": true
+        }
+    },
+    "navigation": {
+        "header": [
+            {
+                "name": "Docs",
+                "url": "/docs"
+            },
+            {
+                "name": "API Reference",
+                "url": "/docs/api-reference"
+            }
+        ],
+        "sidebar": [
+            {
+                "route": "docs",
+                "items": [
+                    {
+                        "group": "Get Started",
+                        "pages": [
+                            "docs/overview"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/api-reference",
+                "items": [
+                    {
+                        
+                    }
+                ]
+            }
+        ]
+    },
+    "api": {
+        "graphql": {
+            "graphql": {
+                "source": "./schema.graphql",
+                "route": "docs/api-reference"
+            }
+        }
+    }
+}

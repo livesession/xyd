@@ -3,14 +3,12 @@ import {ChevronLeft, ChevronRight} from "lucide-react"
 
 import {Example} from "@xyd-js/uniform";
 
-import {MDXReference, mdxValue} from "@/utils/mdx";
-
 import * as cn from "./CodeSampleButtons.styles";
 
 export interface CodeExampleButtonsProps {
-    examples: MDXReference<Example[]>
-    activeExample: MDXReference<Example> | null
-    onClick: (example: MDXReference<Example>) => void
+    examples: Example[]
+    activeExample: Example | null
+    onClick: (example: Example) => void
 }
 
 export function CodeExampleButtons({examples, activeExample, onClick}: CodeExampleButtonsProps) {
@@ -63,7 +61,7 @@ export function CodeExampleButtons({examples, activeExample, onClick}: CodeExamp
                                 example={example}
                                 activeExample={activeExample}
                             >
-                                {mdxValue(example.codeblock.title || null)}
+                                {(example.codeblock.title || null)}
                             </SampleButton>
                         ))}
                     </div>
@@ -84,8 +82,8 @@ export function CodeExampleButtons({examples, activeExample, onClick}: CodeExamp
 function SampleButton({onClick, children, activeExample, example}: {
     onClick: () => void,
     children: React.ReactNode,
-    example: MDXReference<Example>,
-    activeExample: MDXReference<Example> | null,
+    example: Example,
+    activeExample: Example | null,
 }) {
     const markExampleAsActive = (activeExample?.description && activeExample?.description === example?.description) ||
         (activeExample?.codeblock?.title && activeExample?.codeblock?.title === example.codeblock.title)

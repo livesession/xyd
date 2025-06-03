@@ -1,11 +1,17 @@
 import React, {useState} from 'react';
 import type {Meta} from '@storybook/react';
+import {MemoryRouter} from "react-router";
 
 import {UISidebar} from '@xyd-js/ui';
-import {Layout} from "@xyd-js/components/layouts";
+import {LayoutPrimary} from "@xyd-js/components/layouts";
 
 export default {
     title: 'UI/Sidebar',
+    decorators: [
+        (Story) => <MemoryRouter>
+            <Story />
+        </MemoryRouter>,
+    ],
 } as Meta;
 
 export const Default = () => {
@@ -14,7 +20,7 @@ export const Default = () => {
         paddingTop: "0px",
         margin: "0 auto",
     }}>
-        <Layout
+        <LayoutPrimary
             header={<></>}
             aside={<DemoSidebar/>}
             content={<></>}

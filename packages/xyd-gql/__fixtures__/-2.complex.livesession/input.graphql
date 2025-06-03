@@ -1,0 +1,23 @@
+extend schema @od_schema(
+    flattenTypes: true
+)
+
+input BookCreateDetailsInput {
+    date: String
+}
+
+input BookCreateInput {
+    title: String!
+
+    details: BookCreateDetailsInput!
+}
+
+type Book {
+    id: ID!
+
+    title: String!
+}
+
+type Mutation {
+    bookCreate(input: BookCreateInput!): Book!
+}

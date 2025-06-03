@@ -1,0 +1,733 @@
+[
+  {
+    "title": "Interface MetaTags",
+    "canonical": "@xyd-sources-examples/package-a/interfaces/MetaTags",
+    "description": "Interface representing all possible meta tags that can be used in HTML documents.\nThis includes standard meta tags, Open Graph tags, Twitter cards, and various other\nspecialized meta tags for different content types.\n",
+    "context": {
+      "symbolId": "88",
+      "symbolName": "MetaTags",
+      "symbolKind": 256,
+      "packageName": "@xyd-sources-examples/package-a",
+      "fileName": "index.ts",
+      "fileFullPath": "src/index.ts",
+      "line": 8,
+      "col": 17,
+      "signatureText": {
+        "code": "export interface MetaTags {\n}",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export interface MetaTags {\n    //\n    // Standard\n    //\n\n    /** Standard meta tag for controlling search engine crawling and indexing\n     * @example \"index, follow\"\n     * @example \"noindex, nofollow\"\n     */\n    robots: string;\n\n    /** Character encoding for the document\n     * @example \"UTF-8\"\n     */\n    charset: string;\n\n    /** Viewport settings for responsive design\n     * @example \"width=device-width, initial-scale=1\"\n     * @example \"width=device-width, initial-scale=1, maximum-scale=1\"\n     */\n    viewport: string;\n\n    /** Brief description of the page content\n     * @example \"A comprehensive guide to web development\"\n     */\n    description: string;\n\n    /** Keywords relevant to the page content\n     * @example \"web development, javascript, typescript\"\n     */\n    keywords: string;\n\n    /** Author of the page content\n     * @example \"John Doe\"\n     */\n    author: string;\n\n    /** Google-specific crawling instructions\n     * @example \"index, follow\"\n     * @example \"noarchive\"\n     */\n    googlebot: string;\n\n    /** Google-specific settings\n     * @example \"notranslate\"\n     */\n    google: string;\n\n    /** Google Search Console verification token\n     * @example \"verification_token\"\n     */\n    \"google-site-verification\": string;\n\n    /** Software used to generate the page\n     * @example \"Next.js\"\n     * @example \"WordPress\"\n     */\n    generator: string;\n\n    /** Theme color for browser UI\n     * @example \"#ffffff\"\n     * @example \"#000000\"\n     */\n    \"theme-color\": string;\n\n    /** Color scheme preference\n     * @example \"light dark\"\n     * @example \"light\"\n     */\n    \"color-scheme\": string;\n\n    /** Format detection settings\n     * @example \"telephone=no\"\n     * @example \"date=no\"\n     */\n    \"format-detection\": string;\n\n    /** Referrer policy\n     * @example \"origin\"\n     * @example \"no-referrer\"\n     */\n    referrer: string;\n\n    /** Page refresh settings\n     * @example \"0;url=https://example.com\"\n     */\n    refresh: string;\n\n    /** Content rating\n     * @example \"general\"\n     * @example \"mature\"\n     */\n    rating: string;\n\n    /** Crawl frequency suggestion\n     * @example \"7 days\"\n     */\n    \"revisit-after\": string;\n\n    /** Page language\n     * @example \"en-US\"\n     * @example \"fr-FR\"\n     */\n    language: string;\n\n    /** Copyright information\n     * @example \"Copyright 2024\"\n     */\n    copyright: string;\n\n    /** Reply-to email address\n     * @example \"contact@example.com\"\n     */\n    \"reply-to\": string;\n\n    /** Content distribution scope\n     * @example \"global\"\n     */\n    distribution: string;\n\n    /** Content coverage area\n     * @example \"Worldwide\"\n     */\n    coverage: string;\n\n    /** Content category\n     * @example \"Technology\"\n     */\n    category: string;\n\n    /** Target audience\n     * @example \"all\"\n     */\n    target: string;\n\n    /** Mobile device compatibility\n     * @example \"true\"\n     */\n    HandheldFriendly: string;\n\n    /** Mobile optimization settings\n     * @example \"width\"\n     */\n    MobileOptimized: string;\n\n    //\n    // Apple\n    //\n\n    /** iOS web app capability\n     * @example \"yes\"\n     */\n    \"apple-mobile-web-app-capable\": string;\n\n    /** iOS status bar style\n     * @example \"black\"\n     * @example \"black-translucent\"\n     */\n    \"apple-mobile-web-app-status-bar-style\": string;\n\n    /** iOS web app title\n     * @example \"App Name\"\n     */\n    \"apple-mobile-web-app-title\": string;\n\n    /** Web application name\n     * @example \"My App\"\n     */\n    \"application-name\": string;\n\n    //\n    // Windows\n    //\n\n    /** Windows tile color\n     * @example \"#2b5797\"\n     */\n    \"msapplication-TileColor\": string;\n\n    /** Windows tile image\n     * @example \"/mstile-144x144.png\"a\n     */\n    \"msapplication-TileImage\": string;\n\n    /** Windows browser config\n     * @example \"/browserconfig.xml\"\n     */\n    \"msapplication-config\": string;\n\n    //\n    // Open Graph\n    //\n\n    /** Open Graph title\n     * @example \"Page Title\"\n     */\n    \"og:title\": string;\n\n    /** Open Graph content type\n     * @example \"website\"\n     * @example \"article\"\n     */\n    \"og:type\": string;\n\n    /** Open Graph URL\n     * @example \"https://example.com\"\n     */\n    \"og:url\": string;\n\n    /** Open Graph image\n     * @example \"https://example.com/image.jpg\"\n     */\n    \"og:image\": string;\n\n    /** Open Graph description\n     * @example \"A brief description for social media\"\n     */\n    \"og:description\": string;\n\n    /** Open Graph site name\n     * @example \"Site Name\"\n     */\n    \"og:site_name\": string;\n\n    /** Open Graph locale\n     * @example \"en_US\"\n     */\n    \"og:locale\": string;\n\n    /** Open Graph video\n     * @example \"https://example.com/video.mp4\"\n     */\n    \"og:video\": string;\n\n    /** Open Graph audio\n     * @example \"https://example.com/audio.mp3\"\n     */\n    \"og:audio\": string;\n\n    //\n    // Twitter\n    //\n\n    /** Twitter card type\n     * @example \"summary_large_image\"\n     * @example \"summary\"\n     */\n    \"twitter:card\": string;\n\n    /** Twitter site handle\n     * @example \"@username\"\n     */\n    \"twitter:site\": string;\n\n    /** Twitter creator handle\n     * @example \"@author\"\n     */\n    \"twitter:creator\": string;\n\n    /** Twitter title\n     * @example \"Page Title\"\n     */\n    \"twitter:title\": string;\n\n    /** Twitter description\n     * @example \"A brief description for Twitter\"\n     */\n    \"twitter:description\": string;\n\n    /** Twitter image\n     * @example \"https://example.com/image.jpg\"\n     */\n    \"twitter:image\": string;\n\n    /** Twitter image alt text\n     * @example \"Image description\"\n     */\n    \"twitter:image:alt\": string;\n\n    /** Twitter player URL\n     * @example \"https://example.com/player\"\n     */\n    \"twitter:player\": string;\n\n    /** Twitter player width\n     * @example \"480\"\n     */\n    \"twitter:player:width\": string;\n\n    /** Twitter player height\n     * @example \"480\"\n     */\n    \"twitter:player:height\": string;\n\n    /** Twitter iOS app name\n     * @example \"App Name\"\n     */\n    \"twitter:app:name:iphone\": string;\n\n    /** Twitter iOS app ID\n     * @example \"123456789\"\n     */\n    \"twitter:app:id:iphone\": string;\n\n    /** Twitter iOS app URL\n     * @example \"app://\"\n     */\n    \"twitter:app:url:iphone\": string;\n\n    //\n    // Article\n    //\n\n    /** Article publication time\n     * @example \"2024-03-20T12:00:00Z\"\n     */\n    \"article:published_time\": string;\n\n    /** Article modification time\n     * @example \"2024-03-21T15:30:00Z\"\n     */\n    \"article:modified_time\": string;\n\n    /** Article expiration time\n     * @example \"2024-04-20T12:00:00Z\"\n     */\n    \"article:expiration_time\": string;\n\n    /** Article author\n     * @example \"John Doe\"\n     */\n    \"article:author\": string;\n\n    /** Article section\n     * @example \"Technology\"\n     */\n    \"article:section\": string;\n\n    /** Article tags\n     * @example \"Web Development\"\n     */\n    \"article:tag\": string;\n\n    //\n    // Book\n    //\n\n    /** Book author\n     * @example \"Jane Smith\"\n     */\n    \"book:author\": string;\n\n    /** Book ISBN\n     * @example \"978-3-16-148410-0\"\n     */\n    \"book:isbn\": string;\n\n    /** Book release date\n     * @example \"2024-01-01\"\n     */\n    \"book:release_date\": string;\n\n    /** Book tags\n     * @example \"Fiction\"\n     */\n    \"book:tag\": string;\n\n    //\n    // Profile\n    //\n\n    /** Profile first name\n     * @example \"John\"\n     */\n    \"profile:first_name\": string;\n\n    /** Profile last name\n     * @example \"Doe\"\n     */\n    \"profile:last_name\": string;\n\n    /** Profile username\n     * @example \"johndoe\"\n     */\n    \"profile:username\": string;\n\n    /** Profile gender\n     * @example \"male\"\n     */\n    \"profile:gender\": string;\n\n    //\n    // Music\n    //\n\n    /** Music duration in seconds\n     * @example \"180\"\n     */\n    \"music:duration\": string;\n\n    /** Music album name\n     * @example \"Album Name\"\n     */\n    \"music:album\": string;\n\n    /** Music album disc number\n     * @example \"1\"\n     */\n    \"music:album:disc\": string;\n\n    /** Music album track number\n     * @example \"1\"\n     */\n    \"music:album:track\": string;\n\n    /** Music musician/artist\n     * @example \"Artist Name\"\n     */\n    \"music:musician\": string;\n\n    /** Music song name\n     * @example \"Song Name\"\n     */\n    \"music:song\": string;\n\n    /** Music song disc number\n     * @example \"1\"\n     */\n    \"music:song:disc\": string;\n\n    /** Music song track number\n     * @example \"1\"\n     */\n    \"music:song:track\": string;\n\n    //\n    // Video\n    //\n\n    /** Video actor name\n     * @example \"Actor Name\"\n     */\n    \"video:actor\": string;\n\n    /** Video actor role\n     * @example \"Character Name\"\n     */\n    \"video:actor:role\": string;\n\n    /** Video director\n     * @example \"Director Name\"\n     */\n    \"video:director\": string;\n\n    /** Video writer\n     * @example \"Writer Name\"\n     */\n    \"video:writer\": string;\n\n    /** Video duration in seconds\n     * @example \"120\"\n     */\n    \"video:duration\": string;\n\n    /** Video release date\n     * @example \"2024-01-01\"\n     */\n    \"video:release_date\": string;\n\n    /** Video tags\n     * @example \"Action\"\n     */\n    \"video:tag\": string;\n\n    /** Video series name\n     * @example \"Series Name\"\n     */\n    \"video:series\": string;\n}",
+        "lang": "ts"
+      },
+      "group": [
+        "@xyd-sources-examples",
+        "package-a",
+        "Interfaces"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Properties",
+        "properties": [
+          {
+            "name": "robots",
+            "type": "string",
+            "description": "Standard meta tag for controlling search engine crawling and indexing\n",
+            "examples": [
+              "\"index, follow\"",
+              "\"noindex, nofollow\""
+            ]
+          },
+          {
+            "name": "charset",
+            "type": "string",
+            "description": "Character encoding for the document\n",
+            "examples": [
+              "\"UTF-8\""
+            ]
+          },
+          {
+            "name": "viewport",
+            "type": "string",
+            "description": "Viewport settings for responsive design\n",
+            "examples": [
+              "\"width=device-width, initial-scale=1\"",
+              "\"width=device-width, initial-scale=1, maximum-scale=1\""
+            ]
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "Brief description of the page content\n",
+            "examples": [
+              "\"A comprehensive guide to web development\""
+            ]
+          },
+          {
+            "name": "keywords",
+            "type": "string",
+            "description": "Keywords relevant to the page content\n",
+            "examples": [
+              "\"web development, javascript, typescript\""
+            ]
+          },
+          {
+            "name": "author",
+            "type": "string",
+            "description": "Author of the page content\n",
+            "examples": [
+              "\"John Doe\""
+            ]
+          },
+          {
+            "name": "googlebot",
+            "type": "string",
+            "description": "Google-specific crawling instructions\n",
+            "examples": [
+              "\"index, follow\"",
+              "\"noarchive\""
+            ]
+          },
+          {
+            "name": "google",
+            "type": "string",
+            "description": "Google-specific settings\n",
+            "examples": [
+              "\"notranslate\""
+            ]
+          },
+          {
+            "name": "google-site-verification",
+            "type": "string",
+            "description": "Google Search Console verification token\n",
+            "examples": [
+              "\"verification_token\""
+            ]
+          },
+          {
+            "name": "generator",
+            "type": "string",
+            "description": "Software used to generate the page\n",
+            "examples": [
+              "\"Next.js\"",
+              "\"WordPress\""
+            ]
+          },
+          {
+            "name": "theme-color",
+            "type": "string",
+            "description": "Theme color for browser UI\n",
+            "examples": [
+              "\"#ffffff\"",
+              "\"#000000\""
+            ]
+          },
+          {
+            "name": "color-scheme",
+            "type": "string",
+            "description": "Color scheme preference\n",
+            "examples": [
+              "\"light dark\"",
+              "\"light\""
+            ]
+          },
+          {
+            "name": "format-detection",
+            "type": "string",
+            "description": "Format detection settings\n",
+            "examples": [
+              "\"telephone=no\"",
+              "\"date=no\""
+            ]
+          },
+          {
+            "name": "referrer",
+            "type": "string",
+            "description": "Referrer policy\n",
+            "examples": [
+              "\"origin\"",
+              "\"no-referrer\""
+            ]
+          },
+          {
+            "name": "refresh",
+            "type": "string",
+            "description": "Page refresh settings\n",
+            "examples": [
+              "\"0;url=https://example.com\""
+            ]
+          },
+          {
+            "name": "rating",
+            "type": "string",
+            "description": "Content rating\n",
+            "examples": [
+              "\"general\"",
+              "\"mature\""
+            ]
+          },
+          {
+            "name": "revisit-after",
+            "type": "string",
+            "description": "Crawl frequency suggestion\n",
+            "examples": [
+              "\"7 days\""
+            ]
+          },
+          {
+            "name": "language",
+            "type": "string",
+            "description": "Page language\n",
+            "examples": [
+              "\"en-US\"",
+              "\"fr-FR\""
+            ]
+          },
+          {
+            "name": "copyright",
+            "type": "string",
+            "description": "Copyright information\n",
+            "examples": [
+              "\"Copyright 2024\""
+            ]
+          },
+          {
+            "name": "reply-to",
+            "type": "string",
+            "description": "Reply-to email address\n",
+            "examples": [
+              "\"contact@example.com\""
+            ]
+          },
+          {
+            "name": "distribution",
+            "type": "string",
+            "description": "Content distribution scope\n",
+            "examples": [
+              "\"global\""
+            ]
+          },
+          {
+            "name": "coverage",
+            "type": "string",
+            "description": "Content coverage area\n",
+            "examples": [
+              "\"Worldwide\""
+            ]
+          },
+          {
+            "name": "category",
+            "type": "string",
+            "description": "Content category\n",
+            "examples": [
+              "\"Technology\""
+            ]
+          },
+          {
+            "name": "target",
+            "type": "string",
+            "description": "Target audience\n",
+            "examples": [
+              "\"all\""
+            ]
+          },
+          {
+            "name": "HandheldFriendly",
+            "type": "string",
+            "description": "Mobile device compatibility\n",
+            "examples": [
+              "\"true\""
+            ]
+          },
+          {
+            "name": "MobileOptimized",
+            "type": "string",
+            "description": "Mobile optimization settings\n",
+            "examples": [
+              "\"width\""
+            ]
+          },
+          {
+            "name": "apple-mobile-web-app-capable",
+            "type": "string",
+            "description": "iOS web app capability\n",
+            "examples": [
+              "\"yes\""
+            ]
+          },
+          {
+            "name": "apple-mobile-web-app-status-bar-style",
+            "type": "string",
+            "description": "iOS status bar style\n",
+            "examples": [
+              "\"black\"",
+              "\"black-translucent\""
+            ]
+          },
+          {
+            "name": "apple-mobile-web-app-title",
+            "type": "string",
+            "description": "iOS web app title\n",
+            "examples": [
+              "\"App Name\""
+            ]
+          },
+          {
+            "name": "application-name",
+            "type": "string",
+            "description": "Web application name\n",
+            "examples": [
+              "\"My App\""
+            ]
+          },
+          {
+            "name": "msapplication-TileColor",
+            "type": "string",
+            "description": "Windows tile color\n",
+            "examples": [
+              "\"#2b5797\""
+            ]
+          },
+          {
+            "name": "msapplication-TileImage",
+            "type": "string",
+            "description": "Windows tile image\n",
+            "examples": [
+              "\"/mstile-144x144.png\"a"
+            ]
+          },
+          {
+            "name": "msapplication-config",
+            "type": "string",
+            "description": "Windows browser config\n",
+            "examples": [
+              "\"/browserconfig.xml\""
+            ]
+          },
+          {
+            "name": "og:title",
+            "type": "string",
+            "description": "Open Graph title\n",
+            "examples": [
+              "\"Page Title\""
+            ]
+          },
+          {
+            "name": "og:type",
+            "type": "string",
+            "description": "Open Graph content type\n",
+            "examples": [
+              "\"website\"",
+              "\"article\""
+            ]
+          },
+          {
+            "name": "og:url",
+            "type": "string",
+            "description": "Open Graph URL\n",
+            "examples": [
+              "\"https://example.com\""
+            ]
+          },
+          {
+            "name": "og:image",
+            "type": "string",
+            "description": "Open Graph image\n",
+            "examples": [
+              "\"https://example.com/image.jpg\""
+            ]
+          },
+          {
+            "name": "og:description",
+            "type": "string",
+            "description": "Open Graph description\n",
+            "examples": [
+              "\"A brief description for social media\""
+            ]
+          },
+          {
+            "name": "og:site_name",
+            "type": "string",
+            "description": "Open Graph site name\n",
+            "examples": [
+              "\"Site Name\""
+            ]
+          },
+          {
+            "name": "og:locale",
+            "type": "string",
+            "description": "Open Graph locale\n",
+            "examples": [
+              "\"en_US\""
+            ]
+          },
+          {
+            "name": "og:video",
+            "type": "string",
+            "description": "Open Graph video\n",
+            "examples": [
+              "\"https://example.com/video.mp4\""
+            ]
+          },
+          {
+            "name": "og:audio",
+            "type": "string",
+            "description": "Open Graph audio\n",
+            "examples": [
+              "\"https://example.com/audio.mp3\""
+            ]
+          },
+          {
+            "name": "twitter:card",
+            "type": "string",
+            "description": "Twitter card type\n",
+            "examples": [
+              "\"summary_large_image\"",
+              "\"summary\""
+            ]
+          },
+          {
+            "name": "twitter:site",
+            "type": "string",
+            "description": "Twitter site handle\n",
+            "examples": [
+              "\"@username\""
+            ]
+          },
+          {
+            "name": "twitter:creator",
+            "type": "string",
+            "description": "Twitter creator handle\n",
+            "examples": [
+              "\"@author\""
+            ]
+          },
+          {
+            "name": "twitter:title",
+            "type": "string",
+            "description": "Twitter title\n",
+            "examples": [
+              "\"Page Title\""
+            ]
+          },
+          {
+            "name": "twitter:description",
+            "type": "string",
+            "description": "Twitter description\n",
+            "examples": [
+              "\"A brief description for Twitter\""
+            ]
+          },
+          {
+            "name": "twitter:image",
+            "type": "string",
+            "description": "Twitter image\n",
+            "examples": [
+              "\"https://example.com/image.jpg\""
+            ]
+          },
+          {
+            "name": "twitter:image:alt",
+            "type": "string",
+            "description": "Twitter image alt text\n",
+            "examples": [
+              "\"Image description\""
+            ]
+          },
+          {
+            "name": "twitter:player",
+            "type": "string",
+            "description": "Twitter player URL\n",
+            "examples": [
+              "\"https://example.com/player\""
+            ]
+          },
+          {
+            "name": "twitter:player:width",
+            "type": "string",
+            "description": "Twitter player width\n",
+            "examples": [
+              "\"480\""
+            ]
+          },
+          {
+            "name": "twitter:player:height",
+            "type": "string",
+            "description": "Twitter player height\n",
+            "examples": [
+              "\"480\""
+            ]
+          },
+          {
+            "name": "twitter:app:name:iphone",
+            "type": "string",
+            "description": "Twitter iOS app name\n",
+            "examples": [
+              "\"App Name\""
+            ]
+          },
+          {
+            "name": "twitter:app:id:iphone",
+            "type": "string",
+            "description": "Twitter iOS app ID\n",
+            "examples": [
+              "\"123456789\""
+            ]
+          },
+          {
+            "name": "twitter:app:url:iphone",
+            "type": "string",
+            "description": "Twitter iOS app URL\n",
+            "examples": [
+              "\"app://\""
+            ]
+          },
+          {
+            "name": "article:published_time",
+            "type": "string",
+            "description": "Article publication time\n",
+            "examples": [
+              "\"2024-03-20T12:00:00Z\""
+            ]
+          },
+          {
+            "name": "article:modified_time",
+            "type": "string",
+            "description": "Article modification time\n",
+            "examples": [
+              "\"2024-03-21T15:30:00Z\""
+            ]
+          },
+          {
+            "name": "article:expiration_time",
+            "type": "string",
+            "description": "Article expiration time\n",
+            "examples": [
+              "\"2024-04-20T12:00:00Z\""
+            ]
+          },
+          {
+            "name": "article:author",
+            "type": "string",
+            "description": "Article author\n",
+            "examples": [
+              "\"John Doe\""
+            ]
+          },
+          {
+            "name": "article:section",
+            "type": "string",
+            "description": "Article section\n",
+            "examples": [
+              "\"Technology\""
+            ]
+          },
+          {
+            "name": "article:tag",
+            "type": "string",
+            "description": "Article tags\n",
+            "examples": [
+              "\"Web Development\""
+            ]
+          },
+          {
+            "name": "book:author",
+            "type": "string",
+            "description": "Book author\n",
+            "examples": [
+              "\"Jane Smith\""
+            ]
+          },
+          {
+            "name": "book:isbn",
+            "type": "string",
+            "description": "Book ISBN\n",
+            "examples": [
+              "\"978-3-16-148410-0\""
+            ]
+          },
+          {
+            "name": "book:release_date",
+            "type": "string",
+            "description": "Book release date\n",
+            "examples": [
+              "\"2024-01-01\""
+            ]
+          },
+          {
+            "name": "book:tag",
+            "type": "string",
+            "description": "Book tags\n",
+            "examples": [
+              "\"Fiction\""
+            ]
+          },
+          {
+            "name": "profile:first_name",
+            "type": "string",
+            "description": "Profile first name\n",
+            "examples": [
+              "\"John\""
+            ]
+          },
+          {
+            "name": "profile:last_name",
+            "type": "string",
+            "description": "Profile last name\n",
+            "examples": [
+              "\"Doe\""
+            ]
+          },
+          {
+            "name": "profile:username",
+            "type": "string",
+            "description": "Profile username\n",
+            "examples": [
+              "\"johndoe\""
+            ]
+          },
+          {
+            "name": "profile:gender",
+            "type": "string",
+            "description": "Profile gender\n",
+            "examples": [
+              "\"male\""
+            ]
+          },
+          {
+            "name": "music:duration",
+            "type": "string",
+            "description": "Music duration in seconds\n",
+            "examples": [
+              "\"180\""
+            ]
+          },
+          {
+            "name": "music:album",
+            "type": "string",
+            "description": "Music album name\n",
+            "examples": [
+              "\"Album Name\""
+            ]
+          },
+          {
+            "name": "music:album:disc",
+            "type": "string",
+            "description": "Music album disc number\n",
+            "examples": [
+              "\"1\""
+            ]
+          },
+          {
+            "name": "music:album:track",
+            "type": "string",
+            "description": "Music album track number\n",
+            "examples": [
+              "\"1\""
+            ]
+          },
+          {
+            "name": "music:musician",
+            "type": "string",
+            "description": "Music musician/artist\n",
+            "examples": [
+              "\"Artist Name\""
+            ]
+          },
+          {
+            "name": "music:song",
+            "type": "string",
+            "description": "Music song name\n",
+            "examples": [
+              "\"Song Name\""
+            ]
+          },
+          {
+            "name": "music:song:disc",
+            "type": "string",
+            "description": "Music song disc number\n",
+            "examples": [
+              "\"1\""
+            ]
+          },
+          {
+            "name": "music:song:track",
+            "type": "string",
+            "description": "Music song track number\n",
+            "examples": [
+              "\"1\""
+            ]
+          },
+          {
+            "name": "video:actor",
+            "type": "string",
+            "description": "Video actor name\n",
+            "examples": [
+              "\"Actor Name\""
+            ]
+          },
+          {
+            "name": "video:actor:role",
+            "type": "string",
+            "description": "Video actor role\n",
+            "examples": [
+              "\"Character Name\""
+            ]
+          },
+          {
+            "name": "video:director",
+            "type": "string",
+            "description": "Video director\n",
+            "examples": [
+              "\"Director Name\""
+            ]
+          },
+          {
+            "name": "video:writer",
+            "type": "string",
+            "description": "Video writer\n",
+            "examples": [
+              "\"Writer Name\""
+            ]
+          },
+          {
+            "name": "video:duration",
+            "type": "string",
+            "description": "Video duration in seconds\n",
+            "examples": [
+              "\"120\""
+            ]
+          },
+          {
+            "name": "video:release_date",
+            "type": "string",
+            "description": "Video release date\n",
+            "examples": [
+              "\"2024-01-01\""
+            ]
+          },
+          {
+            "name": "video:tag",
+            "type": "string",
+            "description": "Video tags\n",
+            "examples": [
+              "\"Action\""
+            ]
+          },
+          {
+            "name": "video:series",
+            "type": "string",
+            "description": "Video series name\n",
+            "examples": [
+              "\"Series Name\""
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

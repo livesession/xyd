@@ -1,47 +1,94 @@
-import React, {useRef} from "react"
+import React, { } from "react"
 
 import * as cn from "./Heading.styles";
+import { Badge } from "writer";
 
+/**
+ * Props for the Heading component
+ * @interface HeadingProps
+ */
 export interface HeadingProps {
+    /** Content to be rendered inside the heading */
     children: React.ReactNode
+
+    /** The size of the heading (1-6, corresponding to h1-h6) */
     size: 1 | 2 | 3 | 4 | 5 | 6
+
+    /** Optional HTML element to render as (div or span) */
     as?: "div" | "span"
+
+    /** Optional ID for the heading element */
     id?: string
+
+    /** Optional visual style variant */
+    kind?: "muted"
+
+    /** Optional click handler */
     onClick?: () => void
+
+    /** Optional additional CSS class name */
+    className?: string
+
+    /** Optional active state */
+    active?: boolean
+
+    /** Optional label for the heading */
+    label?: string
+
+    /** Optional to hide the anchor icon */
+    noanchor?: boolean
+
+    /** Optional ref for the heading element */
+    ref?: React.RefObject<HTMLHeadingElement>
 }
 
-export function Heading({children, size = 1, as, id, onClick}: HeadingProps) {
+/**
+ * A flexible heading component that can render as any heading level (h1-h6) or as a div/span
+ * 
+ * @category Component
+ */
+export function Heading({
+    children,
+    size = 1,
+    as,
+    id,
+    onClick,
+    className,
+    kind,
+    active,
+    label,
+    noanchor,
+    ref,
+}: HeadingProps) {
     let HeadingComponent = as ? as : `h${size}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 
-    const obRef = useRef<HTMLAnchorElement>(null)
-
     return <HeadingComponent
-        className={`
-            ${cn.HeadingHost}
-            ${size === 1 && cn.HeadingH1}
-            ${size === 2 && cn.HeadingH2}
-            ${size === 3 && cn.HeadingH3}
-            ${size === 4 && cn.HeadingH4}
-            ${size === 5 && cn.HeadingH5}
-            ${size === 6 && cn.HeadingH6}
-            xyd_comp-comp-heading
-        `}
-        onClick={onClick}
+        className={` ${cn.HeadingHost}  ${className || ''}`}
+        data-size={size}
+        data-kind={kind}
+        data-has-label={String(label ? "true" : "false")}
+        data-noanchor={String(noanchor || "false")}
+        data-active={String(active || "false")}
+        onClick={noanchor ? undefined : onClick}
+        id={id}
+        ref={ref}
     >
         {children}
+        
+        {label && <Badge size="sm">{label}</Badge>}
 
-        {id && <Anchor/>}
+        {id && !noanchor && <$Anchor />}
     </HeadingComponent>
 }
 
-function Anchor() {
+function $Anchor() {
     return <svg
+        part="icon"
         xmlns="http://www.w3.org/2000/svg"
         width={15}
         height={15}
         fill="currentColor"
         viewBox="0 0 24 24"
-        className={cn.HeadingLink}
         role="presentation"
     >
         <path

@@ -1,0 +1,27 @@
+type Author {
+    id: ID!
+
+    name: String!
+
+    details: AuthorDetails!
+}
+
+type AuthorDetails {
+    birthDate: String
+}
+
+input AuthorDetailsInput {
+    birthDate: String
+}
+
+type Query {
+    author(
+        id: ID!
+        details: AuthorDetailsInput
+    ): Author
+
+    authorDelete(
+        id: ID!
+    ): Boolean
+}
+

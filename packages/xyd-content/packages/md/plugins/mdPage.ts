@@ -6,6 +6,7 @@ declare global {
     var page: boolean | null | undefined
 }
 
+// TODO: to delete
 /**
  * This plugin extracts the `page` variable from the markdown file.
  * This variable(`page`) is used to determine if theme should be dropped out.
@@ -14,6 +15,7 @@ declare global {
  */
 export const extractPage: Plugin = () => {
     return (tree: UnistNode) => {
+        console.time('plugin:extractPage');
         visit(tree, 'exportNamedDeclaration', (node: any) => {
             const declaration = node.declaration;
 
@@ -28,5 +30,6 @@ export const extractPage: Plugin = () => {
                 }
             });
         });
+        console.timeEnd('plugin:extractPage');
     };
 };

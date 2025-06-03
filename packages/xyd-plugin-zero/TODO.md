@@ -1,1 +1,0 @@
-rename to `@xyd-js/vite` ?

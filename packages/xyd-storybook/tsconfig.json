@@ -5,6 +5,23 @@
     "moduleResolution": "bundler",
     "target": "esnext", // Change this to es2020 or esnext
     "baseUrl": ".",
+    "paths": {
+      "@xyd-js/atlas": [
+        "../xyd-atlas/index"
+      ],
+      "@xyd-js/components": [
+        "../xyd-components/index"
+      ],
+      "@xyd-js/content": [
+        "../xyd-content/src"
+      ],
+      "@xyd-js/ui": [
+        "../xyd-ui/index"
+      ],
+      "@xyd-js/theme-poetry": [
+        "../xyd-theme-poetry/src/index"
+      ]
+    },
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,

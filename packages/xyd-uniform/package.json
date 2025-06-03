@@ -13,7 +13,9 @@
   "scripts": {
     "clean": "rimraf build",
     "prebuild": "pnpm clean",
-    "build": "tsup"
+    "build": "tsup",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@xyd-js/core": "workspace:*",
@@ -30,9 +32,11 @@
     "@mdx-js/mdx": "^3.1.0"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^1.3.1",
     "@types/node": "^22.10.5",
     "rimraf": "^3.0.2",
     "tsup": "^8.3.0",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "vitest": "^1.3.1"
   }
 }

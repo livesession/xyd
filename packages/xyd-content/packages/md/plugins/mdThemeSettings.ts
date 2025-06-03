@@ -10,6 +10,7 @@ declare global {
     var themeSettings: ThemeSettings | undefined;
 }
 
+// TODO: to delete
 /**
  * This plugin adds the `themeSettings` variable to the global scope.
  * This variable is used to determine the theme settings for the current page.
@@ -17,6 +18,8 @@ declare global {
 export const extractThemeSettings: Plugin = () => {
     return (tree: UnistNode) => {
         visit(tree, 'exportNamedDeclaration', (node: any) => {
+            console.time('plugin:extractThemeSettings');
+
             const declaration = node.declaration;
             if (declaration && declaration.declarations) {
                 declaration.declarations.forEach((decl: any) => {
@@ -25,6 +28,7 @@ export const extractThemeSettings: Plugin = () => {
                     }
                 });
             }
+            console.timeEnd('plugin:extractThemeSettings');
         });
     };
 };

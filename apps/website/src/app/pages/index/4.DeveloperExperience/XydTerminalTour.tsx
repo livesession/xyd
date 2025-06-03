@@ -13,6 +13,7 @@ import {Stack, Text} from "@primer/react-brand";
 import {highlight} from "@xyd-js/components/coder";
 
 import styles from '@/app/components/Terminal.module.css';
+import { DEFAULT_CODE_THEME } from '@/app/const';
 
 // TODO: REFACTOR, ADD TO TOURMAN?
 // TODO: refactor to context?
@@ -61,7 +62,7 @@ export function XydTerminalTour() {
     const [loading, setLoading] = useState(true);
 
     async function loadDynamicTheme() {
-        await preload(["shell", "markdown"], "material-default")
+        await preload(["shell", "markdown"], DEFAULT_CODE_THEME)
         setLoading(false);
     }
 
@@ -429,7 +430,7 @@ function highlightCode(code: string, lang: string = "shell") {
             lang: lang,
             value: code,
         },
-        "material-default",
+        DEFAULT_CODE_THEME,
         lang
     );
 }

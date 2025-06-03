@@ -46,7 +46,6 @@
     align-items: center;
     width: 10px;
     height: 10px;
-    font-size: 12px;
     font-weight: 700;
     border-radius: 50%;
     box-shadow: inset 0 0 0 1px var(--brand-Pillar-icon-color-purple);
@@ -54,7 +53,6 @@
 }
 
 .Description {
-    font-size: 15px;
     font-weight: 500;
     transition: color .16s ease;
     color: #b8c1c7;

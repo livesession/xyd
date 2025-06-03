@@ -25,13 +25,16 @@
   "dependencies": {
     "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0",
-    "@livesession/design-system-colors": "0.0.6-alpha-refactor-and-typo.0",
     "@radix-ui/react-tabs": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "react-router": "^7.5.0",
+    "@xyd-js/components": "workspace:*"
   },
   "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-flow": "^7.25.9",
     "@babel/preset-react": "^7.26.0",

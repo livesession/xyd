@@ -1,0 +1,266 @@
+[
+  {
+    "title": "Returns a response",
+    "canonical": "returns-a-response",
+    "description": "Returns a response or a stream of responses",
+    "type": "rest_get",
+    "category": "rest",
+    "context": {
+      "method": "get",
+      "path": "/response",
+      "fullPath": "/response",
+      "group": [
+        ""
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "shell",
+                    "language": "shell",
+                    "code": "curl --request GET \\\n     --url https://example.com/response \\\n     --header 'accept: application/json'"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://example.com/response', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                  },
+                  {
+                    "title": "python",
+                    "language": "python",
+                    "code": "import requests\n\nurl = \"https://example.com/response\"\n\nheaders = {\"accept\": \"application/json\"}\n\nresponse = requests.get(url, headers=headers)\n\nprint(response.text)"
+                  },
+                  {
+                    "title": "go",
+                    "language": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://example.com/response\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "application/json",
+                    "language": "json",
+                    "code": "{\n  \"message\": \"string\"\n}"
+                  },
+                  {
+                    "title": "text/event-stream",
+                    "language": "text",
+                    "code": "{\n  \"message\": \"string\"\n}"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "400",
+                "tabs": [
+                  {
+                    "title": "application/json",
+                    "language": "json",
+                    "code": "{\n  \"message\": \"string\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "description": "OK",
+            "properties": [
+              {
+                "name": "message",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ],
+            "symbolDef": {
+              "id": "#/components/schemas/Response"
+            }
+          },
+          {
+            "title": "200",
+            "description": "OK",
+            "properties": [
+              {
+                "name": "message",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "text/event-stream"
+              }
+            ],
+            "symbolDef": {
+              "id": "#/components/schemas/ResponseStream"
+            }
+          },
+          {
+            "title": "400",
+            "description": "Bad Request",
+            "properties": [
+              {
+                "name": "message",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "400"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ],
+            "symbolDef": {
+              "id": "#/components/schemas/ErrorResponse"
+            }
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "ErrorResponse",
+    "description": "",
+    "canonical": "objects/ErrorResponse",
+    "definitions": [
+      {
+        "title": "ErrorResponse",
+        "properties": [
+          {
+            "name": "message",
+            "type": "string",
+            "description": "",
+            "meta": []
+          }
+        ],
+        "meta": [],
+        "symbolDef": {
+          "id": "#/components/schemas/ErrorResponse"
+        }
+      }
+    ],
+    "examples": {
+      "groups": []
+    },
+    "type": "rest_component_schema",
+    "context": {
+      "componentSchema": "ErrorResponse",
+      "group": [
+        "Objects"
+      ]
+    }
+  },
+  {
+    "title": "Response",
+    "description": "",
+    "canonical": "objects/Response",
+    "definitions": [
+      {
+        "title": "Response",
+        "properties": [
+          {
+            "name": "message",
+            "type": "string",
+            "description": "",
+            "meta": []
+          }
+        ],
+        "meta": [],
+        "symbolDef": {
+          "id": "#/components/schemas/Response"
+        }
+      }
+    ],
+    "examples": {
+      "groups": []
+    },
+    "type": "rest_component_schema",
+    "context": {
+      "componentSchema": "Response",
+      "group": [
+        "Objects"
+      ]
+    }
+  },
+  {
+    "title": "ResponseStream",
+    "description": "",
+    "canonical": "objects/ResponseStream",
+    "definitions": [
+      {
+        "title": "ResponseStream",
+        "properties": [
+          {
+            "name": "message",
+            "type": "string",
+            "description": "",
+            "meta": []
+          }
+        ],
+        "meta": [],
+        "symbolDef": {
+          "id": "#/components/schemas/ResponseStream"
+        }
+      }
+    ],
+    "examples": {
+      "groups": []
+    },
+    "type": "rest_component_schema",
+    "context": {
+      "componentSchema": "ResponseStream",
+      "group": [
+        "Objects"
+      ]
+    }
+  }
+]

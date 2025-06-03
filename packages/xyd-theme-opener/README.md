@@ -1,0 +1,1 @@
+# @xyd-js/theme-opener

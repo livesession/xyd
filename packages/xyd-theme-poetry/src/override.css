@@ -1,3 +1,55 @@
-/*:root {*/
-/*    --XydAtlas-Component-Code-Sample__color--active: blue;*/
-/*}*/
+@layer themes {
+    /* Layout */
+    xyd-layout-primary {
+        > [part="header"] {
+            margin-left: 16rem;
+        }
+
+        [part="sidebar"] {
+            position: fixed;
+            top: var(--xyd-page-gutter);
+            z-index: 1;
+        }
+
+        [part="page"] {
+            position: absolute;
+            left: 260px;
+            right: 0;
+        }
+
+        @media (max-width: 1024px) {
+            > [part="header"] {
+                margin-left: 0
+            }
+
+            [part="page"] {
+                left: 0;
+            }
+        }
+    }
+
+    /* Nav */
+    xyd-nav {
+        [part="logo"] {
+            display: none;
+        }
+
+        [part="list"] {
+            justify-content: flex-start;
+        }
+    }
+
+    /* Code */
+    xyd-codetabs-languages [part=language-trigger][data-state=active] {
+        font-weight: bold;
+        border: none;
+    }
+
+    xyd-code-pre [part="pre"] {
+        border-top: none;
+    }
+
+    xyd-search-button {
+        background: var(--white);
+    }
+}

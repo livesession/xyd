@@ -25,7 +25,7 @@ export async function loader({request}) {
     return await fetchContent(request)
 }
 
-export default function MyCustomPge() {
+export default function MyCustomPage() {
     const content = useLoaderData()
 
     return <Article content={content}/>
@@ -33,29 +33,41 @@ export default function MyCustomPge() {
 ```
 
 ```tsx !themeAPI
-import {
-    BaseTheme,
-    withTheme
-} from "@xyd-js/themes"
-import "@xyd-js/themes/index.css"
+import { BaseTheme, type Theme } from "xyd-js/themes"
+import "xyd-js/themes/index.css"
 
+import {FAQ} from "./pages"
 import { MyAwesomeNavbar } from "./MyAwesomeNavbar"
 
 import './index.css';
 import './override.css';
 import './vars.css';
 
-class MyTheme extends BaseTheme {
-    constructor() {
+export default class MyTheme extends BaseTheme {
+    constructor(theme: Theme) {
         super();
-        this.toc.hide()
+
+        theme.markdown.syntaxHighlight = "github-dark"
     }
     override Navbar() {
         return <MyAwesomeNavbar />
     }
 }
+```
 
-export default withTheme(new MyTheme())
+```tsx !codeCustomization
+import { BaseTheme, type Theme } from "xyd-js/themes"
+
+export default class MyTheme extends BaseTheme {
+    constructor(theme: Theme) {
+        super();
+    }
+ 
+    @route("/docs/api")
+    private apiPageSettings() {
+        this.toc.hide()
+    }
+}
 ```
 
 ```tsx !composableArchitecture

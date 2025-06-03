@@ -1,0 +1,54 @@
+{
+  "name": "@xyd-js/plugin-docs",
+  "version": "0.1.0-xyd.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "scripts": {
+    "clean": "rimraf build",
+    "prebuild": "pnpm clean",
+    "build": "tsup",
+    "watch": "tsup --watch"
+  },
+  "dependencies": {
+    "codehike": "^1.0.3",
+    "@code-hike/lighter": "^1.0.3",
+    "@xyd-js/openapi": "workspace:*",
+    "@xyd-js/gql": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
+    "@xyd-js/sources": "workspace:*"
+  },
+  "peerDependencies": {
+    "@xyd-js/framework": "workspace:*",
+    "@xyd-js/composer": "workspace:*",
+    "@xyd-js/themes": "workspace:*",
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/content": "workspace:*",
+    "@xyd-js/core": "workspace:*",
+    "@react-router/dev": "^7.5.0",
+    "@react-router/node": "^7.5.0",
+    "@react-router/serve": "^7.5.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router": "^7.5.0"
+  },
+  "devDependencies": {
+    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.2",
+    "vite": "^6.1.0",
+    "vite-tsconfig-paths": "^5.0.1",
+    "rimraf": "^3.0.2"
+  }
+}

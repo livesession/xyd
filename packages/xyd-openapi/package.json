@@ -8,20 +8,25 @@
     "clean": "rimraf build",
     "prebuild": "pnpm clean",
     "build": "tsup",
-    "build:examples": "tsup --config tsup.examples-config.ts"
+    "build:examples": "tsup --config tsup.examples-config.ts",
+    "test": "vitest",
+    "ci:test": "vitest run"
   },
   "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "^12.0.2",
+    "@readme/oas-to-snippet": "^28.0.0",
     "@xyd-js/uniform": "workspace:*",
-    "@readme/oas-to-snippet": "^26.0.1",
+    "gray-matter": "^4.0.3",
+    "httpsnippet": "^3.0.1",
     "js-yaml": "^4.1.0",
-    "json-schema-ref-parser": "^9.0.9",
     "oas": "^25.0.3",
     "openapi-sampler": "^1.5.1",
     "openapi-types": "^12.1.3"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
+    "rimraf": "^3.0.2",
     "tsup": "^8.3.0",
-    "rimraf": "^3.0.2"
+    "vitest": "^2.1.1"
   }
 }

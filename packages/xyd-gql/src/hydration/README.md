@@ -1,1 +1,0 @@
-`hydration` converts a GraphQL into XYD `uniform` format.

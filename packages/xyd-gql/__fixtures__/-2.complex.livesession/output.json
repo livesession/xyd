@@ -1,0 +1,302 @@
+[
+  {
+    "title": "bookCreate",
+    "description": "",
+    "canonical": "mutations/bookcreate",
+    "category": "graphql",
+    "type": "graphql_mutation",
+    "context": {
+      "graphqlTypeShort": "mutation",
+      "graphqlName": "bookCreate",
+      "group": [
+        "Mutations"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "Mutation reference",
+                    "language": "graphql",
+                    "code": "mutation bookCreate($input: BookCreateInput!) {\n  bookCreate(input: $input) {\n    # bookCreate fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "input",
+            "type": "BookCreateInput!",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "input",
+              "graphqlName": "BookCreateInput",
+              "group": [
+                "Inputs"
+              ]
+            },
+            "properties": [
+              {
+                "name": "title",
+                "type": "String!",
+                "description": "",
+                "context": {
+                  "graphqlName": "title",
+                  "graphqlTypeFlat": "String",
+                  "graphqlBuiltInType": true
+                },
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ],
+                "typeDef": {
+                  "symbolId": ""
+                }
+              },
+              {
+                "name": "details",
+                "type": "BookCreateDetailsInput!",
+                "description": "",
+                "context": {
+                  "graphqlName": "details",
+                  "graphqlTypeFlat": "BookCreateDetailsInput",
+                  "graphqlBuiltInType": false
+                },
+                "properties": [],
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ],
+                "typeDef": {
+                  "symbolId": "inputs/bookcreatedetailsinput"
+                }
+              }
+            ],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": "inputs/bookcreateinput"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "bookCreate",
+            "type": "Book!",
+            "description": "",
+            "context": {
+              "graphqlName": "bookCreate",
+              "graphqlTypeFlat": "Book",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "flat",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": "objects/book"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Book",
+    "description": "",
+    "canonical": "objects/book",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Book",
+      "group": [
+        "Objects"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          },
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "title",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "BookCreateDetailsInput",
+    "description": "",
+    "canonical": "inputs/bookcreatedetailsinput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "BookCreateDetailsInput",
+      "group": [
+        "Inputs"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "date",
+            "type": "String",
+            "description": "",
+            "context": {
+              "graphqlName": "date",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [],
+            "typeDef": {
+              "symbolId": ""
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "BookCreateInput",
+    "description": "",
+    "canonical": "inputs/bookcreateinput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "BookCreateInput",
+      "group": [
+        "Inputs"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "title",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": ""
+            }
+          },
+          {
+            "name": "details",
+            "type": "BookCreateDetailsInput!",
+            "description": "",
+            "context": {
+              "graphqlName": "details",
+              "graphqlTypeFlat": "BookCreateDetailsInput",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "typeDef": {
+              "symbolId": "inputs/bookcreatedetailsinput"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

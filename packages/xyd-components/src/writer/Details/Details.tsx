@@ -2,30 +2,67 @@ import React from "react"
 
 import * as cn from "./Details.styles";
 
-interface BaseDetailsProps {
+/**
+ * Base interface for all Details component variants
+ */
+export interface BaseDetailsProps {
+    /** Content to be displayed inside the details element */
     children: React.ReactNode;
+
+    /** Label text displayed in the summary */
     label: string;
+
+    /** Optional icon element to be displayed in the summary */
     icon?: React.ReactElement;
+
+    /** Optional CSS class name for custom styling */
+    className?: string;
 }
 
-interface TertiaryDetailsProps extends BaseDetailsProps {
+/**
+ * Props for the tertiary variant of the Details component
+ */
+export interface TertiaryDetailsProps extends BaseDetailsProps {
+    /** Specifies the tertiary variant */
     kind: "tertiary";
+
+    /** Title text or element displayed in the summary */
     title: string | React.ReactNode;
 }
 
-interface SecondaryDetailsProps extends BaseDetailsProps {
+/**
+ * Props for the secondary variant of the Details component
+ */
+export interface SecondaryDetailsProps extends BaseDetailsProps {
+    /** Specifies the secondary variant */
     kind: "secondary";
+
+    /** Title text or element displayed in the summary */
     title: string | React.ReactNode;
 }
 
-interface PrimaryDetailsProps extends BaseDetailsProps {
+/**
+ * Props for the primary variant of the Details component
+ */
+export interface PrimaryDetailsProps extends BaseDetailsProps {
+    /** Specifies the primary variant (default) */
     kind?: "primary";
 }
 
+/** Union type of all possible Details component variants */
 export type DetailsProps = PrimaryDetailsProps | SecondaryDetailsProps | TertiaryDetailsProps
 
-export function Details(props: DetailsProps) {
-    const {children, label} = props;
+/**
+ * A collapsible details component that supports three variants: primary, secondary, and tertiary.
+ * Each variant has a different visual style and structure.
+ * 
+ * @param props - The component props
+ * @returns A details element with collapsible content
+ * 
+ * @category Component
+ */
+export function Details(props: DetailsProps): React.ReactElement {
+    const { children, label } = props;
 
     let title
 
@@ -37,54 +74,45 @@ export function Details(props: DetailsProps) {
 
     const kind = props.kind || "primary";
 
-    return <details className={`
-        ${cn.DetailsHost} 
-        ${isDeepKind && cn.DetailsHostSecondary}
-   `}>
-        <summary className={`
-        ${cn.DetailsSummary} 
-        ${isDeepKind && cn.DetailsSummarySecondary}
-        ${kind === "tertiary" ? cn.DetailsSummaryTertiary : ""}
-   `}>
+    return <details
+        part="details"
+        className={`${cn.DetailsHost} ${props.className || ""}`}
+        data-kind={props.kind}
+    >
+        <summary part="summary">
             {kind === "primary" && (
                 <>
-                    {props.icon || <Icon/>}
-                    <Label>
+                    {props.icon || <$Icon />}
+                    <div part="summary-deep-label">
                         {label}
-                    </Label>
+                    </div>
                 </>
             )}
+
             {isDeepKind && (
                 <div>
-                    <div className={cn.DetailsSummaryDeep}>
-                        {props.icon || <IconDeep/>}
-                        <div className={`
-                            ${cn.DetailsSummaryDeepText}
-                            ${cn.DetailsSummaryDeepTextTertiary}
-                        `}>
+                    <div part="summary-deep">
+                        {props.icon || <$IconDeep />}
+                        <div part="summary-deep-text">
                             {title}
                         </div>
                     </div>
-                    <Label>
+                    <div part="summary-deep-label">
                         {label}
-                    </Label>
-                </div>
+                    </div>
+                </div> 
             )}
-            {isDeepKind && <Icon/>}
+            {isDeepKind && <$Icon />}
         </summary>
 
-        <div className={`
-            ${cn.DetailsContent}
-            ${isDeepKind && cn.DetailsContentSecondary}
-            ${kind === "tertiary" && cn.DetailsContentTertiary}
-        `}>
+        <div part="content">
             {children}
         </div>
     </details>
 }
 
-function Icon() {
-    return <div className={cn.DetailsIcon}>
+function $Icon() {
+    return <div part="icon">
         <svg
             // TODO: bad solution
             data-icon="true"
@@ -103,7 +131,7 @@ function Icon() {
     </div>
 }
 
-function IconDeep() {
+function $IconDeep() {
     return <svg
         width="1em"
         height="1em"
@@ -123,16 +151,9 @@ function IconDeep() {
         </g>
         <defs>
             <clipPath id="clip0_1689_2180">
-                <rect width={24} height={24} fill="white"/>
+                <rect width={24} height={24} fill="white" />
             </clipPath>
         </defs>
     </svg>
 }
 
-function Label({children}: {
-    children?: React.ReactNode
-}) {
-    return <div className={cn.DetailsLabel}>
-        {children}
-    </div>
-}

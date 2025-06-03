@@ -1,5 +1,4 @@
-import "@xyd-js/fable-wiki/atlas.css"
-
+// TODO: import base theme / some theme css
 import './index.css'
 import '../dist/index.css'
 

@@ -14,8 +14,5 @@ export const FooterContainer = css`
 `;
 
 export const FooterTextContainer = css`
-    line-height: 24px;
-    font-size: 14px;
-    font-weight: 500;
     color: rgba(60, 60, 67, .78);
 `; 

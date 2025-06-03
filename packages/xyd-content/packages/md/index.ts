@@ -1,13 +1,22 @@
-import {RemarkMdxTocOptions} from "./plugins/mdToc";
-import {defaultPlugins} from "./plugins"
+import { Settings } from "@xyd-js/core";
 
-export {RemarkMdxTocOptions} from "./plugins/mdToc";
+import { defaultRehypePlugins, defaultRemarkPlugins } from "./plugins"
+import { RemarkMdxTocOptions } from "./plugins/mdToc";
 
-export function mdOptions(toc: RemarkMdxTocOptions) {
+export { RemarkMdxTocOptions, } from "./plugins/mdToc";
+export { mapSettingsToDocSections } from "./search"
+export type { DocSectionSchema } from "./search/types"
+
+export function markdownPlugins(
+    toc: RemarkMdxTocOptions, // TODO: unify this cuz it should come from core -global settings and toc options?
+    settings?: Settings
+) {
+    const remarkPlugins = [...defaultRemarkPlugins(toc, settings)]
+
+    const rehypePlugins = [...defaultRehypePlugins(settings)]
+
     return {
-        remarkPlugins: [
-            ...defaultPlugins(toc)
-        ],
-        rehypePlugins: []
+        remarkPlugins,
+        rehypePlugins,
     }
 }

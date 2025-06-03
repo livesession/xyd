@@ -1,43 +1,53 @@
-import {promises as fs} from "fs";
-import path from "path";
+import fs from "fs/promises"
 
-import {VFile} from "vfile";
-import {compile as mdxCompile} from "@mdx-js/mdx";
+import { VFile } from "vfile"
+import { PluggableList } from "unified";
+import { compile as mdxCompile } from "@mdx-js/mdx";
 
-import {mdOptions} from "../packages/md";
+import { Settings } from "@xyd-js/core"
 
-export async function compileBySlug(
-    slug: string,
-    mdx: boolean
-): Promise<string> {
-    // TODO: cwd ?
-    const filePath = path.join(process.cwd(), `${slug}.${mdx ? "mdx" : "md"}`)
+export {
+    pageFrontMatters,
+    filterNavigationByLevels
+} from "./navigation"
 
-    await fs.access(filePath)
+export type { VarCode } from "./types"
 
-    const content = await fs.readFile(filePath, "utf-8");
+export class ContentFS {
+    constructor(
+        private readonly settings: Settings,
+        private readonly remarkPlugins: PluggableList,
+        private readonly rehypePlugins: PluggableList,
+    ) { }
 
-    return await compile(content, filePath)
-}
+    public async compile(filePath: string): Promise<string> {
+        await fs.access(filePath)
 
-async function compile(content: string, filePath: string): Promise<string> {
-    const vfile = new VFile({
-        path: filePath,
-        value: content,
-        contents: content
-    });
+        const content = await fs.readFile(filePath, "utf-8");
 
-    const opt = mdOptions({
-        minDepth: 2 // TODO: configurable?
-    })
+        const vfile = new VFile({
+            path: filePath,
+            value: content,
+            contents: content
+        });
 
-    const compiled = await mdxCompile(vfile, {
-        remarkPlugins: opt.remarkPlugins,
-        rehypePlugins: opt.rehypePlugins,
-        recmaPlugins: [],
-        outputFormat: 'function-body',
-        development: false,
-    });
+        const compiled = await mdxCompile(vfile, {
+            remarkPlugins: this.remarkPlugins,
+            rehypePlugins: this.rehypePlugins,
+            recmaPlugins: [],
+            outputFormat: 'function-body',
+            development: false,
+            jsx: false
+        });
 
-    return String(compiled)
+        return String(compiled)
+    }
+
+    public async readRaw(filePath: string) {
+        await fs.access(filePath)
+
+        const content = await fs.readFile(filePath, "utf-8");
+
+        return content
+    }
 }

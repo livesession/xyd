@@ -1,0 +1,65 @@
+[
+    {
+        "description": "A reusable button component with different variants.\n\n@component\n@example\n```jsx\n<Button variant=\"primary\" onClick={() => console.log('clicked')}>\n  Click me!\n</Button>\n```",
+        "displayName": "Button",
+        "methods": [],
+        "props": {
+            "children": {
+                "required": true,
+                "flowType": {
+                    "name": "ReactReactNode",
+                    "raw": "React.ReactNode"
+                },
+                "description": "The text content to display inside the button"
+            },
+            "variant": {
+                "required": false,
+                "flowType": {
+                    "name": "union",
+                    "raw": "'primary' | 'secondary'",
+                    "elements": [
+                        {
+                            "name": "literal",
+                            "value": "'primary'"
+                        },
+                        {
+                            "name": "literal",
+                            "value": "'secondary'"
+                        }
+                    ]
+                },
+                "description": "Optional variant to change the button's appearance",
+                "defaultValue": {
+                    "value": "'primary'",
+                    "computed": false
+                }
+            },
+            "onClick": {
+                "required": false,
+                "flowType": {
+                    "name": "signature",
+                    "type": "function",
+                    "raw": "() => void",
+                    "signature": {
+                        "arguments": [],
+                        "return": {
+                            "name": "void"
+                        }
+                    }
+                },
+                "description": "Optional click handler"
+            },
+            "disabled": {
+                "required": false,
+                "flowType": {
+                    "name": "boolean"
+                },
+                "description": "Whether the button is disabled",
+                "defaultValue": {
+                    "value": "false",
+                    "computed": false
+                }
+            }
+        }
+    }
+]

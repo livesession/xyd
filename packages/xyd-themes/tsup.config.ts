@@ -1,4 +1,11 @@
 import { defineConfig } from 'tsup';
+import pkg from './package.json' assert { type: 'json' }
+
+const deps = [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.devDependencies || {}),
+    ...Object.keys(pkg.peerDependencies || {}),
+]
 
 export default defineConfig({
     entry: {
@@ -15,6 +22,9 @@ export default defineConfig({
     splitting: false,
     sourcemap: true,
     clean: true,
+    external: [
+        ...deps
+    ],
     esbuildOptions: (options) => {
         options.platform = 'node';
         options.external = ['node:fs/promises', 'react-router'];

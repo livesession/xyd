@@ -2,68 +2,94 @@ import React from "react"
 
 import * as cn from "./GuideCard.styles";
 
+/**
+ * Props for the GuideCard component
+ */
 export interface GuideCardProps {
+    /** Content to be displayed in the card body */
     children: React.ReactNode;
+
+    /** URL the card links to */
     href: string
+
+    /** Title displayed at the top of the card */
     title: string;
+
+    /** Optional icon displayed to the left of the content */
     icon?: React.ReactNode;
+
+    /** Visual style variant of the card */
     kind?: "secondary"
+
+    /** Size variant of the card */
     size?: "sm" | "md"
+
+    /** Additional CSS class names to apply to the card */
+    className?: string
+
+    /** Additional props to pass to the link element */
+    as?: React.ElementType
 }
 
+/**
+ * A card component that displays content with a title and optional icon.
+ * The entire card is clickable and links to the specified URL.
+ * 
+ * @category Component
+ */
 export function GuideCard({
-                              children,
-                              href,
-                              icon,
-                              title,
-                              kind,
-                              size,
+    children,
+    href,
+    icon,
+    title,
+    kind,
+    size,
+    className,
+    as,
+}: GuideCardProps) {
+    const Link = as || $Link
 
-                          }: GuideCardProps) {
-    return <div className={`
-        ${cn.GuideHost}
-        ${kind === "secondary" && cn.GuideHostSecondary}
-        ${kind === "secondary" && size == "md" && cn.GuideHostSecondaryMd}
-    `}>
-        <a className={cn.GuideLink} href={href}>
-            <div className={`
-                ${cn.GuideItem}
-                ${kind === "secondary" && cn.GuideItemSecondary}
-            `}>
-                {icon && <div className={cn.GuideIcon}>
+    return <xyd-guidecard
+        className={`${cn.GuideHost} ${className || ""}`}
+        data-kind={kind}
+        data-size={size}
+    >
+        <Link part="link" href={href}>
+            <div part="item">
+                {icon && <div part="icon">
                     {icon}
                 </div>}
-                <div className={cn.GuideRight}>
-                    <div className={cn.GuideTitle}>
-                        <div className={`
-                            ${cn.GuideTitle} 
-                            ${cn.GuideTitleBody}
-                            ${size == "md" && cn.GuideTitleBodyMd}
-                        `}>
+                <div part="right">
+                    <div part="title">
+                        <div part="title-body">
                             {title}
                         </div>
-                        <Pointer/>
+                        <$Pointer />
                     </div>
-                    <div className={`
-                        ${cn.GuideBody}
-                        ${size == "md" && cn.GuideBodyMd}
-                    `}>
+                    <div part="body">
                         {children}
                     </div>
                 </div>
             </div>
-        </a>
-    </div>
+        </Link>
+    </xyd-guidecard>
 }
 
-GuideCard.List = function GuideCardList({children}: { children: React.ReactNode }) {
-    return <div className={cn.GuideListHost}>
+/**
+ * A container component for grouping multiple GuideCard components.
+ * Provides consistent spacing and layout for a list of guide cards.
+ */
+GuideCard.List = function GuideCardList({ children }: { children: React.ReactNode }) {
+    return <xyd-guidecard-list className={cn.GuideListHost}>
         {children}
-    </div>
+    </xyd-guidecard-list>
 }
 
-function Pointer() {
-    return <div data-pointer="true" className={cn.GuidePointer}>
+/**
+ * Internal component that renders the arrow pointer icon.
+ */
+function $Pointer() {
+    return <div part="pointer">
         <svg
             xmlns="http://www.w3.org/2000/svg"
             width={24}
@@ -78,4 +104,13 @@ function Pointer() {
             />
         </svg>
     </div>
+}
+
+function $Link({ href, children, ...rest }) {
+    return <a
+        href={href}
+        {...rest}
+    >
+        {children}
+    </a>
 }

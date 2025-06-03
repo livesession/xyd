@@ -1,0 +1,31 @@
+{
+  "name": "@xyd-js/host",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/framework": "workspace:*",
+    "@xyd-js/composer": "workspace:*",
+    "@xyd-js/themes": "workspace:*",
+    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/theme-poetry": "workspace:*",
+    "@xyd-js/theme-cosmo": "workspace:*",
+    "@xyd-js/theme-opener": "workspace:*",
+    "@xyd-js/plugin-orama": "workspace:*",
+    "@xyd-js/plugin-algolia": "workspace:*",
+    "@react-router/dev": "^7.5.0",
+    "@react-router/node": "^7.5.0",
+    "@react-router/serve": "^7.5.0",
+    "isbot": "^5",
+    "react-router": "^7.5.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "semver": "^7.6.3",
+    "vite": "^6.1.0",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

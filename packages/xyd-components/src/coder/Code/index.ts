@@ -11,5 +11,6 @@ export {
     CodeLoader,
 } from "./CodeLoader"
 export {
-    highlight
+    highlight,
+    highlightAsync
 } from "./highlight"

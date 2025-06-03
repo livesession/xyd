@@ -6,7 +6,7 @@
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
-    "./reset.css": "./dist/tokens.css",
+    "./reset.css": "./dist/reset.css",
     "./index.css": "./dist/index.css",
     ".": {
       "import": "./dist/index.js"
@@ -15,11 +15,11 @@
   "scripts": {
     "build": "tsup && node scripts/build-css.js"
   },
+  "dependencies": {},
   "peerDependencies": {
-    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/core": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/framework": "workspace:*",
-    "@xyd-js/ui": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

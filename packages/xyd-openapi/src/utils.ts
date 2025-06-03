@@ -1,21 +1,43 @@
 import path from "path";
 import fs from "fs";
+
 import yaml from "js-yaml";
-import $refParser from "json-schema-ref-parser";
 import {OpenAPIV3} from "openapi-types";
+import GithubSlugger from 'github-slugger';
+import $refParser, {ParserOptions} from "@apidevtools/json-schema-ref-parser";
 
 import {ReferenceType} from "@xyd-js/uniform";
 
-type Parameters = {
-    query?: Record<string, string | number | boolean>;
-    headers?: Record<string, string>;
-};
+import {OasJSONSchema} from "./types";
 
-export function toPascalCase(str: string): string {
-    return str
-        .split(/[\s_-]+/)
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join('');
+export function slug(str: string): string {
+    const slugger = new GithubSlugger();
+    return slugger.slug(str);
+}
+
+// deferencedOpenAPI reads an OpenAPI spec file and returns a dereferenced OpenAPIV3.Document
+// dereferenced means that all $ref references are resolved automatically
+export async function deferencedOpenAPI(openApiPath: string) {
+    const openApiSpec = readOpenApiSpec(openApiPath);
+
+    const options = {
+        dereference: {
+            onDereference(
+                path: string,
+                value: OasJSONSchema,
+                parent?: OasJSONSchema,
+            ) {
+                value.__internal_getRefPath = () => path
+                if (parent) {
+                    parent.__internal_getRefPath = () => path
+                }
+            },
+        },
+    } as ParserOptions;
+
+    await $refParser.dereference(openApiSpec, options);
+
+    return openApiSpec as OpenAPIV3.Document
 }
 
 // TODO: support from url?
@@ -33,17 +55,6 @@ function readOpenApiSpec(filePath: string) {
     }
 }
 
-// deferencedOpenAPI reads an OpenAPI spec file and returns a dereferenced OpenAPIV3.Document
-// dereferenced means that all $ref references are resolved automatically
-export async function deferencedOpenAPI(openApiPath: string) {
-    const openApiSpec = readOpenApiSpec(openApiPath);
-
-    //@ts-ignore TODO: fix ts
-    await $refParser.dereference(openApiSpec);
-
-    return openApiSpec as OpenAPIV3.Document
-}
-
 // httpMethodToUniformMethod converts an HTTP method to a uniform ReferenceType
 export function httpMethodToUniformMethod(method: string): ReferenceType | null {
     switch (method) {
@@ -57,69 +68,14 @@ export function httpMethodToUniformMethod(method: string): ReferenceType | null 
             return ReferenceType.REST_HTTP_POST
         case 'delete':
             return ReferenceType.REST_HTTP_DELETE
-        // case 'options':
-        //     return ReferenceType.REST_HTTP_OPTIONS
-        // case 'head':
-        //     return ReferenceType.REST_HTTP_HEAD
-        // case 'trace':
-        //     return ReferenceType.REST_HTTP_TRACE
+        case 'options':
+            return ReferenceType.REST_HTTP_OPTIONS
+        case 'head':
+            return ReferenceType.REST_HTTP_HEAD
+        case 'trace':
+            return ReferenceType.REST_HTTP_TRACE
         default:
             return null
     }
-}
-
-// schemaToRequestBody generates a request body from an OpenAPI schema
-function schemaToRequestBody(schema: OpenAPIV3.SchemaObject): string {
-    const requestBody: any = {};
-
-    if (schema.type === 'object' && schema.properties) {
-        for (const [key, value] of Object.entries(schema.properties)) {
-            if ((value as OpenAPIV3.SchemaObject).default !== undefined) {
-                requestBody[key] = (value as OpenAPIV3.SchemaObject).default;
-            } else {
-                requestBody[key] = null; // or some placeholder value
-            }
-        }
-    }
-
-    return JSON.stringify(requestBody);
-}
-
-// generateRequestInitFromOpenAPIObject generates a RequestInit object from an OpenAPI object
-export function generateRequestInitFromOapOperation(
-    urlPath: string,
-    operation: OpenAPIV3.OperationObject
-): { url: string, reqInit: RequestInit } {
-    const reqInit: RequestInit = {}
-    let queryParams = '';
-
-    if (operation.parameters) {
-        const parameters = operation.parameters as OpenAPIV3.ParameterObject[]
-
-        const params = new URLSearchParams(
-            Object.entries(parameters).map(([key, value]) => [key, String(value)])
-        ).toString();
-
-        queryParams += `?${params}`;
-    }
-
-    if (operation.requestBody) {
-        const reqBody = operation.requestBody as OpenAPIV3.RequestBodyObject;
-        const contentType = Object.keys(reqBody.content || {})[0];
-
-        if (contentType === "application/json") {
-            const schema = reqBody.content['application/json'].schema as OpenAPIV3.SchemaObject
-
-            reqInit.body = schemaToRequestBody(schema);
-            reqInit.headers = {
-                'Content-Type': 'application/json',
-            }
-        }
-    }
-
-    return {
-        url: `${urlPath}${queryParams}`,
-        reqInit,
-    };
 }
 

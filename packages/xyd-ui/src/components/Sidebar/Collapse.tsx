@@ -1,18 +1,20 @@
-import React, {useEffect, useRef} from "react";
-import type {ReactElement, ReactNode} from "react";
+import React, { useEffect, useRef } from "react";
+import type { ReactElement, ReactNode } from "react";
 import * as cn from "./Collapse.styles";
 
 export interface UICollapseProps {
     children: ReactNode;
     isOpen: boolean;
     horizontal?: boolean;
+    className?: string;
 }
 
 export function UICollapse({
-                               children,
-                               isOpen,
-                               horizontal = false,
-                           }: UICollapseProps): ReactElement {
+    children,
+    isOpen,
+    horizontal = false,
+    className,
+}: UICollapseProps): ReactElement {
     const containerRef = useRef<HTMLDivElement>(null);
     const innerRef = useRef<HTMLDivElement>(null);
     const animationRef = useRef<number | null>(null);
@@ -52,7 +54,7 @@ export function UICollapse({
         }
 
         // Restore original styles
-        originalStyles.forEach(({element, height, overflow}) => {
+        originalStyles.forEach(({ element, height, overflow }) => {
             element.style.height = height;
             element.style.overflow = overflow;
         });
@@ -81,8 +83,8 @@ export function UICollapse({
                 // Check if the mutation affects height
                 const shouldUpdate = mutations.some(mutation => {
                     return mutation.type === 'childList' ||
-                           mutation.type === 'attributes' ||
-                           (mutation.type === 'characterData' && mutation.target.parentElement?.closest('[class*="collapse"]'));
+                        mutation.type === 'attributes' ||
+                        (mutation.type === 'characterData' && mutation.target.parentElement?.closest('[class*="collapse"]'));
                 });
 
                 if (shouldUpdate) {
@@ -134,17 +136,18 @@ export function UICollapse({
     }, []);
 
     return (
-        <div
+        <xyd-collapse
+            data-open={String(isOpen)}
+            className={`${cn.CollapseHost} ${className || ""}`}
             ref={containerRef}
-            className={cn.CollapseContainer}
-            style={initialOpen.current || horizontal ? undefined : {height: 0}}
+            style={initialOpen.current || horizontal ? undefined : { height: 0 }}
         >
             <div
+                part="child"
                 ref={innerRef}
-                className={`${cn.CollapseBase} ${isOpen ? cn.CollapseOpen : ""}`}
             >
                 {children}
             </div>
-        </div>
+        </xyd-collapse>
     );
 }

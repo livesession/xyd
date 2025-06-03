@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@xyd-js/atlas": [
+        "../xyd-atlas"
+      ],
+      "@xyd-js/core": [
+        "../xyd-core/index.ts"
+      ],
+      "@xyd-js/themes": [
+        "../xyd-themes/src/index.ts"
+      ],
+      "@xyd-js/components/content": [
+        "../xyd-components/content.ts"
+      ],
+      "@xyd-js/framework/react": [
+        "../xyd-framework/packages/react/index.ts"
+      ]
+    },
+    "types": [
+      "unplugin-icons/types/react"
+    ],
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "target": "esnext",
+    "baseUrl": ".",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "incremental": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "plugins": [],
+    "strictNullChecks": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

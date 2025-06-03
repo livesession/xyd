@@ -18,13 +18,15 @@ export function CodeCopy({text}: CodeCopyProps) {
         }, 1200)
     }
 
-    return (
+    return <xyd-code-copy>
         <button
+            part="button"
+            className={cn.CodeCopyHost}
             aria-label="Copy to clipboard"
             onClick={onClick}
-            className={cn.CodeCopyHost}
         >
             {copied ? <CheckCheck size={16}/> : <Copy size={16}/>}
         </button>
-    )
+    </xyd-code-copy>
+
 }

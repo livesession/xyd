@@ -1,4 +1,4 @@
-import React, {} from "react";
+import React, { } from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import {
     HighlightedCode,
@@ -13,35 +13,44 @@ export interface CodeTabsProps {
     description: string;
     highlighted: HighlightedCode[]
     size?: "full"
+    className?: string
+    controlByMeta?: boolean // TODO: BETTER IN THE FUTURE
 }
 
 export function withCodeTabs(PreComponent) {
     return function CodeTabs(props: CodeTabsProps) {
         const isSingle = props.highlighted.length === 1 && !props.description
 
-        return (
-            <TabsPrimitive.Root
-                className={cn.CodeTabsHost}
-                style={props.highlighted[0]?.style}
-                defaultValue={props.highlighted[0]?.meta}
-            >
-                <$LanguageTabSwitcher
-                    description={props.description}
-                    highlighted={props.highlighted}
-                />
+        if (props.highlighted.length === 0) { // TODO: suspense?
+            return null
+        }
 
-                {props.highlighted?.map((codeblock, i) => (
-                    <TabsPrimitive.Content value={codeblock.meta} key={i}>
-                        <PreComponent
-                            style={codeblock?.style || codeblock?.style}
-                            codeblock={codeblock}
-                            className={`
-                                ${isSingle && cn.CodeTabsPreSingle}
-                            `}
-                        />
-                    </TabsPrimitive.Content>
-                ))}
-            </TabsPrimitive.Root>
+        return (
+            <xyd-codetabs className={`${cn.CodeTabsHost} ${props.className || ""}`}>
+                <TabsPrimitive.Root
+                    part="root"
+                    data-single={String(isSingle)}
+                    data-nodescription={!props.description ? "true" : undefined}
+                    className={`${cn.CodeTabsRoot}`}
+                    style={props.highlighted[0]?.style}
+                    defaultValue={props.highlighted[0]?.meta}
+                    value={props.controlByMeta ? props.highlighted[0]?.meta : undefined}
+                >
+                    <$LanguageTabSwitcher
+                        description={props.description}
+                        highlighted={props.highlighted}
+                    />
+
+                    {props.highlighted?.map((codeblock, i) => (
+                        <TabsPrimitive.Content value={codeblock.meta} key={i}>
+                            <PreComponent
+                                style={codeblock?.style || codeblock?.style}
+                                codeblock={codeblock}
+                            />
+                        </TabsPrimitive.Content>
+                    ))}
+                </TabsPrimitive.Root>
+            </xyd-codetabs>
         )
     }
 }
@@ -54,42 +63,41 @@ interface LanguageTabSwitcherProps {
 function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
     const isSingle = props.highlighted.length === 1 && !props.description
 
-    return <div className={`
+    return <xyd-codetabs-languages
+        data-single={String(isSingle)}
+        className={`
         ${cn.CodeTabsLanguagesHost}
-        ${isSingle && cn.CodeTabsLanguagesHostSingle}
     `}>
-        <$Description description={props.description}/>
 
-        <TabsPrimitive.List className={cn.CodeTabsLanguagesList}>
-            {props.highlighted?.map(({meta}, i) => {
+        {
+            props.description && <div part="description">
+                <div part="description-item">
+                    {props.description}
+                </div>
+            </div>
+        }
+
+        <TabsPrimitive.List part="languages-list">
+            {props.highlighted?.map(({ meta }, i) => {
                 if (isSingle) {
                     return null
                 }
-                return <TabsPrimitive.Trigger value={meta!} key={i} className={cn.CodeTabsLanguagesButton}>
+                return <TabsPrimitive.Trigger
+                    part="language-trigger"
+                    value={meta!}
+                    key={i}
+                >
                     {meta}
                 </TabsPrimitive.Trigger>
             })}
         </TabsPrimitive.List>
 
-        <div className={`
-            ${cn.CodeTabsLanguagesCopy}
-            ${isSingle && cn.CodeTabsLanguagesCopySingle}
-        `}>
+        <div part="copy">
             {props.highlighted?.map((codeblock, i) => (
                 <TabsPrimitive.Content value={codeblock.meta!} asChild key={i}>
-                    <CodeCopy text={codeblock.value}/>
+                    <CodeCopy text={codeblock.value} />
                 </TabsPrimitive.Content>
             ))}
         </div>
-    </div>
+    </xyd-codetabs-languages>
 }
-
-function $Description(props: { description: string }) {
-    return <div className={cn.CodeTabsLanguagesDescription}>
-        <div className={cn.CodeTabsLanguagesDescriptionItem}>
-            {props.description}
-        </div>
-    </div>
-}
-
-

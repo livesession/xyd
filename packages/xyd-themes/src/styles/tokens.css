@@ -1,0 +1,304 @@
+/* Global */
+:root {
+    --white: #fff;
+    --dark8: #f7f7f8;
+    --dark16: #f9f9f9;
+    --dark32: #ececf1;
+    --dark40: #c5c5d2;
+    --dark48: #6e6e80;
+    --dark60: #443a3a;
+    --dark80: #111827;
+    --dark100: #000;
+    --purple80: #7051d4;
+    --purple100: #2e108e;
+    --blue32: #60A5FA;
+    --blue80: #1971a8;
+    --green80: #28a745;
+    --green100: #108944;
+    --red80: #dc3545;
+    --red100: #b91c1c;
+    --yellow80: #ffc107;
+
+    --color-bg: var(--white);
+    --color-text: var(--dark100);
+
+    --text-primary: var(--color-text);
+    --text-secondary: var(--dark80);
+    --text-tertiary: var(--dark60);
+
+    --color-primary: var(--purple80);
+    --color-primary--active: var(--purple100);
+}
+
+/* Layout */
+:root {
+    --xyd-page-body-bgcolor: var(--color-bg);
+    --xyd-layout-header-bgcolor: var(--color-bg);
+    --xyd-page-body-color: var(--text-primary);
+    --xyd-page-body-color--secondary: var(--dark60);
+
+    --xyd-page-gutter: 8px;
+    --xyd-content-space: 12px;
+
+    --xyd-sidebar-width: 250px;
+    --xyd-sidebar-width--mobile: 250px;
+    --xyd-layout-sidebar-bgcolor: var(--color-bg);
+
+    --xyd-header-total-height: calc(var(--xyd-nav-height) + var(--xyd-subnav-height));
+    --xyd-header-warning-height: 0px;
+
+    --xyd-layout-width-small: 800px;
+    --xyd-layout-width-medium: 1000px;
+    --xyd-layout-width-large: 1200px;
+    --xyd-layout-nav-width-small: 200px;
+    --xyd-layout-nav-width-medium: 256px;
+}
+
+/* Fonts */
+:root {
+    /* Font Sizes */
+    --xyd-font-size-xsmall: 12px;
+    --xyd-font-size-small: 14px;
+    --xyd-font-size-medium: 16px;
+    --xyd-font-size-large: 18px;
+    --xyd-font-size-xlarge: 22px;
+    --xyd-font-size-xxlarge: 26px;
+    --xyd-font-size-2xl: 32px;
+
+    /* Line Heights */
+    --xyd-line-height-xsmall: 16px;
+    --xyd-line-height-small: 19px;
+    --xyd-line-height-medium: 25px;
+    --xyd-line-height-large: 27px;
+    --xyd-line-height-xlarge: 33px;
+    --xyd-line-height-xxlarge: 39px;
+    --xyd-line-height-2xl: 44px;
+
+    /* Font Weights */
+    --xyd-font-weight-normal: 400;
+    --xyd-font-weight-medium: 500;
+    --xyd-font-weight-semibold: 600;
+    --xyd-font-weight-bold: 700;
+    --xyd-font-weight-extrabold: 800;
+    --xyd-font-weight-black: 900;
+}
+
+/* Media Queries */
+:root {
+    /* ////////////// MEDIA QUERIES ////////////// */
+    --xyd-mobile-breakpoint: 768px;
+    --xyd-tablet-breakpoint: 1024px;
+}
+
+/* Transitions */
+:root {
+    --xyd-cubic-bezier: cubic-bezier(.65, 0, .35, 1);
+
+}
+
+/* Components */
+:root {
+    /* Callout */
+    --xyd-callout-bgcolor: var(--dark8);
+    --xyd-callout-border-color: var(--dark32);
+    --xyd-callout-icon-color: var(--dark48);
+    --xyd-callout-message-color: var(--dark80);
+
+    /* Button */
+    --xyd-button-primary-bg: var(--color-primary);
+    --xyd-button-primary-color: var(--white);
+    --xyd-button-primary-border: var(--color-primary);
+    --xyd-button-primary-bg-hover: var(--color-primary--active);
+    --xyd-button-primary-border-hover: var(--color-primary--active);
+
+    --xyd-button-secondary-bg: var(--dark16);
+    --xyd-button-secondary-color: var(--text-primary);
+    --xyd-button-secondary-border: var(--dark32);
+    --xyd-button-secondary-bg-hover: var(--dark32);
+    --xyd-button-secondary-border-hover: var(--dark40);
+
+    --xyd-button-tertiary-bg: transparent;
+    --xyd-button-tertiary-color: var(--text-primary);
+    --xyd-button-tertiary-border: transparent;
+    --xyd-button-tertiary-bg-hover: var(--dark16);
+    --xyd-button-tertiary-border-hover: var(--dark32);
+
+    /* Coder */
+    --xyd-code-bgcolor: linear-gradient(45deg, var(--dark8) 0%, var(--dark8) 100%);
+    --xyd-code-border-color: var(--dark32);
+
+    /* Coder Code */
+    --xyd-coder-code-background: linear-gradient(45deg, var(--dark8) 0%, var(--dark8) 100%);
+    --xyd-coder-code-border-color: var(--dark32);
+    --xyd-coder-code-mark-border-color: var(--blue32);
+    --xyd-coder-code-mark-bgcolor: var(--dark16);
+    --xyd-coder-code-copy-color: var(--dark48);
+
+    /* Code Tabs */
+    --xyd-codetabs-border-color: var(--dark32);
+    --xyd-codetabs-bgcolor: linear-gradient(45deg, var(--dark8) 0%, var(--dark8) 100%);
+    --xyd-codetabs-color: var(--dark80);
+    --xyd-codetabs-color--active: var(--color-primary);
+    --xyd-codetabs-color--hover: var(--dark32);
+
+    /* Badge */
+    --xyd-badge-color--default: var(--xyd-text-color);
+    --xyd-badge-bgcolor--default: var(--dark32);
+
+    --xyd-badge-color--warning: var(--xyd-page-body-color);
+    --xyd-badge-bgcolor--warning: var(--yellow80);
+    --xyd-badge-color--info: var(--color-bg);
+    --xyd-badge-bgcolor--info: var(--blue80);
+
+    /* Breadcrumbs */
+    --xyd-breadcrumbs-color: var(--dark48);
+    --xyd-breadcrumbs-color--active: var(--text-primary);
+
+    /* Details */
+    --xyd-details-border-color: var(--dark32);
+    --xyd-details-bgcolor--secondary: var(--dark16);
+    --xyd-details-summary-color: var(--dark48);
+    --xyd-details-summary-color--active: var(--text-primary);
+    --xyd-details-summary-code-bgcolor: var(--color-bg);
+    --xyd-details-content-bgcolor: var(--color-bg);
+
+    /* GuideCard */
+    --xyd-guidecard-border-color--secondary: var(--dark32);
+    --xyd-guidecard-bgcolor--secondary: var(--dark16);
+    --xyd-guidecard-bgcolor--secondary-active: var(--color-bg);
+    --xyd-guidecard-icon-color: var(--text-primary);
+    --xyd-guidecard-title-color: var(--text-primary);
+    --xyd-guidecard-color: var(--dark48);
+    /* Heading */
+    --xyd-heading-color: var(--text-primary);
+    --xyd-heading-color--muted: var(--dark48);
+    --xyd-heading-icon-color: var(--color-primary);
+
+    /* Text */
+    --xyd-text-color: var(--text-primary);
+    --xyd-text-color--default: var(--text-primary);
+    --xyd-text-color--ghost: var(--text-tertiary);
+    --xyd-text-color--success: var(--green80);
+    --xyd-text-color--success--active: var(--green100);
+    --xyd-text-color--success--muted: rgba(40, 167, 69, 0.3);
+    --xyd-text-color--warn: var(--yellow80);
+    --xyd-text-color--error: var(--red80);
+    --xyd-text-color--error--active: var(--red100);
+    --xyd-text-color--error--muted: rgba(220, 53, 69, 0.3);
+    --xyd-text-color--primary: var(--color-primary);
+    --xyd-text-color--secondary: var(--text-secondary);
+
+    /* Anchor */
+    --xyd-anchor-color: var(--color-primary);
+    --xyd-anchor-color--hover: var(--color-primary--active);
+
+    /* Hr */
+    --xyd-hr-border-color: var(--dark32);
+
+    /* List */
+    --xyd-list-marker-color: var(--dark48);
+    --xyd-list-item-bgcolor: var(--dark48);
+
+    /* NavLinks */
+    --xyd-navlinks-border-color: var(--dark32);
+
+    /* Pre */
+    --xyd-pre-bgcolor: var(--dark16);
+
+    /* Steps */
+    --xyd-steps-marker-bgcolor: var(--dark32);
+    --xyd-steps-marker-color: var(--dark80);
+
+    /* Table */
+    --xyd-table-border-color: var(--dark32);
+    --xyd-table-bgcolor: var(--dark16);
+
+    /* Tabs */
+    --xyd-tabs-bgcolor: var(--dark16);
+    --xyd-tabs-arrow-bgcolor: var(--color-bg);
+    --xyd-tabs-color: var(--dark48);
+    --xyd-tabs-color--active: var(--text-primary);
+    --xyd-tabs-bgcolor--active: var(--color-bg);
+    --xyd-tabs-shadow-color--active: rgba(0, 0, 0, 0.05);
+
+    /* TocCard */
+    --xyd-toccard-border-color: var(--dark32);
+    --xyd-toccard-border-color--active: var(--dark40);
+    --xyd-toccard-color: var(--dark48);
+    --xyd-toccard-title-color: var(--dark80);
+    --xyd-toccard-icon-color: var(--dark80);
+
+    /* UnderlineNav */
+    --xyd-underlinenav-bgcolor: var(--color-bg);
+    --xyd-underlinenav-border-color: hsl(212, 15%, calc(96% - 12% * 1));
+    --xyd-underlinenav-list-color: hsl(212, 15%, calc(96% - 12% * 4));
+    --xyd-underlinenav-color--active: var(--color-primary);
+
+    /* VideoGuide Miniature*/
+    --xyd-videoguide-miniature-mini-width: 202px;
+    --xyd-videoguide-miniature-mini-height: 113px;
+    --xyd-videoguide-miniature-expanded-height: 100px;
+    --xyd-videoguide-miniature-z-index: 1000;
+    --xyd-videoguide-miniature-radius: 4px;
+    --xyd-videoguide-miniature-shadow: 0 7px 14px 0 rgba(60, 66, 87, 0.08), 0 3px 6px 0 rgba(0, 0, 0, 0.12);
+    --xyd-videoguide-miniature-bgcolor: var(--color-bg);
+    --xyd-videoguide-miniature-duration: 0.3s;
+    --xyd-videoguide-miniature-color: var(--color-bg);
+
+    /* Nav */
+    --xyd-nav-height: 50px;
+    --xyd-nav-shadow-bgcolor: var(--color-bg);
+    --xyd-nav-item-color: var(--text-primary);
+    --xyd-nav-item-color--active: var(--dark80);
+    --xyd-nav-item-bgcolor--active: var(--dark16);
+
+    /* ProgressBar */
+    --xyd-progressbar-bgcolor: var(--dark16);
+    --xyd-progressbar-bgcolor--active: var(--color-primary);
+
+    /* Sidebar */
+    --xyd-sidebar-bgcolor: var(--dark16);
+    --xyd-sidebar-divider-color: var(--dark32);
+    --xyd-sidebar-divider-shadow-color: var(--dark32);
+
+    --xyd-sidebar-item-color--active: var(--text-primary);
+    --xyd-sidebar-item-bgcolor--active: var(--dark32);
+    --xyd-sidebar-item-bgcolor--active-hover: var(--dark32);
+    --xyd-sidebar-item-bgcolor--active-mark: var(--color-primary);
+    --xyd-sidebar-item-color: var(--dark48);
+    --xyd-sidebar-item-header-color: var(--text-primary);
+    --xyd-sidebar-item-padding-left: 16px;
+
+    /* SubNav */
+    --xyd-subnav-height: 44px;
+    --xyd-subnav-bgcolor: var(--dark16);
+    --xyd-subnav-prefix-color: var(--dark48);
+    --xyd-subnav-prefix-marker-color: var(--dark32);
+    --xyd-subnav-item-color: var(--dark48);
+    --xyd-subnav-item-color--active: var(--color-text);
+    --xyd-subnav-item-color--active-mark: var(--color-primary);
+
+    /* Toc */
+    --xyd-toc-bgcolor: var(--dark32);
+    --xyd-toc-scroll-bgcolor: var(--dark80);
+    --xyd-toc-item-color: var(--dark48);
+    --xyd-toc-item-color--active: var(--dark80);
+
+    /* SearchButton */
+    --xyd-searchbutton-background: var(--dark16);
+}
+
+/* Atlas */
+:root {
+    --XydAtlas-Ref-Palette-Primary-60: var(--purple80);
+    --XydAtlas-Ref-Palette-Primary-70: var(--purple80);
+    --XydAtlas-Ref-Palette-Primary-80: var(--purple80);
+    --XydAtlas-Ref-Palette-Neutral-10: var(--dark8);
+    --XydAtlas-Ref-Palette-Neutral-20: var(--dark16);
+    --XydAtlas-Ref-Palette-Neutral-30: var(--dark32);
+    --XydAtlas-Ref-Palette-Neutral-40: var(--dark48);
+    --XydAtlas-Ref-Palette-Neutral-70: var(--dark60);
+    --XydAtlas-Ref-Palette-Neutral-80: var(--dark80);
+    --XydAtlas-Ref-Palette-Neutral-100: var(--dark100);
+
+}

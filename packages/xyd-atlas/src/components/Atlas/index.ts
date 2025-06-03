@@ -1,3 +1,7 @@
-export * from "./Atlas"
+export { AtlasLazy } from "./AtlasLazy"
 
-export * from "./AtlasLazy"
+export { Atlas } from "./Atlas"
+
+export { AtlasContext } from "./AtlasContext"
+
+export type { AtlasProps } from "./types"

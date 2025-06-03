@@ -1,0 +1,44 @@
+{
+    "compilerOptions": {
+      "module": "esnext",
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "target": "ES6",
+      "lib": [
+        "dom",
+        "dom.iterable",
+        "esnext"
+      ],
+      "allowJs": true,
+      "skipLibCheck": true,
+      "strict": false,
+      "noEmit": false,
+      "incremental": false,
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "jsx": "react",
+      "plugins": [
+        {
+          "name": "next"
+        }
+      ],
+      "strictNullChecks": true,
+      "baseUrl": ".",
+      "paths": {
+        "@xyd-js/core": ["../xyd-core/src"]
+      },
+      "typeRoots": [
+        "./types.d.ts"
+      ]
+    },
+    "include": [
+      "next-env.d.ts",
+      "**/*.ts",
+      "**/*.tsx",
+      ".next/types/**/*.ts",
+      "types.d.ts"
+    ],
+    "exclude": [
+      "node_modules"
+    ]
+  }

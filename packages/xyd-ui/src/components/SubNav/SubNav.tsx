@@ -7,21 +7,22 @@ export interface SubNavProps {
     children: React.ReactNode
     title: string
     value: string
-    onChange: (value: string) => void
+    onChange?: (value: string) => void
+    className?: string
 }
 
-export function SubNav({children, title, value, onChange}: SubNavProps) {
+export function SubNav({ children, title, value, onChange, className }: SubNavProps) {
     return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
-        <nav className={cn.SubNavHost}>
-            <div className={cn.SubNavPrefix}>
+        <xyd-subnav className={`${cn.SubNavHost} ${className || ""}`}>
+            <div part="prefix">
                 {title}
             </div>
             <RadixTabs.List asChild>
-                <ul className={cn.SubNavUl}>
+                <ul part="list">
                     {children}
                 </ul>
             </RadixTabs.List>
-        </nav>
+        </xyd-subnav>
     </RadixTabs.Root>
 }
 
@@ -29,14 +30,23 @@ export interface SubNavItemProps {
     children: React.ReactNode
     value: string
     href?: string
+    as?: React.ElementType
 }
 
-SubNav.Item = function SubNavItem({children, value, href}: SubNavItemProps) {
+SubNav.Item = function SubNavItem({ children, value, href, as }: SubNavItemProps) {
+    const Link = as || $Link;
+
     return <RadixTabs.Trigger asChild value={value}>
-        <li className={cn.SubNavLi}>
-            <a href={href} className={cn.SubNavLink}>
-                {children}
-            </a>
-        </li>
+        <xyd-subnav-item>
+            <li className={cn.SubNavLi}>
+                <Link part="link" href={href}>
+                    {children}
+                </Link>
+            </li>
+        </xyd-subnav-item>
     </RadixTabs.Trigger>
+}
+
+function $Link({ children, ...props }) {
+    return <a {...props}>{children}</a>
 }

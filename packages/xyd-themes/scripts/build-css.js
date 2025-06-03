@@ -47,7 +47,7 @@ async function main() {
 
     await processCSS(
         path.join(__dirname, '../src/styles/reset.css'),
-        path.join(distDir, 'tokens.css')
+        path.join(distDir, 'reset.css')
     );
 }
 

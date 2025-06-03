@@ -5,6 +5,7 @@ import {MdxJsxFlowElement, MdxJsxAttribute} from "mdast-util-mdx-jsx";
 
 export type TocEntry = {
     depth: number,
+    id: string,
     value: string,
     attributes: { [key: string]: string },
     children: TocEntry[]
@@ -18,11 +19,17 @@ export type CustomTag = {
 export interface RemarkMdxTocOptions {
     name?: string,
     customTags?: CustomTag[],
+    maxDepth?: number,
     minDepth?: number
 }
 
 // TODO: fix any
 export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => async (ast: any) => {
+    if (!options?.minDepth) {
+        options.minDepth = 2
+    }
+
+    console.time('plugin:remarkMdxToc');
     const {visit} = await import("unist-util-visit");
     const {toString} = await import("mdast-util-to-string");
     const {valueToEstree} = await import('estree-util-value-to-estree')
@@ -47,6 +54,7 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
         }
         return {
             depth,
+            id: (node.data as any)?.hProperties?.id,
             value: toString(node, {includeImageAlt: false}),
             attributes,
             children: []
@@ -54,6 +62,7 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
     };
 
     visit(mdast, ["heading", "mdxJsxFlowElement"], node => {
+        // @ts-ignore
         let depth = 0;
         if (node.type === "mdxJsxFlowElement") {
             let valid = false;
@@ -79,7 +88,11 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
             return;
         }
 
-        if (depth && (options?.minDepth && options.minDepth > depth)) {
+        if (depth && (options?.maxDepth && options.maxDepth < depth)) {
+            return
+        }
+
+        if (depth && (options?.minDepth && depth < options.minDepth)) {
             return
         }
 
@@ -130,4 +143,5 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
         }
     };
     mdast.children.unshift(tocExport);
+    console.timeEnd('plugin:remarkMdxToc');
 };

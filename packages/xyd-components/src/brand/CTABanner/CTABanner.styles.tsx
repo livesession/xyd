@@ -60,8 +60,7 @@ export const CTABannerHeadingHost = css`
 `;
 
 export const CTABannerHeadingTitle = css`
-    font-size: 76px;
-    font-weight: 900;
+    font-weight: var(--xyd-font-weight-black);
     text-align: center;
     letter-spacing: 3px;
     margin: 0;
@@ -69,8 +68,7 @@ export const CTABannerHeadingTitle = css`
 
 export const CTABannerHeadingSubtitle = css`
     color: #3c3c43;
-    font-size: 46px;
-    font-weight: 600;
+    font-weight: var(--xyd-font-weight-semibold);
     text-align: center;
 `;
 
