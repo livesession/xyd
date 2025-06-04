@@ -98,7 +98,7 @@ async function processUniformFile(
                                 case 'ts': {
                                     const typedocRefs = await sourcesToUniformV2(
                                         packageDir,
-                                        [packageDir]
+                                        [relativeFilePath]
                                     )
 
                                     if (!typedocRefs || !typedocRefs.references) {
@@ -131,6 +131,7 @@ async function processUniformFile(
                                         packageDir,
                                         [relativeFilePath]
                                     )
+
                                     if (!resp || !resp.references || !resp.projectJson) {
                                         console.error("Failed to process uniform file", filePath)
                                         return null
@@ -138,6 +139,9 @@ async function processUniformFile(
                                     const typedocRefs = resp.references as Reference<TypeDocReferenceContext>[]
 
                                     references = uniformToReactUniform(typedocRefs, resp.projectJson)
+
+                                    console.log("references react", JSON.stringify(references), 22222,  JSON.stringify(typedocRefs))
+
 
                                     break
                                 }
@@ -152,16 +156,6 @@ async function processUniformFile(
                         console.error("package.json not found", filePath)
                     }
                 }
-
-                // case 'tsx': {
-                //     const code = fs.readFileSync(resolvedFilePath, 'utf8');
-                //     const references = reactDocgenToUniform(
-                //         code,
-                //         filePath
-                //     );
-
-                //     return references;
-                // }
 
                 case 'graphql': {
                     const references = await gqlSchemaToReferences(resolvedFilePath, {

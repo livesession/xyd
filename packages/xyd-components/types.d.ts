@@ -20,6 +20,7 @@ declare global {
 
         // Components
         'xyd-badge': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+        'xyd-banner': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-callout': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-breadcrumbs': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-guidecard': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
@@ -33,7 +34,7 @@ declare global {
         'xyd-underlinenav': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-underlinenav-content': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-videoguide-miniature': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-        'xyd-content-decorator': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>; 
+        'xyd-content-decorator': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-grid-decorator': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         // Kit
         'xyd-loader': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;

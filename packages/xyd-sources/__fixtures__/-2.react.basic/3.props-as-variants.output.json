@@ -1,0 +1,166 @@
+[
+  {
+    "title": "Details",
+    "canonical": "@xyd-js/sources/components/Details",
+    "description": "A collapsible details component that supports three variants: primary, secondary, and tertiary.\nEach variant has a different visual style and structure.\n",
+    "context": {
+      "symbolId": "39",
+      "symbolName": "Details",
+      "symbolKind": 64,
+      "packageName": "@xyd-js/sources",
+      "fileName": "3.props-as-variants.tsx",
+      "fileFullPath": "__fixtures__/-2.react.basic/src/3.props-as-variants.tsx",
+      "line": 60,
+      "col": 16,
+      "signatureText": {
+        "code": "",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "",
+        "lang": "ts"
+      },
+      "category": "Component",
+      "group": [
+        "@xyd-js",
+        "sources",
+        "Component"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Props",
+        "properties": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "parameters"
+          }
+        ],
+        "variants": [
+          {
+            "title": "PrimaryDetailsProps",
+            "properties": [
+              {
+                "name": "children",
+                "type": "React.ReactNode",
+                "description": "Content to be displayed inside the details element\n"
+              },
+              {
+                "name": "label",
+                "type": "string",
+                "description": "Label text displayed in the summary\n"
+              },
+              {
+                "name": "icon",
+                "type": "React.ReactElement",
+                "description": "Optional icon element to be displayed in the summary\n"
+              },
+              {
+                "name": "className",
+                "type": "string",
+                "description": "Optional CSS class name for custom styling\n"
+              },
+              {
+                "name": "kind",
+                "type": "\"primary\"",
+                "description": "Specifies the primary variant (default)\n"
+              }
+            ],
+            "meta": [
+              {
+                "name": "symbolName",
+                "value": "PrimaryDetailsProps"
+              }
+            ]
+          },
+          {
+            "title": "SecondaryDetailsProps",
+            "properties": [
+              {
+                "name": "children",
+                "type": "React.ReactNode",
+                "description": "Content to be displayed inside the details element\n"
+              },
+              {
+                "name": "label",
+                "type": "string",
+                "description": "Label text displayed in the summary\n"
+              },
+              {
+                "name": "icon",
+                "type": "React.ReactElement",
+                "description": "Optional icon element to be displayed in the summary\n"
+              },
+              {
+                "name": "className",
+                "type": "string",
+                "description": "Optional CSS class name for custom styling\n"
+              },
+              {
+                "name": "kind",
+                "type": "\"secondary\"",
+                "description": "Specifies the secondary variant\n"
+              },
+              {
+                "name": "title",
+                "type": "React.ReactNode",
+                "description": "Title text or element displayed in the summary\n"
+              }
+            ],
+            "meta": [
+              {
+                "name": "symbolName",
+                "value": "SecondaryDetailsProps"
+              }
+            ]
+          },
+          {
+            "title": "TertiaryDetailsProps",
+            "properties": [
+              {
+                "name": "children",
+                "type": "React.ReactNode",
+                "description": "Content to be displayed inside the details element\n"
+              },
+              {
+                "name": "label",
+                "type": "string",
+                "description": "Label text displayed in the summary\n"
+              },
+              {
+                "name": "icon",
+                "type": "React.ReactElement",
+                "description": "Optional icon element to be displayed in the summary\n"
+              },
+              {
+                "name": "className",
+                "type": "string",
+                "description": "Optional CSS class name for custom styling\n"
+              },
+              {
+                "name": "kind",
+                "type": "\"tertiary\"",
+                "description": "Specifies the tertiary variant\n"
+              },
+              {
+                "name": "title",
+                "type": "React.ReactNode",
+                "description": "Title text or element displayed in the summary\n"
+              }
+            ],
+            "meta": [
+              {
+                "name": "symbolName",
+                "value": "TertiaryDetailsProps"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

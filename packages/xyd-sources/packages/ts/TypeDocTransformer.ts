@@ -1,8 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import type { Reference, Definition, TypeDocReferenceContext, DefinitionProperty, DefinitionPropertyTypeDef, DefinitionTypeDocMeta } from "@xyd-js/uniform";
-
 import type {
     JSONOutput,
     ContainerReflection,
@@ -10,9 +8,18 @@ import type {
     SomeType,
     ReflectionSymbolId,
     Comment,
-    UnionType,
 } from 'typedoc';
-import { ReflectionKind } from "typedoc";
+import {ReflectionKind} from "typedoc";
+
+import type {
+    Reference,
+    Definition,
+    TypeDocReferenceContext,
+    DefinitionProperty,
+    DefinitionTypeDocMeta,
+    SymbolDef
+} from "@xyd-js/uniform";
+import {DEFINED_DEFINITION_PROPERTY_TYPE} from "@xyd-js/uniform";
 
 import {
     MultiSignatureLoader,
@@ -108,7 +115,7 @@ class Transformer {
 
         if (!packageJsonPaths.length) {
             console.warn('(Transformer.createPackagePathMap): No package.json found in rootPath', this.rootPath)
-            return { packageMap: null, moduleRootMap: null }
+            return {packageMap: null, moduleRootMap: null}
         }
 
         for (const packageJsonPath of packageJsonPaths) {
@@ -331,18 +338,27 @@ function typedocGroupToUniform(
 
             break
         }
+
         case ReflectionKind.Function: {
             ref = jsFunctionToUniformRef.call(this, group)
 
             break
         }
+
         case ReflectionKind.Interface: {
             ref = jsInterfaceToUniformRef.call(this, group)
 
             break
         }
+
         case ReflectionKind.Enum: {
             ref = jsEnumToUniformRef.call(this, group)
+
+            break
+        }
+
+        case ReflectionKind.TypeAlias: {
+            ref = jsTypeAliasToUniformRef.call(this, group)
 
             break
         }
@@ -453,7 +469,7 @@ function jsClassToUniformRef(
                 }
                 let type = ""
                 let someTypeProps = {}
-                if (methodSign.type) {          
+                if (methodSign.type) {
                     if (typeof methodSign.type === "object") {
                         someTypeProps = methodSign.type
                     }
@@ -582,7 +598,7 @@ function jsFunctionToUniformRef(
                     value: "parameters"
                 }
             ]
-            
+
             const parametersUniformDef: Definition = {
                 title: 'Parameters',
                 properties: [],
@@ -616,7 +632,8 @@ function jsFunctionToUniformRef(
                 switch (prop.name) {
                     case "__namedParameters": {
                         prop.name = ""
-                        prop.type = "param"
+                        prop.type = DEFINED_DEFINITION_PROPERTY_TYPE.UNION
+                        // prop.type = "param"
                         break
                     }
                 }
@@ -748,10 +765,10 @@ function jsInterfaceToUniformRef(
                 if (methodSign.comment) {
                     methodDesc = commentToUniformDescription(methodSign.comment)
                 }
-                
+
                 let type = ""
                 let someTypeProps = {}
-                if (methodSign.type) {          
+                if (methodSign.type) {
                     if (typeof methodSign.type === "object") {
                         someTypeProps = methodSign.type
                     }
@@ -975,13 +992,13 @@ function declarationUniformContext(
     if (!dec.sources || !dec.sources.length) {
         return
     }
-    
+
     if (dec.sources.length > 1) {
         console.warn('(declarationUniformContext): Multiple sources not supported for function declaration', dec.name)
     }
-    
+
     const source = dec.sources[0]
- 
+
     const signTxt = this.signatureTextLoader.signatureText(
         dec.id,
         source?.line
@@ -1027,20 +1044,20 @@ function declarationUniformContext(
 
 type SomeTypeUniform = string | {
     type?: string;
-    typeDef?: DefinitionPropertyTypeDef;
+    symbolDef?: SymbolDef;
     properties?: DefinitionProperty[]
 }
 
 function someTypeToUniform(someType: SomeType): SomeTypeUniform {
     switch (someType.type) {
         case "reference": {
-            let refType = `<${someType.qualifiedName || someType.name}>`
+            let refType = `${someType.qualifiedName || someType.name}`
 
             if ("target" in someType && typeof someType.target === "number") {
                 return {
                     type: refType,
-                    typeDef: {
-                        symbolId: someType.target?.toString()
+                    symbolDef: {
+                        id: someType.target?.toString()
                     }
                 }
             }
@@ -1050,21 +1067,20 @@ function someTypeToUniform(someType: SomeType): SomeTypeUniform {
         }
         case "union": {
             let types: string[] = []
-            let typeDefs: DefinitionPropertyTypeDef = {}
+            const symbolIds: string[] = []
 
             for (const t of someType.types) {
                 const tUniform = someTypeToUniform(t)
 
                 if (typeof tUniform === "object") {
                     types.push(tUniform.type || "")
-                    if (!typeDefs.union) {
-                        typeDefs.union = []
-                    }
 
-                    if (tUniform?.typeDef?.symbolId) {
-                        typeDefs.union.push({
-                            symbolId: tUniform.typeDef?.symbolId
-                        })
+                    if (tUniform?.symbolDef?.id) {
+                        if (Array.isArray(tUniform?.symbolDef?.id)) {
+                            symbolIds.push(...tUniform.symbolDef?.id)
+                        } else {
+                            symbolIds.push(tUniform.symbolDef.id)
+                        }
                     }
                 } else {
                     types.push(tUniform)
@@ -1073,14 +1089,16 @@ function someTypeToUniform(someType: SomeType): SomeTypeUniform {
 
             return {
                 type: types.join(" | "),
-                typeDef: typeDefs
+                symbolDef: {
+                    id: symbolIds,
+                }
             }
         }
         case "literal": {
             if (typeof someType.value === "string") {
                 return `"${someType.value}"`
             }
-            
+
             return (someType.value || "").toString()
         }
         case "reflection": {
@@ -1153,7 +1171,7 @@ function uniformCategory(dec?: DeclarationReflection): string {
             }
         }
     }
-   
+
     return category
 }
 

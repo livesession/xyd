@@ -53,12 +53,11 @@ export class TestClass {
         // });
 
         it('should return a reference to react component', async () => {
-            return
             const packagePath = path.resolve(fixturesBasePath, "react/react-a")
 
             const resp = await sourcesToUniformV2(packagePath,
                 [
-                    "src/TestAbc.tsx",
+                    "src/TestBasic.tsx",
                 ]
             );
             if (!resp || !resp.references || !resp.projectJson) {
@@ -78,8 +77,8 @@ export class TestClass {
             console.log(`React Uniform saved to: ${outputFilePathReact}`);
         });
 
-
         it('should return a reference to react component', async () => {
+            return
             const packagePath = path.resolve(fixturesBasePath, "packages3")
 
             const resp = await sourcesToUniformV2(packagePath,

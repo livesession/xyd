@@ -126,9 +126,6 @@ export function oapPathToReference(
 
         let properties: DefinitionProperty[] = []
         let rootProperty: DefinitionProperty | undefined
-        if ((oapMethod.operationId || slug(oapMethod?.summary || "")) === "createResponse") {
-            console.log(5)
-        }
         let propertiesResp = oapRequestBodyToDefinitionProperties(reqBody, findSupportedContent) || []
 
         if (Array.isArray(propertiesResp)) {

@@ -2,6 +2,8 @@ export * from "./Anchor"
 
 export * from "./Badge"
 
+export * from "./Banner"
+
 export * from "./Blockquote"
 
 export * from "./Breadcrumbs"

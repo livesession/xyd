@@ -11,6 +11,7 @@ export interface ButtonProps {
     disabled?: boolean;
     icon?: React.ReactElement;
     iconPosition?: "left" | "right";
+    href?: string;
 }
 
 export function Button({
@@ -21,10 +22,22 @@ export function Button({
     onClick,
     disabled = false,
     icon,
-    iconPosition = "left"
+    iconPosition = "left",
+    href
 }: ButtonProps) {
+    let Component = href ? "a" : "button"
+
+    let hrefProps = {}
+
+    if (href) {
+        hrefProps = {
+            href,
+            target: "_blank",
+        }
+    }
+
     return (
-        <button
+        <Component
             className={`${cn.ButtonHost} ${className || ''}`}
             data-kind={kind}
             data-size={size}
@@ -32,6 +45,7 @@ export function Button({
             data-icon-position={iconPosition}
             onClick={onClick}
             disabled={disabled}
+            {...hrefProps}
         >
             {icon && iconPosition === "left" && (
                 <span part="icon" className={cn.ButtonIcon}>
@@ -46,6 +60,6 @@ export function Button({
                     {icon}
                 </span>
             )}
-        </button>
+        </Component>
     );
 }

@@ -14,6 +14,9 @@ import {
 
 import {GQLOperation, GQLSchemaToReferencesOptions, OpenDocsSortConfig} from "./types";
 
+const OPEN_DOCS_DIRECTIVE_NAME = "opendocs";
+const OPEN_DOCS_DIRECTIVE_NAME_ALT = "doc";
+
 export function openDocsExtensionsToOptions(
     schema: GraphQLSchema,
 ) {
@@ -25,8 +28,12 @@ export function openDocsExtensionsToOptions(
             for (const directive of extension.directives || []) {
                 if (directive.name.value === 'od_schema') {
                     for (const arg of directive.arguments || []) {
-                        if (arg.name.value === 'flattenTypes' && arg.value.kind === 'BooleanValue' && arg.value.value === true) {
-                            options.flat = true
+                        if (arg.name.value === 'flattenTypes' && arg.value.kind === 'BooleanValue') {
+                            if (arg.value.value === true) {
+                                options.flat = true
+                            } else if (arg.value.value === false) {
+                                options.flat = false
+                            }
                         } else if (arg.name.value === 'sort' && arg.value.kind === 'ObjectValue') {
                             const sortConfig: OpenDocsSortConfig = {};
                             for (const field of arg.value.fields) {
@@ -68,7 +75,8 @@ export function openDocsToGroup(
     for (const directive of odGqlNode.astNode.directives) {
         switch (directive.name.value) {
             // TODO IN THE FUTURE !!! OPEN DOCS SPEC !!!
-            case "opendocs": {
+            case OPEN_DOCS_DIRECTIVE_NAME:
+            case OPEN_DOCS_DIRECTIVE_NAME_ALT: {
                 const groupArg = directive.arguments?.find(arg => arg.name.value === 'group')
                 if (groupArg?.value.kind === 'ListValue') {
                     groups = groupArg.value.values

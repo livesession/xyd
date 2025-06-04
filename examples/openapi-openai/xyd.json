@@ -13,46 +13,19 @@
     "navigation": {
         "header": [
             {
-                "name": "Docs",
-                "url": "/docs"
-            },
-            {
                 "name": "API Reference",
-                "url": "/docs/api-reference"
-            },
-            {
-                "sub": {
-                    "route": "/docs/api",
-                    "name": "API",
-                    "items": [
-                        {
-                            "name": "REST API",
-                            "url": "/docs/api"
-                        }
-                    ]
-                }
+                "url": "/api-reference"
             }
         ],
         "sidebar": [
             {
-                "route": "docs",
-                "items": [
-                    {
-                        "group": "Get Started",
-                        "pages": [
-                            "docs/quickstart"
-                        ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/api-reference",
+                "route": "api-reference",
                 "items": [
                     {
                         "group": "API Reference",
                         "sort": 0,
                         "pages": [
-                            "docs/api-reference/introduction"
+                            "api-reference/introduction"
                         ]
                     }
                 ]
@@ -63,7 +36,7 @@
         "openapi": {
             "rest": {
                 "source": "./openapi.yaml",
-                "route": "docs/api-reference"
+                "route": "api-reference"
             }
         }
     },

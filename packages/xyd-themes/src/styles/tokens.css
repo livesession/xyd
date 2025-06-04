@@ -1,6 +1,7 @@
 /* Global */
 :root {
     --white: #fff;
+    --black: #000;
     --dark8: #f7f7f8;
     --dark16: #f9f9f9;
     --dark32: #ececf1;
@@ -8,9 +9,10 @@
     --dark48: #6e6e80;
     --dark60: #443a3a;
     --dark80: #111827;
-    --dark100: #000;
+    --dark100: var(--black);
     --purple80: #7051d4;
     --purple100: #2e108e;
+    --blue16: #e4edff;
     --blue32: #60A5FA;
     --blue80: #1971a8;
     --green80: #28a745;
@@ -45,7 +47,7 @@
     --xyd-layout-sidebar-bgcolor: var(--color-bg);
 
     --xyd-header-total-height: calc(var(--xyd-nav-height) + var(--xyd-subnav-height));
-    --xyd-header-warning-height: 0px;
+    --xyd-header-warning-height: calc(var(--xyd-banner-height));
 
     --xyd-layout-width-small: 800px;
     --xyd-layout-width-medium: 1000px;
@@ -149,6 +151,12 @@
     --xyd-badge-bgcolor--warning: var(--yellow80);
     --xyd-badge-color--info: var(--color-bg);
     --xyd-badge-bgcolor--info: var(--blue80);
+
+    /* Banner */
+    --xyd-banner-height: 35px;
+    --xyd-banner-bgcolor: var(--blue16);
+    --xyd-banner-color: var(--black);
+
 
     /* Breadcrumbs */
     --xyd-breadcrumbs-color: var(--dark48);

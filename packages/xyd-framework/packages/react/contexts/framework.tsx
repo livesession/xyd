@@ -3,6 +3,7 @@ import { useNavigation } from "react-router";
 
 import { Metadata, Settings } from "@xyd-js/core";
 import { type ITOC, type IBreadcrumb, type INavLinks, ProgressBar } from "@xyd-js/ui";
+import { Banner, Button } from "@xyd-js/components/writer";
 
 import { FwSidebarGroupProps } from "../components/Sidebar";
 import { SurfaceContext, Surfaces } from "../components/Surfaces";
@@ -34,23 +35,30 @@ export interface FrameworkProps {
     sidebarGroups: FwSidebarGroupProps[],
     surfaces: Surfaces,
     IconComponent: React.ComponentType<{ name: string, width?: number, height?: number }>
+    BannerComponent: React.ComponentType<any>
 }
 
 export function Framework(props: FrameworkProps) {
     const navigation = useNavigation()
+
     const [metadata, setMetadata] = useState<Metadata | undefined>(props.metadata)
-    
+
+    const BannerComponent = props.BannerComponent || null
+
     return <FrameworkContext value={{
         settings: Object.freeze({ ...props.settings }),
         sidebarGroups: Object.freeze([...props.sidebarGroups]),
         metadata: Object.freeze({ ...metadata }),
         setMetadata: setMetadata,
-        IconComponent: props.IconComponent
+        IconComponent: props.IconComponent,
     }}>
         <SurfaceContext value={{
             surfaces: props.surfaces
         }}>
             <ProgressBar isActive={navigation.state === 'loading'} />
+            {BannerComponent ? <Banner>
+                <BannerComponent />
+            </Banner> : null}
 
             {props.children}
         </SurfaceContext>
@@ -156,6 +164,6 @@ export function useRawPage() {
 
 export function useContentComponent() {
     const ctx = useContext(FrameworkPageContext)
-    
+
     return ctx.ContentComponent
 }

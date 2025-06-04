@@ -45,6 +45,10 @@ export async function gqlSchemaToReferences(
         options = {}
     }
 
+    if (!options.hasOwnProperty('flat')) {
+        options.flat = true; // Default flat is true
+
+    }
     options = {
         ...options,
         ...openDocsExtensionsToOptions(schema)

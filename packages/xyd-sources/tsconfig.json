@@ -22,6 +22,12 @@
     // Add this line
   },
   "include": [
+    "__fixtures__/**/*.ts",
+    "__fixtures__/**/*.tsx",
+    "__tests__/**/*.ts",
+    "__tests__/**/*.tsx",
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
     "src/**/*.ts",
     "src/**/*.tsx"
   ],

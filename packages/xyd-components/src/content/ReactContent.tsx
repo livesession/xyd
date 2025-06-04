@@ -41,6 +41,7 @@ import {
     IconNextJS,
     IconAppTemplate,
     IconQuote,
+    Button,
 } from '../writer'
 import { CodeSample } from "../coder";
 import { GridDecorator } from './GridDecorator';
@@ -285,6 +286,7 @@ export function writerContent() {
         Tabs,
         Table,
         Badge,
+        Button,
         UnderlineNav: UnderlineNavContent,
 
         Subtitle(props) {

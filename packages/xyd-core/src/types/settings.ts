@@ -60,6 +60,11 @@ export interface Theme {
      */
     logo?: string | Logo | React.JSX.Element
 
+    /**
+     * Banner configuration for the theme.
+     */
+    banner?: Banner
+
     /** Path to the favicon image. For example: /path/to/favicon.svg */
     favicon?: string;
 
@@ -119,6 +124,15 @@ export interface Logo {
     href?: string;
 }
 
+/**
+ * Banner configuration interface
+ */
+export interface Banner {
+    /**
+     * Banner content.
+     */
+    content: string | React.JSX.Element
+}
 
 export interface IconLibrary {
      /** The iconify library name */
@@ -630,9 +644,9 @@ export interface Engine {
     uniform?: EngineUniform
 }
 
-type EnginePaths = { [key: string]: string[] }
+export type EnginePaths = { [key: string]: string[] }
 
-type EngineUniform = {
+export type EngineUniform = {
     /**
      * If `true` then virtual pages will not created and generated content will be stored on disk
      */

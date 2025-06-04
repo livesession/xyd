@@ -35,16 +35,18 @@ import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
 
 import { PageContext } from "./context";
-import { ReactElement, SVGProps } from "react";
+import { ReactElement, SVGProps, useMemo } from "react";
 import React from "react";
+import { markdownPlugins } from "@xyd-js/content/md";
+import { ContentFS } from "@xyd-js/content";
 
 globalThis.__xydSettings = getSettings
-    
+
 new Composer() // TODO: better API
 const settings = globalThis.__xydSettings
 
 // TODO: better place for that? - it should be managed by framework?
-function Icon({name, width = 24, height = 24}: {name: string, width?: number, height?: number}) {
+function Icon({ name, width = 24, height = 24 }: { name: string, width?: number, height?: number }) {
     if (!iconSet) {
         return null
     }
@@ -84,6 +86,11 @@ globalThis.__xydSurfaces = surfaces
 
 const theme = new Theme()
 
+const mdPlugins = markdownPlugins({
+    maxDepth: settings?.theme?.maxTocDepth || 2,
+}, settings)
+const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
+
 const { Layout: BaseThemeLayout } = theme
 
 interface LoaderData {
@@ -93,6 +100,7 @@ interface LoaderData {
     slug: string
     metadata: Metadata | null
     navlinks?: INavLinks,
+    bannerContentCode?: string
 }
 
 export async function loader({ request }: { request: any }) {
@@ -109,12 +117,21 @@ export async function loader({ request }: { request: any }) {
         slug,
     )
 
+    let bannerContentCode = ""
+
+    if (settings?.theme?.banner?.content && typeof settings?.theme?.banner?.content === "string") {
+        bannerContentCode = await contentFs.compileContent(
+            settings?.theme?.banner?.content,
+        )
+    }
+
     return {
         sidebarGroups,
         breadcrumbs,
         navlinks,
         slug,
         metadata,
+        bannerContentCode
     } as LoaderData
 }
 
@@ -138,6 +155,18 @@ export default function Layout() {
         ];
     }
 
+    let BannerComponent: any = null
+    // TODO: !!!! BETTER API !!!!
+    if (loaderData.bannerContentCode) {
+        const bannerContent = mdxContent(loaderData.bannerContentCode)
+        const BannerContent = MemoMDXComponent(bannerContent.component)
+
+        BannerComponent = function () {
+            return <BannerContent components={theme.reactContentComponents()} />
+        }
+    }
+
+
     return <>
         <Framework
             settings={settings || globalThis.__xydSettings}
@@ -145,6 +174,7 @@ export default function Layout() {
             metadata={loaderData.metadata || {}}
             surfaces={surfaces}
             IconComponent={Icon}
+            BannerComponent={BannerComponent}
         >
             <AtlasContext
                 value={{
@@ -168,3 +198,77 @@ function getPathname(url: string) {
     return parsedUrl.pathname.replace(/^\//, '');
 }
 
+
+// TODO: move to content?
+function mdxExport(code: string) {
+    // Create a wrapper around React.createElement that adds keys to elements in lists
+    const scope = {
+        Fragment: React.Fragment,
+        jsxs: createElementWithKeys,
+        jsx: createElementWithKeys,
+        jsxDEV: createElementWithKeys,
+    }
+    const fn = new Function(...Object.keys(scope), code)
+
+    return fn(scope)
+}
+
+
+// // TODO: move to content?
+function mdxContent(code: string) {
+    const content = mdxExport(code) // TODO: fix any
+    if (!mdxExport) {
+        return {}
+    }
+
+    return {
+        component: content?.default,
+    }
+}
+
+const createElementWithKeys = (type: any, props: any) => {
+    // Process children to add keys to all elements
+    const processChildren = (childrenArray: any[]): any[] => {
+        return childrenArray.map((child, index) => {
+            // If the child is a React element and doesn't have a key, add one
+            if (React.isValidElement(child) && !child.key) {
+                return React.cloneElement(child, { key: `mdx-${index}` });
+            }
+            // If the child is an array, process it recursively
+            if (Array.isArray(child)) {
+                return processChildren(child);
+            }
+            return child;
+        });
+    };
+
+    // Handle both cases: children as separate args or as props.children
+    let processedChildren;
+
+    if (props && props.children) {
+        if (Array.isArray(props.children)) {
+            processedChildren = processChildren(props.children);
+        } else if (React.isValidElement(props.children) && !props.children.key) {
+            // Single child without key
+            processedChildren = React.cloneElement(props.children, { key: 'mdx-child' });
+        } else {
+            // Single child with key or non-React element
+            processedChildren = props.children;
+        }
+    } else {
+        processedChildren = [];
+    }
+
+    // Create the element with processed children
+    return React.createElement(type, {
+        ...props,
+        children: processedChildren
+    });
+};
+
+function MemoMDXComponent(codeComponent: any) {
+    return useMemo(
+        () => codeComponent ? codeComponent : null,
+        [codeComponent]
+    )
+}

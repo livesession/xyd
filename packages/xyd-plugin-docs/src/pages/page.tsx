@@ -4,7 +4,7 @@ import * as React from "react";
 import { useMemo, useContext, ReactElement, SVGProps } from "react";
 import { redirect, ScrollRestoration, useLocation } from "react-router";
 
-import { MetadataMap, Metadata } from "@xyd-js/core"
+import { MetadataMap, Metadata, Settings } from "@xyd-js/core"
 import { ContentFS } from "@xyd-js/content"
 import { markdownPlugins } from "@xyd-js/content/md"
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
@@ -14,7 +14,7 @@ import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
 // @ts-ignore
-const { settings } = virtualSettings
+const { settings } = virtualSettings as Settings
 import { PageContext } from "./context";
 import { SUPPORTED_META_TAGS } from "./metatags";
 
@@ -322,22 +322,6 @@ export function MemoMDXComponent(codeComponent: any) {
 export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     const location = useLocation()
 
-    // const surfaces = new Surfaces()
-    // const reactContent = new ReactContent(settings, {
-    //     Link: FwLink,
-    //     components: {
-    //         Atlas
-    //     },
-    //     useLocation, // // TODO: !!!! BETTER API !!!!!
-    //     useNavigate,
-    //     useNavigation
-    // })
-    // globalThis.__xydThemeSettings = settings?.theme
-    // globalThis.__xydReactContent = reactContent
-    // globalThis.__xydSurfaces = surfaces
-
-    // const theme = new Theme()
-
     const { theme } = useContext(PageContext)
     if (!theme) {
         throw new Error("BaseTheme not found")
@@ -364,3 +348,5 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
         </Page>
     </FrameworkPage>
 }
+
+

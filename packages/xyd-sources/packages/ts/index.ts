@@ -1,5 +1,6 @@
-import path from 'node:path';
-import fs from 'node:fs';
+import * as path from 'node:path';
+import { resolve } from "path";
+import ts from "typescript";
 
 import * as TypeDoc from 'typedoc';
 import type {NormalizedPath, TypeDocOptions} from "typedoc";
@@ -8,6 +9,8 @@ import type { Reference, ReferenceContext } from "@xyd-js/uniform";
 import {
     typedocToUniform
 } from "./TypeDocTransformer"
+
+const importedFiles = new Set<string>();
 
 // TODO: SUPPORT GET FROM URL + VIRTUAL FS (OR NO FS JUST SET NEEDED OPTIONS VIA CODE)
 // TODO: in the future typedoc options?
@@ -33,22 +36,32 @@ export async function sourcesToUniformV2(
         // @ts-ignore
         includeVersion: true,
         // @ts-ignore
-        hideGenerator: true,
+        // hideGenerator: true,
         // @ts-ignore
         skipErrorChecking: true,
 
         // @ts-ignore
         sort: ['source-order'], 
         // @ts-ignore
-        sortEntryPoints: false
+        sortEntryPoints: false,
     }
+
     const options = {
         ...commonOptions,
     }
     const everySingleFile = entryPoints?.every(ep => !!path.extname(ep))
     
     if (everySingleFile) {
-        options.entryPoints = entryPoints?.map(ep => path.resolve(root, ep))
+         entryPoints.map(ep => {
+            findImports(root, path.resolve(root, ep));
+        })
+        const fileImported = Array.from(importedFiles) || []
+        options.entryPoints = [
+            ...[
+                ...entryPoints,
+                ...fileImported
+            ]?.map(ep => path.resolve(root, ep))
+        ]
     } else {
         options.entryPointStrategy = TypeDoc.EntryPointStrategy.Packages
         options.entryPoints = entryPoints
@@ -68,7 +81,6 @@ export async function sourcesToUniformV2(
     const jsonOutput = await app.serializer.projectToObject(project, root as NormalizedPath);
     const projectJson = jsonOutput as unknown as TypeDoc.JSONOutput.ProjectReflection;
 
-    // TODO: do better validation
     if (!projectJson.schemaVersion || !projectJson.children || !projectJson.children.length) {
         console.error('Failed to generate documentation.');
         return
@@ -84,3 +96,30 @@ export async function sourcesToUniformV2(
         projectJson
     }
 }
+
+// TODO: nested strategy
+// TODO: better mechanism?
+function findImports(root: string, file: string, seen = new Set()) {
+    if (seen.has(file)) return;
+    seen.add(file);
+
+    const source = ts.createSourceFile(
+        file,
+        ts.sys.readFile(file) || "",
+        ts.ScriptTarget.Latest,
+        true
+    );
+
+    for (const stmt of source.statements) {
+        if (ts.isImportDeclaration(stmt) && stmt.moduleSpecifier) {
+            const importPath = stmt.moduleSpecifier.getText().replace(/['"]/g, "");
+            if (importPath.startsWith(".")) {
+                const resolved = resolve(file, "..", importPath + ".ts"); // TODO: support .tsx also + aliases
+                const relativePath = path.relative(root, resolved);
+                importedFiles.add(relativePath);
+                findImports(root, resolved, seen);
+            }
+        }
+    }
+}
+

@@ -83,7 +83,7 @@ const tests: {
 describe("gqlSchemaToReferences", () => {
     tests.forEach((test) => {
         it(`[${test.name}]: ${test.description}`, async () => {
-            await testGqlSchemaToReferences(test.name, test.options);
+            await testGqlSchemaToReferences(test);
         });
     });
 });

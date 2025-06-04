@@ -17,22 +17,43 @@ export const ButtonHost = css`
         &[data-size="sm"] {
             height: 28px;
             padding: 0 12px;
-            font-size: 13px;
             gap: 6px;
+
+            font-size: var(--xyd-font-size-xsmall);
+            line-height: var(--xyd-line-height-xsmall);
+
+            p {
+                font-size: var(--xyd-font-size-xsmall);
+                line-height: var(--xyd-line-height-xsmall);
+            }
         }
 
         &[data-size="md"] {
             height: 36px;
             padding: 0 16px;
-            font-size: 14px;
             gap: 8px;
+
+            font-size: var(--xyd-font-size-small);
+            line-height: var(--xyd-line-height-small);
+
+            p {
+                font-size: var(--xyd-font-size-small);
+                line-height: var(--xyd-line-height-small);
+            }
         }
 
         &[data-size="lg"] {
             height: 44px;
             padding: 0 20px;
-            font-size: 15px;
             gap: 10px;
+
+            font-size: var(--xyd-font-size-medium);
+            line-height: var(--xyd-line-height-medium);
+
+            p {
+                font-size: var(--xyd-font-size-medium);
+                line-height: var(--xyd-line-height-medium);
+            }
         }
 
         &[data-kind="primary"] {

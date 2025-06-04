@@ -38,6 +38,8 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
     badge: true,
 
     grid: "GridDecorator",
+
+    button: true,
 }
 
 const supportedTextDirectives: MarkdownComponentDirectiveMap = {
