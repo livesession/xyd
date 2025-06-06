@@ -1,5 +1,5 @@
 ---
-title: Special symbols
+title: Special Symbols
 icon: omega
 ---
 
@@ -65,37 +65,39 @@ Function Calling (`@<function>`) is used to execute [functions](#) within your m
 ## `Output Variable`
 Output Variable (`<<<<out_variable>{<attributes>}`) is used to pass [output variables](#) from content files, useful for customizing documentation behavior:
 
+~~~md
+<<<examples{title="Samples"}
+```tsx
+<Callout>
+Note that you must have an Admin or Owner role to manage webhook settings.
+</Callout>
+```
+
 ```md
-<<<toc{anchor="bottom"}
-:::toc-card{title="Starter" href="https://github.com/xyd-js/starter"}
-  Check out our starter repo
+:::callout
+Note that you must have an Admin or Owner role to manage webhook settings.
 :::
+```
 <<<
-```
+~~~
 
-```mdx
-!$page.githubDemo{
-  title="Starter",
-  description="Check out our starter repo" 
-  href="xyd-js/starter"
-}
-```
 
-```ts
+###  Output Variable API {label="Coming soon"}
+Define your own custom output variable using follow API:
 
-class MyTheme extends BaseTheme {
-  
-  @outputVar("toc")
-  @defineOutputVar("page", "githubDemo")
-  outputVarGithubDemo({title, description, href}) {
-    return <TocCard 
-      title={title} 
-      href={`httpss://github.com/${href}`} 
-     icon={<IconGithub/>}
-    >
-      {description}
-    </TocCard>
+```tsx
+import {BaseTheme} from "xyd-js/themes"
+
+export class MyTheme extends BaseTheme {
+  contructor() {
+    super()
+
+    this.registerOutputVariable(Examples, "examples")
   }
+}
+
+function Examples({title, children}) {
+  // your custom logic here
 }
 
 ```

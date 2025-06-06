@@ -4,7 +4,7 @@ import * as fs from "node:fs";
 import {expect} from "vitest";
 
 import type {Test} from "./types";
-import {sourcesToUniformV2} from "../packages/ts";
+import {sourcesToUniformV2, uniformToMiniUniform} from "../packages/ts";
 import {Reference, TypeDocReferenceContext} from "@xyd-js/uniform";
 import {uniformToReactUniform} from "../packages/react";
 
@@ -31,15 +31,19 @@ export async function testSourcesToUniform(test: Test) {
     let result: Reference[]
     {
         const references = resp.references as Reference<TypeDocReferenceContext>[]
-        const reactUniform = uniformToReactUniform(references, resp.projectJson)
+        const referencesCopy = JSON.parse(JSON.stringify(references));
         if (test.react) {
+            const reactUniform = uniformToReactUniform(references, resp.projectJson)
             result = reactUniform;
+        } else if (test.miniUniformRoot) {
+            const miniUniform = uniformToMiniUniform(test.miniUniformRoot, references)
+            result = miniUniform;
         } else {
             result = resp.references;
         }
 
         if (test.saveUniform) {
-            saveResultAsOutput(fixtureFile, fixtureName, references, test.multiOutput || false, true);
+            saveResultAsOutput(fixtureFile, fixtureName, referencesCopy, test.multiOutput || false, true);
         }
     }
 

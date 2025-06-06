@@ -52,10 +52,13 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
                     .map(attribute => [(attribute as MdxJsxAttribute).name, attribute.value])
             ) as TocEntry['attributes'];
         }
+        let value = toString(node, {includeImageAlt: false});
+        // Remove all props in curly braces
+        value = value.replace(/\s*\{[^}]+\}/g, '');
         return {
             depth,
             id: (node.data as any)?.hProperties?.id,
-            value: toString(node, {includeImageAlt: false}),
+            value,
             attributes,
             children: []
         }

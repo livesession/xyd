@@ -105,7 +105,7 @@ export interface Meta<T = string> {
     value?: unknown; // TODO: better type?
 }
 
-export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum-type"> // TODO: better solution than enum-type?
+export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "internal" | "defaults" | "nullable" | "enum-type"> // TODO: better solution than enum-type?
 
 export enum DEFINED_DEFINITION_PROPERTY_TYPE {
     UNION = "$$union",
@@ -134,6 +134,8 @@ export interface DefinitionProperty {
     context?: any // TODO: better type
 
     properties?: DefinitionProperty[];
+
+    rootProperty?: DefinitionProperty;
 }
 
 export interface ExampleRoot {
@@ -257,6 +259,8 @@ export interface OpenAPIReferenceContext extends BaseReferenceContext {
     componentSchema?: string
 }
 
+export type TypeDocReferenceContextMeta = Meta<"internal">
+
 // Add TypeDocReferenceContext to the union type
 export interface TypeDocReferenceContext extends BaseReferenceContext {
     symbolId: string;
@@ -276,6 +280,7 @@ export interface TypeDocReferenceContext extends BaseReferenceContext {
         lang: string;
     };
     category?: string;
+    meta?: TypeDocReferenceContextMeta[]
 }
 
 export type ReferenceContext = GraphQLReferenceContext | OpenAPIReferenceContext | TypeDocReferenceContext

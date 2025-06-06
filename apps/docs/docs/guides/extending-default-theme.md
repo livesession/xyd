@@ -5,39 +5,49 @@ icon: pencil-ruler
 
 # Extending the Default Theme
 :::subtitle
-Learn how to extend the default theme to match your brand.
+Learn how to extend the default theme 
 :::
 
 While [theme settings](/docs/guides/theme-settings) provide a quick way to customize your documentation,
-extending the default theme gives you more flexibility and control. 
+extending the default theme gives you more flexibility and programmable control. 
  
 This approach allows you to build upon the existing design while adding your own customizations, all while maintaining the core functionality of the default theme.
 
 :::callout
-All built-in themes like [poetry](#) or [gusto](#) are based on the default theme. 
+All built-in themes like [poetry](#) or [opener](#) are based on the default theme. 
 :::
 
 ## Getting Started
 
-To extend the default theme, create a `.xyd/theme` directory in your project root and add an `index.ts` file:
-
+:::steps
+1. To extend the default theme, create a `.docs/theme` directory in your project root and add an `index.ts` file:
 ```ts
-import {BaseTheme, type Theme} from "xyd-js/themes"
+export {default} from "./theme"
+```
+
+2. Next define your own theme based on [`BaseTheme`](/docs/reference/source/BaseTheme):
+```tsx
+import {BaseTheme} from "xyd-js/themes"
 
 export default class MyTheme extends BaseTheme {
-    constructor(theme: Theme) {
-        super(theme);
+    constructor() {
+        super();
         
         // Access theme settings
-        const {logo, favicon} = theme;
+        const {logo, favicon} = this.theme;
         
         // Add your customizations here
     }
 }
 ```
+:::
 
 Full source code of the default theme you can find 
 [here](https://github.com/livesession/xyd/blob/master/packages/xyd-themes/src/BaseTheme.tsx).
+
+:::callout
+Theme must be exported as a default.
+:::
 
 ## Overriding Theme Settings
 
@@ -48,6 +58,7 @@ You can override default theme settings by extending the theme configuration in 
     "theme": {
         "name": "poetry",
         "markdown": {
+            // !diff 
             "syntaxHighlight": "material-ocean",
             // ... other markdown settings
         },
@@ -59,78 +70,93 @@ You can override default theme settings by extending the theme configuration in 
 Then in your theme class, you can modify these settings:
 
 ```ts
+import {BaseTheme} from "xyd-js/themes"
+
 export default class MyTheme extends BaseTheme {
-    constructor(theme: Theme) {
-        super(theme);
+    constructor() {
+        super();
         
-        theme.markdown.syntaxHighlight = "github-dark";
+        // !diff 
+        this.theme.markdown.syntaxHighlight = "github-dark";
     }
 }
 ```
 
-### Style Customization
+## Style Customization
 
-Create an `index.css` file in your `.xyd/theme` directory to add custom styles:
+Create an `index.css` file in your `.xyd/theme` directory and import that to add custom styles:
 
-```css
-/* Custom styles for your extended theme */
-.custom-layout {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-}
+```tsx
+import {BaseTheme} from "xyd-js/themes"
 
-.custom-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 0;
+import './index.css';
+
+export default class MyTheme extends BaseTheme {
+...
 }
 ```
 
 :::callout
-For more advanced customization needs, consider [creating a custom theme](/docs/guides/custom-theme) from scratch.
+You can add as many style file as you want. Also names of your imported styles are your own.
 :::
-
-## Adding a Custom Component
+ 
+## Adding a Custom Component {label="Coming soon"}
 
 Here's an example of how to add a custom component to your extended theme:
 
-```tsx
-export default class MyTheme extends BaseTheme {
-    constructor(theme: Theme) {
-        super(theme);
-        
-        // Register custom component
-        this.registerComponent(CustomBanner, 'custom-banner');
+ :::code-group{}
+  ```tsx Settings API
+    export default {
+        components: {
+            CustomBanner
+        }
     }
-}
+  
+    function CustomBanner({kind, children}) {
+        return <div class={`banner banner-${kind}`}>
+            {children}
+        </div>
+    }
+  ```
 
-function CustomBanner({text, children}: {text: string, children: React.ReactNode}): string {
-    return <div class="custom-banner">
-        <p>{text}</p>
-        {children}
-    </div>
-}
-```
+  ```tsx Theme API
+    import {BaseTheme} from "xyd-js/themes"
+
+    export default class MyTheme extends BaseTheme {
+        constructor() {
+            super());
+            
+            // Register custom component
+            this.registerComponent(CustomBanner, 'custom-banner');
+        }
+    }
+
+    function CustomBanner({kind, children}) {
+        return <div class={`banner banner-${kind}`}>
+            {children}
+        </div>
+    }
+  ``` 
+  :::
+
 
 You can then use this component in your markdown:
 
 ```md
-:::custom-banner{text="Welcome to our documentation!"}
-I'm a child
+:::custom-banner{kind="info"}
+    Welcome to our documentation!
 :::
 ```
 
 or you can use a MDX syntax too:
 
 ```mdx
-<CustomBanner text="Welcome to our documentation!">
-    <>I'm a child</>
+<CustomBanner kind="info">
+    Welcome to our documentation!
 </CustomBanner>
 ```
 
 :::callout
-If you not set `name` in [`registerComponent`](#) function, it will 
+If you not set name in [`registerComponent`](/docs/reference/source/BaseTheme#registerComponent) function, it will 
 convert PascalCase to kebab-case for markdown syntax.
 :::

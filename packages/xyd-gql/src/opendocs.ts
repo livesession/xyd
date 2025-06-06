@@ -15,7 +15,7 @@ import {
 import {GQLOperation, GQLSchemaToReferencesOptions, OpenDocsSortConfig} from "./types";
 
 const OPEN_DOCS_DIRECTIVE_NAME = "opendocs";
-const OPEN_DOCS_DIRECTIVE_NAME_ALT = "doc";
+const OPEN_DOCS_DIRECTIVE_NAME_ALT = "docs";
 
 export function openDocsExtensionsToOptions(
     schema: GraphQLSchema,

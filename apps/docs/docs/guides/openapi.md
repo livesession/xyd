@@ -1,5 +1,10 @@
 ---
 title: OpenAPI
+icon: simple-icons:openapiinitiative
+tocGithub: 
+    link: https://github.com/xyd-js/openapi-samples
+    title: OpenAPI Samples
+    description: Learn how to setup OpenAPI pages
 ---
 
 # OpenAPI
@@ -7,175 +12,146 @@ title: OpenAPI
 Reference OpenAPI endpoints in your docs pages
 :::
 
-## Add an OpenAPI specification file
-
 To describe your endpoints with OpenAPI, make sure you have a valid OpenAPI document in either JSON or YAML format that follows the OpenAPI specification. 
 
 :::callout
 Your document must follow OpenAPI specification 3.0+.
 :::
 
-## Setup OpenAPI configuration
-The fastest way to get started with OpenAPI is to add an `openapi` field to a `api.spec` in the [`settings`](#) file. 
+## Setup OpenAPI Configuration
+The fastest way to get started with OpenAPI is to add an `openapi` field to a `api` in the [`settings`](#) file. 
 This field can contain either the path to an OpenAPI document in your docs repo, or the URL of a hosted OpenAPI document:
 ```json xyd.json
 {
-    // ... rest of config
+    // ... rest of settings
     "api": {
-        "spec": {
-            "openpi": "./api/rest/openapi.yaml" // you can also use URL-based path
+        "openapi": {
+            "source": "./api/rest/openapi.yaml", // you can also use URL-based path
+            "route": "docs/api/rest"
         }
     },
 }
 ```
 
-### Routing setup
-Once configured, you'll need setup routing to match your OpenAPI generated pages with navigation:
-```json xyd.json
-{
-    // ... rest of the config
-    "api": {
-        "spec": {
-            // ... rest of the api config
-        },
-        "route": { 
-            "openapi": "docs/api/rest"
-        }
-    }
-}
-```
-This will create a new route for your OpenAPI specification at `docs/api/rest`.
+This will create a new route for your OpenAPI specification at `docs/api/rest/*`.
 
-### Advanced configuration
+## Advanced Configuration
 Creating APIs for more advanced use cases is possible by configuring the nested `openapi` object:
 ```json xyd.json
 {
-    // ... rest of config
+    // ... rest of settings
     "api": {
-        "spec": {
-            "openapi": {
-                "rest": "./api/rest/openapi.yaml",
-                "webhooks": "./api/webhooks/openapi.yaml"
-            }
-        },
-        "route": { 
-            "openapi": {
-                "rest": "docs/api/rest",
-                "webhooks": "docs/api/webhooks"
+        "openapi": {
+            "rest": {
+                "source": "./api/rest/openapi.yaml",
+                "route": "docs/api/rest"
+            },
+            "webhooks": {
+                "source": "./api/webhooks/openapi.yaml",
+                "route": "docs/api/webhooks"
             }
         }
     },
 }
 ```
 Thanks to this configuration, you'll have two routes:
-- `docs/api/rest` for your REST API
-- `docs/api/webhooks` for your webhooks
+- `docs/api/rest/*` for your REST API
+- `docs/api/webhooks/*` for your webhooks
 
+## API Docs Generation Explanation
 
-## Describing API in OpenAPI file
-The first way to document your API is to use an OpenAPI file iteself. 
-This method would describe your API in a single file, closest to the OpenAPI specification. 
-
-It's simple to setup and it's nice if you like to have a single source of truth for your API.
-All you need is to add `description` field to the corresponding API object:
-
-```yaml openapi.yaml
-paths:
-  /todos:
-    get:
-      description: |
-        ---
-        title: List todos
-        group: [Todos]
-        ---
-        
-        List of all todos, learn more about [todos](/docs/todos).
-
-        :::callout
-        Tip: You can also add callouts to your OpenAPI description.
-        :::
-```
-
-Writing content inside `description` follows the same [rules](#) as writing in any other Markdown file.
-The `group` field will be used to group the endpoint in the [navigation](/docs/guides/navigation) by adding it to settings behind the scenes. 
+- The generator automatically creates documentation based on your OpenAPI specification
+- Uses [OpenAPI tags](https://swagger.io/docs/specification/v3_0/grouping-operations-with-tags/) to create logical groups of endpoints
+- Generates clean URLs from [`operationId`](https://swagger.io/docs/specification/v3_0/paths-and-operations/#operationid) when available
+- Organizes endpoints by path when no tags are specified
+- Groups related schemas with their endpoints
+- Links response schemas to their corresponding endpoints
 
 :::callout
-More details about available frontmatter options read [here](#).
+All defaults can be overridden using the `x-docs` extension
 :::
 
-## Describing API in Markdown files
-The second way to document your API is to use Markdown files.
-This method would describe your API in a separate Markdown file for each endpoint.
+## Navigation Customization
+To make your OpenAPI documentation more organized and user-friendly, you can customize the navigation structure using the `x-docs` extension. This allows you to group endpoints and schemas into logical sections and control their URLs.
+
+You can define the navigation structure in two ways:
+
+1. Using a detailed sidebar configuration
+2. Using endpoint/object level configuration
+
+### Detailed Sidebar Configuration
+You can define a complete navigation structure using the `sidebar` property in the `x-docs` extension:
+
+```yaml
+# ...
+x-docs:
+    urlStrategy: inherit
+    sidebar:
+        - group: Responses
+            pages: 
+                - group: Responses
+                    pages:
+                        - 
+                        type: endpoint
+                        key: createResponse
+                        url: create
+
+                        - 
+                        type: object
+                        key: Response
+                        url: object
+
+                - group: Streaming
+                    pages: 
+                        - 
+                        type: endpoint
+                        key: createResponseStreaming
+                        url: create
+
+                        - 
+                        type: object
+                        key: ResponseStreaming
+                        url: object
+                  
+        - group: Chat Completionss
+            pages:
+                - group: Chat
+                    pages: 
+                        - 
+                        type: endpoint
+                        key: createChatCompletion
+                        url: create
+
+                        - 
+                        type: object
+                        key: Chat
+                        url: object
+```
 
 :::callout
-By default auto-generated elements from OpenAPI will be passed along with your changes at build time.
+Defining sidebar is very similar as in `xyd.json` except pages where in OpenAPI we can define `type` , `key` or `url`.
 :::
 
-This method also allows to set `directory` field in `api.spec` to the path of the directory containing the Markdown files.
-While it's optional, it's recommended to avoid name collisions with auto-generated one.
-```json xyd.json
-{
-    // ... rest of the config
-    "api": {
-        "spec": {
-            // ... rest of the spec config
-        },
-        "match": { 
-            // ... rest of the match config
-        },
-        "directory": {
-            "openapi": {
-                "rest": "openapi-folder"
-            }
-        }
-    }
-}
-```
+### Endpoint/Object Level Configuration
+Alternatively, you can define the navigation structure directly in your endpoints and schemas:
 
-After setting up the configuration, you can create a Markdown file for the endpoint in the `openapi-folder` directory:
+```yaml
+# ...
+x-docs:
+    urlStrategy: inherit
 
-:::code-group{title="Descriping API in Markdown"}
-
-```md openapi-folder/list-todos.md
----
-title: List todos
-group: [Todos]
-openapi: GET /todos
----
-
-List of all todos, learn more about [todos](/docs/todos).
-
-```
-
-```md Frontmatter
----
-title: <title>
-group: [<...groups>]
-openapi: <method> <path>
----
-:::
-
-
-## Describing API both in OpenAPI and Markdown
-You can also describe your API in both OpenAPI and Markdown files.
-This is useful if you like to describe your API close to the OpenAPI specification, but also add more context in Markdown, 
-or replace some of the auto-generated elements.
-
-Let's say we have the following OpenAPI specification:
-```yaml 
 paths:
-  /todos:
-    get:
-      description: |
-        List of all todos, learn more about [todos](/docs/todos).
+    /chat/completions:
+        post:
+            x-docs:
+                group: [Responses, Responses]
+                url: create
+
+components:
+    schemas:
+        Chat:
+            x-docs:
+                group: [Chat Completions, Chat]
+                url: object
 ```
 
-and we want to add `group` and `description` to the endpoint.
-
-We can do that by adding the following to the Markdown file:
-```md list-todos.md
----
-title: List todos
-group: [Todos]
-openapi: GET /todos
-```

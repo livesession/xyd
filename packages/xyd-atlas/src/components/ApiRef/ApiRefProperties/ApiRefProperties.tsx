@@ -12,6 +12,9 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
     return <ul className={cn.ApiRefPropertiesUlHost}>
         {
             properties?.map((property, i) => {
+                if (property.rootProperty && property.rootProperty.properties?.length) {
+                    property.properties = property.rootProperty.properties
+                }
                 const propName = property.name
                 const propValue = property.type
 
@@ -19,7 +22,7 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
                     {
                         propName || propValue ?
                             <dl className={cn.ApiRefPropertiesDlHost}>
-                                <PropName value={propName} meta={property.meta || []} />
+                                <PropName property={property} meta={property.meta || []} />
                                 <PropType
                                     property={property}
                                     meta={property.meta || []}
@@ -49,13 +52,15 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
 
 
 interface PropNameProps {
-    value: string
+    property: DefinitionProperty
     meta: DefinitionPropertyMeta[]
     parentChoiceType?: boolean
 }
 
 function PropName(props: PropNameProps) {
-    if (!props.value) {
+    const value = props.property.name
+
+    if (!value) {
         return null
     }
 
@@ -64,7 +69,7 @@ function PropName(props: PropNameProps) {
             <code
                 data-parent-choice-type={props.parentChoiceType ? "true" : undefined}
                 className={cn.ApiRefPropertiesPropNameCodeHost}
-            >{props.value}</code>
+            >{value}</code>
         </dd>
     </atlas-apiref-propname>
 }
@@ -133,7 +138,7 @@ function propTypesMap(property: DefinitionProperty, multipleTypesMap: { [key: st
 function PropType({ property, meta }: PropTypeProps) {
     const baseMatch = useBaseMatch()
 
-    if (!property || !property.type) {
+    if (!property || !property.type || property.type === property.name) {
         return null
     }
 
@@ -160,6 +165,21 @@ function PropType({ property, meta }: PropTypeProps) {
         }
     }
     valueText = multipleTypes.join(" or ")
+
+    const ofPropertyType = property.rootProperty && property.rootProperty.type
+    if (ofPropertyType) {
+        let ofType = ""
+        let rootType = property?.rootProperty?.type || ""
+
+        switch (rootType) {
+            case "$$union":
+                ofType = "(" + property.rootProperty?.properties?.map(p => p.type).join(" or ") + ")"
+                break
+            default:
+                ofType = rootType
+        }
+        valueText += " of " + ofType
+    }
 
     return <atlas-apiref-proptype>
         <dd>
@@ -247,6 +267,11 @@ function SubProperties({ parent, properties }: SubPropertiesProps) {
     const [expanded, setExpanded] = useState(false)
 
     const choiceType = isChoiceType(parent)
+    const noChildProps = childPropsHasNoProps(parent)
+    if (choiceType && noChildProps) {
+        return null
+    }
+
     const hasArguments = parent.meta?.some(m => m.name === 'hasArguments' && m.value === 'true')
 
     return <>
@@ -264,6 +289,9 @@ function SubProperties({ parent, properties }: SubPropertiesProps) {
                 <ul role="list" className={cn.ApiRefPropertiesSubPropsUl}>
                     {
                         properties?.map((prop, i) => {
+                            if (prop.rootProperty && prop.rootProperty.properties?.length) {
+                                prop.properties = prop.rootProperty.properties
+                            }
                             const propName = (prop.name)
                             const propValue = (prop.type)
 
@@ -272,8 +300,9 @@ function SubProperties({ parent, properties }: SubPropertiesProps) {
                                     propName || propValue ?
                                         <dl className={cn.ApiRefPropertiesDlHost}>
                                             <PropName
+                                                property={prop}
+                                                meta={prop.meta || []}
                                                 parentChoiceType={choiceType || !!hasArguments}
-                                                meta={prop.meta || []} value={propName}
                                             />
                                             <PropType
                                                 property={prop}
@@ -355,5 +384,13 @@ function PropToggle(
 }
 
 function isChoiceType(property: DefinitionProperty) {
-    return ["$$enum", "$$xor", "$$union", "$$array"].includes(property.type)
+    if (property.rootProperty) {
+        return isChoiceType(property.rootProperty)
+    }
+
+    return ["$$enum", "$$xor", "$$union"].includes(property.type)
+}
+
+function childPropsHasNoProps(property: DefinitionProperty) {
+    return property?.properties?.every(prop => !(!!prop.properties?.length))
 }

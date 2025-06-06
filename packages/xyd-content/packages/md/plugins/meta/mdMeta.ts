@@ -4,6 +4,8 @@ import { matter } from 'vfile-matter';
 
 import { Metadata, Settings, Theme } from '@xyd-js/core';
 import { getMetaComponent } from '@xyd-js/context';
+import { Reference, TypeDocReferenceContext } from '@xyd-js/uniform';
+import { uniformToMiniUniform } from '@xyd-js/sources/ts';
 
 import { FunctionName } from '../functions/types';
 import { parseFunctionCall } from '../functions/utils';
@@ -88,19 +90,24 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
             continue
           }
 
-          const importPath = result[1]
+          const importPath = result[0]
+          const importArgs = result[1];
 
           if (!importPath) {
             continue
           }
 
           const promise = (async () => {
-            const references = await processUniformFunctionCall(
+            let references = await processUniformFunctionCall(
               importPath,
               file,
               options?.resolveFrom,
               settings,
             );
+
+            if (importArgs?.mini && references) { // TODO: move to `processUniformFunctionCall`
+              references = uniformToMiniUniform(importArgs.mini, references as Reference<TypeDocReferenceContext>[]);
+            }
 
             resolvedProps[key] = references
           })()

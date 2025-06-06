@@ -1,0 +1,1655 @@
+[
+  {
+    "title": "Settings",
+    "canonical": "@xyd-js/sources/interfaces/Settings",
+    "description": "Main settings interface for the application\n",
+    "context": {
+      "symbolId": "1",
+      "symbolName": "Settings",
+      "symbolKind": 256,
+      "packageName": "@xyd-js/sources",
+      "fileName": "settings.ts",
+      "fileFullPath": "src/settings.ts",
+      "line": 8,
+      "col": 17,
+      "signatureText": {
+        "code": "export interface Settings {\n}",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export interface Settings {\n    /** Theme configuration for the application */\n    theme?: Theme\n\n    /** Navigation configuration */\n    navigation?: Navigation\n\n    /** API configuration */\n    api?: API\n\n    /** Integrations configuration */\n    integrations?: Integrations\n\n    /** Plugins configuration */\n    plugins?: Plugins\n\n    /**\n     * @unsafe\n     * \n     * Redirects configuration\n     */\n    redirects?: Redirects[]\n\n    /**\n     * @unsafe\n     * SEO configuration\n     */\n    seo?: SEO\n\n    /** Engine configuration */\n    engine?: Engine\n}",
+        "lang": "ts"
+      },
+      "meta": [],
+      "group": [
+        "@xyd-js",
+        "sources",
+        "Interfaces"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Props",
+        "properties": [
+          {
+            "name": "theme",
+            "type": "Theme",
+            "description": "Theme configuration for the application\n",
+            "symbolDef": {
+              "id": "10"
+            },
+            "meta": [],
+            "properties": [
+              {
+                "name": "name",
+                "type": "\"poetry\" | \"cosmo\" | \"opener\" | string",
+                "description": "A preset theme configuration that changes the look and feel of the project. \nA theme is a set of default styling configurations. \n\nExample built-in themes: \n`cosmo`\n, \n`gusto`\n, \n`poetry`\n, \n`picasso`\n",
+                "symbolDef": {
+                  "id": [
+                    "35"
+                  ]
+                },
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ],
+                "properties": []
+              },
+              {
+                "name": "markdown",
+                "type": "Markdown",
+                "description": "Markdown configuration for the theme, including options like syntax highlighting\n",
+                "symbolDef": {
+                  "id": "20"
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "syntaxHighlight",
+                    "type": "Theme",
+                    "description": "Syntax highlighting configuration\n",
+                    "meta": [],
+                    "properties": []
+                  }
+                ]
+              },
+              {
+                "name": "logo",
+                "type": "$$union",
+                "description": "Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to. \nSVG format is recommended as it does not pixelate and the file size is generally smaller.\n",
+                "symbolDef": {
+                  "id": [
+                    "22"
+                  ]
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "Logo",
+                    "type": "Logo",
+                    "description": "",
+                    "properties": [
+                      {
+                        "name": "light",
+                        "type": "string",
+                        "description": "Path to the logo in light mode. For example: \n`/path/to/logo.svg`\n",
+                        "meta": [],
+                        "properties": []
+                      },
+                      {
+                        "name": "dark",
+                        "type": "string",
+                        "description": "Path to the logo in dark mode. For example: \n`/path/to/logo.svg`\n",
+                        "meta": [],
+                        "properties": []
+                      },
+                      {
+                        "name": "href",
+                        "type": "string",
+                        "description": "Where clicking on the logo links you to\n",
+                        "meta": [],
+                        "properties": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "string",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  },
+                  {
+                    "name": "React.JSX.Element",
+                    "type": "React.JSX.Element",
+                    "description": "",
+                    "properties": []
+                  }
+                ]
+              },
+              {
+                "name": "banner",
+                "type": "Banner",
+                "description": "Banner configuration for the theme.\n",
+                "symbolDef": {
+                  "id": "26"
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "content",
+                    "type": "$$union",
+                    "description": "Banner content.\n",
+                    "symbolDef": {
+                      "id": []
+                    },
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "properties": [
+                      {
+                        "name": "string",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "React.JSX.Element",
+                        "type": "React.JSX.Element",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "favicon",
+                "type": "string",
+                "description": "Path to the favicon image. For example: /path/to/favicon.svg\n",
+                "meta": [],
+                "properties": []
+              },
+              {
+                "name": "maxTocDepth",
+                "type": "number",
+                "description": "The defult level of the table of contents.\n",
+                "meta": [],
+                "properties": []
+              },
+              {
+                "name": "head",
+                "type": "$$array",
+                "description": "Head configuration\n",
+                "rootProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "$$union",
+                  "properties": [
+                    {
+                      "name": "[string, Record<string, string",
+                      "type": "[string, Record<string, string",
+                      "description": "",
+                      "properties": []
+                    },
+                    {
+                      "name": "boolean>]",
+                      "type": "boolean>]",
+                      "description": "",
+                      "properties": []
+                    }
+                  ]
+                },
+                "meta": [],
+                "properties": []
+              },
+              {
+                "name": "icons",
+                "type": "Icons",
+                "description": "The iconify library\n",
+                "symbolDef": {
+                  "id": "33"
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "library",
+                    "type": "$$union",
+                    "description": "The iconify library\n",
+                    "symbolDef": {
+                      "id": [
+                        "28"
+                      ]
+                    },
+                    "meta": [],
+                    "properties": [
+                      {
+                        "name": "IconLibrary",
+                        "type": "IconLibrary",
+                        "description": "",
+                        "properties": [
+                          {
+                            "name": "name",
+                            "type": "string",
+                            "description": "The iconify library name\n",
+                            "meta": [
+                              {
+                                "name": "required",
+                                "value": "true"
+                              }
+                            ],
+                            "properties": []
+                          },
+                          {
+                            "name": "version",
+                            "type": "string",
+                            "description": "The iconify library version\n",
+                            "meta": [],
+                            "properties": []
+                          },
+                          {
+                            "name": "default",
+                            "type": "boolean",
+                            "description": "The default iconify icon name\n",
+                            "meta": [],
+                            "properties": []
+                          },
+                          {
+                            "name": "noprefix",
+                            "type": "boolean",
+                            "description": "Merge icons from the library into the default iconify library\n",
+                            "meta": [],
+                            "properties": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "string",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "string[]",
+                        "type": "string[]",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "IconLibrary[]",
+                        "type": "IconLibrary[]",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "navigation",
+            "type": "Navigation",
+            "description": "Navigation configuration\n",
+            "symbolDef": {
+              "id": "37"
+            },
+            "meta": [],
+            "properties": [
+              {
+                "name": "sidebar",
+                "type": "$$array",
+                "description": "Definition of sidebar - an array of groups with all the pages within that group\n",
+                "rootProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "$$union",
+                  "properties": [
+                    {
+                      "name": "SidebarRoute",
+                      "type": "SidebarRoute",
+                      "description": "",
+                      "properties": [
+                        {
+                          "name": "route",
+                          "type": "string",
+                          "description": "Route for this sidebar group\n",
+                          "meta": [
+                            {
+                              "name": "required",
+                              "value": "true"
+                            }
+                          ],
+                          "properties": []
+                        },
+                        {
+                          "name": "items",
+                          "type": "$$array",
+                          "description": "Sidebar items within this group\n",
+                          "rootProperty": {
+                            "name": "",
+                            "description": "",
+                            "type": "Sidebar",
+                            "properties": [
+                              {
+                                "name": "group",
+                                "type": "string",
+                                "description": "The name of the group\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "pages",
+                                "type": "$$array",
+                                "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
+                                "rootProperty": {
+                                  "name": "",
+                                  "description": "",
+                                  "type": "PageURL",
+                                  "properties": [
+                                    {
+                                      "name": "",
+                                      "type": "$$union",
+                                      "description": "Page URL type\n",
+                                      "symbolDef": {
+                                        "id": [
+                                          "45"
+                                        ]
+                                      },
+                                      "meta": [],
+                                      "properties": [
+                                        {
+                                          "name": "string",
+                                          "type": "string",
+                                          "description": "",
+                                          "properties": []
+                                        },
+                                        {
+                                          "name": "Sidebar",
+                                          "type": "Sidebar",
+                                          "description": "",
+                                          "properties": [
+                                            {
+                                              "name": "group",
+                                              "type": "string",
+                                              "description": "The name of the group\n",
+                                              "meta": [],
+                                              "properties": []
+                                            },
+                                            {
+                                              "name": "pages",
+                                              "type": "$$array",
+                                              "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
+                                              "rootProperty": {
+                                                "name": "",
+                                                "description": "",
+                                                "type": "PageURL",
+                                                "properties": [],
+                                                "symbolDef": {
+                                                  "id": "53"
+                                                }
+                                              },
+                                              "meta": [],
+                                              "properties": []
+                                            },
+                                            {
+                                              "name": "icon",
+                                              "type": "string",
+                                              "description": "The icon of the group.\n",
+                                              "meta": [],
+                                              "properties": []
+                                            },
+                                            {
+                                              "name": "sort",
+                                              "type": "$$union",
+                                              "description": "The sort order of the group.\n",
+                                              "symbolDef": {
+                                                "id": []
+                                              },
+                                              "meta": [],
+                                              "properties": [
+                                                {
+                                                  "name": "number",
+                                                  "type": "number",
+                                                  "description": "",
+                                                  "properties": []
+                                                },
+                                                {
+                                                  "name": "{\n    before: string;\n    after: string;\n}",
+                                                  "type": "{\n    before: string;\n    after: string;\n}",
+                                                  "description": "",
+                                                  "properties": []
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "symbolDef": {
+                                    "id": "53"
+                                  }
+                                },
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "icon",
+                                "type": "string",
+                                "description": "The icon of the group.\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "sort",
+                                "type": "$$union",
+                                "description": "The sort order of the group.\n",
+                                "symbolDef": {
+                                  "id": []
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "number",
+                                    "type": "number",
+                                    "description": "",
+                                    "properties": []
+                                  },
+                                  {
+                                    "name": "{\n    before: string;\n    after: string;\n}",
+                                    "type": "{\n    before: string;\n    after: string;\n}",
+                                    "description": "",
+                                    "properties": []
+                                  }
+                                ]
+                              }
+                            ],
+                            "symbolDef": {
+                              "id": "45"
+                            }
+                          },
+                          "meta": [
+                            {
+                              "name": "required",
+                              "value": "true"
+                            }
+                          ],
+                          "properties": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Sidebar",
+                      "type": "Sidebar",
+                      "description": "",
+                      "properties": [
+                        {
+                          "name": "group",
+                          "type": "string",
+                          "description": "The name of the group\n",
+                          "meta": [],
+                          "properties": []
+                        },
+                        {
+                          "name": "pages",
+                          "type": "$$array",
+                          "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
+                          "rootProperty": {
+                            "name": "",
+                            "description": "",
+                            "type": "PageURL",
+                            "properties": [
+                              {
+                                "name": "",
+                                "type": "$$union",
+                                "description": "Page URL type\n",
+                                "symbolDef": {
+                                  "id": [
+                                    "45"
+                                  ]
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "string",
+                                    "type": "string",
+                                    "description": "",
+                                    "properties": []
+                                  },
+                                  {
+                                    "name": "Sidebar",
+                                    "type": "Sidebar",
+                                    "description": "",
+                                    "properties": [
+                                      {
+                                        "name": "group",
+                                        "type": "string",
+                                        "description": "The name of the group\n",
+                                        "meta": [],
+                                        "properties": []
+                                      },
+                                      {
+                                        "name": "pages",
+                                        "type": "$$array",
+                                        "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
+                                        "rootProperty": {
+                                          "name": "",
+                                          "description": "",
+                                          "type": "PageURL",
+                                          "properties": [],
+                                          "symbolDef": {
+                                            "id": "53"
+                                          }
+                                        },
+                                        "meta": [],
+                                        "properties": []
+                                      },
+                                      {
+                                        "name": "icon",
+                                        "type": "string",
+                                        "description": "The icon of the group.\n",
+                                        "meta": [],
+                                        "properties": []
+                                      },
+                                      {
+                                        "name": "sort",
+                                        "type": "$$union",
+                                        "description": "The sort order of the group.\n",
+                                        "symbolDef": {
+                                          "id": []
+                                        },
+                                        "meta": [],
+                                        "properties": [
+                                          {
+                                            "name": "number",
+                                            "type": "number",
+                                            "description": "",
+                                            "properties": []
+                                          },
+                                          {
+                                            "name": "{\n    before: string;\n    after: string;\n}",
+                                            "type": "{\n    before: string;\n    after: string;\n}",
+                                            "description": "",
+                                            "properties": []
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ],
+                            "symbolDef": {
+                              "id": "53"
+                            }
+                          },
+                          "meta": [],
+                          "properties": []
+                        },
+                        {
+                          "name": "icon",
+                          "type": "string",
+                          "description": "The icon of the group.\n",
+                          "meta": [],
+                          "properties": []
+                        },
+                        {
+                          "name": "sort",
+                          "type": "$$union",
+                          "description": "The sort order of the group.\n",
+                          "symbolDef": {
+                            "id": []
+                          },
+                          "meta": [],
+                          "properties": [
+                            {
+                              "name": "number",
+                              "type": "number",
+                              "description": "",
+                              "properties": []
+                            },
+                            {
+                              "name": "{\n    before: string;\n    after: string;\n}",
+                              "type": "{\n    before: string;\n    after: string;\n}",
+                              "description": "",
+                              "properties": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "symbolDef": {
+                    "id": [
+                      "42",
+                      "45"
+                    ]
+                  }
+                },
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ],
+                "properties": []
+              },
+              {
+                "name": "header",
+                "type": "$$array",
+                "description": "Array of headers\n",
+                "rootProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "Header",
+                  "properties": [
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "description": "The name of the button\n",
+                      "meta": [],
+                      "properties": []
+                    },
+                    {
+                      "name": "url",
+                      "type": "string",
+                      "description": "The url once you click on the button\n",
+                      "meta": [],
+                      "properties": []
+                    },
+                    {
+                      "name": "float",
+                      "type": "\"right\"",
+                      "description": "Float the header to the right\n",
+                      "meta": [],
+                      "properties": []
+                    }
+                  ],
+                  "symbolDef": {
+                    "id": "63"
+                  }
+                },
+                "meta": [],
+                "properties": []
+              },
+              {
+                "name": "subheader",
+                "type": "$$array",
+                "description": "Array of sub headers\n",
+                "rootProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "SubHeader",
+                  "properties": [
+                    {
+                      "name": "route",
+                      "type": "string",
+                      "description": "Route for this sub-header\n",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ],
+                      "properties": []
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "description": "Name of this sub-header\n",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ],
+                      "properties": []
+                    },
+                    {
+                      "name": "items",
+                      "type": "$$array",
+                      "description": "Items within this sub-header\n",
+                      "rootProperty": {
+                        "name": "",
+                        "description": "",
+                        "type": "Header",
+                        "properties": [
+                          {
+                            "name": "name",
+                            "type": "string",
+                            "description": "The name of the button\n",
+                            "meta": [],
+                            "properties": []
+                          },
+                          {
+                            "name": "url",
+                            "type": "string",
+                            "description": "The url once you click on the button\n",
+                            "meta": [],
+                            "properties": []
+                          },
+                          {
+                            "name": "float",
+                            "type": "\"right\"",
+                            "description": "Float the header to the right\n",
+                            "meta": [],
+                            "properties": []
+                          }
+                        ],
+                        "symbolDef": {
+                          "id": "63"
+                        }
+                      },
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ],
+                      "properties": []
+                    }
+                  ],
+                  "symbolDef": {
+                    "id": "59"
+                  }
+                },
+                "meta": [],
+                "properties": []
+              },
+              {
+                "name": "anchors",
+                "type": "AnchorRoot",
+                "description": "Anchors, includes the icon, name, and url\n",
+                "symbolDef": {
+                  "id": "72"
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "bottom",
+                    "type": "$$array",
+                    "description": "Bottom anchors\n",
+                    "rootProperty": {
+                      "name": "",
+                      "description": "",
+                      "type": "Anchor",
+                      "properties": [
+                        {
+                          "name": "icon",
+                          "type": "string",
+                          "description": "The iconify icon name\n",
+                          "meta": [],
+                          "properties": []
+                        },
+                        {
+                          "name": "name",
+                          "type": "string",
+                          "description": "The name of the anchor label\n",
+                          "meta": [],
+                          "properties": []
+                        },
+                        {
+                          "name": "url",
+                          "type": "string",
+                          "description": "The start of the URL that marks what pages go in the anchor. \nGenerally, this is the name of the folder you put your pages in.\n",
+                          "meta": [],
+                          "properties": []
+                        }
+                      ],
+                      "symbolDef": {
+                        "id": "68"
+                      }
+                    },
+                    "meta": [],
+                    "properties": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "api",
+            "type": "API",
+            "description": "API configuration\n",
+            "symbolDef": {
+              "id": "74"
+            },
+            "meta": [],
+            "properties": [
+              {
+                "name": "openapi",
+                "type": "APIFile",
+                "description": "OpenAPI configuration\n",
+                "symbolDef": {
+                  "id": "78"
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "",
+                    "type": "$$union",
+                    "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
+                    "symbolDef": {
+                      "id": [
+                        "83",
+                        "79"
+                      ]
+                    },
+                    "meta": [],
+                    "properties": [
+                      {
+                        "name": "APIFileAdvanced",
+                        "type": "APIFileAdvanced",
+                        "description": "",
+                        "properties": [
+                          {
+                            "name": "info",
+                            "type": "APIInfo",
+                            "description": "API information configuration\n",
+                            "symbolDef": {
+                              "id": "87"
+                            },
+                            "meta": [],
+                            "properties": [
+                              {
+                                "name": "baseUrl",
+                                "type": "string",
+                                "description": "The base url for all API endpoints. If baseUrl is an array, it will enable \nfor multiple base url options that the user can toggle.\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "auth",
+                                "type": "APIAuth",
+                                "description": "Authentication information\n",
+                                "symbolDef": {
+                                  "id": "94"
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "method",
+                                    "type": "\"bearer\" | \"basic\" | \"key\"",
+                                    "description": "The authentication strategy used for all API endpoints\n",
+                                    "symbolDef": {
+                                      "id": []
+                                    },
+                                    "meta": [
+                                      {
+                                        "name": "required",
+                                        "value": "true"
+                                      }
+                                    ],
+                                    "properties": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "name",
+                                "type": "string",
+                                "description": "The name of the authentication parameter used in the API playground.\nIf method is basic, the format should be [usernameName]:[passwordName]\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "inputPrefix",
+                                "type": "string",
+                                "description": "The default value that's designed to be a prefisx for the authentication input field.\nE.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "playground",
+                                "type": "APIPlayground",
+                                "description": "Configurations for the API playground\n",
+                                "symbolDef": {
+                                  "id": "96"
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "mode",
+                                    "type": "\"show\" | \"simple\" | \"hide\"",
+                                    "description": "Playground display mode\n",
+                                    "symbolDef": {
+                                      "id": []
+                                    },
+                                    "meta": [],
+                                    "properties": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "request",
+                                "type": "APIInfoRequest",
+                                "description": "Request configuration\n",
+                                "symbolDef": {
+                                  "id": "98"
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "example",
+                                    "type": "{\n    languages?: string[];\n}",
+                                    "description": "Configurations for the auto-generated API request examples\n",
+                                    "properties": [
+                                      {
+                                        "name": "languages",
+                                        "type": "string[]",
+                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
+                                        "meta": [],
+                                        "properties": []
+                                      },
+                                      {
+                                        "name": "languages",
+                                        "type": "string[]",
+                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
+                                        "meta": [],
+                                        "properties": []
+                                      }
+                                    ],
+                                    "meta": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "route",
+                            "type": "string",
+                            "description": "Route configuration\n",
+                            "meta": [
+                              {
+                                "name": "required",
+                                "value": "true"
+                              }
+                            ],
+                            "properties": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "APIFileMap",
+                        "type": "APIFileMap",
+                        "description": "",
+                        "properties": [
+                          {
+                            "name": "",
+                            "type": "{\n    [name: string]: string;\n}",
+                            "description": "API file map type\n",
+                            "properties": [],
+                            "meta": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "string",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "string[]",
+                        "type": "string[]",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "graphql",
+                "type": "APIFile",
+                "description": "GraphQL configuration\n",
+                "symbolDef": {
+                  "id": "78"
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "",
+                    "type": "$$union",
+                    "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
+                    "symbolDef": {
+                      "id": [
+                        "83",
+                        "79"
+                      ]
+                    },
+                    "meta": [],
+                    "properties": [
+                      {
+                        "name": "APIFileAdvanced",
+                        "type": "APIFileAdvanced",
+                        "description": "",
+                        "properties": [
+                          {
+                            "name": "info",
+                            "type": "APIInfo",
+                            "description": "API information configuration\n",
+                            "symbolDef": {
+                              "id": "87"
+                            },
+                            "meta": [],
+                            "properties": [
+                              {
+                                "name": "baseUrl",
+                                "type": "string",
+                                "description": "The base url for all API endpoints. If baseUrl is an array, it will enable \nfor multiple base url options that the user can toggle.\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "auth",
+                                "type": "APIAuth",
+                                "description": "Authentication information\n",
+                                "symbolDef": {
+                                  "id": "94"
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "method",
+                                    "type": "\"bearer\" | \"basic\" | \"key\"",
+                                    "description": "The authentication strategy used for all API endpoints\n",
+                                    "symbolDef": {
+                                      "id": []
+                                    },
+                                    "meta": [
+                                      {
+                                        "name": "required",
+                                        "value": "true"
+                                      }
+                                    ],
+                                    "properties": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "name",
+                                "type": "string",
+                                "description": "The name of the authentication parameter used in the API playground.\nIf method is basic, the format should be [usernameName]:[passwordName]\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "inputPrefix",
+                                "type": "string",
+                                "description": "The default value that's designed to be a prefisx for the authentication input field.\nE.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "playground",
+                                "type": "APIPlayground",
+                                "description": "Configurations for the API playground\n",
+                                "symbolDef": {
+                                  "id": "96"
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "mode",
+                                    "type": "\"show\" | \"simple\" | \"hide\"",
+                                    "description": "Playground display mode\n",
+                                    "symbolDef": {
+                                      "id": []
+                                    },
+                                    "meta": [],
+                                    "properties": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "request",
+                                "type": "APIInfoRequest",
+                                "description": "Request configuration\n",
+                                "symbolDef": {
+                                  "id": "98"
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "example",
+                                    "type": "{\n    languages?: string[];\n}",
+                                    "description": "Configurations for the auto-generated API request examples\n",
+                                    "properties": [
+                                      {
+                                        "name": "languages",
+                                        "type": "string[]",
+                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
+                                        "meta": [],
+                                        "properties": []
+                                      },
+                                      {
+                                        "name": "languages",
+                                        "type": "string[]",
+                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
+                                        "meta": [],
+                                        "properties": []
+                                      }
+                                    ],
+                                    "meta": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "route",
+                            "type": "string",
+                            "description": "Route configuration\n",
+                            "meta": [
+                              {
+                                "name": "required",
+                                "value": "true"
+                              }
+                            ],
+                            "properties": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "APIFileMap",
+                        "type": "APIFileMap",
+                        "description": "",
+                        "properties": [
+                          {
+                            "name": "",
+                            "type": "{\n    [name: string]: string;\n}",
+                            "description": "API file map type\n",
+                            "properties": [],
+                            "meta": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "string",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "string[]",
+                        "type": "string[]",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "sources",
+                "type": "APIFile",
+                "description": "Sources configuration\n",
+                "symbolDef": {
+                  "id": "78"
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "",
+                    "type": "$$union",
+                    "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
+                    "symbolDef": {
+                      "id": [
+                        "83",
+                        "79"
+                      ]
+                    },
+                    "meta": [],
+                    "properties": [
+                      {
+                        "name": "APIFileAdvanced",
+                        "type": "APIFileAdvanced",
+                        "description": "",
+                        "properties": [
+                          {
+                            "name": "info",
+                            "type": "APIInfo",
+                            "description": "API information configuration\n",
+                            "symbolDef": {
+                              "id": "87"
+                            },
+                            "meta": [],
+                            "properties": [
+                              {
+                                "name": "baseUrl",
+                                "type": "string",
+                                "description": "The base url for all API endpoints. If baseUrl is an array, it will enable \nfor multiple base url options that the user can toggle.\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "auth",
+                                "type": "APIAuth",
+                                "description": "Authentication information\n",
+                                "symbolDef": {
+                                  "id": "94"
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "method",
+                                    "type": "\"bearer\" | \"basic\" | \"key\"",
+                                    "description": "The authentication strategy used for all API endpoints\n",
+                                    "symbolDef": {
+                                      "id": []
+                                    },
+                                    "meta": [
+                                      {
+                                        "name": "required",
+                                        "value": "true"
+                                      }
+                                    ],
+                                    "properties": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "name",
+                                "type": "string",
+                                "description": "The name of the authentication parameter used in the API playground.\nIf method is basic, the format should be [usernameName]:[passwordName]\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "inputPrefix",
+                                "type": "string",
+                                "description": "The default value that's designed to be a prefisx for the authentication input field.\nE.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n",
+                                "meta": [],
+                                "properties": []
+                              },
+                              {
+                                "name": "playground",
+                                "type": "APIPlayground",
+                                "description": "Configurations for the API playground\n",
+                                "symbolDef": {
+                                  "id": "96"
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "mode",
+                                    "type": "\"show\" | \"simple\" | \"hide\"",
+                                    "description": "Playground display mode\n",
+                                    "symbolDef": {
+                                      "id": []
+                                    },
+                                    "meta": [],
+                                    "properties": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "request",
+                                "type": "APIInfoRequest",
+                                "description": "Request configuration\n",
+                                "symbolDef": {
+                                  "id": "98"
+                                },
+                                "meta": [],
+                                "properties": [
+                                  {
+                                    "name": "example",
+                                    "type": "{\n    languages?: string[];\n}",
+                                    "description": "Configurations for the auto-generated API request examples\n",
+                                    "properties": [
+                                      {
+                                        "name": "languages",
+                                        "type": "string[]",
+                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
+                                        "meta": [],
+                                        "properties": []
+                                      },
+                                      {
+                                        "name": "languages",
+                                        "type": "string[]",
+                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
+                                        "meta": [],
+                                        "properties": []
+                                      }
+                                    ],
+                                    "meta": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "route",
+                            "type": "string",
+                            "description": "Route configuration\n",
+                            "meta": [
+                              {
+                                "name": "required",
+                                "value": "true"
+                              }
+                            ],
+                            "properties": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "APIFileMap",
+                        "type": "APIFileMap",
+                        "description": "",
+                        "properties": [
+                          {
+                            "name": "",
+                            "type": "{\n    [name: string]: string;\n}",
+                            "description": "API file map type\n",
+                            "properties": [],
+                            "meta": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "string",
+                        "type": "string",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "string[]",
+                        "type": "string[]",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "integrations",
+            "type": "Integrations",
+            "description": "Integrations configuration\n",
+            "symbolDef": {
+              "id": "102"
+            },
+            "meta": [],
+            "properties": [
+              {
+                "name": "analytics",
+                "type": "IntegrationAnalytics",
+                "description": "Configurations to add third-party analytics integrations. \nSee full list of supported analytics here.\n",
+                "symbolDef": {
+                  "id": "105"
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "livesession",
+                    "type": "{\n    trackId: string;\n}",
+                    "description": "Livesession analytics configuration\n",
+                    "properties": [
+                      {
+                        "name": "trackId",
+                        "type": "string",
+                        "description": "Livesession's TrackID\n",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          }
+                        ],
+                        "properties": []
+                      },
+                      {
+                        "name": "trackId",
+                        "type": "string",
+                        "description": "Livesession's TrackID\n",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          }
+                        ],
+                        "properties": []
+                      }
+                    ],
+                    "meta": []
+                  }
+                ]
+              },
+              {
+                "name": "search",
+                "type": "IntegrationSearch",
+                "description": "Configurations to add third-party search integrations. \nSee full list of supported search here.\n",
+                "symbolDef": {
+                  "id": "109"
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "algolia",
+                    "type": "{\n    appId: string;\n    apiKey: string;\n}",
+                    "description": "Algolia search configuration\n",
+                    "properties": [
+                      {
+                        "name": "appId",
+                        "type": "string",
+                        "description": "Algolia application ID\n",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          }
+                        ],
+                        "properties": []
+                      },
+                      {
+                        "name": "apiKey",
+                        "type": "string",
+                        "description": "Algolia API key\n",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          }
+                        ],
+                        "properties": []
+                      },
+                      {
+                        "name": "appId",
+                        "type": "string",
+                        "description": "Algolia application ID\n",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          }
+                        ],
+                        "properties": []
+                      },
+                      {
+                        "name": "apiKey",
+                        "type": "string",
+                        "description": "Algolia API key\n",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          }
+                        ],
+                        "properties": []
+                      }
+                    ],
+                    "meta": []
+                  },
+                  {
+                    "name": "orama",
+                    "type": "$$union",
+                    "description": "",
+                    "symbolDef": {
+                      "id": []
+                    },
+                    "meta": [],
+                    "properties": [
+                      {
+                        "name": "boolean",
+                        "type": "boolean",
+                        "description": "",
+                        "properties": []
+                      },
+                      {
+                        "name": "{\n    endpoint: string;\n    apiKey: string;\n    suggestions?: string[];\n}",
+                        "type": "{\n    endpoint: string;\n    apiKey: string;\n    suggestions?: string[];\n}",
+                        "description": "",
+                        "properties": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "plugins",
+            "type": "Plugins",
+            "description": "Plugins configuration\n",
+            "symbolDef": {
+              "id": "119"
+            },
+            "meta": [],
+            "properties": [
+              {
+                "name": "",
+                "type": "$$array",
+                "description": "Plugin configuration\n",
+                "rootProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "$$union",
+                  "properties": [
+                    {
+                      "name": "PluginConfig",
+                      "type": "PluginConfig",
+                      "description": "",
+                      "properties": [
+                        {
+                          "name": "",
+                          "type": "[PluginName, PluginArgs[]]",
+                          "description": "",
+                          "symbolDef": {
+                            "id": [
+                              "121",
+                              "122"
+                            ]
+                          },
+                          "meta": [],
+                          "properties": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "string",
+                      "type": "string",
+                      "description": "",
+                      "properties": []
+                    }
+                  ],
+                  "symbolDef": {
+                    "id": [
+                      "120"
+                    ]
+                  }
+                },
+                "meta": [],
+                "properties": []
+              }
+            ]
+          },
+          {
+            "name": "seo",
+            "type": "SEO",
+            "description": "",
+            "symbolDef": {
+              "id": "126"
+            },
+            "meta": [],
+            "properties": [
+              {
+                "name": "domain",
+                "type": "string",
+                "description": "Domain name\n",
+                "meta": [],
+                "properties": []
+              },
+              {
+                "name": "metatags",
+                "type": "{\n    [tag: string]: string;\n}",
+                "description": "Meta tags\n",
+                "properties": [],
+                "meta": []
+              }
+            ]
+          },
+          {
+            "name": "engine",
+            "type": "Engine",
+            "description": "Engine configuration\n",
+            "symbolDef": {
+              "id": "132"
+            },
+            "meta": [],
+            "properties": [
+              {
+                "name": "paths",
+                "type": "EnginePaths",
+                "description": "Path aliases for imports. Avoid long relative paths by creating shortcuts.\n",
+                "symbolDef": {
+                  "id": "135"
+                },
+                "meta": [],
+                "examples": [
+                  "```json\n{\n  \"paths\": {\n    \"@my-package/*\": [\"../my-package/src/*\"],\n    \"@livesession-go/*\": [\"https://github.com/livesession/livesession-go/*\"]\n  }\n}",
+                  "```typescript\n// Instead of\n@importCode(\"../../../my-package/src/components/Badge.tsx\")\n\n// Use\n@importCode(\"@my-package/src/components/Badge.tsx\")"
+                ],
+                "properties": [
+                  {
+                    "name": "",
+                    "type": "{\n    [key: string]: string[];\n}",
+                    "description": "",
+                    "properties": [],
+                    "meta": []
+                  }
+                ]
+              },
+              {
+                "name": "uniform",
+                "type": "EngineUniform",
+                "description": "",
+                "symbolDef": {
+                  "id": "139"
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "store",
+                    "type": "boolean",
+                    "description": "If \n`true`\n then virtual pages will not created and generated content will be stored on disk\n",
+                    "meta": [],
+                    "properties": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

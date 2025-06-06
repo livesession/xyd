@@ -7,12 +7,15 @@ import { ReactContent } from "@xyd-js/components/content";
 export abstract class Theme {
   constructor() {
     // TODO: !!!better API for this!!!
-    this.settings = globalThis.__xydThemeSettings
+    this.settings = globalThis.__xydThemeSettings // TODO: DELETE
+    this.theme = globalThis.__xydThemeSettings
+
     this.surfaces = globalThis.__xydSurfaces
     this.reactContent = globalThis.__xydReactContent
   }
 
   protected settings: ThemeSettings
+  protected theme: ThemeSettings
   protected readonly reactContent: ReactContent
   protected readonly surfaces: Surfaces
 

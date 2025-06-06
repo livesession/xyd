@@ -4,14 +4,15 @@ icon: chart-no-axes-gantt
 ---
 
 # Roadmap
-:::subitle
+:::subtitle
 Our plans for evolving xyd.
 :::
 
 :::callout
-Last updated: **{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}**
+Last updated: **June 5, 2025**
 :::
 
+## Overview
 This roadmap outlines the key features and improvements we're working on for xyd. While we have a clear vision,
 our plans may evolve as we gather feedback and insights from the community. 
 For recent updates, check out our **[changelog](/docs/development/changelog)**.
@@ -47,6 +48,14 @@ Enhanced docs by adding themes and plugins.
 * **Plugin API**: Customizable plugins API to enhance documentation
 
 * **Marketplace**: Curated collection of themes and plugins with easy installation and updates
+
+## AI
+
+Integration with AI systems and making documentation AI-friendly.
+
+* **AI Search Integration**: Make docs searchable by AI assistants and LLMs
+* **Structured Data**: Enhanced metadata and structured content for better AI comprehension
+* **AI API Access**: Programmatic access to documentation for AI systems
 
 ## Desktop/Browser app
 

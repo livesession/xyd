@@ -75,7 +75,7 @@ or [creating a custom theme](/docs/guides/custom-theme) via code.
 
 Theme settings are defined as an object with the following interface:
 
-@importCode "../../../../packages/xyd-core/src/types/settings.ts#Theme"
+@importCode "@core/types/settings.ts#Theme"
 
 
 Full source you can find [here](https://github.com/livesession/xyd/blob/master/packages/xyd-core/src/types/settings.ts)

@@ -3,4 +3,7 @@ title: Custom theme
 icon: palette
 ---
 
-# TODO
+# Custom theme{label="Coming soon"}
+:::subtitle
+Learn how to create a custom theme from scratch
+:::

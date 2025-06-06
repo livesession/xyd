@@ -21,11 +21,11 @@ You can configure the theme in the [`settings`](/docs/guides/settings) file:
 
 ## Available themes
 
-- `poetry`
-- `cosmo`
-- `opener`
-- `gusto` (coming soon)
+- [`poetry`](https://poetry.xyd.dev)
+- [`cosmo`](https://cosmo.xyd.dev)
+- [`opener`](https://opener.xyd.dev)
 - `picasso` (coming soon)
+- `gusto` (coming soon)
 
 ## Customizing the theme
 

@@ -21,7 +21,7 @@ export async function pageFrontMatters(navigation: Sidebar[], pagePathMapping: {
         if (typeof page !== "string") {
             if ("virtual" in page) {
                 promises.push(job(page, frontmatters, pagePathMapping))
-            } else {
+            } else if ("pages" in page) {
                 page.pages?.forEach(mapPages)
             }
             return
@@ -78,9 +78,9 @@ export function filterNavigationByLevels(
 
             function findMatchedPage(page: PageURL) {
                 if (typeof page !== "string") {
-                    if ("virtual" in page) {
+                    if ("virtual" in page && page.virtual) {
                         return matchPage(page.virtual)
-                    } else {
+                    } else if ("pages" in page) {
                         page.pages?.forEach(findMatchedPage)
                     }
                     return
@@ -167,11 +167,11 @@ async function job(page: string | VirtualPage, frontmatters: MetadataMap, pagePa
     let pageName = ""
     if (typeof page === "string") {
         pageName = page
-    } else {
+    } else if (page.page) {
         pageName = page.page
     }
 
-    if (!pagePathMapping[pageName]) {
+    if (!pageName || !pagePathMapping[pageName]) {
         throw new Error(`Content file for page "${pageName}" does not exist. Please check if you added a content file correctly`)
     }
 

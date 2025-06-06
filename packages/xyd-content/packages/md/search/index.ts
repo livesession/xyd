@@ -202,35 +202,41 @@ function flatPages(
 ) {
     sidebar.map(async side => {
         if ("route" in side) {
-            side.items.map(item => {
+            side.items?.map(item => {
                 return flatPages([item], groups, resp)
             })
-
             return
         }
 
-        if (groups[side.group || ""]) {
-            const link = groups[side.group || ""]
+        // Type guard to check if it's a Sidebar
+        if ("group" in side) {
+            const groupKey = side.group || "";
+            if (groups[groupKey]) {
+                const link = groups[groupKey];
+                if (link) {
+                    resp.push(link);
+                }
+            }
 
-            resp.push(link)
+            side.pages?.map(async page => {
+                if (typeof page === "string") {
+                    resp.push(page);
+                    return;
+                }
+                
+                if ("virtual" in page && page.virtual) {
+                    resp.push(page.virtual);
+                    return; 
+                }
+
+                if ("pages" in page) {
+                    return flatPages([page as Sidebar], groups, resp);
+                }
+            });
         }
+    });
 
-        side?.pages?.map(async page => {
-            if (typeof page === "string") {
-                resp.push(page)
-                return
-            }
-            
-            if ("virtual" in page) {
-                resp.push(page.virtual)
-                return
-            }
-
-            return flatPages([page], groups, resp)
-        })
-    })
-
-    return resp
+    return resp;
 }
 
 function slugify(text: string) {

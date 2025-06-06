@@ -118,6 +118,7 @@ function FwSidebarItem(props: FwSidebarItemProps) {
                             href={item.href}
                             items={item.items}
                             active={active(item)[0]}
+                            icon={item.icon}
                         />)
                     }
                 </>

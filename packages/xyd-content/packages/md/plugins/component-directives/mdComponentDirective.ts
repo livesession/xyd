@@ -7,6 +7,7 @@ import { Node as UnistNode } from "unist";
 import { highlight } from "codehike/code"
 
 import { Settings } from "@xyd-js/core";
+import { uniformToMiniUniform } from "@xyd-js/sources/ts";
 
 import { FunctionName } from "../functions/types";
 import { MarkdownComponentDirectiveMap } from "./types";
@@ -14,6 +15,7 @@ import { functionMatch, parseFunctionCall } from "../functions/utils";
 import { processUniformFunctionCall } from "../functions/uniformProcessor";
 
 import { getComponentName } from "./utils";
+import {Reference, TypeDocReferenceContext} from "@xyd-js/uniform";
 
 // TODO: in the future custom component: `this.registerComponent(MyComponent, "my-component")` ? but core should move to `symbolx`?
 const supportedDirectives: MarkdownComponentDirectiveMap = {
@@ -44,6 +46,10 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
 
 const supportedTextDirectives: MarkdownComponentDirectiveMap = {
     icon: true,
+}
+
+const supportedLeafDirectives: MarkdownComponentDirectiveMap = {
+    atlas: true,
 }
 
 const tableComponents: MarkdownComponentDirectiveMap = {
@@ -83,6 +89,7 @@ export function mdComponentDirective(settings?: Settings): Plugin {
     
             visit(tree, 'containerDirective', recreateComponent(file, promises, supportedDirectives, settings));
             visit(tree, 'textDirective', recreateComponent(file, promises, supportedTextDirectives, settings));
+            visit(tree, 'leafDirective', recreateComponent(file, promises, supportedLeafDirectives, settings));
     
             await Promise.all(promises);
             console.timeEnd('plugin:mdComponentDirective');
@@ -432,17 +439,22 @@ function mdUniformAttribute(
         return
     };
 
-    const importPath = result[1];
+    const importPath = result[0];
+    const importArgs = result[1];
 
     const promise = (async () => {
         try {
             // Process the uniform function call
-            const references = await processUniformFunctionCall(
+            let references = await processUniformFunctionCall(
                 importPath,
                 file,
                 "",
                 settings,
             );
+
+            if (importArgs?.mini && references) { // TODO: move to `processUniformFunctionCall`
+                references = uniformToMiniUniform(importArgs.mini, references as Reference<TypeDocReferenceContext>[]);
+            }
 
             if (references && references.length > 0) {
                 attributes.push({

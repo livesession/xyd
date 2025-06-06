@@ -23,14 +23,19 @@ export interface ApiRefItemProps {
 
 // TODO: context with current referene?
 export function ApiRefItem({ reference }: ApiRefItemProps) {
-    return <atlas-apiref-item className={cn.ApiRefItemHost}>
+    const hasExamples = reference.examples?.groups?.length || false
+
+    return <atlas-apiref-item
+        data-has-examples={hasExamples ? "true" : undefined}
+        className={cn.ApiRefItemHost}
+    >
         <atlas-apiref-item-showcase className={cn.ApiRefItemGrid}>
             <div>
                 <$IntroHeader reference={reference} />
                 <$Definitions reference={reference} />
             </div>
 
-            {reference.examples && <ApiRefSamples examples={reference.examples} />}
+            {hasExamples ? <ApiRefSamples examples={reference.examples} /> : null}
         </atlas-apiref-item-showcase>
     </atlas-apiref-item>
 }

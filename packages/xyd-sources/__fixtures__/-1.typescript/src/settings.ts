@@ -326,13 +326,13 @@ export interface API {
 /**
  * API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration
  */
-export type APIFile = string | string[] | APIFileMap | APIFileAdvanced 
+export type APIFile = string | string[] | APIFileAdvanced | APIFileMap
 
 /**
  * API file map type
  */
 export type APIFileMap = { 
-    [name: string]: string | APIFileAdvanced
+    [name: string]: string
 }
 
 /**
@@ -515,7 +515,10 @@ export type Plugins = (string | PluginConfig)[]
 export type PluginConfig<
     PluginName extends string = string,
     PluginArgs extends unknown[] = unknown[]
-> = [PluginName, ...PluginArgs]
+> = [
+    PluginName,
+    ...PluginArgs
+]
 
 
 // ------ END  settings for plugins END ------

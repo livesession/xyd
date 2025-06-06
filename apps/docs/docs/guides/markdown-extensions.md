@@ -1,5 +1,5 @@
 ---
-title: Markdown extensions
+title: Markdown Extensions
 icon: logos:markdown
 ---
 

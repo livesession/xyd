@@ -11,13 +11,14 @@ import type {
 } from 'typedoc';
 import {ReflectionKind} from "typedoc";
 
-import type {
+import {
     Reference,
     Definition,
     TypeDocReferenceContext,
     DefinitionProperty,
     DefinitionTypeDocMeta,
-    SymbolDef
+    SymbolDef, DefinitionPropertyMeta,
+    TypeDocReferenceContextMeta
 } from "@xyd-js/uniform";
 import {DEFINED_DEFINITION_PROPERTY_TYPE} from "@xyd-js/uniform";
 
@@ -37,14 +38,15 @@ class TypeDocSignatureTextLoader extends MultiSignatureLoader {
 
     public signatureText(
         id: number,
-        line: number
+        line: number,
+        options?: any // TODO: fix options
     ) {
         const loader = this.getSignatuerLoader(id)
         if (!loader) {
             return
         }
 
-        const signTxt = signatureTextByLine(loader, line)
+        const signTxt = signatureTextByLine(loader, line, options)
         if (!signTxt) {
             console.warn('(TypeDocSignatureTextLoader.signatureText): Signature text is empty', id)
             return
@@ -430,9 +432,10 @@ function jsClassToUniformRef(
                 if (param.comment) {
                     description = commentToUniformDescription(param.comment)
                 }
-                let uniformType = someTypeToUniform(param.type)
+                let uniformType = someTypeToUniform.call(this, param.type)
                 let someTypeProps = {}
                 if (typeof uniformType === "object") {
+                    delete uniformType.ofType
                     someTypeProps = uniformType
                 }
 
@@ -573,9 +576,10 @@ function jsFunctionToUniformRef(
                     desc = returnCommentToUniform(sign.comment) || ""
                 }
 
-                const uniformType = someTypeToUniform(sign.type)
+                const uniformType = someTypeToUniform.call(this, sign.type)
                 let someTypeProps = {}
                 if (typeof uniformType === "object") {
+                    delete uniformType.ofType
                     someTypeProps = uniformType
                 }
 
@@ -616,9 +620,10 @@ function jsFunctionToUniformRef(
                     description = commentToUniformDescription(param.comment)
                 }
 
-                const uniformType = someTypeToUniform(param.type)
+                const uniformType = someTypeToUniform.call(this, param.type)
                 let someTypeProps = {}
                 if (typeof uniformType === "object") {
+                    delete uniformType.ofType
                     someTypeProps = uniformType
                 }
 
@@ -718,17 +723,35 @@ function jsInterfaceToUniformRef(
                     description = commentToUniformDescription(prop.comment)
                 }
 
-                const uniformType = someTypeToUniform(prop.type)
+                const uniformType = someTypeToUniform.call(this, prop.type)
                 let someTypeProps = {}
+                let meta: DefinitionPropertyMeta[] = []
                 if (typeof uniformType === "object") {
+                    delete uniformType.ofType
                     someTypeProps = uniformType
+                    meta = uniformType.meta || []
+                }
+
+                // TODO: unify interfaceToUniformRef with uniformProperties
+                if (!prop.flags?.isOptional) {
+                    meta.push({
+                        name: "required",
+                        value: "true"
+                    })
+                }
+                if (Array.isArray(prop.comment?.modifierTags) && prop.comment?.modifierTags?.includes("@internal")) {
+                    meta.push({
+                        name: "internal",
+                        value: "true"
+                    })
                 }
 
                 const property: DefinitionProperty = {
                     name: prop.name,
                     type: typeof uniformType === "string" ? uniformType : "",
                     description,
-                    ...someTypeProps
+                    ...someTypeProps,
+                    meta
                 }
 
                 if (prop.comment) {
@@ -816,7 +839,7 @@ function jsTypeAliasToUniformRef(
         examples: {
             groups: []
         },
-        definitions
+        definitions,
     }
 
     const declarationCtx = declarationUniformContext.call(this, dec)
@@ -842,24 +865,34 @@ function jsTypeAliasToUniformRef(
         ref.description = description
     }
 
+    if (dec.type && dec.children?.length) {
+        console.warn("(jsTypeAliasToUniformRef): Type alias with children is not fully supported, only type definition will be handled", dec.name)
+    }
+
     // handle type definition
     {
+        const typeDef: Definition = {
+            title: 'Type Definition',
+            properties: []
+        }
+
+        let comment = ""
+
+        if (dec.comment) {
+            comment = commentToUniformDescription(dec.comment)
+        }
+
+
         if (dec.type) {
-            const typeDef: Definition = {
-                title: 'Type Definition',
-                properties: []
-            }
-
-            let comment = ""
-
-            if (dec.comment) {
-                comment = commentToUniformDescription(dec.comment)
-            }
-
-            const uniformType = someTypeToUniform(dec.type)
+            const uniformType = someTypeToUniform.call(this, dec.type)
             let someTypeProps = {}
             if (typeof uniformType === "object") {
+                delete uniformType.ofType
                 someTypeProps = uniformType
+            }
+
+            if (uniformType === "VirtualPage") {
+                console.log(555)
             }
 
             typeDef.properties.push({
@@ -868,9 +901,13 @@ function jsTypeAliasToUniformRef(
                 description: comment,
                 ...someTypeProps
             })
+        } else if (dec?.children?.length) {
+            const properties = uniformProperties.call(this, dec)
 
-            definitions.push(typeDef)
+            typeDef.properties = properties
         }
+
+        definitions.push(typeDef)
     }
 
     return ref
@@ -1015,6 +1052,15 @@ function declarationUniformContext(
     // Use the packagePath directly as it's already relative to the module root
     const fileFullPath = symbolMap.packagePath
 
+    const meta: TypeDocReferenceContextMeta[] = []
+
+    if (Array.isArray(dec.comment?.modifierTags) && dec.comment?.modifierTags?.includes("@internal")) {
+        meta.push({
+            name: "internal",
+            value: "true"
+        })
+    }
+
     const ctx: TypeDocReferenceContext = {
         symbolId: dec.id?.toString(),
         symbolName: dec.name,
@@ -1031,7 +1077,8 @@ function declarationUniformContext(
         sourcecode: {
             code: sourceCode,
             lang: "ts"
-        }
+        },
+        meta,
     }
 
     const category = uniformCategory(dec)
@@ -1044,70 +1091,207 @@ function declarationUniformContext(
 
 type SomeTypeUniform = string | {
     type?: string;
+    ofType?: string;
     symbolDef?: SymbolDef;
-    properties?: DefinitionProperty[]
+    rootProperty?: DefinitionProperty;
+    properties?: DefinitionProperty[];
+    meta?: DefinitionPropertyMeta[];
 }
 
-function someTypeToUniform(someType: SomeType): SomeTypeUniform {
+function someTypeToUniform(
+    this: Transformer,
+    someType: SomeType
+): SomeTypeUniform | string {
+    const meta: DefinitionPropertyMeta[] = []
+
+    if ("target" in someType) {
+        // TODO: better data structure - is there any map for this?
+        for (const child of this?.project?.children || []) {
+            if (String(child.id) === String(someType.target)) {
+                if (Array.isArray(child.comment?.modifierTags) && child.comment?.modifierTags?.includes("@internal")) {
+                    meta.push({
+                        name: "internal",
+                        value: "true"
+                    })
+                }
+            }
+        }
+    }
+
     switch (someType.type) {
-        case "reference": {
+        case "reference": { // e.g ReferenceType
             let refType = `${someType.qualifiedName || someType.name}`
 
             if ("target" in someType && typeof someType.target === "number") {
+                if (refType === "VirtualPage") {
+                    console.log(555)
+                }
                 return {
                     type: refType,
                     symbolDef: {
                         id: someType.target?.toString()
-                    }
+                    },
+                    meta
                 }
             }
 
-            // TODO: abstract definition properties like GenericDefinitionProperty extends DefinitionProperty?
+            // Handle generic types like Record with typeArguments
+            if ("typeArguments" in someType && someType.typeArguments) {
+                const typeArgs = someType.typeArguments.map(arg => {
+                    const argType = someTypeToUniform.call(this, arg)
+                    return typeof argType === "string" ? argType : argType.type || ""
+                })
+                refType = `${refType}<${typeArgs.join(", ")}>`
+            }
+
             return refType
         }
-        case "union": {
-            let types: string[] = []
-            const symbolIds: string[] = []
 
-            for (const t of someType.types) {
-                const tUniform = someTypeToUniform(t)
+        case "union": { // e.g type | type2
+            const resp = unionLikeSomeType.call(this, someType.types)
 
-                if (typeof tUniform === "object") {
-                    types.push(tUniform.type || "")
-
-                    if (tUniform?.symbolDef?.id) {
-                        if (Array.isArray(tUniform?.symbolDef?.id)) {
-                            symbolIds.push(...tUniform.symbolDef?.id)
-                        } else {
-                            symbolIds.push(tUniform.symbolDef.id)
-                        }
-                    }
-                } else {
-                    types.push(tUniform)
-                }
+            if (typeof resp === "string") {
+                return resp
             }
 
             return {
-                type: types.join(" | "),
-                symbolDef: {
-                    id: symbolIds,
-                }
+                ...resp,
+                meta: [
+                    ...(resp.meta || []),
+                    ...meta
+                ]
             }
         }
-        case "literal": {
-            if (typeof someType.value === "string") {
+
+        case "literal": { // primitive types or string literals
+            if (typeof someType.value === "string") { // e.g `"opener"`
                 return `"${someType.value}"`
             }
 
-            return (someType.value || "").toString()
+            return (someType.value || "").toString() // e.g `123` or `true`
         }
-        case "reflection": {
-            const properties = uniformProperties(someType.declaration)
+
+        case "reflection": { // inline like {something: true}
+            const properties = uniformProperties.call(this, someType.declaration)
+
+            let type = ""
+
+            if (someType.declaration.indexSignatures?.length || someType.declaration.children?.length) {
+                type = this.signatureTextLoader.signatureText(
+                    someType.declaration.id,
+                    someType.declaration.sources?.[0]?.line || 0,
+                    {
+                        typeOnly: true,
+                    }
+                ) || ""
+            }
 
             return {
-                properties
+                type,
+                properties,
+                meta
             }
         }
+
+        case "array": { // e.g type[]
+            const arrayItemType = someTypeToUniform.call(this, someType.elementType)
+
+            if (typeof arrayItemType === "string") {
+                return {
+                    type: arrayItemType + "[]",
+                    meta,
+                }
+            }
+
+            return {
+                ofType: (arrayItemType.type || "") + "[]",
+                type: DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY,
+                rootProperty: {
+                    name: "",
+                    description: "",
+                    type: (arrayItemType.type || ""),
+                    properties: [],
+                    symbolDef: arrayItemType.symbolDef
+                },
+                meta,
+            }
+        }
+
+        case "tuple": { // e.g [type, type2]
+            const elements = someType.elements || []
+            const elementTypes = elements.map(element => someTypeToUniform.call(this, element))
+
+            // Get the full type signature from the source code if this is a type alias
+            if ('target' in someType && typeof someType.target === 'number') {
+                const source = this.project.symbolIdMap[someType.target]?.sources?.[0]
+                if (source) {
+                    const signatureText = this.signatureTextLoader.signatureText(
+                        someType.target,
+                        source.line
+                    )
+                    if (signatureText) {
+                        return {
+                            type: signatureText,
+                            symbolDef: {
+                                id: someType.target.toString()
+                            },
+                            meta
+                        }
+                    }
+                }
+            }
+
+            // Fallback to manually constructing the type if signature text is not available
+            const tupleType = `[${elementTypes.map(t => typeof t === "string" ? t : t.type || "").join(", ")}]`
+
+            // Collect all symbol definitions from tuple elements
+            const symbolIds: string[] = []
+            for (const t of elementTypes) {
+                if (typeof t === "object" && t.symbolDef?.id) {
+                    if (Array.isArray(t.symbolDef.id)) {
+                        symbolIds.push(...t.symbolDef.id)
+                    } else {
+                        symbolIds.push(t.symbolDef.id)
+                    }
+                }
+            }
+
+            return {
+                type: tupleType,
+                symbolDef: symbolIds.length > 0 ? {id: symbolIds} : undefined,
+                meta
+            }
+        }
+
+        case "intersection": { //  e.g type & type2
+            const resp = unionLikeSomeType.call(this, someType.types)
+
+            if (typeof resp === "string") {
+                return resp
+            }
+
+            return {
+                ...resp,
+                meta: [
+                    ...(resp.meta || []),
+                    ...meta
+                ]
+            }
+        }
+
+        case "rest": {
+            const resp = someTypeToUniform.call(this, someType.elementType)
+
+            if (typeof resp === "string") {
+                return `${resp}[]`
+            }
+
+            return {
+                ...resp,
+                type: `${resp.type || ""}[]`,
+            }
+        }
+
         default: {
             if (!("name" in someType)) {
                 console.warn('SomeType does not have name property', someType.type)
@@ -1116,6 +1300,49 @@ function someTypeToUniform(someType: SomeType): SomeTypeUniform {
 
             return someType.name
         }
+    }
+
+    return ""
+}
+
+function unionLikeSomeType(this: Transformer, someTypes: SomeType[]): SomeTypeUniform | string {
+    let types: string[] = []
+    const symbolIds: string[] = []
+
+    for (const t of someTypes) {
+        const tUniform = someTypeToUniform.call(this, t)
+
+        if (typeof tUniform === "object") {
+            // TODO: IN THE FUTURE CREATE AUDIENCES TO UNLOCK INTERNAL TYPES
+            if (tUniform.meta?.some(m => m.name === "internal" && m.value === "true")) {
+                continue
+            }
+            // If it's a tuple type, don't split it
+            if (tUniform.type?.startsWith('[') && tUniform.type?.endsWith(']')) {
+                types.push(tUniform.type)
+            } else {
+                types.push(tUniform.ofType || tUniform.type || "")
+            }
+
+            if (tUniform?.symbolDef?.id) {
+                if (Array.isArray(tUniform?.symbolDef?.id)) {
+                    symbolIds.push(...tUniform.symbolDef?.id)
+                } else {
+                    symbolIds.push(tUniform.symbolDef.id)
+                }
+            }
+
+            delete tUniform.ofType
+        } else {
+            types.push(tUniform)
+        }
+    }
+
+    return {
+        type: types.filter(Boolean).join(" | "),
+        symbolDef: {
+            id: symbolIds,
+        },
     }
 }
 
@@ -1192,53 +1419,64 @@ function returnCommentToUniform(comment: Comment): string {
     return desc
 }
 
-// TODO: recursive
-function uniformProperties(dec: DeclarationReflection) {
+function uniformProperties(
+    this: Transformer,
+    dec: DeclarationReflection
+): DefinitionProperty[] {
     const properties: DefinitionProperty[] = []
 
-    for (const child of dec.children || []) {
-        switch (child.kind) {
-            case ReflectionKind.Property: {
-                const prop = child
+    for (const prop of dec.children || []) {
+        if (!prop.type) {
+            console.warn('(uniformProperties): Property type not found', prop.name)
+            continue
+        }
 
-                if (!prop.type) {
-                    console.warn('(jsInterfaceToUniformRef): Property type not found', prop.name)
-                    continue
-                }
+        let description = ""
+        if (prop.comment) {
+            description = commentToUniformDescription(prop.comment)
+        }
 
-                let description = ""
-                if (prop.comment) {
-                    description = commentToUniformDescription(prop.comment)
-                }
+        const uniformType = someTypeToUniform.call(this, prop.type)
+        let meta: DefinitionPropertyMeta[] = []
 
-                const uniformType = someTypeToUniform(prop.type)
-                let someTypeProps = {}
-                if (typeof uniformType === "object") {
-                    someTypeProps = uniformType
-                }
+        let someTypeProps = {}
+        if (typeof uniformType === "object") {
+            delete uniformType.ofType
+            someTypeProps = uniformType
 
-                const property: DefinitionProperty = {
-                    name: prop.name,
-                    type: typeof uniformType === "string" ? uniformType : "",
-                    description,
-                    ...someTypeProps
-                }
+            meta = uniformType.meta || []
+        }
 
-                if (prop.comment) {
-                    const examples = commentToUniformExamples(prop.comment)
-                    if (examples.length > 0) {
-                        property.examples = examples
-                    }
-                }
+        if (!prop.flags?.isOptional) {
+            meta.push({
+                name: "required",
+                value: "true"
+            })
+        }
 
-                properties.push(property)
+        if (Array.isArray(prop.comment?.modifierTags) && prop.comment?.modifierTags?.includes("@internal")) {
+            meta.push({
+                name: "internal",
+                value: "true"
+            })
+        }
 
-                break
-            }
-            default: {
-                console.warn('(uniformProperties): Unsupported child kind', child.kind)
+        const property: DefinitionProperty = {
+            name: prop.name,
+            type: typeof uniformType === "string" ? uniformType : "",
+            description,
+            ...someTypeProps,
+            meta
+        }
+
+        if (prop.comment) {
+            const examples = commentToUniformExamples(prop.comment)
+            if (examples.length > 0) {
+                property.examples = examples
             }
         }
+
+        properties.push(property)
     }
 
     return properties

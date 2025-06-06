@@ -28,7 +28,7 @@ export function mdFunctionImportCode(settings?: Settings) {
                 const result = parseFunctionCall(node, FunctionName.ImportCode);
                 if (!result) return;
 
-                const importPath = result[1];
+                const importPath = result[0];
 
                 // Parse the import path to extract file path, regions, and line ranges
                 const { filePath, regions, lineRanges } = parseImportPath(

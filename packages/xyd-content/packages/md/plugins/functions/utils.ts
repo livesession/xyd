@@ -1,8 +1,8 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { VFile } from 'vfile';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import {VFile} from 'vfile';
 
-import { Settings } from '@xyd-js/core';
+import {Settings} from '@xyd-js/core';
 
 /**
  * Common options for all function plugins
@@ -15,9 +15,29 @@ export interface FunctionOptions {
  * Parse a function call with arguments
  * @param node The AST node to parse
  * @param functionName The name of the function to look for
- * @returns An array with the first element being null and the second being the first argument, or null if no match
  */
-export function parseFunctionCall(node: any, functionName: string): [null, string] | null {
+export function parseFunctionCall<args = any>(node: any, functionName: string): [string, args] | null {
+    function resp(args: any) {
+        const response: any[] = []
+
+        response.push(args[0])
+        let jsonArgs = undefined;
+        let argsString = args[1]
+        if (argsString) {
+            try {
+                argsString = argsString
+                    .replace(/'/g, '"')
+                    .replace(/(\w+):/g, '"$1":');
+
+                jsonArgs = JSON.parse(argsString);
+                response.push(jsonArgs);
+            } catch (e) {
+            }
+        }
+
+        return response as [string, any];
+    }
+
     // Check for the simple case with a single text node
     if (node.children && node.children.length === 1 && node.children[0].type === 'text') {
         const textNode = node.children[0];
@@ -29,13 +49,14 @@ export function parseFunctionCall(node: any, functionName: string): [null, strin
             // Split by comma and trim each argument
             const args = argsText.split(',').map((arg: string) => arg.trim().replace(/^["']|["']$/g, ''));
             // Return the first argument as the path
-            return [null, args[0]];
+
+            return resp(args)
         }
 
         // Check for the original syntax
         const originalMatch = textNode.value.match(new RegExp(`^${functionName}\\s+['"](.*)['"]$`));
         if (originalMatch) {
-            return [null, originalMatch[1]];
+            return resp([originalMatch[1], originalMatch[2]]);
         }
     }
 
@@ -58,7 +79,7 @@ export function parseFunctionCall(node: any, functionName: string): [null, strin
         // We found a split command, extract the URL from the link node
         const url = middleNode.url;
 
-        return [null, url]; // Create a match array with the URL in position 1
+        return resp([url]) // Create a match array with the URL in position 1
     }
 
     // Check for parentheses syntax with multiple arguments
@@ -74,11 +95,11 @@ export function parseFunctionCall(node: any, functionName: string): [null, strin
             // Split by comma and trim each argument
             const args = argsText.split(',').map((arg: string) => arg.trim().replace(/^["']|["']$/g, ''));
             // Return the first argument as the path
-            return [null, args[0]];
+            return resp(args);
         } else if (middleNode.type === 'link') {
             // Case with a link node (for URLs)
             const url = middleNode.url;
-            return [null, url];
+            return resp([url]);
         }
     }
 
@@ -114,19 +135,19 @@ export function parseImportPath(importPath: string): {
             if (part.includes('-')) {
                 // Range like "2-4"
                 const [start, end] = part.split('-').map(num => parseInt(num, 10));
-                result.lineRanges.push({ start, end });
+                result.lineRanges.push({start, end});
             } else if (part.endsWith(':')) {
                 // Range like "8:"
                 const start = parseInt(part.replace(':', ''), 10);
-                result.lineRanges.push({ start });
+                result.lineRanges.push({start});
             } else if (part.startsWith(':')) {
                 // Range like ":10"
                 const end = parseInt(part.replace(':', ''), 10);
-                result.lineRanges.push({ end });
+                result.lineRanges.push({end});
             } else {
                 // Single line like "1"
                 const line = parseInt(part, 10);
-                result.lineRanges.push({ start: line, end: line });
+                result.lineRanges.push({start: line, end: line});
             }
         }
     }
@@ -137,55 +158,55 @@ export function parseImportPath(importPath: string): {
         // Split the path at the hash
         const basePath = result.filePath.substring(0, hashIndex);
         const regionPart = result.filePath.substring(hashIndex + 1);
-        
+
         // Update the file path
         result.filePath = basePath;
-        
+
         // Check if the region part contains a numeric line range
         const regionLineRangeMatch = regionPart.match(/\{([0-9,\s:-]+)\}/);
-        
+
         if (regionLineRangeMatch) {
             // If there are numeric line ranges in the region part, extract them
             const regionLineRangeStr = regionLineRangeMatch[1];
             const regionName = regionPart.replace(/\{[0-9,\s:-]+\}/, '').trim();
-            
+
             // Parse the line ranges
             const rangeParts = regionLineRangeStr.split(',').map(part => part.trim());
             const regionLineRanges: LineRange[] = [];
-            
+
             for (const part of rangeParts) {
                 if (part.includes('-')) {
                     // Range like "2-4"
                     const [start, end] = part.split('-').map(num => parseInt(num, 10));
-                    regionLineRanges.push({ start, end });
+                    regionLineRanges.push({start, end});
                 } else if (part.endsWith(':')) {
                     // Range like "8:"
                     const start = parseInt(part.replace(':', ''), 10);
-                    regionLineRanges.push({ start });
+                    regionLineRanges.push({start});
                 } else if (part.startsWith(':')) {
                     // Range like ":10"
                     const end = parseInt(part.replace(':', ''), 10);
-                    regionLineRanges.push({ end });
+                    regionLineRanges.push({end});
                 } else {
                     // Single line like "1"
                     const line = parseInt(part, 10);
-                    regionLineRanges.push({ start: line, end: line });
+                    regionLineRanges.push({start: line, end: line});
                 }
             }
-            
+
             // Add the region with its line ranges
-            result.regions.push({ name: regionName, lineRanges: regionLineRanges });
+            result.regions.push({name: regionName, lineRanges: regionLineRanges});
         } else {
             // If there are no numeric line ranges in the region part, check if it contains commas
             if (regionPart.includes(',')) {
                 // Split by comma for multiple regions
                 const regionNames = regionPart.split(',');
                 for (const name of regionNames) {
-                    result.regions.push({ name: name.trim() });
+                    result.regions.push({name: name.trim()});
                 }
             } else {
                 // Single region
-                result.regions.push({ name: regionPart.trim() });
+                result.regions.push({name: regionPart.trim()});
             }
         }
     }
@@ -370,33 +391,33 @@ export function functionMatch(value: string, functionName: string): boolean {
  * @returns The resolved path or the original path if no alias is found
  */
 export function resolvePathAlias(inputPath: string, settings?: Settings, baseDir?: string): string {
-  if (!settings?.engine?.paths) {
-    return inputPath;
-  }
-
-  // Find the longest matching alias
-  let resolvedPath = inputPath;
-  let longestMatch = '';
-
-  for (const [alias, aliasPaths] of Object.entries(settings.engine.paths)) {
-    // Convert alias pattern to regex, replacing * with .*
-    const aliasPattern = alias.replace(/\*/g, '.*');
-    const aliasRegex = new RegExp(`^${aliasPattern}`);
-    
-    if (aliasRegex.test(inputPath) && alias.length > longestMatch.length) {
-      longestMatch = alias;
-      // Replace the alias with the first path from the array
-      const aliasPath = aliasPaths[0];
-      // Replace * in the alias path with the matched part from the input path
-      const matchedPart = inputPath.slice(alias.indexOf('*'));
-      resolvedPath = aliasPath.replace(/\*/g, matchedPart);
+    if (!settings?.engine?.paths) {
+        return inputPath;
     }
-  }
 
-  // If we found a match and have a base directory, resolve the path relative to it
-  if (longestMatch && baseDir) {
-    resolvedPath = path.resolve(baseDir, resolvedPath);
-  }
+    // Find the longest matching alias
+    let resolvedPath = inputPath;
+    let longestMatch = '';
 
-  return resolvedPath;
+    for (const [alias, aliasPaths] of Object.entries(settings.engine.paths)) {
+        // Convert alias pattern to regex, replacing * with .*
+        const aliasPattern = alias.replace(/\*/g, '.*');
+        const aliasRegex = new RegExp(`^${aliasPattern}`);
+
+        if (aliasRegex.test(inputPath) && alias.length > longestMatch.length) {
+            longestMatch = alias;
+            // Replace the alias with the first path from the array
+            const aliasPath = aliasPaths[0];
+            // Replace * in the alias path with the matched part from the input path
+            const matchedPart = inputPath.slice(alias.indexOf('*'));
+            resolvedPath = aliasPath.replace(/\*/g, matchedPart);
+        }
+    }
+
+    // If we found a match and have a base directory, resolve the path relative to it
+    if (longestMatch && baseDir) {
+        resolvedPath = path.resolve(baseDir, resolvedPath);
+    }
+
+    return resolvedPath;
 }

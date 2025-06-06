@@ -1,6 +1,6 @@
-import path from 'node:path';
-import fs from 'node:fs';
-import os from 'node:os';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
+import * as os from 'node:os';
 import { VFile } from 'vfile';
 
 import { Metadata, Settings } from '@xyd-js/core';
@@ -27,7 +27,7 @@ export async function processUniformFunctionCall(
     file: VFile,
     resolveFrom?: string,
     settings?: Settings,
-): Promise<any[] | null> {
+): Promise<Reference[] | null> {
     // Parse the import path to extract file path
     const { filePath, regions, lineRanges } = parseImportPath(value);
 

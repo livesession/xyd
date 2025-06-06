@@ -1,14 +1,18 @@
 import * as path from 'node:path';
-import { resolve } from "path";
+import {resolve} from "path";
 import ts from "typescript";
 
 import * as TypeDoc from 'typedoc';
 import type {NormalizedPath, TypeDocOptions} from "typedoc";
 
-import type { Reference, ReferenceContext } from "@xyd-js/uniform";
+import type {Reference, ReferenceContext} from "@xyd-js/uniform";
 import {
     typedocToUniform
 } from "./TypeDocTransformer"
+
+export {
+    uniformToMiniUniform
+} from "./uniformToMiniUniform"
 
 const importedFiles = new Set<string>();
 
@@ -41,7 +45,7 @@ export async function sourcesToUniformV2(
         skipErrorChecking: true,
 
         // @ts-ignore
-        sort: ['source-order'], 
+        sort: ['source-order'],
         // @ts-ignore
         sortEntryPoints: false,
     }
@@ -50,9 +54,9 @@ export async function sourcesToUniformV2(
         ...commonOptions,
     }
     const everySingleFile = entryPoints?.every(ep => !!path.extname(ep))
-    
+
     if (everySingleFile) {
-         entryPoints.map(ep => {
+        entryPoints.map(ep => {
             findImports(root, path.resolve(root, ep));
         })
         const fileImported = Array.from(importedFiles) || []

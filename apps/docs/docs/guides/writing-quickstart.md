@@ -1,5 +1,5 @@
 ---
-title: Writing quickstart
+title: Writing
 icon: letter-text
 ---
 
@@ -26,6 +26,7 @@ But you can still use pure MDX or both if you want.
 :::
 
 ## Metadata Specification
+The full API reference of metadata you can find [here](/docs/reference/meta).
 
 ### Title
 The title field is used for the page title (SEO) and for the sidebar navigation item:

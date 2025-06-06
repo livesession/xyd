@@ -2,7 +2,7 @@ import { visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
 
 import { Settings } from '@xyd-js/core'
-import uniform, { pluginJsonView } from "@xyd-js/uniform"
+import uniform, { pluginJsonView, Reference, TypeDocReferenceContext } from "@xyd-js/uniform"
 
 import { FunctionName } from "./types";
 import {
@@ -12,6 +12,7 @@ import {
 
 // Import the processUniformFunctionCall function
 import { processUniformFunctionCall } from './uniformProcessor';
+import { uniformToMiniUniform } from '@xyd-js/sources/ts';
 
 export function mdFunctionUniform(settings?: Settings) {
     return function (options: FunctionOptions = {}) {
@@ -26,18 +27,23 @@ export function mdFunctionUniform(settings?: Settings) {
                 const result = parseFunctionCall(node, FunctionName.Uniform);
                 if (!result) return;
 
-                const importPath = result[1];
+                const importPath = result[0];
+                const importArgs = result[1];
 
                 // Create a promise for this node
                 const promise = (async () => {
                     try {
                         // Process the uniform function call
-                        const references = await processUniformFunctionCall(
+                        let references = await processUniformFunctionCall(
                             importPath,
                             file,
                             options.resolveFrom,
                             settings,
                         );
+
+                        if (importArgs?.mini && references) { // TODO: move to `processUniformFunctionCall`
+                            references = uniformToMiniUniform(importArgs.mini, references as Reference<TypeDocReferenceContext>[]);
+                        }
 
                         if (references) {
                             node.type = 'code';

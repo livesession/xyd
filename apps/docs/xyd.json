@@ -12,7 +12,9 @@
                     "name": "lucide",
                     "default": true
                 },
-                "logos"
+                "simple-icons",
+                "logos",
+                "majesticons"
             ]
         }
     },
@@ -52,6 +54,7 @@
                         "group": "Core concepts",
                         "pages": [
                             "docs/guides/settings",
+                            "docs/guides/writing-quickstart",
                             "docs/guides/routing",
                             "docs/guides/themes"
                         ]
@@ -59,11 +62,29 @@
                     {
                         "group": "Writing Content",
                         "pages": [
-                            "docs/guides/writing-quickstart",
-                            "docs/guides/special-symbols",
                             "docs/guides/markdown-extensions",
+                            "docs/guides/special-symbols",
                             "docs/guides/developer-content",
+                            "docs/guides/compose-content",
                             "docs/guides/seo"
+                        ]
+                    },
+                    {
+                        "group": "API Pages",
+                        "pages": [
+                            "docs/guides/openapi",
+                            "docs/guides/graphql",
+                            "docs/guides/components",
+                            {
+                                "group": "Source Code",
+                                "icon": "square-code",
+                                "pages": [
+                                    "docs/guides/typescript",
+                                    "docs/guides/python",
+                                    "docs/guides/golang"
+                                ]
+                            },
+                            "docs/guides/asyncapi"
                         ]
                     },
                     {
@@ -72,6 +93,8 @@
                             "docs/guides/customization-introduction",
                             "docs/guides/extending-default-theme",
                             "docs/guides/custom-theme",
+                            "docs/guides/icons",
+                            "docs/guides/custom-scripts",
                             "docs/guides/plugins"
                         ]
                     },
@@ -110,6 +133,14 @@
                             "docs/development/roadmap",
                             "docs/development/contributing",
                             "docs/development/changelog"
+                        ]
+                    },
+                    {
+                        "group": "Resources",
+                        "pages": [
+                            "docs/resources/migration-tool",
+                            "docs/resources/examples",
+                            "docs/resources/showcase"
                         ]
                     }
                 ]

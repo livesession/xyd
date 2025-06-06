@@ -28,13 +28,19 @@ export const ApiRefItemHost = css`
     flex-direction: column;
     gap: 16px;
     padding-bottom: 25px;
+
+    &[data-has-examples="true"] {
+        atlas-apiref-item-showcase {
+            display: grid;
+            gap: 100px;
+
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
 `;
 
 export const ApiRefItemGrid = css`
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: normal;
-    gap: 100px;
 `;
 
 export const ApiRefItemDefinitionsHost = css`

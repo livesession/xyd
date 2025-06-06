@@ -24,6 +24,12 @@ export const HeadingHost = css`
             display: flex;
             align-items: center;
             gap: 8px;
+
+            xyd-badge {
+                font-size: var(--xyd-font-size-xsmall);
+                line-height: var(--xyd-line-height-xsmall);
+                letter-spacing: 2px;
+            }
         }
 
         &:hover {
