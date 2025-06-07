@@ -41,7 +41,8 @@
             {
               "fileName": "settings.ts",
               "line": 10,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L10"
             }
           ],
           "type": {
@@ -71,7 +72,8 @@
             {
               "fileName": "settings.ts",
               "line": 13,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L13"
             }
           ],
           "type": {
@@ -101,12 +103,13 @@
             {
               "fileName": "settings.ts",
               "line": 16,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L16"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 74,
+            "target": 71,
             "name": "API",
             "package": "@xyd-js/sources"
           }
@@ -131,12 +134,13 @@
             {
               "fileName": "settings.ts",
               "line": 19,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L19"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 102,
+            "target": 99,
             "name": "Integrations",
             "package": "@xyd-js/sources"
           }
@@ -161,12 +165,13 @@
             {
               "fileName": "settings.ts",
               "line": 22,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L22"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 119,
+            "target": 116,
             "name": "Plugins",
             "package": "@xyd-js/sources"
           }
@@ -197,14 +202,15 @@
             {
               "fileName": "settings.ts",
               "line": 29,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L29"
             }
           ],
           "type": {
             "type": "array",
             "elementType": {
               "type": "reference",
-              "target": 123,
+              "target": 120,
               "name": "Redirects",
               "package": "@xyd-js/sources"
             }
@@ -236,12 +242,13 @@
             {
               "fileName": "settings.ts",
               "line": 35,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L35"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 126,
+            "target": 123,
             "name": "SEO",
             "package": "@xyd-js/sources"
           }
@@ -266,12 +273,13 @@
             {
               "fileName": "settings.ts",
               "line": 38,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L38"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 132,
+            "target": 129,
             "name": "Engine",
             "package": "@xyd-js/sources"
           }
@@ -296,7 +304,8 @@
         {
           "fileName": "settings.ts",
           "line": 8,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L8"
         }
       ]
     },
@@ -327,7 +336,7 @@
             "summary": [
               {
                 "kind": "text",
-                "text": "A preset theme configuration that changes the look and feel of the project. \nA theme is a set of default styling configurations. \n\nExample built-in themes: "
+                "text": "A preset theme configuration that changes the look and feel of the project.\nA theme is a set of default styling configurations.\n\nExample built-in themes: "
               },
               {
                 "kind": "code",
@@ -363,7 +372,8 @@
             {
               "fileName": "settings.ts",
               "line": 53,
-              "character": 13
+              "character": 13,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L53"
             }
           ],
           "type": {
@@ -417,7 +427,8 @@
             {
               "fileName": "settings.ts",
               "line": 56,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L56"
             }
           ],
           "type": {
@@ -439,7 +450,7 @@
             "summary": [
               {
                 "kind": "text",
-                "text": "Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to. \nSVG format is recommended as it does not pixelate and the file size is generally smaller."
+                "text": "Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to.\nSVG format is recommended as it does not pixelate and the file size is generally smaller."
               }
             ]
           },
@@ -447,7 +458,8 @@
             {
               "fileName": "settings.ts",
               "line": 62,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L62"
             }
           ],
           "type": {
@@ -497,7 +509,8 @@
             {
               "fileName": "settings.ts",
               "line": 67,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L67"
             }
           ],
           "type": {
@@ -527,7 +540,8 @@
             {
               "fileName": "settings.ts",
               "line": 70,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L70"
             }
           ],
           "type": {
@@ -555,7 +569,8 @@
             {
               "fileName": "settings.ts",
               "line": 73,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L73"
             }
           ],
           "type": {
@@ -583,7 +598,8 @@
             {
               "fileName": "settings.ts",
               "line": 76,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L76"
             }
           ],
           "type": {
@@ -648,7 +664,8 @@
             {
               "fileName": "settings.ts",
               "line": 79,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L79"
             }
           ],
           "type": {
@@ -678,7 +695,8 @@
         {
           "fileName": "settings.ts",
           "line": 46,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L46"
         }
       ]
     },
@@ -717,7 +735,8 @@
             {
               "fileName": "settings.ts",
               "line": 97,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L97"
             }
           ],
           "type": {
@@ -744,7 +763,8 @@
         {
           "fileName": "settings.ts",
           "line": 95,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L95"
         }
       ]
     },
@@ -787,7 +807,8 @@
             {
               "fileName": "settings.ts",
               "line": 105,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L105"
             }
           ],
           "type": {
@@ -819,7 +840,8 @@
             {
               "fileName": "settings.ts",
               "line": 108,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L108"
             }
           ],
           "type": {
@@ -847,7 +869,8 @@
             {
               "fileName": "settings.ts",
               "line": 111,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L111"
             }
           ],
           "type": {
@@ -870,7 +893,8 @@
         {
           "fileName": "settings.ts",
           "line": 103,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L103"
         }
       ]
     },
@@ -907,7 +931,8 @@
             {
               "fileName": "settings.ts",
               "line": 121,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L121"
             }
           ],
           "type": {
@@ -944,7 +969,8 @@
         {
           "fileName": "settings.ts",
           "line": 117,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L117"
         }
       ]
     },
@@ -973,7 +999,8 @@
             {
               "fileName": "settings.ts",
               "line": 126,
-              "character": 5
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L126"
             }
           ],
           "type": {
@@ -1001,7 +1028,8 @@
             {
               "fileName": "settings.ts",
               "line": 129,
-              "character": 5
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L129"
             }
           ],
           "type": {
@@ -1029,7 +1057,8 @@
             {
               "fileName": "settings.ts",
               "line": 132,
-              "character": 5
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L132"
             }
           ],
           "type": {
@@ -1057,7 +1086,8 @@
             {
               "fileName": "settings.ts",
               "line": 135,
-              "character": 5
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L135"
             }
           ],
           "type": {
@@ -1081,7 +1111,8 @@
         {
           "fileName": "settings.ts",
           "line": 124,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L124"
         }
       ]
     },
@@ -1112,7 +1143,8 @@
             {
               "fileName": "settings.ts",
               "line": 140,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L140"
             }
           ],
           "type": {
@@ -1160,7 +1192,8 @@
         {
           "fileName": "settings.ts",
           "line": 138,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L138"
         }
       ]
     },
@@ -1182,7 +1215,8 @@
         {
           "fileName": "settings.ts",
           "line": 144,
-          "character": 12
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L144"
         }
       ],
       "type": {
@@ -1221,7 +1255,8 @@
         {
           "fileName": "settings.ts",
           "line": 147,
-          "character": 12
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L147"
         }
       ],
       "type": {
@@ -1271,7 +1306,8 @@
             {
               "fileName": "settings.ts",
               "line": 158,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L158"
             }
           ],
           "type": {
@@ -1315,14 +1351,15 @@
             {
               "fileName": "settings.ts",
               "line": 161,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L161"
             }
           ],
           "type": {
             "type": "array",
             "elementType": {
               "type": "reference",
-              "target": 63,
+              "target": 60,
               "name": "Header",
               "package": "@xyd-js/sources"
             }
@@ -1348,14 +1385,15 @@
             {
               "fileName": "settings.ts",
               "line": 164,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L164"
             }
           ],
           "type": {
             "type": "array",
             "elementType": {
               "type": "reference",
-              "target": 59,
+              "target": 56,
               "name": "SubHeader",
               "package": "@xyd-js/sources"
             }
@@ -1381,12 +1419,13 @@
             {
               "fileName": "settings.ts",
               "line": 173,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L173"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 72,
+            "target": 69,
             "name": "AnchorRoot",
             "package": "@xyd-js/sources"
           }
@@ -1407,7 +1446,8 @@
         {
           "fileName": "settings.ts",
           "line": 156,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L156"
         }
       ]
     },
@@ -1444,7 +1484,8 @@
             {
               "fileName": "settings.ts",
               "line": 181,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L181"
             }
           ],
           "type": {
@@ -1470,7 +1511,8 @@
             {
               "fileName": "settings.ts",
               "line": 184,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L184"
             }
           ],
           "type": {
@@ -1497,7 +1539,8 @@
         {
           "fileName": "settings.ts",
           "line": 179,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L179"
         }
       ]
     },
@@ -1536,7 +1579,8 @@
             {
               "fileName": "settings.ts",
               "line": 192,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L192"
             }
           ],
           "type": {
@@ -1564,14 +1608,15 @@
             {
               "fileName": "settings.ts",
               "line": 198,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L198"
             }
           ],
           "type": {
             "type": "array",
             "elementType": {
               "type": "reference",
-              "target": 53,
+              "target": 50,
               "name": "PageURL",
               "package": "@xyd-js/sources"
             }
@@ -1597,7 +1642,8 @@
             {
               "fileName": "settings.ts",
               "line": 203,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L203"
             }
           ],
           "type": {
@@ -1625,81 +1671,13 @@
             {
               "fileName": "settings.ts",
               "line": 208,
-              "character": 4
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L208"
             }
           ],
           "type": {
-            "type": "union",
-            "types": [
-              {
-                "type": "intrinsic",
-                "name": "number"
-              },
-              {
-                "type": "reflection",
-                "declaration": {
-                  "id": 50,
-                  "name": "__type",
-                  "variant": "declaration",
-                  "kind": 65536,
-                  "flags": {},
-                  "children": [
-                    {
-                      "id": 51,
-                      "name": "before",
-                      "variant": "declaration",
-                      "kind": 1024,
-                      "flags": {},
-                      "sources": [
-                        {
-                          "fileName": "settings.ts",
-                          "line": 209,
-                          "character": 8
-                        }
-                      ],
-                      "type": {
-                        "type": "intrinsic",
-                        "name": "string"
-                      }
-                    },
-                    {
-                      "id": 52,
-                      "name": "after",
-                      "variant": "declaration",
-                      "kind": 1024,
-                      "flags": {},
-                      "sources": [
-                        {
-                          "fileName": "settings.ts",
-                          "line": 211,
-                          "character": 8
-                        }
-                      ],
-                      "type": {
-                        "type": "intrinsic",
-                        "name": "string"
-                      }
-                    }
-                  ],
-                  "groups": [
-                    {
-                      "title": "Properties",
-                      "children": [
-                        51,
-                        52
-                      ]
-                    }
-                  ],
-                  "sources": [
-                    {
-                      "fileName": "settings.ts",
-                      "line": 208,
-                      "character": 20
-                    }
-                  ]
-                }
-              }
-            ]
+            "type": "intrinsic",
+            "name": "number"
           }
         }
       ],
@@ -1718,12 +1696,13 @@
         {
           "fileName": "settings.ts",
           "line": 190,
-          "character": 17
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L190"
         }
       ]
     },
     {
-      "id": 53,
+      "id": 50,
       "name": "PageURL",
       "variant": "declaration",
       "kind": 2097152,
@@ -1739,8 +1718,9 @@
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 218,
-          "character": 12
+          "line": 214,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L214"
         }
       ],
       "type": {
@@ -1752,7 +1732,7 @@
           },
           {
             "type": "reference",
-            "target": 54,
+            "target": 51,
             "name": "VirtualPage",
             "package": "@xyd-js/sources"
           },
@@ -1766,7 +1746,7 @@
       }
     },
     {
-      "id": 54,
+      "id": 51,
       "name": "VirtualPage",
       "variant": "declaration",
       "kind": 2097152,
@@ -1789,8 +1769,9 @@
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 237,
-          "character": 12
+          "line": 233,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L233"
         }
       ],
       "type": {
@@ -1803,14 +1784,14 @@
           {
             "type": "reflection",
             "declaration": {
-              "id": 55,
+              "id": 52,
               "name": "__type",
               "variant": "declaration",
               "kind": 65536,
               "flags": {},
               "children": [
                 {
-                  "id": 56,
+                  "id": 53,
                   "name": "virtual",
                   "variant": "declaration",
                   "kind": 1024,
@@ -1826,8 +1807,9 @@
                   "sources": [
                     {
                       "fileName": "settings.ts",
-                      "line": 239,
-                      "character": 4
+                      "line": 235,
+                      "character": 4,
+                      "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L235"
                     }
                   ],
                   "type": {
@@ -1836,7 +1818,7 @@
                   }
                 },
                 {
-                  "id": 57,
+                  "id": 54,
                   "name": "page",
                   "variant": "declaration",
                   "kind": 1024,
@@ -1852,8 +1834,9 @@
                   "sources": [
                     {
                       "fileName": "settings.ts",
-                      "line": 242,
-                      "character": 4
+                      "line": 238,
+                      "character": 4,
+                      "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L238"
                     }
                   ],
                   "type": {
@@ -1862,7 +1845,7 @@
                   }
                 },
                 {
-                  "id": 58,
+                  "id": 55,
                   "name": "templates",
                   "variant": "declaration",
                   "kind": 1024,
@@ -1880,8 +1863,9 @@
                   "sources": [
                     {
                       "fileName": "settings.ts",
-                      "line": 245,
-                      "character": 4
+                      "line": 241,
+                      "character": 4,
+                      "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L241"
                     }
                   ],
                   "type": {
@@ -1906,17 +1890,18 @@
                 {
                   "title": "Properties",
                   "children": [
-                    56,
-                    57,
-                    58
+                    53,
+                    54,
+                    55
                   ]
                 }
               ],
               "sources": [
                 {
                   "fileName": "settings.ts",
-                  "line": 237,
-                  "character": 35
+                  "line": 233,
+                  "character": 35,
+                  "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L233"
                 }
               ]
             }
@@ -1925,7 +1910,7 @@
       }
     },
     {
-      "id": 59,
+      "id": 56,
       "name": "SubHeader",
       "variant": "declaration",
       "kind": 256,
@@ -1940,7 +1925,7 @@
       },
       "children": [
         {
-          "id": 60,
+          "id": 57,
           "name": "route",
           "variant": "declaration",
           "kind": 1024,
@@ -1956,8 +1941,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 254,
-              "character": 4
+              "line": 250,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L250"
             }
           ],
           "type": {
@@ -1966,7 +1952,7 @@
           }
         },
         {
-          "id": 61,
+          "id": 58,
           "name": "name",
           "variant": "declaration",
           "kind": 1024,
@@ -1982,8 +1968,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 257,
-              "character": 4
+              "line": 253,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L253"
             }
           ],
           "type": {
@@ -1992,7 +1979,7 @@
           }
         },
         {
-          "id": 62,
+          "id": 59,
           "name": "items",
           "variant": "declaration",
           "kind": 1024,
@@ -2008,15 +1995,16 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 260,
-              "character": 4
+              "line": 256,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L256"
             }
           ],
           "type": {
             "type": "array",
             "elementType": {
               "type": "reference",
-              "target": 63,
+              "target": 60,
               "name": "Header",
               "package": "@xyd-js/sources"
             }
@@ -2027,22 +2015,23 @@
         {
           "title": "Properties",
           "children": [
-            60,
-            61,
-            62
+            57,
+            58,
+            59
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 252,
-          "character": 17
+          "line": 248,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L248"
         }
       ]
     },
     {
-      "id": 63,
+      "id": 60,
       "name": "Header",
       "variant": "declaration",
       "kind": 2097152,
@@ -2057,7 +2046,7 @@
       },
       "children": [
         {
-          "id": 65,
+          "id": 62,
           "name": "name",
           "variant": "declaration",
           "kind": 1024,
@@ -2075,8 +2064,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 268,
-              "character": 4
+              "line": 264,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L264"
             }
           ],
           "type": {
@@ -2085,7 +2075,7 @@
           }
         },
         {
-          "id": 66,
+          "id": 63,
           "name": "url",
           "variant": "declaration",
           "kind": 1024,
@@ -2103,8 +2093,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 271,
-              "character": 4
+              "line": 267,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L267"
             }
           ],
           "type": {
@@ -2113,7 +2104,7 @@
           }
         },
         {
-          "id": 67,
+          "id": 64,
           "name": "float",
           "variant": "declaration",
           "kind": 1024,
@@ -2131,8 +2122,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 274,
-              "character": 4
+              "line": 270,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L270"
             }
           ],
           "type": {
@@ -2145,22 +2137,23 @@
         {
           "title": "Properties",
           "children": [
-            65,
-            66,
-            67
+            62,
+            63,
+            64
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 266,
-          "character": 12
+          "line": 262,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L262"
         }
       ]
     },
     {
-      "id": 68,
+      "id": 65,
       "name": "Anchor",
       "variant": "declaration",
       "kind": 256,
@@ -2175,7 +2168,7 @@
       },
       "children": [
         {
-          "id": 69,
+          "id": 66,
           "name": "icon",
           "variant": "declaration",
           "kind": 1024,
@@ -2193,8 +2186,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 282,
-              "character": 4
+              "line": 278,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L278"
             }
           ],
           "type": {
@@ -2203,7 +2197,7 @@
           }
         },
         {
-          "id": 70,
+          "id": 67,
           "name": "name",
           "variant": "declaration",
           "kind": 1024,
@@ -2221,8 +2215,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 285,
-              "character": 4
+              "line": 281,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L281"
             }
           ],
           "type": {
@@ -2231,7 +2226,7 @@
           }
         },
         {
-          "id": 71,
+          "id": 68,
           "name": "url",
           "variant": "declaration",
           "kind": 1024,
@@ -2242,15 +2237,16 @@
             "summary": [
               {
                 "kind": "text",
-                "text": "The start of the URL that marks what pages go in the anchor. \nGenerally, this is the name of the folder you put your pages in."
+                "text": "The start of the URL that marks what pages go in the anchor.\nGenerally, this is the name of the folder you put your pages in."
               }
             ]
           },
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 291,
-              "character": 4
+              "line": 287,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L287"
             }
           ],
           "type": {
@@ -2263,22 +2259,23 @@
         {
           "title": "Properties",
           "children": [
-            69,
-            70,
-            71
+            66,
+            67,
+            68
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 280,
-          "character": 17
+          "line": 276,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L276"
         }
       ]
     },
     {
-      "id": 72,
+      "id": 69,
       "name": "AnchorRoot",
       "variant": "declaration",
       "kind": 256,
@@ -2293,7 +2290,7 @@
       },
       "children": [
         {
-          "id": 73,
+          "id": 70,
           "name": "bottom",
           "variant": "declaration",
           "kind": 1024,
@@ -2311,15 +2308,16 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 299,
-              "character": 4
+              "line": 295,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L295"
             }
           ],
           "type": {
             "type": "array",
             "elementType": {
               "type": "reference",
-              "target": 68,
+              "target": 65,
               "name": "Anchor",
               "package": "@xyd-js/sources"
             }
@@ -2330,20 +2328,21 @@
         {
           "title": "Properties",
           "children": [
-            73
+            70
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 297,
-          "character": 17
+          "line": 293,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L293"
         }
       ]
     },
     {
-      "id": 74,
+      "id": 71,
       "name": "API",
       "variant": "declaration",
       "kind": 256,
@@ -2358,7 +2357,7 @@
       },
       "children": [
         {
-          "id": 75,
+          "id": 72,
           "name": "openapi",
           "variant": "declaration",
           "kind": 1024,
@@ -2376,19 +2375,20 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 313,
-              "character": 4
+              "line": 309,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L309"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 78,
+            "target": 75,
             "name": "APIFile",
             "package": "@xyd-js/sources"
           }
         },
         {
-          "id": 76,
+          "id": 73,
           "name": "graphql",
           "variant": "declaration",
           "kind": 1024,
@@ -2406,19 +2406,20 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 318,
-              "character": 4
+              "line": 314,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L314"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 78,
+            "target": 75,
             "name": "APIFile",
             "package": "@xyd-js/sources"
           }
         },
         {
-          "id": 77,
+          "id": 74,
           "name": "sources",
           "variant": "declaration",
           "kind": 1024,
@@ -2436,13 +2437,14 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 323,
-              "character": 4
+              "line": 319,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L319"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 78,
+            "target": 75,
             "name": "APIFile",
             "package": "@xyd-js/sources"
           }
@@ -2452,22 +2454,23 @@
         {
           "title": "Properties",
           "children": [
-            75,
-            76,
-            77
+            72,
+            73,
+            74
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 309,
-          "character": 17
+          "line": 305,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L305"
         }
       ]
     },
     {
-      "id": 78,
+      "id": 75,
       "name": "APIFile",
       "variant": "declaration",
       "kind": 2097152,
@@ -2483,8 +2486,9 @@
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 329,
-          "character": 12
+          "line": 325,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L325"
         }
       ],
       "type": {
@@ -2503,21 +2507,21 @@
           },
           {
             "type": "reference",
-            "target": 83,
-            "name": "APIFileAdvanced",
+            "target": 76,
+            "name": "APIFileMap",
             "package": "@xyd-js/sources"
           },
           {
             "type": "reference",
-            "target": 79,
-            "name": "APIFileMap",
+            "target": 80,
+            "name": "APIFileAdvanced",
             "package": "@xyd-js/sources"
           }
         ]
       }
     },
     {
-      "id": 79,
+      "id": 76,
       "name": "APIFileMap",
       "variant": "declaration",
       "kind": 2097152,
@@ -2533,14 +2537,15 @@
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 334,
-          "character": 12
+          "line": 330,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L330"
         }
       ],
       "type": {
         "type": "reflection",
         "declaration": {
-          "id": 80,
+          "id": 77,
           "name": "__type",
           "variant": "declaration",
           "kind": 65536,
@@ -2548,13 +2553,14 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 334,
-              "character": 25
+              "line": 330,
+              "character": 25,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L330"
             }
           ],
           "indexSignatures": [
             {
-              "id": 81,
+              "id": 78,
               "name": "__index",
               "variant": "signature",
               "kind": 8192,
@@ -2562,13 +2568,14 @@
               "sources": [
                 {
                   "fileName": "settings.ts",
-                  "line": 335,
-                  "character": 4
+                  "line": 331,
+                  "character": 4,
+                  "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L331"
                 }
               ],
               "parameters": [
                 {
-                  "id": 82,
+                  "id": 79,
                   "name": "name",
                   "variant": "param",
                   "kind": 32768,
@@ -2580,8 +2587,19 @@
                 }
               ],
               "type": {
-                "type": "intrinsic",
-                "name": "string"
+                "type": "union",
+                "types": [
+                  {
+                    "type": "intrinsic",
+                    "name": "string"
+                  },
+                  {
+                    "type": "reference",
+                    "target": 80,
+                    "name": "APIFileAdvanced",
+                    "package": "@xyd-js/sources"
+                  }
+                ]
               }
             }
           ]
@@ -2589,7 +2607,7 @@
       }
     },
     {
-      "id": 83,
+      "id": 80,
       "name": "APIFileAdvanced",
       "variant": "declaration",
       "kind": 2097152,
@@ -2604,7 +2622,7 @@
       },
       "children": [
         {
-          "id": 85,
+          "id": 82,
           "name": "info",
           "variant": "declaration",
           "kind": 1024,
@@ -2622,19 +2640,20 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 343,
-              "character": 4
+              "line": 339,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L339"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 87,
+            "target": 84,
             "name": "APIInfo",
             "package": "@xyd-js/sources"
           }
         },
         {
-          "id": 86,
+          "id": 83,
           "name": "route",
           "variant": "declaration",
           "kind": 1024,
@@ -2650,8 +2669,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 346,
-              "character": 4
+              "line": 342,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L342"
             }
           ],
           "type": {
@@ -2664,21 +2684,22 @@
         {
           "title": "Properties",
           "children": [
-            85,
-            86
+            82,
+            83
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 341,
-          "character": 12
+          "line": 337,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L337"
         }
       ]
     },
     {
-      "id": 87,
+      "id": 84,
       "name": "APIInfo",
       "variant": "declaration",
       "kind": 256,
@@ -2693,7 +2714,7 @@
       },
       "children": [
         {
-          "id": 88,
+          "id": 85,
           "name": "baseUrl",
           "variant": "declaration",
           "kind": 1024,
@@ -2704,15 +2725,16 @@
             "summary": [
               {
                 "kind": "text",
-                "text": "The base url for all API endpoints. If baseUrl is an array, it will enable \nfor multiple base url options that the user can toggle."
+                "text": "The base url for all API endpoints. If baseUrl is an array, it will enable\nfor multiple base url options that the user can toggle."
               }
             ]
           },
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 361,
-              "character": 4
+              "line": 357,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L357"
             }
           ],
           "type": {
@@ -2721,7 +2743,7 @@
           }
         },
         {
-          "id": 89,
+          "id": 86,
           "name": "auth",
           "variant": "declaration",
           "kind": 1024,
@@ -2739,19 +2761,20 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 364,
-              "character": 4
+              "line": 360,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L360"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 94,
+            "target": 91,
             "name": "APIAuth",
             "package": "@xyd-js/sources"
           }
         },
         {
-          "id": 90,
+          "id": 87,
           "name": "name",
           "variant": "declaration",
           "kind": 1024,
@@ -2769,8 +2792,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 370,
-              "character": 4
+              "line": 366,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L366"
             }
           ],
           "type": {
@@ -2779,7 +2803,7 @@
           }
         },
         {
-          "id": 91,
+          "id": 88,
           "name": "inputPrefix",
           "variant": "declaration",
           "kind": 1024,
@@ -2797,8 +2821,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 376,
-              "character": 4
+              "line": 372,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L372"
             }
           ],
           "type": {
@@ -2807,7 +2832,7 @@
           }
         },
         {
-          "id": 92,
+          "id": 89,
           "name": "playground",
           "variant": "declaration",
           "kind": 1024,
@@ -2825,19 +2850,20 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 379,
-              "character": 4
+              "line": 375,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L375"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 96,
+            "target": 93,
             "name": "APIPlayground",
             "package": "@xyd-js/sources"
           }
         },
         {
-          "id": 93,
+          "id": 90,
           "name": "request",
           "variant": "declaration",
           "kind": 1024,
@@ -2855,13 +2881,14 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 382,
-              "character": 4
+              "line": 378,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L378"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 98,
+            "target": 95,
             "name": "APIInfoRequest",
             "package": "@xyd-js/sources"
           }
@@ -2871,25 +2898,26 @@
         {
           "title": "Properties",
           "children": [
+            85,
+            86,
+            87,
             88,
             89,
-            90,
-            91,
-            92,
-            93
+            90
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 356,
-          "character": 17
+          "line": 352,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L352"
         }
       ]
     },
     {
-      "id": 94,
+      "id": 91,
       "name": "APIAuth",
       "variant": "declaration",
       "kind": 256,
@@ -2904,7 +2932,7 @@
       },
       "children": [
         {
-          "id": 95,
+          "id": 92,
           "name": "method",
           "variant": "declaration",
           "kind": 1024,
@@ -2920,8 +2948,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 390,
-              "character": 4
+              "line": 386,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L386"
             }
           ],
           "type": {
@@ -2947,20 +2976,21 @@
         {
           "title": "Properties",
           "children": [
-            95
+            92
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 388,
-          "character": 17
+          "line": 384,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L384"
         }
       ]
     },
     {
-      "id": 96,
+      "id": 93,
       "name": "APIPlayground",
       "variant": "declaration",
       "kind": 256,
@@ -2975,7 +3005,7 @@
       },
       "children": [
         {
-          "id": 97,
+          "id": 94,
           "name": "mode",
           "variant": "declaration",
           "kind": 1024,
@@ -2993,8 +3023,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 398,
-              "character": 4
+              "line": 394,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L394"
             }
           ],
           "type": {
@@ -3020,20 +3051,21 @@
         {
           "title": "Properties",
           "children": [
-            97
+            94
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 396,
-          "character": 17
+          "line": 392,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L392"
         }
       ]
     },
     {
-      "id": 98,
+      "id": 95,
       "name": "APIInfoRequest",
       "variant": "declaration",
       "kind": 256,
@@ -3048,7 +3080,7 @@
       },
       "children": [
         {
-          "id": 99,
+          "id": 96,
           "name": "example",
           "variant": "declaration",
           "kind": 1024,
@@ -3066,21 +3098,22 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 406,
-              "character": 4
+              "line": 402,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L402"
             }
           ],
           "type": {
             "type": "reflection",
             "declaration": {
-              "id": 100,
+              "id": 97,
               "name": "__type",
               "variant": "declaration",
               "kind": 65536,
               "flags": {},
               "children": [
                 {
-                  "id": 101,
+                  "id": 98,
                   "name": "languages",
                   "variant": "declaration",
                   "kind": 1024,
@@ -3091,15 +3124,16 @@
                     "summary": [
                       {
                         "kind": "text",
-                        "text": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java"
+                        "text": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include\nbash, python, javascript, php, go, java"
                       }
                     ]
                   },
                   "sources": [
                     {
                       "fileName": "settings.ts",
-                      "line": 412,
-                      "character": 8
+                      "line": 408,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L408"
                     }
                   ],
                   "type": {
@@ -3115,15 +3149,16 @@
                 {
                   "title": "Properties",
                   "children": [
-                    101
+                    98
                   ]
                 }
               ],
               "sources": [
                 {
                   "fileName": "settings.ts",
-                  "line": 406,
-                  "character": 14
+                  "line": 402,
+                  "character": 14,
+                  "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L402"
                 }
               ]
             }
@@ -3134,20 +3169,21 @@
         {
           "title": "Properties",
           "children": [
-            99
+            96
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 404,
-          "character": 17
+          "line": 400,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L400"
         }
       ]
     },
     {
-      "id": 102,
+      "id": 99,
       "name": "Integrations",
       "variant": "declaration",
       "kind": 256,
@@ -3162,7 +3198,7 @@
       },
       "children": [
         {
-          "id": 103,
+          "id": 100,
           "name": "analytics",
           "variant": "declaration",
           "kind": 1024,
@@ -3173,26 +3209,27 @@
             "summary": [
               {
                 "kind": "text",
-                "text": "Configurations to add third-party analytics integrations. \nSee full list of supported analytics here."
+                "text": "Configurations to add third-party analytics integrations.\nSee full list of supported analytics here."
               }
             ]
           },
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 428,
-              "character": 4
+              "line": 424,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L424"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 105,
+            "target": 102,
             "name": "IntegrationAnalytics",
             "package": "@xyd-js/sources"
           }
         },
         {
-          "id": 104,
+          "id": 101,
           "name": "search",
           "variant": "declaration",
           "kind": 1024,
@@ -3203,20 +3240,21 @@
             "summary": [
               {
                 "kind": "text",
-                "text": "Configurations to add third-party search integrations. \nSee full list of supported search here."
+                "text": "Configurations to add third-party search integrations.\nSee full list of supported search here."
               }
             ]
           },
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 434,
-              "character": 4
+              "line": 430,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L430"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 109,
+            "target": 106,
             "name": "IntegrationSearch",
             "package": "@xyd-js/sources"
           }
@@ -3226,21 +3264,22 @@
         {
           "title": "Properties",
           "children": [
-            103,
-            104
+            100,
+            101
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 423,
-          "character": 17
+          "line": 419,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L419"
         }
       ]
     },
     {
-      "id": 105,
+      "id": 102,
       "name": "IntegrationAnalytics",
       "variant": "declaration",
       "kind": 256,
@@ -3255,7 +3294,7 @@
       },
       "children": [
         {
-          "id": 106,
+          "id": 103,
           "name": "livesession",
           "variant": "declaration",
           "kind": 1024,
@@ -3273,21 +3312,22 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 443,
-              "character": 4
+              "line": 439,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L439"
             }
           ],
           "type": {
             "type": "reflection",
             "declaration": {
-              "id": 107,
+              "id": 104,
               "name": "__type",
               "variant": "declaration",
               "kind": 65536,
               "flags": {},
               "children": [
                 {
-                  "id": 108,
+                  "id": 105,
                   "name": "trackId",
                   "variant": "declaration",
                   "kind": 1024,
@@ -3303,8 +3343,9 @@
                   "sources": [
                     {
                       "fileName": "settings.ts",
-                      "line": 445,
-                      "character": 8
+                      "line": 441,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L441"
                     }
                   ],
                   "type": {
@@ -3317,15 +3358,16 @@
                 {
                   "title": "Properties",
                   "children": [
-                    108
+                    105
                   ]
                 }
               ],
               "sources": [
                 {
                   "fileName": "settings.ts",
-                  "line": 443,
-                  "character": 18
+                  "line": 439,
+                  "character": 18,
+                  "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L439"
                 }
               ]
             }
@@ -3336,20 +3378,21 @@
         {
           "title": "Properties",
           "children": [
-            106
+            103
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 441,
-          "character": 17
+          "line": 437,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L437"
         }
       ]
     },
     {
-      "id": 109,
+      "id": 106,
       "name": "IntegrationSearch",
       "variant": "declaration",
       "kind": 256,
@@ -3364,7 +3407,7 @@
       },
       "children": [
         {
-          "id": 110,
+          "id": 107,
           "name": "algolia",
           "variant": "declaration",
           "kind": 1024,
@@ -3382,21 +3425,22 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 455,
-              "character": 4
+              "line": 451,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L451"
             }
           ],
           "type": {
             "type": "reflection",
             "declaration": {
-              "id": 111,
+              "id": 108,
               "name": "__type",
               "variant": "declaration",
               "kind": 65536,
               "flags": {},
               "children": [
                 {
-                  "id": 112,
+                  "id": 109,
                   "name": "appId",
                   "variant": "declaration",
                   "kind": 1024,
@@ -3412,8 +3456,9 @@
                   "sources": [
                     {
                       "fileName": "settings.ts",
-                      "line": 457,
-                      "character": 8
+                      "line": 453,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L453"
                     }
                   ],
                   "type": {
@@ -3422,7 +3467,7 @@
                   }
                 },
                 {
-                  "id": 113,
+                  "id": 110,
                   "name": "apiKey",
                   "variant": "declaration",
                   "kind": 1024,
@@ -3438,8 +3483,9 @@
                   "sources": [
                     {
                       "fileName": "settings.ts",
-                      "line": 460,
-                      "character": 8
+                      "line": 456,
+                      "character": 8,
+                      "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L456"
                     }
                   ],
                   "type": {
@@ -3452,23 +3498,24 @@
                 {
                   "title": "Properties",
                   "children": [
-                    112,
-                    113
+                    109,
+                    110
                   ]
                 }
               ],
               "sources": [
                 {
                   "fileName": "settings.ts",
-                  "line": 455,
-                  "character": 14
+                  "line": 451,
+                  "character": 14,
+                  "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L451"
                 }
               ]
             }
           }
         },
         {
-          "id": 114,
+          "id": 111,
           "name": "orama",
           "variant": "declaration",
           "kind": 1024,
@@ -3478,8 +3525,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 463,
-              "character": 4
+              "line": 459,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L459"
             }
           ],
           "type": {
@@ -3492,14 +3540,14 @@
               {
                 "type": "reflection",
                 "declaration": {
-                  "id": 115,
+                  "id": 112,
                   "name": "__type",
                   "variant": "declaration",
                   "kind": 65536,
                   "flags": {},
                   "children": [
                     {
-                      "id": 116,
+                      "id": 113,
                       "name": "endpoint",
                       "variant": "declaration",
                       "kind": 1024,
@@ -3515,8 +3563,9 @@
                       "sources": [
                         {
                           "fileName": "settings.ts",
-                          "line": 465,
-                          "character": 8
+                          "line": 461,
+                          "character": 8,
+                          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L461"
                         }
                       ],
                       "type": {
@@ -3525,7 +3574,7 @@
                       }
                     },
                     {
-                      "id": 117,
+                      "id": 114,
                       "name": "apiKey",
                       "variant": "declaration",
                       "kind": 1024,
@@ -3541,8 +3590,9 @@
                       "sources": [
                         {
                           "fileName": "settings.ts",
-                          "line": 468,
-                          "character": 8
+                          "line": 464,
+                          "character": 8,
+                          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L464"
                         }
                       ],
                       "type": {
@@ -3551,7 +3601,7 @@
                       }
                     },
                     {
-                      "id": 118,
+                      "id": 115,
                       "name": "suggestions",
                       "variant": "declaration",
                       "kind": 1024,
@@ -3569,8 +3619,9 @@
                       "sources": [
                         {
                           "fileName": "settings.ts",
-                          "line": 471,
-                          "character": 8
+                          "line": 467,
+                          "character": 8,
+                          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L467"
                         }
                       ],
                       "type": {
@@ -3586,17 +3637,18 @@
                     {
                       "title": "Properties",
                       "children": [
-                        116,
-                        117,
-                        118
+                        113,
+                        114,
+                        115
                       ]
                     }
                   ],
                   "sources": [
                     {
                       "fileName": "settings.ts",
-                      "line": 463,
-                      "character": 12
+                      "line": 459,
+                      "character": 12,
+                      "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L459"
                     }
                   ]
                 }
@@ -3609,21 +3661,22 @@
         {
           "title": "Properties",
           "children": [
-            110,
-            114
+            107,
+            111
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 453,
-          "character": 17
+          "line": 449,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L449"
         }
       ]
     },
     {
-      "id": 119,
+      "id": 116,
       "name": "Plugins",
       "variant": "declaration",
       "kind": 2097152,
@@ -3641,7 +3694,7 @@
             "content": [
               {
                 "kind": "code",
-                "text": "```ts\n1)\n{\n plugins: [\n   \"livesession\",\n ]\n}\n\nor 2)\n{\n plugins: [\n   [\n     \"livesession\",\n     \"accountID.websiteID\",\n     {\n         keystrokes: true \n     }\n   ]\n ]\n}\n\nyou can also use the type to define the plugin config in your code:\n\nconst livesessionPlugin: PluginConfig<\"livesession\", [string, { keystrokes: boolean }]> = [\n   \"livesession\",\n   \"accountID.websiteID\",\n   {\n       keystrokes: true \n   }\n]\n```"
+                "text": "```ts\n1)\n{\n plugins: [\n   \"livesession\",\n ]\n}\n\nor 2)\n{\n plugins: [\n   [\n     \"livesession\",\n     \"accountID.websiteID\",\n     {\n         keystrokes: true\n     }\n   ]\n ]\n}\n\nyou can also use the type to define the plugin config in your code:\n\nconst livesessionPlugin: PluginConfig<\"livesession\", [string, { keystrokes: boolean }]> = [\n   \"livesession\",\n   \"accountID.websiteID\",\n   {\n       keystrokes: true\n   }\n]\n```"
               }
             ]
           }
@@ -3650,8 +3703,9 @@
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 513,
-          "character": 12
+          "line": 509,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L509"
         }
       ],
       "type": {
@@ -3665,7 +3719,7 @@
             },
             {
               "type": "reference",
-              "target": 120,
+              "target": 117,
               "name": "PluginConfig",
               "package": "@xyd-js/sources"
             }
@@ -3674,7 +3728,7 @@
       }
     },
     {
-      "id": 120,
+      "id": 117,
       "name": "PluginConfig",
       "variant": "declaration",
       "kind": 2097152,
@@ -3682,13 +3736,14 @@
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 515,
-          "character": 12
+          "line": 511,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L511"
         }
       ],
       "typeParameters": [
         {
-          "id": 121,
+          "id": 118,
           "name": "PluginName",
           "variant": "typeParam",
           "kind": 131072,
@@ -3703,7 +3758,7 @@
           }
         },
         {
-          "id": 122,
+          "id": 119,
           "name": "PluginArgs",
           "variant": "typeParam",
           "kind": 131072,
@@ -3729,7 +3784,7 @@
         "elements": [
           {
             "type": "reference",
-            "target": 121,
+            "target": 118,
             "name": "PluginName",
             "package": "@xyd-js/sources",
             "refersToTypeParameter": true
@@ -3738,7 +3793,7 @@
             "type": "rest",
             "elementType": {
               "type": "reference",
-              "target": 122,
+              "target": 119,
               "name": "PluginArgs",
               "package": "@xyd-js/sources",
               "refersToTypeParameter": true
@@ -3748,7 +3803,7 @@
       }
     },
     {
-      "id": 123,
+      "id": 120,
       "name": "Redirects",
       "variant": "declaration",
       "kind": 256,
@@ -3763,7 +3818,7 @@
       },
       "children": [
         {
-          "id": 124,
+          "id": 121,
           "name": "source",
           "variant": "declaration",
           "kind": 1024,
@@ -3779,8 +3834,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 532,
-              "character": 4
+              "line": 525,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L525"
             }
           ],
           "type": {
@@ -3789,7 +3845,7 @@
           }
         },
         {
-          "id": 125,
+          "id": 122,
           "name": "destination",
           "variant": "declaration",
           "kind": 1024,
@@ -3805,8 +3861,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 535,
-              "character": 4
+              "line": 528,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L528"
             }
           ],
           "type": {
@@ -3819,21 +3876,22 @@
         {
           "title": "Properties",
           "children": [
-            124,
-            125
+            121,
+            122
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 530,
-          "character": 17
+          "line": 523,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L523"
         }
       ]
     },
     {
-      "id": 126,
+      "id": 123,
       "name": "SEO",
       "variant": "declaration",
       "kind": 256,
@@ -3848,7 +3906,7 @@
       },
       "children": [
         {
-          "id": 127,
+          "id": 124,
           "name": "domain",
           "variant": "declaration",
           "kind": 1024,
@@ -3866,8 +3924,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 545,
-              "character": 4
+              "line": 538,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L538"
             }
           ],
           "type": {
@@ -3876,7 +3935,7 @@
           }
         },
         {
-          "id": 128,
+          "id": 125,
           "name": "metatags",
           "variant": "declaration",
           "kind": 1024,
@@ -3894,14 +3953,15 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 550,
-              "character": 4
+              "line": 543,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L543"
             }
           ],
           "type": {
             "type": "reflection",
             "declaration": {
-              "id": 129,
+              "id": 126,
               "name": "__type",
               "variant": "declaration",
               "kind": 65536,
@@ -3909,13 +3969,14 @@
               "sources": [
                 {
                   "fileName": "settings.ts",
-                  "line": 550,
-                  "character": 15
+                  "line": 543,
+                  "character": 15,
+                  "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L543"
                 }
               ],
               "indexSignatures": [
                 {
-                  "id": 130,
+                  "id": 127,
                   "name": "__index",
                   "variant": "signature",
                   "kind": 8192,
@@ -3923,13 +3984,14 @@
                   "sources": [
                     {
                       "fileName": "settings.ts",
-                      "line": 550,
-                      "character": 16
+                      "line": 543,
+                      "character": 16,
+                      "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L543"
                     }
                   ],
                   "parameters": [
                     {
-                      "id": 131,
+                      "id": 128,
                       "name": "tag",
                       "variant": "param",
                       "kind": 32768,
@@ -3954,21 +4016,22 @@
         {
           "title": "Properties",
           "children": [
-            127,
-            128
+            124,
+            125
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 541,
-          "character": 17
+          "line": 534,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L534"
         }
       ]
     },
     {
-      "id": 132,
+      "id": 129,
       "name": "Engine",
       "variant": "declaration",
       "kind": 256,
@@ -3983,7 +4046,7 @@
       },
       "children": [
         {
-          "id": 133,
+          "id": 130,
           "name": "paths",
           "variant": "declaration",
           "kind": 1024,
@@ -4020,19 +4083,20 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 582,
-              "character": 4
+              "line": 575,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L575"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 135,
+            "target": 132,
             "name": "EnginePaths",
             "package": "@xyd-js/sources"
           }
         },
         {
-          "id": 134,
+          "id": 131,
           "name": "uniform",
           "variant": "declaration",
           "kind": 1024,
@@ -4056,13 +4120,14 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 590,
-              "character": 4
+              "line": 583,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L583"
             }
           ],
           "type": {
             "type": "reference",
-            "target": 139,
+            "target": 136,
             "name": "EngineUniform",
             "package": "@xyd-js/sources"
           }
@@ -4072,21 +4137,22 @@
         {
           "title": "Properties",
           "children": [
-            133,
-            134
+            130,
+            131
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 559,
-          "character": 17
+          "line": 552,
+          "character": 17,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L552"
         }
       ]
     },
     {
-      "id": 135,
+      "id": 132,
       "name": "EnginePaths",
       "variant": "declaration",
       "kind": 2097152,
@@ -4094,14 +4160,15 @@
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 593,
-          "character": 12
+          "line": 586,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L586"
         }
       ],
       "type": {
         "type": "reflection",
         "declaration": {
-          "id": 136,
+          "id": 133,
           "name": "__type",
           "variant": "declaration",
           "kind": 65536,
@@ -4109,13 +4176,14 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 593,
-              "character": 26
+              "line": 586,
+              "character": 26,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L586"
             }
           ],
           "indexSignatures": [
             {
-              "id": 137,
+              "id": 134,
               "name": "__index",
               "variant": "signature",
               "kind": 8192,
@@ -4123,13 +4191,14 @@
               "sources": [
                 {
                   "fileName": "settings.ts",
-                  "line": 593,
-                  "character": 28
+                  "line": 586,
+                  "character": 28,
+                  "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L586"
                 }
               ],
               "parameters": [
                 {
-                  "id": 138,
+                  "id": 135,
                   "name": "key",
                   "variant": "param",
                   "kind": 32768,
@@ -4153,14 +4222,14 @@
       }
     },
     {
-      "id": 139,
+      "id": 136,
       "name": "EngineUniform",
       "variant": "declaration",
       "kind": 2097152,
       "flags": {},
       "children": [
         {
-          "id": 141,
+          "id": 138,
           "name": "store",
           "variant": "declaration",
           "kind": 1024,
@@ -4186,8 +4255,9 @@
           "sources": [
             {
               "fileName": "settings.ts",
-              "line": 599,
-              "character": 4
+              "line": 592,
+              "character": 4,
+              "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L592"
             }
           ],
           "type": {
@@ -4200,15 +4270,16 @@
         {
           "title": "Properties",
           "children": [
-            141
+            138
           ]
         }
       ],
       "sources": [
         {
           "fileName": "settings.ts",
-          "line": 595,
-          "character": 12
+          "line": 588,
+          "character": 12,
+          "url": "https://github.com/livesession/xyd/blob/02ebb3c991957058dd6c677cf08197e91970c7d0/packages/xyd-sources/__fixtures__/-1.typescript/src/settings.ts#L588"
         }
       ]
     }
@@ -4227,20 +4298,20 @@
         37,
         42,
         45,
-        59,
-        68,
-        72,
-        74,
-        87,
-        94,
-        96,
-        98,
+        56,
+        65,
+        69,
+        71,
+        84,
+        91,
+        93,
+        95,
+        99,
         102,
-        105,
-        109,
+        106,
+        120,
         123,
-        126,
-        132
+        129
       ]
     },
     {
@@ -4248,16 +4319,16 @@
       "children": [
         35,
         36,
-        53,
-        54,
-        63,
-        78,
-        79,
-        83,
-        119,
-        120,
-        135,
-        139
+        50,
+        51,
+        60,
+        75,
+        76,
+        80,
+        116,
+        117,
+        132,
+        136
       ]
     }
   ],
@@ -4516,429 +4587,414 @@
     "50": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "__type"
+      "qualifiedName": "PageURL"
     },
     "51": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "__type.before"
+      "qualifiedName": "VirtualPage"
     },
     "52": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "__type.after"
+      "qualifiedName": "__type"
     },
     "53": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "PageURL"
+      "qualifiedName": "__type.virtual"
     },
     "54": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "VirtualPage"
+      "qualifiedName": "__type.page"
     },
     "55": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "__type"
+      "qualifiedName": "__type.templates"
     },
     "56": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "__type.virtual"
+      "qualifiedName": "SubHeader"
     },
     "57": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "__type.page"
+      "qualifiedName": "SubHeader.route"
     },
     "58": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "__type.templates"
+      "qualifiedName": "SubHeader.name"
     },
     "59": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "SubHeader"
+      "qualifiedName": "SubHeader.items"
     },
     "60": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "SubHeader.route"
-    },
-    "61": {
-      "packageName": "@xyd-js/sources",
-      "packagePath": "src/settings.ts",
-      "qualifiedName": "SubHeader.name"
+      "qualifiedName": "Header"
     },
     "62": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "SubHeader.items"
+      "qualifiedName": "__type.name"
     },
     "63": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
-      "qualifiedName": "Header"
-    },
-    "65": {
-      "packageName": "@xyd-js/sources",
-      "packagePath": "src/settings.ts",
-      "qualifiedName": "__type.name"
-    },
-    "66": {
-      "packageName": "@xyd-js/sources",
-      "packagePath": "src/settings.ts",
       "qualifiedName": "__type.url"
     },
-    "67": {
+    "64": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.float"
     },
-    "68": {
+    "65": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Anchor"
     },
-    "69": {
+    "66": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Anchor.icon"
     },
-    "70": {
+    "67": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Anchor.name"
     },
-    "71": {
+    "68": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Anchor.url"
     },
-    "72": {
+    "69": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "AnchorRoot"
     },
-    "73": {
+    "70": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "AnchorRoot.bottom"
     },
-    "74": {
+    "71": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "API"
     },
-    "75": {
+    "72": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "API.openapi"
     },
-    "76": {
+    "73": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "API.graphql"
     },
-    "77": {
+    "74": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "API.sources"
     },
-    "78": {
+    "75": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIFile"
     },
-    "79": {
+    "76": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIFileMap"
     },
-    "80": {
+    "77": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type"
     },
-    "81": {
+    "78": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.__index"
     },
-    "83": {
+    "80": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIFileAdvanced"
     },
-    "85": {
+    "82": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.info"
     },
-    "86": {
+    "83": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.route"
     },
-    "87": {
+    "84": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIInfo"
     },
-    "88": {
+    "85": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIInfo.baseUrl"
     },
-    "89": {
+    "86": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIInfo.auth"
     },
-    "90": {
+    "87": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIInfo.name"
     },
-    "91": {
+    "88": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIInfo.inputPrefix"
     },
-    "92": {
+    "89": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIInfo.playground"
     },
-    "93": {
+    "90": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIInfo.request"
     },
-    "94": {
+    "91": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIAuth"
     },
-    "95": {
+    "92": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIAuth.method"
     },
-    "96": {
+    "93": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIPlayground"
     },
-    "97": {
+    "94": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIPlayground.mode"
     },
-    "98": {
+    "95": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIInfoRequest"
     },
-    "99": {
+    "96": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "APIInfoRequest.example"
     },
-    "100": {
+    "97": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type"
     },
-    "101": {
+    "98": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.languages"
     },
-    "102": {
+    "99": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Integrations"
     },
-    "103": {
+    "100": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Integrations.analytics"
     },
-    "104": {
+    "101": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Integrations.search"
     },
-    "105": {
+    "102": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "IntegrationAnalytics"
     },
-    "106": {
+    "103": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "IntegrationAnalytics.livesession"
     },
-    "107": {
+    "104": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type"
     },
-    "108": {
+    "105": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.trackId"
     },
-    "109": {
+    "106": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "IntegrationSearch"
     },
-    "110": {
+    "107": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "IntegrationSearch.algolia"
     },
-    "111": {
+    "108": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type"
     },
-    "112": {
+    "109": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.appId"
     },
-    "113": {
+    "110": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.apiKey"
     },
-    "114": {
+    "111": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "IntegrationSearch.orama"
     },
-    "115": {
+    "112": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type"
     },
-    "116": {
+    "113": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.endpoint"
     },
-    "117": {
+    "114": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.apiKey"
     },
-    "118": {
+    "115": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.suggestions"
     },
-    "119": {
+    "116": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Plugins"
     },
-    "120": {
+    "117": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "PluginConfig"
     },
-    "121": {
+    "118": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "PluginName"
     },
-    "122": {
+    "119": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "PluginArgs"
     },
-    "123": {
+    "120": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Redirects"
     },
-    "124": {
+    "121": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Redirects.source"
     },
-    "125": {
+    "122": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Redirects.destination"
     },
-    "126": {
+    "123": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "SEO"
     },
-    "127": {
+    "124": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "SEO.domain"
     },
-    "128": {
+    "125": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "SEO.metatags"
     },
-    "129": {
+    "126": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type"
     },
-    "130": {
+    "127": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.__index"
     },
-    "132": {
+    "129": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Engine"
     },
-    "133": {
+    "130": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Engine.paths"
     },
-    "134": {
+    "131": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "Engine.uniform"
     },
-    "135": {
+    "132": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "EnginePaths"
     },
-    "136": {
+    "133": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type"
     },
-    "137": {
+    "134": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.__index"
     },
-    "139": {
+    "136": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "EngineUniform"
     },
-    "141": {
+    "138": {
       "packageName": "@xyd-js/sources",
       "packagePath": "src/settings.ts",
       "qualifiedName": "__type.store"

@@ -52,13 +52,14 @@ To customize your documentation via code, you'll need to work with a `.xyd/theme
 This file is only necessary when you need to extend default theme's functionality or create a new theme:
 
 ```ts
-import {BaseTheme, type Theme} from "xyd-js/themes"
+import {BaseTheme} from "xyd-js/themes"
 
 export default class MyTheme extends BaseTheme {
-    constructor(theme: Theme) {
+    constructor() {
         super();
 
         // you can access theme settings here
+        // this.theme # do stuff what u want with `theme`
     }
 }
 ```
@@ -71,11 +72,10 @@ Learn more about [extending the default theme](/docs/guides/extending-default-th
 or [creating a custom theme](/docs/guides/custom-theme) via code.
 :::
 
-## Theme Interface
+## Theme Reference
 
-Theme settings are defined as an object with the following interface:
+Theme settings are defined as an object with the following reference:
 
-@importCode "@core/types/settings.ts#Theme"
-
+::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Theme'})"}
 
 Full source you can find [here](https://github.com/livesession/xyd/blob/master/packages/xyd-core/src/types/settings.ts)

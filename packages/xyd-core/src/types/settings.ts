@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 
 import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
 
@@ -205,11 +205,7 @@ export interface Sidebar {
     /**
      * The sort order of the group.
      */
-    sort?: number | {
-        before: string
-
-        after: string
-    }
+    sort?: number
 }
 
 /**

@@ -17,7 +17,7 @@
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface Settings {\n    /** Theme configuration for the application */\n    theme?: Theme\n\n    /** Navigation configuration */\n    navigation?: Navigation\n\n    /** API configuration */\n    api?: API\n\n    /** Integrations configuration */\n    integrations?: Integrations\n\n    /** Plugins configuration */\n    plugins?: Plugins\n\n    /**\n     * @unsafe\n     * \n     * Redirects configuration\n     */\n    redirects?: Redirects[]\n\n    /**\n     * @unsafe\n     * SEO configuration\n     */\n    seo?: SEO\n\n    /** Engine configuration */\n    engine?: Engine\n}",
+        "code": "export interface Settings {\n    /** Theme configuration for the application */\n    theme?: Theme\n\n    /** Navigation configuration */\n    navigation?: Navigation\n\n    /** API configuration */\n    api?: API\n\n    /** Integrations configuration */\n    integrations?: Integrations\n\n    /** Plugins configuration */\n    plugins?: Plugins\n\n    /**\n     * @unsafe\n     *\n     * Redirects configuration\n     */\n    redirects?: Redirects[]\n\n    /**\n     * @unsafe\n     * SEO configuration\n     */\n    seo?: SEO\n\n    /** Engine configuration */\n    engine?: Engine\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -57,7 +57,7 @@
             "type": "API",
             "description": "API configuration\n",
             "symbolDef": {
-              "id": "74"
+              "id": "71"
             },
             "meta": []
           },
@@ -66,7 +66,7 @@
             "type": "Integrations",
             "description": "Integrations configuration\n",
             "symbolDef": {
-              "id": "102"
+              "id": "99"
             },
             "meta": []
           },
@@ -75,7 +75,7 @@
             "type": "Plugins",
             "description": "Plugins configuration\n",
             "symbolDef": {
-              "id": "119"
+              "id": "116"
             },
             "meta": []
           },
@@ -83,13 +83,13 @@
             "name": "redirects",
             "type": "$$array",
             "description": "",
-            "rootProperty": {
+            "ofProperty": {
               "name": "",
               "description": "",
               "type": "Redirects",
               "properties": [],
               "symbolDef": {
-                "id": "123"
+                "id": "120"
               }
             },
             "meta": []
@@ -99,7 +99,7 @@
             "type": "SEO",
             "description": "",
             "symbolDef": {
-              "id": "126"
+              "id": "123"
             },
             "meta": []
           },
@@ -108,7 +108,7 @@
             "type": "Engine",
             "description": "Engine configuration\n",
             "symbolDef": {
-              "id": "132"
+              "id": "129"
             },
             "meta": []
           }
@@ -134,7 +134,7 @@
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface Theme {\n    /** \n     * A preset theme configuration that changes the look and feel of the project. \n     * A theme is a set of default styling configurations. \n     * \n     * Example built-in themes: `cosmo`, `gusto`, `poetry`, `picasso`\n     */\n    readonly name: ThemePresetName | (string & {})\n\n    /** Markdown configuration for the theme, including options like syntax highlighting */\n    markdown?: Markdown\n\n    /** \n     * Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to. \n     * SVG format is recommended as it does not pixelate and the file size is generally smaller.\n     */\n    logo?: string | Logo | React.JSX.Element\n\n    /**\n     * Banner configuration for the theme.\n     */\n    banner?: Banner\n\n    /** Path to the favicon image. For example: /path/to/favicon.svg */\n    favicon?: string;\n\n    /** The defult level of the table of contents. */\n    maxTocDepth?: number\n\n    /** Head configuration */\n    head?: HeadConfig[]\n\n    /** The iconify library */\n    icons?: Icons\n}",
+        "code": "export interface Theme {\n    /**\n     * A preset theme configuration that changes the look and feel of the project.\n     * A theme is a set of default styling configurations.\n     *\n     * Example built-in themes: `cosmo`, `gusto`, `poetry`, `picasso`\n     */\n    readonly name: ThemePresetName | (string & {})\n\n    /** Markdown configuration for the theme, including options like syntax highlighting */\n    markdown?: Markdown\n\n    /**\n     * Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to.\n     * SVG format is recommended as it does not pixelate and the file size is generally smaller.\n     */\n    logo?: string | Logo | React.JSX.Element\n\n    /**\n     * Banner configuration for the theme.\n     */\n    banner?: Banner\n\n    /** Path to the favicon image. For example: /path/to/favicon.svg */\n    favicon?: string;\n\n    /** The defult level of the table of contents. */\n    maxTocDepth?: number\n\n    /** Head configuration */\n    head?: HeadConfig[]\n\n    /** The iconify library */\n    icons?: Icons\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -154,7 +154,7 @@
           {
             "name": "name",
             "type": "ThemePresetName | string",
-            "description": "A preset theme configuration that changes the look and feel of the project. \nA theme is a set of default styling configurations. \n\nExample built-in themes: \n`cosmo`\n, \n`gusto`\n, \n`poetry`\n, \n`picasso`\n",
+            "description": "A preset theme configuration that changes the look and feel of the project.\nA theme is a set of default styling configurations.\n\nExample built-in themes: \n`cosmo`\n, \n`gusto`\n, \n`poetry`\n, \n`picasso`\n",
             "symbolDef": {
               "id": [
                 "35"
@@ -179,7 +179,7 @@
           {
             "name": "logo",
             "type": "string | Logo | React.JSX.Element",
-            "description": "Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to. \nSVG format is recommended as it does not pixelate and the file size is generally smaller.\n",
+            "description": "Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to.\nSVG format is recommended as it does not pixelate and the file size is generally smaller.\n",
             "symbolDef": {
               "id": [
                 "22"
@@ -212,7 +212,7 @@
             "name": "head",
             "type": "$$array",
             "description": "Head configuration\n",
-            "rootProperty": {
+            "ofProperty": {
               "name": "",
               "description": "",
               "type": "[string, Record<string, string | boolean>]",
@@ -406,7 +406,7 @@
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface IconLibrary {\n     /** The iconify library name */\n     name: string\n\n     /** The iconify library version */\n     version?: string\n\n     /** The default iconify icon name */\n     default?: boolean\n\n     /** Merge icons from the library into the default iconify library */\n     noprefix?: boolean\n}",
+        "code": "export interface IconLibrary {\n    /** The iconify library name */\n    name: string\n\n    /** The iconify library version */\n    version?: string\n\n    /** The default iconify icon name */\n    default?: boolean\n\n    /** Merge icons from the library into the default iconify library */\n    noprefix?: boolean\n}",
         "lang": "ts"
       },
       "meta": []
@@ -530,17 +530,16 @@
     "definitions": [
       {
         "title": "Type Definition",
-        "properties": [
-          {
-            "name": "",
-            "type": "\"poetry\" | \"cosmo\" | \"opener\"",
-            "description": "Available theme preset names\n",
-            "symbolDef": {
-              "id": []
-            },
-            "meta": []
-          }
-        ]
+        "properties": [],
+        "rootProperty": {
+          "name": "",
+          "type": "\"poetry\" | \"cosmo\" | \"opener\"",
+          "description": "Available theme preset names\n",
+          "symbolDef": {
+            "id": []
+          },
+          "meta": []
+        }
       }
     ]
   },
@@ -578,17 +577,16 @@
     "definitions": [
       {
         "title": "Type Definition",
-        "properties": [
-          {
-            "name": "",
-            "type": "\"side\" | \"top\"",
-            "description": "Search bar location options\n",
-            "symbolDef": {
-              "id": []
-            },
-            "meta": []
-          }
-        ]
+        "properties": [],
+        "rootProperty": {
+          "name": "",
+          "type": "\"side\" | \"top\"",
+          "description": "Search bar location options\n",
+          "symbolDef": {
+            "id": []
+          },
+          "meta": []
+        }
       }
     ]
   },
@@ -610,7 +608,7 @@
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface Navigation {\n    /** Definition of sidebar - an array of groups with all the pages within that group */\n    sidebar: (SidebarRoute | Sidebar)[]\n\n    /** Array of headers */\n    header?: Header[]\n\n    /** Array of sub headers */\n    subheader?: SubHeader[]\n\n    /**\n     * Array of version names. Only use this if you want to show different versions of docs \n     * with a dropdown in the navigation bar.\n     */\n    // versions?: string[]\n\n    /** Anchors, includes the icon, name, and url */\n    anchors?: AnchorRoot\n}",
+        "code": "export interface Navigation {\n    /** Definition of sidebar - an array of groups with all the pages within that group */\n    sidebar: (SidebarRoute | Sidebar)[]\n\n    /** Array of headers */\n    header?: Header[]\n\n    /** Array of sub headers */\n    subheader?: SubHeader[]\n\n    /**\n     * Array of version names. Only use this if you want to show different versions of docs\n     * with a dropdown in the navigation bar.\n     */\n    // versions?: string[]\n\n    /** Anchors, includes the icon, name, and url */\n    anchors?: AnchorRoot\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -631,7 +629,7 @@
             "name": "sidebar",
             "type": "$$array",
             "description": "Definition of sidebar - an array of groups with all the pages within that group\n",
-            "rootProperty": {
+            "ofProperty": {
               "name": "",
               "description": "",
               "type": "SidebarRoute | Sidebar",
@@ -654,13 +652,13 @@
             "name": "header",
             "type": "$$array",
             "description": "Array of headers\n",
-            "rootProperty": {
+            "ofProperty": {
               "name": "",
               "description": "",
               "type": "Header",
               "properties": [],
               "symbolDef": {
-                "id": "63"
+                "id": "60"
               }
             },
             "meta": []
@@ -669,13 +667,13 @@
             "name": "subheader",
             "type": "$$array",
             "description": "Array of sub headers\n",
-            "rootProperty": {
+            "ofProperty": {
               "name": "",
               "description": "",
               "type": "SubHeader",
               "properties": [],
               "symbolDef": {
-                "id": "59"
+                "id": "56"
               }
             },
             "meta": []
@@ -685,7 +683,7 @@
             "type": "AnchorRoot",
             "description": "Anchors, includes the icon, name, and url\n",
             "symbolDef": {
-              "id": "72"
+              "id": "69"
             },
             "meta": []
           }
@@ -743,7 +741,7 @@
             "name": "items",
             "type": "$$array",
             "description": "Sidebar items within this group\n",
-            "rootProperty": {
+            "ofProperty": {
               "name": "",
               "description": "",
               "type": "Sidebar",
@@ -781,7 +779,7 @@
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface Sidebar {\n    /** The name of the group */\n    group?: string\n\n    /** \n     * The relative paths to the markdown files that will serve as pages.\n     * Note: groups are recursive, so to add a sub-folder add another group object in the page array.\n     */\n    pages?: PageURL[]\n\n    /**\n     * The icon of the group.\n     */\n    icon?: string\n\n    /**\n     * The sort order of the group.\n     */\n    sort?: number | {\n        before: string\n\n        after: string\n    }\n}",
+        "code": "export interface Sidebar {\n    /** The name of the group */\n    group?: string\n\n    /**\n     * The relative paths to the markdown files that will serve as pages.\n     * Note: groups are recursive, so to add a sub-folder add another group object in the page array.\n     */\n    pages?: PageURL[]\n\n    /**\n     * The icon of the group.\n     */\n    icon?: string\n\n    /**\n     * The sort order of the group.\n     */\n    sort?: number\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -808,13 +806,13 @@
             "name": "pages",
             "type": "$$array",
             "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
-            "rootProperty": {
+            "ofProperty": {
               "name": "",
               "description": "",
               "type": "PageURL",
               "properties": [],
               "symbolDef": {
-                "id": "53"
+                "id": "50"
               }
             },
             "meta": []
@@ -827,11 +825,8 @@
           },
           {
             "name": "sort",
-            "type": "number | number | {\n    before: string;\n    after: string;\n}",
+            "type": "number",
             "description": "The sort order of the group.\n",
-            "symbolDef": {
-              "id": []
-            },
             "meta": []
           }
         ]
@@ -843,13 +838,13 @@
     "canonical": "@xyd-js/sources/types/PageURL",
     "description": "Page URL type\n",
     "context": {
-      "symbolId": "53",
+      "symbolId": "50",
       "symbolName": "PageURL",
       "symbolKind": 2097152,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 218,
+      "line": 214,
       "col": 12,
       "signatureText": {
         "code": "export type PageURL = string | VirtualPage | Sidebar;",
@@ -872,19 +867,18 @@
     "definitions": [
       {
         "title": "Type Definition",
-        "properties": [
-          {
-            "name": "",
-            "type": "string | Sidebar",
-            "description": "Page URL type\n",
-            "symbolDef": {
-              "id": [
-                "45"
-              ]
-            },
-            "meta": []
-          }
-        ]
+        "properties": [],
+        "rootProperty": {
+          "name": "",
+          "type": "string | Sidebar",
+          "description": "Page URL type\n",
+          "symbolDef": {
+            "id": [
+              "45"
+            ]
+          },
+          "meta": []
+        }
       }
     ]
   },
@@ -893,13 +887,13 @@
     "canonical": "@xyd-js/sources/types/VirtualPage",
     "description": "Virtual page type\n\nVirtual pages are composition of pages, needed for templating e.g in uniform\n\nExample:\n\n{\n pages: [0\n   \".xyd/.cache/.content/docs/rest/todo:docs/rest/todo\",\n ]\n}\n\nabove will be rendered as docs/rest/todo.md using composition from xyd's \n`.content`\n",
     "context": {
-      "symbolId": "54",
+      "symbolId": "51",
       "symbolName": "VirtualPage",
       "symbolKind": 2097152,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 237,
+      "line": 233,
       "col": 12,
       "signatureText": {
         "code": "export type VirtualPage = string | {\n    virtual: string;\n    page: string;\n    templates?: string | string[];\n};",
@@ -927,17 +921,16 @@
     "definitions": [
       {
         "title": "Type Definition",
-        "properties": [
-          {
-            "name": "",
-            "type": "string | string | {\n    virtual: string;\n    page: string;\n    templates?: string | string[];\n}",
-            "description": "Virtual page type\n\nVirtual pages are composition of pages, needed for templating e.g in uniform\n\nExample:\n\n{\n pages: [0\n   \".xyd/.cache/.content/docs/rest/todo:docs/rest/todo\",\n ]\n}\n\nabove will be rendered as docs/rest/todo.md using composition from xyd's \n`.content`\n",
-            "symbolDef": {
-              "id": []
-            },
-            "meta": []
-          }
-        ]
+        "properties": [],
+        "rootProperty": {
+          "name": "",
+          "type": "string | string | {\n    virtual: string;\n    page: string;\n    templates?: string | string[];\n}",
+          "description": "Virtual page type\n\nVirtual pages are composition of pages, needed for templating e.g in uniform\n\nExample:\n\n{\n pages: [0\n   \".xyd/.cache/.content/docs/rest/todo:docs/rest/todo\",\n ]\n}\n\nabove will be rendered as docs/rest/todo.md using composition from xyd's \n`.content`\n",
+          "symbolDef": {
+            "id": []
+          },
+          "meta": []
+        }
       }
     ]
   },
@@ -946,13 +939,13 @@
     "canonical": "@xyd-js/sources/interfaces/SubHeader",
     "description": "Sub-header configuration\n",
     "context": {
-      "symbolId": "59",
+      "symbolId": "56",
       "symbolName": "SubHeader",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 252,
+      "line": 248,
       "col": 17,
       "signatureText": {
         "code": "export interface SubHeader {\n}",
@@ -1002,13 +995,13 @@
             "name": "items",
             "type": "$$array",
             "description": "Items within this sub-header\n",
-            "rootProperty": {
+            "ofProperty": {
               "name": "",
               "description": "",
               "type": "Header",
               "properties": [],
               "symbolDef": {
-                "id": "63"
+                "id": "60"
               }
             },
             "meta": [
@@ -1027,13 +1020,13 @@
     "canonical": "@xyd-js/sources/types/Header",
     "description": "Header configuration\n",
     "context": {
-      "symbolId": "63",
+      "symbolId": "60",
       "symbolName": "Header",
       "symbolKind": 2097152,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 266,
+      "line": 262,
       "col": 12,
       "signatureText": {
         "code": "export type Header = {\n    name?: string;\n    url?: string;\n    float?: \"right\";\n};",
@@ -1084,20 +1077,20 @@
     "canonical": "@xyd-js/sources/interfaces/Anchor",
     "description": "Anchor configuration\n",
     "context": {
-      "symbolId": "68",
+      "symbolId": "65",
       "symbolName": "Anchor",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 280,
+      "line": 276,
       "col": 17,
       "signatureText": {
         "code": "export interface Anchor {\n}",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface Anchor {\n    /** The iconify icon name */\n    icon?: string\n\n    /** The name of the anchor label */\n    name?: string\n\n    /** \n     * The start of the URL that marks what pages go in the anchor. \n     * Generally, this is the name of the folder you put your pages in.\n     */\n    url?: string\n}",
+        "code": "export interface Anchor {\n    /** The iconify icon name */\n    icon?: string\n\n    /** The name of the anchor label */\n    name?: string\n\n    /**\n     * The start of the URL that marks what pages go in the anchor.\n     * Generally, this is the name of the folder you put your pages in.\n     */\n    url?: string\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -1129,7 +1122,7 @@
           {
             "name": "url",
             "type": "string",
-            "description": "The start of the URL that marks what pages go in the anchor. \nGenerally, this is the name of the folder you put your pages in.\n",
+            "description": "The start of the URL that marks what pages go in the anchor.\nGenerally, this is the name of the folder you put your pages in.\n",
             "meta": []
           }
         ]
@@ -1141,13 +1134,13 @@
     "canonical": "@xyd-js/sources/interfaces/AnchorRoot",
     "description": "Anchor root configuration\n",
     "context": {
-      "symbolId": "72",
+      "symbolId": "69",
       "symbolName": "AnchorRoot",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 297,
+      "line": 293,
       "col": 17,
       "signatureText": {
         "code": "export interface AnchorRoot {\n}",
@@ -1175,13 +1168,13 @@
             "name": "bottom",
             "type": "$$array",
             "description": "Bottom anchors\n",
-            "rootProperty": {
+            "ofProperty": {
               "name": "",
               "description": "",
               "type": "Anchor",
               "properties": [],
               "symbolDef": {
-                "id": "68"
+                "id": "65"
               }
             },
             "meta": []
@@ -1195,20 +1188,20 @@
     "canonical": "@xyd-js/sources/interfaces/API",
     "description": "API configuration interface\n",
     "context": {
-      "symbolId": "74",
+      "symbolId": "71",
       "symbolName": "API",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 309,
+      "line": 305,
       "col": 17,
       "signatureText": {
         "code": "export interface API {\n}",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface API {\n    /** \n     * OpenAPI configuration\n     */\n    openapi?: APIFile\n\n    /**\n     * GraphQL configuration\n     */\n    graphql?: APIFile\n\n    /**\n     * Sources configuration\n     */\n    sources?: APIFile\n}",
+        "code": "export interface API {\n    /**\n     * OpenAPI configuration\n     */\n    openapi?: APIFile\n\n    /**\n     * GraphQL configuration\n     */\n    graphql?: APIFile\n\n    /**\n     * Sources configuration\n     */\n    sources?: APIFile\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -1230,7 +1223,7 @@
             "type": "APIFile",
             "description": "OpenAPI configuration\n",
             "symbolDef": {
-              "id": "78"
+              "id": "75"
             },
             "meta": []
           },
@@ -1239,7 +1232,7 @@
             "type": "APIFile",
             "description": "GraphQL configuration\n",
             "symbolDef": {
-              "id": "78"
+              "id": "75"
             },
             "meta": []
           },
@@ -1248,7 +1241,7 @@
             "type": "APIFile",
             "description": "Sources configuration\n",
             "symbolDef": {
-              "id": "78"
+              "id": "75"
             },
             "meta": []
           }
@@ -1261,20 +1254,20 @@
     "canonical": "@xyd-js/sources/types/APIFile",
     "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
     "context": {
-      "symbolId": "78",
+      "symbolId": "75",
       "symbolName": "APIFile",
       "symbolKind": 2097152,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 329,
+      "line": 325,
       "col": 12,
       "signatureText": {
-        "code": "export type APIFile = string | string[] | APIFileAdvanced | APIFileMap;",
+        "code": "export type APIFile = string | string[] | APIFileMap | APIFileAdvanced;",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export type APIFile = string | string[] | APIFileAdvanced | APIFileMap",
+        "code": "export type APIFile = string | string[] | APIFileMap | APIFileAdvanced",
         "lang": "ts"
       },
       "meta": [],
@@ -1290,20 +1283,19 @@
     "definitions": [
       {
         "title": "Type Definition",
-        "properties": [
-          {
-            "name": "",
-            "type": "string | string[] | APIFileAdvanced | APIFileMap",
-            "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
-            "symbolDef": {
-              "id": [
-                "83",
-                "79"
-              ]
-            },
-            "meta": []
-          }
-        ]
+        "properties": [],
+        "rootProperty": {
+          "name": "",
+          "type": "string | string[] | APIFileMap | APIFileAdvanced",
+          "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
+          "symbolDef": {
+            "id": [
+              "76",
+              "80"
+            ]
+          },
+          "meta": []
+        }
       }
     ]
   },
@@ -1312,20 +1304,20 @@
     "canonical": "@xyd-js/sources/types/APIFileMap",
     "description": "API file map type\n",
     "context": {
-      "symbolId": "79",
+      "symbolId": "76",
       "symbolName": "APIFileMap",
       "symbolKind": 2097152,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 334,
+      "line": 330,
       "col": 12,
       "signatureText": {
-        "code": "export type APIFileMap = {\n    [name: string]: string;\n};",
+        "code": "export type APIFileMap = {\n    [name: string]: string | APIFileAdvanced;\n};",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export type APIFileMap = { \n    [name: string]: string\n}",
+        "code": "export type APIFileMap = {\n    [name: string]: string | APIFileAdvanced\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -1341,15 +1333,19 @@
     "definitions": [
       {
         "title": "Type Definition",
-        "properties": [
-          {
+        "properties": [],
+        "rootProperty": {
+          "name": "",
+          "type": "$$union",
+          "description": "API file map type\n",
+          "properties": [],
+          "meta": [],
+          "ofProperty": {
             "name": "",
-            "type": "{\n    [name: string]: string;\n}",
-            "description": "API file map type\n",
-            "properties": [],
-            "meta": []
+            "type": "{\n    [name: string]: string | APIFileAdvanced;\n}",
+            "description": ""
           }
-        ]
+        }
       }
     ]
   },
@@ -1358,20 +1354,20 @@
     "canonical": "@xyd-js/sources/types/APIFileAdvanced",
     "description": "API file advanced type\n",
     "context": {
-      "symbolId": "83",
+      "symbolId": "80",
       "symbolName": "APIFileAdvanced",
       "symbolKind": 2097152,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 341,
+      "line": 337,
       "col": 12,
       "signatureText": {
         "code": "export type APIFileAdvanced = {\n    info?: APIInfo;\n    route: string;\n};",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export type APIFileAdvanced = { \n    /** API information configuration */\n    info?: APIInfo\n\n    /** Route configuration */\n    route: string\n}",
+        "code": "export type APIFileAdvanced = {\n    /** API information configuration */\n    info?: APIInfo\n\n    /** Route configuration */\n    route: string\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -1393,7 +1389,7 @@
             "type": "APIInfo",
             "description": "API information configuration\n",
             "symbolDef": {
-              "id": "87"
+              "id": "84"
             },
             "meta": []
           },
@@ -1417,20 +1413,20 @@
     "canonical": "@xyd-js/sources/interfaces/APIInfo",
     "description": "API information configuration\n",
     "context": {
-      "symbolId": "87",
+      "symbolId": "84",
       "symbolName": "APIInfo",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 356,
+      "line": 352,
       "col": 17,
       "signatureText": {
         "code": "export interface APIInfo {\n}",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface APIInfo {\n    /** \n     * The base url for all API endpoints. If baseUrl is an array, it will enable \n     * for multiple base url options that the user can toggle.\n     */\n    baseUrl?: string\n\n    /** Authentication information */\n    auth?: APIAuth\n\n    /** \n     * The name of the authentication parameter used in the API playground.\n     * If method is basic, the format should be [usernameName]:[passwordName]\n     */\n    name?: string\n\n    /**\n     * The default value that's designed to be a prefisx for the authentication input field.\n     * E.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n     */\n    inputPrefix?: string\n\n    /** Configurations for the API playground */\n    playground?: APIPlayground\n\n    /** Request configuration */\n    request?: APIInfoRequest\n}",
+        "code": "export interface APIInfo {\n    /**\n     * The base url for all API endpoints. If baseUrl is an array, it will enable\n     * for multiple base url options that the user can toggle.\n     */\n    baseUrl?: string\n\n    /** Authentication information */\n    auth?: APIAuth\n\n    /**\n     * The name of the authentication parameter used in the API playground.\n     * If method is basic, the format should be [usernameName]:[passwordName]\n     */\n    name?: string\n\n    /**\n     * The default value that's designed to be a prefisx for the authentication input field.\n     * E.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n     */\n    inputPrefix?: string\n\n    /** Configurations for the API playground */\n    playground?: APIPlayground\n\n    /** Request configuration */\n    request?: APIInfoRequest\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -1450,7 +1446,7 @@
           {
             "name": "baseUrl",
             "type": "string",
-            "description": "The base url for all API endpoints. If baseUrl is an array, it will enable \nfor multiple base url options that the user can toggle.\n",
+            "description": "The base url for all API endpoints. If baseUrl is an array, it will enable\nfor multiple base url options that the user can toggle.\n",
             "meta": []
           },
           {
@@ -1458,7 +1454,7 @@
             "type": "APIAuth",
             "description": "Authentication information\n",
             "symbolDef": {
-              "id": "94"
+              "id": "91"
             },
             "meta": []
           },
@@ -1479,7 +1475,7 @@
             "type": "APIPlayground",
             "description": "Configurations for the API playground\n",
             "symbolDef": {
-              "id": "96"
+              "id": "93"
             },
             "meta": []
           },
@@ -1488,7 +1484,7 @@
             "type": "APIInfoRequest",
             "description": "Request configuration\n",
             "symbolDef": {
-              "id": "98"
+              "id": "95"
             },
             "meta": []
           }
@@ -1501,13 +1497,13 @@
     "canonical": "@xyd-js/sources/interfaces/APIAuth",
     "description": "API authentication configuration\n",
     "context": {
-      "symbolId": "94",
+      "symbolId": "91",
       "symbolName": "APIAuth",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 388,
+      "line": 384,
       "col": 17,
       "signatureText": {
         "code": "export interface APIAuth {\n}",
@@ -1554,13 +1550,13 @@
     "canonical": "@xyd-js/sources/interfaces/APIPlayground",
     "description": "API playground configuration\n",
     "context": {
-      "symbolId": "96",
+      "symbolId": "93",
       "symbolName": "APIPlayground",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 396,
+      "line": 392,
       "col": 17,
       "signatureText": {
         "code": "export interface APIPlayground {\n}",
@@ -1602,20 +1598,20 @@
     "canonical": "@xyd-js/sources/interfaces/APIInfoRequest",
     "description": "API request configuration\n",
     "context": {
-      "symbolId": "98",
+      "symbolId": "95",
       "symbolName": "APIInfoRequest",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 404,
+      "line": 400,
       "col": 17,
       "signatureText": {
         "code": "export interface APIInfoRequest {\n}",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface APIInfoRequest {\n    /** Configurations for the auto-generated API request examples */\n    example?: {\n        /**\n         * An array of strings that determine the order of the languages of the auto-generated request examples.\n         * You can either define custom languages utilizing x-codeSamples or use our default languages which include \n         * bash, python, javascript, php, go, java\n         */\n        languages?: string[]\n    }\n}",
+        "code": "export interface APIInfoRequest {\n    /** Configurations for the auto-generated API request examples */\n    example?: {\n        /**\n         * An array of strings that determine the order of the languages of the auto-generated request examples.\n         * You can either define custom languages utilizing x-codeSamples or use our default languages which include\n         * bash, python, javascript, php, go, java\n         */\n        languages?: string[]\n    }\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -1640,7 +1636,7 @@
               {
                 "name": "languages",
                 "type": "string[]",
-                "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
+                "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include\nbash, python, javascript, php, go, java\n",
                 "meta": []
               }
             ],
@@ -1655,20 +1651,20 @@
     "canonical": "@xyd-js/sources/interfaces/Integrations",
     "description": "Integrations configuration\n",
     "context": {
-      "symbolId": "102",
+      "symbolId": "99",
       "symbolName": "Integrations",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 423,
+      "line": 419,
       "col": 17,
       "signatureText": {
         "code": "export interface Integrations {\n}",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface Integrations {\n    /** \n     * Configurations to add third-party analytics integrations. \n     * See full list of supported analytics here.\n     */\n    analytics?: IntegrationAnalytics\n\n    /**\n     * Configurations to add third-party search integrations. \n     * See full list of supported search here.\n     */\n    search?: IntegrationSearch\n}",
+        "code": "export interface Integrations {\n    /**\n     * Configurations to add third-party analytics integrations.\n     * See full list of supported analytics here.\n     */\n    analytics?: IntegrationAnalytics\n\n    /**\n     * Configurations to add third-party search integrations.\n     * See full list of supported search here.\n     */\n    search?: IntegrationSearch\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -1688,18 +1684,18 @@
           {
             "name": "analytics",
             "type": "IntegrationAnalytics",
-            "description": "Configurations to add third-party analytics integrations. \nSee full list of supported analytics here.\n",
+            "description": "Configurations to add third-party analytics integrations.\nSee full list of supported analytics here.\n",
             "symbolDef": {
-              "id": "105"
+              "id": "102"
             },
             "meta": []
           },
           {
             "name": "search",
             "type": "IntegrationSearch",
-            "description": "Configurations to add third-party search integrations. \nSee full list of supported search here.\n",
+            "description": "Configurations to add third-party search integrations.\nSee full list of supported search here.\n",
             "symbolDef": {
-              "id": "109"
+              "id": "106"
             },
             "meta": []
           }
@@ -1712,13 +1708,13 @@
     "canonical": "@xyd-js/sources/interfaces/IntegrationAnalytics",
     "description": "Analytics configuration\n",
     "context": {
-      "symbolId": "105",
+      "symbolId": "102",
       "symbolName": "IntegrationAnalytics",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 441,
+      "line": 437,
       "col": 17,
       "signatureText": {
         "code": "export interface IntegrationAnalytics {\n}",
@@ -1770,13 +1766,13 @@
     "canonical": "@xyd-js/sources/interfaces/IntegrationSearch",
     "description": "Search configuration\n",
     "context": {
-      "symbolId": "109",
+      "symbolId": "106",
       "symbolName": "IntegrationSearch",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 453,
+      "line": 449,
       "col": 17,
       "signatureText": {
         "code": "export interface IntegrationSearch {\n}",
@@ -1848,13 +1844,13 @@
     "canonical": "@xyd-js/sources/types/Plugins",
     "description": "Plugin configuration\n",
     "context": {
-      "symbolId": "119",
+      "symbolId": "116",
       "symbolName": "Plugins",
       "symbolKind": 2097152,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 513,
+      "line": 509,
       "col": 12,
       "signatureText": {
         "code": "export type Plugins = (string | PluginConfig)[];",
@@ -1877,25 +1873,24 @@
     "definitions": [
       {
         "title": "Type Definition",
-        "properties": [
-          {
+        "properties": [],
+        "rootProperty": {
+          "name": "",
+          "type": "$$array",
+          "description": "Plugin configuration\n",
+          "ofProperty": {
             "name": "",
-            "type": "$$array",
-            "description": "Plugin configuration\n",
-            "rootProperty": {
-              "name": "",
-              "description": "",
-              "type": "string | PluginConfig",
-              "properties": [],
-              "symbolDef": {
-                "id": [
-                  "120"
-                ]
-              }
-            },
-            "meta": []
-          }
-        ]
+            "description": "",
+            "type": "string | PluginConfig",
+            "properties": [],
+            "symbolDef": {
+              "id": [
+                "117"
+              ]
+            }
+          },
+          "meta": []
+        }
       }
     ]
   },
@@ -1904,20 +1899,20 @@
     "canonical": "@xyd-js/sources/types/PluginConfig",
     "description": "",
     "context": {
-      "symbolId": "120",
+      "symbolId": "117",
       "symbolName": "PluginConfig",
       "symbolKind": 2097152,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 515,
+      "line": 511,
       "col": 12,
       "signatureText": {
         "code": "export type PluginConfig<PluginName extends string = string, PluginArgs extends unknown[] = unknown[]> = [\n    PluginName,\n    ...PluginArgs\n];",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export type PluginConfig<\n    PluginName extends string = string,\n    PluginArgs extends unknown[] = unknown[]\n> = [\n    PluginName,\n    ...PluginArgs\n]",
+        "code": "export type PluginConfig<\n    PluginName extends string = string,\n    PluginArgs extends unknown[] = unknown[]\n> = [PluginName, ...PluginArgs]",
         "lang": "ts"
       },
       "meta": []
@@ -1928,20 +1923,19 @@
     "definitions": [
       {
         "title": "Type Definition",
-        "properties": [
-          {
-            "name": "",
-            "type": "[PluginName, PluginArgs[]]",
-            "description": "",
-            "symbolDef": {
-              "id": [
-                "121",
-                "122"
-              ]
-            },
-            "meta": []
-          }
-        ]
+        "properties": [],
+        "rootProperty": {
+          "name": "",
+          "type": "[PluginName, PluginArgs[]]",
+          "description": "",
+          "symbolDef": {
+            "id": [
+              "118",
+              "119"
+            ]
+          },
+          "meta": []
+        }
       }
     ]
   },
@@ -1950,13 +1944,13 @@
     "canonical": "@xyd-js/sources/interfaces/Redirects",
     "description": "Redirects configuration\n",
     "context": {
-      "symbolId": "123",
+      "symbolId": "120",
       "symbolName": "Redirects",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 530,
+      "line": 523,
       "col": 17,
       "signatureText": {
         "code": "export interface Redirects {\n}",
@@ -2011,13 +2005,13 @@
     "canonical": "@xyd-js/sources/interfaces/SEO",
     "description": "SEO configuration\n",
     "context": {
-      "symbolId": "126",
+      "symbolId": "123",
       "symbolName": "SEO",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 541,
+      "line": 534,
       "col": 17,
       "signatureText": {
         "code": "export interface SEO {\n}",
@@ -2049,10 +2043,15 @@
           },
           {
             "name": "metatags",
-            "type": "{\n    [tag: string]: string;\n}",
+            "type": "$$union",
             "description": "Meta tags\n",
             "properties": [],
-            "meta": []
+            "meta": [],
+            "ofProperty": {
+              "name": "",
+              "type": "{\n    [tag: string]: string;\n}",
+              "description": ""
+            }
           }
         ]
       }
@@ -2063,20 +2062,20 @@
     "canonical": "@xyd-js/sources/interfaces/Engine",
     "description": "Config configuration\n",
     "context": {
-      "symbolId": "132",
+      "symbolId": "129",
       "symbolName": "Engine",
       "symbolKind": 256,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 559,
+      "line": 552,
       "col": 17,
       "signatureText": {
         "code": "export interface Engine {\n}",
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface Engine {\n    /** \n     * Path aliases for imports. Avoid long relative paths by creating shortcuts.\n     * \n     * @example\n     * ```json\n     * {\n     *   \"paths\": {\n     *     \"@my-package/*\": [\"../my-package/src/*\"],\n     *     \"@livesession-go/*\": [\"https://github.com/livesession/livesession-go/*\"]\n     *   }\n     * }\n     * ```\n     * \n     * Usage:\n     * ```typescript\n     * // Instead of\n     * @importCode(\"../../../my-package/src/components/Badge.tsx\")\n     * \n     * // Use\n     * @importCode(\"@my-package/src/components/Badge.tsx\")\n     * ```\n     */\n    paths?: EnginePaths\n\n    /**\n     * @unsafe\n     * \n     * Uniform configuration\n     * \n     */\n    uniform?: EngineUniform\n}",
+        "code": "export interface Engine {\n    /**\n     * Path aliases for imports. Avoid long relative paths by creating shortcuts.\n     *\n     * @example\n     * ```json\n     * {\n     *   \"paths\": {\n     *     \"@my-package/*\": [\"../my-package/src/*\"],\n     *     \"@livesession-go/*\": [\"https://github.com/livesession/livesession-go/*\"]\n     *   }\n     * }\n     * ```\n     *\n     * Usage:\n     * ```typescript\n     * // Instead of\n     * @importCode(\"../../../my-package/src/components/Badge.tsx\")\n     *\n     * // Use\n     * @importCode(\"@my-package/src/components/Badge.tsx\")\n     * ```\n     */\n    paths?: EnginePaths\n\n    /**\n     * @unsafe\n     *\n     * Uniform configuration\n     *\n     */\n    uniform?: EngineUniform\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -2098,7 +2097,7 @@
             "type": "EnginePaths",
             "description": "Path aliases for imports. Avoid long relative paths by creating shortcuts.\n",
             "symbolDef": {
-              "id": "135"
+              "id": "132"
             },
             "meta": [],
             "examples": [
@@ -2111,7 +2110,7 @@
             "type": "EngineUniform",
             "description": "",
             "symbolDef": {
-              "id": "139"
+              "id": "136"
             },
             "meta": []
           }
@@ -2124,13 +2123,13 @@
     "canonical": "@xyd-js/sources/types/EnginePaths",
     "description": "",
     "context": {
-      "symbolId": "135",
+      "symbolId": "132",
       "symbolName": "EnginePaths",
       "symbolKind": 2097152,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 593,
+      "line": 586,
       "col": 12,
       "signatureText": {
         "code": "export type EnginePaths = {\n    [key: string]: string[];\n};",
@@ -2148,15 +2147,19 @@
     "definitions": [
       {
         "title": "Type Definition",
-        "properties": [
-          {
+        "properties": [],
+        "rootProperty": {
+          "name": "",
+          "type": "$$union",
+          "description": "",
+          "properties": [],
+          "meta": [],
+          "ofProperty": {
             "name": "",
             "type": "{\n    [key: string]: string[];\n}",
-            "description": "",
-            "properties": [],
-            "meta": []
+            "description": ""
           }
-        ]
+        }
       }
     ]
   },
@@ -2165,13 +2168,13 @@
     "canonical": "@xyd-js/sources/types/EngineUniform",
     "description": "",
     "context": {
-      "symbolId": "139",
+      "symbolId": "136",
       "symbolName": "EngineUniform",
       "symbolKind": 2097152,
       "packageName": "@xyd-js/sources",
       "fileName": "settings.ts",
       "fileFullPath": "src/settings.ts",
-      "line": 595,
+      "line": 588,
       "col": 12,
       "signatureText": {
         "code": "export type EngineUniform = {\n    store?: boolean;\n};",

@@ -891,16 +891,14 @@ function jsTypeAliasToUniformRef(
                 someTypeProps = uniformType
             }
 
-            if (uniformType === "VirtualPage") {
-                console.log(555)
-            }
-
-            typeDef.properties.push({
+            const propDefinition: DefinitionProperty = {
                 name: "",
                 type: typeof uniformType === "string" ? uniformType : "",
                 description: comment,
                 ...someTypeProps
-            })
+            }
+
+            typeDef.rootProperty = propDefinition
         } else if (dec?.children?.length) {
             const properties = uniformProperties.call(this, dec)
 
@@ -1093,7 +1091,7 @@ type SomeTypeUniform = string | {
     type?: string;
     ofType?: string;
     symbolDef?: SymbolDef;
-    rootProperty?: DefinitionProperty;
+    ofProperty?: DefinitionProperty;
     properties?: DefinitionProperty[];
     meta?: DefinitionPropertyMeta[];
 }
@@ -1123,9 +1121,6 @@ function someTypeToUniform(
             let refType = `${someType.qualifiedName || someType.name}`
 
             if ("target" in someType && typeof someType.target === "number") {
-                if (refType === "VirtualPage") {
-                    console.log(555)
-                }
                 return {
                     type: refType,
                     symbolDef: {
@@ -1186,6 +1181,23 @@ function someTypeToUniform(
                 ) || ""
             }
 
+            if (someType.declaration.indexSignatures?.length) {
+                if (properties.length > 1) {
+                    console.warn('(someTypeToUniform): Reflection type with multiple properties, using first one as ofProperty', someType.declaration.name)
+                }
+
+                return {
+                    type: DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
+                    properties: [],
+                    meta,
+                    ofProperty: {
+                        name: "",
+                        type,
+                        description: "",
+                    }
+                }
+            }
+
             return {
                 type,
                 properties,
@@ -1206,7 +1218,7 @@ function someTypeToUniform(
             return {
                 ofType: (arrayItemType.type || "") + "[]",
                 type: DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY,
-                rootProperty: {
+                ofProperty: {
                     name: "",
                     description: "",
                     type: (arrayItemType.type || ""),
@@ -1221,30 +1233,9 @@ function someTypeToUniform(
             const elements = someType.elements || []
             const elementTypes = elements.map(element => someTypeToUniform.call(this, element))
 
-            // Get the full type signature from the source code if this is a type alias
-            if ('target' in someType && typeof someType.target === 'number') {
-                const source = this.project.symbolIdMap[someType.target]?.sources?.[0]
-                if (source) {
-                    const signatureText = this.signatureTextLoader.signatureText(
-                        someType.target,
-                        source.line
-                    )
-                    if (signatureText) {
-                        return {
-                            type: signatureText,
-                            symbolDef: {
-                                id: someType.target.toString()
-                            },
-                            meta
-                        }
-                    }
-                }
-            }
-
-            // Fallback to manually constructing the type if signature text is not available
             const tupleType = `[${elementTypes.map(t => typeof t === "string" ? t : t.type || "").join(", ")}]`
 
-            // Collect all symbol definitions from tuple elements
+            // 1. collect all symbol definitions from tuple elements
             const symbolIds: string[] = []
             for (const t of elementTypes) {
                 if (typeof t === "object" && t.symbolDef?.id) {

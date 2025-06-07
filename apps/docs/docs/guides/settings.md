@@ -20,10 +20,9 @@ Source code of `settings` is available [here](https://github.com/livesession/xyd
 :::
 
 ## Reference
-This section contains the full reference for the docs.json file.
+This section contains the full reference for the docs.json file:
 
-
-::atlas{references="@uniform('@core/types/settings.ts', {mini: 'Settings'})"}
+::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Settings'})"}
 
 
 ## JSON Schema Validation

@@ -1,7 +1,7 @@
 [
   {
     "title": "Settings",
-    "canonical": "@xyd-js/sources/interfaces/Settings",
+    "canonical": "",
     "description": "Main settings interface for the application\n",
     "context": {
       "symbolId": "1",
@@ -17,7 +17,7 @@
         "lang": "ts"
       },
       "sourcecode": {
-        "code": "export interface Settings {\n    /** Theme configuration for the application */\n    theme?: Theme\n\n    /** Navigation configuration */\n    navigation?: Navigation\n\n    /** API configuration */\n    api?: API\n\n    /** Integrations configuration */\n    integrations?: Integrations\n\n    /** Plugins configuration */\n    plugins?: Plugins\n\n    /**\n     * @unsafe\n     * \n     * Redirects configuration\n     */\n    redirects?: Redirects[]\n\n    /**\n     * @unsafe\n     * SEO configuration\n     */\n    seo?: SEO\n\n    /** Engine configuration */\n    engine?: Engine\n}",
+        "code": "export interface Settings {\n    /** Theme configuration for the application */\n    theme?: Theme\n\n    /** Navigation configuration */\n    navigation?: Navigation\n\n    /** API configuration */\n    api?: API\n\n    /** Integrations configuration */\n    integrations?: Integrations\n\n    /** Plugins configuration */\n    plugins?: Plugins\n\n    /**\n     * @unsafe\n     *\n     * Redirects configuration\n     */\n    redirects?: Redirects[]\n\n    /**\n     * @unsafe\n     * SEO configuration\n     */\n    seo?: SEO\n\n    /** Engine configuration */\n    engine?: Engine\n}",
         "lang": "ts"
       },
       "meta": [],
@@ -32,25 +32,27 @@
     },
     "definitions": [
       {
-        "title": "Props",
+        "title": "Properties",
         "properties": [
           {
             "name": "theme",
             "type": "Theme",
             "description": "Theme configuration for the application\n",
             "symbolDef": {
-              "id": "10"
+              "id": "10",
+              "canonical": ""
             },
             "meta": [],
             "properties": [
               {
                 "name": "name",
                 "type": "\"poetry\" | \"cosmo\" | \"opener\" | string",
-                "description": "A preset theme configuration that changes the look and feel of the project. \nA theme is a set of default styling configurations. \n\nExample built-in themes: \n`cosmo`\n, \n`gusto`\n, \n`poetry`\n, \n`picasso`\n",
+                "description": "A preset theme configuration that changes the look and feel of the project.\nA theme is a set of default styling configurations.\n\nExample built-in themes: \n`cosmo`\n, \n`gusto`\n, \n`poetry`\n, \n`picasso`\n",
                 "symbolDef": {
                   "id": [
                     "35"
-                  ]
+                  ],
+                  "canonical": ""
                 },
                 "meta": [
                   {
@@ -65,7 +67,8 @@
                 "type": "Markdown",
                 "description": "Markdown configuration for the theme, including options like syntax highlighting\n",
                 "symbolDef": {
-                  "id": "20"
+                  "id": "20",
+                  "canonical": ""
                 },
                 "meta": [],
                 "properties": [
@@ -74,48 +77,61 @@
                     "type": "Theme",
                     "description": "Syntax highlighting configuration\n",
                     "meta": [],
-                    "properties": []
+                    "symbolDef": {
+                      "canonical": ""
+                    }
                   }
                 ]
               },
               {
                 "name": "logo",
                 "type": "$$union",
-                "description": "Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to. \nSVG format is recommended as it does not pixelate and the file size is generally smaller.\n",
+                "description": "Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to.\nSVG format is recommended as it does not pixelate and the file size is generally smaller.\n",
                 "symbolDef": {
                   "id": [
                     "22"
-                  ]
+                  ],
+                  "canonical": ""
                 },
                 "meta": [],
                 "properties": [
                   {
                     "name": "Logo",
                     "type": "Logo",
-                    "description": "",
+                    "description": "Logo configuration interface\n",
                     "properties": [
                       {
                         "name": "light",
                         "type": "string",
                         "description": "Path to the logo in light mode. For example: \n`/path/to/logo.svg`\n",
                         "meta": [],
-                        "properties": []
+                        "symbolDef": {
+                          "canonical": ""
+                        }
                       },
                       {
                         "name": "dark",
                         "type": "string",
                         "description": "Path to the logo in dark mode. For example: \n`/path/to/logo.svg`\n",
                         "meta": [],
-                        "properties": []
+                        "symbolDef": {
+                          "canonical": ""
+                        }
                       },
                       {
                         "name": "href",
                         "type": "string",
                         "description": "Where clicking on the logo links you to\n",
                         "meta": [],
-                        "properties": []
+                        "symbolDef": {
+                          "canonical": ""
+                        }
                       }
-                    ]
+                    ],
+                    "symbolDef": {
+                      "id": "22",
+                      "canonical": ""
+                    }
                   },
                   {
                     "name": "string",
@@ -136,7 +152,8 @@
                 "type": "Banner",
                 "description": "Banner configuration for the theme.\n",
                 "symbolDef": {
-                  "id": "26"
+                  "id": "26",
+                  "canonical": ""
                 },
                 "meta": [],
                 "properties": [
@@ -145,7 +162,8 @@
                     "type": "$$union",
                     "description": "Banner content.\n",
                     "symbolDef": {
-                      "id": []
+                      "id": [],
+                      "canonical": ""
                     },
                     "meta": [
                       {
@@ -175,39 +193,36 @@
                 "type": "string",
                 "description": "Path to the favicon image. For example: /path/to/favicon.svg\n",
                 "meta": [],
-                "properties": []
+                "symbolDef": {
+                  "canonical": ""
+                }
               },
               {
                 "name": "maxTocDepth",
                 "type": "number",
                 "description": "The defult level of the table of contents.\n",
                 "meta": [],
-                "properties": []
+                "symbolDef": {
+                  "canonical": ""
+                }
               },
               {
                 "name": "head",
                 "type": "$$array",
                 "description": "Head configuration\n",
-                "rootProperty": {
+                "ofProperty": {
                   "name": "",
                   "description": "",
-                  "type": "$$union",
-                  "properties": [
-                    {
-                      "name": "[string, Record<string, string",
-                      "type": "[string, Record<string, string",
-                      "description": "",
-                      "properties": []
-                    },
-                    {
-                      "name": "boolean>]",
-                      "type": "boolean>]",
-                      "description": "",
-                      "properties": []
-                    }
-                  ]
+                  "type": "[string, Record<string, string | boolean>]",
+                  "properties": [],
+                  "symbolDef": {
+                    "canonical": ""
+                  }
                 },
                 "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                },
                 "properties": []
               },
               {
@@ -215,7 +230,8 @@
                 "type": "Icons",
                 "description": "The iconify library\n",
                 "symbolDef": {
-                  "id": "33"
+                  "id": "33",
+                  "canonical": ""
                 },
                 "meta": [],
                 "properties": [
@@ -226,7 +242,8 @@
                     "symbolDef": {
                       "id": [
                         "28"
-                      ]
+                      ],
+                      "canonical": ""
                     },
                     "meta": [],
                     "properties": [
@@ -245,30 +262,42 @@
                                 "value": "true"
                               }
                             ],
-                            "properties": []
+                            "symbolDef": {
+                              "canonical": ""
+                            }
                           },
                           {
                             "name": "version",
                             "type": "string",
                             "description": "The iconify library version\n",
                             "meta": [],
-                            "properties": []
+                            "symbolDef": {
+                              "canonical": ""
+                            }
                           },
                           {
                             "name": "default",
                             "type": "boolean",
                             "description": "The default iconify icon name\n",
                             "meta": [],
-                            "properties": []
+                            "symbolDef": {
+                              "canonical": ""
+                            }
                           },
                           {
                             "name": "noprefix",
                             "type": "boolean",
                             "description": "Merge icons from the library into the default iconify library\n",
                             "meta": [],
-                            "properties": []
+                            "symbolDef": {
+                              "canonical": ""
+                            }
                           }
-                        ]
+                        ],
+                        "symbolDef": {
+                          "id": "28",
+                          "canonical": ""
+                        }
                       },
                       {
                         "name": "string",
@@ -299,7 +328,8 @@
             "type": "Navigation",
             "description": "Navigation configuration\n",
             "symbolDef": {
-              "id": "37"
+              "id": "37",
+              "canonical": ""
             },
             "meta": [],
             "properties": [
@@ -307,7 +337,7 @@
                 "name": "sidebar",
                 "type": "$$array",
                 "description": "Definition of sidebar - an array of groups with all the pages within that group\n",
-                "rootProperty": {
+                "ofProperty": {
                   "name": "",
                   "description": "",
                   "type": "$$union",
@@ -315,7 +345,7 @@
                     {
                       "name": "SidebarRoute",
                       "type": "SidebarRoute",
-                      "description": "",
+                      "description": "Sidebar multi-group configuration\n",
                       "properties": [
                         {
                           "name": "route",
@@ -327,15 +357,17 @@
                               "value": "true"
                             }
                           ],
-                          "properties": []
+                          "symbolDef": {
+                            "canonical": ""
+                          }
                         },
                         {
                           "name": "items",
                           "type": "$$array",
                           "description": "Sidebar items within this group\n",
-                          "rootProperty": {
+                          "ofProperty": {
                             "name": "",
-                            "description": "",
+                            "description": "Sidebar configuration\n",
                             "type": "Sidebar",
                             "properties": [
                               {
@@ -343,102 +375,106 @@
                                 "type": "string",
                                 "description": "The name of the group\n",
                                 "meta": [],
-                                "properties": []
+                                "symbolDef": {
+                                  "canonical": ""
+                                }
                               },
                               {
                                 "name": "pages",
                                 "type": "$$array",
                                 "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
-                                "rootProperty": {
+                                "ofProperty": {
                                   "name": "",
-                                  "description": "",
+                                  "description": "Page URL type\n",
                                   "type": "PageURL",
-                                  "properties": [
-                                    {
-                                      "name": "",
-                                      "type": "$$union",
-                                      "description": "Page URL type\n",
-                                      "symbolDef": {
-                                        "id": [
-                                          "45"
-                                        ]
-                                      },
-                                      "meta": [],
-                                      "properties": [
-                                        {
-                                          "name": "string",
-                                          "type": "string",
-                                          "description": "",
-                                          "properties": []
-                                        },
-                                        {
-                                          "name": "Sidebar",
-                                          "type": "Sidebar",
-                                          "description": "",
-                                          "properties": [
-                                            {
-                                              "name": "group",
-                                              "type": "string",
-                                              "description": "The name of the group\n",
-                                              "meta": [],
-                                              "properties": []
-                                            },
-                                            {
-                                              "name": "pages",
-                                              "type": "$$array",
-                                              "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
-                                              "rootProperty": {
-                                                "name": "",
-                                                "description": "",
-                                                "type": "PageURL",
-                                                "properties": [],
-                                                "symbolDef": {
-                                                  "id": "53"
-                                                }
-                                              },
-                                              "meta": [],
-                                              "properties": []
-                                            },
-                                            {
-                                              "name": "icon",
-                                              "type": "string",
-                                              "description": "The icon of the group.\n",
-                                              "meta": [],
-                                              "properties": []
-                                            },
-                                            {
-                                              "name": "sort",
-                                              "type": "$$union",
-                                              "description": "The sort order of the group.\n",
-                                              "symbolDef": {
-                                                "id": []
-                                              },
-                                              "meta": [],
-                                              "properties": [
-                                                {
-                                                  "name": "number",
-                                                  "type": "number",
-                                                  "description": "",
-                                                  "properties": []
-                                                },
-                                                {
-                                                  "name": "{\n    before: string;\n    after: string;\n}",
-                                                  "type": "{\n    before: string;\n    after: string;\n}",
-                                                  "description": "",
-                                                  "properties": []
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ],
+                                  "properties": [],
                                   "symbolDef": {
-                                    "id": "53"
+                                    "id": "50",
+                                    "canonical": ""
+                                  },
+                                  "ofProperty": {
+                                    "name": "",
+                                    "type": "$$union",
+                                    "description": "Page URL type\n",
+                                    "symbolDef": {
+                                      "id": [
+                                        "45"
+                                      ],
+                                      "canonical": ""
+                                    },
+                                    "meta": [],
+                                    "properties": [
+                                      {
+                                        "name": "Sidebar",
+                                        "type": "Sidebar",
+                                        "description": "Sidebar configuration\n",
+                                        "properties": [
+                                          {
+                                            "name": "group",
+                                            "type": "string",
+                                            "description": "The name of the group\n",
+                                            "meta": [],
+                                            "symbolDef": {
+                                              "canonical": ""
+                                            }
+                                          },
+                                          {
+                                            "name": "pages",
+                                            "type": "$$array",
+                                            "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
+                                            "ofProperty": {
+                                              "name": "",
+                                              "description": "",
+                                              "type": "PageURL",
+                                              "properties": [],
+                                              "symbolDef": {
+                                                "id": "50",
+                                                "canonical": ""
+                                              }
+                                            },
+                                            "meta": [],
+                                            "symbolDef": {
+                                              "canonical": ""
+                                            },
+                                            "properties": []
+                                          },
+                                          {
+                                            "name": "icon",
+                                            "type": "string",
+                                            "description": "The icon of the group.\n",
+                                            "meta": [],
+                                            "symbolDef": {
+                                              "canonical": ""
+                                            }
+                                          },
+                                          {
+                                            "name": "sort",
+                                            "type": "number",
+                                            "description": "The sort order of the group.\n",
+                                            "meta": [],
+                                            "symbolDef": {
+                                              "canonical": ""
+                                            }
+                                          }
+                                        ],
+                                        "symbolDef": {
+                                          "id": "45",
+                                          "canonical": ""
+                                        }
+                                      },
+                                      {
+                                        "name": "string",
+                                        "type": "string",
+                                        "description": "",
+                                        "properties": []
+                                      }
+                                    ]
                                   }
                                 },
                                 "meta": [],
+                                "symbolDef": {
+                                  "canonical": ""
+                                },
                                 "properties": []
                               },
                               {
@@ -446,34 +482,23 @@
                                 "type": "string",
                                 "description": "The icon of the group.\n",
                                 "meta": [],
-                                "properties": []
+                                "symbolDef": {
+                                  "canonical": ""
+                                }
                               },
                               {
                                 "name": "sort",
-                                "type": "$$union",
+                                "type": "number",
                                 "description": "The sort order of the group.\n",
-                                "symbolDef": {
-                                  "id": []
-                                },
                                 "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "number",
-                                    "type": "number",
-                                    "description": "",
-                                    "properties": []
-                                  },
-                                  {
-                                    "name": "{\n    before: string;\n    after: string;\n}",
-                                    "type": "{\n    before: string;\n    after: string;\n}",
-                                    "description": "",
-                                    "properties": []
-                                  }
-                                ]
+                                "symbolDef": {
+                                  "canonical": ""
+                                }
                               }
                             ],
                             "symbolDef": {
-                              "id": "45"
+                              "id": "45",
+                              "canonical": ""
                             }
                           },
                           "meta": [
@@ -482,116 +507,127 @@
                               "value": "true"
                             }
                           ],
+                          "symbolDef": {
+                            "canonical": ""
+                          },
                           "properties": []
                         }
-                      ]
+                      ],
+                      "symbolDef": {
+                        "id": "42",
+                        "canonical": ""
+                      }
                     },
                     {
                       "name": "Sidebar",
                       "type": "Sidebar",
-                      "description": "",
+                      "description": "Sidebar configuration\n",
                       "properties": [
                         {
                           "name": "group",
                           "type": "string",
                           "description": "The name of the group\n",
                           "meta": [],
-                          "properties": []
+                          "symbolDef": {
+                            "canonical": ""
+                          }
                         },
                         {
                           "name": "pages",
                           "type": "$$array",
                           "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
-                          "rootProperty": {
+                          "ofProperty": {
                             "name": "",
-                            "description": "",
+                            "description": "Page URL type\n",
                             "type": "PageURL",
-                            "properties": [
-                              {
-                                "name": "",
-                                "type": "$$union",
-                                "description": "Page URL type\n",
-                                "symbolDef": {
-                                  "id": [
-                                    "45"
-                                  ]
-                                },
-                                "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "string",
-                                    "type": "string",
-                                    "description": "",
-                                    "properties": []
-                                  },
-                                  {
-                                    "name": "Sidebar",
-                                    "type": "Sidebar",
-                                    "description": "",
-                                    "properties": [
-                                      {
-                                        "name": "group",
-                                        "type": "string",
-                                        "description": "The name of the group\n",
-                                        "meta": [],
-                                        "properties": []
-                                      },
-                                      {
-                                        "name": "pages",
-                                        "type": "$$array",
-                                        "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
-                                        "rootProperty": {
-                                          "name": "",
-                                          "description": "",
-                                          "type": "PageURL",
-                                          "properties": [],
-                                          "symbolDef": {
-                                            "id": "53"
-                                          }
-                                        },
-                                        "meta": [],
-                                        "properties": []
-                                      },
-                                      {
-                                        "name": "icon",
-                                        "type": "string",
-                                        "description": "The icon of the group.\n",
-                                        "meta": [],
-                                        "properties": []
-                                      },
-                                      {
-                                        "name": "sort",
-                                        "type": "$$union",
-                                        "description": "The sort order of the group.\n",
-                                        "symbolDef": {
-                                          "id": []
-                                        },
-                                        "meta": [],
-                                        "properties": [
-                                          {
-                                            "name": "number",
-                                            "type": "number",
-                                            "description": "",
-                                            "properties": []
-                                          },
-                                          {
-                                            "name": "{\n    before: string;\n    after: string;\n}",
-                                            "type": "{\n    before: string;\n    after: string;\n}",
-                                            "description": "",
-                                            "properties": []
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ],
+                            "properties": [],
                             "symbolDef": {
-                              "id": "53"
+                              "id": "50",
+                              "canonical": ""
+                            },
+                            "ofProperty": {
+                              "name": "",
+                              "type": "$$union",
+                              "description": "Page URL type\n",
+                              "symbolDef": {
+                                "id": [
+                                  "45"
+                                ],
+                                "canonical": ""
+                              },
+                              "meta": [],
+                              "properties": [
+                                {
+                                  "name": "Sidebar",
+                                  "type": "Sidebar",
+                                  "description": "Sidebar configuration\n",
+                                  "properties": [
+                                    {
+                                      "name": "group",
+                                      "type": "string",
+                                      "description": "The name of the group\n",
+                                      "meta": [],
+                                      "symbolDef": {
+                                        "canonical": ""
+                                      }
+                                    },
+                                    {
+                                      "name": "pages",
+                                      "type": "$$array",
+                                      "description": "The relative paths to the markdown files that will serve as pages.\nNote: groups are recursive, so to add a sub-folder add another group object in the page array.\n",
+                                      "ofProperty": {
+                                        "name": "",
+                                        "description": "",
+                                        "type": "PageURL",
+                                        "properties": [],
+                                        "symbolDef": {
+                                          "id": "50",
+                                          "canonical": ""
+                                        }
+                                      },
+                                      "meta": [],
+                                      "symbolDef": {
+                                        "canonical": ""
+                                      },
+                                      "properties": []
+                                    },
+                                    {
+                                      "name": "icon",
+                                      "type": "string",
+                                      "description": "The icon of the group.\n",
+                                      "meta": [],
+                                      "symbolDef": {
+                                        "canonical": ""
+                                      }
+                                    },
+                                    {
+                                      "name": "sort",
+                                      "type": "number",
+                                      "description": "The sort order of the group.\n",
+                                      "meta": [],
+                                      "symbolDef": {
+                                        "canonical": ""
+                                      }
+                                    }
+                                  ],
+                                  "symbolDef": {
+                                    "id": "45",
+                                    "canonical": ""
+                                  }
+                                },
+                                {
+                                  "name": "string",
+                                  "type": "string",
+                                  "description": "",
+                                  "properties": []
+                                }
+                              ]
                             }
                           },
                           "meta": [],
+                          "symbolDef": {
+                            "canonical": ""
+                          },
                           "properties": []
                         },
                         {
@@ -599,39 +635,32 @@
                           "type": "string",
                           "description": "The icon of the group.\n",
                           "meta": [],
-                          "properties": []
+                          "symbolDef": {
+                            "canonical": ""
+                          }
                         },
                         {
                           "name": "sort",
-                          "type": "$$union",
+                          "type": "number",
                           "description": "The sort order of the group.\n",
-                          "symbolDef": {
-                            "id": []
-                          },
                           "meta": [],
-                          "properties": [
-                            {
-                              "name": "number",
-                              "type": "number",
-                              "description": "",
-                              "properties": []
-                            },
-                            {
-                              "name": "{\n    before: string;\n    after: string;\n}",
-                              "type": "{\n    before: string;\n    after: string;\n}",
-                              "description": "",
-                              "properties": []
-                            }
-                          ]
+                          "symbolDef": {
+                            "canonical": ""
+                          }
                         }
-                      ]
+                      ],
+                      "symbolDef": {
+                        "id": "45",
+                        "canonical": ""
+                      }
                     }
                   ],
                   "symbolDef": {
                     "id": [
                       "42",
                       "45"
-                    ]
+                    ],
+                    "canonical": ""
                   }
                 },
                 "meta": [
@@ -640,15 +669,18 @@
                     "value": "true"
                   }
                 ],
+                "symbolDef": {
+                  "canonical": ""
+                },
                 "properties": []
               },
               {
                 "name": "header",
                 "type": "$$array",
                 "description": "Array of headers\n",
-                "rootProperty": {
+                "ofProperty": {
                   "name": "",
-                  "description": "",
+                  "description": "Header configuration\n",
                   "type": "Header",
                   "properties": [
                     {
@@ -656,37 +688,47 @@
                       "type": "string",
                       "description": "The name of the button\n",
                       "meta": [],
-                      "properties": []
+                      "symbolDef": {
+                        "canonical": ""
+                      }
                     },
                     {
                       "name": "url",
                       "type": "string",
                       "description": "The url once you click on the button\n",
                       "meta": [],
-                      "properties": []
+                      "symbolDef": {
+                        "canonical": ""
+                      }
                     },
                     {
                       "name": "float",
                       "type": "\"right\"",
                       "description": "Float the header to the right\n",
                       "meta": [],
-                      "properties": []
+                      "symbolDef": {
+                        "canonical": ""
+                      }
                     }
                   ],
                   "symbolDef": {
-                    "id": "63"
+                    "id": "60",
+                    "canonical": ""
                   }
                 },
                 "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                },
                 "properties": []
               },
               {
                 "name": "subheader",
                 "type": "$$array",
                 "description": "Array of sub headers\n",
-                "rootProperty": {
+                "ofProperty": {
                   "name": "",
-                  "description": "",
+                  "description": "Sub-header configuration\n",
                   "type": "SubHeader",
                   "properties": [
                     {
@@ -699,7 +741,9 @@
                           "value": "true"
                         }
                       ],
-                      "properties": []
+                      "symbolDef": {
+                        "canonical": ""
+                      }
                     },
                     {
                       "name": "name",
@@ -711,15 +755,17 @@
                           "value": "true"
                         }
                       ],
-                      "properties": []
+                      "symbolDef": {
+                        "canonical": ""
+                      }
                     },
                     {
                       "name": "items",
                       "type": "$$array",
                       "description": "Items within this sub-header\n",
-                      "rootProperty": {
+                      "ofProperty": {
                         "name": "",
-                        "description": "",
+                        "description": "Header configuration\n",
                         "type": "Header",
                         "properties": [
                           {
@@ -727,25 +773,32 @@
                             "type": "string",
                             "description": "The name of the button\n",
                             "meta": [],
-                            "properties": []
+                            "symbolDef": {
+                              "canonical": ""
+                            }
                           },
                           {
                             "name": "url",
                             "type": "string",
                             "description": "The url once you click on the button\n",
                             "meta": [],
-                            "properties": []
+                            "symbolDef": {
+                              "canonical": ""
+                            }
                           },
                           {
                             "name": "float",
                             "type": "\"right\"",
                             "description": "Float the header to the right\n",
                             "meta": [],
-                            "properties": []
+                            "symbolDef": {
+                              "canonical": ""
+                            }
                           }
                         ],
                         "symbolDef": {
-                          "id": "63"
+                          "id": "60",
+                          "canonical": ""
                         }
                       },
                       "meta": [
@@ -754,14 +807,21 @@
                           "value": "true"
                         }
                       ],
+                      "symbolDef": {
+                        "canonical": ""
+                      },
                       "properties": []
                     }
                   ],
                   "symbolDef": {
-                    "id": "59"
+                    "id": "56",
+                    "canonical": ""
                   }
                 },
                 "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                },
                 "properties": []
               },
               {
@@ -769,7 +829,8 @@
                 "type": "AnchorRoot",
                 "description": "Anchors, includes the icon, name, and url\n",
                 "symbolDef": {
-                  "id": "72"
+                  "id": "69",
+                  "canonical": ""
                 },
                 "meta": [],
                 "properties": [
@@ -777,9 +838,9 @@
                     "name": "bottom",
                     "type": "$$array",
                     "description": "Bottom anchors\n",
-                    "rootProperty": {
+                    "ofProperty": {
                       "name": "",
-                      "description": "",
+                      "description": "Anchor configuration\n",
                       "type": "Anchor",
                       "properties": [
                         {
@@ -787,28 +848,38 @@
                           "type": "string",
                           "description": "The iconify icon name\n",
                           "meta": [],
-                          "properties": []
+                          "symbolDef": {
+                            "canonical": ""
+                          }
                         },
                         {
                           "name": "name",
                           "type": "string",
                           "description": "The name of the anchor label\n",
                           "meta": [],
-                          "properties": []
+                          "symbolDef": {
+                            "canonical": ""
+                          }
                         },
                         {
                           "name": "url",
                           "type": "string",
-                          "description": "The start of the URL that marks what pages go in the anchor. \nGenerally, this is the name of the folder you put your pages in.\n",
+                          "description": "The start of the URL that marks what pages go in the anchor.\nGenerally, this is the name of the folder you put your pages in.\n",
                           "meta": [],
-                          "properties": []
+                          "symbolDef": {
+                            "canonical": ""
+                          }
                         }
                       ],
                       "symbolDef": {
-                        "id": "68"
+                        "id": "65",
+                        "canonical": ""
                       }
                     },
                     "meta": [],
+                    "symbolDef": {
+                      "canonical": ""
+                    },
                     "properties": []
                   }
                 ]
@@ -820,7 +891,8 @@
             "type": "API",
             "description": "API configuration\n",
             "symbolDef": {
-              "id": "74"
+              "id": "71",
+              "canonical": ""
             },
             "meta": [],
             "properties": [
@@ -829,546 +901,585 @@
                 "type": "APIFile",
                 "description": "OpenAPI configuration\n",
                 "symbolDef": {
-                  "id": "78"
+                  "id": "75",
+                  "canonical": ""
                 },
                 "meta": [],
-                "properties": [
-                  {
-                    "name": "",
-                    "type": "$$union",
-                    "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
-                    "symbolDef": {
-                      "id": [
-                        "83",
-                        "79"
-                      ]
-                    },
-                    "meta": [],
-                    "properties": [
-                      {
-                        "name": "APIFileAdvanced",
-                        "type": "APIFileAdvanced",
-                        "description": "",
-                        "properties": [
-                          {
-                            "name": "info",
-                            "type": "APIInfo",
-                            "description": "API information configuration\n",
-                            "symbolDef": {
-                              "id": "87"
-                            },
-                            "meta": [],
-                            "properties": [
-                              {
-                                "name": "baseUrl",
-                                "type": "string",
-                                "description": "The base url for all API endpoints. If baseUrl is an array, it will enable \nfor multiple base url options that the user can toggle.\n",
-                                "meta": [],
-                                "properties": []
-                              },
-                              {
-                                "name": "auth",
-                                "type": "APIAuth",
-                                "description": "Authentication information\n",
-                                "symbolDef": {
-                                  "id": "94"
-                                },
-                                "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "method",
-                                    "type": "\"bearer\" | \"basic\" | \"key\"",
-                                    "description": "The authentication strategy used for all API endpoints\n",
-                                    "symbolDef": {
-                                      "id": []
-                                    },
-                                    "meta": [
-                                      {
-                                        "name": "required",
-                                        "value": "true"
-                                      }
-                                    ],
-                                    "properties": []
-                                  }
-                                ]
-                              },
-                              {
-                                "name": "name",
-                                "type": "string",
-                                "description": "The name of the authentication parameter used in the API playground.\nIf method is basic, the format should be [usernameName]:[passwordName]\n",
-                                "meta": [],
-                                "properties": []
-                              },
-                              {
-                                "name": "inputPrefix",
-                                "type": "string",
-                                "description": "The default value that's designed to be a prefisx for the authentication input field.\nE.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n",
-                                "meta": [],
-                                "properties": []
-                              },
-                              {
-                                "name": "playground",
-                                "type": "APIPlayground",
-                                "description": "Configurations for the API playground\n",
-                                "symbolDef": {
-                                  "id": "96"
-                                },
-                                "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "mode",
-                                    "type": "\"show\" | \"simple\" | \"hide\"",
-                                    "description": "Playground display mode\n",
-                                    "symbolDef": {
-                                      "id": []
-                                    },
-                                    "meta": [],
-                                    "properties": []
-                                  }
-                                ]
-                              },
-                              {
-                                "name": "request",
-                                "type": "APIInfoRequest",
-                                "description": "Request configuration\n",
-                                "symbolDef": {
-                                  "id": "98"
-                                },
-                                "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "example",
-                                    "type": "{\n    languages?: string[];\n}",
-                                    "description": "Configurations for the auto-generated API request examples\n",
-                                    "properties": [
-                                      {
-                                        "name": "languages",
-                                        "type": "string[]",
-                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
-                                        "meta": [],
-                                        "properties": []
-                                      },
-                                      {
-                                        "name": "languages",
-                                        "type": "string[]",
-                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
-                                        "meta": [],
-                                        "properties": []
-                                      }
-                                    ],
-                                    "meta": []
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "name": "route",
-                            "type": "string",
-                            "description": "Route configuration\n",
-                            "meta": [
-                              {
-                                "name": "required",
-                                "value": "true"
-                              }
-                            ],
-                            "properties": []
-                          }
-                        ]
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "$$union",
+                  "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
+                  "symbolDef": {
+                    "id": [
+                      "76",
+                      "80"
+                    ],
+                    "canonical": ""
+                  },
+                  "meta": [],
+                  "properties": [
+                    {
+                      "name": "APIFileMap",
+                      "type": "APIFileMap",
+                      "description": "API file map type\n",
+                      "properties": [],
+                      "symbolDef": {
+                        "id": "76",
+                        "canonical": ""
                       },
-                      {
-                        "name": "APIFileMap",
-                        "type": "APIFileMap",
-                        "description": "",
-                        "properties": [
-                          {
-                            "name": "",
-                            "type": "{\n    [name: string]: string;\n}",
-                            "description": "API file map type\n",
-                            "properties": [],
-                            "meta": []
-                          }
-                        ]
-                      },
-                      {
-                        "name": "string",
-                        "type": "string",
-                        "description": "",
-                        "properties": []
-                      },
-                      {
-                        "name": "string[]",
-                        "type": "string[]",
-                        "description": "",
-                        "properties": []
+                      "ofProperty": {
+                        "name": "",
+                        "type": "{\n    [name: string]: string | APIFileAdvanced;\n}",
+                        "description": ""
                       }
-                    ]
-                  }
-                ]
+                    },
+                    {
+                      "name": "APIFileAdvanced",
+                      "type": "APIFileAdvanced",
+                      "description": "API file advanced type\n",
+                      "properties": [
+                        {
+                          "name": "info",
+                          "type": "APIInfo",
+                          "description": "API information configuration\n",
+                          "symbolDef": {
+                            "id": "84",
+                            "canonical": ""
+                          },
+                          "meta": [],
+                          "properties": [
+                            {
+                              "name": "baseUrl",
+                              "type": "string",
+                              "description": "The base url for all API endpoints. If baseUrl is an array, it will enable\nfor multiple base url options that the user can toggle.\n",
+                              "meta": [],
+                              "symbolDef": {
+                                "canonical": ""
+                              }
+                            },
+                            {
+                              "name": "auth",
+                              "type": "APIAuth",
+                              "description": "Authentication information\n",
+                              "symbolDef": {
+                                "id": "91",
+                                "canonical": ""
+                              },
+                              "meta": [],
+                              "properties": [
+                                {
+                                  "name": "method",
+                                  "type": "\"bearer\" | \"basic\" | \"key\"",
+                                  "description": "The authentication strategy used for all API endpoints\n",
+                                  "symbolDef": {
+                                    "id": [],
+                                    "canonical": ""
+                                  },
+                                  "meta": [
+                                    {
+                                      "name": "required",
+                                      "value": "true"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "name": "name",
+                              "type": "string",
+                              "description": "The name of the authentication parameter used in the API playground.\nIf method is basic, the format should be [usernameName]:[passwordName]\n",
+                              "meta": [],
+                              "symbolDef": {
+                                "canonical": ""
+                              }
+                            },
+                            {
+                              "name": "inputPrefix",
+                              "type": "string",
+                              "description": "The default value that's designed to be a prefisx for the authentication input field.\nE.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n",
+                              "meta": [],
+                              "symbolDef": {
+                                "canonical": ""
+                              }
+                            },
+                            {
+                              "name": "playground",
+                              "type": "APIPlayground",
+                              "description": "Configurations for the API playground\n",
+                              "symbolDef": {
+                                "id": "93",
+                                "canonical": ""
+                              },
+                              "meta": [],
+                              "properties": [
+                                {
+                                  "name": "mode",
+                                  "type": "\"show\" | \"simple\" | \"hide\"",
+                                  "description": "Playground display mode\n",
+                                  "symbolDef": {
+                                    "id": [],
+                                    "canonical": ""
+                                  },
+                                  "meta": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "request",
+                              "type": "APIInfoRequest",
+                              "description": "Request configuration\n",
+                              "symbolDef": {
+                                "id": "95",
+                                "canonical": ""
+                              },
+                              "meta": [],
+                              "properties": [
+                                {
+                                  "name": "example",
+                                  "type": "{\n    languages?: string[];\n}",
+                                  "description": "Configurations for the auto-generated API request examples\n",
+                                  "properties": [
+                                    {
+                                      "name": "languages",
+                                      "type": "string[]",
+                                      "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include\nbash, python, javascript, php, go, java\n",
+                                      "meta": []
+                                    }
+                                  ],
+                                  "meta": [],
+                                  "symbolDef": {
+                                    "canonical": ""
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "name": "route",
+                          "type": "string",
+                          "description": "Route configuration\n",
+                          "meta": [
+                            {
+                              "name": "required",
+                              "value": "true"
+                            }
+                          ],
+                          "symbolDef": {
+                            "canonical": ""
+                          }
+                        }
+                      ],
+                      "symbolDef": {
+                        "id": "80",
+                        "canonical": ""
+                      }
+                    },
+                    {
+                      "name": "string",
+                      "type": "string",
+                      "description": "",
+                      "properties": []
+                    },
+                    {
+                      "name": "string[]",
+                      "type": "string[]",
+                      "description": "",
+                      "properties": []
+                    }
+                  ]
+                }
               },
               {
                 "name": "graphql",
                 "type": "APIFile",
                 "description": "GraphQL configuration\n",
                 "symbolDef": {
-                  "id": "78"
+                  "id": "75",
+                  "canonical": ""
                 },
                 "meta": [],
-                "properties": [
-                  {
-                    "name": "",
-                    "type": "$$union",
-                    "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
-                    "symbolDef": {
-                      "id": [
-                        "83",
-                        "79"
-                      ]
-                    },
-                    "meta": [],
-                    "properties": [
-                      {
-                        "name": "APIFileAdvanced",
-                        "type": "APIFileAdvanced",
-                        "description": "",
-                        "properties": [
-                          {
-                            "name": "info",
-                            "type": "APIInfo",
-                            "description": "API information configuration\n",
-                            "symbolDef": {
-                              "id": "87"
-                            },
-                            "meta": [],
-                            "properties": [
-                              {
-                                "name": "baseUrl",
-                                "type": "string",
-                                "description": "The base url for all API endpoints. If baseUrl is an array, it will enable \nfor multiple base url options that the user can toggle.\n",
-                                "meta": [],
-                                "properties": []
-                              },
-                              {
-                                "name": "auth",
-                                "type": "APIAuth",
-                                "description": "Authentication information\n",
-                                "symbolDef": {
-                                  "id": "94"
-                                },
-                                "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "method",
-                                    "type": "\"bearer\" | \"basic\" | \"key\"",
-                                    "description": "The authentication strategy used for all API endpoints\n",
-                                    "symbolDef": {
-                                      "id": []
-                                    },
-                                    "meta": [
-                                      {
-                                        "name": "required",
-                                        "value": "true"
-                                      }
-                                    ],
-                                    "properties": []
-                                  }
-                                ]
-                              },
-                              {
-                                "name": "name",
-                                "type": "string",
-                                "description": "The name of the authentication parameter used in the API playground.\nIf method is basic, the format should be [usernameName]:[passwordName]\n",
-                                "meta": [],
-                                "properties": []
-                              },
-                              {
-                                "name": "inputPrefix",
-                                "type": "string",
-                                "description": "The default value that's designed to be a prefisx for the authentication input field.\nE.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n",
-                                "meta": [],
-                                "properties": []
-                              },
-                              {
-                                "name": "playground",
-                                "type": "APIPlayground",
-                                "description": "Configurations for the API playground\n",
-                                "symbolDef": {
-                                  "id": "96"
-                                },
-                                "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "mode",
-                                    "type": "\"show\" | \"simple\" | \"hide\"",
-                                    "description": "Playground display mode\n",
-                                    "symbolDef": {
-                                      "id": []
-                                    },
-                                    "meta": [],
-                                    "properties": []
-                                  }
-                                ]
-                              },
-                              {
-                                "name": "request",
-                                "type": "APIInfoRequest",
-                                "description": "Request configuration\n",
-                                "symbolDef": {
-                                  "id": "98"
-                                },
-                                "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "example",
-                                    "type": "{\n    languages?: string[];\n}",
-                                    "description": "Configurations for the auto-generated API request examples\n",
-                                    "properties": [
-                                      {
-                                        "name": "languages",
-                                        "type": "string[]",
-                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
-                                        "meta": [],
-                                        "properties": []
-                                      },
-                                      {
-                                        "name": "languages",
-                                        "type": "string[]",
-                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
-                                        "meta": [],
-                                        "properties": []
-                                      }
-                                    ],
-                                    "meta": []
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "name": "route",
-                            "type": "string",
-                            "description": "Route configuration\n",
-                            "meta": [
-                              {
-                                "name": "required",
-                                "value": "true"
-                              }
-                            ],
-                            "properties": []
-                          }
-                        ]
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "$$union",
+                  "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
+                  "symbolDef": {
+                    "id": [
+                      "76",
+                      "80"
+                    ],
+                    "canonical": ""
+                  },
+                  "meta": [],
+                  "properties": [
+                    {
+                      "name": "APIFileMap",
+                      "type": "APIFileMap",
+                      "description": "API file map type\n",
+                      "properties": [],
+                      "symbolDef": {
+                        "id": "76",
+                        "canonical": ""
                       },
-                      {
-                        "name": "APIFileMap",
-                        "type": "APIFileMap",
-                        "description": "",
-                        "properties": [
-                          {
-                            "name": "",
-                            "type": "{\n    [name: string]: string;\n}",
-                            "description": "API file map type\n",
-                            "properties": [],
-                            "meta": []
-                          }
-                        ]
-                      },
-                      {
-                        "name": "string",
-                        "type": "string",
-                        "description": "",
-                        "properties": []
-                      },
-                      {
-                        "name": "string[]",
-                        "type": "string[]",
-                        "description": "",
-                        "properties": []
+                      "ofProperty": {
+                        "name": "",
+                        "type": "{\n    [name: string]: string | APIFileAdvanced;\n}",
+                        "description": ""
                       }
-                    ]
-                  }
-                ]
+                    },
+                    {
+                      "name": "APIFileAdvanced",
+                      "type": "APIFileAdvanced",
+                      "description": "API file advanced type\n",
+                      "properties": [
+                        {
+                          "name": "info",
+                          "type": "APIInfo",
+                          "description": "API information configuration\n",
+                          "symbolDef": {
+                            "id": "84",
+                            "canonical": ""
+                          },
+                          "meta": [],
+                          "properties": [
+                            {
+                              "name": "baseUrl",
+                              "type": "string",
+                              "description": "The base url for all API endpoints. If baseUrl is an array, it will enable\nfor multiple base url options that the user can toggle.\n",
+                              "meta": [],
+                              "symbolDef": {
+                                "canonical": ""
+                              }
+                            },
+                            {
+                              "name": "auth",
+                              "type": "APIAuth",
+                              "description": "Authentication information\n",
+                              "symbolDef": {
+                                "id": "91",
+                                "canonical": ""
+                              },
+                              "meta": [],
+                              "properties": [
+                                {
+                                  "name": "method",
+                                  "type": "\"bearer\" | \"basic\" | \"key\"",
+                                  "description": "The authentication strategy used for all API endpoints\n",
+                                  "symbolDef": {
+                                    "id": [],
+                                    "canonical": ""
+                                  },
+                                  "meta": [
+                                    {
+                                      "name": "required",
+                                      "value": "true"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "name": "name",
+                              "type": "string",
+                              "description": "The name of the authentication parameter used in the API playground.\nIf method is basic, the format should be [usernameName]:[passwordName]\n",
+                              "meta": [],
+                              "symbolDef": {
+                                "canonical": ""
+                              }
+                            },
+                            {
+                              "name": "inputPrefix",
+                              "type": "string",
+                              "description": "The default value that's designed to be a prefisx for the authentication input field.\nE.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n",
+                              "meta": [],
+                              "symbolDef": {
+                                "canonical": ""
+                              }
+                            },
+                            {
+                              "name": "playground",
+                              "type": "APIPlayground",
+                              "description": "Configurations for the API playground\n",
+                              "symbolDef": {
+                                "id": "93",
+                                "canonical": ""
+                              },
+                              "meta": [],
+                              "properties": [
+                                {
+                                  "name": "mode",
+                                  "type": "\"show\" | \"simple\" | \"hide\"",
+                                  "description": "Playground display mode\n",
+                                  "symbolDef": {
+                                    "id": [],
+                                    "canonical": ""
+                                  },
+                                  "meta": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "request",
+                              "type": "APIInfoRequest",
+                              "description": "Request configuration\n",
+                              "symbolDef": {
+                                "id": "95",
+                                "canonical": ""
+                              },
+                              "meta": [],
+                              "properties": [
+                                {
+                                  "name": "example",
+                                  "type": "{\n    languages?: string[];\n}",
+                                  "description": "Configurations for the auto-generated API request examples\n",
+                                  "properties": [
+                                    {
+                                      "name": "languages",
+                                      "type": "string[]",
+                                      "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include\nbash, python, javascript, php, go, java\n",
+                                      "meta": []
+                                    }
+                                  ],
+                                  "meta": [],
+                                  "symbolDef": {
+                                    "canonical": ""
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "name": "route",
+                          "type": "string",
+                          "description": "Route configuration\n",
+                          "meta": [
+                            {
+                              "name": "required",
+                              "value": "true"
+                            }
+                          ],
+                          "symbolDef": {
+                            "canonical": ""
+                          }
+                        }
+                      ],
+                      "symbolDef": {
+                        "id": "80",
+                        "canonical": ""
+                      }
+                    },
+                    {
+                      "name": "string",
+                      "type": "string",
+                      "description": "",
+                      "properties": []
+                    },
+                    {
+                      "name": "string[]",
+                      "type": "string[]",
+                      "description": "",
+                      "properties": []
+                    }
+                  ]
+                }
               },
               {
                 "name": "sources",
                 "type": "APIFile",
                 "description": "Sources configuration\n",
                 "symbolDef": {
-                  "id": "78"
+                  "id": "75",
+                  "canonical": ""
                 },
                 "meta": [],
-                "properties": [
-                  {
-                    "name": "",
-                    "type": "$$union",
-                    "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
-                    "symbolDef": {
-                      "id": [
-                        "83",
-                        "79"
-                      ]
-                    },
-                    "meta": [],
-                    "properties": [
-                      {
-                        "name": "APIFileAdvanced",
-                        "type": "APIFileAdvanced",
-                        "description": "",
-                        "properties": [
-                          {
-                            "name": "info",
-                            "type": "APIInfo",
-                            "description": "API information configuration\n",
-                            "symbolDef": {
-                              "id": "87"
-                            },
-                            "meta": [],
-                            "properties": [
-                              {
-                                "name": "baseUrl",
-                                "type": "string",
-                                "description": "The base url for all API endpoints. If baseUrl is an array, it will enable \nfor multiple base url options that the user can toggle.\n",
-                                "meta": [],
-                                "properties": []
-                              },
-                              {
-                                "name": "auth",
-                                "type": "APIAuth",
-                                "description": "Authentication information\n",
-                                "symbolDef": {
-                                  "id": "94"
-                                },
-                                "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "method",
-                                    "type": "\"bearer\" | \"basic\" | \"key\"",
-                                    "description": "The authentication strategy used for all API endpoints\n",
-                                    "symbolDef": {
-                                      "id": []
-                                    },
-                                    "meta": [
-                                      {
-                                        "name": "required",
-                                        "value": "true"
-                                      }
-                                    ],
-                                    "properties": []
-                                  }
-                                ]
-                              },
-                              {
-                                "name": "name",
-                                "type": "string",
-                                "description": "The name of the authentication parameter used in the API playground.\nIf method is basic, the format should be [usernameName]:[passwordName]\n",
-                                "meta": [],
-                                "properties": []
-                              },
-                              {
-                                "name": "inputPrefix",
-                                "type": "string",
-                                "description": "The default value that's designed to be a prefisx for the authentication input field.\nE.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n",
-                                "meta": [],
-                                "properties": []
-                              },
-                              {
-                                "name": "playground",
-                                "type": "APIPlayground",
-                                "description": "Configurations for the API playground\n",
-                                "symbolDef": {
-                                  "id": "96"
-                                },
-                                "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "mode",
-                                    "type": "\"show\" | \"simple\" | \"hide\"",
-                                    "description": "Playground display mode\n",
-                                    "symbolDef": {
-                                      "id": []
-                                    },
-                                    "meta": [],
-                                    "properties": []
-                                  }
-                                ]
-                              },
-                              {
-                                "name": "request",
-                                "type": "APIInfoRequest",
-                                "description": "Request configuration\n",
-                                "symbolDef": {
-                                  "id": "98"
-                                },
-                                "meta": [],
-                                "properties": [
-                                  {
-                                    "name": "example",
-                                    "type": "{\n    languages?: string[];\n}",
-                                    "description": "Configurations for the auto-generated API request examples\n",
-                                    "properties": [
-                                      {
-                                        "name": "languages",
-                                        "type": "string[]",
-                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
-                                        "meta": [],
-                                        "properties": []
-                                      },
-                                      {
-                                        "name": "languages",
-                                        "type": "string[]",
-                                        "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include \nbash, python, javascript, php, go, java\n",
-                                        "meta": [],
-                                        "properties": []
-                                      }
-                                    ],
-                                    "meta": []
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          {
-                            "name": "route",
-                            "type": "string",
-                            "description": "Route configuration\n",
-                            "meta": [
-                              {
-                                "name": "required",
-                                "value": "true"
-                              }
-                            ],
-                            "properties": []
-                          }
-                        ]
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "$$union",
+                  "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration\n",
+                  "symbolDef": {
+                    "id": [
+                      "76",
+                      "80"
+                    ],
+                    "canonical": ""
+                  },
+                  "meta": [],
+                  "properties": [
+                    {
+                      "name": "APIFileMap",
+                      "type": "APIFileMap",
+                      "description": "API file map type\n",
+                      "properties": [],
+                      "symbolDef": {
+                        "id": "76",
+                        "canonical": ""
                       },
-                      {
-                        "name": "APIFileMap",
-                        "type": "APIFileMap",
-                        "description": "",
-                        "properties": [
-                          {
-                            "name": "",
-                            "type": "{\n    [name: string]: string;\n}",
-                            "description": "API file map type\n",
-                            "properties": [],
-                            "meta": []
-                          }
-                        ]
-                      },
-                      {
-                        "name": "string",
-                        "type": "string",
-                        "description": "",
-                        "properties": []
-                      },
-                      {
-                        "name": "string[]",
-                        "type": "string[]",
-                        "description": "",
-                        "properties": []
+                      "ofProperty": {
+                        "name": "",
+                        "type": "{\n    [name: string]: string | APIFileAdvanced;\n}",
+                        "description": ""
                       }
-                    ]
-                  }
-                ]
+                    },
+                    {
+                      "name": "APIFileAdvanced",
+                      "type": "APIFileAdvanced",
+                      "description": "API file advanced type\n",
+                      "properties": [
+                        {
+                          "name": "info",
+                          "type": "APIInfo",
+                          "description": "API information configuration\n",
+                          "symbolDef": {
+                            "id": "84",
+                            "canonical": ""
+                          },
+                          "meta": [],
+                          "properties": [
+                            {
+                              "name": "baseUrl",
+                              "type": "string",
+                              "description": "The base url for all API endpoints. If baseUrl is an array, it will enable\nfor multiple base url options that the user can toggle.\n",
+                              "meta": [],
+                              "symbolDef": {
+                                "canonical": ""
+                              }
+                            },
+                            {
+                              "name": "auth",
+                              "type": "APIAuth",
+                              "description": "Authentication information\n",
+                              "symbolDef": {
+                                "id": "91",
+                                "canonical": ""
+                              },
+                              "meta": [],
+                              "properties": [
+                                {
+                                  "name": "method",
+                                  "type": "\"bearer\" | \"basic\" | \"key\"",
+                                  "description": "The authentication strategy used for all API endpoints\n",
+                                  "symbolDef": {
+                                    "id": [],
+                                    "canonical": ""
+                                  },
+                                  "meta": [
+                                    {
+                                      "name": "required",
+                                      "value": "true"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "name": "name",
+                              "type": "string",
+                              "description": "The name of the authentication parameter used in the API playground.\nIf method is basic, the format should be [usernameName]:[passwordName]\n",
+                              "meta": [],
+                              "symbolDef": {
+                                "canonical": ""
+                              }
+                            },
+                            {
+                              "name": "inputPrefix",
+                              "type": "string",
+                              "description": "The default value that's designed to be a prefisx for the authentication input field.\nE.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.\n",
+                              "meta": [],
+                              "symbolDef": {
+                                "canonical": ""
+                              }
+                            },
+                            {
+                              "name": "playground",
+                              "type": "APIPlayground",
+                              "description": "Configurations for the API playground\n",
+                              "symbolDef": {
+                                "id": "93",
+                                "canonical": ""
+                              },
+                              "meta": [],
+                              "properties": [
+                                {
+                                  "name": "mode",
+                                  "type": "\"show\" | \"simple\" | \"hide\"",
+                                  "description": "Playground display mode\n",
+                                  "symbolDef": {
+                                    "id": [],
+                                    "canonical": ""
+                                  },
+                                  "meta": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "request",
+                              "type": "APIInfoRequest",
+                              "description": "Request configuration\n",
+                              "symbolDef": {
+                                "id": "95",
+                                "canonical": ""
+                              },
+                              "meta": [],
+                              "properties": [
+                                {
+                                  "name": "example",
+                                  "type": "{\n    languages?: string[];\n}",
+                                  "description": "Configurations for the auto-generated API request examples\n",
+                                  "properties": [
+                                    {
+                                      "name": "languages",
+                                      "type": "string[]",
+                                      "description": "An array of strings that determine the order of the languages of the auto-generated request examples.\nYou can either define custom languages utilizing x-codeSamples or use our default languages which include\nbash, python, javascript, php, go, java\n",
+                                      "meta": []
+                                    }
+                                  ],
+                                  "meta": [],
+                                  "symbolDef": {
+                                    "canonical": ""
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "name": "route",
+                          "type": "string",
+                          "description": "Route configuration\n",
+                          "meta": [
+                            {
+                              "name": "required",
+                              "value": "true"
+                            }
+                          ],
+                          "symbolDef": {
+                            "canonical": ""
+                          }
+                        }
+                      ],
+                      "symbolDef": {
+                        "id": "80",
+                        "canonical": ""
+                      }
+                    },
+                    {
+                      "name": "string",
+                      "type": "string",
+                      "description": "",
+                      "properties": []
+                    },
+                    {
+                      "name": "string[]",
+                      "type": "string[]",
+                      "description": "",
+                      "properties": []
+                    }
+                  ]
+                }
               }
             ]
           },
@@ -1377,16 +1488,18 @@
             "type": "Integrations",
             "description": "Integrations configuration\n",
             "symbolDef": {
-              "id": "102"
+              "id": "99",
+              "canonical": ""
             },
             "meta": [],
             "properties": [
               {
                 "name": "analytics",
                 "type": "IntegrationAnalytics",
-                "description": "Configurations to add third-party analytics integrations. \nSee full list of supported analytics here.\n",
+                "description": "Configurations to add third-party analytics integrations.\nSee full list of supported analytics here.\n",
                 "symbolDef": {
-                  "id": "105"
+                  "id": "102",
+                  "canonical": ""
                 },
                 "meta": [],
                 "properties": [
@@ -1404,32 +1517,23 @@
                             "name": "required",
                             "value": "true"
                           }
-                        ],
-                        "properties": []
-                      },
-                      {
-                        "name": "trackId",
-                        "type": "string",
-                        "description": "Livesession's TrackID\n",
-                        "meta": [
-                          {
-                            "name": "required",
-                            "value": "true"
-                          }
-                        ],
-                        "properties": []
+                        ]
                       }
                     ],
-                    "meta": []
+                    "meta": [],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
                   }
                 ]
               },
               {
                 "name": "search",
                 "type": "IntegrationSearch",
-                "description": "Configurations to add third-party search integrations. \nSee full list of supported search here.\n",
+                "description": "Configurations to add third-party search integrations.\nSee full list of supported search here.\n",
                 "symbolDef": {
-                  "id": "109"
+                  "id": "106",
+                  "canonical": ""
                 },
                 "meta": [],
                 "properties": [
@@ -1447,8 +1551,7 @@
                             "name": "required",
                             "value": "true"
                           }
-                        ],
-                        "properties": []
+                        ]
                       },
                       {
                         "name": "apiKey",
@@ -1459,42 +1562,21 @@
                             "name": "required",
                             "value": "true"
                           }
-                        ],
-                        "properties": []
-                      },
-                      {
-                        "name": "appId",
-                        "type": "string",
-                        "description": "Algolia application ID\n",
-                        "meta": [
-                          {
-                            "name": "required",
-                            "value": "true"
-                          }
-                        ],
-                        "properties": []
-                      },
-                      {
-                        "name": "apiKey",
-                        "type": "string",
-                        "description": "Algolia API key\n",
-                        "meta": [
-                          {
-                            "name": "required",
-                            "value": "true"
-                          }
-                        ],
-                        "properties": []
+                        ]
                       }
                     ],
-                    "meta": []
+                    "meta": [],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
                   },
                   {
                     "name": "orama",
                     "type": "$$union",
                     "description": "",
                     "symbolDef": {
-                      "id": []
+                      "id": [],
+                      "canonical": ""
                     },
                     "meta": [],
                     "properties": [
@@ -1521,63 +1603,113 @@
             "type": "Plugins",
             "description": "Plugins configuration\n",
             "symbolDef": {
-              "id": "119"
+              "id": "116",
+              "canonical": ""
             },
             "meta": [],
-            "properties": [
-              {
+            "properties": [],
+            "ofProperty": {
+              "name": "",
+              "type": "$$array",
+              "description": "Plugin configuration\n",
+              "ofProperty": {
                 "name": "",
-                "type": "$$array",
-                "description": "Plugin configuration\n",
-                "rootProperty": {
-                  "name": "",
-                  "description": "",
-                  "type": "$$union",
-                  "properties": [
-                    {
-                      "name": "PluginConfig",
-                      "type": "PluginConfig",
-                      "description": "",
-                      "properties": [
-                        {
-                          "name": "",
-                          "type": "[PluginName, PluginArgs[]]",
-                          "description": "",
-                          "symbolDef": {
-                            "id": [
-                              "121",
-                              "122"
-                            ]
-                          },
-                          "meta": [],
-                          "properties": []
-                        }
-                      ]
+                "description": "",
+                "type": "$$union",
+                "properties": [
+                  {
+                    "name": "PluginConfig",
+                    "type": "PluginConfig",
+                    "description": "",
+                    "properties": [],
+                    "symbolDef": {
+                      "id": "117",
+                      "canonical": ""
                     },
-                    {
-                      "name": "string",
-                      "type": "string",
+                    "ofProperty": {
+                      "name": "[PluginName, PluginArgs[]]",
+                      "type": "[PluginName, PluginArgs[]]",
                       "description": "",
                       "properties": []
                     }
+                  },
+                  {
+                    "name": "string",
+                    "type": "string",
+                    "description": "",
+                    "properties": []
+                  }
+                ],
+                "symbolDef": {
+                  "id": [
+                    "117"
+                  ],
+                  "canonical": ""
+                }
+              },
+              "meta": [],
+              "symbolDef": {
+                "canonical": ""
+              },
+              "properties": []
+            }
+          },
+          {
+            "name": "redirects",
+            "type": "$$array",
+            "description": "",
+            "ofProperty": {
+              "name": "",
+              "description": "Redirects configuration\n",
+              "type": "Redirects",
+              "properties": [
+                {
+                  "name": "source",
+                  "type": "string",
+                  "description": "Source path to redirect from\n",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
                   ],
                   "symbolDef": {
-                    "id": [
-                      "120"
-                    ]
+                    "canonical": ""
                   }
                 },
-                "meta": [],
-                "properties": []
+                {
+                  "name": "destination",
+                  "type": "string",
+                  "description": "Destination path to redirect to\n",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ],
+                  "symbolDef": {
+                    "canonical": ""
+                  }
+                }
+              ],
+              "symbolDef": {
+                "id": "120",
+                "canonical": ""
               }
-            ]
+            },
+            "meta": [],
+            "symbolDef": {
+              "canonical": ""
+            },
+            "properties": []
           },
           {
             "name": "seo",
             "type": "SEO",
-            "description": "",
+            "description": "SEO configuration\n",
             "symbolDef": {
-              "id": "126"
+              "id": "123",
+              "canonical": ""
             },
             "meta": [],
             "properties": [
@@ -1586,14 +1718,24 @@
                 "type": "string",
                 "description": "Domain name\n",
                 "meta": [],
-                "properties": []
+                "symbolDef": {
+                  "canonical": ""
+                }
               },
               {
                 "name": "metatags",
-                "type": "{\n    [tag: string]: string;\n}",
+                "type": "$$union",
                 "description": "Meta tags\n",
                 "properties": [],
-                "meta": []
+                "meta": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "{\n    [tag: string]: string;\n}",
+                  "description": ""
+                },
+                "symbolDef": {
+                  "canonical": ""
+                }
               }
             ]
           },
@@ -1602,7 +1744,8 @@
             "type": "Engine",
             "description": "Engine configuration\n",
             "symbolDef": {
-              "id": "132"
+              "id": "129",
+              "canonical": ""
             },
             "meta": [],
             "properties": [
@@ -1611,29 +1754,38 @@
                 "type": "EnginePaths",
                 "description": "Path aliases for imports. Avoid long relative paths by creating shortcuts.\n",
                 "symbolDef": {
-                  "id": "135"
+                  "id": "132",
+                  "canonical": ""
                 },
                 "meta": [],
                 "examples": [
                   "```json\n{\n  \"paths\": {\n    \"@my-package/*\": [\"../my-package/src/*\"],\n    \"@livesession-go/*\": [\"https://github.com/livesession/livesession-go/*\"]\n  }\n}",
                   "```typescript\n// Instead of\n@importCode(\"../../../my-package/src/components/Badge.tsx\")\n\n// Use\n@importCode(\"@my-package/src/components/Badge.tsx\")"
                 ],
-                "properties": [
-                  {
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "$$union",
+                  "description": "",
+                  "properties": [],
+                  "meta": [],
+                  "ofProperty": {
                     "name": "",
                     "type": "{\n    [key: string]: string[];\n}",
-                    "description": "",
-                    "properties": [],
-                    "meta": []
+                    "description": ""
+                  },
+                  "symbolDef": {
+                    "canonical": ""
                   }
-                ]
+                }
               },
               {
                 "name": "uniform",
                 "type": "EngineUniform",
                 "description": "",
                 "symbolDef": {
-                  "id": "139"
+                  "id": "136",
+                  "canonical": ""
                 },
                 "meta": [],
                 "properties": [
@@ -1642,13 +1794,18 @@
                     "type": "boolean",
                     "description": "If \n`true`\n then virtual pages will not created and generated content will be stored on disk\n",
                     "meta": [],
-                    "properties": []
+                    "symbolDef": {
+                      "canonical": ""
+                    }
                   }
                 ]
               }
             ]
           }
-        ]
+        ],
+        "symbolDef": {
+          "canonical": ""
+        }
       }
     ]
   }

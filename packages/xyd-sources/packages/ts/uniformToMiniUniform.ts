@@ -1,34 +1,33 @@
-import * as TypeDoc from 'typedoc';
-import {ReflectionKind} from 'typedoc';
-
 import {
-    CommonDefinitionVariantMeta,
     DEFINED_DEFINITION_PROPERTY_TYPE,
     Definition, DefinitionProperty,
-    DefinitionVariant,
     Reference,
     TypeDocReferenceContext
 } from "@xyd-js/uniform";
 
 // TODO: in the future translation system
 const TXT = {
-    Props: "Props",
-
-    Component: "Component",
+    Properties: "Properties",
 }
 
+// TODO: primite types for different langauges
 // Map of primitive types that can be merged
 const PRIMITIVE_TYPES = new Set(['string', 'number', 'boolean']);
 
+type RefsBySymbolId = { [symbolId: string]: Reference };
+
+// TODO: name it eager and move to uniform plugins
+/**
+ * `uniformToMiniUniform` converts a list of references into a mini uniform format.
+ */
 export function uniformToMiniUniform(
     rootSymbolName: string,
     references: Reference<TypeDocReferenceContext>[],
 ): Reference[] {
     const output: Reference[] = []
+    const refBySymbolId: RefsBySymbolId = {}
 
-    let refBySymbolId: { [symbolId: string]: Reference } = {}
-
-    // First pass: collect all references by symbolId
+    // 1. collect all references by symbolId
     for (const reference of references) {
         const ctx = reference.context
 
@@ -37,37 +36,12 @@ export function uniformToMiniUniform(
                 continue // Skip internal references
             }
 
-            // Create a clean copy of the reference without circular references
-            const cleanRef = {
-                ...reference,
-                definitions: reference.definitions.map(def => ({
-                    ...def,
-                    properties: def.properties?.map(prop => {
-                        const cleanProp = {
-                            ...prop,
-                            properties: prop.properties || []
-                        };
-
-                        if (prop.rootProperty) {
-                            cleanProp.rootProperty = {
-                                name: prop.rootProperty.name,
-                                description: prop.rootProperty.description,
-                                type: prop.rootProperty.type,
-                                properties: prop.rootProperty.properties || [],
-                                symbolDef: prop.rootProperty.symbolDef
-                            };
-                        }
-
-                        return cleanProp;
-                    }) || []
-                }))
-            };
-
-            refBySymbolId[ctx.symbolId] = cleanRef
+            // TODO: check if still has issues with circular references
+            refBySymbolId[ctx.symbolId] = JSON.parse(JSON.stringify(reference)); // Deep clone to avoid circular references
         }
     }
 
-    // Second pass: process root references
+    // 2. process references by rootSymbolName
     for (const reference of references) {
         const ctx = reference.context
 
@@ -78,24 +52,27 @@ export function uniformToMiniUniform(
         const miniRef: Reference = {
             ...reference,
             title: ctx?.symbolName || reference.title,
-            canonical: miniCanonical(reference.canonical),
-            context: {
-                ...ctx,
-                group: miniGroup(ctx?.group || []),
-            },
+            canonical: "",
+            context: ctx,
             definitions: [],
         }
 
         for (const def of reference.definitions) {
             const miniDef: Definition = {
                 ...def,
-                title: TXT.Props,
+                title: TXT.Properties,
                 properties: [],
+                symbolDef: {
+                    ...def.symbolDef || {},
+                    canonical: "", // TODO: support canonical in the future
+                }
             }
+
+            const defProperties = def?.rootProperty ? [def.rootProperty] : def.properties || []
 
             definitionMiniPropsPassThrough(
                 refBySymbolId,
-                def.properties || [],
+                defProperties,
                 miniDef,
             )
 
@@ -108,169 +85,49 @@ export function uniformToMiniUniform(
     return output
 }
 
-function shortMergedType(property: DefinitionProperty): DefinitionProperty | null {
-    // Only handle union types
-    if (property.type !== DEFINED_DEFINITION_PROPERTY_TYPE.UNION || !property.properties?.length) {
-        return null;
-    }
-
-    // Process nested properties first
-    const processedProperties = property.properties.map(prop => {
-        // If this property is also a union, try to simplify it
-        if (prop.type === DEFINED_DEFINITION_PROPERTY_TYPE.UNION) {
-            const shortType = shortMergedType(prop);
-            if (shortType) {
-                return shortType;
-            }
-        }
-
-        // check one level of prop.properties e.g {type: "Example": properties: [{name: "a", type: "string"}, {name: "b", type: "number"}]}
-        if (prop.properties?.length) {
-            const childMerged = shortMergedType({
-                name: "",
-                description: "",
-                type: DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
-                properties: prop.properties
-            })
-
-            if (childMerged) {
-                return childMerged
-            }
-        }
-
-        return prop;
-    });
-
-    // Check if all properties are either string literals or primitive types
-    const hasOnlySimpleTypes = processedProperties.every(prop => {
-        // Check for string literals (type starts and ends with quotes)
-        if (prop.type.startsWith('"') && prop.type.endsWith('"')) {
-            return true;
-        }
-        // Check for primitive types
-        return PRIMITIVE_TYPES.has(prop.type);
-    });
-
-    if (!hasOnlySimpleTypes) {
-        return null;
-    }
-
-    // Create merged type string
-    const types = processedProperties.map(prop => prop.type);
-    const mergedType = types.join(' | ');
-
-    // Return simplified property
-    return {
-        ...property,
-        type: mergedType,
-        properties: []
-    };
-}
-
-function handleUnionTypes(
-    refBySymbolId: { [symbolId: string]: Reference },
-    symbolIds: string[],
-    typeString: string | undefined,
-    visited: Set<string>,
+/**
+ * `definitionMiniPropsPassThrough` processes the properties of a definition and resolves them into a mini definition.
+ */
+function definitionMiniPropsPassThrough(
+    refBySymbolId: RefsBySymbolId,
+    defProperties: DefinitionProperty[],
+    miniDef: Definition,
     options?: {
-        depth?: number,
+        paramProps?: boolean,
     }
-): DefinitionProperty[] {
-    const properties: DefinitionProperty[] = [];
-
-    // If we have symbolDef.id array, process those first
-    if (symbolIds.length > 0) {
-        for (const symbolId of symbolIds) {
-            if (typeof symbolId === 'string') {
-                // Skip if we've already visited this type
-                if (visited.has(symbolId)) {
-                    continue;
-                }
-                visited.add(symbolId);
-
-                const refSymbol = refBySymbolId[symbolId];
-                if (refSymbol?.definitions?.[0]) {
-                    const refSymbolCtx = refSymbol.context as TypeDocReferenceContext;
-                    const unionProperty: DefinitionProperty = {
-                        name: refSymbolCtx?.symbolName || '',
-                        type: refSymbolCtx?.symbolName || '',
-                        description: '',
-                        properties: [],
-                    };
-
-                    if (refSymbol.definitions[0].properties) {
-                        for (const prop of refSymbol.definitions[0].properties) {
-                            const resolvedProp = resolveProperty(refBySymbolId, prop, {
-                                ...options,
-                                depth: (options?.depth || 0) + 1,
-                                visited: new Set(visited)
-                            });
-                            if (resolvedProp.properties) {
-                                unionProperty.properties = unionProperty.properties || [];
-                                unionProperty.properties.push(resolvedProp);
-                            }
-                        }
-                    }
-
-                    properties.push(unionProperty);
-                }
+) {
+    for (let property of defProperties) {
+        property = {
+            ...property,
+            symbolDef: {
+                ...property.symbolDef || {},
+                canonical: "", // TODO: support canonical in the future
             }
         }
-    }
 
-    // Then process any remaining types from the type string
-    if (typeString && typeString.includes("|")) {
-        const types = typeString.split("|").map(t => t.trim());
-        for (const type of types) {
-            // Skip if we already processed this type from symbolDef
-            if (properties.some(p => p.type === type)) {
-                continue;
-            }
+        // 1. if the property has properties, use them directly
+        if (property.properties?.length) {
+            miniDef.properties = property.properties || [];
 
-            // Try to find a symbol for this type
-            const matchingSymbol = Object.values(refBySymbolId).find(
-                ref => (ref.context as TypeDocReferenceContext)?.symbolName === type
-            );
-
-            if (matchingSymbol?.definitions?.[0]) {
-                const refSymbolCtx = matchingSymbol.context as TypeDocReferenceContext;
-                const unionProperty: DefinitionProperty = {
-                    name: refSymbolCtx?.symbolName || type,
-                    type: refSymbolCtx?.symbolName || type,
-                    description: '',
-                    properties: [],
-                };
-
-                if (matchingSymbol.definitions[0].properties) {
-                    for (const prop of matchingSymbol.definitions[0].properties) {
-                        const resolvedProp = resolveProperty(refBySymbolId, prop, {
-                            ...options,
-                            depth: (options?.depth || 0) + 1,
-                            visited: new Set(visited)
-                        });
-                        if (resolvedProp.properties) {
-                            unionProperty.properties = unionProperty.properties || [];
-                            unionProperty.properties.push(resolvedProp);
-                        }
-                    }
-                }
-
-                properties.push(unionProperty);
-            } else {
-                // If no symbol found, add as simple type
-                properties.push({
-                    name: type,
-                    type: type,
-                    description: '',
-                    properties: []
-                });
-            }
+            continue;
         }
-    }
 
-    return properties;
+        // 2. resolve the property and all its nested properties
+        const resolvedProperty = resolveProperty(refBySymbolId, property, options)
+
+        miniDef.properties.push({
+            ...resolvedProperty,
+            symbolDef: {
+                ...resolvedProperty.symbolDef || {},
+                canonical: "", // TODO: support canonical in the future
+            }
+        })
+    }
 }
 
+/**
+ * `resolveProperty` recursively resolves a property and its nested properties.
+ */
 function resolveProperty(
     refBySymbolId: { [symbolId: string]: Reference },
     property: DefinitionProperty,
@@ -280,6 +137,13 @@ function resolveProperty(
         visited?: Set<string>
     }
 ): DefinitionProperty {
+    property = {
+        ...property,
+        symbolDef: {
+            ...property.symbolDef || {},
+            canonical: "", // TODO: support canonical in the future
+        }
+    }
     // Initialize depth and visited set if not provided
     const depth = options?.depth || 0;
     const visited = options?.visited || new Set<string>();
@@ -290,307 +154,338 @@ function resolveProperty(
         return property;
     }
 
+    if (property?.properties?.length) {
+        return property
+    }
+
+    const resolvedPropertyProps: DefinitionProperty[] = []
     const resolvedProperty: DefinitionProperty = {
         ...property,
-        properties: property.properties?.map(p => ({
-            ...p,
-            properties: p.properties || []
-        })) || []
-    };
-
-    // Handle tuple types
-    if (property.type?.startsWith('[') && property.type?.endsWith(']')) {
-        resolvedProperty.type = property.type;
-        return resolvedProperty;
+        properties: resolvedPropertyProps,
     }
 
-    // Handle array types
+    // 1. handle array types
     if (property.type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY) {
-        // Create a new rootProperty object to avoid circular references
-        resolvedProperty.rootProperty = {
-            name: property.rootProperty?.name || "",
-            description: property.rootProperty?.description || "",
-            type: property.rootProperty?.type || "",
-            properties: property.rootProperty?.properties?.map(p => ({
-                ...p,
-                properties: p.properties || []
-            })) || [],
-            symbolDef: property.rootProperty?.symbolDef
-        };
+        if (property.ofProperty) {
+            const resolvedRootProperty = resolveProperty(
+                refBySymbolId,
+                property.ofProperty,
+                options
+            )
 
-        // Handle array with union type in rootProperty
-        if (property.rootProperty?.type === DEFINED_DEFINITION_PROPERTY_TYPE.UNION || 
-            (property.rootProperty?.type && property.rootProperty.type.includes("|"))) {
-            resolvedProperty.rootProperty.type = DEFINED_DEFINITION_PROPERTY_TYPE.UNION;
-            
-            // If we have symbolDef, use it to resolve the union types
-            if (property.rootProperty.symbolDef?.id) {
-                const symbolIds = Array.isArray(property.rootProperty.symbolDef.id) 
-                    ? property.rootProperty.symbolDef.id 
-                    : [property.rootProperty.symbolDef.id];
-                
-                resolvedProperty.rootProperty.properties = handleUnionTypes(
-                    refBySymbolId,
-                    symbolIds,
-                    property.rootProperty.type,
-                    visited,
-                    options
-                );
-            } else {
-                // If no symbolDef, try to resolve types from the type string
-                const types = property.rootProperty.type.split("|").map(t => t.trim());
-                resolvedProperty.rootProperty.properties = types.map(type => {
-                    // Try to find a symbol for this type
-                    const matchingSymbol = Object.values(refBySymbolId).find(
-                        ref => (ref.context as TypeDocReferenceContext)?.symbolName === type
-                    );
+            resolvedProperty.ofProperty = resolvedRootProperty
 
-                    if (matchingSymbol?.definitions?.[0]) {
-                        const refSymbolCtx = matchingSymbol.context as TypeDocReferenceContext;
-                        return {
-                            name: refSymbolCtx?.symbolName || type,
-                            type: refSymbolCtx?.symbolName || type,
-                            description: '',
-                            properties: []
-                        };
-                    }
-
-                    return {
-                        name: type,
-                        type: type,
-                        description: '',
-                        properties: []
-                    };
-                });
-            }
-            return resolvedProperty;
+            return resolvedProperty
+        } else {
+            console.warn(`Property ${property.name} is an array but has no ofProperty defined, using type only`);
         }
 
-        // If we have a rootProperty with symbolDef, resolve it
-        if (property.rootProperty?.symbolDef?.id) {
-            const symbolIds = Array.isArray(property.rootProperty.symbolDef.id) 
-                ? property.rootProperty.symbolDef.id 
-                : [property.rootProperty.symbolDef.id];
-
-            // Always handle as union type if we have multiple symbol IDs
-            if (symbolIds.length > 1) {
-                resolvedProperty.rootProperty.type = DEFINED_DEFINITION_PROPERTY_TYPE.UNION;
-                resolvedProperty.rootProperty.properties = handleUnionTypes(
-                    refBySymbolId,
-                    symbolIds,
-                    property.rootProperty.type,
-                    visited,
-                    options
-                );
-            } else {
-                // Single symbol ID case
-                const symbolId = symbolIds[0];
-                if (typeof symbolId === 'string') {
-                    // Skip if we've already visited this type
-                    if (visited.has(symbolId)) {
-                        return resolvedProperty;
-                    }
-                    visited.add(symbolId);
-
-                    const refSymbol = refBySymbolId[symbolId];
-                    if (refSymbol?.definitions?.[0]) {
-                        // If the referenced type has properties, resolve them
-                        if (refSymbol.definitions[0].properties) {
-                            // Recursively resolve each property of the array item type
-                            for (const prop of refSymbol.definitions[0].properties) {
-                                const resolvedProp = resolveProperty(refBySymbolId, prop, {
-                                    ...options,
-                                    depth: depth + 1,
-                                    visited: new Set(visited)
-                                });
-                                if (resolvedProp.properties && resolvedProperty.rootProperty.properties) {
-                                    resolvedProperty.rootProperty.properties.push(resolvedProp);
-                                }
-                            }
-                        } else {
-                            // If the referenced type has no properties, copy its type and description
-                            const refSymbolCtx = refSymbol.context as TypeDocReferenceContext;
-                            resolvedProperty.rootProperty.type = refSymbolCtx?.symbolName || property.rootProperty?.type || "";
-                            resolvedProperty.rootProperty.description = refSymbol.description || property.rootProperty?.description || "";
-                        }
-                    }
-                }
-            }
-        } else if (property.rootProperty?.type) {
-            // If we only have a type string, just use it
-            resolvedProperty.rootProperty.type = property.rootProperty.type;
-        }
-        
-        return resolvedProperty;
+        return property
     }
 
-    // Handle union types (when symbolDef.id is an array or type contains "|")
-    if ((property.symbolDef?.id && Array.isArray(property.symbolDef.id)) || (property.type && property.type.includes("|"))) {
-        resolvedProperty.type = DEFINED_DEFINITION_PROPERTY_TYPE.UNION;
-        resolvedProperty.properties = handleUnionTypes(
-            refBySymbolId,
-            Array.isArray(property.symbolDef?.id) ? property.symbolDef.id : [],
-            property.type,
-            visited,
-            options
-        );
-
-        // Try to create a short merged type
-        const shortType = shortMergedType(resolvedProperty);
-
-        if (shortType) {
-            return shortType;
-        }
-    }
-    // Handle single type
-    else if (property.symbolDef?.id) {
-        const symbolId = property.symbolDef.id;
+    // 2. handle symbolDef.id references
+    const symbolId = property?.symbolDef?.id;
+    if (symbolId) {
+        // 3. if symbolId is a string, resolve the reference
         if (typeof symbolId === 'string') {
-            // Skip if we've already visited this type
+            if (symbolId === "123") {
+                console.log(5)
+            }
             if (visited.has(symbolId)) {
                 return resolvedProperty;
             }
             visited.add(symbolId);
 
             const refSymbol = refBySymbolId[symbolId];
-            if (refSymbol?.definitions?.[0]) {
-                // If the referenced type has properties, resolve them
-                if (refSymbol.definitions[0].properties) {
-                    // Recursively resolve each property
-                    for (const prop of refSymbol.definitions[0].properties) {
-                        const resolvedProp = resolveProperty(refBySymbolId, prop, {
-                            ...options,
-                            depth: depth + 1,
-                            visited: new Set(visited)
-                        });
-                        if (resolvedProp.properties && resolvedProperty.properties) {
-                            resolvedProperty.properties.push(resolvedProp);
-                        }
-                    }
-                } else {
-                    // If the referenced type has no properties, copy its type and description
-                    const refSymbolCtx = refSymbol.context as TypeDocReferenceContext;
-                    resolvedProperty.type = refSymbolCtx?.symbolName || property.type;
-                    resolvedProperty.description = refSymbol.description || property.description;
+            const refSymbolDefinition = refSymbol?.definitions?.[0];
+            const refSymbolDefinitionProps = refSymbolDefinition?.properties || [];
+
+            // If the referenced type has properties, resolve them
+            if (refSymbolDefinitionProps.length) {
+                // Recursively resolve each property
+                for (const prop of refSymbolDefinitionProps) {
+                    const resolvedProp = resolveProperty(refBySymbolId, prop, {
+                        ...options,
+                        depth: depth + 1,
+                        visited: new Set(visited)
+                    });
+                    resolvedPropertyProps.push(resolvedProp);
                 }
+
+            } else if (refSymbolDefinition.rootProperty) {
+                const resolvedProp = resolveProperty(refBySymbolId, refSymbolDefinition.rootProperty, {
+                    ...options,
+                    depth: depth + 1,
+                    visited: new Set(visited)
+                });
+
+                resolvedProperty.ofProperty = resolvedProp;
+            } else {
+                console.warn(`Reference for symbol ${symbolId} has no properties, using type and description only`);
             }
-        }
-    }
-    // Handle properties that are already defined
-    else if (property.properties?.length) {
-        for (const prop of property.properties) {
-            const resolvedProp = resolveProperty(refBySymbolId, prop, {
-                ...options,
-                depth: depth + 1,
-                visited: new Set(visited)
-            });
-            if (resolvedProp.properties && resolvedProperty.properties) {
-                resolvedProperty.properties.push(resolvedProp);
+
+            if (!resolvedProperty.description) {
+                resolvedProperty.description = refSymbol.description || '';
             }
-        }
-    }
 
-    return resolvedProperty;
-}
-
-function definitionMiniPropsPassThrough(
-    refBySymbolId: { [symbolId: string]: Reference },
-    defProperties: DefinitionProperty[],
-    miniDef: Definition,
-    options?: {
-        paramProps?: boolean,
-    }
-)  {
-    for (const property of defProperties) {
-        // If the property has properties, use them directly
-        if (property.properties?.length) {
-            miniDef.properties.push({
-                ...property,
-                properties: property.properties.map(p => ({
-                    ...p,
-                    properties: p.properties || []
-                }))
-            });
-            continue;
+            return resolvedProperty;
         }
 
-        // Handle array types with union rootProperty
-        if (property.type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY && property.rootProperty?.type?.includes("|")) {
-            const resolvedProperty = resolveProperty(refBySymbolId, property, options);
-            miniDef.properties.push(resolvedProperty);
-            continue;
-        }
-
-        if (property.type === DEFINED_DEFINITION_PROPERTY_TYPE.UNION && !property?.symbolDef?.id) {
-            definitionMiniPropsPassThrough(
+        // TODO: in the future only symbolId as []? but currently it handles a cases when e.g: `string | Settings`
+        // 4. if property is resolve union type
+        const isResolveUnion = isResolveUnionRef(property)
+        if (isResolveUnion) {
+            resolvedProperty.type = DEFINED_DEFINITION_PROPERTY_TYPE.UNION;
+            const unionProps = handleUnionTypes(
                 refBySymbolId,
-                property.properties || [],
-                miniDef,
-                {
-                    paramProps: true,
+                property,
+                options
+            );
+
+            if (unionProps.length > 1) {
+                resolvedProperty.properties = unionProps;
+            } else {
+                resolvedProperty.ofProperty = unionProps[0];
+            }
+
+            // Try to create a short merged type
+            const shortType = shortMergedType(resolvedProperty);
+
+            if (shortType) {
+                return shortType;
+            }
+
+            return resolvedProperty
+        }
+    }
+
+    return property
+}
+
+/**
+ * `shortMergedType` attempts to simplify a union type by merging properties into a single type string.
+ */
+function shortMergedType(property: DefinitionProperty): DefinitionProperty | null {
+    property = {
+        ...property,
+        symbolDef: {
+            ...property.symbolDef || {},
+            canonical: "", // TODO: support canonical in the future
+        }
+    }
+    // 1. only handle union types
+    if (property.type !== DEFINED_DEFINITION_PROPERTY_TYPE.UNION) {
+        return null;
+    }
+
+    const properties = property.ofProperty ? [property.ofProperty] : property.properties || [];
+
+    // 2. process nested properties first
+    const processedProperties = properties.map(prop => {
+        // 3. if this property is also a union, try to simplify it
+        if (prop.type === DEFINED_DEFINITION_PROPERTY_TYPE.UNION) {
+            const shortType = shortMergedType(prop);
+            if (shortType) {
+                return shortType;
+            }
+        }
+
+        // 4. check one level of prop.properties e.g {type: "Example": properties: [{name: "a", type: "string"}, {name: "b", type: "number"}]}
+        const shortType = shortMergedType({
+            name: "",
+            description: "",
+            type: DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
+            properties: prop.properties,
+            ofProperty: prop.ofProperty,
+        })
+
+        if (shortType) {
+            return shortType
+        }
+
+        return prop;
+    });
+
+    if (!processedProperties?.length) {
+        return null
+    }
+
+    // 5. check if all properties are either string literals or primitive types
+    const hasOnlySimpleTypes = processedProperties.every(prop => {
+        // 6. check for string literals (type starts and ends with quotes)
+        if (isLiteralValues(prop.type)) {
+            return true
+        }
+
+        // 7. check for primitive types also
+        return PRIMITIVE_TYPES.has(prop.type);
+    });
+
+    if (!hasOnlySimpleTypes) {
+        return null;
+    }
+
+    // 8. create merged type string
+    const types = processedProperties.map(prop => prop.type);
+    const mergedType = types.join(' | ');
+
+    return {
+        ...property,
+        type: mergedType,
+        properties: []
+    };
+}
+
+/**
+ * @todo: in the future typedoc uniform should handle more union types like `$$union`
+ *
+ * `handleUnionTypes` processes union types from a definition property.
+ */
+function handleUnionTypes(
+    refBySymbolId: { [symbolId: string]: Reference },
+    property: DefinitionProperty,
+    options?: {
+        depth?: number,
+    }
+): DefinitionProperty[] {
+    property = {
+        ...property,
+        symbolDef: {
+            ...property.symbolDef || {},
+            canonical: "", // TODO: support canonical in the future
+        }
+    }
+    const symbolIds = Array.isArray(property.symbolDef?.id) ? property.symbolDef.id : [];
+    const typeString = property.type
+
+    const properties: DefinitionProperty[] = [];
+    const unionTypeStringsMap: { [key: string]: boolean } = (typeString || "").split("|")
+        .map(t => t.trim())
+        .reduce((acc, type) => ({
+            ...acc,
+            [type]: true
+        }), {});
+
+    // 1. if we have symbolDef.id array, process those firsi
+    if (symbolIds.length > 0) {
+        for (const symbolId of symbolIds) {
+            const refSymbol = refBySymbolId[symbolId];
+            const refSymbolDefinition = refSymbol?.definitions?.[0];
+            const ctx = refSymbol?.context as TypeDocReferenceContext;
+
+            if (refSymbolDefinition) {
+                unionTypeStringsMap[ctx.symbolName] = false
+
+                const propProperties: DefinitionProperty[] = [];
+                const prop: DefinitionProperty = {
+                    name: ctx.symbolName || '',
+                    type: ctx.symbolName || '',
+                    description: refSymbol.description || '',
+                    properties: propProperties,
+                    symbolDef: {
+                        id: symbolId,
+                        canonical: "", // TODO: support canonical in the future
+                    },
                 }
-            )
-            continue
-        }
 
-        // Handle properties without symbolDef
-        if (!property.symbolDef?.id) {
-            if (options?.paramProps) {
-                miniDef.properties.push(property)
-                continue
+                if (refSymbolDefinition.properties.length) {
+                    for (const prop of refSymbolDefinition.properties) {
+                        const resolvedProp = resolveProperty(
+                            refBySymbolId,
+                            prop,
+                            options
+                        )
+
+                        propProperties.push(resolvedProp)
+                    }
+                } else if (refSymbolDefinition.rootProperty) {
+                    const resolvedProp = resolveProperty(
+                        refBySymbolId,
+                        refSymbolDefinition.rootProperty,
+                        options
+                    )
+
+                    const shouldMergeUnion = resolvedProp.type === DEFINED_DEFINITION_PROPERTY_TYPE.UNION &&
+                        resolvedProp.ofProperty?.type &&
+                        !resolvedProp.properties?.length
+
+                    if (shouldMergeUnion) {
+                        prop.ofProperty = resolvedProp.ofProperty
+                    } else {
+                        prop.ofProperty = resolvedProp
+                    }
+                }
+
+                properties.push(prop)
+
+                if (!prop.description) {
+                    prop.description = refSymbol.description || '';
+                }
             }
-            // Skip properties without symbolDef instead of error
-            continue
         }
-
-        const symbolId = property.symbolDef.id
-        if (typeof symbolId !== "string") {
-            if (options?.paramProps) {
-                miniDef.properties.push(property)
-                continue
-            }
-            // Skip properties with invalid symbolId instead of error
-            continue
-        }
-
-        const refSymbol = refBySymbolId[symbolId]
-        if (!refSymbol) {
-            console.error(`Reference for symbol ${symbolId} not found`)
-            continue
-        }
-        const refSymbolCtx = refSymbol.context as TypeDocReferenceContext
-
-        const symbolRefMainRef = refSymbol.definitions?.[0]
-        if (!symbolRefMainRef) {
-            console.error(`Reference for symbol ${symbolId} has no main ref`)
-            continue
-        }
-
-        // Resolve the property and all its nested properties
-        const resolvedProperty = resolveProperty(refBySymbolId, property, options)
-        miniDef.properties.push(resolvedProperty)
     }
+
+    // TODO: in the future it should be done via uniform in xyd-sources?
+    // 2. then process any remaining types from the type string
+    for (const type of Object.keys(unionTypeStringsMap)) {
+        const ok = unionTypeStringsMap[type]
+        if (!ok) {
+            continue;
+        }
+
+        properties.push({
+            name: type,
+            type: type,
+            description: '',
+            properties: []
+        });
+    }
+
+    return properties
 }
 
-function miniCanonical(canonical: string): string {
-    const parts = canonical.split("/")
-    for (const i in parts) {
-        const part = parts[i]
-        if (part === "functions") {
-            parts[i] = "components"
-        }
+/**
+ * `isResolveUnionRef` checks if the property should be resolved as a union type.
+ * It checks if the symbolDef.id is an array or if the type contains a union string to resolve, except literal values.
+ *
+ * @example: {symbolDef: {id: []}, type: `string | number`}
+ * @example: {symbolDef: {id: ["1"]}, type: `string | Logo`}
+ * @example: {symbolDef: {id: ["1", "2"]}, type: `Icon | Logo`}
+ */
+function isResolveUnionRef(property: DefinitionProperty): boolean {
+    const symbolId = property?.symbolDef?.id
+
+    const symbolIsArr = (Array.isArray(symbolId) && symbolId.length)
+    if (symbolIsArr) {
+        return true
     }
 
-    return parts.join("/")
+    const hasUnionString = (property.type && property.type.includes("|"))
+
+    if (hasUnionString) {
+        const literalValues = isLiteralValues(property.type)
+
+        if (literalValues) {
+            return false // If all types are literal values, do not resolve as union
+        }
+
+        return true
+    }
+
+    return false
 }
 
-function miniGroup(group: string[]): string[] {
-    for (const i in group) {
-        const part = group[i].toLowerCase()
-        if (part === "functions") {
-            group[i] = TXT.Component
-        }
-    }
+/**
+ * `isLiteralValues` checks if the type is a literal value like: `"opener" | "cosmo" | "picasso"`
+ *
+ * @example: `"opener" | "cosmo" | "picasso"` - returns true
+ * @example: `string | "number` - returns false
+ */
+function isLiteralValues(type: string) {
+    const types = type.split("|").map(t => t.trim())
 
-    return group
+    return types.every(t =>
+        (t.startsWith('"') && t.endsWith('"')) ||
+        (t.startsWith("'") && t.endsWith("'"))
+    )
 }

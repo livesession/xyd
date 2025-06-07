@@ -115,6 +115,8 @@ export enum DEFINED_DEFINITION_PROPERTY_TYPE {
     ARRAY = "$$array",
 
     ENUM = "$$enum",
+
+    // TYPE = "$$type", TODO: good idea?
 }
 
 export interface DefinitionProperty {
@@ -135,7 +137,7 @@ export interface DefinitionProperty {
 
     properties?: DefinitionProperty[];
 
-    rootProperty?: DefinitionProperty;
+    ofProperty?: DefinitionProperty;
 }
 
 export interface ExampleRoot {

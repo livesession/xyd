@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import React, {createContext, useContext, useState, useCallback, useEffect} from "react";
 
 import {
     Definition,
@@ -8,22 +8,35 @@ import {
     Reference,
     ReferenceCategory
 } from "@xyd-js/uniform";
-import { Heading, Code } from "@xyd-js/components/writer";
+import {Heading, Code} from "@xyd-js/components/writer";
 
 import {
     ApiRefProperties,
     ApiRefSamples
 } from "@/components/ApiRef";
 import * as cn from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
-import { useVariantToggles, type VariantToggleConfig } from "@/components/Atlas/AtlasContext";
+import {useVariantToggles, type VariantToggleConfig} from "@/components/Atlas/AtlasContext";
 
 export interface ApiRefItemProps {
     reference: Reference
+    kind?: "secondary"
 }
 
 // TODO: context with current referene?
-export function ApiRefItem({ reference }: ApiRefItemProps) {
+export function ApiRefItem({
+                               kind,
+                               reference
+                           }: ApiRefItemProps) {
     const hasExamples = reference.examples?.groups?.length || false
+
+    let header: React.ReactNode | null = <$IntroHeader reference={reference}/>
+    let examples: React.ReactNode | null = <ApiRefSamples examples={reference.examples}/>
+:
+    null
+    if (kind === "secondary") {
+        header = null
+        examples = null
+    }
 
     return <atlas-apiref-item
         data-has-examples={hasExamples ? "true" : undefined}
@@ -31,16 +44,19 @@ export function ApiRefItem({ reference }: ApiRefItemProps) {
     >
         <atlas-apiref-item-showcase className={cn.ApiRefItemGrid}>
             <div>
-                <$IntroHeader reference={reference} />
-                <$Definitions reference={reference} />
+                {header}
+                <$Definitions
+                    kind={kind}
+                    reference={reference}
+                />
             </div>
 
-            {hasExamples ? <ApiRefSamples examples={reference.examples} /> : null}
+            {examples}
         </atlas-apiref-item-showcase>
     </atlas-apiref-item>
 }
 
-function $IntroHeader({ reference }: ApiRefItemProps) {
+function $IntroHeader({reference}: ApiRefItemProps) {
     let topNavbar;
 
     switch (reference?.category) {
@@ -60,7 +76,7 @@ function $IntroHeader({ reference }: ApiRefItemProps) {
         }
     }
     return <>
-        <$Title title={reference.title} />
+        <$Title title={reference.title}/>
 
         {topNavbar}
 
@@ -68,7 +84,7 @@ function $IntroHeader({ reference }: ApiRefItemProps) {
     </>
 }
 
-function $Authorization({ reference }: ApiRefItemProps) {
+function $Authorization({reference}: ApiRefItemProps) {
     if (!reference.context) {
         return null;
     }
@@ -82,7 +98,7 @@ function $Authorization({ reference }: ApiRefItemProps) {
     return <div>
         <div className={cn.ApiRefItemDefinitionsItem}>
             <div part="header">
-                <$Subtitle title="Scopes" />
+                <$Subtitle title="Scopes"/>
             </div>
 
             <$DefinitionBody definition={{
@@ -106,14 +122,19 @@ const VariantContext = createContext<{
     variants: DefinitionVariant[],
 }>({
     variant: undefined,
-    setVariant: () => { },
+    setVariant: () => {
+    },
     variantToggles: [],
     selectedValues: {},
-    setSelectedValue: () => { },
+    setSelectedValue: () => {
+    },
     variants: [],
 });
 
-function $Definitions({ reference }: ApiRefItemProps) {
+function $Definitions({
+                          kind,
+                          reference
+                      }: ApiRefItemProps) {
     let argDefinition: Definition | undefined
     let definitions = reference?.definitions || []
 
@@ -174,21 +195,25 @@ function $Definitions({ reference }: ApiRefItemProps) {
     }
 
     return <atlas-apiref-definitions className={cn.ApiRefItemDefinitionsHost}>
-        <$Authorization reference={reference} />
+        <$Authorization reference={reference}/>
 
         {definitions?.map((definition, i) => {
+            if (kind === "secondary") {
+                return  <$DefinitionBody definition={definition}/>
+            }
+
             return <$VariantsProvider key={i} definition={definition}>
                 <div>
                     {
                         definition?.title ? <div key={i} className={cn.ApiRefItemDefinitionsItem}>
                             <div part="header">
-                                <$Subtitle title={definition.title} />
+                                <$Subtitle title={definition.title}/>
                                 <div part="controls">
-                                    <$VariantSelects />
+                                    <$VariantSelects/>
                                 </div>
                             </div>
 
-                            <$DefinitionBody definition={definition} />
+                            <$DefinitionBody definition={definition}/>
                         </div> : null
                     }
                 </div>
@@ -197,7 +222,7 @@ function $Definitions({ reference }: ApiRefItemProps) {
     </atlas-apiref-definitions>
 }
 
-function $VariantsProvider({ definition, children }: {
+function $VariantsProvider({definition, children}: {
     definition: Definition,
     children: React.ReactNode
 }) {
@@ -211,7 +236,7 @@ function $VariantsProvider({ definition, children }: {
     });
 
     const setSelectedValue = useCallback((key: string, value: string) => {
-        setSelectedValues(prev => ({ ...prev, [key]: value }));
+        setSelectedValues(prev => ({...prev, [key]: value}));
     }, []);
 
     const variants = definition.variants || [];
@@ -246,7 +271,7 @@ function findMatchingVariant(variants: DefinitionVariant[], selectedValues: Reco
 }
 
 function $VariantSelects() {
-    const { variantToggles, selectedValues, setSelectedValue, variants } = useContext(VariantContext);
+    const {variantToggles, selectedValues, setSelectedValue, variants} = useContext(VariantContext);
 
     if (!variants?.length) return null;
 
@@ -295,27 +320,28 @@ function $VariantSelects() {
 interface DefinitionBodyProps {
     definition: Definition
 }
+
 function $DefinitionBody(props: DefinitionBodyProps) {
-    const { definition } = props;
-    const { variant } = useContext(VariantContext);
+    const {definition} = props;
+    const {variant} = useContext(VariantContext);
 
     let apiRefProperties: React.ReactNode | null = null
 
     if (variant) {
         if (variant.properties?.length) {
-            apiRefProperties = <ApiRefProperties properties={variant.properties} />
+            apiRefProperties = <ApiRefProperties properties={variant.properties}/>
         } else if (variant.rootProperty) {
             apiRefProperties = <ApiRefProperties properties={[
                 variant.rootProperty
-            ]} />
+            ]}/>
         }
     } else {
         if (definition.properties?.length) {
-            apiRefProperties = <ApiRefProperties properties={definition.properties} />
+            apiRefProperties = <ApiRefProperties properties={definition.properties}/>
         } else if (definition.rootProperty) {
             apiRefProperties = <ApiRefProperties properties={[
                 definition.rootProperty
-            ]} />
+            ]}/>
         }
     }
 
@@ -330,7 +356,7 @@ function $DefinitionBody(props: DefinitionBodyProps) {
     </div>
 }
 
-function $Navbar({ label, subtitle }: { label: string, subtitle: string }) {
+function $Navbar({label, subtitle}: { label: string, subtitle: string }) {
     return <>
         <div className={cn.ApiRefItemNavbarHost}>
             <span className={cn.ApiRefItemNavbarContainer}>
@@ -345,7 +371,7 @@ function $Navbar({ label, subtitle }: { label: string, subtitle: string }) {
     </>
 }
 
-function $Title({ title }: { title: string }) {
+function $Title({title}: { title: string }) {
     return <>
         <Heading size={1}>
             {title}
@@ -353,7 +379,7 @@ function $Title({ title }: { title: string }) {
     </>
 }
 
-function $Subtitle({ title }: { title: string }) {
+function $Subtitle({title}: { title: string }) {
     return <>
         <Heading size={3}>
             {title}
