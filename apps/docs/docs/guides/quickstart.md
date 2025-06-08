@@ -8,8 +8,7 @@ icon: rocket
 Start building modern documentation in record time
 :::
 
-Follow the instructions below to learn how to deploy,
-update and supercharge your documentation with <code>xyd</code>.
+Follow the instructions below to learn how to run, deploy, update and supercharge your documentation with `xyd`.
 
 :::callout
 **Prerequisite:** Please install Node.js (version 19 or higher) before proceeding.

@@ -50,13 +50,14 @@ Note you do not need to append `.md` or `.mdx` to the file paths.
 :::
 
 #### Groups in Sidebar
-Groups allow you to group your pages. Groups can also be nested within each other:
+Groups allow you to group your pages:
 
 ```json
 {
   "sidebar": [
     {
         {
+            // !diff +
             "group": "Get Started",
             "pages": [
                 "docs/guides/introduction",
@@ -86,6 +87,7 @@ You can also define nested groups with pages:
             "pages": [
                 "docs/guides/introduction",
                 "docs/guides/getting-started",
+                // !diff +
                 {
                   "group": "Deployment",
                   "pages": [
@@ -112,6 +114,7 @@ You can also do more advanced routing in the sidebar, like matching based on the
 {
     "sidebar": [
         {
+            // !diff +
             "route": "docs",
             "items": [
                 {
@@ -131,6 +134,7 @@ You can also do more advanced routing in the sidebar, like matching based on the
             ],
         },
         {
+            // !diff +
             "route": "docs/api",
             "items": [
                 {
@@ -152,7 +156,6 @@ This approuch gives you more control over the routing and allows you to create m
 ### Header
 
 The header navigation allows you to create a top-level navigation bar. 
-You can also define a sub header for a specific route.
 
 ```json
 {
@@ -165,38 +168,47 @@ You can also define a sub header for a specific route.
       {
         "name": "API Reference",
         "url": "/docs/api"
+      }
+    ]
+  }
+}
+```
+
+you can also define a sub header for a specific routes:
+
+```json
+{
+  "navigation": {
+    "subheader": [
+      {
+        // !diff +
+        "route": "docs/api",
+        "name": "API",
+        "items": [
+          {
+            "name": "Getting Started",
+            "url": "/docs/api"
+          },
+          {
+            "name": "Authentication",
+            "url": "/docs/api/auth"
+          },
+        ]
       },
       {
-        "sub": {
-          "route": "/docs/api",
-          "name": "API",
-          "items": [
-            {
-              "name": "Getting Started",
-              "url": "/docs/api"
-            },
-            {
-              "name": "Authentication",
-              "url": "/docs/api/auth"
-            },
-          ]
-        }
-      },
-      {
-        "sub": {
-          "route": "/docs/guides",
-          "name": "Guides",
-          "items": [
-            {
-              "name": "Quick Start",
-              "url": "/docs/guides/quickstart"
-            },
-            {
-              "name": "Tutorials",
-              "url": "/docs/guides/tutorials"
-            }
-          ]
-        }
+        // !diff +
+        "route": "docs/guides",
+        "name": "Guides",
+        "items": [
+          {
+            "name": "Quick Start",
+            "url": "/docs/guides/quickstart"
+          },
+          {
+            "name": "Tutorials",
+            "url": "/docs/guides/tutorials"
+          }
+        ]
       }
     ]
   }
@@ -204,10 +216,10 @@ You can also define a sub header for a specific route.
 ```
 
 :::callout
-The `route` property in sub header determines when the sub menu should be visible based on the current route.
+The `route` property in `subheader` determines which the header should be visible.
 :::
 
-### Anchors
+### Anchors {label="Coming Soon"}
 
 Anchors provide a way to add fixed navigation elements, typically at the bottom of the page. They're useful for displaying important external links or resources.
 

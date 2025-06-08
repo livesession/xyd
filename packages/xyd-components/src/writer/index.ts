@@ -24,6 +24,8 @@ export * from "./Hr"
 
 export * from "./Icon"
 
+export * from "./Image"
+
 export * from "./List"
 
 export * from "./NavLinks"
@@ -40,6 +42,8 @@ export * from "./Text"
 export * from "./TocCard"
 
 export * from "./UnderlineNav"
+
+export * from "./Update"
 
 export * from "./VideoGuide"
 

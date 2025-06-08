@@ -14,8 +14,6 @@ export interface IFramework {
     sidebarGroups: Readonly<FwSidebarGroupProps[]>
     metadata: Readonly<Metadata>
     setMetadata: (metadata: Metadata) => void
-
-    IconComponent: React.ComponentType<{ name: string, width?: number, height?: number }>
 }
 
 const framework: IFramework = {
@@ -23,7 +21,6 @@ const framework: IFramework = {
     metadata: {},
     sidebarGroups: [],
     setMetadata: () => { },
-    IconComponent: () => null
 }
 const FrameworkContext = createContext<IFramework>(framework)
 
@@ -34,7 +31,6 @@ export interface FrameworkProps {
     metadata: Metadata,
     sidebarGroups: FwSidebarGroupProps[],
     surfaces: Surfaces,
-    IconComponent: React.ComponentType<{ name: string, width?: number, height?: number }>
     BannerComponent: React.ComponentType<any>
 }
 
@@ -50,7 +46,6 @@ export function Framework(props: FrameworkProps) {
         sidebarGroups: Object.freeze([...props.sidebarGroups]),
         metadata: Object.freeze({ ...metadata }),
         setMetadata: setMetadata,
-        IconComponent: props.IconComponent,
     }}>
         <SurfaceContext value={{
             surfaces: props.surfaces
@@ -110,12 +105,6 @@ export function FrameworkPage(props: FrameworkPageProps) {
     }}>
         {props.children}
     </FrameworkPageContext>
-}
-
-export function useIconComponent() {
-    const ctx = useContext(FrameworkContext)
-
-    return ctx.IconComponent
 }
 
 export function useSidebarGroups() {

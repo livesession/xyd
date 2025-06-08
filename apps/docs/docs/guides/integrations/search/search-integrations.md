@@ -13,11 +13,11 @@ Automatically send data about your documentation engagement to your third party 
 :::grid
 - 
   - 
-    :::guide-card{kind="secondary" title="Algolia" icon="<IconCode/>" href="/docs/guides/integrations/search/algolia"}
+    :::guide-card{kind="secondary" title="Algolia" icon="<Icon name='code'/>" href="/docs/guides/integrations/search/algolia"}
     Learn how to add send analytics events to Algolia
     :::
   - 
-    :::guide-card{kind="secondary" title="Orama" icon="<IconCode/>" href="/docs/guides/integrations/search/orama"}
+    :::guide-card{kind="secondary" title="Orama" icon="<Icon name='code'/>" href="/docs/guides/integrations/search/orama"}
     Learn how to add send analytics events to Orama
     :::
 

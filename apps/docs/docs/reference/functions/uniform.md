@@ -2,12 +2,17 @@
 title: "@uniform"
 ---
 
-# @uniform
+# @uniform{label="Experimental"}
 :::subtitle
 Learn how to use `@uniform` function
 :::
 
 The `@uniform` function is a powerful tool for generating API reference documentation from your source code. It automatically extracts and formats code documentation, including types, parameters, return values, and examples.
+
+:::callout
+The `@uniform` function is still in experimental stage.
+:::
+
 
 ## Basic Usage
 

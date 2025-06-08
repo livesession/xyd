@@ -22,6 +22,7 @@ export interface Settings {
     plugins?: Plugins
 
     /**
+     * @internal
      * @unsafe
      * 
      * Redirects configuration
@@ -77,6 +78,12 @@ export interface Theme {
 
     /** The iconify library */
     icons?: Icons
+
+    /**
+     * Custom scripts to be added to the head of the every page.
+     * Paths are relative to the root of the project or absolute.
+     */
+    scripts?: Script[]
 }
 // #endregion Theme
 
@@ -86,8 +93,10 @@ export interface Theme {
  *
  * @example: ['script', { src: 'https://example.com/script.js', defer: true }]
  */
-type HeadConfig =
+export type HeadConfig =
     | [string, Record<string, string | boolean>]
+
+export type Script = string
 
 /**
  * Markdown configuration interface
@@ -496,7 +505,8 @@ export interface IntegrationSearch {
  *  ]
  * }
  * 
- * you can also use the type to define the plugin config in your code:
+ * @example [audience:dev]
+ * You can also use the type to define the plugin config in your code:
  * 
  * const livesessionPlugin: PluginConfig<"livesession", [string, { keystrokes: boolean }]> = [
  *    "livesession",

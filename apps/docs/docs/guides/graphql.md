@@ -1,6 +1,6 @@
 ---
 title: GraphQL
-icon: simple-icons:graphql
+icon: docs:graphql
 tocGithub: 
     link: https://github.com/xyd-js/graphql-samples
     title: GraphQL Samples

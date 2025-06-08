@@ -12,9 +12,7 @@
                     "name": "lucide",
                     "default": true
                 },
-                "simple-icons",
-                "logos",
-                "majesticons"
+                "./icons/iconify.json"
             ]
         }
     },
@@ -54,16 +52,16 @@
                         "group": "Core concepts",
                         "pages": [
                             "docs/guides/settings",
-                            "docs/guides/writing-quickstart",
+                            "docs/guides/themes",
+                            "docs/guides/pages",
                             "docs/guides/routing",
-                            "docs/guides/themes"
+                            "docs/guides/special-symbols"
                         ]
                     },
                     {
                         "group": "Writing Content",
                         "pages": [
                             "docs/guides/markdown-extensions",
-                            "docs/guides/special-symbols",
                             "docs/guides/developer-content",
                             "docs/guides/compose-content",
                             "docs/guides/seo"
@@ -84,7 +82,8 @@
                                     "docs/guides/golang"
                                 ]
                             },
-                            "docs/guides/asyncapi"
+                            "docs/guides/asyncapi",
+                            "docs/guides/apitoolchain"
                         ]
                     },
                     {

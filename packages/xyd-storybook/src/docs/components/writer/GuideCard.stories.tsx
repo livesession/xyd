@@ -1,12 +1,11 @@
 import React, {} from 'react';
 import type {Meta} from '@storybook/react';
 
+import { GuideCard } from '@xyd-js/components/writer';
 import {
-    GuideCard,
-
     IconSessionReplay,
     IconMetrics
-} from '@xyd-js/components/writer';
+} from '../../../__fixtures__/Icons';
 
 export default {
     title: 'Components/Writer/GuideCard',

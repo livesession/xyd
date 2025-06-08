@@ -1,6 +1,6 @@
 ---
 title: TypeScript
-icon: simple-icons:typescript
+icon: docs:typescript
 ---
 
 # TypeScript {label="Coming soon"}

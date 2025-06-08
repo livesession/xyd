@@ -8,13 +8,17 @@ export interface ApiRefPropertiesProps {
     properties: DefinitionProperty[]
 }
 
+// TODO: in the future configurable
+const HIDE_INTERNAL = true
+
 export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
     return <ul className={cn.ApiRefPropertiesUlHost}>
         {
-            properties?.map((property, i) => {
+            filterProperties(properties)?.map((property, i) => {
                 const propName = property.name
                 const propValue = property.type
                 const propertyProperties = propProperties(property)
+                const description = property.ofProperty?.description || property.description || ""
 
                 return <li className={cn.ApiRefPropertiesLiHost} key={i}>
                     {
@@ -32,7 +36,7 @@ export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
 
                     <div className={cn.ApiRefPropertiesDescriptionHost}>
                         <>
-                            {property.description}
+                            {description}
                         </>
                     </div>
 
@@ -172,7 +176,7 @@ function SubProperties({parent, properties}: SubPropertiesProps) {
     const [expanded, setExpanded] = useState(false)
 
     // Get the actual properties to display
-    let foundProperties = properties || []
+    const foundProperties = filterProperties(properties || [])
 
     const choiceType = isChoiceType(parent)
     const noChildProps = foundProperties.every(prop => !(prop.properties?.length ?? 0))
@@ -200,6 +204,7 @@ function SubProperties({parent, properties}: SubPropertiesProps) {
                             const propName = prop.name
                             const propValue = prop.type
                             const properties = propProperties(prop)
+                            const description = prop.ofProperty?.description || prop.description || ""
 
                             return <li className={cn.ApiRefPropertiesSubPropsLi} key={i}>
                                 {
@@ -220,7 +225,7 @@ function SubProperties({parent, properties}: SubPropertiesProps) {
                                 }
                                 <div className={cn.ApiRefPropertiesDescriptionHost}>
                                     <>
-                                        {prop.description}
+                                        {description}
                                     </>
                                 </div>
                                 {
@@ -335,8 +340,16 @@ function propProperties(prop: DefinitionProperty): DefinitionProperty[] {
     return []
 }
 
-function childPropsHasNoProps(property: DefinitionProperty) {
-    return property?.properties?.every(prop => !(!!prop.properties?.length))
+function filterProperties(properties: DefinitionProperty[]): DefinitionProperty[] {
+    return properties.filter(property => {
+        if (property?.meta?.some(m => m.name === "internal" && m.value === "true")) {
+            if (HIDE_INTERNAL) {
+                return false
+            }
+        }
+
+        return true
+    })
 }
 
 function resolvePropertySymbol(property: DefinitionProperty): string[] {
@@ -454,6 +467,7 @@ function resolvePropertySymbol(property: DefinitionProperty): string[] {
 
     return [property.type]
 }
+
 function atomicDefinedPropertySymbol(property: DefinitionProperty): string {
     switch (property.type) {
         case DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY: {
@@ -470,6 +484,7 @@ function atomicDefinedPropertySymbol(property: DefinitionProperty): string {
         }
     }
 }
+
 function groupSymbol(property: DefinitionProperty) {
     const symbols = resolvePropertySymbol(property)
     symbols[0] = "(" + symbols[0]
@@ -477,6 +492,7 @@ function groupSymbol(property: DefinitionProperty) {
 
     return symbols
 }
+
 function atomicPropertySymbol(property: DefinitionProperty): string {
     const defined = atomicDefinedPropertySymbol(property)
 

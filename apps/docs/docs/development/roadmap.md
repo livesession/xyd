@@ -5,7 +5,7 @@ icon: chart-no-axes-gantt
 
 # Roadmap
 :::subtitle
-Our plans for evolving xyd.
+Our plans for evolving xyd
 :::
 
 :::callout

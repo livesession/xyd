@@ -1,6 +1,6 @@
 ---
 title: Python
-icon: simple-icons:python
+icon: docs:python
 ---
 
 # Python {label="Coming soon"}

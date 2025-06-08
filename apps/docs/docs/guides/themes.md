@@ -15,7 +15,9 @@ You can configure the theme in the [`settings`](/docs/guides/settings) file:
 
 ```json
 {
-  "theme": "poetry"
+  "theme": {
+    "name": "theme name here"
+  }
 }
 ```
 

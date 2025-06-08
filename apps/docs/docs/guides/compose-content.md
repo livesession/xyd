@@ -1,6 +1,6 @@
 ---
 title: Compose Content
-icon: majesticons:atom-2-line
+icon: docs:atom-2-line
 ---
 
 # Compose Content

@@ -176,15 +176,65 @@ export function pluginIconSet(settings: Settings): VitePluginOption {
     const DEFAULT_ICON_SET = "lucide";
 
     async function fetchIconSet(name: string, version?: string): Promise<{ icons: any, iconSet: IconSet }> {
-        const url = version
+        // If it's a URL, use it directly
+        if (name.startsWith('http://') || name.startsWith('https://')) {
+            try {
+                const iconsResp = await fetch(name);
+                const iconsData = await iconsResp.json();
+                const iconSet = new IconSet(iconsData);
+                return { icons: iconsData, iconSet };
+            } catch (error) {
+                console.warn(`Failed to fetch from URL ${name}:`, error);
+            }
+        }
+
+        // Try to read from file system
+        const tryReadFile = (filePath: string) => {
+            try {
+                if (!fs.existsSync(filePath)) {
+                    console.warn(`File does not exist: ${filePath}`);
+                    return null;
+                }
+                const fileContent = fs.readFileSync(filePath, 'utf-8');
+                try {
+                    const iconsData = JSON.parse(fileContent);
+                    const iconSet = new IconSet(iconsData);
+                    return { icons: iconsData, iconSet };
+                } catch (parseError) {
+                    console.warn(`Invalid JSON in file ${filePath}:`, parseError);
+                    return null;
+                }
+            } catch (error) {
+                console.warn(`Failed to read file ${filePath}:`, error);
+                return null;
+            }
+        };
+
+
+        if (path.isAbsolute(name)) {
+            const result = tryReadFile(name);
+            if (result) return result;
+        }
+
+        if (name.startsWith(".")) {
+            const fullPath = path.join(process.cwd(), name);
+            const result = tryReadFile(fullPath);
+            if (result) return result;
+        }
+
+        // Fallback to CDN
+        const cdnUrl = version
             ? `https://cdn.jsdelivr.net/npm/@iconify-json/${name}@${version}/icons.json`
             : `https://cdn.jsdelivr.net/npm/@iconify-json/${name}/icons.json`;
 
-        const iconsResp = await fetch(url);
-        const iconsData = await iconsResp.json();
-        const iconSet = new IconSet(iconsData);
-
-        return { icons: iconsData, iconSet };
+        try {
+            const iconsResp = await fetch(cdnUrl);
+            const iconsData = await iconsResp.json();
+            const iconSet = new IconSet(iconsData);
+            return { icons: iconsData, iconSet };
+        } catch (error) {
+            throw new Error(`Failed to load icon set from any source (file or CDN): ${name}`);
+        }
     }
 
     async function processIconSet(iconSet: IconSet, icons: any, noPrefix?: boolean): Promise<Map<string, { svg: string }>> {

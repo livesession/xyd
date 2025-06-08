@@ -1,6 +1,6 @@
 ---
 title: Golang
-icon: simple-icons:go
+icon: docs:go
 ---
 
 # Golang {label="Coming soon"}

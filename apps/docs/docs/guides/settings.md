@@ -30,7 +30,7 @@ The `docs.json` file is validated against a JSON schema to ensure proper configu
 
 ```json
 {
-    "$schema": "https://xyd.dev/schema.json"
+    "$schema": "https://json.xyd.dev"
 }
 ```
 

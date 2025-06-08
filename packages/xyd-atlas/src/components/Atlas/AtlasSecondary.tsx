@@ -7,13 +7,12 @@ import {
     Table,
     Details,
     Code,
-
-    IconQuote
 } from "@xyd-js/components/writer";
 import {CodeSample} from "@xyd-js/components/coder";
 
 import {MDXCommonAtlasProps} from "@/components/Atlas/types";
 import {useSyntaxHighlight} from "./AtlasContext";
+import {IconQuote} from "@/components/Icon";
 
 // TODO: interface should be imported from somewhere
 interface CodeSourceContext {

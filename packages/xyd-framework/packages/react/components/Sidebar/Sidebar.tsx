@@ -3,7 +3,6 @@ import React, { } from "react"
 import { UISidebar } from "@xyd-js/ui";
 
 import { useGroup } from "./SidebarGroup";
-import { useIconComponent } from "../../contexts";
 import { Icon } from "@xyd-js/components/writer";
 
 // TODO: custom hooks for active onclick handler etc?
@@ -91,8 +90,7 @@ function FwSidebarItem(props: FwSidebarItemProps) {
     // Only mark as parent active if it's a parent of an active item with href
     const isParentActive = hasActiveChild
 
-    const IconComponent = useIconComponent() || Icon
-    const icon = <IconComponent name={props.icon || ""} width={16} />
+    const icon = <Icon name={props.icon || ""} size={16} />
 
     return <UISidebar.Item
         button={nested}

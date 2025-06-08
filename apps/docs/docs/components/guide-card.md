@@ -10,23 +10,23 @@ uniform: "@components/writer/GuideCard/GuideCard.tsx"
 :::grid
 - 
   - 
-    :::guide-card{title="Getting Started" icon="<IconCode/>" href="/guides/quickstart"}
+    :::guide-card{title="Getting Started" icon="<Icon name='code'/>" href="/guides/quickstart"}
     Start your journey with our comprehensive quickstart guide.
     :::
     
   - 
-    :::guide-card{title="Routing Guide" icon="<IconCode/>" href="/guides/routing"}
+    :::guide-card{title="Routing Guide" icon="<Icon name='code'/>" href="/guides/routing"}
     Learn about file-convention and settings-based routing in XYD.
     :::
 
 - 
   - 
-    :::guide-card{kind="secondary" title="Customization" icon="<IconCode/>" href="/guides/customization-introduction"}
+    :::guide-card{kind="secondary" title="Customization" icon="<Icon name='code'/>" href="/guides/customization-introduction"}
     Explore how to customize and extend XYD to match your needs.
     :::
     
   - 
-    :::guide-card{title="API Documentation" icon="<IconCode/>" href="/guides/openapi"}
+    :::guide-card{title="API Documentation" icon="<Icon name='code'/>" href="/guides/openapi"}
     Discover how to document your APIs with OpenAPI specifications.
     :::
 :::

@@ -12,7 +12,7 @@ import { extractPage } from "./mdPage";
 import { mdHeading } from "./mdHeading";
 import { rehypeHeading } from "./rehypeHeading";
 import { mdComponentDirective } from "./component-directives";
-import { mdFunctionImportCode, mdFunctionUniform } from "./functions"
+import { mdFunctionChangelog, mdFunctionImportCode, mdFunctionUniform } from "./functions"
 import { mdServerHighlight } from "./developer-writing";
 import { mdMeta } from "./meta";
 import { mdComposer } from "./composer/mdComposer";
@@ -59,6 +59,7 @@ function remarkFunctionPlugins(settings?: Settings) {
     return [
         mdFunctionImportCode(settings),
         mdFunctionUniform(settings),
+        mdFunctionChangelog(),
     ]
 }
 

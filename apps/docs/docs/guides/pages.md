@@ -1,32 +1,24 @@
 ---
-title: Writing
+title: Pages
 icon: letter-text
 ---
 
-# Writing Quickstart
+# Pages Quickstart
 :::subtitle
 Learn how to write content and navigation metadata 
 :::
 
-## Introduction
-
-Each page is `md`/`mdx` file that should follow [frontmatter](https://jekyllrb.com/docs/front-matter/) specification:
+Each page is a `md`/`mdx` file that should follow [frontmatter](https://jekyllrb.com/docs/front-matter/) specification:
 
 ```mdx
 ---
 title: My title
 ---
 ```
-Writing metadata in frontmatter is required for navigation and optionaly for other [metadata](#) features like SEO.
+Writing page meta in frontmatter is required for [routing](/docs/guides/routing) and optionaly for other [metadata](#) features like SEO.
 
-:::callout
-While MDX is powerful, xyd makes writing docs much easier using markdown [special symbols](/docs/guides/special-symbols).
-
-But you can still use pure MDX or both if you want.
-:::
-
-## Metadata Specification
-The full API reference of metadata you can find [here](/docs/reference/meta).
+## Page Meta Specification
+The full API reference of page meta you can find [here](/docs/reference/pages/meta).
 
 ### Title
 The title field is used for the page title (SEO) and for the sidebar navigation item:
@@ -54,6 +46,10 @@ title: My title
 description: A brief summary of what this page is about
 ---
 ```
+
+:::callout
+More SEO page meta you can find [here](/docs/guides/seo).
+:::
 
 ### Sidebar icons
 You can customize the sidebar icon for each page by specifying an icon name. The icon will be displayed next to the page title in the navigation.
@@ -102,20 +98,38 @@ layout: center
 ---
 ```
 
-## Content 
+## Writing Content 
 To write a content for your page, you can use the [MDX](https://mdxjs.com/) or [Markdown](https://www.markdownguide.org/) syntax.
 You can also leverage built in [components](/docs/api/components), 
 [extensions](docs/guides/markdown-extensions)
 and [special symbols](docs/guides/special-symbols) to enhance your content:
 
-```mdx
+:::code-group
+
+~~~md
 # Quickstart
 
 This is a quickstart guide for the `xyd` project.
 
-:::callout
+callout
 Tip: You can use the React `<Callout>` component to render a callout too
-:::
-```
+~~~
 
+~~~mdx
+# Quickstart
+
+This is a quickstart guide for the `xyd` project.
+
+<Callout>
+Tip: You can use the React `<Callout>` component to render a callout too
+</Callout>
+~~~
+
+:::
+
+:::callout
+While MDX is powerful, xyd makes writing docs much easier using markdown [special symbols](/docs/guides/special-symbols).
+
+But you can still use pure MDX or both if you want.
+:::
 

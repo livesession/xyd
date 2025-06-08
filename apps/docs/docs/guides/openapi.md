@@ -1,6 +1,6 @@
 ---
 title: OpenAPI
-icon: simple-icons:openapiinitiative
+icon: docs:openapiinitiative
 tocGithub: 
     link: https://github.com/xyd-js/openapi-samples
     title: OpenAPI Samples

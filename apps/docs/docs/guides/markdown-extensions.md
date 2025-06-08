@@ -1,6 +1,6 @@
 ---
 title: Markdown Extensions
-icon: logos:markdown
+icon: docs:markdown
 ---
 
 # Markdown Extensions
@@ -190,7 +190,7 @@ For creating tabbed navigation interfaces, you can use the following syntax:
 
 This creates a navigation component with two tabs: "CLI" and "Code", each with its own content. The content for each tab follows the tab definition.
 
-:::guide-card{icon="<IconCode/>" title="Component Directives" href="https://github.com/xyd-js/xyd-samples/tree/main/component-directives"}
+:::guide-card{icon="<Icon name='code'/>" title="Component Directives" href="https://github.com/xyd-js/xyd-samples/tree/main/component-directives"}
 Explore samples with component directives
 :::
 

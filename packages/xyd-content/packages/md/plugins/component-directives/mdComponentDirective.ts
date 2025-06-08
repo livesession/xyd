@@ -42,10 +42,13 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
     grid: "GridDecorator",
 
     button: true,
+
+    update: true,
 }
 
 const supportedTextDirectives: MarkdownComponentDirectiveMap = {
     icon: true,
+    br: true,
 }
 
 const supportedLeafDirectives: MarkdownComponentDirectiveMap = {

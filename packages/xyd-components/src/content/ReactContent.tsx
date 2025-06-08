@@ -22,26 +22,9 @@ import {
     ListOl,
     UnderlineNav,
     Text,
-
-    // Icon,
-    IconCode,
-    IconCustomEvent,
-    IconFunnels,
-    IconMetrics,
-    IconSessionReplay,
-    IconAlert,
-    IconBrowser,
-    IconREST,
-    IconGraphQL,
-    IconWebhooks,
-    IconJSBrowser,
-    IconJSNode,
-    IconStorybook,
-    IconReactRouter,
-    IconNextJS,
-    IconAppTemplate,
-    IconQuote,
     Button,
+    Icon,
+    Update,
 } from '../writer'
 import { CodeSample } from "../coder";
 import { GridDecorator } from './GridDecorator';
@@ -202,7 +185,7 @@ export function stdContent(
             return <$Link {...props} as={this?.options?.Link} />
         },
         br: (props) => {
-            return <br />
+            return <br/>
         },
 
         React: NoopReactComponent,
@@ -288,14 +271,14 @@ export function writerContent() {
         Badge,
         Button,
         UnderlineNav: UnderlineNavContent,
-
         Subtitle(props) {
             const paragraph = props?.children?.props?.children
 
             return <Heading size={4} kind="muted" {...props}>
                 {paragraph}
             </Heading>
-        }
+        },
+        Update
     }
 }
 
@@ -390,26 +373,7 @@ function $UnderlineNavItemContentComponent(props) {
 // TODO: better system for icons + should work with .md like icon="session-replay" etc.
 export function iconContent() {
     return {
-        // Icon,
-
-        // TODO: remove below and use iconset system
-        IconSessionReplay,
-        IconMetrics,
-        IconFunnels,
-        IconCode,
-        IconCustomEvent,
-        IconAlert,
-        IconBrowser,
-        IconREST,
-        IconGraphQL,
-        IconWebhooks,
-        IconJSBrowser,
-        IconJSNode,
-        IconStorybook,
-        IconReactRouter,
-        IconNextJS,
-        IconAppTemplate,
-        IconQuote,
+        Icon,
     }
 }
 

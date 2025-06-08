@@ -65,13 +65,4 @@ We've streamlined the entire documentation process—from writing and reviewing 
 
 Whether building a simple documentation site or a complex developer portal, `xyd` offers the flexibility to meet your needs while removing unnecessary complexity.
 
-## Ideal Use Cases
-<br/>
-`xyd` is perfect for a variety of documentation needs:
-
-- **[Technical Documentation](/docs/guides/writing-quickstart)**: Create comprehensive guides for APIs, libraries, and frameworks
-- **[Product Documentation](/docs/guides/customization-introduction)**: Document your products with beautiful, interactive guides
-- **[Developer Portals](/docs/guides/routing)**: Build portals at scale
-- **[Knowledge Bases](/docs/guides/settings)**: Create resources that help users find answers quickly
-
 Ready to transform your documentation experience? [Get started now](/docs/guides/quickstart).
