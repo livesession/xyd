@@ -5,7 +5,7 @@ og:title: "Og title"
 description: Documentation platform built for developers
 ---
 
-# Why `xyd`?
+# Why `abc`?
 :::subtitle
 Learn how to use `xyd`
 :::

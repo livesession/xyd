@@ -105,14 +105,7 @@ function definitionMiniPropsPassThrough(
             }
         }
 
-        // 1. if the property has properties, use them directly
-        if (property.properties?.length) {
-            miniDef.properties = property.properties || [];
-
-            continue;
-        }
-
-        // 2. resolve the property and all its nested properties
+        // 1. resolve the property and all its nested properties
         const resolvedProperty = resolveProperty(refBySymbolId, property, options)
 
         miniDef.properties.push({
@@ -188,9 +181,6 @@ function resolveProperty(
     if (symbolId) {
         // 3. if symbolId is a string, resolve the reference
         if (typeof symbolId === 'string') {
-            if (symbolId === "123") {
-                console.log(5)
-            }
             if (visited.has(symbolId)) {
                 return resolvedProperty;
             }
@@ -199,6 +189,11 @@ function resolveProperty(
             const refSymbol = refBySymbolId[symbolId];
             const refSymbolDefinition = refSymbol?.definitions?.[0];
             const refSymbolDefinitionProps = refSymbolDefinition?.properties || [];
+
+            if (!refSymbol) {
+                console.warn(`Reference for symbol ${symbolId} not found, using type only`);
+                return resolvedProperty;
+            }
 
             // If the referenced type has properties, resolve them
             if (refSymbolDefinitionProps.length) {

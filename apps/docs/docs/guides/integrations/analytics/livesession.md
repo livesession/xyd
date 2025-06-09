@@ -2,14 +2,14 @@
 title: LiveSession
 ---
 
-# LiveSession
+# LiveSession {label="Coming Soon"}
 :::subtitle
-Learn how to send analytics events to LiveSEssion
+Learn how to send analytics events to LiveSession
 :::
 
 Add the following to your docs.json file to send analytics to LiveSession.
 
-:::code-group{title="Analytics options in xyd.json"}
+:::code-group{title="Analytics options in docs.json"}
 ```json Schema
 {
     "integrations": {

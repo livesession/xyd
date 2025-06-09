@@ -9,13 +9,26 @@ const SAVE_UNIFORM = TEST_DEBUG || process.env.SAVE_UNIFORM === "true";
 const SAVE_TYPEDOC = TEST_DEBUG || process.env.SAVE_UNIFORM === "true";
 
 const tests: Test[] = [
+    // {
+    //     id: "1.settings",
+    //     file: "-1.typescript",
+    //     description: "TypeScript: example",
+    //     miniUniformRoot: "Settings",
+    //     entryPoints: [
+    //         "src/settings.ts"
+    //     ],
+    //     forceSave: FORCE_SAVE,
+    //     saveUniform: SAVE_UNIFORM,
+    //     saveTypedoc: SAVE_TYPEDOC,
+    //     multiOutput: true
+    // },
     {
         id: "1.settings",
         file: "-1.typescript",
         description: "TypeScript: example",
-        miniUniformRoot: "Settings",
+        miniUniformRoot: "Metadata",
         entryPoints: [
-            "src/settings.ts"
+            "src/settings2.ts"
         ],
         forceSave: FORCE_SAVE,
         saveUniform: SAVE_UNIFORM,

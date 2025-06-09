@@ -12,7 +12,7 @@ Learn how to use special symbols to make your content more powerful
 Learn how to use them below.
 
 ## `Component Directive`
-Component Directive (`:::<component>`) is used to render UI [components](#) directly in your markdown:
+Component Directive (`:::<component>`) is used to render UI [components](/docs/components) directly in your markdown:
 
 ```mdx
 :::callout
@@ -54,7 +54,7 @@ above will pass `id` as prop for `my-component`. More details about this API you
 &nbsp;
 
 ## `Function Calling`
-Function Calling (`@<function>`) is used to execute [functions](#) within your markdown content:
+Function Calling (`@<function>`) is used to execute [functions](/docs/reference/functions) within your markdown content:
 
 ```mdx
 @import "~/snippets/Hello.ts"

@@ -3,7 +3,7 @@ title: Plugins
 icon: blocks
 ---
 
-# Plugins
+# Plugins {label="Experimental"}
 :::subtitle
 Learn how to use plugins
 :::

@@ -8,7 +8,7 @@ import { Reference, TypeDocReferenceContext } from '@xyd-js/uniform';
 import { uniformToMiniUniform } from '@xyd-js/sources/ts';
 
 import { FunctionName } from '../functions/types';
-import { parseFunctionCall } from '../functions/utils';
+import { parseFunctionCall, parseImportPath } from '../functions/utils';
 import { processUniformFunctionCall } from '../functions/uniformProcessor';
 import { componentLike } from '../utils';
 import { SymbolxVfile } from '../types';
@@ -48,8 +48,32 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
           meta.uniform = meta.openapi
         }
         meta.component = "atlas"
-        meta.componentProps = {
-          references: `@uniform('${meta.uniform}')`
+
+        if (typeof meta.uniform === "string") {
+          meta.componentProps = {
+            references: `@uniform('${meta.uniform}')`
+          }
+        } else if (typeof meta.uniform === "object") {
+          const uniformArgs = {}
+          
+          if (meta.uniform.eager) {
+            // TODO: support eager line ranges?
+            const { filePath, regions } = parseImportPath(meta.uniform.path)
+
+            if (regions.length > 1) {
+              console.warn("Eager uniform with multiple regions is not supported")
+            }
+            
+            if (regions.length) {
+              uniformArgs["eager"] = regions[0].name
+            }
+            
+            meta.uniform.path = filePath
+          }
+
+          meta.componentProps = {
+            references: `@uniform('${meta.uniform.path}', ${JSON.stringify(uniformArgs)})`
+          }
         }
       }
 
@@ -105,8 +129,11 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
               settings,
             );
 
-            if (importArgs?.mini && references) { // TODO: move to `processUniformFunctionCall`
-              references = uniformToMiniUniform(importArgs.mini, references as Reference<TypeDocReferenceContext>[]);
+
+            if (importArgs?.eager && references) { // TODO: move to `processUniformFunctionCall`
+              // TODO: rename uniformToMiniUniform eager
+              // TODO: support multile regions
+              references = uniformToMiniUniform(importArgs.eager, references as Reference<TypeDocReferenceContext>[]);
             }
 
             resolvedProps[key] = references

@@ -1,6 +1,10 @@
 ---
 title: Introduction
 icon: text
+tocGithub: 
+    link: https://github.com/xyd-js/customization-samples
+    title: Customization Samples
+    description: Learn how to setup customize your docs
 ---
 
 # Customization Introduction
@@ -11,16 +15,16 @@ Learn the fundamentals of documentation customization
 Customizing your documentation allows you to create a unique and branded experience for your users.
 There are three main approaches for customization:
 
-1. Customization via settings file - choose from a variety of [pre-built themes](/docs/guides/themes) 
-and tweak using available [theme settings](/docs/guides/theme-settings)
+1. Customization via [settings file](/docs/guides/settings) - choose from a variety of [pre-built themes](/docs/guides/themes) 
+and tweak using available [theme settings](/docs/guides/customization-introduction#theme-reference)
 
-2. Extending the default theme - build upon the existing design while adding your own enhancements via code
+2. [Extending the default theme](/docs/guides/extending-default-theme) - build upon the existing design while adding your own enhancements via code
 
-3. Creating a new theme - develop a completely new theme from scratch via code
+3. [Creating a new theme](/docs/guides/custom-theme) - develop a completely new theme from scratch via code
 
 ## Customization via Settings file
 This is the simplest way to customize your documentation.
- You can do this by editing the `xyd.json` file in the root of your project.
+ You can do this by editing the `docs.json` file in the root of your project.
 
 ```json
 {
@@ -32,22 +36,25 @@ This is the simplest way to customize your documentation.
     }
 }
 ```
-For more details on the theme settings, see the [Theme Settings](/docs/guides/theme-settings) guide.
+For more details on the theme settings, see the [reference](/docs/guides/customization-introduction#theme-reference) guide.
 
 ## Customization via Code
-To customize your documentation via code, you'll need to work with a `.xyd/theme` directory inside your project root:
+To customize your documentation via code, you'll need to work with a `.docs/theme` directory inside your project root:
 ```
 .
-├─ docs                # project root
-│  ├─ .xyd
-│  │  └─ theme
-│  │     ├─ index.ts   # theme entry
-│  │     └─ index.css  # theme styles entry
-│  │  
-│  └─ index.md
-└─ xyd.json            # settings file
+├─ .docs                # .docs root
+│  └─ theme
+│     ├─ index.ts   # theme entry
+│     └─ index.css  # theme styles entry
+|
+└─ docs.json            # settings file
 ```
 
+### Theme Styles Entry
+Thanks to `index.css` inside `.docs/theme/index.css` you can customize base theme styles.
+List of all available css tokens you can find [here](https://github.com/livesession/xyd/blob/master/packages/xyd-themes/src/styles/tokens.css).
+
+### Theme Entry
 <code>xyd</code> will lookup for `index.ts` if you want to modify or create new theme behavior. 
 This file is only necessary when you need to extend default theme's functionality or create a new theme:
 
@@ -78,4 +85,4 @@ Theme settings are defined as an object with the following reference:
 
 ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Theme'})"}
 
-Full source you can find [here](https://github.com/livesession/xyd/blob/master/packages/xyd-core/src/types/settings.ts)
+Full settings reference you can read [here](/docs/guides/settings#reference)

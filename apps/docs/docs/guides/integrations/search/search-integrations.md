@@ -13,7 +13,7 @@ Automatically send data about your documentation engagement to your third party 
 :::grid
 - 
   - 
-    :::guide-card{kind="secondary" title="Algolia" icon="<Icon name='code'/>" href="/docs/guides/integrations/search/algolia"}
+    :::guide-card{kind="secondary" title="Algolia" icon="<Icon name='docs:algolia'/>" href="/docs/guides/integrations/search/algolia"}
     Learn how to add send analytics events to Algolia
     :::
   - 
@@ -23,30 +23,3 @@ Automatically send data about your documentation engagement to your third party 
 
 :::
 
-
-## Enable analytics
-Set your analytics keys in `xyd.json` under the `integrations.analytics` section. 
-The syntax for `xyd.json` is below.
-
-You only need to include entries for the platforms you want to connect:
-
-```json xyd.json
-{
-    "integrations": {
-        "analytics": {
-            "livesession": {
-                "trackId": "required"
-            }
-        }
-    }
-}
-```
-
-## Supported events
-* `CodeExampleChange`
-
-*  `CodeTabChange`
-
-*  `CodeCopy`
-
-*  `CopyPage`

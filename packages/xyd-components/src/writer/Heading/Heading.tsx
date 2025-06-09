@@ -40,6 +40,8 @@ export interface HeadingProps {
 
     /** Optional ref for the heading element */
     ref?: React.RefObject<HTMLHeadingElement>
+
+    style?: React.CSSProperties
 }
 
 /**
@@ -59,10 +61,12 @@ export function Heading({
     label,
     noanchor,
     ref,
+    style,
 }: HeadingProps) {
     let HeadingComponent = as ? as : `h${size}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 
     return <HeadingComponent
+        style={style || undefined}
         className={` ${cn.HeadingHost}  ${className || ''}`}
         data-size={size}
         data-kind={kind}

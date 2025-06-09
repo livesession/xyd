@@ -13,6 +13,10 @@ export const CalloutHost = css`
         border: 1px solid var(--xyd-callout-border-color);
         background-color: var(--xyd-callout-bgcolor);
         
+        code {
+            background: var(--white);
+        }
+        
         [part="icon"] {
             display: inline-flex;
             margin-right: 14px;
@@ -30,5 +34,6 @@ export const CalloutHost = css`
         
         [part="message-body"] {
         }
+        
     }
 `;

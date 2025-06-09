@@ -143,8 +143,14 @@ pnpm add -g xyd-js
 
 ## Import Code
 
-You can import code from a file using the `@importCode` [function](/docs/api/functions#importCode):
+You can import code from a file using the [`@importCode`](/docs/reference/functions/importCode) function:
 ```md
 @importCode "./relative-to-current-file.tsx"
 ```
 
+## Changelog
+
+You can also render changelog page using the [`@changelog`](/docs/reference/functions/changelog) function:
+```md
+@changelog "~/CHANGELOG.md"
+```

@@ -1,5 +1,8 @@
 import { visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkMdx from 'remark-mdx';
 
 import { FunctionName } from './types';
 import { FunctionOptions, parseFunctionCall, downloadContent } from './utils';
@@ -26,14 +29,34 @@ export function mdFunctionChangelog() {
                         const content = await downloadContent(importPath, file, options.resolveFrom);
                         const entries = parseChangelog(content);
 
-                        console.log(entries, 333333);
-                        // Create Update components for each entry
-                        const updates = entries.map(createUpdateComponent).join('\n\n');
-
                         // Replace the node with the generated content
-                        node.type = 'html';
-                        node.value = updates;
-                        node.children = undefined;
+                        node.type = 'mdxJsxFlowElement';
+                        node.attributes = [];
+                        node.children = entries.map(entry => {
+                            // Parse the markdown content
+                            const parsedContent = unified()
+                                .use(remarkParse)
+                                .use(remarkMdx)
+                                .parse(entry.content);
+
+                            return {
+                                type: 'mdxJsxFlowElement',
+                                name: 'Update',
+                                attributes: [
+                                    {
+                                        type: 'mdxJsxAttribute',
+                                        name: 'version',
+                                        value: entry.version
+                                    },
+                                    {
+                                        type: 'mdxJsxAttribute',
+                                        name: 'date',
+                                        value: entry.date || ''
+                                    }
+                                ],
+                                children: parsedContent.children
+                            };
+                        });
                     } catch (error) {
                         console.error(`Error processing changelog: ${importPath}`, error);
                     }
@@ -47,7 +70,6 @@ export function mdFunctionChangelog() {
     };
 }
 
-
 function parseChangelog(content: string): ChangelogEntry[] {
     const entries: ChangelogEntry[] = [];
     const lines = content.split('\n');
@@ -57,8 +79,11 @@ function parseChangelog(content: string): ChangelogEntry[] {
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
 
-        // Match version headers (## X.Y.Z)
-        const versionMatch = line.match(/^##\s+([\d.]+)/);
+        // Match different version header formats:
+        // 1. ## [X.Y.Z] - any date format
+        // 2. ## [X.Y.Z]
+        // 3. ## X.Y.Z
+        const versionMatch = line.match(/^##\s+(?:\[?([\d.]+)\]?(?:\s*-\s*([^\n]+))?)/);
         if (versionMatch) {
             // Save previous entry if exists
             if (currentEntry) {
@@ -69,9 +94,15 @@ function parseChangelog(content: string): ChangelogEntry[] {
             // Start new entry
             currentEntry = {
                 version: versionMatch[1],
+                date: versionMatch[2]?.trim() || '',
                 content: ''
             };
             currentContent = [];
+            continue;
+        }
+
+        // Skip the main title (# xyd-js)
+        if (line.startsWith('# ')) {
             continue;
         }
 
@@ -90,9 +121,4 @@ function parseChangelog(content: string): ChangelogEntry[] {
     return entries;
 }
 
-function createUpdateComponent(entry: ChangelogEntry): string {
-    return `:::update{version="${entry.version}" date="${entry.date || ''}"}
-${entry.content}
-:::`;
-}
 

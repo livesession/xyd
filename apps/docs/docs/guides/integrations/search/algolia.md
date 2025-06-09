@@ -9,13 +9,14 @@ Learn how to send analytics events to LiveSEssion
 
 Add the following to your docs.json file to send analytics to LiveSession.
 
-:::code-group{title="Analytics options in xyd.json"}
+:::code-group{title="Analytics options in docs.json"}
 ```json Schema
 {
     "integrations": {
-        "analytics": {
-            "livesession": {
-                "trackId": "required"
+        "search": {
+            "algolia": {
+                "appId": "required",
+                "apiKey": "required"
             }
         }
     }
@@ -25,9 +26,10 @@ Add the following to your docs.json file to send analytics to LiveSession.
 ```json Example
 {
     "integrations": {
-        "analytics": {
-            "livesession": {
-                "trackId": "aeb.beaea"
+        "search": {
+            "algolia": {
+                "appId": "123",
+                "apiKey": "321"
             }
         }
     }

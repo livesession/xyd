@@ -12,7 +12,6 @@ Our plans for evolving xyd
 Last updated: **June 5, 2025**
 :::
 
-## Overview
 This roadmap outlines the key features and improvements we're working on for xyd. While we have a clear vision,
 our plans may evolve as we gather feedback and insights from the community. 
 For recent updates, check out our **[changelog](/docs/development/changelog)**.
@@ -25,6 +24,8 @@ but specific features and timelines may adjust based on community needs and tech
 We believe in building xyd together with our community. 
 Feel free to join the [discussion](https://github.com/livesession/xyd/discussions) and share your thoughts on any of these features.
 
+List of terms we'd focus:
+
 ## Compose
 
 Composable architecture for writing docs content.
@@ -33,7 +34,7 @@ Composable architecture for writing docs content.
 
 * **Interactive Widgets**: Built-in support for creating interactive documentation elements
 
-## API Toolchain
+## APIToolchain
 
 Set of tools to help build API-based docs.
 

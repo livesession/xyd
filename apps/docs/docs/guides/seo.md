@@ -9,24 +9,26 @@ icon: search
 Enhance your documentation's search engine visibility with custom meta tags
 :::
 
-Our documentation platform provides automatic meta tag generation, but you have full control to customize them through the `xyd.json` configuration or individual page metadata frontmatter.
+Our documentation platform provides automatic meta tag generation, but you have full control to customize them through the `docs.json` configuration or individual [page](/docs/guides/pages) meta.
 
 ## Global Meta Tags
 
-Set default meta tags for your entire documentation by adding the `seo.metatags` section to your `xyd.json`:
+Set default meta tags for your entire documentation by adding the `seo.metatags` section to your `docs.json`:
 
 ```json
-"seo": {
-    "metatags": {
-        "og:image": "https://your-domain.com/default-social-image.jpg",
-        "description": "Your default site description"
-    }
+{
+  "seo": {
+      "metatags": {
+          "og:image": "https://your-domain.com/default-social-image.jpg",
+          "description": "Your default site description"
+      }
+  }
 }
 ```
 
 ## Page-specific Meta Tags
 
-Customize meta tags for individual pages using page metadata frontmatter:
+Customize meta tags for individual pages using [page](/docs/guides/pages) meta:
 
 ```md
 ---
@@ -46,7 +48,11 @@ Your documentation automatically includes:
 - A `sitemap.xml` file (accessible at `/sitemap.xml`)
 - A `robots.txt` file
 
-By default, only pages listed in `xyd.json` are included. To include all pages, configure your `xyd.json`:
+:::callout
+For good `sitemap.xml` generation make sure you filled [`seo.domain`](/docs/guides/settings).
+:::
+
+By default, only pages listed in `docs.json` are included. To include all pages, configure your `docs.json`:
 
 ```json
 "seo": {
@@ -64,7 +70,7 @@ noindex: true
 ---
 ```
 
-For site-wide indexing control, set in `xyd.json`:
+For site-wide indexing control, set in `docs.json`:
 
 ```json
 "seo": {

@@ -140,9 +140,6 @@ async function processUniformFile(
 
                                     references = uniformToReactUniform(typedocRefs, resp.projectJson)
 
-                                    console.log("references react", JSON.stringify(references), 22222,  JSON.stringify(typedocRefs))
-
-
                                     break
                                 }
                             }

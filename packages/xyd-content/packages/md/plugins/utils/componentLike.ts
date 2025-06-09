@@ -9,7 +9,7 @@ import reactElementToJSXString from 'react-element-to-jsx-string';
 
 const acornWithJsx = acorn.Parser.extend(acornJsx());
 
-export function componentLike(
+    export function componentLike(
     componentName: string,
     props: Record<string, any>,
     children: any[]

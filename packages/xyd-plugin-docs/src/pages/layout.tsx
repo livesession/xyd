@@ -60,11 +60,6 @@ globalThis.__xydSurfaces = surfaces
 
 const theme = new Theme()
 
-const mdPlugins = markdownPlugins({
-    maxDepth: settings?.theme?.maxTocDepth || 2,
-}, settings)
-const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
-
 const {Layout: BaseThemeLayout} = theme
 
 interface LoaderData {
@@ -92,6 +87,11 @@ export async function loader({request}: { request: any }) {
     )
 
     let bannerContentCode = ""
+
+    const mdPlugins = markdownPlugins({
+        maxDepth: metadata?.maxTocDepth || settings?.theme?.maxTocDepth || 2,
+    }, settings)
+    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
 
     if (settings?.theme?.banner?.content && typeof settings?.theme?.banner?.content === "string") {
         bannerContentCode = await contentFs.compileContent(

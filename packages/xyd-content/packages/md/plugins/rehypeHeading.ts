@@ -2,6 +2,8 @@ import { visit } from 'unist-util-visit';
 import type { Plugin } from 'unified';
 import type { Root } from 'hast';
 
+import { mdParameters } from './utils/mdParameters';
+
 export const rehypeHeading: Plugin<[], Root> = () => {
   return (tree) => {
     visit(tree, 'element', (node) => {
@@ -14,31 +16,31 @@ export const rehypeHeading: Plugin<[], Root> = () => {
         .map((child) => ('value' in child ? child.value : ''))
         .join('');
 
-      // Extract attributes from curly braces
-      const attributeMatch = text.match(/\s*{([^}]+)}\s*$/);
-      if (!attributeMatch) {
+      // Parse props using curly braces
+      const { props, sanitizedText } = mdParameters(text);
+
+      if (node.properties?.hideHeading) {
+        const existingStyle = node.properties?.style || '';
+        node.properties = {
+          ...node.properties,
+          style: `${existingStyle} visibility: hidden; display: block`.trim()
+        };
+      }
+      
+      // Update the text content - remove [+toc] but keep the heading visible
+      if (node.children[0] && 'value' in node.children[0]) {
+        node.children[0].value = sanitizedText;
+      }
+
+      // If no props were found, return
+      if (Object.keys(props).length === 0) {
         return;
       }
 
-      // Remove the attributes from the text
-      const headingText = text.slice(0, attributeMatch.index).trim();
-      
-      // Parse attributes like key="value"
-      const attrString = attributeMatch[1];
-      const attrMatches = attrString.matchAll(/(\w+)\s*=\s*"([^"]+)"/g);
-      
-      // Add attributes to the node's properties
-      for (const [_, key, value] of attrMatches) {
-        node.properties = {
-          ...node.properties,
-          [key]: value
-        };
-      }
-
-      // Update the text content
-      if (node.children[0] && 'value' in node.children[0]) {
-        node.children[0].value = headingText;
-      }
+      node.properties = {
+        ...node.properties,
+        ...props,
+      };
     });
   };
 }; 

@@ -3,6 +3,8 @@ import GithubSlugger from 'github-slugger';
 import type { Plugin } from 'unified';
 import type { Root, Heading } from 'mdast';
 
+import {mdParameters} from "./utils/mdParameters"
+
 interface HeadingData {
   hProperties?: {
     id?: string;
@@ -10,7 +12,7 @@ interface HeadingData {
   };
 }
 
-export const mdHeading: Plugin<[], Root> = () => {
+export const mdHeadingId: Plugin<[], Root> = () => {
   let slugger = new GithubSlugger();
 
   return (tree) => {
@@ -30,7 +32,10 @@ export const mdHeading: Plugin<[], Root> = () => {
         .map((child) => ('value' in child ? child.value : ''))
         .join('');
 
-      const id = slugger.slug(text);
+      
+      const {props, sanitizedText} = mdParameters(text)
+
+      const id = props.id || slugger.slug(sanitizedText);
 
       // Add the id to the heading's data
       node.data.hProperties = {

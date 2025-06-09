@@ -8,9 +8,5 @@ icon: clock-arrow-up
 The latest updates and improvements to xyd
 :::
 
-@changelog("./CHANGELOG.md")
-
-<Update date="2025-04-10" version="Java SDK 0.9.0 released">
-  Hello World
-</Update>
+@changelog("~/CHANGELOG.md")
 

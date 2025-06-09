@@ -10,8 +10,6 @@ declare global {
     var __xydStaticFiles: string[];
 }
 
-// console.log("Config - Settings from shared data:", settings);
-
 // Flatten navigation paths
 const flattenNavigation = (navigation: Settings['navigation']) => {
     if (!navigation?.sidebar) return [];

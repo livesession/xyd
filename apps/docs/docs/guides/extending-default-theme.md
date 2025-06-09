@@ -14,7 +14,7 @@ extending the default theme gives you more flexibility and programmable control.
 This approach allows you to build upon the existing design while adding your own customizations, all while maintaining the core functionality of the default theme.
 
 :::callout
-All built-in themes like [poetry](#) or [opener](#) are based on the default theme. 
+All built-in themes like [poetry](https://github.com/livesession/xyd/tree/master/packages/xyd-theme-poetry) or [opener](https://github.com/livesession/xyd/tree/master/packages/xyd-theme-opener) are based on the default theme. 
 :::
 
 ## Getting Started
@@ -69,18 +69,33 @@ You can override default theme settings by extending the theme configuration in 
 
 Then in your theme class, you can modify these settings:
 
-```ts
+:::code-group{}
+```ts Settings API
 import {BaseTheme} from "xyd-js/themes"
 
 export default class MyTheme extends BaseTheme {
     constructor() {
         super();
         
-        // !diff 
+        // !diff +
         this.theme.markdown.syntaxHighlight = "github-dark";
     }
 }
 ```
+
+```ts Theme API
+import {BaseTheme} from "xyd-js/themes"
+
+export default class MyTheme extends BaseTheme {
+    constructor() {
+        super();
+        
+        // !diff +
+        this.theme.markdown.syntaxHighlight = "github-dark";
+    }
+}
+```
+:::
 
 ## Style Customization
 

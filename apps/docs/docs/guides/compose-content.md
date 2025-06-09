@@ -8,7 +8,7 @@ icon: docs:atom-2-line
 Learn how to streamline content experience
 :::
 
-`xyd` combines generated and manual content into composition to create powerful documentation. Use composition along with [uniform](/docs/reference/meta/uniform), [components](/docs/components) or [functions](/docs/reference/functions/overview) to build rich, interactive documentation.
+`xyd` combines generated and manual content into composition to create powerful documentation. Use composition along with [uniform](/docs/guides/apitoolchain), [components](/docs/components) or [functions](/docs/reference/functions/overview) to build rich, interactive documentation.
 
 ## Supported uniform extensions
 Uniform translates code automatically based on supported extensions:
@@ -20,7 +20,7 @@ Uniform translates code automatically based on supported extensions:
 
 ## Compose Uniform Pages
 
-The [`uniform`](/docs/reference/meta/uniform) field in meta generates code documentation automatically:
+The `uniform` field in page meta generates API documentation automatically:
 
 ~~~md
 ---
@@ -28,6 +28,13 @@ title: Callouts
 icon: info
 layout: wide
 uniform: "@components/writer/Callout/Callout.tsx"
+---
+~~~
+
+now with our custom composed content:
+~~~md
+---
+<!-- ... -->
 ---
 
 <!-- BELOW CONTENT IS COMPOSED - EXTENDS API PAGE BY CUSTOM CONTENT -->
@@ -56,8 +63,3 @@ Note that you must have an Admin or Owner role to manage webhook settings.
 All available output variables within uniform compose you can find [here](/docs/reference/composer/uniform/output-variables). 
 :::
 
-## Next Steps
-
-- Learn about [API Documentation](/docs/guides/openapi)
-- Explore [Component System](/docs/components)
-- Read about [Markdown Extensions](/docs/guides/markdown-extensions)

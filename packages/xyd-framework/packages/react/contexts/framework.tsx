@@ -18,7 +18,9 @@ export interface IFramework {
 
 const framework: IFramework = {
     settings: {},
-    metadata: {},
+    metadata: {
+        title: "",
+    },
     sidebarGroups: [],
     setMetadata: () => { },
 }
@@ -44,7 +46,7 @@ export function Framework(props: FrameworkProps) {
     return <FrameworkContext value={{
         settings: Object.freeze({ ...props.settings }),
         sidebarGroups: Object.freeze([...props.sidebarGroups]),
-        metadata: Object.freeze({ ...metadata }),
+        metadata: Object.freeze({ ...metadata, title: metadata?.title || "" }),
         setMetadata: setMetadata,
     }}>
         <SurfaceContext value={{

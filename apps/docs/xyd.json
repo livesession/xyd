@@ -36,6 +36,30 @@
                 "url": "/docs/reference"
             }
         ],
+        "subheader": [
+            {
+                "name": "API",
+                "route": "docs/reference",
+                "items": [
+                    {
+                        "name": "Core",
+                        "url": "/docs/reference/core"
+                    },
+                    {
+                        "name": "Functions",
+                        "url": "/docs/reference/functions"
+                    },
+                    {
+                        "name": "Composer",
+                        "url": "/docs/reference/Composer"
+                    },
+                    {
+                        "name": "CLI",
+                        "url": "/docs/reference/CLI"
+                    }
+                ]
+            }
+        ],
         "sidebar": [
             {
                 "route": "docs",
@@ -61,10 +85,21 @@
                     {
                         "group": "Writing Content",
                         "pages": [
-                            "docs/guides/markdown-extensions",
+                            "docs/guides/writing-quickstart",
                             "docs/guides/developer-content",
                             "docs/guides/compose-content",
                             "docs/guides/seo"
+                        ]
+                    },
+                    {
+                        "group": "Customization",
+                        "pages": [
+                            "docs/guides/customization-introduction",
+                            "docs/guides/extending-default-theme",
+                            "docs/guides/custom-theme",
+                            "docs/guides/icons",
+                            "docs/guides/custom-scripts",
+                            "docs/guides/plugins"
                         ]
                     },
                     {
@@ -84,17 +119,6 @@
                             },
                             "docs/guides/asyncapi",
                             "docs/guides/apitoolchain"
-                        ]
-                    },
-                    {
-                        "group": "Customization",
-                        "pages": [
-                            "docs/guides/customization-introduction",
-                            "docs/guides/extending-default-theme",
-                            "docs/guides/custom-theme",
-                            "docs/guides/icons",
-                            "docs/guides/custom-scripts",
-                            "docs/guides/plugins"
                         ]
                     },
                     {
@@ -164,14 +188,48 @@
                 ]
             },
             {
-                "route": "docs/reference",
+                "route": "docs/reference/functions",
                 "items": [
                     {
-                        "group": "Functions",
+                        "group": "Reference",
                         "pages": [
                             "docs/reference/functions/overview",
                             "docs/reference/functions/importCode",
-                            "docs/reference/functions/uniform"
+                            "docs/reference/functions/uniform",
+                            "docs/reference/functions/changelog"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/reference/core",
+                "items": [
+                    {
+                        "group": "Reference",
+                        "pages": [
+                            "docs/reference/core/overview",
+                            "docs/reference/core/settings",
+                            "docs/reference/core/pagemeta"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/reference/composer",
+                "items": [
+                    {
+                        "group": "Reference",
+                        "pages": [
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/reference/cli",
+                "items": [
+                    {
+                        "group": "Reference",
+                        "pages": [
                         ]
                     }
                 ]

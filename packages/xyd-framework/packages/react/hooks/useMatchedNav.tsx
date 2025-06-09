@@ -1,6 +1,6 @@
-import {useMatches} from "react-router";
+import { useMatches } from "react-router";
 
-import {useSettings} from "../contexts";
+import { useSettings } from "../contexts";
 
 // TODO: better data structures
 export function useMatchedSubNav() {
@@ -9,12 +9,29 @@ export function useMatchedSubNav() {
 
     const lastMatchId = matches[matches.length - 1]?.id
 
-    const matchedSubnav = settings.navigation?.subheader
-        ?.find(item => item.items?.find(item => item.url === lastMatchId))
+    let matchedSubnav = settings.navigation?.subheader
+        ?.find(item => item.items?.find(item => {
+            return sanitizeUrl(item.url || "") === sanitizeUrl(lastMatchId)
+        }))
+
+
+    // if (!matchedSubnav) {
+    //     matchedSubnav = settings.navigation?.subheader
+    //         ?.find(item => sanitizeUrl(item.route || "") === sanitizeUrl(lastMatchId))
+    // }
 
     if (!matchedSubnav) {
         return null
     }
 
     return matchedSubnav || null
+}
+
+
+function sanitizeUrl(url: string) {
+    if (url.startsWith("/")) {
+        return url.slice(1)
+    }
+
+    return url
 }

@@ -24,6 +24,7 @@ import {
     Text,
     Button,
     Icon,
+    Image,
     Update,
 } from '../writer'
 import { CodeSample } from "../coder";
@@ -187,6 +188,9 @@ export function stdContent(
         br: (props) => {
             return <br/>
         },
+        img: (props) => {
+            return <Image {...props} />
+        },
 
         React: NoopReactComponent,
     }
@@ -198,9 +202,10 @@ interface HeadingContentProps {
     children: React.ReactNode
     label?: string
     noanchor?: boolean
+    style?: any
 }
 
-function $Heading({ id, depth, children, label, noanchor }: HeadingContentProps) {
+function $Heading({ id, depth, children, label, noanchor, style }: HeadingContentProps) {
     // const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
     // const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
     const navigation = this?.options?.useNavigation() // TODO: !!!! BETTER API !!!!!
@@ -247,6 +252,7 @@ function $Heading({ id, depth, children, label, noanchor }: HeadingContentProps)
         }}
         label={label}
         noanchor={noanchor}
+        style={style}
     >
         {children}
     </Heading>

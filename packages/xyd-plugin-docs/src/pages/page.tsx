@@ -18,12 +18,6 @@ const { settings } = virtualSettings as Settings
 import { PageContext } from "./context";
 import { SUPPORTED_META_TAGS } from "./metatags";
 
-const mdPlugins = markdownPlugins({
-    maxDepth: settings?.theme?.maxTocDepth || 2,
-}, settings)
-
-const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
-
 function getPathname(url: string) {
     const parsedUrl = new URL(url);
     return parsedUrl.pathname.replace(/^\//, '');
@@ -130,6 +124,12 @@ export async function loader({ request }: { request: any }) {
 
     let code = ""
     let rawPage = ""
+
+    const mdPlugins = markdownPlugins({
+        maxDepth: metadata?.maxTocDepth || settings?.theme?.maxTocDepth || 2,
+    }, settings)
+    
+    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
 
     const pagePath = globalThis.__xydPagePathMapping[slug]
     if (pagePath) {

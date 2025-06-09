@@ -1,21 +1,103 @@
 ---
-title: Markdown Extensions
-icon: docs:markdown
+title: Writing Quickstart
+icon: letter-text
 ---
 
-# Markdown Extensions
+# Writing Quickstart
 :::subtitle
-Learn how to use built in Markdown extensions
+Learn how to write content 
 :::
 
-<code>xyd</code> provides many useful extensions to markdown language,
-for example [GFM](https://github.github.com/gfm/) (GitHub Flavored Markdown) or [Markdown Directives](https://github.com/remarkjs/remark-directive).
+Learn how to write documentation content using Markdown, MDX, and xyd's built-in components.
+
+## Headers [maxTocDepth=3]
+You can define headers using markdown syntax like:
+```md
+---
+title: My Page Title
+---
+
+# My Header
+```
+
+with header subtitle:
+```md
+---
+title: My Page Title
+---
+
+# My Header {subtitle="Learn how to use headers"}
+```
+
+with header label:
+```md
+---
+title: My Page Title
+---
+
+# My Header {label="Coming Soon"}
+```
+
+### Headers Anchors
+Headers get automatically anchor links applied.
+If you'd like to set a custom anchor,  add an `id` sugar syntax prop to the heading:
+```mdx
+## My custom anchors {#custom-anchors}
+```
+This sets the heading anchor to `#custom-anchors` instead of the default `#my-custom-anchors`.
+
+### TOC Anchors
+The table of contents (TOC) will be generated based on headings, you can also customize that:
+
+```mdx
+## Heading [!toc]
+This heading will be **HIDDEN* from TOC.
+
+## TOC Heading Only [toc]
+This heading will **ONLY** be visible in TOC.
+You can use it to add additional TOC items.
+
+## TOC Changed [toc="toc changed"]
+It display 'toc changed' in TOC section instead of 'TOC Changed'.
+
+## TOC Force [+toc]
+It adds heading to the TOC despite of `maxTocDepth`. 
+It's visible on content too.
+```
+
+## Content
+To write a content for your page, you can use the [MDX](https://mdxjs.com/) or [Markdown](https://www.markdownguide.org/) syntax.
+You can also leverage built in [components](/docs/components) or [special symbols](/docs/guides/special-symbols) to enhance your content:
+
+:::code-group
+
+~~~md
+# Quickstart
+
+This is a quickstart guide for the `xyd` project.
+
+callout
+Tip: You can use the React `<Callout>` component to render a callout too
+~~~
+
+~~~mdx
+# Quickstart
+
+This is a quickstart guide for the `xyd` project.
+
+<Callout>
+Tip: You can use the React `<Callout>` component to render a callout too
+</Callout>
+~~~
+:::
 
 :::callout
-The full list of default used extensions you can find [here](https://github.com/livesession/xyd/blob/master/packages/xyd-content/packages/md/plugins/index.ts)
+While MDX is powerful, xyd makes writing docs much easier using markdown [special symbols](/docs/guides/special-symbols).
+
+But you can still use pure MDX or both if you want.
 :::
 
-## GFM
+## Markdown GFM
 You can use GFM (GitHub Flavored Markdown) to write your content like this:
 ```mdx
 # Heading
@@ -44,12 +126,10 @@ Hello World, **Bold**, _Italic_, ~~Hidden~~
 | Hello | World       |
 ```
 
-&nbsp;
-
-## MDX
+## MDX 
 MDX combines Markdown with JSX, letting you use React components in your docs.
 
-### Reusable components
+### Reusable components {label="Coming Soon"}
 
 1. Creating a reusable component:
     ```mdx my-component.mdx
@@ -63,7 +143,7 @@ MDX combines Markdown with JSX, letting you use React components in your docs.
     <MyComponent />
     ```
 
-### Reusable variables
+### Reusable variables {label="Coming Soon"}
 
 1. You can also use MDX for reusable variables, by exporting data from your MDX files:
     ```tsx reusable-variables.mdx
@@ -85,7 +165,7 @@ MDX combines Markdown with JSX, letting you use React components in your docs.
     Hello, my title is {title} and I like {data.category}.
     ```
 
-### Exporting component variables
+### Exporting component variables {label="Coming Soon"}
 1. You can also add variables that can be filled in via props when you import the file:
     ```mdx component-variables.mdx
     My favourite favurite book's category is {category}
@@ -97,36 +177,6 @@ MDX combines Markdown with JSX, letting you use React components in your docs.
 
     <MyComponent category="fantasy" />
     ```
-
-&nbsp;
-
-## Headers Anchors
-Headers(`#`) get automatically anchor links applied, anchors can also 
-be configured using the `anchor` option.
-
-If you'd like to set a custom anchor,  add a suffix to the heading:
-```mdx
-# My custom anchors {#custom-anchors}
-```
-This sets the heading anchor to `#custom-anchors` instead of the default `#my-custom-anchors`.
-
-&nbsp;
-
-## TOC Anchors
-The table of contents (TOC) will be generated based on headings, you can also customise the effects of headings:
-
-```mdx
-# Heading {!toc}
-This heading will be hidden from TOC.
-
-# TOC Heading Only {toc}
-This heading will **only** be visible in TOC, you can use it to add additional TOC items.
-
-# TOC Changed{toc="toc changed"}
-It display 'toc changed' in TOC section instead of 'TOC Changed'
-```
-
-&nbsp;
 
 ## Component Directives
 Use markdown directives (`:::`) to render components in markdown syntax (instead of MDX), the full list of components you can find [here](/docs/components).
@@ -176,8 +226,8 @@ For creating steps you can use such us syntax:
 :::
 ~~~
 
-### Navigation
-For creating tabbed navigation interfaces, you can use the following syntax:
+### Tabs {label="Coming Soon"}
+For creating tabs, you can use the following syntax:
 ~~~
 :::tabs
 1. [CLI](tab=cli)
@@ -189,12 +239,6 @@ For creating tabbed navigation interfaces, you can use the following syntax:
 ~~~
 
 This creates a navigation component with two tabs: "CLI" and "Code", each with its own content. The content for each tab follows the tab definition.
-
-:::guide-card{icon="<Icon name='code'/>" title="Component Directives" href="https://github.com/xyd-js/xyd-samples/tree/main/component-directives"}
-Explore samples with component directives
-:::
-
-&nbsp;
 
 ## Emojis 🎉
 For declaring just copy and paste the emoji you want to use in your markdown, for example:

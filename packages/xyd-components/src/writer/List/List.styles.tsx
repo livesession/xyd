@@ -18,8 +18,13 @@ export default {
             ul & {
                 margin-bottom: 0.5rem;
                 position: relative;
-                padding-left: 2em !important;
                 padding-inline-start: .375em;
+                padding-left: 2em !important;
+            }
+
+            /*  TODO: IN THE FUTURE BETTER SOLUTION IS NEEDED */
+            xyd-grid-decorator ul & {
+                padding-left: 0 !important;
             }
 
             ul &::before {

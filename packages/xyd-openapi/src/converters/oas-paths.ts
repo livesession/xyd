@@ -168,11 +168,7 @@ export function oapPathToReference(
                 return null
         }
     }
-
-    // if ((oapMethod.operationId || slug(oapMethod?.summary || "")) === "createResponse") {
-    //     console.log(5)
-    // }
-
+    
     return endpointRef
 }
 

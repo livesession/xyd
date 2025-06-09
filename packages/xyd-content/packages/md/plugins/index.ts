@@ -9,7 +9,7 @@ import { remarkMdxToc, RemarkMdxTocOptions } from "./mdToc";
 import { remarkInjectCodeMeta } from "./mdCode";
 import { extractThemeSettings } from "./mdThemeSettings";
 import { extractPage } from "./mdPage";
-import { mdHeading } from "./mdHeading";
+import { mdHeadingId } from "./mdHeadingId";
 import { rehypeHeading } from "./rehypeHeading";
 import { mdComponentDirective } from "./component-directives";
 import { mdFunctionChangelog, mdFunctionImportCode, mdFunctionUniform } from "./functions"
@@ -42,7 +42,7 @@ function remarkPlugins(
     settings?: Settings
 ) {
     return [
-        mdHeading,
+        mdHeadingId,
         remarkInjectCodeMeta,
         remarkMdxToc(toc),
         extractThemeSettings,

@@ -1,14 +1,17 @@
-import {Root, Heading} from "mdast";
-import {MdxjsEsm} from "mdast-util-mdx";
-import {Plugin} from "unified"; // TODO: use Plugin type
-import {MdxJsxFlowElement, MdxJsxAttribute} from "mdast-util-mdx-jsx";
+import { Root, Heading } from "mdast";
+import { MdxjsEsm } from "mdast-util-mdx";
+import { Plugin } from "unified";
+import { MdxJsxFlowElement, MdxJsxAttribute } from "mdast-util-mdx-jsx";
+
+import { mdParameters } from './utils/mdParameters';
 
 export type TocEntry = {
     depth: number,
     id: string,
     value: string,
     attributes: { [key: string]: string },
-    children: TocEntry[]
+    children: TocEntry[],
+    maxTocDepth?: number
 };
 
 export type CustomTag = {
@@ -30,10 +33,10 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
     }
 
     console.time('plugin:remarkMdxToc');
-    const {visit} = await import("unist-util-visit");
-    const {toString} = await import("mdast-util-to-string");
-    const {valueToEstree} = await import('estree-util-value-to-estree')
-    const {name: isIdentifierName} = await import('estree-util-is-identifier-name');
+    const { visit } = await import("unist-util-visit");
+    const { toString } = await import("mdast-util-to-string");
+    const { valueToEstree } = await import('estree-util-value-to-estree')
+    const { name: isIdentifierName } = await import('estree-util-is-identifier-name');
 
     const mdast = ast as Root;
     const name = options.name ?? "toc";
@@ -43,7 +46,9 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
 
     const toc: TocEntry[] = [];
     const flatToc: TocEntry[] = [];
-    const createEntry = (node: Heading | MdxJsxFlowElement, depth: number): TocEntry => {
+    const nodesToRemove: number[] = [];
+
+    const createEntry = (node: Heading | MdxJsxFlowElement, depth: number, index: number): TocEntry | null => {
         let attributes = (node.data || {}) as TocEntry['attributes'];
         if (node.type === "mdxJsxFlowElement") {
             attributes = Object.fromEntries(
@@ -52,19 +57,53 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
                     .map(attribute => [(attribute as MdxJsxAttribute).name, attribute.value])
             ) as TocEntry['attributes'];
         }
-        let value = toString(node, {includeImageAlt: false});
-        // Remove all props in curly braces
-        value = value.replace(/\s*\{[^}]+\}/g, '');
+
+        let value = toString(node, { includeImageAlt: false });
+        const { attributes: parsedAttributes, sanitizedText } = mdParameters(value);
+
+        // Merge parsed attributes with existing ones
+        attributes = { ...attributes, ...parsedAttributes };
+
+        // Handle toc attribute
+        if (attributes.toc === 'false') {
+            return null; // Skip this entry
+        }
+
+        // If toc attribute is present, update the node's content to remove the [toc] part
+        if (attributes.toc === 'true' && node.type === "heading") {
+            // Keep the heading but remove the [toc] text and hide it
+            (node as any).data = {
+                ...(node as any).data,
+                hProperties: {
+                    ...(node as any).data?.hProperties,
+                    hideHeading: true
+                }
+            };
+            node.children = node.children.map(child => {
+                if (child.type === "text") {
+                    return {
+                        ...child,
+                        value: ""
+                    };
+                }
+                return child;
+            });
+        }
+
+        // Use toc value if provided, otherwise use clean text
+        const tocValue = attributes.toc === 'true' ? sanitizedText : (attributes.toc || sanitizedText);
+
         return {
             depth,
             id: (node.data as any)?.hProperties?.id,
-            value,
+            value: tocValue,
             attributes,
-            children: []
-        }
+            children: [],
+            maxTocDepth: attributes.maxTocDepth ? parseInt(attributes.maxTocDepth) : undefined
+        };
     };
 
-    visit(mdast, ["heading", "mdxJsxFlowElement"], node => {
+    visit(mdast, ["heading", "mdxJsxFlowElement"], (node, index) => {
         // @ts-ignore
         let depth = 0;
         if (node.type === "mdxJsxFlowElement") {
@@ -91,15 +130,45 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
             return;
         }
 
-        if (depth && (options?.maxDepth && options.maxDepth < depth)) {
-            return
+        const entry = createEntry(node, depth, index as number);
+        if (!entry) return;
+
+        // If toc attribute is explicitly set to true or +toc is present, include it regardless of depth
+        if (entry.attributes.toc === 'true' || entry.attributes["+toc"] === 'true') {
+            flatToc.push(entry);
+            let parent: TocEntry[] = toc;
+            for (let i = flatToc.length - 1; i >= 0; --i) {
+                const current = flatToc[i];
+                if (current.depth < entry.depth) {
+                    parent = current.children;
+                    break;
+                }
+            }
+            parent.push(entry);
+            return;
+        }
+
+        // First check if this entry should be included based on parent's maxTocDepth
+        let parentMaxDepth = options.maxDepth;
+        for (let i = flatToc.length - 1; i >= 0; --i) {
+            const parent = flatToc[i];
+            if (parent.depth < entry.depth) {
+                if (parent.maxTocDepth !== undefined) {
+                    parentMaxDepth = parent.maxTocDepth;
+                }
+                break;
+            }
+        }
+
+        // Now check against the effective max depth (either global or parent's maxTocDepth)
+        if (depth && parentMaxDepth && depth > parentMaxDepth) {
+            return;
         }
 
         if (depth && (options?.minDepth && depth < options.minDepth)) {
-            return
+            return;
         }
 
-        const entry = createEntry(node, depth);
         flatToc.push(entry);
 
         let parent: TocEntry[] = toc;
@@ -111,6 +180,11 @@ export const remarkMdxToc = (options: RemarkMdxTocOptions): Plugin => () => asyn
             }
         }
         parent.push(entry);
+    });
+
+    // Remove nodes marked for removal
+    nodesToRemove.sort((a, b) => b - a).forEach(index => {
+        mdast.children.splice(index, 1);
     });
 
     const tocExport: MdxjsEsm = {
