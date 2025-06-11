@@ -2,14 +2,14 @@
 title: Algolia
 ---
 
-# LiveSession
+# Algolia {label="Experimental"}
 :::subtitle
-Learn how to send analytics events to LiveSEssion
+Learn how to use Algolia
 :::
 
-Add the following to your docs.json file to send analytics to LiveSession.
+Add the following to your docs.json:
 
-:::code-group{title="Analytics options in docs.json"}
+:::code-group
 ```json Schema
 {
     "integrations": {

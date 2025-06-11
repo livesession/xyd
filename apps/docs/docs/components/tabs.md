@@ -5,6 +5,8 @@ layout: wide
 uniform: "@components/writer/UnderlineNav/UnderlineNav.tsx"
 ---
 
+# Tabs {label="Coming Soon"}
+
 <<<examples
 ```tsx
  <UnderlineNav>

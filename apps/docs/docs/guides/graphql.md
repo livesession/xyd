@@ -1,10 +1,11 @@
 ---
 title: GraphQL
 icon: docs:graphql
-tocGithub: 
+tocCard: 
     link: https://github.com/xyd-js/graphql-samples
     title: GraphQL Samples
     description: Learn how to setup GraphQL pages
+    icon: docs:github
 ---
 
 # GraphQL

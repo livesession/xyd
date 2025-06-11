@@ -99,7 +99,7 @@ The function generates a structured JSON output containing:
 
 ## Plugins
 
-You can configure the uniform plugins in your `xyd.json`:
+You can configure the uniform plugins in your `docs.json`:
 
 ```json
 {

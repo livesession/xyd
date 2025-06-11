@@ -5,6 +5,7 @@ declare global {
     namespace JSX {
       interface IntrinsicElements {
         'xyd-built-with': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+        'xyd-page-footer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       }
     }
   }

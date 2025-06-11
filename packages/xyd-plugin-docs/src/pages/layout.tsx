@@ -17,8 +17,6 @@ import {ReactContent} from "@xyd-js/components/content";
 import {Atlas, AtlasContext, type VariantToggleConfig} from "@xyd-js/atlas";
 import {Surfaces} from "@xyd-js/framework/react";
 import {Composer} from "@xyd-js/composer";
-import {BaseTheme} from "@xyd-js/themes";
-import parse from 'html-react-parser';
 // @ts-ignore
 import {iconSet} from 'virtual:xyd-icon-set';
 
@@ -139,7 +137,6 @@ export default function Layout() {
             return <BannerContent components={theme.reactContentComponents()}/>
         }
     }
-
 
     return <>
         <IconProvider value={{

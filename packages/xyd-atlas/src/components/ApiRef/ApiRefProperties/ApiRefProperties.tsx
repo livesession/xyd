@@ -84,7 +84,7 @@ interface PropTypeProps {
 function PropType({property}: PropTypeProps) {
     const href = useSymbolLink(property)
 
-    const symbol = resolvePropertySymbol(property).join(" ")
+    const symbol = resolvePropertySymbol(property)
 
     let propSymbol: string | React.ReactNode = symbol
 
@@ -179,7 +179,20 @@ function SubProperties({parent, properties}: SubPropertiesProps) {
     const foundProperties = filterProperties(properties || [])
 
     const choiceType = isChoiceType(parent)
-    const noChildProps = foundProperties.every(prop => !(prop.properties?.length ?? 0))
+    const noChildProps = function () {
+        if (parent?.type ===  DEFINED_DEFINITION_PROPERTY_TYPE.ENUM) {
+            return false
+        }
+
+        return foundProperties.every(prop => {
+            if (prop.ofProperty) {
+                return false
+            }
+
+            return !(prop.properties?.length ?? 0)
+        })
+    }()
+
     if (choiceType && noChildProps) {
         return null
     }
@@ -352,120 +365,171 @@ function filterProperties(properties: DefinitionProperty[]): DefinitionProperty[
     })
 }
 
-function resolvePropertySymbol(property: DefinitionProperty): string[] {
-    if (property?.ofProperty) {
-        switch (property.ofProperty.type) {
-            case DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY: {
-                let ofOfSymbols: string[] = []
+function resolvePropertySymbol(property: DefinitionProperty): string {
+    function resolvePropertySymbolInner(property: DefinitionProperty) {
+        if (property?.ofProperty) {
+            switch (property.ofProperty.type) {
+                case DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY: {
+                    let ofOfSymbols: string[] = []
 
-                if (property.type) {
-                    ofOfSymbols.push(property.type)
+                    if (property.type) {
+                        ofOfSymbols.push(property.type)
+                    }
+
+                    if (property.ofProperty.ofProperty) {
+                        const symbol = groupSymbol(property.ofProperty.ofProperty)
+
+                        if (symbol) {
+                            ofOfSymbols.push(symbol)
+                        }
+                    }
+
+                    const atomicDefinedSymbol = atomicDefinedPropertySymbol(property.ofProperty)
+                    const ofPrefix = [
+                        atomicDefinedSymbol,
+                        "of"
+                    ]
+
+                    return [
+                        [
+                            ...ofPrefix,
+                            ...ofOfSymbols
+                        ].join(" ")
+                    ]
                 }
+                case DEFINED_DEFINITION_PROPERTY_TYPE.UNION:
+                case DEFINED_DEFINITION_PROPERTY_TYPE.ENUM:
+                case DEFINED_DEFINITION_PROPERTY_TYPE.XOR: {
+                    if (property.ofProperty.properties?.length) {
+                        const atomicDefinedSymbol = atomicDefinedPropertySymbol(property)
 
-                if (property.ofProperty.ofProperty) {
-                    const symbols = groupSymbol(property.ofProperty.ofProperty)
+                        if (atomicDefinedSymbol) {
+                            const unionSymbol = groupSymbol({
+                                name: "",
+                                description: "",
+                                type: DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
+                                properties: property.ofProperty.properties || [],
+                            })
 
-                    ofOfSymbols.push(...symbols)
-                }
+                            if (unionSymbol?.length && unionSymbol.includes("$$")) {
+                                return [atomicDefinedSymbol]
+                            }
 
-                const atomicDefinedSymbol = atomicDefinedPropertySymbol(property.ofProperty)
-                const ofPrefix = [
-                    atomicDefinedSymbol,
-                    "of"
-                ]
-
-                return [
-                    ...ofPrefix,
-                    ...ofOfSymbols
-                ]
-            }
-            case DEFINED_DEFINITION_PROPERTY_TYPE.UNION:
-            case DEFINED_DEFINITION_PROPERTY_TYPE.ENUM:
-            case DEFINED_DEFINITION_PROPERTY_TYPE.XOR: {
-                if (property.ofProperty.properties?.length) {
-                    const atomicDefinedSymbol = atomicDefinedPropertySymbol(property)
-
-                    if (atomicDefinedSymbol) {
-                        const unionSymbol = groupSymbol({
-                            name: "",
-                            description: "",
-                            type: DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
-                            properties: property.ofProperty.properties || [],
-                        })
+                            return [
+                                [
+                                    atomicDefinedSymbol,
+                                    "of",
+                                    unionSymbol
+                                ].join(" ")
+                            ]
+                        }
 
                         return [
-                            atomicDefinedSymbol,
-                            "of",
-                            ...unionSymbol
+                            property.type,
+                            groupSymbol(property.ofProperty)
                         ]
                     }
 
+                    if (property.ofProperty?.ofProperty) {
+                        return [property.ofProperty?.ofProperty?.type]
+                    }
+
+                    return []
+                }
+                default: {
+                    if (!property.ofProperty.name) {
+                        const defined = atomicDefinedPropertySymbol(property)
+                        const symbol = atomicPropertySymbol(property)
+
+                        if (symbol.startsWith("$$")) {
+                            return [property.ofProperty.type]
+                        }
+
+                        const chains = [
+                            symbol
+                        ]
+
+                        if (defined) {
+                            chains.push("of")
+                        }
+
+                        chains.push(
+                            groupSymbol(property.ofProperty)
+                        )
+
+                        return chains
+                    }
+
                     return [
-                        property.type,
-                        ...groupSymbol(property.ofProperty)
+                        property.ofProperty.type
                     ]
                 }
-
-                if (property.ofProperty?.ofProperty) {
-                    return [property.ofProperty?.ofProperty?.type]
-                }
-
-                return []
             }
-            default: {
-                if (!property.ofProperty.name) {
-                    const defined = atomicDefinedPropertySymbol(property)
-                    const symbol = atomicPropertySymbol(property)
+        }
 
-                    if (symbol.startsWith("$$")) {
-                        return [property.ofProperty.type]
+        switch (property.type) {
+            case DEFINED_DEFINITION_PROPERTY_TYPE.UNION, DEFINED_DEFINITION_PROPERTY_TYPE.XOR: {
+                if (property.properties?.length) {
+                    const respMap = {}
+                    let resp: string[] = []
+                    for (const prop of property.properties) {
+                        let symbols = resolvePropertySymbolInner(prop)
+
+                        if (prop.ofProperty && symbols.length > 1) {
+                            symbols = [[
+                                symbols[0],
+                                ...symbols.slice(1, symbols.length),
+                            ].join("")]
+                        }
+
+                        resp.push(...symbols)
                     }
 
-                    const chains = [
-                        symbol
-                    ]
-
-                    if (defined) {
-                        chains.push("of")
+                    let hasOr = false // TODO: in the future better
+                    for (const symbol of resp) {
+                        if (symbol.trim() === "or") {
+                            hasOr = true
+                            break
+                        }
+                        respMap[symbol] = true
                     }
 
-                    chains.push(
-                        ...groupSymbol(property.ofProperty)
-                    )
+                    if (!hasOr) {
+                        resp = Object.keys(respMap)
+                    }
 
-                    return chains
+                    return [resp.join(" or ")]
                 }
 
-                return [
-                    property.ofProperty.type
-                ]
+                break
             }
+
+            case DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY: {
+                return ["array"]
+            }
+
+            case DEFINED_DEFINITION_PROPERTY_TYPE.ENUM: {
+                return ["enum"]
+            }
+        }
+
+        if (property.type?.startsWith("$$")) {
+            return []
+        }
+
+        return [property.type]
+    }
+
+    const symbolsParts = resolvePropertySymbolInner(property)
+    if (nullableProperty(property)) {
+        if (symbolsParts.length) {
+            symbolsParts.push("or", "null")
+        } else {
+            symbolsParts.push("null")
         }
     }
 
-    switch (property.type) {
-        case DEFINED_DEFINITION_PROPERTY_TYPE.UNION: {
-            if (property.properties?.length) {
-                const resp: string[] = []
-                for (const prop of property.properties) {
-                    let symbols = resolvePropertySymbol(prop)
-
-                    if (prop.ofProperty && symbols.length > 1) {
-                        symbols = [[
-                            symbols[0],
-                            ...symbols.slice(1, symbols.length),
-                        ].join("")]
-                    }
-
-                    resp.push(...symbols)
-                }
-
-                return [resp.join(" or ")]
-            }
-        }
-    }
-
-    return [property.type]
+    return symbolsParts.join(" ")
 }
 
 function atomicDefinedPropertySymbol(property: DefinitionProperty): string {
@@ -486,11 +550,12 @@ function atomicDefinedPropertySymbol(property: DefinitionProperty): string {
 }
 
 function groupSymbol(property: DefinitionProperty) {
-    const symbols = resolvePropertySymbol(property)
-    symbols[0] = "(" + symbols[0]
-    symbols[symbols.length - 1] = symbols[symbols.length - 1] + ")"
+    const symbol = resolvePropertySymbol(property)
+    if (symbol?.startsWith("$$")) {
+        return ""
+    }
 
-    return symbols
+    return symbol
 }
 
 function atomicPropertySymbol(property: DefinitionProperty): string {
@@ -501,4 +566,8 @@ function atomicPropertySymbol(property: DefinitionProperty): string {
     }
 
     return defined
+}
+
+function nullableProperty(property: DefinitionProperty): boolean {
+    return property.meta?.some(m => m.name === "nullable" && m.value === "true") || false
 }

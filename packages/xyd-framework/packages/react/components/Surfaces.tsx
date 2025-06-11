@@ -3,7 +3,9 @@ import React, {createContext, useContext} from 'react'
 export enum SurfaceTarget {
     NavRight = "nav.right",
     
-    SidebarTop = "sidebar.top"
+    SidebarTop = "sidebar.top",
+
+    PageFooterBottom = "page.footer.bottom",
 }
 
 // Type that allows both enum and string values

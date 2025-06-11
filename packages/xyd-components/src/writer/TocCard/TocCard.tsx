@@ -1,16 +1,18 @@
 import React from "react";
 
 import cn from "./TocCard.module.css";
+import { Icon } from "writer";
 
 interface TocCardProps {
     title: string;
     description: string;
     href: string;
     className?: string;
+    icon?: string;
     as?: React.ElementType;
 }
 
-export function TocCard({ title, description, href, className, as }: TocCardProps) {
+export function TocCard({ title, description, href, className, icon, as }: TocCardProps) {
     const Link = as || $Link;
 
     return <xyd-toccard
@@ -25,12 +27,7 @@ export function TocCard({ title, description, href, className, as }: TocCardProp
             >
                 <div part="title-container">
                     <div part="title">{title}</div>
-                    <img
-                        // TODO in the future build-time src and ssr also?
-                        part="link-icon"
-                        src="https://github.com/favicon.ico"
-                        alt={`${title} favicon`}
-                    />
+                    {icon && <Icon name={icon} size={16} />}
                 </div>
                 <div part="description">
                     {description}

@@ -43,16 +43,6 @@ Bool false sugar syntax
 :::
 ```
 
-Some components/built-in tags has special symbols as props, for example:
-```
-:::my-component{#some-id}
-:::
-```
-
-above will pass `id` as prop for `my-component`. More details about this API you can find [here](#).  
-
-&nbsp;
-
 ## `Function Calling`
 Function Calling (`@<function>`) is used to execute [functions](/docs/reference/functions) within your markdown content:
 
@@ -60,10 +50,8 @@ Function Calling (`@<function>`) is used to execute [functions](/docs/reference/
 @import "~/snippets/Hello.ts"
 ```
 
-&nbsp;
-
-## `Output Variable`
-Output Variable (`<<<<out_variable>{<attributes>}`) is used to pass [output variables](#) from content files, useful for customizing documentation behavior:
+## `Output Variable` {label="Experimental"}
+Output Variable (`<<< <out_variable>{<attributes>}`) is used to pass output variables from content files, useful for [composing](/docs/guides/compose-content) documentation content:
 
 ~~~md
 <<<examples{title="Samples"}
@@ -85,7 +73,20 @@ Note that you must have an Admin or Owner role to manage webhook settings.
 ###  Output Variable API {label="Coming soon"}
 Define your own custom output variable using follow API:
 
-```tsx
+:::code-group
+```tsx Settings API
+export default {
+  outputVariables: {
+    examples: Examples
+  }
+}
+
+function Examples({title, children}) {
+  // your custom logic here
+}
+```
+
+```tsx Theme API
 import {BaseTheme} from "xyd-js/themes"
 
 export class MyTheme extends BaseTheme {
@@ -101,26 +102,23 @@ function Examples({title, children}) {
 }
 
 ```
+:::
 
-&nbsp;
-
-## `Read Variable`
-Read Variable (`{<read_variable>}`) is used to access [read variables](#) from frontmatter and other [pages](#):
+## `Read Variable` {label="Coming Soon"}
+Read Variable (`{<read_variable>}`) is used to access read variables from frontmatter and other pages:
 
 ```mdx
 {frontmatter.title}
 ```
 
-&nbsp;
-
 ## `Attributes`
-Some built-in tags has abilities to pass [attributes](#) (`<tag|expression>{<attributes>}`):
+Some built-in tags has abilities to pass attributes (`<tag|expression>{<attributes>}`):
 ```mdx
-## Hide me from TOC {!toc}
+## Hide me from TOC [!toc]
 
-## Add me to TOC while not render on page {toc}
+## Add me to TOC while not render on page [toc]
 
-## Component Directive (`:::`) {toc="Component Directive"}
+## Component Directive (`:::`) [toc="Component Directive"]
 ```
 
 

@@ -1,10 +1,11 @@
 ---
 title: Icons
 icon: image
-tocGithub: 
+tocCard: 
     link: https://github.com/xyd-js/icon-samples
     title: Icons Samples
     description: Learn how to setup Icons
+    icon: docs:github
 ---
 
 # Icons

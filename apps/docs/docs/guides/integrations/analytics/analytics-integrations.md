@@ -26,7 +26,7 @@ The syntax for `docs.json` is below.
 
 You only need to include entries for the platforms you want to connect:
 
-```json xyd.json
+```json docs.json
 {
     "integrations": {
         "analytics": {
@@ -45,4 +45,4 @@ You only need to include entries for the platforms you want to connect:
 
 *  `CodeCopy`
 
-*  `CopyPage`
+*  `PageCopy`

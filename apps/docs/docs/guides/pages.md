@@ -1,6 +1,6 @@
 ---
 title: Pages
-icon: columns-2 
+icon: columns-2
 ---
 
 # Pages Quickstart
@@ -83,7 +83,7 @@ The Page Layout setting allows you to customize the appearance of your page thro
 This setting is optional - if not specified, the page will use the `default` layout settings.
 
 #### Default layout
-If no specific mode is given, the [`page`](#) will default to standard settings. 
+If no specific mode is given, the `page` will default to standard settings. 
 This means the page will display with the default table of contents (if headings are present) and other standard elements, providing a typical layout without any special adjustments.
 ```md
 ---
@@ -112,19 +112,21 @@ layout: center
 ---
 ```
 
-## TOC Depth
+## TOC [maxTocDepth=3]
+The Table of Contents (TOC) is automatically generated based on the headings in your page. It provides easy navigation through your content and can be customized in several ways.
+
+### Depth
 You can customize the depth level of TOCs per page:
 ```md
 ---
 maxTocDepth: 2
 ---
 ```
-
 :::callout
 If you want to change the depth level globally, please check out [settings](/docs/guides/settings#reference).
 :::
 
-## TOC Card
+### Card
 `tocCard` meta is useful for showing additional card below table of contents with addional info to your content.
 
 ```md
@@ -137,6 +139,9 @@ tocCard:
 ---
 ```
 
+:::callout
+If you want to learn more about toc anchors, check out [here](/docs/guides/writing-quickstart#toc-anchors).
+:::
 
 ## Uniform
 

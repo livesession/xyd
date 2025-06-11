@@ -1,8 +1,13 @@
 import React, {Fragment} from 'react'
 import type {ReactElement} from 'react'
-import {ArrowRightIcon} from '@radix-ui/react-icons'
 
 import * as cn from './Breadcrumbs.styles'
+
+function ArrowRightIcon() {
+    return <div>
+        TODO
+    </div>
+}
 
 function Anchor({children, ...rest}) {
     return <a {...rest}>

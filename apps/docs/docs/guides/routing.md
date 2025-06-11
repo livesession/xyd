@@ -1,10 +1,13 @@
 ---
 title: Routing
 icon: waypoints
-tocGithub: 
+tocCard: 
     link: https://github.com/xyd-js/routing-samples
     title: Routing Samples
     description: Learn how to setup Routing
+    icon: docs:github
+
+maxTocDepth: 4
 ---
 
 # Routing
@@ -108,7 +111,7 @@ Please not that order of your sidebar items depends on place in the config file.
 :::
 
 #### Routing in Sidebar
-You can also do more advanced routing in the sidebar, like matching based on the current route:
+You can also do more advanced routing in the sidebar, like matching based on the specific route:
 
 ```json
 {
@@ -174,6 +177,8 @@ The header navigation allows you to create a top-level navigation bar.
 }
 ```
 
+#### Subheader
+
 you can also define a sub header for a specific routes:
 
 ```json
@@ -214,6 +219,7 @@ you can also define a sub header for a specific routes:
   }
 }
 ```
+Subheader usually shows under header but it depends on theme.
 
 :::callout
 The `route` property in `subheader` determines which the header should be visible.
@@ -253,10 +259,6 @@ Anchors provide a way to add fixed navigation elements, typically at the bottom 
   }
 }
 ```
-
-:::callout
-Anchors support icons and can be positioned at different parts of the page using the `bottom` property.
-:::
 
 ##  File-Convention Routing {label="Coming soon"}
 :::callout

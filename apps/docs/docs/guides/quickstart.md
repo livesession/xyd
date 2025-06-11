@@ -11,7 +11,7 @@ Start building modern documentation in record time
 Follow the instructions below to learn how to run, deploy, update and supercharge your documentation with `xyd`.
 
 :::callout
-**Prerequisite:** Please install Node.js (version 19 or higher) before proceeding.
+**Prerequisite:** Please install Node.js (version 22 or higher) before proceeding.
 :::
 
 <!-- <UnderlineNav value={activeTab}>
@@ -38,7 +38,7 @@ pnpm add -g xyd-js
 ```
 :::
 
-**Step 2:** Navigate to the docs directory (where the settings file is located) and execute the following command:
+**Step 2:** Navigate to the docs directory (where the [settings file](/docs/guides/settings) is located) and execute the following command:
 ```bash
 xyd
 ```
@@ -62,5 +62,5 @@ pnpm add -g xyd-js
 
 ## Publishing
 Publishing changes depends on your preferences, the simplest way is to
-use the one of infrastructure provider slike Netlify or Vercel.
-Learn more about [publishing](/docs/deploy)
+use the one of infrastructure providers like Netlify or Vercel.
+Learn more about [deploy](/docs/guides/deploy).

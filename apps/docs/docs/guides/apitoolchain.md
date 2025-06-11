@@ -3,10 +3,7 @@ title: APIToolchain
 icon: docs:plug-connected-settings-20-filled
 ---
 
-# APIToolchain{label="Coming Soon"}
-:::subtitle
-Learn how to use API generation tools
-:::
+# APIToolchain{label="Coming Soon" subtitle="Learn how to use API generation tools"}
 
 APIToolchain is a set of tools that allows you to generate API documentation from multiple sources like [GraphQL](https://graphql.org/), [OpenAPI](https://www.openapis.org) or [TypeScript](https://www.typescriptlang.org/) into one unified format called `uniform`.
 

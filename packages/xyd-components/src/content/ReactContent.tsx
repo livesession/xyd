@@ -26,6 +26,7 @@ import {
     Icon,
     Image,
     Update,
+    Card
 } from '../writer'
 import { CodeSample } from "../coder";
 import { GridDecorator } from './GridDecorator';
@@ -201,11 +202,12 @@ interface HeadingContentProps {
     depth: 1 | 2 | 3 | 4 | 5 | 6
     children: React.ReactNode
     label?: string
+    subtitle?: string
     noanchor?: boolean
     style?: any
 }
 
-function $Heading({ id, depth, children, label, noanchor, style }: HeadingContentProps) {
+function $Heading({ id, depth, children, label, subtitle,noanchor, style }: HeadingContentProps) {
     // const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
     // const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
     const navigation = this?.options?.useNavigation() // TODO: !!!! BETTER API !!!!!
@@ -251,6 +253,7 @@ function $Heading({ id, depth, children, label, noanchor, style }: HeadingConten
             document.querySelector(`#${id}`)?.scrollIntoView()
         }}
         label={label}
+        subtitle={subtitle}
         noanchor={noanchor}
         style={style}
     >
@@ -284,7 +287,8 @@ export function writerContent() {
                 {paragraph}
             </Heading>
         },
-        Update
+        Update,
+        Card: $Card.bind(this)
     }
 }
 
@@ -292,6 +296,13 @@ function $GuideCardContentComponent(props) {
     return <GuideCard
         {...props}
         as={this?.options?.Link}
+    />
+}
+
+function $Card(props) {
+    return <Card
+        {...props}
+        link={this?.options?.Link}
     />
 }
 

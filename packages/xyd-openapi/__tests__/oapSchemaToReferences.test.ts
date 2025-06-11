@@ -11,19 +11,19 @@ const tests: {
     options?: uniformOasOptions
 }[] = [
     // TODO: uncomment when ready
-    // {
-    //     name: "-2.complex.openai",
-    //     description: "OpenAI OpenAPI API example",
-    //     plugins: [
-    //         uniformOpenAIMeta,
-    //     ],
-    //     // options: {
-    //     //    regions: [
-    //     //        // "/components/schemas/ListAssistantsResponse",
-    //     //        "POST /responses"
-    //     //    ]
-    //     // }
-    // },
+    {
+        name: "-2.complex.openai",
+        description: "OpenAI OpenAPI API example",
+        plugins: [
+            uniformOpenAIMeta,
+        ],
+        // options: {
+        //    regions: [
+        //        // "/components/schemas/ListAssistantsResponse",
+        //        "POST /responses"
+        //    ]
+        // }
+    },
 
     // {
     //     name: "1.basic",
@@ -37,11 +37,11 @@ const tests: {
     //     name: "3.multiple-responses",
     //     description: "Multiple responses OpenAPI API example",
     // },
-
-    {
-        name: "4.abc",
-        description: "Multiple responses OpenAPI API example",
-    },
+    //
+    // {
+    //     name: "4.abc",
+    //     description: "Multiple responses OpenAPI API example",
+    // },
 ]
 
 describe("oapSchemaToReferences", () => {

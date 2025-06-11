@@ -1,5 +1,5 @@
 import React, { } from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
+import {Tabs as TabsPrimitive} from "radix-ui"; // TODO: remove and use separation
 import {
     HighlightedCode,
 } from "codehike/code"

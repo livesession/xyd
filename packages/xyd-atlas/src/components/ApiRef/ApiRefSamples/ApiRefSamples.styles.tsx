@@ -1,7 +1,7 @@
 import {css} from "@linaria/core";
 
 export const ApiRefSamplesContainerHost = css`
-    height: 100%;
+    height: fit-content;
     position: sticky;
     top: 12px;
     display: flex;

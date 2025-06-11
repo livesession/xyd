@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useMemo} from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs"; // TODO: remove and use separation
+import {Tabs as TabsPrimitive} from "radix-ui"; // TODO: remove and use separation
 import {
     AnnotationHandler,
     InnerLine,

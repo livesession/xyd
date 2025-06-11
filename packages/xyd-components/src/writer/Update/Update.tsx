@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { Badge, Text } from '@xyd-js/components/writer';
+import { Badge } from '../Badge';
+import { Text } from '../Text';
+
 import * as cn from "./Update.styles"
 
 interface UpdateProps {

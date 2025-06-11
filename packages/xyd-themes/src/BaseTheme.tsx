@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { useLocation } from 'react-router'
+import GitHubButton from 'react-github-btn'
 
-import { TocCard, VideoGuide } from '@xyd-js/components/writer';
+import { TocCard, Text, VideoGuide } from '@xyd-js/components/writer';
 import { ContentDecorator } from "@xyd-js/components/content";
 import {
     LayoutPrimary
@@ -32,12 +33,14 @@ export class BaseTheme extends Theme {
         this.ContentNav = this.ContentNav.bind(this)
         this.TocTop = this.TocTop.bind(this)
         this.TocBottom = this.TocBottom.bind(this)
+        this.PageFooter = this.PageFooter.bind(this)
     }
 
     public Page({ children }: { children: React.ReactNode }) {
         const {
             Content: $Content,
             ContentNav: $ContentNav,
+            PageFooter: $PageFooter,
         } = this
 
         const hideToc = this.useHideToc()
@@ -48,7 +51,9 @@ export class BaseTheme extends Theme {
                 {children}
             </$Content>
 
-            <$BuiltWithXYD />
+            <$PageFooter>
+                <$BuiltWithXYD />
+            </$PageFooter>
         </LayoutPrimary.Page>
     }
 
@@ -140,19 +145,56 @@ export class BaseTheme extends Theme {
 
     protected TocBottom() {
         const meta = useMetadata()
-        const tocGithub = meta?.tocGithub
-        const isEmpty = !tocGithub || !tocGithub.link || !tocGithub.title || !tocGithub.description
+        const tocCard = meta?.tocCard
+        const isEmpty = !tocCard || !tocCard.link || !tocCard.title || !tocCard.description
         if (isEmpty) {
             return null
         }
 
         return <div>
             <TocCard
-                title={tocGithub.title}
-                description={tocGithub.description}
-                href={tocGithub.link}
+                title={tocCard.title}
+                description={tocCard.description}
+                href={tocCard.link}
+                icon={tocCard.icon}
             />
         </div>
+    }
+
+    protected PageFooter({ children }: { children: React.ReactNode }) {
+        const settings = useSettings()
+
+        let pageFooterBottom: React.ReactNode | null = null
+
+        if (settings.integrations?.apps?.githubStar) {
+            pageFooterBottom = <div part="github-button-container">
+                <Text size="small">
+                    {settings.integrations.apps.githubStar.label}
+                </Text>
+
+                <GitHubButton
+                    href={settings.integrations.apps.githubStar.href}
+                    data-icon={settings.integrations.apps.githubStar.dataIcon || "octicon-star"}
+                    data-size={settings.integrations.apps.githubStar.dataSize || "large"}
+                    data-show-count={settings.integrations.apps.githubStar.dataShowCount || true}
+                    aria-label={settings.integrations.apps.githubStar.ariaLabel}
+                >
+                    {settings.integrations.apps.githubStar.title}
+                </GitHubButton>
+            </div>
+
+        }
+
+        return <>
+            <xyd-page-footer>
+                {children}
+
+                {/* TODO: in the future */}
+                {/* <Surface target="page.footer.bottom"/> */}
+                {pageFooterBottom}
+
+            </xyd-page-footer>
+        </>
     }
 }
 

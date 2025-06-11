@@ -1,0 +1,8 @@
+:root {
+    --xyd-banner-height: 45px !important;
+}
+
+xyd-banner {
+    background: none;
+    border-bottom: 1px solid var(--dark32);
+}

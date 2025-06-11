@@ -44,6 +44,8 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
     button: true,
 
     update: true,
+
+    card: true,
 }
 
 const supportedTextDirectives: MarkdownComponentDirectiveMap = {
@@ -53,6 +55,7 @@ const supportedTextDirectives: MarkdownComponentDirectiveMap = {
 
 const supportedLeafDirectives: MarkdownComponentDirectiveMap = {
     atlas: true,
+    card: true,
 }
 
 const tableComponents: MarkdownComponentDirectiveMap = {

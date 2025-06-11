@@ -2,12 +2,12 @@
 title: Search Integrations
 ---
 
-# Analytics Integrations
+# Search Integrations {label="Experimental"}
 :::subtitle
-Integrate with an analytics platform to track events
+Integrate with search providers to enhance your documentation search experience
 :::
 
-Automatically send data about your documentation engagement to your third party analytics provider.
+Add powerful search capabilities to your documentation by integrating with popular search providers.
 
 ## All integrations
 :::grid

@@ -42,8 +42,18 @@ export function Framework(props: FrameworkProps) {
     const [metadata, setMetadata] = useState<Metadata | undefined>(props.metadata)
 
     const BannerComponent = props.BannerComponent || null
+  
+    return <>
+      {/*  TODO: better place*/}
+      <style>{`
+        ${!BannerComponent ? `
+         :root {
+             --xyd-banner-height: 0px;
+         }
+        ` : ''}
+     `}</style>
 
-    return <FrameworkContext value={{
+        <FrameworkContext value={{
         settings: Object.freeze({ ...props.settings }),
         sidebarGroups: Object.freeze([...props.sidebarGroups]),
         metadata: Object.freeze({ ...metadata, title: metadata?.title || "" }),
@@ -60,6 +70,7 @@ export function Framework(props: FrameworkProps) {
             {props.children}
         </SurfaceContext>
     </FrameworkContext>
+    </>
 }
 
 interface FrameworkPageProps {

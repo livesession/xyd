@@ -19,6 +19,17 @@
     "integrations": {
         "search": {
             "orama": true
+        },
+        "apps": {
+            "githubStar": {
+                "title": "Star",
+                "label": "Show your support! Star us on GitHub ⭐️",
+                "href": "https://github.com/livesession/xyd",
+                "dataIcon": "octicon-star",
+                "dataSize": "large",
+                "dataShowCount": true,
+                "ariaLabel": "Star livesession/xyd on GitHub"
+            }
         }
     },
     "navigation": {
@@ -51,11 +62,11 @@
                     },
                     {
                         "name": "Composer",
-                        "url": "/docs/reference/Composer"
+                        "url": "/docs/reference/composer"
                     },
                     {
                         "name": "CLI",
-                        "url": "/docs/reference/CLI"
+                        "url": "/docs/reference/cli"
                     }
                 ]
             }
@@ -94,8 +105,8 @@
                     {
                         "group": "Customization",
                         "pages": [
-                            "docs/guides/customization-introduction",
-                            "docs/guides/extending-default-theme",
+                            "docs/guides/customization-quickstart",
+                            "docs/guides/theme-api",
                             "docs/guides/custom-theme",
                             "docs/guides/icons",
                             "docs/guides/custom-scripts",
@@ -146,6 +157,13 @@
                                     "docs/guides/integrations/search/search-integrations",
                                     "docs/guides/integrations/search/algolia",
                                     "docs/guides/integrations/search/orama"
+                                ]
+                            },
+                            {
+                                "group": "Other apps",
+                                "icon": "layout-grid",
+                                "pages": [
+                                    "docs/guides/integrations/apps/github-star"
                                 ]
                             }
                         ]
@@ -209,6 +227,7 @@
                         "pages": [
                             "docs/reference/core/overview",
                             "docs/reference/core/settings",
+                            "docs/reference/core/theme",
                             "docs/reference/core/pagemeta"
                         ]
                     }
@@ -220,6 +239,7 @@
                     {
                         "group": "Reference",
                         "pages": [
+                            "docs/reference/composer/overview"
                         ]
                     }
                 ]
@@ -230,6 +250,7 @@
                     {
                         "group": "Reference",
                         "pages": [
+                            "docs/reference/cli/overview"
                         ]
                     }
                 ]

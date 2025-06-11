@@ -1,10 +1,11 @@
 ---
-title: Introduction
-icon: text
-tocGithub: 
+title: Customization Quickstart
+icon: pencil-ruler
+tocCard: 
     link: https://github.com/xyd-js/customization-samples
     title: Customization Samples
     description: Learn how to setup customize your docs
+    icon: docs:github
 ---
 
 # Customization Introduction
@@ -36,13 +37,13 @@ This is the simplest way to customize your documentation.
     }
 }
 ```
-For more details on the theme settings, see the [reference](/docs/guides/customization-introduction#theme-reference) guide.
+For more details on the theme settings, see the [reference](/docs/guides/customization-quickstart#theme-reference) guide.
 
-## Customization via Code
+## Customization via Code [maxTocDepth=3]
 To customize your documentation via code, you'll need to work with a `.docs/theme` directory inside your project root:
 ```
 .
-├─ .docs                # .docs root
+├─ .docs            # .docs root
 │  └─ theme
 │     ├─ index.ts   # theme entry
 │     └─ index.css  # theme styles entry
@@ -54,7 +55,7 @@ To customize your documentation via code, you'll need to work with a `.docs/them
 Thanks to `index.css` inside `.docs/theme/index.css` you can customize base theme styles.
 List of all available css tokens you can find [here](https://github.com/livesession/xyd/blob/master/packages/xyd-themes/src/styles/tokens.css).
 
-### Theme Entry
+### Theme Entry {label="Experimental"}
 <code>xyd</code> will lookup for `index.ts` if you want to modify or create new theme behavior. 
 This file is only necessary when you need to extend default theme's functionality or create a new theme:
 

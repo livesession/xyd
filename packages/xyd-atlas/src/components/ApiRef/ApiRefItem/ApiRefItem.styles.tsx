@@ -33,8 +33,11 @@ export const ApiRefItemHost = css`
         atlas-apiref-item-showcase {
             display: grid;
             gap: 100px;
-
             grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            @media (max-width: 767px) {
+                grid-template-columns: 1fr;
+            }
         }
     }
 `;

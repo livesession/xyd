@@ -5,7 +5,7 @@ icon: download
 
 # Migrations {label="Coming Soon"}
 :::subtitle
-How to migrate documentation from your existing docs framework
+Learn how to migrate from your existing docs framework
 :::
 
 You can use our CLI to convert your existing documentation to xyd:

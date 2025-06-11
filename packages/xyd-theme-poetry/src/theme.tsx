@@ -1,12 +1,12 @@
 import React from "react"
 
-import {Theme as ThemeSettings} from "@xyd-js/core"
-import {UISidebar} from "@xyd-js/ui"
-import {FwLogo} from "@xyd-js/framework/react"
-import {BaseTheme} from "@xyd-js/themes"
+import { Text } from "@xyd-js/components/writer"
+import { UISidebar } from "@xyd-js/ui"
+import { FwLogo } from "@xyd-js/framework/react"
+import { BaseTheme } from "@xyd-js/themes"
 
 // @ts-ignore
-import {SearchButton} from 'virtual-component:Search'
+import { SearchButton } from 'virtual-component:Search'
 
 import "./imports.css"
 
@@ -28,7 +28,7 @@ export default class ThemePoetry extends BaseTheme {
             }
         }
 
-        this.surfaces.define("sidebar.top", <_Search/>);
+        this.surfaces.define("sidebar.top", <_Search />);
     }
 }
 
@@ -36,12 +36,13 @@ function _Search() {
     return <>
         <UISidebar.Item button anchor>
             <a href="/">
-                <FwLogo/>
+                <FwLogo />
             </a>
         </UISidebar.Item>
 
         <UISidebar.Item button anchor>
-            <SearchButton/>
+            <SearchButton />
         </UISidebar.Item>
     </>
 }
+

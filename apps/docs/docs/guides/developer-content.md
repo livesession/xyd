@@ -31,7 +31,7 @@ const MyComponent = () => {
 ```
 
 :::callout
-You can also customize syntax highlighting. Please see [here](/docs/developer-content#syntax-highlighting) for more details.
+You can also customize syntax highlighting. Please see [theme settings](/docs/guides/customization-quickstart#theme-reference) for more details.
 :::
 
 ## Line Highlighting

@@ -1,5 +1,5 @@
 import React from "react"
-import * as RadixTabs from "@radix-ui/react-tabs";
+import {Tabs as RadixTabs} from "radix-ui"; // TODO: remove and use separation
 
 import * as cn from "./SubNav.styles";
 

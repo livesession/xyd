@@ -22,6 +22,22 @@
         line-height: var(--xyd-line-height-small);
     }
 
+    xyd-page-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+        [part="github-button-container"] {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            padding: 15px;
+        }
+    }
+
     xyd-built-with {
         display: flex;
         gap: 8px;

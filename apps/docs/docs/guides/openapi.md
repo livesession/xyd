@@ -1,10 +1,11 @@
 ---
 title: OpenAPI
 icon: docs:openapiinitiative
-tocGithub: 
+tocCard: 
     link: https://github.com/xyd-js/openapi-samples
     title: OpenAPI Samples
     description: Learn how to setup OpenAPI pages
+    icon: docs:github
 ---
 
 # OpenAPI
@@ -21,7 +22,7 @@ Your document must follow OpenAPI specification 3.0+.
 ## Setup OpenAPI Configuration
 The fastest way to get started with OpenAPI is to add an `openapi` field to a `api` in the [`settings`](#) file. 
 This field can contain either the path to an OpenAPI document in your docs repo, or the URL of a hosted OpenAPI document:
-```json xyd.json
+```json docs.json
 {
     // ... rest of settings
     "api": {
@@ -37,7 +38,7 @@ This will create a new route for your OpenAPI specification at `docs/api/rest/*`
 
 ## Advanced Configuration
 Creating APIs for more advanced use cases is possible by configuring the nested `openapi` object:
-```json xyd.json
+```json docs.json
 {
     // ... rest of settings
     "api": {
@@ -129,7 +130,7 @@ x-docs:
 ```
 
 :::callout
-Defining sidebar is very similar as in `xyd.json` except pages where in OpenAPI we can define `type` , `key` or `url`.
+Defining sidebar is very similar as in `docs.json` except pages where in OpenAPI we can define `type` , `key` or `url`.
 :::
 
 ### Endpoint/Object Level Configuration

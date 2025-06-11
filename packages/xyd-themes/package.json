@@ -15,10 +15,12 @@
   "scripts": {
     "build": "tsup && node scripts/build-css.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react-github-btn": "^1.4.0"
+  },
   "peerDependencies": {
-    "@xyd-js/core": "workspace:*",
     "@xyd-js/components": "workspace:*",
+    "@xyd-js/core": "workspace:*",
     "@xyd-js/framework": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

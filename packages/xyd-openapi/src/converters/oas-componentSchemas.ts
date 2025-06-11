@@ -15,7 +15,6 @@ export function schemaComponentsToUniformReferences(
     openapi: OpenAPIV3.Document,
     options?: uniformOasOptions
 ): Reference[] {
-    return [] // TODO: !!! UNCOMMENT !!!
     const references: Reference[] = [];
 
     if (!openapi.components?.schemas) {

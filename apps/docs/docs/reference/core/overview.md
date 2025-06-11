@@ -4,19 +4,20 @@ title: Overview
 
 # Core API
 :::subtitle
-Reference for core objects and referencees
+Reference for core objects and references
 :::
 
 Core API provides the essential objects and references for configuring your documentation. These objects control how your documentation is structured, rendered, and displayed.
 
 ## Core Objects
 
-- **Page Meta**: Control page metadata like title, description, and layout
 - **Settings**: Configure documentation behavior and appearance
-- **Navigation**: Define documentation structure and routing
 - **Theme**: Customize documentation appearance
+- **Page Meta**: Control page metadata like title, description, and layout
+- **Navigation**: Define documentation structure and routing
 
 ## Next Steps
 
 - [Settings](/docs/reference/core/settings)
+- [Theme](/docs/reference/core/theme)
 - [Page Meta](/docs/reference/core/pagemeta)

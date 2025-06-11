@@ -1,10 +1,11 @@
 ---
 title: UI Components
 icon: component
-tocGithub: 
+tocCard: 
     link: https://github.com/xyd-js/component-api-samples
     title: Components API Samples
     description: Learn how to setup Components API pages
+    icon: docs:github
 ---
 
 # UI Components

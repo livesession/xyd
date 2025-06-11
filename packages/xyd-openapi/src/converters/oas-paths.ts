@@ -40,6 +40,9 @@ export function oapPathToReference(
     const exampleGroups: ExampleGroup[] = []
 
     const oapMethod = oapPath?.[httpMethod as keyof OpenAPIV3.PathItemObject] as OpenAPIV3.OperationObject
+    // if (oapMethod?.operationId !== "createChatCompletion") { // TODO: REMOVE
+    //     return null
+    // }
     if (!oapMethod) {
         return null
     }

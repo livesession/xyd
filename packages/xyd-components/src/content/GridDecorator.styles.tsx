@@ -23,6 +23,19 @@ export default {
                 width: 100%;
             }
 
+            &[data-cols] {
+                --cols: var(--data-cols, 2);
+                ul ul {
+                    grid-template-columns: repeat(var(--cols), 1fr);
+                }
+            }
+
+            &[data-cols="2"] { --data-cols: 2; }
+            &[data-cols="3"] { --data-cols: 3; }
+            &[data-cols="4"] { --data-cols: 4; }
+            &[data-cols="5"] { --data-cols: 5; }
+            &[data-cols="6"] { --data-cols: 6; }
+
             @media (max-width: 768px) {
                 > ul {
                     gap: 0;

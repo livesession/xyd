@@ -48,27 +48,32 @@ function parseParameters(
 ) {
     const attributes: Record<string, string> = {};
 
-    // Match patterns like [attr=value], [attr="value"], [!attr], [attr] or {prop=value}, {prop="value"}, {!prop}, {prop}
-    const regex = new RegExp(
-        `\\${delimiter}(!)?([^=\\${closingDelimiter}]+)(?:=(?:"([^"]*)"|([^\\${closingDelimiter}]*)))?\\${closingDelimiter}`,
-        'g'
-    );
+    // First, find all parameter blocks
+    const blockRegex = new RegExp(`\\${delimiter}([^\\${closingDelimiter}]*)\\${closingDelimiter}`, 'g');
+    let blockMatch;
+    
+    while ((blockMatch = blockRegex.exec(text)) !== null) {
+        const blockContent = blockMatch[1];
+        
+        // Then parse individual parameters within the block
+        const paramRegex = /(!)?([^=\s]+)(?:=(?:"([^"]*)"|([^\s]*)))?/g;
+        let paramMatch;
+        
+        while ((paramMatch = paramRegex.exec(blockContent)) !== null) {
+            const [_, isNegated, prop, quotedValue, unquotedValue] = paramMatch;
+            const value = quotedValue !== undefined ? quotedValue : unquotedValue;
 
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-        const [_, isNegated, prop, quotedValue, unquotedValue] = match;
-        const value = quotedValue !== undefined ? quotedValue : unquotedValue;
+            // Sanitize both the property name and value
+            let sanitizedParam = sanitizeParameters(prop);
+            let sanitizedValue = value ? sanitizeParameters(value) : (isNegated ? 'false' : 'true');
 
-        // Sanitize both the property name and value
-        let sanitizedParam = sanitizeParameters(prop);
-        let sanitizedValue = value ? sanitizeParameters(value) : (isNegated ? 'false' : 'true');
+            if (sanitizedParam.startsWith("#") && sanitizedValue === "true") {
+                sanitizedValue = sanitizedParam.replace("#", "").trim()
+                sanitizedParam = "id"
+            }
 
-        if (sanitizedParam.startsWith("#") && sanitizedValue === "true") {
-            sanitizedValue = sanitizedParam.replace("#", "").trim()
-            sanitizedParam = "id"
+            attributes[sanitizedParam] = sanitizedValue;
         }
-
-        attributes[sanitizedParam] = sanitizedValue;
     }
 
     return attributes;

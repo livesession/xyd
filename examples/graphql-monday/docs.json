@@ -1,7 +1,7 @@
 {
     "theme": {
         "name": "opener",
-        "logo": "/public/assets/logo.svg",
+        "logo": "/public/assets/logo.png",
         "favicon": "/public/assets/favicon.svg",
         "maxTocDepth": 2
     },

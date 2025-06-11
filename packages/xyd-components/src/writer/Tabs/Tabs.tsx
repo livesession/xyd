@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import * as RadixTabs from "@radix-ui/react-tabs"
+import {Tabs as RadixTabs} from "radix-ui"; // TODO: remove and use separation
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import * as cn from "./Tabs.styles";

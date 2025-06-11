@@ -1,7 +1,18 @@
 import React from "react"
-import { ArrowLeftIcon, ArrowRightIcon } from '@radix-ui/react-icons'
 
 import * as cn from "./NavLinks.styles";
+
+function ArrowRightIcon() {
+    return <div>
+        TODO
+    </div>
+}
+
+function ArrowLeftIcon() {
+    return <div>
+        TODO
+    </div>
+}
 
 export interface NavLinksProps {
     prev?: {

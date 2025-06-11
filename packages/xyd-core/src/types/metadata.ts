@@ -72,30 +72,32 @@ export interface Metadata<P = void> {
     hidden?: boolean
 
     /**
-     * @internal
-     * 
-     * Optional 'tocGithub' for github references
-     * 
      * @todo: !!! IN THE FUTURE COMPOSE API !!!
+     * 
+     * Optional 'tocCard' for github references
      * 
      * @example
      * ```
-     * tocGithub: {
+     * tocCard: {
      *     link: "https://github.com/livesession/livesession-browser",
      *     title: "Checkout the code",
      *     description: "Check how to use the LiveSession Browser SDK",
+     *     icon: "github"
      * }
      * ```
      */
-    tocGithub?: {
-        /** 'link' for github references */
+    tocCard?: {
+        /** 'link' to the card */
         link: string
 
-        /** 'title' for github references */
+        /** 'title' of the card */
         title: string
 
-        /** 'description' for github references */
+        /** 'description' of the card */
         description: string
+
+        /** 'icon' of the card */
+        icon?: string
     }
 }
 

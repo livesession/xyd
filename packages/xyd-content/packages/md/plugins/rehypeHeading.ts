@@ -17,7 +17,7 @@ export const rehypeHeading: Plugin<[], Root> = () => {
         .join('');
 
       // Parse props using curly braces
-      const { props, sanitizedText } = mdParameters(text);
+      const { props } = mdParameters(text);
 
       if (node.properties?.hideHeading) {
         const existingStyle = node.properties?.style || '';
@@ -26,10 +26,14 @@ export const rehypeHeading: Plugin<[], Root> = () => {
           style: `${existingStyle} visibility: hidden; display: block`.trim()
         };
       }
-      
-      // Update the text content - remove [+toc] but keep the heading visible
-      if (node.children[0] && 'value' in node.children[0]) {
-        node.children[0].value = sanitizedText;
+
+      for (const child of node.children) {
+        if (!('value' in child)) {
+          continue
+        }
+        const { sanitizedText } = mdParameters(child.value);
+
+        child.value = sanitizedText;
       }
 
       // If no props were found, return

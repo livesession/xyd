@@ -5,7 +5,7 @@ import { createServer } from 'vite';
 
 import { Settings } from "@xyd-js/core";
 
-const extensions = ['tsx', 'jsx', 'js', 'ts', 'json'];
+const extensions = ['tsx', 'ts', 'json'];
 
 /**
  * Reads `xyd` settings from the current working directory.
@@ -27,7 +27,7 @@ const extensions = ['tsx', 'jsx', 'js', 'ts', 'json'];
  */
 export async function readSettings(): Promise<Settings | string | null> {
     const dirPath = process.cwd();
-    const baseFileName = 'xyd';
+    const baseFileName = 'docs';
 
     let settingsFilePath = '';
     let reactSettings = false;
@@ -43,7 +43,7 @@ export async function readSettings(): Promise<Settings | string | null> {
             settingsFilePath = path.join(dirPath, settingsFile);
             reactSettings = path.extname(settingsFile) !== '.json';
         } else {
-            console.error(`No settings file found.\nFile must be named 'xyd' with one of the following extensions: ${extensions.join(', ')}`);
+            console.error(`No settings file found.\nFile must be named 'docs' with one of the following extensions: ${extensions.join(', ')}`);
             return null;
         }
     } catch (error) {

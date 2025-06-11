@@ -1,5 +1,6 @@
 import React, { } from "react"
 
+import { Text } from "@xyd-js/components/writer"
 import { UISidebar } from "@xyd-js/ui"
 import { BaseTheme } from "@xyd-js/themes"
 import { ContentDecorator } from "@xyd-js/components/content"
@@ -97,4 +98,5 @@ function _Search() {
         </UISidebar.Item>
     </>
 }
+
 

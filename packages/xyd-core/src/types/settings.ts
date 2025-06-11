@@ -131,17 +131,17 @@ export interface Banner {
 }
 
 export interface IconLibrary {
-     /** The iconify library name */
-     name: string
+    /** The iconify library name */
+    name: string
 
-     /** The iconify library version */
-     version?: string
+    /** The iconify library version */
+    version?: string
 
-     /** The default iconify icon name */
-     default?: boolean
+    /** The default iconify icon name */
+    default?: boolean
 
-     /** Merge icons from the library into the default iconify library */
-     noprefix?: boolean
+    /** Merge icons from the library into the default iconify library */
+    noprefix?: boolean
 }
 
 export interface Icons {
@@ -331,19 +331,19 @@ export interface API {
 /**
  * API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration
  */
-export type APIFile = string | string[] | APIFileMap | APIFileAdvanced 
+export type APIFile = string | string[] | APIFileMap | APIFileAdvanced
 
 /**
  * API file map type
  */
-export type APIFileMap = { 
+export type APIFileMap = {
     [name: string]: string | APIFileAdvanced
 }
 
 /**
  * API file advanced type
  */
-export type APIFileAdvanced = { 
+export type APIFileAdvanced = {
     /** API information configuration */
     info?: APIInfo
 
@@ -437,6 +437,8 @@ export interface Integrations {
      * See full list of supported search here.
      */
     search?: IntegrationSearch
+
+    apps?: IntegrationApps
 }
 
 // #region IntegrationAnalytics
@@ -475,6 +477,51 @@ export interface IntegrationSearch {
         /** Orama suggestions */
         suggestions?: string[]
     } | boolean
+}
+
+export interface IntegrationApps {
+    /**
+     * Github star app configuration. 
+     * List of all [options](https://github.com/buttons/react-github-btn).
+     */
+    githubStar?: IntegrationAppGithubStar
+}
+
+export interface IntegrationAppGithubStar {
+    /**
+     * The title of the Github button
+     */
+    title: string
+
+    /**
+     * The label of the Github Button
+     */
+    label?: string
+
+    /**
+     * The href of the Github project
+     */
+    href: string
+    
+    /**
+     * The data-show-count of the Github project
+     */
+    dataShowCount?: boolean
+
+    /**
+     * The data-icon of the Github button
+     */
+    dataIcon?: string
+
+    /**
+     * The data-size of the Github button
+     */
+    dataSize?: string
+
+    /**
+     * The aria-label of the Github button
+     */
+    ariaLabel?: string
 }
 
 // ------ END  settings for integrations END ------
@@ -550,7 +597,7 @@ export interface SEO {
     /**
      * Meta tags
      */
-    metatags?: {[tag: string]: string} // TODO: in the future type-safe
+    metatags?: { [tag: string]: string } // TODO: in the future type-safe
 }
 
 // ------ END  settings for redirects END ------

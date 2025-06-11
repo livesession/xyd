@@ -2,9 +2,9 @@
 title: Overview
 ---
 
-# Functions Overview
+# Functions API {label="Experimental"}
 :::subtitle
-Learn how to use dynamic content capabilities through functions
+Reference for dynamic content capabilities through functions
 :::
 
 Guide to using functions in XYD for enhancing your documentation with dynamic content and code integration.

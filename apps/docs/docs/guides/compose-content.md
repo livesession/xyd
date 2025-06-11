@@ -3,7 +3,7 @@ title: Compose Content
 icon: docs:atom-2-line
 ---
 
-# Compose Content
+# Compose Content {label="Experimental"}
 :::subtitle
 Learn how to streamline content experience
 :::

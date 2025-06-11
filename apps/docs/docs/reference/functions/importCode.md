@@ -70,7 +70,7 @@ You can combine regions with line ranges:
 
 ## Path Aliases
 
-To avoid long relative paths, you can configure path aliases in your `xyd.json`:
+To avoid long relative paths, you can configure path aliases in your `docs.json`:
 
 ```json
 {

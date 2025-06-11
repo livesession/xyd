@@ -1,67 +1,50 @@
 ---
-title: Orama
+title: Orama 
 ---
 
-# Orama
+# Orama {label="Experimental"}
 :::subtitle
 Learn how to add Orama search integration
 :::
 
-Add the following to your docs.json file to send analytics to LiveSession.
+To enable Orama Search enable it in docs.json:
+```json
+{
+    "integrations": {
+        "search": {
+            "orama": true
+        }
+    }
+}
+```
 
-:::tabs
-1. [Default](tab=default)
-    :::code-group{title="Search options in xyd.json"}
-    ```json Schema
-    {
-        "integrations": {
-            "search": {
-                "orama": "required" // boolean
+for more advanced configuration you can like:
+:::code-group
+```json Schema
+{
+    "integrations": {
+        "search": {
+            "orama": {
+                "endpoint": "optional",   // string
+                "apiKey":   "optional",   // string
+                "suggestions": "optional" // string[]
             }
         }
     }
-    ```
+}
+```
 
-    ```json Example
-    {
-        "integrations": {
-            "search": {
-                "orama": true
+```json Example
+{
+    "integrations": {
+        "search": {
+            "orama": {
+                "endpoint":   "https://api.orama.example",
+                "apiKey":     "YOUR_API_KEY_HERE",
+                "suggestions": ["term1", "term2"] 
             }
         }
     }
-    ```
-    :::
-
-2. [Full options](tab=full)
-    :::code-group{title="Search options in xyd.json"}
-    ```json Schema
-    {
-        "integrations": {
-            "search": {
-                "orama": {
-                    "endpoint": "optional",   // string
-                    "apiKey":   "optional",   // string
-                    "suggestions": "optional" // string[]
-                }
-            }
-        }
-    }
-    ```
-
-    ```json Example
-    {
-        "integrations": {
-            "search": {
-                "orama": {
-                    "endpoint":   "https://api.orama.example",
-                    "apiKey":     "YOUR_API_KEY_HERE",
-                    "suggestions": ["term1", "term2"] 
-                }
-            }
-        }
-    }
-    ```
-    :::
+}
+```
 :::
-

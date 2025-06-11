@@ -1,0 +1,270 @@
+export const SETTINGS = {
+    "theme": {
+        "name": "opener",
+        "logo": "/public/assets/logo.svg",
+        "favicon": "/public/assets/logo.svg",
+        "banner": {
+            "content": ":::button{href='https://xyd.dev' size='sm' kind='secondary'}\n **xyd 0.1.0-alpha is coming soon!**\n:::"
+        },
+        "icons": {
+            "library": [
+                {
+                    "name": "lucide",
+                    "default": true
+                },
+                "./icons/iconify.json"
+            ]
+        }
+    },
+    "integrations": {
+        "search": {
+            "orama": true
+        },
+        "apps": {
+            "githubStar": {
+                "title": "Star",
+                "label": "Show your support! Star us on GitHub ⭐️",
+                "href": "https://github.com/livesession/xyd",
+                "dataIcon": "octicon-star",
+                "dataSize": "large",
+                "dataShowCount": true,
+                "ariaLabel": "Star livesession/xyd on GitHub"
+            }
+        }
+    },
+    "navigation": {
+        "header": [
+            {
+                "name": "Guides",
+                "url": "/docs"
+            },
+            {
+                "name": "Components",
+                "url": "/docs/components"
+            },
+            {
+                "name": "Reference",
+                "url": "/docs/reference"
+            }
+        ],
+        "subheader": [
+            {
+                "name": "API",
+                "route": "docs/reference",
+                "items": [
+                    {
+                        "name": "Core",
+                        "url": "/docs/reference/core"
+                    },
+                    {
+                        "name": "Functions",
+                        "url": "/docs/reference/functions"
+                    },
+                    {
+                        "name": "Composer",
+                        "url": "/docs/reference/composer"
+                    },
+                    {
+                        "name": "CLI",
+                        "url": "/docs/reference/cli"
+                    }
+                ]
+            }
+        ],
+        "sidebar": [
+            {
+                "route": "docs",
+                "items": [
+                    {
+                        "group": "Get Started",
+                        "pages": [
+                            "docs/guides/introduction",
+                            "docs/guides/quickstart",
+                            "docs/guides/deploy"
+                        ]
+                    },
+                    {
+                        "group": "Core concepts",
+                        "pages": [
+                            "docs/guides/settings",
+                            "docs/guides/themes",
+                            "docs/guides/pages",
+                            "docs/guides/routing",
+                            "docs/guides/special-symbols"
+                        ]
+                    },
+                    {
+                        "group": "Writing Content",
+                        "pages": [
+                            "docs/guides/writing-quickstart",
+                            "docs/guides/developer-content",
+                            "docs/guides/compose-content",
+                            "docs/guides/seo"
+                        ]
+                    },
+                    {
+                        "group": "Customization",
+                        "pages": [
+                            "docs/guides/customization-quickstart",
+                            "docs/guides/theme-api",
+                            "docs/guides/custom-theme",
+                            "docs/guides/icons",
+                            "docs/guides/custom-scripts",
+                            "docs/guides/plugins"
+                        ]
+                    },
+                    {
+                        "group": "API Pages",
+                        "pages": [
+                            "docs/guides/openapi",
+                            "docs/guides/graphql",
+                            "docs/guides/components",
+                            {
+                                "group": "Source Code",
+                                "icon": "square-code",
+                                "pages": [
+                                    "docs/guides/typescript",
+                                    "docs/guides/python",
+                                    "docs/guides/golang"
+                                ]
+                            },
+                            "docs/guides/asyncapi",
+                            "docs/guides/apitoolchain"
+                        ]
+                    },
+                    {
+                        "group": "SDK Generation",
+                        "pages": [
+                            "docs/guides/sdk-quickstart",
+                            "docs/guides/opensdk"
+                        ]
+                    },
+                    {
+                        "group": "Integrations",
+                        "pages": [
+                            {
+                                "group": "Analytics",
+                                "icon": "chart-line",
+                                "pages": [
+                                    "docs/guides/integrations/analytics/analytics-integrations",
+                                    "docs/guides/integrations/analytics/livesession"
+                                ]
+                            },
+                            {
+                                "group": "Search",
+                                "icon": "text-search",
+                                "pages": [
+                                    "docs/guides/integrations/search/search-integrations",
+                                    "docs/guides/integrations/search/algolia",
+                                    "docs/guides/integrations/search/orama"
+                                ]
+                            },
+                            {
+                                "group": "Other apps",
+                                "icon": "layout-grid",
+                                "pages": [
+                                    "docs/guides/integrations/apps/github-star"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "group": "Development",
+                        "pages": [
+                            "docs/development/roadmap",
+                            "docs/development/contributing",
+                            "docs/development/changelog"
+                        ]
+                    },
+                    {
+                        "group": "Resources",
+                        "pages": [
+                            "docs/resources/migration-tool",
+                            "docs/resources/examples",
+                            "docs/resources/showcase"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/components",
+                "items": [
+                    {
+                        "group": "Components",
+                        "pages": [
+                            "docs/components/text",
+                            "docs/components/heading",
+                            "docs/components/callouts",
+                            "docs/components/details",
+                            "docs/components/guide-card",
+                            "docs/components/tables",
+                            "docs/components/steps",
+                            "docs/components/tabs",
+                            "docs/components/grid"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/reference/functions",
+                "items": [
+                    {
+                        "group": "Reference",
+                        "pages": [
+                            "docs/reference/functions/overview",
+                            "docs/reference/functions/importCode",
+                            "docs/reference/functions/uniform",
+                            "docs/reference/functions/changelog"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/reference/core",
+                "items": [
+                    {
+                        "group": "Reference",
+                        "pages": [
+                            "docs/reference/core/overview",
+                            "docs/reference/core/settings",
+                            "docs/reference/core/theme",
+                            "docs/reference/core/pagemeta"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/reference/composer",
+                "items": [
+                    {
+                        "group": "Reference",
+                        "pages": [
+                            "docs/reference/composer/overview"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/reference/cli",
+                "items": [
+                    {
+                        "group": "Reference",
+                        "pages": [
+                            "docs/reference/cli/overview"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "engine": {
+        "paths": {
+            "@components/*": [
+                "../../packages/xyd-components/src/*"
+            ],
+            "@core/*": [
+                "../../packages/xyd-core/src/*"
+            ]
+        }
+    }
+}
