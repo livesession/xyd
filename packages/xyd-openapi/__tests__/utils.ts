@@ -35,9 +35,10 @@ function removeFunctions(obj: any): any {
 export async function testOasSchemaToReferences(
     fixtureName: string,
     options?: uniformOasOptions,
-    plugins?: any[] // TODO: fix any
+    plugins?: any[], // TODO: fix any,
+    url?: string // URL to the OpenAPI schema
 ) {
-    const schemaLocation = fullFixturePath(`${fixtureName}/input.yaml`)
+    const schemaLocation = url ? url : fullFixturePath(`${fixtureName}/input.yaml`)
 
     const schemalocation = await deferencedOpenAPI(schemaLocation);
     let result = oapSchemaToReferences(schemalocation, options);

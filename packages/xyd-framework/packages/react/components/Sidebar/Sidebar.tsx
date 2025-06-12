@@ -2,8 +2,11 @@ import React, { } from "react"
 
 import { UISidebar } from "@xyd-js/ui";
 
-import { useGroup } from "./SidebarGroup";
 import { Icon } from "@xyd-js/components/writer";
+import { Metadata } from "@xyd-js/core";
+
+import { useGroup } from "./SidebarGroup";
+import { Surface } from "../Surfaces";
 
 // TODO: custom hooks for active onclick handler etc?
 
@@ -31,6 +34,7 @@ export function FwSidebarItemGroup(props: FwSidebarGroupProps) {
             key={index + item.href}
             title={item.title}
             sidebarTitle={item.sidebarTitle}
+            pageMeta={item.pageMeta}
             href={item.href}
             items={item.items}
             active={item.active}
@@ -58,6 +62,7 @@ export interface FwSidebarItemProps {
     readonly level?: number
     readonly groupIndex?: number
     readonly itemIndex?: number
+    readonly pageMeta?: Metadata
     // internal
 }
 
@@ -100,7 +105,25 @@ function FwSidebarItem(props: FwSidebarItemProps) {
         onClick={handleClick}
         icon={icon}
     >
-        {title}
+        <div part="item-title-container">
+            <Surface
+                target="sidebar.item.left"
+                props={{
+                    active: isActiveItem,
+                    pageMeta: props.pageMeta,
+                }}
+            />
+            <div>
+                {title}
+            </div>
+            <Surface
+                target="sidebar.item.right"
+                props={{
+                    active: isActiveItem,
+                    pageMeta: props.pageMeta,
+                }}
+            />
+        </div>
 
         {
             props.items?.length && <UISidebar.SubTree isOpen={isActive}>

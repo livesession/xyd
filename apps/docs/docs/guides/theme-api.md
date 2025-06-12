@@ -89,7 +89,7 @@ You can add as many style file as you want. Also names of your imported styles a
         constructor() {
             super());
             
-            // Register custom components
+            // register custom components
             this.components({
                 Badge: MyCustomBadge,
             });
@@ -130,8 +130,10 @@ Here's an example of how to add a custom component to your theme:
         constructor() {
             super());
             
-            // Register custom component
-            this.registerComponent(CustomBanner, 'custom-banner');
+            // register custom component
+            this.customComponents({ 
+                CustomBanner
+            });
         }
     }
 
@@ -159,7 +161,7 @@ or you can use a MDX syntax too:
 ```
 
 :::callout
-If you not set name in [`registerComponent`](/docs/reference/source/BaseTheme#registerComponent) function, it will 
+If you not set name in [`customComponents`](/docs/reference/source/BaseTheme#registerComponent) function, it will 
 convert PascalCase to kebab-case for markdown syntax.
 :::
 
@@ -189,13 +191,16 @@ If you want to add your custom components into specific place inside docs, you c
 
     export default class MyTheme extends BaseTheme {
         constructor() {
-            super());
+            super();
             
-            // Register custom component
-            this.registerComponent(CustomBanner, {
-                // !diff +
-                surface: "page.footer"
-            });
+            // register custom component
+            this.customComponents({
+                CustomBanner: {
+                    component: CustomBanner,
+                    // !diff +
+                    surface: "page.footer"
+                }
+            })
         }
     }
 

@@ -20,7 +20,7 @@ Our mission is to create the Docs Platform for future dev.
 
 - Batteries Included - everything to build docs at scale is here.
 
-- Open - we believe that awesome docs should be open source
+- Open - we believe that docs frameworks should be open source.
 
 ## Developer Experience
 

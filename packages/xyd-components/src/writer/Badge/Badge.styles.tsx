@@ -6,11 +6,20 @@ export const BadgeHost = css`
         align-items: center;
         
         /* Size variants */
-        &[data-size="sm"] {
-            height: 18px;
-            padding: 10px 10px;
+        &[data-size="xs"] {
+            height: 15px;
+            padding: 6px;
             gap: 3px;
             border-radius: 6px;
+            font-size: var(--xyd-font-size-xsmall);
+        }
+
+        &[data-size="sm"] {
+            height: 18px;
+            padding: 10px;
+            gap: 3px;
+            border-radius: 6px;
+            font-size: var(--xyd-font-size-xsmall);
         }
         
         /* Kind variants */

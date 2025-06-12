@@ -13,6 +13,7 @@ export async function mapSettingsToProps(
     settings: Settings,
     pagePathMapping: { [key: string]: string },
     slug: string,
+    frontmatters?: MetadataMap
 ): Promise<{
     groups: FwSidebarGroupProps[],
     breadcrumbs: IBreadcrumb[]
@@ -20,9 +21,12 @@ export async function mapSettingsToProps(
     hiddenPages?: { [key: string]: boolean }
     metadata?: Metadata | null
 }> {
+    console.log(1111111)
     let uniqIndex = 0
     const filteredNav = filterNavigation(settings, slug)
-    const frontmatters = await pageFrontMatters(filteredNav, pagePathMapping) as MetadataMap
+    if (!frontmatters) {
+        frontmatters = await pageFrontMatters(filteredNav, pagePathMapping) as MetadataMap
+    }
 
     const slugFrontmatter = frontmatters[slug] || null
     const breadcrumbs: IBreadcrumb[] = []
@@ -41,6 +45,11 @@ export async function mapSettingsToProps(
         currentNav: Sidebar,
         nav: Sidebar[]
     ) {
+        if (!frontmatters) {
+            console.error("frontmatters not found")
+            return null
+        }
+        
         if (typeof page !== "string" && !("virtual" in page)) {
             const items = page.pages
                 ?.map((p) => mapItems(p, page, nav))
@@ -117,7 +126,8 @@ export async function mapSettingsToProps(
             active: false,
             uniqIndex: uniqIndex++,
             icon: meta?.icon || "",
-            sidebarTitle: meta?.sidebarTitle || ""
+            sidebarTitle: meta?.sidebarTitle || "",
+            pageMeta: meta || null,
         }
     }
 
@@ -141,6 +151,7 @@ export async function mapSettingsToProps(
             } as FwSidebarGroupProps
         }) || []
 
+    console.log(8888888888)
     return {
         groups,
         breadcrumbs,

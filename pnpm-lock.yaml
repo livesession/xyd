@@ -42,6 +42,73 @@ importers:
         specifier: ^2.1.1
         version: 2.1.9(@types/node@20.9.0)(happy-dom@15.11.7)(lightningcss@1.30.1)(terser@5.42.0)
 
+  .xyd/host:
+    dependencies:
+      '@react-router/dev':
+        specifier: ^7.5.0
+        version: 7.6.2(@react-router/serve@7.6.2(react-router@7.6.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(typescript@5.8.3))(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.30.1)(react-router@7.6.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(terser@5.42.0)(tsx@4.20.1)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.1)(yaml@2.8.0))(yaml@2.8.0)
+      '@react-router/node':
+        specifier: ^7.5.0
+        version: 7.6.2(react-router@7.6.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(typescript@5.8.3)
+      '@react-router/serve':
+        specifier: ^7.5.0
+        version: 7.6.2(react-router@7.6.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(typescript@5.8.3)
+      '@xyd-js/atlas':
+        specifier: workspace:*
+        version: link:../../packages/xyd-atlas
+      '@xyd-js/components':
+        specifier: workspace:*
+        version: link:../../packages/xyd-components
+      '@xyd-js/composer':
+        specifier: workspace:*
+        version: link:../../packages/xyd-composer
+      '@xyd-js/core':
+        specifier: workspace:*
+        version: link:../../packages/xyd-core
+      '@xyd-js/framework':
+        specifier: workspace:*
+        version: link:../../packages/xyd-framework
+      '@xyd-js/plugin-algolia':
+        specifier: workspace:*
+        version: link:../../packages/xyd-plugin-algolia
+      '@xyd-js/plugin-orama':
+        specifier: workspace:*
+        version: link:../../packages/xyd-plugin-orama
+      '@xyd-js/theme-cosmo':
+        specifier: workspace:*
+        version: link:../../packages/xyd-theme-cosmo
+      '@xyd-js/theme-opener':
+        specifier: workspace:*
+        version: link:../../packages/xyd-theme-opener
+      '@xyd-js/theme-poetry':
+        specifier: workspace:*
+        version: link:../../packages/xyd-theme-poetry
+      '@xyd-js/themes':
+        specifier: workspace:*
+        version: link:../../packages/xyd-themes
+      isbot:
+        specifier: ^5
+        version: 5.1.28
+      react-router:
+        specifier: ^7.5.0
+        version: 7.6.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+    devDependencies:
+      autoprefixer:
+        specifier: ^10.4.20
+        version: 10.4.21(postcss@8.5.4)
+      postcss:
+        specifier: ^8.4.47
+        version: 8.5.4
+      semver:
+        specifier: ^7.6.3
+        version: 7.7.2
+      vite:
+        specifier: ^6.1.0
+        version: 6.3.5(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.1)(yaml@2.8.0)
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.31)(jiti@2.4.2)(lightningcss@1.30.1)(terser@5.42.0)(tsx@4.20.1)(yaml@2.8.0))
+
   apps/docs/.xyd/build: {}
 
   apps/openapi-demo:
@@ -70,6 +137,12 @@ importers:
       '@xyd-js/framework':
         specifier: workspace:*
         version: link:../../packages/xyd-framework
+      '@xyd-js/gql':
+        specifier: workspace:*
+        version: link:../../packages/xyd-gql
+      '@xyd-js/openapi':
+        specifier: workspace:*
+        version: link:../../packages/xyd-openapi
       '@xyd-js/theme-cosmo':
         specifier: workspace:*
         version: link:../../packages/xyd-theme-cosmo
@@ -85,6 +158,9 @@ importers:
       '@xyd-js/ui':
         specifier: workspace:*
         version: link:../../packages/xyd-ui
+      '@xyd-js/uniform':
+        specifier: workspace:*
+        version: link:../../packages/xyd-uniform
       gestalt:
         specifier: ^177.0.0
         version: 177.0.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -16588,6 +16664,14 @@ snapshots:
     optionalDependencies:
       vite: 5.4.19(@types/node@20.9.0)(lightningcss@1.30.1)(terser@5.42.0)
 
+  '@vitest/mocker@2.1.9(vite@5.4.19(@types/node@22.15.31)(lightningcss@1.30.1)(terser@5.42.0))':
+    dependencies:
+      '@vitest/spy': 2.1.9
+      estree-walker: 3.0.3
+      magic-string: 0.30.17
+    optionalDependencies:
+      vite: 5.4.19(@types/node@22.15.31)(lightningcss@1.30.1)(terser@5.42.0)
+
   '@vitest/pretty-format@2.0.5':
     dependencies:
       tinyrainbow: 1.2.0
@@ -23464,7 +23548,7 @@ snapshots:
   vitest@2.1.9(@types/node@22.15.31)(happy-dom@15.11.7)(lightningcss@1.30.1)(terser@5.42.0):
     dependencies:
       '@vitest/expect': 2.1.9
-      '@vitest/mocker': 2.1.9(vite@5.4.19(@types/node@20.9.0)(lightningcss@1.30.1)(terser@5.42.0))
+      '@vitest/mocker': 2.1.9(vite@5.4.19(@types/node@22.15.31)(lightningcss@1.30.1)(terser@5.42.0))
       '@vitest/pretty-format': 2.1.9
       '@vitest/runner': 2.1.9
       '@vitest/snapshot': 2.1.9

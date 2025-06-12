@@ -7,23 +7,33 @@ import {uniformOpenAIMeta} from "../__fixtures__/-2.complex.openai/pluginOasOpen
 const tests: {
     name: string;
     description: string,
+    url?: string, // URL to the OpenAPI schema
     plugins?: any[]; // TODO: fix any,
     options?: uniformOasOptions
 }[] = [
     // TODO: uncomment when ready
+    // {
+    //     name: "-2.complex.openai",
+    //     description: "OpenAI OpenAPI API example",
+    //     plugins: [
+    //         uniformOpenAIMeta,
+    //     ],
+    //     // options: {
+    //     //    regions: [
+    //     //        // "/components/schemas/ListAssistantsResponse",
+    //     //        "POST /responses"
+    //     //    ]
+    //     // }
+    // },
+
     {
-        name: "-2.complex.openai",
+        name: "4.abc",
+        url: "https://raw.githubusercontent.com/bump-sh-examples/train-travel-api/main/openapi.yaml",
         description: "OpenAI OpenAPI API example",
-        plugins: [
-            uniformOpenAIMeta,
-        ],
-        // options: {
-        //    regions: [
-        //        // "/components/schemas/ListAssistantsResponse",
-        //        "POST /responses"
-        //    ]
-        // }
-    },
+        // plugins: [
+        //     uniformOpenAIMeta,
+        // ],
+    }
 
     // {
     //     name: "1.basic",
@@ -47,7 +57,7 @@ const tests: {
 describe("oapSchemaToReferences", () => {
     tests.forEach((test) => {
         it(`[${test.name}]: ${test.description}`, async () => {
-            await testOasSchemaToReferences(test.name, test.options, test.plugins);
+            await testOasSchemaToReferences(test.name, test.options, test.plugins, test.url);
         });
     });
 });

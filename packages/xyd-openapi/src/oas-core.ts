@@ -353,25 +353,47 @@ export function schemaObjectToUniformDefinitionPropertyMeta(objProp: OpenAPIV3.S
             }
         }
     }
-
     if (objProp.deprecated) {
         meta.push({
             name: "deprecated",
             value: "true"
         })
     }
-
     if ("default" in objProp) {
         meta.push({
             name: "defaults",
             value: objProp.default
         })
     }
-
     if ("nullable" in objProp) {
         meta.push({
             name: "nullable",
             value: "true"
+        })
+    }
+    if ("example" in objProp) {
+        const example = typeof objProp.example === "object" ? JSON.stringify(objProp.example) : objProp.example;
+        meta.push({
+            name: "example",
+            value: example
+        })
+    }
+    if ("examples" in objProp) {
+        meta.push({
+            name: "examples",
+            value: objProp.examples
+        })
+    }
+    if ("maximum" in objProp) {
+        meta.push({
+            name: "maximum",
+            value: objProp.maximum
+        })
+    }
+    if ("minimum" in objProp) {
+        meta.push({
+            name: "minimum",
+            value: objProp.minimum
         })
     }
 

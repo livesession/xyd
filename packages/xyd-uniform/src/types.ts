@@ -105,7 +105,7 @@ export interface Meta<T = string> {
     value?: unknown; // TODO: better type?
 }
 
-export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "internal" | "defaults" | "nullable" | "enum-type"> // TODO: better solution than enum-type?
+export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "internal" | "defaults" | "nullable" | "example" | "examples" | "minimum" | "maximum" | "enum-type"> // TODO: better solution than enum-type?
 
 export enum DEFINED_DEFINITION_PROPERTY_TYPE {
     UNION = "$$union",

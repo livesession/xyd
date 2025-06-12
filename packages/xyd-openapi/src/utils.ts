@@ -2,13 +2,13 @@ import path from "path";
 import fs from "fs";
 
 import yaml from "js-yaml";
-import {OpenAPIV3} from "openapi-types";
+import { OpenAPIV3 } from "openapi-types";
 import GithubSlugger from 'github-slugger';
-import $refParser, {ParserOptions} from "@apidevtools/json-schema-ref-parser";
+import $refParser, { ParserOptions } from "@apidevtools/json-schema-ref-parser";
 
-import {ReferenceType} from "@xyd-js/uniform";
+import { ReferenceType } from "@xyd-js/uniform";
 
-import {OasJSONSchema} from "./types";
+import { OasJSONSchema } from "./types";
 
 export function slug(str: string): string {
     const slugger = new GithubSlugger();
@@ -18,34 +18,71 @@ export function slug(str: string): string {
 // deferencedOpenAPI reads an OpenAPI spec file and returns a dereferenced OpenAPIV3.Document
 // dereferenced means that all $ref references are resolved automatically
 export async function deferencedOpenAPI(openApiPath: string) {
-    const openApiSpec = readOpenApiSpec(openApiPath);
+    const openApiSpec = await readOpenApiSpec(openApiPath);
+    const cwd = process.cwd();
 
-    const options = {
+    const remoteOasPath = openApiPath.startsWith('http://') || openApiPath.startsWith('https://') ? true : false
+
+    const options: ParserOptions = {
         dereference: {
-            onDereference(
-                path: string,
-                value: OasJSONSchema,
-                parent?: OasJSONSchema,
-            ) {
-                value.__internal_getRefPath = () => path
-                if (parent) {
-                    parent.__internal_getRefPath = () => path
-                }
-            },
-        },
+            // onDereference(path, value, parent) {
+            //     if (typeof value === 'string') {
+            //         return
+            //     }
+
+            //     value.__refPath = path;
+            //     if (parent) parent.__refPath = path;
+            // }
+        }
     } as ParserOptions;
+
+    if (remoteOasPath) {
+        if (!options.resolve) {
+            options.resolve = {}
+        }
+
+        options.resolve.file = {
+            // canRead: file => /\.md$/i.test(file.url),
+            read: async (file: any) => {
+                // 1) Convert absolute local path back into a repo-relative path:
+                //    "/Users/.../docs/foo.md" → "docs/foo.md"
+                let rel = path.relative(cwd, file.url);
+                rel = rel.split(path.sep).join('/');
+
+                // 2) Resolve against your GitHub raw URL:
+                const absoluteUrl = new URL(rel, openApiPath).href;
+                //    → "https://raw.githubusercontent.com/.../docs/foo.md"
+
+                // 3) Fetch it:
+                const res = await fetch(absoluteUrl);
+                if (!res.ok) {
+                    throw new Error(`Failed to fetch ${absoluteUrl}: ${res.status}`);
+                }
+                return res.text();        // hand back the Markdown
+            }
+        }
+    }
 
     await $refParser.dereference(openApiSpec, options);
 
     return openApiSpec as OpenAPIV3.Document
 }
 
-// TODO: support from url?
-// readOpenApiSpec reads an OpenAPI spec file and returns the content
-function readOpenApiSpec(filePath: string) {
-    const ext = path.extname(filePath).toLowerCase();
-    const content = fs.readFileSync(filePath, 'utf-8');
+// readOpenApiSpec reads an OpenAPI spec file or URL and returns the content
+async function readOpenApiSpec(filePath: string) {
+    let content: string;
 
+    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+        const response = await fetch(filePath);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch OpenAPI spec from URL: ${response.statusText}`);
+        }
+        content = await response.text();
+    } else {
+        content = fs.readFileSync(filePath, 'utf-8');
+    }
+
+    const ext = path.extname(filePath).toLowerCase();
     if (ext === '.yaml' || ext === '.yml') {
         return yaml.load(content);
     } else if (ext === '.json') {

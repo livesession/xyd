@@ -71,8 +71,8 @@ export function CodeTheme(props: CodeThemeProps) {
                 };
             }
 
-            return {};
-        }) as HighlightedCode[]
+            return null
+        }).filter(Boolean) as HighlightedCode[]
     }
 
     async function clientSideHighlight() {

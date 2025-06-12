@@ -16,7 +16,7 @@ export interface BadgeProps {
     /**
      * The size of the badge.
      */
-    size?: "sm"
+    size?: "sm" | "xs"
 
     /**
      * The kind of the badge.

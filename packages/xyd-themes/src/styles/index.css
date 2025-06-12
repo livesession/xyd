@@ -69,3 +69,62 @@
         max-width: 200px;
     }
 }
+
+@layer overrides {
+    /* HTTP Method Colors */
+    [atlas-oas-method="GET"] { 
+        --method-color: #15803d;
+        --method-bg: rgba(74, 222, 128, .2);
+
+        &[data-active="true"] {
+            --method-bg: #2ab673;
+            --method-color: var(--white);
+        }
+    }
+    [atlas-oas-method="POST"] { 
+        --method-color: #1D4ED8;
+        --method-bg: rgba(96, 165, 250, .2);
+
+        &[data-active="true"] {
+            --method-bg: #3064e3;
+            --method-color: var(--white);
+        }
+    }
+    [atlas-oas-method="PUT"] { 
+        --method-color: #C28C30;
+        --method-bg: rgba(250,204,21,.2);
+
+        &[data-active="true"] {
+            --method-bg: #2ab673;
+            --method-color: var(--white);
+        }
+    }
+    [atlas-oas-method="DELETE"] { 
+        --method-color: #B91C1C;
+        --method-bg: rgba(248, 114, 114, 0.2); 
+
+        &[data-active="true"] {
+            --method-bg: #cb3a32;
+            --method-color: var(--white);
+        }
+    }
+    [atlas-oas-method="PATCH"] { 
+        --method-color: #c2410c; 
+        --method-bg: rgba(251,146,60,.2); 
+
+        &[data-active="true"] {
+            --method-bg: #DA622B;
+            --method-color: var(--white);
+        }
+    }
+
+    [atlas-oas-method] {
+        color: var(--method-color);
+    }
+
+    [atlas-oas-method] xyd-badge {
+        background-color: var(--method-bg);
+        color: var(--method-color);
+        font-weight: var(--xyd-font-weight-bold);
+    }
+}

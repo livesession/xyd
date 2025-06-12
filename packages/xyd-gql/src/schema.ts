@@ -25,12 +25,19 @@ export async function gqlSchemaToReferences(
     const schemaLocations = Array.isArray(schemaLocation) ? schemaLocation : [schemaLocation];
 
     // 2. Read all schema contents
-    const schemaContents = schemaLocations.map(location => {
+    const schemaContents = await Promise.all(schemaLocations.map(async location => {
+        if (location.startsWith('http://') || location.startsWith('https://')) {
+            const response = await fetch(location);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch schema from URL: ${location}`);
+            }
+            return response.text();
+        }
         if (fs.existsSync(location)) {
             return fs.readFileSync(location, 'utf-8');
         }
         return location;
-    });
+    }));
 
     // 3. Merge all schema contents
     const mergedTypeDefs = mergeTypeDefs(schemaContents);

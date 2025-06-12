@@ -1,4 +1,4 @@
-import React, {createContext, useContext} from 'react'
+import React, {createContext, useContext, ComponentType} from 'react'
 
 export enum SurfaceTarget {
     NavRight = "nav.right",
@@ -6,6 +6,9 @@ export enum SurfaceTarget {
     SidebarTop = "sidebar.top",
 
     PageFooterBottom = "page.footer.bottom",
+
+    SidebarItemLeft = "sidebar.item.left",
+    SidebarItemRight = "sidebar.item.right",
 }
 
 // Type that allows both enum and string values
@@ -56,7 +59,14 @@ export class Surfaces implements ROSurface {
     }
 }
 
-export function Surface({target}: { target: SurfaceTargetType }) {
+interface SurfaceProps {
+    target: SurfaceTargetType
+    props?: any // TODO: fix any
+}
+
+export function Surface(props: SurfaceProps): React.JSX.Element | null {
+    const { target } = props
+
     const registry = useContext(SurfaceContext)
 
     if (!registry.surfaces) {
@@ -69,5 +79,24 @@ export function Surface({target}: { target: SurfaceTargetType }) {
         return null
     }
 
-    return components
+    if (!Array.isArray(components)) {
+        if (typeof components === 'function') {
+            const Component = components as ComponentType<any>
+            return <Component {...props.props} />
+        }
+    }
+
+    if (Array.isArray(components)) {
+        return <>
+            {components.map((Component, index) => {
+                if (typeof Component === 'function') {
+                    const Comp = Component as ComponentType<any>
+                    return <Comp key={index} {...props.props} />
+                }
+                return <React.Fragment key={index}>{Component}</React.Fragment>
+            })}
+        </>
+    }
+
+    return null
 }

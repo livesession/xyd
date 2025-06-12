@@ -44,7 +44,6 @@ function $ThemedCodeSample(props: CodeSampleProps) {
             ]}
         />
     }
-
     return <$CodeSampleTabs
         description={props.description}
         highlighted={highlighted}

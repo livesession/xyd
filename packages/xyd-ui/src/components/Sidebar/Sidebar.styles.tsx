@@ -58,6 +58,13 @@ export const ItemHost = css`
                 color: var( --xyd-sidebar-item-color--active);
                 border-radius: 4px;
             }
+
+            [part="item-title-container"] {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
         }
         [part="first-item" ][data-active="true"] {
             background: var(--xyd-sidebar-item-bgcolor--active);

@@ -8,7 +8,7 @@ export const ApiRefItemTitleLink = css`
 `;
 
 export const ApiRefItemNavbarHost = css`
-    margin-top: 8px;
+    margin: 20px 0px;
 `;
 
 export const ApiRefItemNavbarContainer = css`
@@ -16,11 +16,17 @@ export const ApiRefItemNavbarContainer = css`
     padding: 8px;
     border: 1px solid var(--XydAtlas-Component-ApiRef-Item__color-border);
     border-radius: 8px;
+    display: flex;
+    gap: 4px;
 `;
 
 export const ApiRefItemNavbarLabel = css`
     color: var(--XydAtlas-Component-ApiRef-Item__color-navbar);
     margin-right: 4px;
+`;
+
+export const ApiRefItemNavbarSubtitle = css`
+    letter-spacing: 1px;
 `;
 
 export const ApiRefItemHost = css`

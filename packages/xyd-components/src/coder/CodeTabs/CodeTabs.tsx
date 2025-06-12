@@ -19,9 +19,9 @@ export interface CodeTabsProps {
 
 export function withCodeTabs(PreComponent) {
     return function CodeTabs(props: CodeTabsProps) {
-        const isSingle = props.highlighted.length === 1 && !props.description
+        const isSingle = props?.highlighted?.length === 1 && !props.description
 
-        if (props.highlighted.length === 0) { // TODO: suspense?
+        if (props?.highlighted?.length === 0) { // TODO: suspense?
             return null
         }
 
@@ -61,7 +61,7 @@ interface LanguageTabSwitcherProps {
 }
 
 function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
-    const isSingle = props.highlighted.length === 1 && !props.description
+    const isSingle = props?.highlighted?.length === 1 && !props.description
 
     return <xyd-codetabs-languages
         data-single={String(isSingle)}

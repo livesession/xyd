@@ -11,6 +11,9 @@ export default defineConfig({
     tsconfigPaths(),
     virtualComponentsPlugin()
   ],
+  ssr: {
+    external: ["@xyd-js/framework/hydration", "fs"]
+  }
 });
 
 

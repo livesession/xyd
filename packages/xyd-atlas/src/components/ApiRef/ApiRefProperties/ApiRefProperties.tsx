@@ -1,8 +1,9 @@
-import React, {useState} from "react";
-import {DEFINED_DEFINITION_PROPERTY_TYPE, DefinitionProperty, DefinitionPropertyMeta} from "@xyd-js/uniform";
+import React, { useState } from "react";
+import { DEFINED_DEFINITION_PROPERTY_TYPE, DefinitionProperty, DefinitionPropertyMeta } from "@xyd-js/uniform";
 
 import * as cn from "./ApiRefProperties.styles";
-import {useBaseMatch} from "@/components/Atlas/AtlasContext";
+import { useBaseMatch } from "@/components/Atlas/AtlasContext";
+import { Badge } from "@xyd-js/components/writer";
 
 export interface ApiRefPropertiesProps {
     properties: DefinitionProperty[]
@@ -11,7 +12,7 @@ export interface ApiRefPropertiesProps {
 // TODO: in the future configurable
 const HIDE_INTERNAL = true
 
-export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
+export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
     return <ul className={cn.ApiRefPropertiesUlHost}>
         {
             filterProperties(properties)?.map((property, i) => {
@@ -24,7 +25,7 @@ export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
                     {
                         propName || propValue ?
                             <dl className={cn.ApiRefPropertiesDlHost}>
-                                <PropName property={property} meta={property.meta || []}/>
+                                <PropName property={property} meta={property.meta || []} />
                                 <PropType
                                     property={property}
                                 />
@@ -36,7 +37,12 @@ export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
 
                     <div className={cn.ApiRefPropertiesDescriptionHost}>
                         <>
-                            {description}
+                            <div>
+                                {description}
+                            </div>
+                            <div>
+                                {renderMetaInfo(property.meta)}
+                            </div>
                         </>
                     </div>
 
@@ -81,7 +87,7 @@ interface PropTypeProps {
     property: DefinitionProperty
 }
 
-function PropType({property}: PropTypeProps) {
+function PropType({ property }: PropTypeProps) {
     const href = useSymbolLink(property)
 
     const symbol = resolvePropertySymbol(property)
@@ -126,6 +132,16 @@ function PropMeta(props: PropMetaProps) {
             return null
         case "enum-type":
             return null
+        case "minimum":
+            return null
+        case "maximum":
+            return null
+        case "example":
+            return null
+        case "examples":
+            return null
+        case "internal":
+            return null
         case "hasArguments":
             return null
     }
@@ -147,8 +163,8 @@ export interface PropMetaListProps {
     metas: PropMetaProps[]
 }
 
-function PropMetaList({metas}: PropMetaListProps) {
-    const order = {deprecated: 0, required: 1, defaults: 2};
+function PropMetaList({ metas }: PropMetaListProps) {
+    const order = { deprecated: 0, required: 1, defaults: 2 };
 
     const sortedMetas = [...metas].sort((a, b) => {
         return (order[a.name as keyof typeof order] ?? 3) - (order[b.name as keyof typeof order] ?? 3);
@@ -172,7 +188,7 @@ interface SubPropertiesProps {
     properties: DefinitionProperty[]
 }
 
-function SubProperties({parent, properties}: SubPropertiesProps) {
+function SubProperties({ parent, properties }: SubPropertiesProps) {
     const [expanded, setExpanded] = useState(false)
 
     // Get the actual properties to display
@@ -180,7 +196,7 @@ function SubProperties({parent, properties}: SubPropertiesProps) {
 
     const choiceType = isChoiceType(parent)
     const noChildProps = function () {
-        if (parent?.type ===  DEFINED_DEFINITION_PROPERTY_TYPE.ENUM) {
+        if (parent?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM) {
             return false
         }
 
@@ -238,7 +254,12 @@ function SubProperties({parent, properties}: SubPropertiesProps) {
                                 }
                                 <div className={cn.ApiRefPropertiesDescriptionHost}>
                                     <>
-                                        {description}
+                                        <div>
+                                            {description}
+                                        </div>
+                                        <div>
+                                            {renderMetaInfo(prop.meta)}
+                                        </div>
                                     </>
                                 </div>
                                 {
@@ -570,4 +591,61 @@ function atomicPropertySymbol(property: DefinitionProperty): string {
 
 function nullableProperty(property: DefinitionProperty): boolean {
     return property.meta?.some(m => m.name === "nullable" && m.value === "true") || false
+}
+
+function renderMetaInfo(meta: DefinitionPropertyMeta[] | undefined) {
+    if (!meta?.length) return null;
+
+    const minimum = meta.find(m => m.name === 'minimum')?.value;
+    const maximum = meta.find(m => m.name === 'maximum')?.value;
+    const example = meta.find(m => m.name === 'example')?.value;
+    const examples = meta.find(m => m.name === 'examples')?.value;
+
+    const rangeInfo: React.ReactNode[] = [];
+    if (minimum !== undefined && maximum !== undefined) {
+        rangeInfo.push(
+            <div>
+                Required range: <Badge>
+                    {`${minimum} <= x <= ${maximum}`}
+                </Badge>
+            </div>
+        );
+    } else if (minimum !== undefined) {
+        rangeInfo.push(
+            <div>
+                Required range: <Badge>
+                    {`x >= ${minimum}`}
+                </Badge>
+            </div>
+        );
+    } else if (maximum !== undefined) {
+        rangeInfo.push(
+            <div>
+                Required range: <Badge>
+                    {`x <= ${maximum}`}
+                </Badge>
+            </div>
+        );
+    }
+
+    const exampleInfo = example || examples ? <div part="examples">
+        <span>Examples:</span>
+        {
+            example ? <Badge>{`"${example}"`}</Badge> : null
+        }
+        {
+            Array.isArray(examples) && <div part="examples-list">
+                {examples.map((example, i) => (
+                    <Badge key={`example-${i}`}>{`"${example}"`}</Badge>
+                ))}
+            </div>
+        }
+    </div> : null
+
+    return <atlas-apiref-meta-info className={cn.ApiRefPropertiesMetaInfoHost}>
+        {rangeInfo?.map((info, i) => (
+            <div key={`range-${i}`}>{info}</div>
+        ))}
+        {exampleInfo}
+    </atlas-apiref-meta-info>
 }

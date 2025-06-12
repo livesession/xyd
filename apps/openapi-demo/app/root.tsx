@@ -6,7 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
+import { GlobalStateProvider } from './context';
 import type { Route } from "./+types/root";
 
 export const links: Route.LinksFunction = () => [
@@ -32,10 +32,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        
-        {children}
-        <ScrollRestoration />
-        <Scripts />
+        <GlobalStateProvider>
+          {children}
+          <ScrollRestoration />
+          <Scripts />
+        </GlobalStateProvider>
       </body>
     </html>
   );

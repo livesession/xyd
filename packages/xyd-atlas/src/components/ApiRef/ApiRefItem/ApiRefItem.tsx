@@ -8,7 +8,7 @@ import {
     Reference,
     ReferenceCategory
 } from "@xyd-js/uniform";
-import {Heading, Code} from "@xyd-js/components/writer";
+import {Heading, Code, Badge} from "@xyd-js/components/writer";
 
 import {
     ApiRefProperties,
@@ -27,12 +27,12 @@ export function ApiRefItem({
                                kind,
                                reference
                            }: ApiRefItemProps) {
+    console.log("CURRENT REF", reference)
     const hasExamples = reference.examples?.groups?.length || false
 
     let header: React.ReactNode | null = <$IntroHeader reference={reference}/>
     let examples: React.ReactNode | null = <ApiRefSamples examples={reference.examples}/>
-:
-    null
+
     if (kind === "secondary") {
         header = null
         examples = null
@@ -199,7 +199,7 @@ function $Definitions({
 
         {definitions?.map((definition, i) => {
             if (kind === "secondary") {
-                return  <$DefinitionBody definition={definition}/>
+                return <$DefinitionBody definition={definition}/>
             }
 
             return <$VariantsProvider key={i} definition={definition}>
@@ -240,6 +240,9 @@ function $VariantsProvider({definition, children}: {
     }, []);
 
     const variants = definition.variants || [];
+    console.log('Definition variants:', definition.variants);
+    console.log('Variant toggles:', variantToggles);
+
     const [variant, setVariant] = useState<DefinitionVariant | undefined>(() => {
         return findMatchingVariant(variants, selectedValues);
     });
@@ -262,12 +265,21 @@ function $VariantsProvider({definition, children}: {
 }
 
 function findMatchingVariant(variants: DefinitionVariant[], selectedValues: Record<string, string>): DefinitionVariant | undefined {
-    return variants.find(variant => {
-        return Object.entries(selectedValues).every(([key, value]) => {
+    console.log('Finding matching variant for:', selectedValues);
+    console.log('Available variants:', variants);
+
+    const matchingVariant = variants.find(variant => {
+        const matches = Object.entries(selectedValues).every(([key, value]) => {
+            if (!value) return true; // Skip empty values
             const meta = variant.meta?.find(m => m.name === key);
             return meta?.value === value;
         });
-    }) || variants[0];
+        console.log('Checking variant:', variant, 'matches:', matches);
+        return matches;
+    });
+
+    console.log('Found matching variant:', matchingVariant);
+    return matchingVariant || variants[0];
 }
 
 function $VariantSelects() {
@@ -275,46 +287,89 @@ function $VariantSelects() {
 
     if (!variants?.length) return null;
 
-    return <div className={""}>
-        {variantToggles.map(toggle => {
-            // Get all variants that match current selections (except the current toggle)
-            const matchingVariants = variants.filter(variant => {
-                return Object.entries(selectedValues).every(([key, value]) => {
-                    // Skip the current toggle key since we're finding values for it
-                    if (key === toggle.key) return true;
+    // Create selects based on variantToggles
+    return (
+        <div className={""}>
+            {variantToggles.map((toggle, index) => {
+                // Get all unique values for this toggle
+                const availableValues = Array.from(new Set(
+                    variants.map(v => {
+                        const meta = v.meta?.find(m => m.name === toggle.key);
+                        return meta?.value as string;
+                    }).filter(Boolean)
+                )).sort();
 
-                    const meta = variant.meta?.find(m => m.name === key);
-                    return meta?.value === value;
+                // Get available values based on other selected values
+                const filteredValues = availableValues.filter(value => {
+                    // For the first toggle, show all values
+                    if (index === 0) return true;
+
+                    // For other toggles, check if there's a variant with this value and all previous selected values
+                    return variants.some(variant => {
+                        // First check if this variant has the value we're checking
+                        const hasValue = variant.meta?.some(m => m.name === toggle.key && m.value === value);
+                        if (!hasValue) return false;
+
+                        // Then check if it matches all previous selected values
+                        return variantToggles.slice(0, index).every(prevToggle => {
+                            const selectedValue = selectedValues[prevToggle.key];
+                            if (!selectedValue) return true; // Skip empty values
+
+                            const meta = variant.meta?.find(m => m.name === prevToggle.key);
+                            return meta?.value === selectedValue;
+                        });
+                    });
                 });
-            });
 
-            // Get available values for this toggle from matching variants
-            const availableValues = Array.from(new Set(
-                matchingVariants.map(v => v.meta?.find(m => m.name === toggle.key)?.value).filter(Boolean)
-            ));
+                // If no values available, use the current value
+                const displayValues = filteredValues.length > 0 ? filteredValues :
+                    (selectedValues[toggle.key] ? [selectedValues[toggle.key]] : availableValues);
 
-            // If no values available, use the current value
-            if (availableValues.length === 0 && selectedValues[toggle.key]) {
-                availableValues.push(selectedValues[toggle.key]);
-            }
+                return (
+                    <select
+                        key={toggle.key}
+                        value={selectedValues[toggle.key] || ''}
+                        onChange={(e) => {
+                            const newValue = e.target.value;
+                            setSelectedValue(toggle.key, newValue);
 
-            return (
-                <select
-                    key={toggle.key}
-                    value={selectedValues[toggle.key]}
-                    onChange={(e) => setSelectedValue(toggle.key, e.target.value)}
-                >
-                    {availableValues.map(value => (
-                        <option key={value} value={value}>
-                            <>
+                            // For the first toggle (status), check if current content type is still valid
+                            if (index === 0 && variantToggles.length > 1) {
+                                const contentTypeKey = variantToggles[1].key;
+                                const currentContentType = selectedValues[contentTypeKey];
+
+                                if (currentContentType) {
+                                    // Check if current content type is valid for new status
+                                    const isValid = variants.some(variant => {
+                                        const statusMeta = variant.meta?.find(m => m.name === toggle.key);
+                                        const contentTypeMeta = variant.meta?.find(m => m.name === contentTypeKey);
+                                        return statusMeta?.value === newValue && contentTypeMeta?.value === currentContentType;
+                                    });
+
+                                    // If not valid, reset content type
+                                    if (!isValid) {
+                                        setSelectedValue(contentTypeKey, '');
+                                    }
+                                }
+                            } else if (index < variantToggles.length - 1) {
+                                // For other toggles, reset all toggles after this one
+                                // Only if there are toggles after this one
+                                variantToggles.slice(index + 1).forEach(nextToggle => {
+                                    setSelectedValue(nextToggle.key, '');
+                                });
+                            }
+                        }}
+                    >
+                        {displayValues.map(value => (
+                            <option key={value} value={value}>
                                 {value}
-                            </>
-                        </option>
-                    ))}
-                </select>
-            );
-        })}
-    </div>
+                            </option>
+                        ))}
+                    </select>
+                );
+            })}
+        </div>
+    );
 }
 
 interface DefinitionBodyProps {
@@ -325,32 +380,71 @@ function $DefinitionBody(props: DefinitionBodyProps) {
     const {definition} = props;
     const {variant} = useContext(VariantContext);
 
-    let apiRefProperties: React.ReactNode | null = null
+    let apiRefProperties: React.ReactNode | null = null;
 
     if (variant) {
         if (variant.properties?.length) {
-            apiRefProperties = <ApiRefProperties properties={variant.properties}/>
+            apiRefProperties = <ApiRefProperties properties={variant.properties}/>;
         } else if (variant.rootProperty) {
-            apiRefProperties = <ApiRefProperties properties={[
-                variant.rootProperty
-            ]}/>
+            apiRefProperties = <ApiRefProperties properties={[variant.rootProperty]}/>;
         }
     } else {
         if (definition.properties?.length) {
-            apiRefProperties = <ApiRefProperties properties={definition.properties}/>
+            apiRefProperties = <ApiRefProperties properties={definition.properties}/>;
         } else if (definition.rootProperty) {
-            apiRefProperties = <ApiRefProperties properties={[
-                definition.rootProperty
-            ]}/>
+            apiRefProperties = <ApiRefProperties properties={[definition.rootProperty]}/>;
         }
     }
 
+    const getMetaInfo = (meta: Meta[] | undefined) => {
+        if (!meta?.length) return null;
+
+        const minimum = meta.find(m => m.name === 'minimum')?.value;
+        const maximum = meta.find(m => m.name === 'maximum')?.value;
+        const example = meta.find(m => m.name === 'example')?.value;
+
+        const rangeInfo: string[] = [];
+        if (minimum !== undefined && maximum !== undefined) {
+            rangeInfo.push(`Required range: ${minimum} <= x <= ${maximum}`);
+        } else if (minimum !== undefined) {
+            rangeInfo.push(`Required range: x >= ${minimum}`);
+        } else if (maximum !== undefined) {
+            rangeInfo.push(`Required range: x <= ${maximum}`);
+        }
+
+        const exampleInfo = example ? [`Examples:`, `"${example}"`] : [];
+
+        return [...rangeInfo, ...exampleInfo].length > 0 ? (
+            <div style={{
+                marginTop: '1rem',
+                marginBottom: '1rem',
+                color: 'var(--color-text-secondary)',
+                fontSize: '0.875rem'
+            }}>
+                {rangeInfo.map((info, i) => (
+                    <div key={`range-${i}`}>{info}</div>
+                ))}
+                {exampleInfo.length > 0 && (
+                    <>
+                        <div>{exampleInfo[0]}</div>
+                        <div>{exampleInfo[1]}</div>
+                    </>
+                )}
+            </div>
+        ) : null;
+    };
+
+    const metaInfo = variant ? getMetaInfo(variant.meta) : getMetaInfo(definition.meta);
+    const description = variant ? variant.description : definition.description;
+
     return <div part="body">
         {
-            definition.description && <div>
-                {definition.description}
+            description && <div>
+                {description}
             </div>
         }
+
+        {metaInfo}
 
         {apiRefProperties}
     </div>
@@ -359,14 +453,19 @@ function $DefinitionBody(props: DefinitionBodyProps) {
 function $Navbar({label, subtitle}: { label: string, subtitle: string }) {
     return <>
         <div className={cn.ApiRefItemNavbarHost}>
-            <span className={cn.ApiRefItemNavbarContainer}>
-                <span className={cn.ApiRefItemNavbarLabel}>
-                    {label.toUpperCase()}
-                </span>
-                <span>
+            <div className={cn.ApiRefItemNavbarContainer}>
+                <div className={cn.ApiRefItemNavbarLabel}>
+                    {/* TODO: in the future not only for REST */}
+                    <div data-active="true" atlas-oas-method={label.toUpperCase()}>
+                        <Badge size="xs">
+                            {label.toUpperCase()}
+                        </Badge>
+                    </div>
+                </div>
+                <div className={cn.ApiRefItemNavbarSubtitle}>
                     {subtitle}
-                </span>
-            </span>
+                </div>
+            </div>
         </div>
     </>
 }
