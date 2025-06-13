@@ -16,6 +16,7 @@ import {
 } from "@/components/ApiRef";
 import * as cn from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
 import {useVariantToggles, type VariantToggleConfig} from "@/components/Atlas/AtlasContext";
+import {DefinitionBody} from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
 
 export interface ApiRefItemProps {
     reference: Reference
@@ -27,7 +28,6 @@ export function ApiRefItem({
                                kind,
                                reference
                            }: ApiRefItemProps) {
-    console.log("CURRENT REF", reference)
     const hasExamples = reference.examples?.groups?.length || false
 
     let header: React.ReactNode | null = <$IntroHeader reference={reference}/>
@@ -240,8 +240,6 @@ function $VariantsProvider({definition, children}: {
     }, []);
 
     const variants = definition.variants || [];
-    console.log('Definition variants:', definition.variants);
-    console.log('Variant toggles:', variantToggles);
 
     const [variant, setVariant] = useState<DefinitionVariant | undefined>(() => {
         return findMatchingVariant(variants, selectedValues);
@@ -265,20 +263,15 @@ function $VariantsProvider({definition, children}: {
 }
 
 function findMatchingVariant(variants: DefinitionVariant[], selectedValues: Record<string, string>): DefinitionVariant | undefined {
-    console.log('Finding matching variant for:', selectedValues);
-    console.log('Available variants:', variants);
-
     const matchingVariant = variants.find(variant => {
         const matches = Object.entries(selectedValues).every(([key, value]) => {
             if (!value) return true; // Skip empty values
             const meta = variant.meta?.find(m => m.name === key);
             return meta?.value === value;
         });
-        console.log('Checking variant:', variant, 'matches:', matches);
         return matches;
     });
 
-    console.log('Found matching variant:', matchingVariant);
     return matchingVariant || variants[0];
 }
 
@@ -436,11 +429,17 @@ function $DefinitionBody(props: DefinitionBodyProps) {
 
     const metaInfo = variant ? getMetaInfo(variant.meta) : getMetaInfo(definition.meta);
     const description = variant ? variant.description : definition.description;
+    const metaDescription = definitionMetaDescription(variant ? variant : definition);
 
-    return <div part="body">
+    return <div className={cn.DefinitionBody}>
         {
             description && <div>
                 {description}
+            </div>
+        }
+        {
+            metaDescription && <div>
+                {metaDescription}
             </div>
         }
 
@@ -486,3 +485,13 @@ function $Subtitle({title}: { title: string }) {
     </>
 }
 
+function definitionMetaDescription(definition: Definition | DefinitionVariant): string {
+    if (definition.meta?.length) {
+        const descriptionMeta = definition.meta.find(meta => meta.name === 'definitionDescription');
+        if (descriptionMeta) {
+            return descriptionMeta.value as string || "";
+        }
+    }
+
+    return "";
+}

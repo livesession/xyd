@@ -9,7 +9,7 @@ export interface UISidebarProps {
     footerItems?: React.ReactNode;
     className?: string;
 }
-
+[]
 export function UISidebar({ children, footerItems, className }: UISidebarProps) {
     const listRef = useRef<HTMLUListElement>(null);
 

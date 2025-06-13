@@ -61,7 +61,22 @@ export function oapSchemaToReferences(
 
                 const scopes: string[] = []
                 const oapMethod = oapPath?.[httpMethod] as OpenAPIV3.OperationObject
+                if (schema?.security?.length) {
+                    for (const security of schema.security) {
+                        for (const securityKey of Object.keys(security)) {
+                            if (securityKey === "oauth2" || securityKey === "OAuth2") {
+                                const securityScopes = security[securityKey]
+                                if (Array.isArray(securityScopes)) {
+                                    scopes.push(...securityScopes)
+                                }
+                            }
+                        }
+                    }
+                }
                 if (oapMethod?.security) {
+                    if (!oapMethod?.security?.length) {
+                        scopes.length = 0
+                    }
                     for (const security of oapMethod.security) {
                         for (const securityKey of Object.keys(security)) {
                             const securityScheme = schema?.components?.securitySchemes?.[securityKey]

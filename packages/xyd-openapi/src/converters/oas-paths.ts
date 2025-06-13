@@ -40,9 +40,7 @@ export function oapPathToReference(
     const exampleGroups: ExampleGroup[] = []
 
     const oapMethod = oapPath?.[httpMethod as keyof OpenAPIV3.PathItemObject] as OpenAPIV3.OperationObject
-    // if (oapMethod?.operationId !== "createChatCompletion") { // TODO: REMOVE
-    //     return null
-    // }
+
     if (!oapMethod) {
         return null
     }
@@ -196,15 +194,22 @@ export function oapOperationToUniformDefinition(
             const schema = responseObject.content[contentType]?.schema as OpenAPIV3.SchemaObject
             const respProperties = oasResponseToDefinitionProperties(responses, code, contentType) || []
 
-            if (Array.isArray(respProperties)) {
-                properties = respProperties
-            } else {
-                rootProperty = respProperties
+            if (respProperties && "properties" in respProperties && respProperties?.properties) {
+                if (Array.isArray(respProperties.properties)) {
+                    properties = respProperties.properties
+                } else {
+                    rootProperty = respProperties.properties
+                }
+            }
+
+            let definitionDescription = ""
+            if ("description" in respProperties) {
+                definitionDescription = respProperties.description || ""
             }
 
             variants.push({
                 title: code,
-                description: responseObject.description || "",
+                description: responseObject.description,
                 properties,
                 rootProperty,
                 meta: [
@@ -215,6 +220,10 @@ export function oapOperationToUniformDefinition(
                     {
                         name: "contentType",
                         value: contentType || "",
+                    },
+                    {
+                        name: "definitionDescription",
+                        value: definitionDescription
                     }
                 ],
                 symbolDef: definitionPropertyTypeDef(schema),

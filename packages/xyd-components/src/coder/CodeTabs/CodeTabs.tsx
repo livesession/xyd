@@ -1,4 +1,4 @@
-import React, { } from "react";
+import React, { useState, useEffect } from "react";
 import {Tabs as TabsPrimitive} from "radix-ui"; // TODO: remove and use separation
 import {
     HighlightedCode,
@@ -20,8 +20,15 @@ export interface CodeTabsProps {
 export function withCodeTabs(PreComponent) {
     return function CodeTabs(props: CodeTabsProps) {
         const isSingle = props?.highlighted?.length === 1 && !props.description
+        const defaultValue = props.highlighted[0]?.meta || props.highlighted[0]?.lang
+        const [activeTab, setActiveTab] = useState(defaultValue)
 
-        if (props?.highlighted?.length === 0) { // TODO: suspense?
+        // Reset active tab when highlighted prop changes
+        useEffect(() => {
+            setActiveTab(defaultValue)
+        }, [defaultValue])
+
+        if (props?.highlighted?.length === 0) { 
             return null
         }
 
@@ -33,8 +40,8 @@ export function withCodeTabs(PreComponent) {
                     data-nodescription={!props.description ? "true" : undefined}
                     className={`${cn.CodeTabsRoot}`}
                     style={props.highlighted[0]?.style}
-                    defaultValue={props.highlighted[0]?.meta}
-                    value={props.controlByMeta ? props.highlighted[0]?.meta : undefined}
+                    value={activeTab}
+                    onValueChange={setActiveTab}
                 >
                     <$LanguageTabSwitcher
                         description={props.description}
@@ -42,7 +49,7 @@ export function withCodeTabs(PreComponent) {
                     />
 
                     {props.highlighted?.map((codeblock, i) => (
-                        <TabsPrimitive.Content value={codeblock.meta} key={i}>
+                        <TabsPrimitive.Content value={codeblock.meta || codeblock.lang} key={i}>
                             <PreComponent
                                 style={codeblock?.style || codeblock?.style}
                                 codeblock={codeblock}
@@ -63,6 +70,10 @@ interface LanguageTabSwitcherProps {
 function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
     const isSingle = props?.highlighted?.length === 1 && !props.description
 
+    console.log(props.highlighted, "HIGHLIGHTED", props)
+    const highlighted = props.highlighted.filter((item, index, self) =>
+        index === self.findIndex((t) => (t.meta || t.lang) === (item.meta || item.lang))
+    );
     return <xyd-codetabs-languages
         data-single={String(isSingle)}
         className={`
@@ -78,23 +89,23 @@ function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
         }
 
         <TabsPrimitive.List part="languages-list">
-            {props.highlighted?.map(({ meta }, i) => {
+            {highlighted?.map(({ meta, lang }, i) => {
                 if (isSingle) {
                     return null
                 }
                 return <TabsPrimitive.Trigger
                     part="language-trigger"
-                    value={meta!}
+                    value={meta || lang}
                     key={i}
                 >
-                    {meta}
+                    {meta || lang}
                 </TabsPrimitive.Trigger>
             })}
         </TabsPrimitive.List>
 
         <div part="copy">
-            {props.highlighted?.map((codeblock, i) => (
-                <TabsPrimitive.Content value={codeblock.meta!} asChild key={i}>
+            {highlighted?.map((codeblock, i) => (
+                <TabsPrimitive.Content value={codeblock.meta || codeblock.lang} asChild key={i}>
                     <CodeCopy text={codeblock.value} />
                 </TabsPrimitive.Content>
             ))}

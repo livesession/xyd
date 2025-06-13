@@ -87,7 +87,8 @@ export function schemaObjectToUniformDefinitionProperties(
                             properties[existingPropertyIndex] = {
                                 ...existingProperty,
                                 ...property,
-                                meta: [...(existingProperty.meta || []), ...(property.meta || [])]
+                                description: property.description || existingProperty.description || "",
+                                meta: [...(existingProperty.meta || []), ...(property.meta || [])],
                             };
                         } else {
                             properties.push(property);
@@ -229,6 +230,84 @@ export function schemaObjectToUniformDefinitionProperty(
         };
 
         return prop
+    }
+
+    // Handle allOf case
+    if ('allOf' in schema && schema.allOf) {
+        const componentPaths: string[] = []
+        const mergedProperty: DefinitionProperty = {
+            name,
+            type: schema.type || "",
+            description: schema.description || "",
+            properties: [],
+            meta
+        };
+
+        for (const variantSchema of schema.allOf) {
+            if ('$ref' in variantSchema) {
+                console.warn("$ref is not supported in allOf schemas");
+                continue; // Skip reference objects
+            }
+
+            const oasSchema = variantSchema as OasJSONSchema;
+            if (oasSchema.__internal_getRefPath) {
+                const refPath = oasSchema.__internal_getRefPath();
+                if (typeof refPath === 'string') {
+                    componentPaths.push(refPath);
+                } else if (Array.isArray(refPath)) {
+                    componentPaths.push(...refPath);
+                } else {
+                    console.warn("Invalid refPath type in allOf schema", oasSchema);
+                }
+            }
+
+
+            if (!mergedProperty.type) {
+                if (typeof variantSchema.type === 'string') {
+                    mergedProperty.type = variantSchema.type || ""
+                }
+            }
+
+            if ('properties' in variantSchema && variantSchema.properties) {
+                for (const [propName, propSchema] of Object.entries(variantSchema.properties)) {
+                    if (BUILT_IN_PROPERTIES[propName]) {
+                        continue;
+                    }
+                    if ('$ref' in propSchema) {
+                        console.warn("$ref is not supported in allOf properties");
+                        continue; // Skip reference objects
+                    }
+
+                    const property = schemaObjectToUniformDefinitionProperty(
+                        propName,
+                        propSchema,
+                        variantSchema.required?.includes(propName)
+                    );
+
+                    if (property && mergedProperty.properties) {
+                        // Check if property already exists and merge if needed
+                        const existingPropertyIndex = mergedProperty.properties.findIndex(p => p.name === propName);
+                        if (existingPropertyIndex >= 0) {
+                            // Merge properties if they exist in multiple schemas
+                            const existingProperty = mergedProperty.properties[existingPropertyIndex];
+                            mergedProperty.properties[existingPropertyIndex] = {
+                                ...existingProperty,
+                                ...property,
+                                description: property.description || existingProperty.description || "",
+                                meta: [...(existingProperty.meta || []), ...(property.meta || [])],
+                            };
+                        } else {
+                            mergedProperty.properties.push(property);
+                        }
+                    }
+                }
+            }
+        }
+
+        const oasSchema = schema as OasJSONSchema;
+        oasSchema.__internal_getRefPath = () => componentPaths;
+
+        return mergedProperty;
     }
 
     const property: DefinitionProperty = {

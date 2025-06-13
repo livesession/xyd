@@ -6,6 +6,9 @@ import {
     DefinitionProperty,
     ReferenceType,
     OpenAPIReferenceContext, SymbolDef,
+    ExampleGroup,
+    Example,
+    CodeBlockTab,
 } from "@xyd-js/uniform";
 
 import {OasJSONSchema, uniformOasOptions} from "../types";
@@ -30,7 +33,6 @@ export function schemaComponentsToUniformReferences(
 
         if ('$ref' in componentSchema) {
             console.warn(`Skipping reference object: ${componentSchemaName}`);
-
             continue; // Skip reference objects
         }
 
@@ -60,7 +62,8 @@ export function schemaComponentsToUniformReferences(
             canonical: `objects/${componentSchemaName}`,
             definitions: [definition],
             examples: {
-                groups: [] // TODO: json example
+                // groups: [],
+                groups: createSchemaExampleGroup(componentSchema as OpenAPIV3.SchemaObject)
             },
             type: ReferenceType.REST_COMPONENT_SCHEMA,
             context: {
@@ -91,6 +94,28 @@ export function schemaComponentsToUniformReferences(
     return references;
 }
 
+function createSchemaExampleGroup(schema: OpenAPIV3.SchemaObject): ExampleGroup[] {
+    const example = generateSchemaExample(schema);
+    if (!example) {
+        return [];
+    }
+
+    const tabs: CodeBlockTab[] = [{
+        title: 'json',
+        language: 'json',
+        code: JSON.stringify(example, null, 2)
+    }];
+
+    return [{
+        description: 'Example',
+        examples: [{
+            codeblock: {
+                tabs
+            }
+        }]
+    }];
+}
+
 function definitionPropertyTypeDef(
     schema: OpenAPIV3.SchemaObject | undefined,
 ) {
@@ -112,4 +137,48 @@ function definitionPropertyTypeDef(
     }
 
     return typeDef
+}
+
+function generateSchemaExample(schema: OpenAPIV3.SchemaObject): any {
+    if (!schema) {
+        return null;
+    }
+
+    // Handle examples array
+    if ('examples' in schema && Array.isArray(schema.examples)) {
+        return schema.examples[0];
+    }
+
+    // Handle single example
+    if ('example' in schema && schema.example !== undefined) {
+        return schema.example;
+    }
+
+    // Handle object type with properties
+    if (schema.type === 'object' && schema.properties) {
+        const result: Record<string, any> = {};
+        for (const [propName, propSchema] of Object.entries(schema.properties)) {
+            result[propName] = generateSchemaExample(propSchema as OpenAPIV3.SchemaObject);
+        }
+        return result;
+    }
+
+    // Handle array type
+    if (schema.type === 'array' && schema.items) {
+        const itemExample = generateSchemaExample(schema.items as OpenAPIV3.SchemaObject);
+        return itemExample ? [itemExample] : [];
+    }
+
+    // Handle primitive types with default values
+    switch (schema.type) {
+        case 'string':
+            return '';
+        case 'number':
+        case 'integer':
+            return 0;
+        case 'boolean':
+            return false;
+        default:
+            return null;
+    }
 }

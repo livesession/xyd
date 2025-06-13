@@ -89,11 +89,6 @@ switch (SETTINGS?.theme?.name) {
 
 const DemoContext = createContext({})
 
-const {
-  Layout: BaseThemeLayout,
-  Page: BaseThemePage
-} = theme
-
 export function meta({ }: Route.MetaArgs) {
   return [
   ];
@@ -136,7 +131,7 @@ export async function action({
   const apisidebar = settings?.navigation?.sidebar.find(sidebar => sidebar.route === prefix) || null
 
   if (uniformData?.out?.sidebar?.length && apisidebar?.items) {
-    apisidebar.items.push(...uniformData?.out?.sidebar || [])
+    apisidebar.items[0].pages.push(...uniformData?.out?.sidebar || [])
   }
 
   const frontmatter = uniformData?.out?.pageFrontMatter || {}
@@ -168,8 +163,6 @@ export async function action({
     frontmatter
   )
 
-  console.log(props, 4444444444)
-
   return {
     groups: props?.groups || [],
     settings,
@@ -181,7 +174,36 @@ export async function action({
   }
 }
 
-export default function Home({ actionData }) {
+export  function Home({ actionData }) {
+    let currentTheme = null;
+  switch (effectiveActionData.settings?.theme?.name) {
+    case "poetry":
+      currentTheme = new ThemePoetry();
+      break;
+    case "opener":
+      currentTheme = new ThemeOpener();
+      break;
+    case "cosmo":
+      currentTheme = new ThemeCosmo();
+      break;
+    default:
+      currentTheme = null;
+  }
+
+  const {
+    Page: BaseThemePage
+  } = currentTheme || {};
+
+
+  return      <BaseThemePage>
+                <Atlas
+                  kind="primary"
+                  references={firstReference}
+                />
+              </BaseThemePage>
+}
+
+export default function Home2({ actionData }) {
   const [example, setExample] = useState(null);
   const { actionData: globalActionData, setActionData } = useGlobalState();
   const location = useLocation()
@@ -191,7 +213,7 @@ export default function Home({ actionData }) {
   React.useEffect(() => {
     if (actionData) {
       setActionData(actionData);
-      let canonical = actionData?.references[0]?.canonical
+      let canonical = actionData?.references?.[0]?.canonical
       if (canonical) {
         canonical = canonical.startsWith("/") ? canonical : `/${canonical}`
         if (canonical.endsWith("/")) {
@@ -212,25 +234,43 @@ export default function Home({ actionData }) {
     pageFrontMatter: {}
   };
 
-  // TODO: in the future map instead of array
-  const reference = effectiveActionData.references.find(ref => {
+  // Get current theme based on settings
+  let currentTheme = null;
+  switch (effectiveActionData.settings?.theme?.name) {
+    case "poetry":
+      currentTheme = new ThemePoetry();
+      break;
+    case "opener":
+      currentTheme = new ThemeOpener();
+      break;
+    case "cosmo":
+      currentTheme = new ThemeCosmo();
+      break;
+    default:
+      currentTheme = null;
+  }
+
+  const {
+    Layout: BaseThemeLayout,
+    Page: BaseThemePage
+  } = currentTheme || {};
+
+  // Find reference with proper null checks
+  const reference = effectiveActionData.references?.find(ref => {
+    if (!ref?.canonical) return false;
+    
     let canonical = ref.canonical.startsWith("/") ? ref.canonical : `/${ref.canonical}`
     if (canonical.endsWith("/")) {
       canonical = canonical.slice(0, -1)
     }
 
     return `${prefix}${canonical}` === location.pathname
-  })
+  }) || null;
 
-  const firstReference = reference
-    ? [reference]
-    : [];
+  const firstReference = reference ? [reference] : [];
 
   let atlasVariantToggles: VariantToggleConfig[] = [];
 
-  console.log(effectiveActionData, 33333333)
-
-  // TODO: BETTER HANDLE THAT
   if (effectiveActionData.exampleType === "openapi") {
     atlasVariantToggles = [
       { key: "status", defaultValue: "200" },
@@ -245,17 +285,16 @@ export default function Home({ actionData }) {
   return (
     <DemoContext.Provider value={{ example, setExample }}>
       <Framework
-        settings={effectiveActionData.settings}
-        sidebarGroups={effectiveActionData.groups}
+        settings={effectiveActionData.settings || {}}
+        sidebarGroups={effectiveActionData.groups || []}
         metadata={{
           layout: "wide",
           uniform: "1",
           title: "OpenAPI Demo"
         }}
         surfaces={surfaces}
-        BannerComponent={() => <ActionDropdownExample settings={effectiveActionData.settings} />}
+        BannerComponent={() => <ActionDropdownExample settings={effectiveActionData.settings || {}} />}
       >
-
         <AtlasContext
           value={{
             syntaxHighlight: effectiveActionData.settings?.theme?.markdown?.syntaxHighlight || null,
@@ -263,14 +302,21 @@ export default function Home({ actionData }) {
             variantToggles: atlasVariantToggles
           }}
         >
-          <BaseThemeLayout>
-            <BaseThemePage>
-              <Atlas
-                kind="primary"
-                references={firstReference || []}
-              />
-            </BaseThemePage>
-          </BaseThemeLayout>
+          {BaseThemeLayout && BaseThemePage ? (
+            <BaseThemeLayout>
+              <BaseThemePage>
+                <Atlas
+                  kind="primary"
+                  references={firstReference}
+                />
+              </BaseThemePage>
+            </BaseThemeLayout>
+          ) : (
+            <Atlas
+              kind="primary"
+              references={firstReference}
+            />
+          )}
         </AtlasContext>
       </Framework>
     </DemoContext.Provider>
@@ -415,8 +461,59 @@ function SelectTheme() {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const anchorRef = useRef(null);
+  const { setActionData } = useGlobalState();
 
-  const onSelect = ({ item }) => setSelected(item);
+  const onSelect = ({ item }) => {
+    console.log("on")
+    setSelected(item);
+    setOpen(false);
+
+    // Update theme in settings
+    const newSettings = JSON.parse(JSON.stringify(SETTINGS));
+    newSettings.theme = {
+      ...newSettings.theme,
+      name: item.value
+    };
+
+    // Update global theme settings
+    globalThis.__xydThemeSettings = newSettings.theme;
+
+    // Update theme instance
+    let newTheme = null;
+    switch (item.value) {
+      case "poetry":
+        newTheme = new ThemePoetry();
+        break;
+      case "opener":
+        newTheme = new ThemeOpener();
+        break;
+      case "cosmo":
+        newTheme = new ThemeCosmo();
+        break;
+      default:
+        newTheme = null;
+    }
+
+    // Update global state to trigger re-render with new theme
+    setActionData(prev => ({
+      ...prev,
+      settings: newSettings
+    }));
+
+    // Dynamically import theme CSS
+    const themeName = item.value;
+    
+    // Remove old theme styles - both Vite dev mode and regular link tags
+    const oldThemeStyles = document.querySelectorAll('link[data-theme-style], style[data-vite-dev-id*="theme-"]');
+    oldThemeStyles.forEach(style => style.remove());
+
+    // Create new theme style link
+    const themeStyles = document.createElement('link');
+    themeStyles.rel = 'stylesheet';
+    themeStyles.href = `/node_modules/@xyd-js/theme-${themeName}/dist/index.css`;
+    themeStyles.setAttribute('data-theme-style', 'true');
+    document.head.appendChild(themeStyles);
+  };
 
   return <>
     <Button
@@ -437,11 +534,11 @@ function SelectTheme() {
           id="choose-theme"
           onDismiss={() => setOpen(false)}
         >
-
-          {themes.map((example) => (
+          {themes.map((theme) => (
             <Dropdown.Item
+              key={theme.value}
               onSelect={onSelect}
-              option={{ value: example.value, label: example.label }}
+              option={{ value: theme.value, label: theme.label }}
               selected={selected}
             />
           ))}

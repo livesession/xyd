@@ -9,6 +9,15 @@ import {
 import { GlobalStateProvider } from './context';
 import type { Route } from "./+types/root";
 
+
+export async function action({
+  request,
+}: Route.ClientActionArgs) {
+  return {
+      ok: 1
+  }
+}
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {

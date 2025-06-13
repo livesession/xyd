@@ -140,6 +140,7 @@ function FwSidebarItem(props: FwSidebarItemProps) {
                             items={item.items}
                             active={active(item)[0]}
                             icon={item.icon}
+                            pageMeta={item.pageMeta}
                         />)
                     }
                 </>

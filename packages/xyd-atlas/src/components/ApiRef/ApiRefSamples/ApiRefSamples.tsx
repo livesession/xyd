@@ -14,11 +14,19 @@ export interface ApiRefSamplesProps {
 
 export function ApiRefSamples({examples}: ApiRefSamplesProps) {
     const syntaxHighlight = useSyntaxHighlight()
+    const [activeExampleIndices, setActiveExampleIndices] = useState<Record<number, number>>({})
+
+    const handleExampleChange = (groupIndex: number, exampleIndex: number) => {
+        setActiveExampleIndices(prev => ({
+            ...prev,
+            [groupIndex]: exampleIndex
+        }))
+    }
 
     return <atlas-apiref-samples className={cn.ApiRefSamplesContainerHost}>
         {
             examples.groups?.map(({description, examples: example}, i) => {
-                const [activeExampleIndex, setActiveExampleIndex] = useState(0)
+                const activeExampleIndex = activeExampleIndices[i] || 0
                 const activeExample = example[activeExampleIndex]
 
                 const codeblocks = activeExample?.codeblock?.tabs?.map(tab => ({
@@ -36,7 +44,7 @@ export function ApiRefSamples({examples}: ApiRefSamplesProps) {
                                 examples={example}
                                 onClick={(ex) => {
                                     const index = example.findIndex(e => e === ex)
-                                    setActiveExampleIndex(index)
+                                    handleExampleChange(i, index)
                                 }}
                             />
                             : null

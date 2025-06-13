@@ -39,7 +39,12 @@ export const SETTINGS = Object.freeze({
             {
                 "route": "/docs/api",
                 "items": [
-                   
+                    {
+                        "group": "Endpoints",
+                        "pages": [
+
+                        ]
+                    }
                 ]
             }
         ]

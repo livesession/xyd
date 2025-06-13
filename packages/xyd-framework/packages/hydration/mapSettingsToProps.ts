@@ -21,7 +21,6 @@ export async function mapSettingsToProps(
     hiddenPages?: { [key: string]: boolean }
     metadata?: Metadata | null
 }> {
-    console.log(1111111)
     let uniqIndex = 0
     const filteredNav = filterNavigation(settings, slug)
     if (!frontmatters) {
@@ -151,7 +150,6 @@ export async function mapSettingsToProps(
             } as FwSidebarGroupProps
         }) || []
 
-    console.log(8888888888)
     return {
         groups,
         breadcrumbs,

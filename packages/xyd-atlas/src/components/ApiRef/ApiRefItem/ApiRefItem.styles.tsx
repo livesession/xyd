@@ -18,6 +18,7 @@ export const ApiRefItemNavbarContainer = css`
     border-radius: 8px;
     display: flex;
     gap: 4px;
+    overflow: scroll;
 `;
 
 export const ApiRefItemNavbarLabel = css`
@@ -91,10 +92,8 @@ export const ApiRefItemDefinitionsItem = css`
     }
 `;
 
-export const ApiRefItemSubtitleHost = css`
-    font-weight: var(--xyd-font-weight-semibold);
-`;
-
-export const ApiRefItemSubtitleLink = css`
-    text-decoration: none;
-`;
+export const DefinitionBody = css`
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+`

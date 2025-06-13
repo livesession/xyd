@@ -34,7 +34,7 @@ export interface Reference<
     __UNSAFE_selector?: (selector: string) => any;
 }
 
-export type DefinitionOpenAPIMeta = Meta<"contentType" | "required">;
+export type DefinitionOpenAPIMeta = Meta<"contentType" | "required" | "definitionDescription">;
 export type DefinitionTypeDocMeta = Meta<"type">;
 export type DefinitionGraphqlMeta = Meta<"type" | "graphqlName">;
 
@@ -78,7 +78,7 @@ export interface Definition<
     type?: string;
 }
 
-export type DefinitionVariantOpenAPIMeta = Meta<"status" | "contentType">;
+export type DefinitionVariantOpenAPIMeta = Meta<"status" | "contentType" | "definitionDescription">;
 export type CommonDefinitionVariantMeta = Meta<"symbolName">;
 
 export type DefinitionVariantMeta = CommonDefinitionVariantMeta | DefinitionVariantOpenAPIMeta

@@ -161,6 +161,7 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
         return group
     })
 
+
     // TODO: better API for elements like logo search
     return <FwSidebarGroupContext
         initialActiveItems={initialActiveItems}
