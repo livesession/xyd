@@ -1,8 +1,6 @@
 export const SETTINGS = Object.freeze({
     "theme": {
         "name": "opener",
-        "logo": "/public/assets/logo.svg",
-        "favicon": "/public/assets/logo.svg",
         "banner": {
             "content": ":::button{href='https://xyd.dev' size='sm' kind='secondary'}\n **xyd 0.1.0-alpha is coming soon!**\n:::"
         },

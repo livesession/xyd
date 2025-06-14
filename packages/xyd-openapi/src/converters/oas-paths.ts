@@ -29,6 +29,12 @@ export function oapPathToReference(
     path: string,
     oapPath: OpenAPIV3.PathItemObject,
 ): Reference | null {
+    if (path.includes("domains/{domain_name}/records") && httpMethod === "post") {
+        console.log("ISSUE 1", path)
+    }
+    if (path.includes("gen-ai") && httpMethod === "post") {
+        console.log("ISSUE 2", path)
+    }
     const mType = httpMethodToUniformMethod(httpMethod)
 
     if (!mType) {
@@ -168,6 +174,13 @@ export function oapPathToReference(
             default:
                 return null
         }
+    }
+
+    if (path.includes("domains/{domain_name}/records") && httpMethod === "post") {
+        console.log("ISSUE", path)
+    }
+    if (path.includes("gen-ai") && httpMethod === "post") {
+        console.log("ISSUE 2", path)
     }
     
     return endpointRef

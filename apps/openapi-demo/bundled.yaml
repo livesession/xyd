@@ -288,7 +288,7 @@ info:
     Throughout this document, some example API requests will be given using the
     `curl` command. This will allow us to demonstrate the various endpoints in a
     simple, textual format.
-    
+      
       These examples assume that you are using a Linux or macOS command line. To run
     these commands on a Windows machine, you can either use cmd.exe, PowerShell, or WSL:
 
@@ -1131,7 +1131,7 @@ paths:
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
               -d '{"name":"My SSH Public Key","public_key":"ssh-rsa AEXAMPLEaC1yc2EAAAADAQABAAAAQQDDHr/jh2Jy4yALcK4JyWbVkPRaWmhck3IgCoeOO3z1e2dBowLh64QAM+Qb72pxekALga2oi4GvT+TlWNhzPH4V example"}' \
-              "https://api.digitalocean.com/v2/account/keys"
+              "https://api.digitalocean.com/v2/account/keys" 
         - lang: Go
           source: |-
             import (
@@ -1211,7 +1211,7 @@ paths:
             curl -X GET \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-              "https://api.digitalocean.com/v2/account/keys/512190"
+              "https://api.digitalocean.com/v2/account/keys/512190" 
         - lang: Go
           source: |-
             import (
@@ -1235,7 +1235,7 @@ paths:
             token = ENV['DIGITALOCEAN_TOKEN']
             client = DropletKit::Client.new(access_token: token)
 
-            client.ssh_keys.find(id: 512190)
+            client.ssh_keys.find(id: 512190) 
         - lang: Python
           source: |-
             import os
@@ -1359,7 +1359,7 @@ paths:
             curl -X DELETE \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-              "https://api.digitalocean.com/v2/account/keys/512190"
+              "https://api.digitalocean.com/v2/account/keys/512190" 
         - lang: Go
           source: |-
             import (
@@ -3357,7 +3357,7 @@ paths:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
             -d '{"ttl": 1800}' \
-            "https://api.digitalocean.com/v2/cdn/endpoints/19f06b6a-3ace-4315-b086-499a0e521b76"
+            "https://api.digitalocean.com/v2/cdn/endpoints/19f06b6a-3ace-4315-b086-499a0e521b76" 
         - lang: Go
           source: |-
             import (
@@ -4514,7 +4514,7 @@ paths:
             curl -X DELETE \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30"
+            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30" 
         - lang: Go
           source: |-
             import (
@@ -4744,7 +4744,7 @@ paths:
       summary: Start an Online Migration
       description: |-
         To start an online migration, send a PUT request to `/v2/databases/$DATABASE_ID/online-migration` endpoint. Migrating a cluster establishes a connection with an existing cluster and replicates its contents to the target cluster. Online migration is only available for MySQL, PostgreSQL, Redis, and Valkey clusters.
-        If the existing database is continuously being written to,  the migration process will continue for up to two weeks unless it is manually stopped. Online migration is only available for [MySQL](https://docs.digitalocean.com/products/databases/mysql/how-to/migrate/#:~:text=To%20migrate%20a%20MySQL%20database,then%20select%20Set%20Up%20Migration),  [PostgreSQL](https://docs.digitalocean.com/products/databases/postgresql/how-to/migrate/),  [Redis](https://docs.digitalocean.com/products/databases/redis/how-to/migrate/), and [Valkey](https://docs.digitalocean.com/products/databases/valkey/how-to/migrate/) clusters.
+        If the existing database is continuously being written to,  the migration process will continue for up to two weeks unless it is manually stopped. Online migration is only available for [MySQL](https://docs.digitalocean.com/products/databases/mysql/how-to/migrate/#:~:text=To%20migrate%20a%20MySQL%20database,then%20select%20Set%20Up%20Migration),  [PostgreSQL](https://docs.digitalocean.com/products/databases/postgresql/how-to/migrate/),  [Redis](https://docs.digitalocean.com/products/databases/redis/how-to/migrate/), and [Valkey](https://docs.digitalocean.com/products/databases/valkey/how-to/migrate/) clusters. 
       tags:
         - Databases
       parameters:
@@ -4984,7 +4984,7 @@ paths:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
             -d '{"size":"db-s-4vcpu-8gb", "num_nodes":3, "storage_size_mib":163840}' \
-            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30/resize"
+            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30/resize" 
         - lang: Go
           source: |-
             import (
@@ -5897,7 +5897,7 @@ paths:
                         (To be deprecated: use settings.mongo_user_settings.role instead for access controls to MongoDB databases). 
                         For MongoDB clusters, set to `true` to create a read-only user.
                         This option is not currently supported for other database engines.
-
+                                   
             examples:
               Add New User:
                 value:
@@ -6617,7 +6617,7 @@ paths:
             curl -X GET /
             -H "Content-Type: application/json" /
             -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" /
-            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30/pools"
+            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30/pools" 
         - lang: Go
           source: |-
             import (
@@ -6694,7 +6694,7 @@ paths:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
             -d '{"name": "backend-pool","mode": "transaction","size": 10,"db": "defaultdb","user": "doadmin"}' \
-            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30/pools"
+            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30/pools" 
         - lang: Go
           source: |-
             import (
@@ -6768,7 +6768,7 @@ paths:
             curl -X GET /
             -H "Content-Type: application/json" /
             -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" /
-            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30/pools/backend-pool"
+            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30/pools/backend-pool" 
         - lang: Go
           source: |-
             import (
@@ -6791,7 +6791,7 @@ paths:
 
             client = Client(token=os.environ.get("DIGITALOCEAN_TOKEN"))
 
-            get_resp = client.databases.get_connection_pool(database_cluster_uuid="a7aba8a", pool_name="backend-pool")
+            get_resp = client.databases.get_connection_pool(database_cluster_uuid="a7aba8a", pool_name="backend-pool") 
       security:
         - bearer_auth:
             - database:read
@@ -6835,7 +6835,7 @@ paths:
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
             -d '{"mode": "transaction", "size": 15, "db": "defaultdb", "user": "doadmin"}' \
-            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30/pools/backend-pool"
+            "https://api.digitalocean.com/v2/databases/9cc10173-e9ea-4176-9dbc-a4cee4c4ff30/pools/backend-pool" 
         - lang: Go
           source: |-
             import (
@@ -7434,7 +7434,7 @@ paths:
 
                 client := godo.NewFromToken(token)
                 ctx := context.TODO()
-            
+              
                 topicName := "events"
 
                 user, _, err := client.Databases.GetTopic(ctx, "9cc10173-e9ea-4176-9dbc-a4cee4c4ff30", topicName)
@@ -10709,7 +10709,7 @@ paths:
       description: |
         To update the configuration of an existing autoscale pool, send a PUT request to
         `/v2/droplets/autoscale/$AUTOSCALE_POOL_ID`. The request must contain a full representation
-        of the autoscale pool including existing attributes.
+        of the autoscale pool including existing attributes. 
       tags:
         - Droplet Autoscale Pools
       parameters:
@@ -10777,7 +10777,7 @@ paths:
       description: |
         To destroy an autoscale pool, send a DELETE request to the `/v2/droplets/autoscale/$AUTOSCALE_POOL_ID` endpoint.
 
-        A successful response will include a 202 response code and no content.
+        A successful response will include a 202 response code and no content. 
       tags:
         - Droplet Autoscale Pools
       parameters:
@@ -10887,7 +10887,7 @@ paths:
         To list all of the scaling history events of an autoscale pool, send a GET request to `/v2/droplets/autoscale/$AUTOSCALE_POOL_ID/history`.
 
         The response body will be a JSON object with a key of `history`. This will be
-        set to an array containing objects each representing a history event.
+        set to an array containing objects each representing a history event. 
       tags:
         - Droplet Autoscale Pools
       parameters:
@@ -11990,7 +11990,7 @@ paths:
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
               -d '{"inbound_rules":[{"protocol":"tcp","ports":"3306","sources":{"droplet_ids":[49696269]}}],"outbound_rules":[{"protocol":"tcp","ports":"3306","destinations":{"droplet_ids":[49696269]}}]}' \
-              "https://api.digitalocean.com/v2/firewalls/bb4b2611-3d72-467b-8602-280330ecd65c/rules"
+              "https://api.digitalocean.com/v2/firewalls/bb4b2611-3d72-467b-8602-280330ecd65c/rules" 
         - lang: Go
           source: |-
             import (
@@ -12278,7 +12278,7 @@ paths:
             curl -X GET \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-              "https://api.digitalocean.com/v2/floating_ips?page=1&per_page=20"
+              "https://api.digitalocean.com/v2/floating_ips?page=1&per_page=20" 
         - lang: Go
           source: |-
             import (
@@ -12350,7 +12350,7 @@ paths:
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
               -d '{"droplet_id": 123456}' \
-              "https://api.digitalocean.com/v2/floating_ips"
+              "https://api.digitalocean.com/v2/floating_ips" 
         - lang: Go
           source: |-
             import (
@@ -12378,7 +12378,7 @@ paths:
             client = DropletKit::Client.new(access_token: token)
 
             floating_ip = DropletKit::FloatingIp.new(droplet_id: 123456)
-            client.floating_ips.create(floating_ip)
+            client.floating_ips.create(floating_ip) 
       security:
         - bearer_auth:
             - reserved_ip:create
@@ -12410,7 +12410,7 @@ paths:
             curl -X GET \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-              "https://api.digitalocean.com/v2/floating_ips/45.55.96.47"
+              "https://api.digitalocean.com/v2/floating_ips/45.55.96.47" 
         - lang: Go
           source: |-
             import (
@@ -12494,7 +12494,7 @@ paths:
             token = ENV['DIGITALOCEAN_TOKEN']
             client = DropletKit::Client.new(access_token: token)
 
-            client.floating_ips.delete(ip: '45.55.96.47')
+            client.floating_ips.delete(ip: '45.55.96.47') 
       security:
         - bearer_auth:
             - reserved_ip:delete
@@ -13593,8 +13593,8 @@ paths:
 
                 client := godo.NewFromToken(token)
                 ctx := context.TODO()
-            
-            
+
+                
             }
         - lang: Python
           source: |-
@@ -19110,7 +19110,7 @@ paths:
                   ctx := context.TODO()
 
                   ListOptions := &godo.ListOptions{ Page: 1, PerPage: 20, WithProjects: true}
-            
+                  
                   response, _, err := client.PartnerAttachment.List(ctx, ListOptions)
             }
         - lang: Python
@@ -19580,7 +19580,7 @@ paths:
             import (
                 "context"
                 "os"
-            
+                
                 "github.com/digitalocean/godo"
             )
 
@@ -19633,7 +19633,7 @@ paths:
             import (
                 "context"
                 "os"
-            
+                
                 "github.com/digitalocean/godo"
             )
 
@@ -20347,7 +20347,7 @@ paths:
             token = ENV['DIGITALOCEAN_TOKEN']
             client = DropletKit::Client.new(access_token: token)
 
-            client.projects.delete(id: '4e1bfbc3-dc3e-41f2-a18f-1b4d7ba71679')
+            client.projects.delete(id: '4e1bfbc3-dc3e-41f2-a18f-1b4d7ba71679') 
         - lang: Python
           source: |-
             import os
@@ -22372,7 +22372,7 @@ paths:
 
             req = {
                   "type": "unreferenced blobs only"
-            
+                  
             }
 
             resp = client.registry.run_garbage_collection(registry_name="example",body=req)
@@ -22620,7 +22620,7 @@ paths:
             curl -X GET \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-              "https://api.digitalocean.com/v2/reserved_ips?page=1&per_page=20"
+              "https://api.digitalocean.com/v2/reserved_ips?page=1&per_page=20" 
         - lang: Go
           source: |-
             import (
@@ -22700,7 +22700,7 @@ paths:
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
               -d '{"droplet_id": 123456}' \
-              "https://api.digitalocean.com/v2/reserved_ips"
+              "https://api.digitalocean.com/v2/reserved_ips" 
         - lang: Go
           source: |-
             import (
@@ -22731,7 +22731,7 @@ paths:
             client = DropletKit::Client.new(access_token: token)
 
             reserved_ip = DropletKit::ReservedIp.new(droplet_id: 123456)
-            client.reserved_ips.create(reserved_ip)
+            client.reserved_ips.create(reserved_ip) 
         - lang: Python
           source: |-
             import os
@@ -22775,7 +22775,7 @@ paths:
             curl -X GET \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-              "https://api.digitalocean.com/v2/reserved_ips/45.55.96.47"
+              "https://api.digitalocean.com/v2/reserved_ips/45.55.96.47" 
         - lang: Go
           source: |-
             import (
@@ -22867,7 +22867,7 @@ paths:
             token = ENV['DIGITALOCEAN_TOKEN']
             client = DropletKit::Client.new(access_token: token)
 
-            client.reserved_ips.delete(ip: '45.55.96.47')
+            client.reserved_ips.delete(ip: '45.55.96.47') 
         - lang: Python
           source: |-
             import os
@@ -23148,7 +23148,7 @@ paths:
             curl -X GET \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-              "https://api.digitalocean.com/v2/reserved_ipv6?page=1&per_page=20"
+              "https://api.digitalocean.com/v2/reserved_ipv6?page=1&per_page=20" 
         - lang: Go
           source: |-
             import (
@@ -23215,7 +23215,7 @@ paths:
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
               -d '{"region_slug": "nyc3"}' \
-              "https://api.digitalocean.com/v2/reserved_ipv6"
+              "https://api.digitalocean.com/v2/reserved_ipv6" 
         - lang: Go
           source: |-
             import (
@@ -23280,7 +23280,7 @@ paths:
             curl -X GET \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-              "https://api.digitalocean.com/v2/reserved_ipv6/2409:40d0:f7:1017:74b4:3a96:105e:4c6e"
+              "https://api.digitalocean.com/v2/reserved_ipv6/2409:40d0:f7:1017:74b4:3a96:105e:4c6e" 
         - lang: Go
           source: |-
             import (
@@ -23498,7 +23498,7 @@ paths:
             curl -X GET \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-              "https://api.digitalocean.com/v2/sizes"
+              "https://api.digitalocean.com/v2/sizes" 
         - lang: Go
           source: |-
             import (
@@ -24765,7 +24765,7 @@ paths:
             curl -X DELETE \
               -H "Content-Type: application/json" \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-              "https://api.digitalocean.com/v2/volumes?name=example&region=nyc1"
+              "https://api.digitalocean.com/v2/volumes?name=example&region=nyc1" 
         - lang: Python
           source: |-
             import os
@@ -27484,7 +27484,7 @@ paths:
                 "faas_namespace": "fn-2014dc98-faa1-45f4-ba1f-59910cb3d399",
                 "faas_name": "default/get-zipcode"
               }'
-
+             
   /v2/gen-ai/agents/{agent_uuid}/functions/{function_uuid}:
     put:
       description: To update the function route, send a PUT request to `/v2/gen-ai/agents/{agent_uuid}/functions/{function_uuid}`.
@@ -27723,8 +27723,8 @@ paths:
                 "agent_uuid": "1b418231-b7d6-11ef-bf8f-4e013e2ddde4",
                 "agent_uuid": "9a6e3975-b0c6-11ef-bf8f-4e013e2ddde4"
               }'
-    
 
+             
     delete:
       description: To detach a knowledge base from an agent, send a DELETE request to `/v2/gen-ai/agents/{agent_uuid}/knowledge_bases/{knowledge_base_uuid}`.
       operationId: genai_detach_knowledge_base
@@ -27847,7 +27847,7 @@ paths:
                 "route_name": "route-token-stat",
                 "if_case": "for any token related statistics, use this route"
               }'
-
+             
     put:
       description: To update an agent route for an agent, send a PUT request to `/v2/gen-ai/agents/{parent_agent_uuid}/child_agents/{child_agent_uuid}`.
       operationId: genai_update_attached_agent
@@ -28019,7 +28019,7 @@ paths:
               -H "Content-Type: application/json"  \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
               "https://api.digitalocean.com/v2/gen-ai/agents/c441bf77-81d6-11ef-bf8f-4e013e2ddde4"
-
+             
     put:
       description: To update an agent, send a PUT request to `/v2/gen-ai/agents/{uuid}`. The response body is a JSON object containing the agent.
       operationId: genai_update_agent
@@ -28833,8 +28833,8 @@ paths:
               -H "Content-Type: application/json"  \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
               "https://api.digitalocean.com/v2/gen-ai/indexing_jobs/9758a232-b351-11ef-bf8f-4e013e2ddde4"
-  
 
+             
   /v2/gen-ai/indexing_jobs/{uuid}:
     get:
       description: To get status of an indexing Job for a knowledge base, send a GET request to `/v2/gen-ai/indexing_jobs/{uuid}`.
@@ -28884,7 +28884,7 @@ paths:
               -H "Content-Type: application/json"  \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
               "https://api.digitalocean.com/v2/gen-ai/indexing_jobs/9758a232-b351-11ef-bf8f-4e013e2ddde4"
-
+             
   /v2/gen-ai/indexing_jobs/{uuid}/cancel:
     put:
       description: To cancel an indexing job for a knowledge base, send a PUT request to `/v2/gen-ai/indexing_jobs/{uuid}/cancel`.
@@ -29277,7 +29277,7 @@ paths:
               -H "Content-Type: application/json"  \
               -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
               "https://api.digitalocean.com/v2/gen-ai/knowledge_bases/9758a232-b351-11ef-bf8f-4e013e2ddde4"
-
+             
     put:
       description: To update a knowledge base, send a PUT request to `/v2/gen-ai/knowledge_bases/{uuid}`.
       operationId: genai_update_knowledge_base
@@ -33463,7 +33463,7 @@ components:
               - `app_pinned` - indicates that there is already a rollback in progress and the app is pinned.
               - `database_config_conflict` - indicates that the deployment's database config is different than the current config.
               - `region_conflict` - indicates that the deployment's region differs from the current app region.
-            
+              
             Warning conditions:
               - `static_site_requires_rebuild` - indicates that the deployment contains at least one static site that will require a rebuild.
               - `image_source_missing_digest` - indicates that the deployment contains at least one component with an image source that is missing a digest.
@@ -48499,7 +48499,7 @@ components:
     list_namespaces:
       description: |-
         An array of JSON objects with a key called `namespaces`.  Each object represents a namespace and contains
-        the properties associated with it.
+        the properties associated with it. 
       headers:
         ratelimit-limit:
           $ref: '#/components/headers/ratelimit-limit'
@@ -48606,7 +48606,7 @@ components:
     list_triggers:
       description: |-
         An array of JSON objects with a key called `namespaces`.  Each object represents a namespace and contains
-        the properties associated with it.
+        the properties associated with it. 
       headers:
         ratelimit-limit:
           $ref: '#/components/headers/ratelimit-limit'
@@ -55009,7 +55009,7 @@ components:
       description: |
         **Important:**  
         The `type` query parameter is not directly related to the `type` attribute.
-        The main thing to remember here is that DigitalOcean-produced distribution images will have `snapshot` as the type attribute.
+        The main thing to remember here is that DigitalOcean-produced distribution images will have `snapshot` as the type attribute. 
       value:
         images:
           - id: 63663980

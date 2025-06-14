@@ -1,9 +1,20 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import type { Reference } from '@xyd-js/uniform';
+import type { Settings } from '@xyd-js/core';
+import type { FwSidebarGroupProps } from '@xyd-js/framework/react';
+import { SETTINGS } from './routes/settings';
+
+interface GlobalStateActionData {
+  references: Reference[];
+  settings: Settings
+  groups: FwSidebarGroupProps[]
+  exampleType: "openapi" | "graphql"
+}
 
 // Create a context for the global state
 export const GlobalStateContext = createContext<{
-  actionData: any;
-  setActionData: (data: any) => void;
+  actionData: GlobalStateActionData | null;
+  setActionData: (data: GlobalStateActionData) => void;
 }>({
   actionData: null,
   setActionData: () => { },
@@ -11,7 +22,12 @@ export const GlobalStateContext = createContext<{
 
 // Create a provider component
 export function GlobalStateProvider({ children }: { children: React.ReactNode }) {
-  const [actionData, setActionData] = useState<any>(null);
+  const [actionData, setActionData] = useState<any>({
+    references: [],
+    settings: SETTINGS,
+    groups: [],
+    exampleType: ""
+  });
 
   const handleSetActionData = (data: any) => {
     setActionData(data);
@@ -32,3 +48,5 @@ export function useGlobalState() {
   }
   return context;
 } 
+
+export const UrlContext = createContext({})

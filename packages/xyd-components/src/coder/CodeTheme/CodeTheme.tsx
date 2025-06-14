@@ -41,8 +41,6 @@ export function CodeTheme(props: CodeThemeProps) {
     const [highlighted, setHighlighted] = useState<HighlightedCode[] | undefined>(initializeHighlighted(props.codeblocks));
     const [clientSideFetch, setClientSideFetch] = useState(true)
 
-    console.log(props.codeblocks, "CODEBLOCKS")
-
     useEffect(() => {
         setHighlighted(initializeHighlighted(props.codeblocks))
     }, [props.codeblocks])

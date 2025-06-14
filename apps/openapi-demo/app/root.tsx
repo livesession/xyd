@@ -6,17 +6,10 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import React, { } from 'react';
+
 import { GlobalStateProvider } from './context';
 import type { Route } from "./+types/root";
-
-
-export async function action({
-  request,
-}: Route.ClientActionArgs) {
-  return {
-      ok: 1
-  }
-}
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -31,7 +24,8 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children, ...rest }: { children: React.ReactNode }) {
+  console.log(111111111, rest)
   return (
     <html lang="en">
       <head>

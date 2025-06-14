@@ -28,8 +28,8 @@ const tests: {
 
     {
         name: "4.abc",
-        url: "https://raw.githubusercontent.com/bump-sh-examples/train-travel-api/main/openapi.yaml",
-        description: "OpenAI OpenAPI API example",
+        // url: "https://raw.githubusercontent.com/digitalocean/openapi/main/specification/DigitalOcean-public.v2.yaml",
+        description: "Digital Ocean API example",
         // plugins: [
         //     uniformOpenAIMeta,
         // ],
@@ -54,7 +54,7 @@ const tests: {
     // },
 ]
 
-describe("oapSchemaToReferences", () => {
+describe("oapSchemaToReferences",{ timeout: 15000 }, () => {
     tests.forEach((test) => {
         it(`[${test.name}]: ${test.description}`, async () => {
             await testOasSchemaToReferences(test.name, test.options, test.plugins, test.url);

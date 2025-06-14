@@ -1,7 +1,7 @@
-import React, { useState, useRef, createContext, useContext } from 'react';
+import React, { useState, useRef, createContext, useContext, useEffect, useMemo } from 'react';
 import {
-    Form,
     Outlet,
+    useFetcher,
     useLocation,
     useNavigate,
     useNavigation,
@@ -9,17 +9,14 @@ import {
 import { Box, Button, Dropdown, Flex, TextField, Text } from 'gestalt';
 import GitHubButton from 'react-github-btn'
 
-import { oapSchemaToReferences, deferencedOpenAPI } from "@xyd-js/openapi"
 import { Badge } from "@xyd-js/components/writer"
-import uniform, { pluginNavigation, type OpenAPIReferenceContext, type Reference } from "@xyd-js/uniform"
-import { gqlSchemaToReferences } from "@xyd-js/gql"
 import { ReactContent } from "@xyd-js/components/content";
 import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
-import { Surfaces, Framework, FwLink, useSettings } from "@xyd-js/framework/react";
-import { mapSettingsToProps } from "@xyd-js/framework/hydration"
+import { Surfaces, Framework, FwLink } from "@xyd-js/framework/react";
 import ThemePoetry from "@xyd-js/theme-poetry";
 import ThemeOpener from "@xyd-js/theme-opener";
 import ThemeCosmo from "@xyd-js/theme-cosmo";
+
 import { SETTINGS } from './settings';
 import { useGlobalState } from '../context';
 
@@ -33,10 +30,11 @@ if (SETTINGS?.theme?.name === "poetry") {
 }
 import 'gestalt/dist/gestalt.css';
 import "../index.css";
-import type { Route } from './+types/home';
+import { DOCS_PREFIX } from '~/const';
+import { UrlContext } from '~/context';
 
 const surfaces = new Surfaces()
-function Abc(props: any) {
+function SidebarItemRight(props: any) {
     const openapi = props?.pageMeta?.openapi || ""
     const [_, region = ""] = openapi.includes("#") ? openapi.split("#") : ["", openapi]
     const [method = ""] = region.split(" ")
@@ -56,7 +54,7 @@ function Abc(props: any) {
     </div>
 }
 
-surfaces.define("sidebar.item.right", Abc);
+surfaces.define("sidebar.item.right", SidebarItemRight);
 
 const reactContent = new ReactContent(SETTINGS, {
     Link: FwLink,
@@ -88,128 +86,21 @@ switch (SETTINGS?.theme?.name) {
         theme = null
 }
 
-const DemoContext = createContext({})
+export const DemoContext = createContext({})
 
-export function meta({ }: Route.MetaArgs) {
-    return [
-    ];
-}
-
-const prefix = "/docs/api" // TODO: IN THE FUTURE BETTER cuz should also work without prefix
-
-export async function action({
-    request,
-}: Route.ClientActionArgs) {
-    const formData = await request.formData();
-    const example = formData.get("example");
-    const type = formData.get("type");
-
-    let references: Reference[] = []
-
-    switch (type) {
-        case "openapi": {
-            const openApiSpec = await deferencedOpenAPI(example as string)
-            references = await oapSchemaToReferences(openApiSpec)
-            break
-        }
-
-        case "graphql": {
-            references = await gqlSchemaToReferences(example as string)
-        }
-    }
-
-    const uniformData = await uniform(references || [], {
-        plugins: [pluginNavigation(SETTINGS, {
-            urlPrefix: prefix
-        })],
-    })
-
-    if (uniformData?.references) {
-        references = uniformData.references
-    }
-
-    const settings = JSON.parse(JSON.stringify(SETTINGS))
-    const apisidebar = settings?.navigation?.sidebar.find(sidebar => sidebar.route === prefix) || null
-
-    if (uniformData?.out?.sidebar?.length && apisidebar?.items) {
-        apisidebar.items[0].pages.push(...uniformData?.out?.sidebar || [])
-    }
-
-    const frontmatter = uniformData?.out?.pageFrontMatter || {}
-
-    for (const ref of references) {
-        const frontmatter = uniformData?.out?.pageFrontMatter || {}
-        let canonical = ref.canonical
-        canonical = canonical.startsWith("/") ? canonical : `/${canonical}`
-        if (canonical.endsWith("/")) {
-            canonical = canonical.slice(0, -1)
-        }
-
-        const meta = frontmatter[`${prefix}${canonical}`] || {}
-        if (!meta) {
-            continue
-        }
-
-        const ctx = ref.context as OpenAPIReferenceContext
-
-        if (ctx.method && ctx.path) {
-            meta.openapi = `#${ctx.method?.toUpperCase()} ${ctx.path}`
-        }
-    }
-
-    const props = await mapSettingsToProps(
-        settings,
-        {},
-        prefix + (references?.[0]?.canonical || ""),
-        frontmatter
-    )
-
-    return {
-        groups: props?.groups || [],
-        settings,
-        example,
-        references,
-        sidebar: uniformData?.out?.sidebar || [],
-        pageFrontMatter: uniformData?.out?.pageFrontMatter || {},
-        exampleType: type
-    }
-}
-
-export default function Home2({ actionData }) {
+export default function Layout() {
     const [example, setExample] = useState(null);
-    const { actionData: globalActionData, setActionData } = useGlobalState();
-    const location = useLocation()
-    const navigate = useNavigate()
+    const { actionData: globalActionData } = useGlobalState();
 
-    // Update global state when actionData changes
-    React.useEffect(() => {
-        if (actionData) {
-            setActionData(actionData);
-            let canonical = actionData?.references?.[0]?.canonical
-            if (canonical) {
-                canonical = canonical.startsWith("/") ? canonical : `/${canonical}`
-                if (canonical.endsWith("/")) {
-                    canonical = canonical.slice(0, -1)
-                }
+    const effectiveActionData = globalActionData || null
 
-                navigate(`${prefix}${canonical}`)
-            }
-        }
-    }, [actionData]);
+    if (!effectiveActionData) {
+        return null
+    }
 
-    // Use globalActionData if available, fallback to actionData
-    const effectiveActionData = globalActionData || actionData || {
-        settings: {},
-        groups: [],
-        references: [],
-        sidebar: [],
-        pageFrontMatter: {}
-    };
-
-    // Get current theme based on settings
     let currentTheme = null;
-    const settings = Object.keys(effectiveActionData.settings).length  ? effectiveActionData.settings : SETTINGS
-    console.log(settings, 333)
+    const settings = Object.keys(effectiveActionData.settings).length ? effectiveActionData.settings : SETTINGS
+
     switch (settings?.theme?.name) {
         case "poetry":
             currentTheme = new ThemePoetry();
@@ -225,26 +116,30 @@ export default function Home2({ actionData }) {
     }
 
     const {
+        Page: BaseThemePage,
         Layout: BaseThemeLayout,
-        Page: BaseThemePage
     } = currentTheme || {};
 
-    // Find reference with proper null checks
-    const reference = effectiveActionData.references?.find(ref => {
-        if (!ref?.canonical) return false;
+    return (
+        <DemoContext.Provider value={{ example, setExample, settings}}>
+            <Layout2 effectiveActionData={effectiveActionData} BaseThemePage={BaseThemePage} BaseThemeLayout={BaseThemeLayout} />
+        </DemoContext.Provider>
+    );
+}
 
-        let canonical = ref.canonical.startsWith("/") ? ref.canonical : `/${ref.canonical}`
-        if (canonical.endsWith("/")) {
-            canonical = canonical.slice(0, -1)
-        }
-
-        return `${prefix}${canonical}` === location.pathname
-    }) || null;
-
-    const firstReference = reference ? [reference] : [];
+const Layout2 = React.memo(function Layout2({
+    effectiveActionData,
+    BaseThemeLayout,
+    BaseThemePage
+}: {
+    effectiveActionData: any;
+    BaseThemeLayout: any;
+    BaseThemePage: any;
+}) {
+    console.log("effectiveActionData", effectiveActionData)
+    // Get current theme based on settings
 
     let atlasVariantToggles: VariantToggleConfig[] = [];
-
     if (effectiveActionData.exampleType === "openapi") {
         atlasVariantToggles = [
             { key: "status", defaultValue: "200" },
@@ -255,80 +150,86 @@ export default function Home2({ actionData }) {
             { key: "symbolName", defaultValue: "" }
         ];
     }
+    return <Framework
+        settings={effectiveActionData.settings || {}}
+        sidebarGroups={effectiveActionData.groups || []}
+        metadata={{
+            layout: "wide",
+            uniform: "1",
+            title: "OpenAPI Demo"
+        }}
+        surfaces={surfaces}
+        BannerComponent={MemoizedActionDropdownExample}
+    >
+        <AtlasContext
+            value={{
+                syntaxHighlight: effectiveActionData.settings?.theme?.markdown?.syntaxHighlight || null,
+                baseMatch: "/docs/api",
+                variantToggles: atlasVariantToggles
+            }}
+        >
+            {BaseThemeLayout && (
+                <BaseThemeLayout>
+                    <UrlContext.Provider value={{ BaseThemePage }}>
+                        <Outlet />
+                    </UrlContext.Provider>
+                </BaseThemeLayout>
+            )}
+        </AtlasContext>
+    </Framework>
+});
 
-    return (
-        <DemoContext.Provider value={{ example, setExample }}>
-            <Framework
-                settings={effectiveActionData.settings || {}}
-                sidebarGroups={effectiveActionData.groups || []}
-                metadata={{
-                    layout: "wide",
-                    uniform: "1",
-                    title: "OpenAPI Demo"
-                }}
-                surfaces={surfaces}
-                BannerComponent={() => <ActionDropdownExample settings={effectiveActionData.settings || {}} />}
-            >
-                <AtlasContext
-                    value={{
-                        syntaxHighlight: effectiveActionData.settings?.theme?.markdown?.syntaxHighlight || null,
-                        baseMatch: "/docs/api",
-                        variantToggles: atlasVariantToggles
-                    }}
-                >
-                    {BaseThemeLayout  ? (
-                        <BaseThemeLayout>
-                            <Outlet/>
-                        </BaseThemeLayout>
-                    ) : null }
-                </AtlasContext>
-            </Framework>
-        </DemoContext.Provider>
-    );
+function MemoizedActionDropdownExample() {
+    const { settings: globalSettings } = useContext(DemoContext)
+    return <ActionDropdownExample settings={globalSettings} />
 }
 
 function ActionDropdownExample({ settings }: { settings: any }) {
+    const fetcher = useFetcher();
     const { example } = useContext(DemoContext)
+    const { setActionData } = useGlobalState();
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (fetcher.data) {
+            setActionData(fetcher.data)
+            let canonical = fetcher?.data?.references?.[0]?.canonical
+            if (canonical) {
+                canonical = canonical.startsWith("/") ? canonical : `/${canonical}`
+                if (canonical.endsWith("/")) {
+                    canonical = canonical.slice(0, -1)
+                }
+
+                navigate(`${DOCS_PREFIX}${canonical}`)
+            }
+        }
+    }, [fetcher])
 
     return (
         <div className="banner-container">
             <div className="banner-left">
-                {
-                    settings?.integrations?.apps?.githubStar && <>
-                        <Text weight="bold">
-                            Star us on GitHub ⭐️
-                        </Text>
-
-                        <GitHubButton
-                            href={settings?.integrations?.apps?.githubStar?.href}
-                            data-icon={settings?.integrations?.apps?.githubStar?.dataIcon || "octicon-star"}
-                            data-size={settings?.integrations?.apps?.githubStar?.dataSize || "large"}
-                            data-show-count={settings?.integrations?.apps?.githubStar?.dataShowCount || true}
-                            aria-label={settings?.integrations?.apps?.githubStar?.ariaLabel}
-                        >
-                            {settings?.integrations?.apps?.githubStar?.title}
-                        </GitHubButton>
-                    </>
-                }
+                <GithubStars settings={settings} />
             </div>
 
-            <Form method="post">
+            <fetcher.Form method="POST" action="/api/try">
                 <input type="hidden" name="type" value={example?.type} />
+                <input type="hidden" name="value" value={example?.value} />
                 <Flex alignItems="center" gap={2}>
-                    <Example />
+                    <UniformURLInput />
 
                     <Flex>
                         <Button type="submit" size="sm" text="Try!" />
                     </Flex>
 
                     <Flex width="100%">
-                        <SelectExample />
+                        <SelectPredefinedUniformURL />
                     </Flex>
-                    <Flex width="100%">
+                    {/* TODO: in the futures */}
+                    {/* <Flex width="100%">
                         <SelectTheme />
-                    </Flex>
+                    </Flex> */}
                 </Flex>
-            </Form>
+            </fetcher.Form>
             <div className="banner-right">
                 Right
             </div>
@@ -336,7 +237,28 @@ function ActionDropdownExample({ settings }: { settings: any }) {
     );
 }
 
-function SelectExample() {
+function GithubStars({ settings }: { settings: any }) {
+    return <>
+        {
+            settings?.integrations?.apps?.githubStar && <>
+                <Text weight="bold">
+                    Star us on GitHub ⭐️
+                </Text>
+
+                <GitHubButton
+                    href={settings?.integrations?.apps?.githubStar?.href}
+                    data-icon={settings?.integrations?.apps?.githubStar?.dataIcon || "octicon-star"}
+                    data-size={settings?.integrations?.apps?.githubStar?.dataSize || "large"}
+                    data-show-count={settings?.integrations?.apps?.githubStar?.dataShowCount || true}
+                    aria-label={settings?.integrations?.apps?.githubStar?.ariaLabel}
+                >
+                    {settings?.integrations?.apps?.githubStar?.title}
+                </GitHubButton>
+            </>
+        }
+    </>
+}
+function SelectPredefinedUniformURL() {
     const { setExample } = useContext(DemoContext)
 
     const exmaples = {
@@ -512,7 +434,7 @@ function SelectTheme() {
     </>
 }
 
-function Example() {
+function UniformURLInput() {
     const { example } = useContext(DemoContext)
     const [input, setInput] = useState(example?.url);
 
@@ -532,7 +454,7 @@ function Example() {
                     placeholder="URL to OpenAPI / GraphQL / React"
                     type="text"
                     size="sm"
-                    value={input}
+                    value={input || example?.url}
                     name="example"
                 />
             </Box>

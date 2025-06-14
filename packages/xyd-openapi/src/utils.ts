@@ -25,14 +25,26 @@ export async function deferencedOpenAPI(openApiPath: string) {
 
     const options: ParserOptions = {
         dereference: {
-            // onDereference(path, value, parent) {
-            //     if (typeof value === 'string') {
-            //         return
-            //     }
+            onDereference(path, value, parent) {
+                if (path === "#/components/schemas/apiAgent") {
+                 console.log("PATH", path)
 
-            //     value.__refPath = path;
-            //     if (parent) parent.__refPath = path;
-            // }
+                }
+                if (value && typeof value === 'object') {
+                    value.__refPath = () => path
+                }
+                if (parent && typeof parent === 'object') {
+                    parent.__refPath = () => path
+                }
+
+                console.log(5)
+                // if (typeof value === 'string') {
+                //     return
+                // }
+                //
+                // value.__refPath = path;
+
+            }
         }
     } as ParserOptions;
 
@@ -58,7 +70,22 @@ export async function deferencedOpenAPI(openApiPath: string) {
                 if (!res.ok) {
                     throw new Error(`Failed to fetch ${absoluteUrl}: ${res.status}`);
                 }
-                return res.text();        // hand back the Markdown
+
+                let content;
+                if (file.extension === '.json' || file.extension === '.yaml' || file.extension === '.yml') {
+                    // If the file is JSON or YAML, return the parsed content
+                    if (file.extension === '.json') {
+                        content = await res.json();
+                    } else {
+                        content = yaml.load(await res.text());
+                    }
+                } else {
+                    content = await res.text();        // hand back the Markdown
+                }
+
+                // Store in cache
+                urlContentCache.set(absoluteUrl, content);
+                return content;
             }
         }
     }

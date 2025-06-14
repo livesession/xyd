@@ -19,8 +19,8 @@ export function oapExamples(
     operation: Operation
 ): ExampleGroup[] {
     const exampleGroups = [
-        ...reqExamples(operation, oas),
-        ...resBodyExmaples(operation, oas),
+        // ...reqExamples(operation, oas), TODO: uncomment
+        // ...resBodyExmaples(operation, oas),  TODO: uncomment
     ]
 
     return exampleGroups

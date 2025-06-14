@@ -70,7 +70,6 @@ interface LanguageTabSwitcherProps {
 function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
     const isSingle = props?.highlighted?.length === 1 && !props.description
 
-    console.log(props.highlighted, "HIGHLIGHTED", props)
     const highlighted = props.highlighted.filter((item, index, self) =>
         index === self.findIndex((t) => (t.meta || t.lang) === (item.meta || item.lang))
     );
