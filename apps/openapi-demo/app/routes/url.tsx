@@ -1,15 +1,26 @@
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { useContext, useEffect } from "react";
 
 import { Atlas } from "@xyd-js/atlas";
 
 import { UrlContext, useGlobalState } from "~/context";
 import { DOCS_PREFIX } from "~/const";
-import { createContext, useContext } from "react";
 
 export default function Url() {
     const { actionData: globalActionData } = useGlobalState();
     const location = useLocation()
+    // const navigate = useNavigate()
     const { BaseThemePage } = useContext(UrlContext)
+
+    // useEffect(() => {
+    //     if (!globalActionData?.references?.length) {
+    //         navigate("/")
+    //     }
+    // }, [])
+
+    // if (!globalActionData?.references?.length) {
+    //     return null
+    // }
 
     const findRef = globalActionData?.references?.find(ref => {
         let canonical = ref.canonical.startsWith("/") ? ref.canonical : `/${ref.canonical}`
@@ -21,16 +32,16 @@ export default function Url() {
         return canonical === location.pathname
     })
 
+    console.log(findRef, 3333)
     if (!findRef) {
         return null
     }
 
-    console.log(BaseThemePage, "BaseThemePage")
     const references = [findRef]
     return <BaseThemePage>
-    <Atlas
-        kind="primary"
-        references={references}
-    />
+        <Atlas
+            kind="primary"
+            references={references}
+        />
     </BaseThemePage>
 }

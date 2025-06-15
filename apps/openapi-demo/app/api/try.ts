@@ -15,11 +15,19 @@ export async function action({
 }: Route.ClientActionArgs) {
     const formData = await request.formData();
     const example = formData.get("example");
-    const type = formData.get("type");
+    let type = formData.get("type");
     const value = formData.get("value");
 
     let references: Reference[] = []
 
+    if (!type) {
+        const extension = example.split(".").pop()
+        if (extension === "json" || extension === "yaml" || extension === "yml") {
+            type = "openapi"
+        } else if (extension === "graphql" || extension === "gql" || extension === "gqls" || extension === "graphqls") {
+            type = "graphql"
+        }
+    }
     switch (type) {
         case "openapi": {
             const openApiSpec = await deferencedOpenAPI(example as string)
@@ -38,7 +46,6 @@ export async function action({
         }),
     ]
 
-    console.log(value, "value", 333333)
     if (value === "openai") {
         uniformPlugins.push(uniformOpenAIMeta)
     }

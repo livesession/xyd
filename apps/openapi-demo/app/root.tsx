@@ -12,20 +12,10 @@ import { GlobalStateProvider } from './context';
 import type { Route } from "./+types/root";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-  },
+
 ];
 
-export function Layout({ children, ...rest }: { children: React.ReactNode }) {
-  console.log(111111111, rest)
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>

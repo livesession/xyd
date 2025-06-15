@@ -86,21 +86,26 @@ switch (SETTINGS?.theme?.name) {
         theme = null
 }
 
-export const DemoContext = createContext({})
+interface DemoContextType {
+    example: any;
+    setExample: (example: any) => void;
+    settings: any;
+}
+
+export const DemoContext = createContext<DemoContextType>({
+    example: null,
+    setExample: () => {},
+    settings: {}
+});
 
 export default function Layout() {
-    const [example, setExample] = useState(null);
+    const [example, setExample] = useState<any>(null);
     const { actionData: globalActionData } = useGlobalState();
 
-    const effectiveActionData = globalActionData || null
-
-    if (!effectiveActionData) {
-        return null
-    }
+    const effectiveActionData = globalActionData || null;
+    const settings = effectiveActionData?.settings || SETTINGS;
 
     let currentTheme = null;
-    const settings = Object.keys(effectiveActionData.settings).length ? effectiveActionData.settings : SETTINGS
-
     switch (settings?.theme?.name) {
         case "poetry":
             currentTheme = new ThemePoetry();
@@ -136,9 +141,6 @@ const Layout2 = React.memo(function Layout2({
     BaseThemeLayout: any;
     BaseThemePage: any;
 }) {
-    console.log("effectiveActionData", effectiveActionData)
-    // Get current theme based on settings
-
     let atlasVariantToggles: VariantToggleConfig[] = [];
     if (effectiveActionData.exampleType === "openapi") {
         atlasVariantToggles = [
@@ -177,6 +179,8 @@ const Layout2 = React.memo(function Layout2({
             )}
         </AtlasContext>
     </Framework>
+}, (prevProps, nextProps) => {
+    return JSON.stringify(prevProps.effectiveActionData) === JSON.stringify(nextProps.effectiveActionData);
 });
 
 function MemoizedActionDropdownExample() {
@@ -205,6 +209,9 @@ function ActionDropdownExample({ settings }: { settings: any }) {
         }
     }, [fetcher])
 
+    const loading = fetcher.state === "submitting"
+    const disabled = loading || !example?.url
+
     return (
         <div className="banner-container">
             <div className="banner-left">
@@ -218,7 +225,7 @@ function ActionDropdownExample({ settings }: { settings: any }) {
                     <UniformURLInput />
 
                     <Flex>
-                        <Button type="submit" size="sm" text="Try!" />
+                        <Button type="submit" size="sm" text="Try!" disabled={disabled}/>
                     </Flex>
 
                     <Flex width="100%">
@@ -350,7 +357,6 @@ function SelectTheme() {
     const { setActionData } = useGlobalState();
 
     const onSelect = ({ item }) => {
-        console.log("on")
         setSelected(item);
         setOpen(false);
 
@@ -455,6 +461,41 @@ function UniformURLInput() {
                     type="text"
                     size="sm"
                     value={input || example?.url}
+                    name="example"
+                />
+            </Box>
+        </Flex>
+    );
+}
+
+
+function UniformURLInputV2() {
+    const { example, setExample } = useContext(DemoContext)
+
+    function handleChange(value: string) {
+        setExample({
+            ...example,
+            url: value
+        })
+    }
+
+    return (
+        <Flex
+            alignItems="center"
+            gap={4}
+            height="100%"
+            width="100%"
+        >
+            <Box width={400}>
+                <TextField
+                    id="header-example"
+                    onChange={({ value }) => {
+                        handleChange(value);
+                    }}
+                    placeholder="URL to OpenAPI / GraphQL / React"
+                    type="text"
+                    size="sm"
+                    value={example?.url || ""}
                     name="example"
                 />
             </Box>
