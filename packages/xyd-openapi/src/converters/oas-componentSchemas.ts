@@ -7,7 +7,6 @@ import {
     ReferenceType,
     OpenAPIReferenceContext, SymbolDef,
     ExampleGroup,
-    Example,
     CodeBlockTab,
 } from "@xyd-js/uniform";
 
@@ -16,7 +15,7 @@ import {schemaObjectToUniformDefinitionProperties} from "../oas-core";
 
 export function schemaComponentsToUniformReferences(
     openapi: OpenAPIV3.Document,
-    options?: uniformOasOptions
+    options?: uniformOasOptions,
 ): Reference[] {
     const references: Reference[] = [];
 
@@ -38,7 +37,7 @@ export function schemaComponentsToUniformReferences(
 
         let properties: DefinitionProperty[] = [];
         let rootProperty: DefinitionProperty | undefined = undefined;
-        const respProperties = schemaObjectToUniformDefinitionProperties(componentSchema) || [];
+        const respProperties = schemaObjectToUniformDefinitionProperties(componentSchema, false) || [];
         if (Array.isArray(respProperties)) {
             properties = respProperties
         } else {
@@ -62,7 +61,6 @@ export function schemaComponentsToUniformReferences(
             canonical: `objects/${componentSchemaName}`,
             definitions: [definition],
             examples: {
-                // groups: [],
                 groups: createSchemaExampleGroup(componentSchema as OpenAPIV3.SchemaObject)
             },
             type: ReferenceType.REST_COMPONENT_SCHEMA,
@@ -94,7 +92,7 @@ export function schemaComponentsToUniformReferences(
     return references;
 }
 
-function createSchemaExampleGroup(schema: OpenAPIV3.SchemaObject): ExampleGroup[] {
+function createSchemaExampleGroup(schema: OpenAPIV3.SchemaObject, map: any): ExampleGroup[] {
     const example = generateSchemaExample(schema);
     if (!example) {
         return [];
@@ -139,34 +137,57 @@ function definitionPropertyTypeDef(
     return typeDef
 }
 
-function generateSchemaExample(schema: OpenAPIV3.SchemaObject): any {
+function generateSchemaExample(
+    schema: OpenAPIV3.SchemaObject,
+    visitedExample?: Map<OpenAPIV3.SchemaObject, any>,
+    parent?: any
+): any {
     if (!schema) {
         return null;
+    }
+    if (!visitedExample) {
+        visitedExample = new Map<OpenAPIV3.SchemaObject, any>();
+    }
+
+    const cached = visitedExample.get(schema)
+    if (cached) {
+        return JSON.parse(JSON.stringify(cached)); // Return a deep copy of the cached example
+    }
+    if (parent) {
+        visitedExample.set(schema, parent);
     }
 
     // Handle examples array
     if ('examples' in schema && Array.isArray(schema.examples)) {
-        return schema.examples[0];
+        const v =  schema.examples[0];
+        visitedExample.set(schema, v);
+        return v; // Return the first example from the examples array
     }
 
     // Handle single example
     if ('example' in schema && schema.example !== undefined) {
-        return schema.example;
+        const v =  schema.example;
+        visitedExample.set(schema, v);
+        return v; // Return the single example if it exists
     }
 
     // Handle object type with properties
     if (schema.type === 'object' && schema.properties) {
         const result: Record<string, any> = {};
         for (const [propName, propSchema] of Object.entries(schema.properties)) {
-            result[propName] = generateSchemaExample(propSchema as OpenAPIV3.SchemaObject);
+            result[propName] = generateSchemaExample(propSchema as OpenAPIV3.SchemaObject, visitedExample, result);
         }
+        visitedExample.set(schema, result);
         return result;
     }
 
     // Handle array type
     if (schema.type === 'array' && schema.items) {
-        const itemExample = generateSchemaExample(schema.items as OpenAPIV3.SchemaObject);
-        return itemExample ? [itemExample] : [];
+        const itemExample = generateSchemaExample(schema.items as OpenAPIV3.SchemaObject, visitedExample);
+        const v = itemExample ? [itemExample] : [];
+        visitedExample.set(schema, v);
+
+        return v; // Return an array with a single item example
     }
 
     // Handle primitive types with default values

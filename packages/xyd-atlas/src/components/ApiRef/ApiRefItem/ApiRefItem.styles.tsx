@@ -27,7 +27,10 @@ export const ApiRefItemNavbarLabel = css`
 `;
 
 export const ApiRefItemNavbarSubtitle = css`
+    display: flex;
     letter-spacing: 1px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 `;
 
 export const ApiRefItemHost = css`

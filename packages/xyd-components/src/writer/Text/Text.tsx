@@ -1,4 +1,5 @@
 import React from "react"
+
 import * as cn from "./Text.styles";
 
 /**
@@ -40,6 +41,9 @@ export interface TextProps {
     
     /** Click event handler */
     onClick?: () => void
+    
+    /** HTML tag to render the text as */
+    as?: "span" | "p"
 }
 
 /**
@@ -54,10 +58,13 @@ export function Text({
     children,
     className,
     id,
-    onClick
+    onClick,
+    as = "p"
 }: TextProps) {
+    const Tag = as || "p";
+
     return (
-        <p
+        <Tag
             className={`${cn.TextHost} ${className || ''}`}
             data-size={size}
             data-kind={kind}
@@ -66,7 +73,7 @@ export function Text({
             id={id}
         >
             {children}
-        </p>
+        </Tag>
     )
 }
 

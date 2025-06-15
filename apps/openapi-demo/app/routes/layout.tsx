@@ -440,7 +440,7 @@ function SelectTheme() {
     </>
 }
 
-function UniformURLInput() {
+function UniformURLInputV3() {
     const { example } = useContext(DemoContext)
     const [input, setInput] = useState(example?.url);
 
@@ -469,7 +469,7 @@ function UniformURLInput() {
 }
 
 
-function UniformURLInputV2() {
+function UniformURLInput() {
     const { example, setExample } = useContext(DemoContext)
 
     function handleChange(value: string) {

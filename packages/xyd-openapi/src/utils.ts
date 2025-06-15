@@ -8,8 +8,6 @@ import $refParser, { ParserOptions } from "@apidevtools/json-schema-ref-parser";
 
 import { ReferenceType } from "@xyd-js/uniform";
 
-import { OasJSONSchema } from "./types";
-
 export function slug(str: string): string {
     const slugger = new GithubSlugger();
     return slugger.slug(str);
@@ -25,25 +23,13 @@ export async function deferencedOpenAPI(openApiPath: string) {
 
     const options: ParserOptions = {
         dereference: {
-            onDereference(path, value, parent) {
-                if (path === "#/components/schemas/apiAgent") {
-                 console.log("PATH", path)
-
-                }
+            onDereference(path: any, value: any, parent: any) {
                 if (value && typeof value === 'object') {
-                    value.__refPath = () => path
+                    value.__UNSAFE_refPath = () => path
                 }
                 if (parent && typeof parent === 'object') {
-                    parent.__refPath = () => path
+                    parent.__UNSAFE_refPath = () => path
                 }
-
-                console.log(5)
-                // if (typeof value === 'string') {
-                //     return
-                // }
-                //
-                // value.__refPath = path;
-
             }
         }
     } as ParserOptions;
@@ -54,7 +40,6 @@ export async function deferencedOpenAPI(openApiPath: string) {
         }
 
         options.resolve.file = {
-            // canRead: file => /\.md$/i.test(file.url),
             read: async (file: any) => {
                 // 1) Convert absolute local path back into a repo-relative path:
                 //    "/Users/.../docs/foo.md" → "docs/foo.md"
@@ -83,8 +68,6 @@ export async function deferencedOpenAPI(openApiPath: string) {
                     content = await res.text();        // hand back the Markdown
                 }
 
-                // Store in cache
-                urlContentCache.set(absoluteUrl, content);
                 return content;
             }
         }

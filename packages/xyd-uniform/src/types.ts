@@ -78,7 +78,7 @@ export interface Definition<
     type?: string;
 }
 
-export type DefinitionVariantOpenAPIMeta = Meta<"status" | "contentType" | "definitionDescription">;
+export type DefinitionVariantOpenAPIMeta = Meta<"status" | "contentType" | "definitionDescription" | "required">;
 export type CommonDefinitionVariantMeta = Meta<"symbolName">;
 
 export type DefinitionVariantMeta = CommonDefinitionVariantMeta | DefinitionVariantOpenAPIMeta

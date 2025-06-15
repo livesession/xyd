@@ -4,6 +4,6 @@ export {
     deferencedOpenAPI,
     oapSchemaToReferences,
 
-    oapOperationToUniformDefinition
+    oapResponseOperationToUniformDefinition
 } from "./src";
 

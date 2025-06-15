@@ -19,7 +19,7 @@ import {httpMethodToUniformMethod} from "../utils";
 // oapSchemaToReferences converts an OpenAPI schema to a list of uniform References
 export function oapSchemaToReferences(
     schema: OpenAPIV3.Document,
-    options?: uniformOasOptions
+    options?: uniformOasOptions,
 ): Reference[] {
     const references: Reference[] = [];
     const oas = new Oas(schema as any);
@@ -101,7 +101,7 @@ export function oapSchemaToReferences(
 
     const schemas = schemaComponentsToUniformReferences(
         schema,
-        options
+        options,
     )
     references.push(...schemas)
 

@@ -29,12 +29,6 @@ export function oapPathToReference(
     path: string,
     oapPath: OpenAPIV3.PathItemObject,
 ): Reference | null {
-    if (path.includes("domains/{domain_name}/records") && httpMethod === "post") {
-        console.log("ISSUE 1", path)
-    }
-    if (path.includes("gen-ai") && httpMethod === "post") {
-        console.log("ISSUE 2", path)
-    }
     const mType = httpMethodToUniformMethod(httpMethod)
 
     if (!mType) {
@@ -46,7 +40,6 @@ export function oapPathToReference(
     const exampleGroups: ExampleGroup[] = []
 
     const oapMethod = oapPath?.[httpMethod as keyof OpenAPIV3.PathItemObject] as OpenAPIV3.OperationObject
-
     if (!oapMethod) {
         return null
     }
@@ -104,55 +97,7 @@ export function oapPathToReference(
         })
     }
 
-    if (oapMethod.requestBody) {
-        const reqBody = oapMethod.requestBody as OpenAPIV3.RequestBodyObject
-
-        const contentTypes = Object.keys(reqBody.content)
-        if (contentTypes.length > 1) {
-            console.warn("Multiple content types are not supported yet")
-        }
-
-        const findSupportedContent = contentTypes[contentTypes.length - 1]
-        if (!findSupportedContent) {
-            return null
-        }
-
-        const meta: DefinitionOpenAPIMeta[] = [
-            {
-                name: "contentType",
-                value: findSupportedContent,
-            }
-        ]
-
-        if (reqBody.required) {
-            meta.push({
-                name: "required",
-                value: "true",
-            })
-        }
-
-        let properties: DefinitionProperty[] = []
-        let rootProperty: DefinitionProperty | undefined
-        let propertiesResp = oapRequestBodyToDefinitionProperties(reqBody, findSupportedContent) || []
-
-        if (Array.isArray(propertiesResp)) {
-            properties = propertiesResp
-        } else {
-            rootProperty = propertiesResp
-        }
-        definitions.push({
-            title: 'Request body',
-            properties,
-            rootProperty,
-            meta,
-            symbolDef: definitionPropertyTypeDef(schema),
-        })
-    }
-
-    if (oapMethod.responses) {
-        const definition = oapOperationToUniformDefinition(oapMethod)
-        definitions.push(definition)
-    }
+    definitions.push(...oapOperationToDefinitions(oapMethod))
 
     // TODO: !!!! better api !!!!
     endpointRef.__UNSAFE_selector = function __UNSAFE_selector(selector: string) {
@@ -176,17 +121,88 @@ export function oapPathToReference(
         }
     }
 
-    if (path.includes("domains/{domain_name}/records") && httpMethod === "post") {
-        console.log("ISSUE", path)
-    }
-    if (path.includes("gen-ai") && httpMethod === "post") {
-        console.log("ISSUE 2", path)
-    }
-    
     return endpointRef
 }
 
-export function oapOperationToUniformDefinition(
+function oapOperationToDefinitions(
+    oapMethod: OpenAPIV3.OperationObject,
+): Definition[] {
+    const definitions: Definition[] = []
+
+    if (oapMethod.requestBody) {
+        const definition = oapRequestOperationToUniformDefinition(oapMethod)
+        definitions.push(definition)
+    }
+
+    if (oapMethod.responses) {
+        const definition = oapResponseOperationToUniformDefinition(oapMethod)
+        definitions.push(definition)
+    }
+
+    return definitions
+}
+
+function oapRequestOperationToUniformDefinition(
+    oapOperation: OpenAPIV3.OperationObject,
+): Definition {
+    const reqBody = oapOperation.requestBody as OpenAPIV3.RequestBodyObject
+    const variants: DefinitionVariant<DefinitionVariantOpenAPIMeta>[] = []
+
+    for (const contentType of Object.keys(reqBody.content)) {
+        const schema = reqBody.content[contentType]?.schema as OpenAPIV3.SchemaObject
+
+        let properties: DefinitionProperty[] = []
+        let rootProperty: DefinitionProperty | undefined
+        let propertiesResp = oapRequestBodyToDefinitionProperties(reqBody, contentType) || []
+
+        if (Array.isArray(propertiesResp)) {
+            properties = propertiesResp
+        } else {
+            rootProperty = propertiesResp
+        }
+
+        const meta: DefinitionVariantOpenAPIMeta[] = [
+            {
+                name: "contentType",
+                value: contentType || "",
+            },
+        ]
+
+        if (schema?.required) {
+            meta.push({
+                name: "required",
+                value: schema.required ? "true" : "false",
+            })
+        }
+
+        variants.push({
+            title: contentType,
+            description: schema.description || "",
+            properties,
+            rootProperty,
+            meta,
+            symbolDef: definitionPropertyTypeDef(schema),
+        })
+    }
+
+    const meta: DefinitionOpenAPIMeta[] = []
+
+    if (reqBody.required) {
+        meta.push({
+            name: "required",
+            value: "true",
+        })
+    }
+
+    return {
+        title: 'Request body',
+        variants,
+        properties: [],
+        meta
+    }
+}
+
+export function oapResponseOperationToUniformDefinition(
     oapOperation: OpenAPIV3.OperationObject,
 ): Definition {
     const responses = oapOperation.responses as OpenAPIV3.ResponsesObject
@@ -196,6 +212,17 @@ export function oapOperationToUniformDefinition(
     Object.keys(responses).forEach((code) => {
         const responseObject = responses[code] as OpenAPIV3.ResponseObject
         if (!responseObject?.content) {
+            variants.push({
+                title: code,
+                description: responseObject.description,
+                properties: [],
+                meta: [
+                    {
+                        name: "status",
+                        value: code || "",
+                    },
+                ],
+            })
             return null
         }
 

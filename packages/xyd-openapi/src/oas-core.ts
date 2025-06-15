@@ -9,12 +9,10 @@ import {
 import {OasJSONSchema} from "./types";
 import { BUILT_IN_PROPERTIES } from "./const";
 
-let visited = new Map<string, DefinitionProperty>();
-
 export function schemaObjectToUniformDefinitionProperties(
     schemaObject: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject,
     rootProperty?: boolean,
-    map?: Map<string, DefinitionProperty> = visited
+    visitedRefs?: Map<string, DefinitionProperty>
 ): DefinitionProperty[] | DefinitionProperty | null {
     if ('$ref' in schemaObject) {
         console.warn("Reference objects are not supported in schemaObjectToUniformDefinitionProperties");
@@ -26,7 +24,7 @@ export function schemaObjectToUniformDefinitionProperties(
 
     // Process schema properties
     if ('anyOf' in schemaObject && schemaObject.anyOf) {
-        const property = schemaObjectToUniformDefinitionProperty("", schemaObject, false, false, map)
+        const property = schemaObjectToUniformDefinitionProperty("", schemaObject, false, false, visitedRefs)
 
         if (property) {
             if (rootProperty) {
@@ -36,7 +34,7 @@ export function schemaObjectToUniformDefinitionProperties(
             properties.push(property);
         }
     } else if ('oneOf' in schemaObject && schemaObject.oneOf) {
-        const property = schemaObjectToUniformDefinitionProperty("", schemaObject, false,false, map)
+        const property = schemaObjectToUniformDefinitionProperty("", schemaObject, false,false, visitedRefs)
 
         if (property) {
             if (rootProperty) {
@@ -79,7 +77,13 @@ export function schemaObjectToUniformDefinitionProperties(
                         continue; // Skip reference objects
                     }
 
-                    const property = schemaObjectToUniformDefinitionProperty(propName, propSchema, schema.required?.includes(propName),false, map);
+                    const property = schemaObjectToUniformDefinitionProperty(
+                        propName,
+                        propSchema,
+                        schema.required?.includes(propName),
+                        propSchema?.type === "array" ? true : false,
+                        visitedRefs
+                    );
 
                     if (property) {
                         // Check if property already exists and merge if needed
@@ -114,7 +118,13 @@ export function schemaObjectToUniformDefinitionProperties(
                 continue; // Skip reference objects
             }
 
-            const property = schemaObjectToUniformDefinitionProperty(propName, propSchema, schemaObject.required?.includes(propName), false, map);
+            const property = schemaObjectToUniformDefinitionProperty(
+                propName,
+                propSchema,
+                schemaObject.required?.includes(propName),
+                propSchema?.type === "array" ? true : false,
+                visitedRefs
+            );
             if (property) {
                 properties.push(property);
             }
@@ -129,20 +139,28 @@ export function schemaObjectToUniformDefinitionProperty(
     schema: OpenAPIV3.SchemaObject,
     required?: boolean,
     arrayOf?: boolean,
-    visitedRefs?: Map<string, DefinitionProperty>
+    visitedRefs?: Map<string, DefinitionProperty>,
+    parentProperty?: DefinitionProperty
 ): DefinitionProperty | null {
+    if (name === "__UNSAFE_refPath") {
+        return null
+    }
     if (!schema) return null;
 
     if (!visitedRefs) {
         visitedRefs = new Map();
     }
     let refPath = ""
-    if ("__refPath" in schema && typeof schema.__refPath === 'function') {
-        refPath = schema.__refPath();
+    if ("__UNSAFE_refPath" in schema && typeof schema.__UNSAFE_refPath === 'function') {
+        refPath = schema.__UNSAFE_refPath();
         const defProp = visitedRefs.get(refPath);
         if (defProp) {
-            return defProp
+            return JSON.parse(JSON.stringify(defProp)); // Return a deep copy circular json
         }
+    }
+
+    if (parentProperty) {
+        visitedRefs.set(refPath, parentProperty);
     }
 
     // Handle anyOf case
@@ -395,7 +413,7 @@ export function schemaObjectToUniformDefinitionProperty(
                     propSchema,
                     schema.required?.includes(propName),
                     false,
-                    visitedRefs
+                    visitedRefs,
                 );
 
                 if (nestedProperty) {
@@ -413,10 +431,10 @@ export function schemaObjectToUniformDefinitionProperty(
                 properties: []
             };
 
-            const itemsProperty = schemaObjectToUniformDefinitionProperty("", schema.items, required, true, visitedRefs);
+            const itemsProperty = schemaObjectToUniformDefinitionProperty("", schema.items, required, true, visitedRefs, arrayProperty);
             
             if (itemsProperty) {
-                if (isOfType(itemsProperty.type) || itemsProperty.ofProperty?.type) {
+                if (arrayOf || isOfType(itemsProperty.type) || itemsProperty.ofProperty?.type) {
                     arrayProperty.ofProperty = {
                         name: "",
                         type: itemsProperty.type,

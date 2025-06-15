@@ -28,7 +28,9 @@ const tests: {
 
     {
         name: "4.abc",
+        // url: "https://raw.githubusercontent.com/bump-sh-examples/train-travel-api/main/openapi.yaml",
         // url: "https://raw.githubusercontent.com/digitalocean/openapi/main/specification/DigitalOcean-public.v2.yaml",
+        url: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/ghes-3.0/ghes-3.0.json",
         description: "Digital Ocean API example",
         // plugins: [
         //     uniformOpenAIMeta,

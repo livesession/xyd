@@ -8,7 +8,7 @@ import {
     Reference,
     ReferenceCategory
 } from "@xyd-js/uniform";
-import {Heading, Code, Badge} from "@xyd-js/components/writer";
+import {Heading, Code, Badge, Text} from "@xyd-js/components/writer";
 
 import {
     ApiRefProperties,
@@ -16,7 +16,6 @@ import {
 } from "@/components/ApiRef";
 import * as cn from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
 import {useVariantToggles, type VariantToggleConfig} from "@/components/Atlas/AtlasContext";
-import {DefinitionBody} from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
 
 export interface ApiRefItemProps {
     reference: Reference
@@ -71,6 +70,7 @@ function $IntroHeader({reference}: ApiRefItemProps) {
             topNavbar = <$Navbar
                 label={ctx.method}
                 subtitle={`${ctx.fullPath}`}
+                matchSubtitle={ctx.path}
             />
             break;
         }
@@ -226,7 +226,21 @@ function $VariantsProvider({definition, children}: {
     definition: Definition,
     children: React.ReactNode
 }) {
-    const variantToggles = useVariantToggles();
+    const variants = definition.variants || [];
+    const variantMetas = variants.reduce((acc, variant) => {
+        const allMetaNames = variant.meta?.reduce((metaAcc, meta) => ({
+            ...metaAcc,
+            [meta.name]: 1,
+        }), {}) || {}
+        
+        
+        return {
+            ...acc,
+            ...allMetaNames,
+        }
+    }, {});
+    const variantToggles = (useVariantToggles() || []).filter(toggle => variantMetas[toggle.key])
+
     const [selectedValues, setSelectedValues] = useState<Record<string, string>>(() => {
         const initial: Record<string, string> = {};
         variantToggles.forEach(toggle => {
@@ -239,7 +253,6 @@ function $VariantsProvider({definition, children}: {
         setSelectedValues(prev => ({...prev, [key]: value}));
     }, []);
 
-    const variants = definition.variants || [];
 
     const [variant, setVariant] = useState<DefinitionVariant | undefined>(() => {
         return findMatchingVariant(variants, selectedValues);
@@ -449,7 +462,49 @@ function $DefinitionBody(props: DefinitionBodyProps) {
     </div>
 }
 
-function $Navbar({label, subtitle}: { label: string, subtitle: string }) {
+interface NavbarProps {
+    label: string
+    subtitle: string
+    matchSubtitle?: string
+}
+
+function $Navbar({label, subtitle, matchSubtitle}: NavbarProps) {
+    const renderSubtitle = () => {
+        if (!matchSubtitle) {
+            return subtitle;
+        }
+
+        const index = subtitle.indexOf(matchSubtitle);
+        if (index === -1) {
+            return subtitle;
+        }
+
+        const before = subtitle.substring(0, index);
+        const match = subtitle.substring(index, index + matchSubtitle.length);
+        const after = subtitle.substring(index + matchSubtitle.length);
+
+        return (
+            <>
+                {before}
+                <Text as="span" weight="extra-bold">
+                    {match}
+                </Text>
+                {after}
+            </>
+        );
+    };
+
+    const handleClick = (e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const range = document.createRange();
+        range.selectNodeContents(target);
+        const selection = window.getSelection();
+        if (selection) {
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    };
+
     return <>
         <div className={cn.ApiRefItemNavbarHost}>
             <div className={cn.ApiRefItemNavbarContainer}>
@@ -461,8 +516,11 @@ function $Navbar({label, subtitle}: { label: string, subtitle: string }) {
                         </Badge>
                     </div>
                 </div>
-                <div className={cn.ApiRefItemNavbarSubtitle}>
-                    {subtitle}
+                <div 
+                    className={cn.ApiRefItemNavbarSubtitle}
+                    onClick={handleClick}
+                >
+                    {renderSubtitle()}
                 </div>
             </div>
         </div>

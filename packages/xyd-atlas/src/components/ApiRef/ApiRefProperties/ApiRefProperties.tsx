@@ -20,6 +20,7 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
                 const propValue = property.type
                 const propertyProperties = propProperties(property)
                 const description = property.ofProperty?.description || property.description || ""
+                const metaInfo = renderMetaInfo(property.meta)
 
                 return <li className={cn.ApiRefPropertiesLiHost} key={i}>
                     {
@@ -35,16 +36,18 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
                             </dl> : null
                     }
 
-                    <div className={cn.ApiRefPropertiesDescriptionHost}>
-                        <>
-                            <div>
-                                {description}
-                            </div>
-                            <div>
-                                {renderMetaInfo(property.meta)}
-                            </div>
-                        </>
-                    </div>
+                    {
+                        description || metaInfo ? <div className={cn.ApiRefPropertiesDescriptionHost}>
+                            <>
+                                <div>
+                                    {description}
+                                </div>
+                                <div>
+                                    {renderMetaInfo(property.meta)}
+                                </div>
+                            </>
+                        </div> : null
+                    }
 
                     {
                         propertyProperties?.length > 0 ?
@@ -234,6 +237,8 @@ function SubProperties({ parent, properties }: SubPropertiesProps) {
                             const propValue = prop.type
                             const properties = propProperties(prop)
                             const description = prop.ofProperty?.description || prop.description || ""
+                            const metaInfo = renderMetaInfo(prop.meta)
+
 
                             return <li className={cn.ApiRefPropertiesSubPropsLi} key={i}>
                                 {
@@ -252,16 +257,21 @@ function SubProperties({ parent, properties }: SubPropertiesProps) {
                                             />
                                         </dl> : null
                                 }
-                                <div className={cn.ApiRefPropertiesDescriptionHost}>
-                                    <>
-                                        <div>
-                                            {description}
+
+                                {
+                                    description || metaInfo
+                                        ? <div className={cn.ApiRefPropertiesDescriptionHost}>
+                                            <>
+                                                <div>
+                                                    {description}
+                                                </div>
+                                                <div>
+                                                    {renderMetaInfo(prop.meta)}
+                                                </div>
+                                            </>
                                         </div>
-                                        <div>
-                                            {renderMetaInfo(prop.meta)}
-                                        </div>
-                                    </>
-                                </div>
+                                        : null
+                                }
                                 {
                                     properties?.length ?
                                         <SubProperties
@@ -631,12 +641,12 @@ function renderMetaInfo(meta: DefinitionPropertyMeta[] | undefined) {
     const exampleInfo = example || examples ? <div part="examples">
         <span>Examples:</span>
         {
-            example ? <Badge>{`"${example}"`}</Badge> : null
+            example ? <Badge>{`${example}`}</Badge> : null
         }
         {
             Array.isArray(examples) && <div part="examples-list">
                 {examples.map((example, i) => (
-                    <Badge key={`example-${i}`}>{`"${example}"`}</Badge>
+                    <Badge key={`example-${i}`}>{`${example}`}</Badge>
                 ))}
             </div>
         }
