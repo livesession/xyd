@@ -7,7 +7,7 @@ export {
     Surfaces,
     SurfaceContext,
 
-    type SurfaceTarget,
+    SurfaceTarget,
 } from "./components/Surfaces"
 
 export type {FrameworkProps} from "./contexts"

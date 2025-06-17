@@ -16,6 +16,10 @@ export default {
                 margin-top: var(--space-medium);
             }
             
+            hr {
+                margin: 35px 0px;
+            }
+            
             p {
                 display: block;
 

@@ -13,6 +13,7 @@
     "@xyd-js/theme-poetry": "workspace:*",
     "@xyd-js/theme-cosmo": "workspace:*",
     "@xyd-js/theme-opener": "workspace:*",
+    "@xyd-js/theme-picasso": "workspace:*",
     "@xyd-js/plugin-orama": "workspace:*",
     "@xyd-js/plugin-algolia": "workspace:*",
     "@react-router/dev": "^7.5.0",

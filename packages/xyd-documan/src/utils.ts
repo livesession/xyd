@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
-import { execSync } from "node:child_process";
+import { execSync, ExecSyncOptions } from "node:child_process";
 import crypto from "node:crypto";
 
 import { createServer, PluginOption as VitePluginOption, Plugin as VitePlugin } from "vite";
@@ -15,18 +15,15 @@ import type { IconLibrary } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
 
+import hostPackageJson from "../../xyd-host/package.json"
+
 import { BUILD_FOLDER_PATH, CACHE_FOLDER_PATH, HOST_FOLDER_PATH } from "./const";
+import { CLI } from './cli';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const HOST_VERSION = "0.1.0-xyd.0"
-
-interface IconifyIcon {
-    body: string;
-    width: number;
-    height: number;
-}
+const HOST_VERSION = hostPackageJson?.version
 
 export async function appInit(options?: PluginDocsOptions) {
     const readPreloadSettings = await readSettings() // TODO: in the future better solution - currently we load settings twice (pluginDocs and here)
@@ -488,7 +485,6 @@ export async function preWorkspaceSetup(options: {
     const pagesTargetPath = path.join(hostPath, "plugins/xyd-plugin-docs/src/pages")
 
     if (fs.existsSync(pagesSourcePath)) {
-        console.debug(`Copying pages from: ${pagesSourcePath} to: ${pagesTargetPath}`)
         await copyHostTemplate(pagesSourcePath, pagesTargetPath)
     } else {
         console.warn(`Pages source path does not exist: ${pagesSourcePath}`)
@@ -633,89 +629,103 @@ async function ensureFoldersExist() {
         const fullPath = path.resolve(process.cwd(), folder)
         if (!fs.existsSync(fullPath)) {
             fs.mkdirSync(fullPath, { recursive: true })
-            console.debug(`Created folder: ${folder}`)
         }
     }
 }
 
 // TODO: in the future buil-in xyd plugins should be installable via code
 export async function postWorkspaceSetup(settings: Settings) {
-    const hostPath = getHostPath()
-    const packageJsonPath = path.join(hostPath, 'package.json')
+    const spinner = new CLI('dots');
 
-    if (!fs.existsSync(packageJsonPath)) {
-        console.warn('No package.json found in host path')
-        return
-    }
+    try {
+        spinner.startSpinner('Installing xyd framework...');
 
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+        const hostPath = getHostPath()
+        const packageJsonPath = path.join(hostPath, 'package.json')
 
-    // Initialize dependencies if they don't exist
-    if (!packageJson.dependencies) {
-        packageJson.dependencies = {}
-    }
-    for (const plugin of settings.plugins || []) {
-        let pluginName: string
-
-        if (typeof plugin === "string") {
-            pluginName = plugin
-        } else if (Array.isArray(plugin)) {
-            pluginName = plugin[0]
-        } else {
-            continue
+        if (!fs.existsSync(packageJsonPath)) {
+            console.warn('No package.json found in host path')
+            return
         }
 
-        if (pluginName.startsWith("@xyd-js/")) {
-            continue // TODO: currently we don't install built-in xyd plugins - they are defined in host
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+
+        // Initialize dependencies if they don't exist
+        if (!packageJson.dependencies) {
+            packageJson.dependencies = {}
         }
+        for (const plugin of settings.plugins || []) {
+            let pluginName: string
 
-        // Check if it's a valid npm package name
-        // Valid formats: name or @scope/name
-        // Invalid: ./path/to/file.js or /absolute/path
-        const isValidNpmPackage = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(pluginName)
-
-        if (isValidNpmPackage) {
-            // Search for matching dependencies in host's package.json
-            const hostPackageJsonPath = path.join(hostPath, 'package.json')
-            if (fs.existsSync(hostPackageJsonPath)) {
-                const hostPackageJson = JSON.parse(fs.readFileSync(hostPackageJsonPath, 'utf-8'))
-                const deps = hostPackageJson.dependencies || {}
-
-                // Find matching dependency
-                const matchingDep = Object.entries(deps).find(([depName]) => {
-                    return depName === pluginName
-                })
-
-                if (matchingDep) {
-                    packageJson.dependencies[pluginName] = matchingDep[1]
-                } else {
-                    console.warn(`no matching dependency found for: ${pluginName} in: ${hostPackageJsonPath}`)
-                }
+            if (typeof plugin === "string") {
+                pluginName = plugin
+            } else if (Array.isArray(plugin)) {
+                pluginName = plugin[0]
             } else {
-                console.warn(`no host package.json found in: ${hostPath}`)
+                continue
             }
-        } else if (!pluginName.startsWith('.') && !pluginName.startsWith('/')) {
-            // Only warn if it's not a local file path (doesn't start with . or /)
-            console.warn(`invalid plugin name: ${pluginName}`)
+
+            if (pluginName.startsWith("@xyd-js/")) {
+                continue // TODO: currently we don't install built-in xyd plugins - they are defined in host
+            }
+
+            // Check if it's a valid npm package name
+            // Valid formats: name or @scope/name
+            // Invalid: ./path/to/file.js or /absolute/path
+            const isValidNpmPackage = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(pluginName)
+
+            if (isValidNpmPackage) {
+                // Search for matching dependencies in host's package.json
+                const hostPackageJsonPath = path.join(hostPath, 'package.json')
+                if (fs.existsSync(hostPackageJsonPath)) {
+                    const hostPackageJson = JSON.parse(fs.readFileSync(hostPackageJsonPath, 'utf-8'))
+                    const deps = hostPackageJson.dependencies || {}
+
+                    // Find matching dependency
+                    const matchingDep = Object.entries(deps).find(([depName]) => {
+                        return depName === pluginName
+                    })
+
+                    if (matchingDep) {
+                        packageJson.dependencies[pluginName] = matchingDep[1]
+                    } else {
+                        console.warn(`no matching dependency found for: ${pluginName} in: ${hostPackageJsonPath}`)
+                    }
+                } else {
+                    console.warn(`no host package.json found in: ${hostPath}`)
+                }
+            } else if (!pluginName.startsWith('.') && !pluginName.startsWith('/')) {
+                // Only warn if it's not a local file path (doesn't start with . or /)
+                console.warn(`invalid plugin name: ${pluginName}`)
+            }
         }
+
+        fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
+
+        await nodeInstallPackages(hostPath)
+
+        spinner.stopSpinner();
+        spinner.log('✔ Local xyd framework installed successfully');
+    } catch(error) {
+        spinner.stopSpinner();
+        spinner.error('❌ Failed to install xyd framework');
+        throw error;
     }
-
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
-
-    nodeInstallPackages(hostPath)
 }
-
 
 function nodeInstallPackages(hostPath: string) {
     const cmd = process.env.XYD_DEV_MODE ? 'pnpm i' : 'npm i'
-    execSync(cmd, {
+    const execOptions: ExecSyncOptions = {
         cwd: hostPath,
-        stdio: 'inherit',
         env: {
             ...process.env,
             NODE_ENV: "" // since 'production' does not install it well
         }
-    })
+    }
+    if (process.env.XYD_VERBOSE) {
+        execOptions.stdio = 'inherit'
+    }
+    execSync(cmd, execOptions)
 }
 
 function nodeDownloadPackage(
@@ -728,13 +738,17 @@ function nodeDownloadPackage(
         ? `pnpm pack ${packageName}@${version} --pack-destination ${extractDir}`
         : `npm pack ${packageName}@${version} --pack-destination ${extractDir}`
 
-    execSync(cmd, { stdio: 'inherit' })
+    const execOptions: ExecSyncOptions = {}
+    if (process.env.XYD_VERBOSE) {
+        execOptions.stdio = 'inherit'
+    }
+    execSync(cmd, execOptions)
 
     const tarball = fs.readdirSync(extractDir).find(file => file.endsWith('.tgz'))
     if (!tarball) {
         throw new Error(`No tarball found for ${packageName}@${version}`)
     }
-    execSync(`tar -xzf ${path.join(extractDir, tarball)} -C ${extractDir}`, { stdio: 'inherit' })
+    execSync(`tar -xzf ${path.join(extractDir, tarball)} -C ${extractDir}`, execOptions)
 
     // Move package contents to outputDir
     const extractedDir = path.join(extractDir, 'package')

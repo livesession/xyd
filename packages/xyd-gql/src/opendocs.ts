@@ -89,8 +89,6 @@ export function openDocsToGroup(
     }
 
     if (!groups?.length) {
-        groups.push("Reference")
-
         if (odGqlNode instanceof GraphQLObjectType) {
             groups.push(
                 "Objects"

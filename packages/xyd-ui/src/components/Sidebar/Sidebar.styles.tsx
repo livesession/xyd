@@ -65,6 +65,12 @@ export const ItemHost = css`
                 align-items: center;
                 justify-content: space-between;
             }
+
+            [part="item-title"] {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
         }
         [part="first-item" ][data-active="true"] {
             background: var(--xyd-sidebar-item-bgcolor--active);

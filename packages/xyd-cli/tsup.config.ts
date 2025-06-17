@@ -14,6 +14,7 @@ import pluginDocsPkg from '../xyd-plugin-docs/package.json';
 import themeGustoPkg from '../xyd-theme-gusto/package.json';
 import themePoetryPkg from '../xyd-theme-poetry/package.json';
 import themeOpenerPkg from '../xyd-theme-opener/package.json';
+import themePicassoPkg from '../xyd-theme-picasso/package.json';
 import uiPkg from '../xyd-ui/package.json';
 import uniformPkg from '../xyd-uniform/package.json';
 import sourcesPk from '../xyd-sources/package.json';
@@ -36,6 +37,7 @@ const deps = {
         ...themeGustoPkg?.dependencies,
         ...themePoetryPkg.dependencies,
         ...themeOpenerPkg.dependencies,
+        ...themePicassoPkg.dependencies,
         ...uiPkg.dependencies,
         ...uniformPkg.dependencies,
         ...sourcesPk.dependencies,
@@ -55,6 +57,7 @@ const deps = {
         ...themeGustoPkg.devDependencies,
         ...themePoetryPkg.devDependencies,
         ...themeOpenerPkg.devDependencies,
+        ...themePicassoPkg.devDependencies,
         ...uiPkg.devDependencies,
         ...uniformPkg.devDependencies,
         ...sourcesPk.devDependencies,

@@ -12,8 +12,8 @@
     ".": {
       "import": "./dist/index.js"
     },
-    "./atlas-index": {
-      "import": "./dist/atlas-index.js"
+    "./xydPlugin": {
+      "import": "./dist/xydPlugin.js"
     }
   },
   "scripts": {
@@ -33,7 +33,9 @@
     "lucide-react": "^0.447.0"
   },
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "@xyd-js/framework": "workspace:*",
+    "@xyd-js/plugins": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

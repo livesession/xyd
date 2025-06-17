@@ -72,8 +72,8 @@ Thanks to this configuration, you'll have two routes:
 All defaults can be overridden using the optional `@docs` directive
 :::
 
-## Navigation Customization
-While the generator automatically organizes your schema, you can customize the navigation structure using the optional `@docs` directive. This directive allows you to override the default grouping and organize your types and operations into custom groups.
+## Sideba Customization
+While the generator automatically organizes your schema, you can customize the sidebar structure using the optional `@docs` directive. This directive allows you to override the default grouping and organize your types and operations into custom groups.
 
 Here's an example of how to use the `@docs` directive to create custom groups:
 
@@ -111,3 +111,6 @@ type Mutation {
 :::callout
 The `@docs` directive is optional. If not specified, the generator will automatically group types by their categories (Queries, Mutations, Objects, etc.).
 :::
+
+## API Docs Playground
+You can also check out our [interactive API Docs Playground](http://apidocs-playground.xyd.dev/) to see these features in action and experiment with different OpenAPI configurations in real-time.

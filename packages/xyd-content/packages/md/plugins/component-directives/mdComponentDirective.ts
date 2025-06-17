@@ -124,7 +124,16 @@ function recreateComponent(
         const isCodeLike = codeComponents[node.name];
 
         if (isNavLike) {
-            mdNav(node, directivesMap);
+            componentProps(
+                node,
+                attributes,
+                promises,
+                file,
+                settings,
+            );
+
+            console.log("attributes", attributes);
+            mdNav(node, directivesMap, attributes);
             return;
         }
 
@@ -165,7 +174,7 @@ function recreateComponent(
     }
 }
 
-function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap) {
+function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap, attributes: any[]) {
     const componentName = getComponentName(node.name, directivesMap);
 
     // Parse the nav directive content to extract tabs and their content
@@ -244,13 +253,16 @@ function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap) {
     const jsxNode = {
         type: 'mdxJsxFlowElement',
         name: componentName,
-        attributes: [
-            // We don't need to provide value or onChange for uncontrolled mode
-        ],
+        attributes,
+        // attributes: [
+        //     // We don't need to provide value or onChange for uncontrolled mode
+        // ],
         children: [...tabItems, ...tabContents]
     };
 
     Object.assign(node, jsxNode);
+
+    console.log("NODE", node)
 
     return;
 }

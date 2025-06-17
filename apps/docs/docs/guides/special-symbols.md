@@ -20,7 +20,7 @@ This is a callout component
 :::
 ```
 
-To pass props into component use `{<key>=<value>}`:
+to pass props into component use `{<key>=<value>}`:
 ```mdx
 :::callout{kind="warning"}
 Take care!
@@ -43,34 +43,46 @@ Bool false sugar syntax
 :::
 ```
 
+if component does not have a children prop you can use shorter directive syntax(`::`):
+```mdx
+::my-component{label="Cool"}
+```
+
 ## `Function Calling`
 Function Calling (`@<function>`) is used to execute [functions](/docs/reference/functions) within your markdown content:
 
 ```mdx
 @import "~/snippets/Hello.ts"
 ```
+:::callout
+`~/` points to root of your docs project.
+:::
 
-## `Output Variable` {label="Experimental"}
-Output Variable (`<<< <out_variable>{<attributes>}`) is used to pass output variables from content files, useful for [composing](/docs/guides/compose-content) documentation content:
+## `Output Variable` {label="Coming Soon"}
+Output Variable (`@out(<name>=<expression>)`) is used to pass output variables from content files, useful for [composing](/docs/guides/compose-content) documentation content:
 
 ~~~md
-<<<examples{title="Samples"}
-```tsx
-<Callout>
-Note that you must have an Admin or Owner role to manage webhook settings.
-</Callout>
-```
+@out(examples=(
+  ```md
+  :::callout
+  Note that you must have an Admin or Owner role to manage webhook settings.
+  :::
+  ```
+))
+~~~
 
+or if output variable is a callback:
+~~~md
+@.examples(title="Samples")
 ```md
 :::callout
 Note that you must have an Admin or Owner role to manage webhook settings.
 :::
 ```
-<<<
+@end
 ~~~
 
-
-###  Output Variable API {label="Coming soon"}
+###  Output Variable API
 Define your own custom output variable using follow API:
 
 :::code-group
@@ -93,7 +105,9 @@ export class MyTheme extends BaseTheme {
   contructor() {
     super()
 
-    this.registerOutputVariable(Examples, "examples")
+    this.outputVariables({
+      examples: Examples,
+    })
   }
 }
 
@@ -112,7 +126,7 @@ Read Variable (`{<read_variable>}`) is used to access read variables from frontm
 ```
 
 ## `Attributes`
-Some built-in tags has abilities to pass attributes (`<tag|expression>{<attributes>}`):
+Some built-in tags has abilities to pass attributes (`<tag|expression>[<attributes>]`):
 ```mdx
 ## Hide me from TOC [!toc]
 
@@ -121,19 +135,23 @@ Some built-in tags has abilities to pass attributes (`<tag|expression>{<attribut
 ## Component Directive (`:::`) [toc="Component Directive"]
 ```
 
+:::callout
+Learn more about toc attributes [here](/docs/guides/writing-quickstart#toc-anchors).
+:::
 
-### Example
+## Full Example
 Here's how you can combine all these symbols in a single markdown file:
 
-```mdx
+```md
 ---
 title: Special symbols usage
 ---
 
-!toc{anchor="bottom"}
+@.toc(anchor="bottom")
 :::toc-card{title="Starter" href="https://github.com/xyd-js/starter"}
   Check out our starter repo
 :::
+@end
 
 # {frontmatter.title}
 

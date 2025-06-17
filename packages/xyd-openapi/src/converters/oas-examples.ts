@@ -9,9 +9,10 @@ import type {JSONSchema7} from "json-schema";
 import {ExampleGroup, Example, CodeBlockTab} from "@xyd-js/uniform";
 
 import {BUILT_IN_PROPERTIES} from "../const";
+import {xDocsLanguages} from "../xdocs";
 
 // TODO: custom snippet languages options
-const SUPPORTED_LANGUAGES = ["shell", "javascript", "python", "go"]
+const DEFAULT_CODE_LANGUAGES = ["shell", "javascript", "python", "go"]
 
 // TODO: option with another languages
 export function oapExamples(
@@ -38,6 +39,53 @@ function langFallback(lang: string): string {
 
     return langLower;
 }
+
+function smartDeepCopy<T>(obj: T, excludeProps: string[] = []): T {
+    const seen = new WeakMap();
+    
+    function copy(value: any): any {
+        // Handle primitives and null
+        if (value === null || typeof value !== 'object') {
+            return value;
+        }
+
+        // Handle arrays
+        if (Array.isArray(value)) {
+            return value.map(copy);
+        }
+
+        // Handle dates
+        if (value instanceof Date) {
+            return new Date(value);
+        }
+
+        // Check for circular references
+        if (seen.has(value)) {
+            return seen.get(value);
+        }
+
+        // Create new object
+        const result: any = {};
+        seen.set(value, result);
+
+        // Copy all properties except excluded ones
+        for (const [key, val] of Object.entries(value)) {
+            const propPath = key;
+            if (!excludeProps.some(prop => propPath.startsWith(prop))) {
+                result[key] = copy(val);
+            }
+        }
+
+        return result;
+    }
+
+    return copy(obj);
+}
+
+function excludeProperties(operation: Operation, excludeProps: string[]): Operation {
+    return smartDeepCopy(operation, excludeProps);
+}
+
 function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSchema7 | JSONSchema7[], any>): ExampleGroup[] {
     const exampleGroups: ExampleGroup[] = []
     const examples: Example[] = []
@@ -129,10 +177,11 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
 
     // Generate examples if we have either parameters or request body, or if we have neither
     if (hasParameters || hasRequestBody || (!hasRequestBody && !hasParameters)) {
-        SUPPORTED_LANGUAGES.forEach(lang => {
-            // operation.api.components = undefined // TODO: uncomment if issues with cirular references
-            // operation.api.paths = undefined // TODO: uncomment if issues with cirular references
-            const {code} = oasToSnippet(oas, operation, {
+        const langs = xDocsLanguages(operation.api) || DEFAULT_CODE_LANGUAGES
+        langs.forEach(lang => {
+            // TODO: needed for circural references - find better solution?
+            const operationCopy = excludeProperties(operation, ['api.components', 'api.paths']);
+            const {code} = oasToSnippet(oas, operationCopy, {
                 ...paramData,
                 ...bodyData
             }, null, lang)

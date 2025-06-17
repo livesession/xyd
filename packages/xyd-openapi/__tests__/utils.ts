@@ -42,8 +42,6 @@ export async function testOasSchemaToReferences(
 
     const schemalocation = await deferencedOpenAPI(schemaLocation);
     let result = oapSchemaToReferences(schemalocation, options);
-    saveResultAsOutput(fixtureName, result)
-    const expectedOutput = readFixtureOutput(`${fixtureName}/output.json`);
     if (plugins?.length) {
         const uni = uniform(result, {
             plugins
@@ -51,6 +49,10 @@ export async function testOasSchemaToReferences(
 
         result = uni.references;
     }
+
+    saveResultAsOutput(fixtureName, result) // TODO: comment for prod
+
+    const expectedOutput = readFixtureOutput(`${fixtureName}/output.json`);
     try {
         // Remove functions before comparison
         const cleanResult = removeFunctions(result);

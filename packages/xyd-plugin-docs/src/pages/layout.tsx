@@ -15,6 +15,8 @@ import type {INavLinks, IBreadcrumb} from "@xyd-js/ui";
 import {Framework, FwLink, useSettings, type FwSidebarGroupProps} from "@xyd-js/framework/react";
 import {ReactContent} from "@xyd-js/components/content";
 import {Atlas, AtlasContext, type VariantToggleConfig} from "@xyd-js/atlas";
+import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
+
 import {Surfaces} from "@xyd-js/framework/react";
 import {Composer} from "@xyd-js/composer";
 // @ts-ignore
@@ -43,6 +45,16 @@ new Composer() // TODO: better API
 const settings = globalThis.__xydSettings
 
 const surfaces = new Surfaces()
+const atlasXyd = AtlasXydPlugin()(settings) // TODO: in the future via standard plugin API
+const SidebarItemRight = atlasXyd?.customComponents?.["AtlasSidebarItemRight"]
+
+if (SidebarItemRight) {
+    surfaces.define(
+        SidebarItemRight.surface,
+        SidebarItemRight.component,
+    )
+}
+
 const reactContent = new ReactContent(settings, {
     Link: FwLink,
     components: {

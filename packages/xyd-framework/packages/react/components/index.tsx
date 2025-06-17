@@ -1,23 +1,15 @@
 import React, {isValidElement, useState} from "react";
-import {Link, useLocation, useMatches, type To} from "react-router";
+import {Link, type To, useLocation, useMatches} from "react-router";
 
 import {Header} from "@xyd-js/core";
 import type {ITOC} from "@xyd-js/ui";
-import {Breadcrumbs, NavLinks, Anchor, Button, Icon} from "@xyd-js/components/writer";
-import {Toc, SubNav, UISidebar, Nav} from "@xyd-js/ui"
-import {useEvents} from "@xyd-js/analytics"
+import {Nav, SubNav, Toc, UISidebar} from "@xyd-js/ui"
+import {Anchor, Breadcrumbs, Button, Icon, NavLinks} from "@xyd-js/components/writer";
 
-import {Surface} from "./Surfaces";
+import {Surface, SurfaceTarget} from "./Surfaces";
 
-import {
-    useBreadcrumbs,
-    useNavLinks,
-    useRawPage,
-    useSettings,
-    useSidebarGroups,
-    useToC
-} from "../contexts";
-import {FwSidebarItemGroup, FwSidebarGroupContext, FwSidebarItemProps} from "./Sidebar";
+import {useBreadcrumbs, useNavLinks, useRawPage, useSettings, useSidebarGroups, useToC} from "../contexts";
+import {FwSidebarGroupContext, FwSidebarItemGroup, FwSidebarItemProps} from "./Sidebar";
 
 import {useMatchedSubNav} from "../hooks";
 
@@ -89,7 +81,7 @@ export function FwNav({kind}: { kind?: "middle" }) {
                     : null
             }
 
-            <Surface target="nav.right"/>
+            <Surface target={SurfaceTarget.NavRight}/>
         </>}
     >
         {headerMap["default"]}
@@ -167,7 +159,7 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
         initialActiveItems={initialActiveItems}
     >
         <UISidebar footerItems={footerItems && footerItems}>
-            <Surface target="sidebar.top"/>
+            <Surface target={SurfaceTarget.SidebarTop}/>
 
             {
                 groups?.map((group, index) => <FwSidebarItemGroup
@@ -283,7 +275,7 @@ export function FwCopyPage() {
 
 function $Link({children, ...rest}) {
     let to: To = ""
-
+                
     if (rest.href) {
         try {
             new URL(rest.href)

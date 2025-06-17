@@ -42,7 +42,7 @@ above component will render an API Docs Page similar to [this](#).
 ## Usage in Other Libs
 
 You can also use `APIToolchain` in your code to connect into your custom workflow. 
-For example you can generate API docs elements to show your libary settings that comes from your TypeScript codebase:
+For example you can generate API docs elements to show your library settings that comes from your TypeScript codebase:
 ```ts myLibrarySettings.ts
 /**
  * Your library configuration interface.

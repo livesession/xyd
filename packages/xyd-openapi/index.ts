@@ -4,6 +4,8 @@ export {
     deferencedOpenAPI,
     oapSchemaToReferences,
 
-    oapResponseOperationToUniformDefinition
+    oapResponseOperationToUniformDefinition,
+
+    uniformPluginXDocsSidebar
 } from "./src";
 

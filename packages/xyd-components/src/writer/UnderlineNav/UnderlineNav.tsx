@@ -14,7 +14,7 @@ const UnderlineContext = createContext<{
 
 /**
  * Props for the UnderlineNav component
- */
+ */§
 export interface TabsProps {
     /** Child elements to be rendered within the navigation */
     children: React.ReactNode
@@ -30,6 +30,9 @@ export interface TabsProps {
 
     /** Additional CSS class name for the component */
     className?: string
+
+    /** The variant of the navigation */
+    kind?: 'default' | 'secondary'
 }
 
 /**
@@ -42,7 +45,8 @@ export function UnderlineNav({
     value: controlledValue,
     onChange,
     slide = true,
-    className
+    className,
+    kind = 'default'
 }: TabsProps) {
     const childrenArray = React.Children.toArray(children);
     const navItems = childrenArray.filter(
@@ -65,7 +69,10 @@ export function UnderlineNav({
     return (
         <UnderlineContext.Provider value={{ direction }}>
             <RadixTabs.Root value={value} onValueChange={handleValueChange}>
-                <xyd-underlinenav className={`${cn.UnderlineNavHost} ${className || ""}`} >
+                <xyd-underlinenav 
+                    className={`${cn.UnderlineNavHost} ${className || ""}`}
+                    data-kind={kind}
+                >
                     <nav part="nav">
                         <RadixTabs.List asChild>
                             <ul part="list">

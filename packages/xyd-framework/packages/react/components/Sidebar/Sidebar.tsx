@@ -113,7 +113,7 @@ function FwSidebarItem(props: FwSidebarItemProps) {
                     pageMeta: props.pageMeta,
                 }}
             />
-            <div>
+            <div part="item-title">
                 {title}
             </div>
             <Surface

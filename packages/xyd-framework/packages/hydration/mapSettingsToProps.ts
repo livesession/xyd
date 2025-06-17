@@ -93,7 +93,7 @@ export async function mapSettingsToProps(
         }
 
         if (!title) {
-            console.error("Title not found for page", pageName)
+            console.debug(`⚠️ Title not found for page "${pageName}"`)
         }
 
         const meta = frontmatters[pageName]

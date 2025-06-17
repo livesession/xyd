@@ -24,13 +24,15 @@ const external = [
 ];
 
 // Function to copy tokens.css to dist
-function copyTokensCss() {
+function copyCss(names) {
     return {
-        name: 'copy-tokens-css',
+        name: `copy-${names.join('-')}-css`,
         writeBundle() {
-            const tokensCss = fs.readFileSync('src/styles/tokens.css', 'utf8');
-            fs.mkdirSync('dist', { recursive: true });
-            fs.writeFileSync('dist/tokens.css', tokensCss);
+            names.forEach(name => {
+                const css = fs.readFileSync(`src/styles/${name}.css`, 'utf8');
+                fs.mkdirSync('dist', { recursive: true });
+                fs.writeFileSync(`dist/${name}.css`, css);
+            });
         }
     };
 }
@@ -39,6 +41,7 @@ export default [
     {
         input: {
             index: 'index.ts',
+            xydPlugin: 'packages/xyd-plugin/index.ts',
         },
         output: [
             {
@@ -78,7 +81,7 @@ export default [
             css({
                 output: 'index.css',
             }),
-            copyTokensCss(),
+            copyCss(['tokens', 'styles']),
             resolve(),
             commonjs(),
             typescript({
@@ -99,7 +102,16 @@ export default [
     {
         input: 'index.ts',
         output: {
-            dir: 'dist',
+            file: 'dist/index.d.ts',
+            format: 'es',
+        },
+        plugins: [dts()],
+        external
+    },
+    {
+        input: 'packages/xyd-plugin/index.ts',
+        output: {
+            file: 'dist/xydPlugin.d.ts',
             format: 'es',
         },
         plugins: [dts()],

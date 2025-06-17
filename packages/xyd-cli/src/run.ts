@@ -16,16 +16,16 @@ ${colors.blueBright("xyd")}
   ${colors.underline("Options")}:
     --help, -h          Print this help message and exit
     --version, -v       Print the CLI version and exit
+    --verbose           Show debug messages
 
   ${colors.underline("Build your project")}:
 
     $ xyd build
 
+  ${colors.underline("Install the xyd framework")}:
 
- ${colors.underline("Start your production server")}:
- 
-    $ xyd start
-    
+    $ xyd install
+
   ${colors.underline("Run your project locally in development")}:
 
     $ xyd dev
@@ -62,11 +62,20 @@ export async function run(argv: string[] = process.argv.slice(2)) {
             "-p": "--port",
             "--logLevel": String,
             "-l": "--logLevel",
+            "--verbose": Boolean,
+            "--debug": Boolean,
         },
         {
             argv,
         }
     );
+
+    if (args["--verbose"]) {
+        process.env.XYD_VERBOSE = "true"
+    } else {
+        // Override console.debug to be silent when not in verbose mode
+        console.debug = () => {};
+    }
 
     let input = args._;
 
@@ -92,14 +101,14 @@ export async function run(argv: string[] = process.argv.slice(2)) {
         case "build":
             await commands.build(input[1], flags);
             break;
-        case "start":
-            await commands.start(input[1], flags);
+        case "install":
+            await commands.install(input[1], flags);
             break;
         case "dev":
             await commands.dev(input[1], flags);
             break;
         default:
-            // `xyd ./my-project` is shorthand for `xyd dev ./my-project`
+            // `xyd` is shorthand for `xyd dev`
             await commands.dev(input[0], flags);
     }
 }

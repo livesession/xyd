@@ -1,6 +1,11 @@
 ---
 title: Deploy
 icon: container
+tocCard: 
+    link: https://github.com/xyd-js/deploymen-samples
+    title: Deployment Samples
+    description: Learn how to deploy xyd docs
+    icon: docs:github
 ---
 
 # Deploy your `xyd` docs
@@ -13,35 +18,21 @@ You must follow the following steps to deploy your `xyd` docs:
 
 * You run `xyd` command inside your docs project.
 
-## Build and test
+## Build
 
-:::steps
-1. Run this command to build the docs:
-    <br/>
-    ```bash
-    $ xyd build
-    ```
+Run this command to build the docs:
+```bash
+$ xyd build
+```
 
-2. Once built, preview it locally by running:
-    <br/>
-    ```bash
-    $ xyd start
-    ```
-
-3. You can also configure the port of the server by passing --port as an argument.
-    <br/>
-    ```bash
-    $ xyd start --port 3000
-    ```
-    <br/>
-    Now you can visit [`http://localhost:3000`](http://localhost:3000)` to see the preview.
-:::
+it produces a static files availalbe at `.xyd/build/client` folder within your docs project.
+You can serve that locally using popular static web servers or just deploy it on production.
 
 ## Deployment
-Since `xyd build` produces static files you can deploy it on any infrastrucutre you want very easy.
-After a build it produces `.xyd/build/client` folder which you could upload to your provider.
+Since `xyd build` produces static files you can deploy it on any infrastructure you want very easy.
+Just point to generated folder which you could upload to your provider.
 
 :::callout
-Many deployment providers have one-step configuration to just point to generated static folder.
+Please make sure you installed [xyd](/docs/guides/quickstart) CLI on you CI/CD before.
 :::
 

@@ -9,7 +9,7 @@ icon: search
 Enhance your documentation's search engine visibility with custom meta tags
 :::
 
-Our documentation platform provides automatic meta tag generation, but you have full control to customize them through the `docs.json` configuration or individual [page](/docs/guides/pages) meta.
+Our documentation platform provides automatic meta tag generation, but you have a full control to customize them through the [`docs.json`](/docs/guides/settings) configuration or individual [page](/docs/guides/pages) meta.
 
 ## Global Meta Tags
 

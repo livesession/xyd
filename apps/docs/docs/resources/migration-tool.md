@@ -35,3 +35,7 @@ Don't see your docs framework or have a home grown system? We can still help! Pl
 
 * `xyd migrateme [path | url]` - converts by provided path to your docs source code. Alternatively an url to your deployed docs.
 This command will automatically detect used framework.
+
+## Preview {label="Coming Soon"}
+
+You can also preview your docs online before migration [here](https://preview.xyd.dev). 

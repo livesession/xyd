@@ -205,6 +205,7 @@ function oapRequestOperationToUniformDefinition(
 export function oapResponseOperationToUniformDefinition(
     oapOperation: OpenAPIV3.OperationObject,
 ): Definition {
+
     const responses = oapOperation.responses as OpenAPIV3.ResponsesObject
 
     const variants: DefinitionVariant<DefinitionVariantOpenAPIMeta>[] = []

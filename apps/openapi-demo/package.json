@@ -22,6 +22,7 @@
     "@xyd-js/theme-cosmo": "workspace:*",
     "@xyd-js/theme-opener": "workspace:*",
     "@xyd-js/theme-poetry": "workspace:*",
+    "@xyd-js/theme-picasso": "workspace:*",
     "@xyd-js/themes": "workspace:*",
     "@xyd-js/ui": "workspace:*",
     "gestalt": "^177.0.0",

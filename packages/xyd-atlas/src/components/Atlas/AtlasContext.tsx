@@ -11,6 +11,7 @@ export const AtlasContext = createContext<{
     syntaxHighlight: Theme | null,
     baseMatch?: string,
     variantToggles?: VariantToggleConfig[], // Array of toggle configurations
+    Link?: any
 }>({
     syntaxHighlight: null
 })

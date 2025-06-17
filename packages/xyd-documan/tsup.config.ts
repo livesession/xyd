@@ -18,6 +18,7 @@ const deps = [
     "@xyd-js/theme-opener",
     "@xyd-js/theme-poetry",
     "@xyd-js/theme-cosmo",
+    "@xyd-js/theme-picasso",
 ].indexOf(dep) === -1)
 
 export default defineConfig({

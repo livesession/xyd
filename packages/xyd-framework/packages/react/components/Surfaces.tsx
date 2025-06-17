@@ -34,7 +34,11 @@ export const SurfaceContext = createContext<SurfaceContext>({
 export class Surfaces implements ROSurface {
     private registry: Partial<Record<SurfaceTargetType, React.JSX.Element | React.JSX.Element[]>> = {}
 
-    public define(target: SurfaceTargetType, component: React.JSX.Element, opts?: SurfaceOptions) {
+    public define(
+        target: SurfaceTargetType,
+        component: React.JSX.Element | React.ComponentType<any>, // TODO: fix any
+        opts?: SurfaceOptions
+    ) {
         if (opts?.append) {
             if (Array.isArray(this.registry[target])) {
                 this.registry[target].push(component)
@@ -84,19 +88,21 @@ export function Surface(props: SurfaceProps): React.JSX.Element | null {
             const Component = components as ComponentType<any>
             return <Component {...props.props} />
         }
+
+        return <React.Fragment>{components}</React.Fragment>
     }
 
-    if (Array.isArray(components)) {
-        return <>
-            {components.map((Component, index) => {
-                if (typeof Component === 'function') {
-                    const Comp = Component as ComponentType<any>
-                    return <Comp key={index} {...props.props} />
-                }
-                return <React.Fragment key={index}>{Component}</React.Fragment>
-            })}
-        </>
+    if (!components.length) {
+        return null
     }
 
-    return null
+    return <>
+        {components.map((Component, index) => {
+            if (typeof Component === 'function') {
+                const Comp = Component as ComponentType<any>
+                return <Comp key={index} {...props.props} />
+            }
+            return <React.Fragment key={index}>{Component}</React.Fragment>
+        })}
+    </>
 }

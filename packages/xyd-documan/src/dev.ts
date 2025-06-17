@@ -7,6 +7,7 @@ import { API, APIFile, } from "@xyd-js/core";
 
 import { appInit, calculateFolderChecksum, commonVitePlugins, getAppRoot, getDocsPluginBasePath, getHostPath, getPublicPath, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
 import { CACHE_FOLDER_PATH, SUPPORTED_WATCH_FILES } from "./const";
+import {CLI} from "./cli";
 
 // TODO: !!! BETTER TIMER / DEBUG API !!!
 if (!process.env.ENABLE_TIMERS) {
@@ -20,12 +21,16 @@ interface DevOptions {
     port?: number
 }
 export async function dev(options?: DevOptions) {
+    const spinner = new CLI('dots');
+    spinner.startSpinner('Preparing local xyd instance...');
+
     const skip = await preWorkspaceSetup()
 
     const { respPluginDocs, resolvedPlugins } = await appInit()
     const allowCwd = searchForWorkspaceRoot(process.cwd())
     const appRoot = getAppRoot()
     const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)
+    spinner.stopSpinner();
 
     if (!skip) {
         await postWorkspaceSetup(respPluginDocs.settings)
@@ -33,6 +38,9 @@ export async function dev(options?: DevOptions) {
         const newChecksum = calculateFolderChecksum(getHostPath());
         storeChecksum(newChecksum);
     }
+
+    // ⚠️  
+    spinner.log('✔ Local xyd instance is ready');
 
     let server: ViteDevServer | null = null
 

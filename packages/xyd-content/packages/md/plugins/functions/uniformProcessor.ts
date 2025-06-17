@@ -7,7 +7,7 @@ import { Metadata, Settings } from '@xyd-js/core';
 import { sourcesToUniform, sourcesToUniformV2, type TypeDocReferenceContext } from '@xyd-js/sources/ts';
 import { reactDocgenToUniform, uniformToReactUniform } from '@xyd-js/sources/react';
 import { gqlSchemaToReferences } from "@xyd-js/gql"
-import { oapSchemaToReferences, deferencedOpenAPI } from "@xyd-js/openapi"
+import {oapSchemaToReferences, deferencedOpenAPI, uniformPluginXDocsSidebar} from "@xyd-js/openapi"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
 import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
@@ -46,6 +46,11 @@ export async function processUniformFunctionCall(
     }
 
     const plugins = globalThis.__xydUserUniformVitePlugins || []
+    const matter = file.data?.matter as Metadata
+    if (matter?.openapi) {
+        plugins.push(uniformPluginXDocsSidebar)
+    }
+
     const uniformRefs = uniform(references, {
         plugins: [
             ...plugins,

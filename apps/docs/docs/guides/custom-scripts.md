@@ -21,7 +21,7 @@ Add custom tags to the `<head>` of your xyd site. Can be useful for adding analy
 }
 ```
 
-## Custom JS
+## Custom JS {label="Coming Soon"}
 Custom JS lets you write JavaScript in separate files that are automatically injected across your documentation site. Use it to implement global features or integrate third-party services:
 ```json
 "theme": {

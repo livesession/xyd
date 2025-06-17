@@ -20,6 +20,7 @@ import uniform, {
     OpenAPIReferenceContext,
     GraphQLReferenceContext
 } from "@xyd-js/uniform";
+import {uniformPluginXDocsSidebar} from "@xyd-js/openapi";
 
 import {Preset, PresetData} from "../../types";
 
@@ -219,6 +220,9 @@ async function uniformResolver(
     const uniformRefs = await uniformApiResolver(apiFilePath)
     const plugins = globalThis.__xydUserUniformVitePlugins || []
 
+    if (uniformType === "openapi") {
+        plugins.push(uniformPluginXDocsSidebar)
+    }
     const uniformWithNavigation = uniform(uniformRefs, {
         plugins: [
             ...plugins,

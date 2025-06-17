@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { DEFINED_DEFINITION_PROPERTY_TYPE, DefinitionProperty, DefinitionPropertyMeta } from "@xyd-js/uniform";
 
 import * as cn from "./ApiRefProperties.styles";
-import { useBaseMatch } from "@/components/Atlas/AtlasContext";
+import { AtlasContext, useBaseMatch } from "@/components/Atlas/AtlasContext";
 import { Badge } from "@xyd-js/components/writer";
 
 export interface ApiRefPropertiesProps {
@@ -91,6 +91,7 @@ interface PropTypeProps {
 }
 
 function PropType({ property }: PropTypeProps) {
+    const { Link = "a" } = useContext(AtlasContext)
     const href = useSymbolLink(property)
 
     const symbol = resolvePropertySymbol(property)
@@ -102,7 +103,7 @@ function PropType({ property }: PropTypeProps) {
     }
 
     if (href) {
-        propSymbol = <a className={cn.ApiRefPropertiesPropTypeCodeLink} href={href}>{propSymbol}</a>
+        propSymbol = <Link className={cn.ApiRefPropertiesPropTypeCodeLink} href={href}>{propSymbol}</Link>
     }
 
     return <atlas-apiref-proptype>
@@ -238,7 +239,6 @@ function SubProperties({ parent, properties }: SubPropertiesProps) {
                             const properties = propProperties(prop)
                             const description = prop.ofProperty?.description || prop.description || ""
                             const metaInfo = renderMetaInfo(prop.meta)
-
 
                             return <li className={cn.ApiRefPropertiesSubPropsLi} key={i}>
                                 {
@@ -652,6 +652,10 @@ function renderMetaInfo(meta: DefinitionPropertyMeta[] | undefined) {
         }
     </div> : null
 
+    if (!rangeInfo?.length && !exampleInfo) {
+        return null
+    }
+    
     return <atlas-apiref-meta-info className={cn.ApiRefPropertiesMetaInfoHost}>
         {rangeInfo?.map((info, i) => (
             <div key={`range-${i}`}>{info}</div>

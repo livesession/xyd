@@ -8,7 +8,7 @@ tocCard:
     icon: docs:github
 ---
 
-# UI Components
+# UI Components {label="Experimental"}
 :::subtitle
 Reference UI Components in your docs pages
 :::

@@ -1,0 +1,843 @@
+[
+  {
+    "title": "Returns a list of users",
+    "canonical": "/users/get",
+    "description": "Optional extended description in CommonMark or HTML.",
+    "type": "rest_get",
+    "category": "rest",
+    "context": {
+      "method": "get",
+      "path": "/users",
+      "fullPath": "http:/api.example.com/v1/users",
+      "group": [
+        "API & Reference",
+        "Endpoints",
+        "Users"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "shell",
+                    "language": "shell",
+                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const options = {method: 'GET'};\n\nfetch('http://api.example.com/v1/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                  },
+                  {
+                    "title": "python",
+                    "language": "python",
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users\"\n\nresponse = requests.get(url)\n\nprint(response.text)"
+                  },
+                  {
+                    "title": "go",
+                    "language": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "application/json",
+                    "language": "json",
+                    "code": "[\n  {\n    \"id\": 0,\n    \"username\": \"string\",\n    \"email\": \"user@example.com\",\n    \"status\": \"active\",\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"updatedAt\": \"2019-08-24T14:15:22Z\"\n  }\n]"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Query parameters",
+        "properties": [
+          {
+            "name": "limit",
+            "type": "integer",
+            "description": "Maximum number of items to return",
+            "meta": [
+              {
+                "name": "defaults",
+                "value": 20
+              },
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "offset",
+            "type": "integer",
+            "description": "Number of items to skip",
+            "meta": [
+              {
+                "name": "defaults",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "description": "A JSON array of users",
+            "properties": [],
+            "rootProperty": {
+              "type": "$$array",
+              "properties": [
+                {
+                  "name": "id",
+                  "type": "integer",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "username",
+                  "type": "string",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "email",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "status",
+                  "type": "$$enum",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "enum-type",
+                      "value": "string"
+                    }
+                  ],
+                  "properties": [
+                    {
+                      "name": "active",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    },
+                    {
+                      "name": "inactive",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    }
+                  ]
+                },
+                {
+                  "name": "createdAt",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "updatedAt",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ]
+            },
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Get user by ID",
+    "canonical": "/users/userId",
+    "description": "Get user by ID",
+    "type": "rest_get",
+    "category": "rest",
+    "context": {
+      "method": "get",
+      "path": "/users/{userId}",
+      "fullPath": "http:/api.example.com/v1/users/{userId}",
+      "group": [
+        "API & Reference",
+        "Endpoints",
+        "Users"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "shell",
+                    "language": "shell",
+                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users/userId"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const options = {method: 'GET'};\n\nfetch('http://api.example.com/v1/users/userId', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                  },
+                  {
+                    "title": "python",
+                    "language": "python",
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId\"\n\nresponse = requests.get(url)\n\nprint(response.text)"
+                  },
+                  {
+                    "title": "go",
+                    "language": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "application/json",
+                    "language": "json",
+                    "code": "{\n  \"id\": 0,\n  \"username\": \"string\",\n  \"email\": \"user@example.com\",\n  \"status\": \"active\",\n  \"createdAt\": \"2019-08-24T14:15:22Z\",\n  \"updatedAt\": \"2019-08-24T14:15:22Z\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "description": "User details",
+            "properties": [
+              {
+                "name": "id",
+                "type": "integer",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "username",
+                "type": "string",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "status",
+                "type": "$$enum",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "enum-type",
+                    "value": "string"
+                  }
+                ],
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "string",
+                    "description": "",
+                    "meta": []
+                  },
+                  {
+                    "name": "inactive",
+                    "type": "string",
+                    "description": "",
+                    "meta": []
+                  }
+                ]
+              },
+              {
+                "name": "createdAt",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "updatedAt",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "title": "404",
+            "description": "User not found",
+            "properties": [],
+            "meta": [
+              {
+                "name": "status",
+                "value": "404"
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Get user's posts",
+    "canonical": "/users/posts",
+    "description": "Get user's posts",
+    "type": "rest_get",
+    "category": "rest",
+    "context": {
+      "method": "get",
+      "path": "/users/{userId}/posts",
+      "fullPath": "http:/api.example.com/v1/users/{userId}/posts",
+      "group": [
+        "API & Reference",
+        "Endpoints",
+        "Users"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "shell",
+                    "language": "shell",
+                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users/userId/posts"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const options = {method: 'GET'};\n\nfetch('http://api.example.com/v1/users/userId/posts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                  },
+                  {
+                    "title": "python",
+                    "language": "python",
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId/posts\"\n\nresponse = requests.get(url)\n\nprint(response.text)"
+                  },
+                  {
+                    "title": "go",
+                    "language": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId/posts\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "application/json",
+                    "language": "json",
+                    "code": "[\n  {\n    \"id\": 0,\n    \"title\": \"string\",\n    \"content\": \"string\",\n    \"userId\": 0,\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"updatedAt\": \"2019-08-24T14:15:22Z\"\n  }\n]"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "description": "List of user's posts",
+            "properties": [],
+            "rootProperty": {
+              "type": "$$array",
+              "properties": [
+                {
+                  "name": "id",
+                  "type": "integer",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "title",
+                  "type": "string",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "content",
+                  "type": "string",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "userId",
+                  "type": "integer",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "createdAt",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "updatedAt",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ]
+            },
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "Create a new post for user",
+    "canonical": "/users/posts/create",
+    "description": "Create a new post for user",
+    "type": "rest_post",
+    "category": "rest",
+    "context": {
+      "method": "post",
+      "path": "/users/{userId}/posts",
+      "fullPath": "http:/api.example.com/v1/users/{userId}/posts",
+      "group": [
+        "API & Reference",
+        "Endpoints",
+        "Users"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "shell",
+                    "language": "shell",
+                    "code": "curl --request POST \\\n     --url http://api.example.com/v1/users/userId/posts"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const options = {method: 'POST'};\n\nfetch('http://api.example.com/v1/users/userId/posts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                  },
+                  {
+                    "title": "python",
+                    "language": "python",
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId/posts\"\n\nresponse = requests.post(url)\n\nprint(response.text)"
+                  },
+                  {
+                    "title": "go",
+                    "language": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId/posts\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "201",
+                "tabs": [
+                  {
+                    "title": "application/json",
+                    "language": "json",
+                    "code": "{\n  \"id\": 0,\n  \"title\": \"string\",\n  \"content\": \"string\",\n  \"userId\": 0,\n  \"createdAt\": \"2019-08-24T14:15:22Z\",\n  \"updatedAt\": \"2019-08-24T14:15:22Z\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Request body",
+        "variants": [
+          {
+            "title": "application/json",
+            "description": "",
+            "properties": [
+              {
+                "name": "title",
+                "type": "string",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "content",
+                "type": "string",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              }
+            ],
+            "meta": [
+              {
+                "name": "contentType",
+                "value": "application/json"
+              },
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "properties": [],
+        "meta": [
+          {
+            "name": "required",
+            "value": "true"
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "201",
+            "description": "Post created successfully",
+            "properties": [
+              {
+                "name": "id",
+                "type": "integer",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "title",
+                "type": "string",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "content",
+                "type": "string",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "userId",
+                "type": "integer",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "createdAt",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "updatedAt",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "status",
+                "value": "201"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "User",
+    "description": "",
+    "canonical": "/users/object",
+    "definitions": [
+      {
+        "title": "User",
+        "properties": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "username",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "description": "",
+            "meta": []
+          },
+          {
+            "name": "status",
+            "type": "$$enum",
+            "description": "",
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "string"
+              }
+            ],
+            "properties": [
+              {
+                "name": "active",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "inactive",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "string",
+            "description": "",
+            "meta": []
+          },
+          {
+            "name": "updatedAt",
+            "type": "string",
+            "description": "",
+            "meta": []
+          }
+        ],
+        "meta": []
+      }
+    ],
+    "examples": {
+      "groups": [
+        {
+          "description": "Example",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"id\": 0,\n  \"username\": \"\",\n  \"email\": \"\",\n  \"status\": \"\",\n  \"createdAt\": \"\",\n  \"updatedAt\": \"\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "type": "rest_component_schema",
+    "context": {
+      "componentSchema": "User",
+      "group": [
+        "API & Reference",
+        "Endpoints",
+        "Users"
+      ]
+    }
+  }
+]

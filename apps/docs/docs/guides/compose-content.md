@@ -18,7 +18,7 @@ Uniform translates code automatically based on supported extensions:
 * `.py` for Python code (soon)
 * `.go` for Go code (soon)
 
-## Compose Uniform Pages
+## Uniform Pages
 
 The `uniform` field in page meta generates API documentation automatically:
 
@@ -31,7 +31,8 @@ uniform: "@components/writer/Callout/Callout.tsx"
 ---
 ~~~
 
-now with our custom composed content:
+## Compose Uniform Pages
+You can also customize uniform pages:
 ~~~md
 ---
 <!-- ... -->
@@ -42,9 +43,14 @@ now with our custom composed content:
 :::callout
 Note that you must have an Admin or Owner role to manage webhook settings.
 :::
+~~~
+
+### Output Variables {label="Coming Soon"}
+~~~md
+<!--  -->
 
 <!-- YOU CAN USE OUTPUT VARIABLES TOO -->
-<<<examples
+@let(examples=(
 ```tsx
 <Callout>
 Note that you must have an Admin or Owner role to manage webhook settings.
@@ -56,10 +62,6 @@ Note that you must have an Admin or Owner role to manage webhook settings.
 Note that you must have an Admin or Owner role to manage webhook settings.
 :::
 ```
-<<<
+))
 ~~~
-
-:::callout
-All available output variables within uniform compose you can find [here](/docs/reference/composer/uniform/output-variables). 
-:::
 

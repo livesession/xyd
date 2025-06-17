@@ -172,7 +172,8 @@ async function job(page: string | VirtualPage, frontmatters: MetadataMap, pagePa
     }
 
     if (!pageName || !pagePathMapping[pageName]) {
-        throw new Error(`Content file for page "${pageName}" does not exist. Please check if you added a content file correctly`)
+        console.log(`⚠️ "${pageName}" is defined in the docs.json navigation but the file does not exist.`)
+        return
     }
 
     const filePath = path.join(process.cwd(), pagePathMapping[pageName])

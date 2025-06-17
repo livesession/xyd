@@ -49,7 +49,9 @@ export function mdFunctionUniform(settings?: Settings) {
                             node.type = 'code';
                             node.lang = 'json';
                             const jsonViewRefs = uniform(references, {
-                                plugins: [pluginJsonView()]
+                                plugins: [
+                                    pluginJsonView()
+                                ]
                             })
 
                             // TODO: support multiple json views

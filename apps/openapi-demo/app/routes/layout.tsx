@@ -6,7 +6,7 @@ import {
     useNavigate,
     useNavigation,
 } from "react-router";
-import { Box, Button, Dropdown, Flex, TextField, Text } from 'gestalt';
+import { Box, Button, Dropdown, Flex, TextField, Text, Spinner } from 'gestalt';
 import GitHubButton from 'react-github-btn'
 
 import { Badge } from "@xyd-js/components/writer"
@@ -90,17 +90,20 @@ interface DemoContextType {
     example: any;
     setExample: (example: any) => void;
     settings: any;
+    fetcher: any;
 }
 
 export const DemoContext = createContext<DemoContextType>({
     example: null,
-    setExample: () => {},
-    settings: {}
+    setExample: () => { },
+    settings: {},
+    fetcher: null
 });
 
 export default function Layout() {
     const [example, setExample] = useState<any>(null);
     const { actionData: globalActionData } = useGlobalState();
+    const fetcher = useFetcher();
 
     const effectiveActionData = globalActionData || null;
     const settings = effectiveActionData?.settings || SETTINGS;
@@ -126,7 +129,7 @@ export default function Layout() {
     } = currentTheme || {};
 
     return (
-        <DemoContext.Provider value={{ example, setExample, settings}}>
+        <DemoContext.Provider value={{ example, setExample, settings, fetcher }}>
             <Layout2 effectiveActionData={effectiveActionData} BaseThemePage={BaseThemePage} BaseThemeLayout={BaseThemeLayout} />
         </DemoContext.Provider>
     );
@@ -141,6 +144,7 @@ const Layout2 = React.memo(function Layout2({
     BaseThemeLayout: any;
     BaseThemePage: any;
 }) {
+
     let atlasVariantToggles: VariantToggleConfig[] = [];
     if (effectiveActionData.exampleType === "openapi") {
         atlasVariantToggles = [
@@ -152,6 +156,7 @@ const Layout2 = React.memo(function Layout2({
             { key: "symbolName", defaultValue: "" }
         ];
     }
+
     return <Framework
         settings={effectiveActionData.settings || {}}
         sidebarGroups={effectiveActionData.groups || []}
@@ -167,21 +172,53 @@ const Layout2 = React.memo(function Layout2({
             value={{
                 syntaxHighlight: effectiveActionData.settings?.theme?.markdown?.syntaxHighlight || null,
                 baseMatch: "/docs/api",
-                variantToggles: atlasVariantToggles
+                variantToggles: atlasVariantToggles,
+                Link: FwLink,
             }}
         >
-            {BaseThemeLayout && (
-                <BaseThemeLayout>
-                    <UrlContext.Provider value={{ BaseThemePage }}>
-                        <Outlet />
-                    </UrlContext.Provider>
-                </BaseThemeLayout>
-            )}
+            <BaseThemeLayout>
+                <UrlContext.Provider value={{ BaseThemePage }}>
+                    <Loader />
+                    <Outlet />
+
+                </UrlContext.Provider>
+            </BaseThemeLayout>
         </AtlasContext>
     </Framework>
 }, (prevProps, nextProps) => {
     return JSON.stringify(prevProps.effectiveActionData) === JSON.stringify(nextProps.effectiveActionData);
 });
+
+function Loader() {
+    const { fetcher } = useContext(DemoContext)
+    const navigation = useNavigation()
+
+    const loading = fetcher.state === "submitting"
+
+    if (!loading) {
+        return null
+    }
+    return <div style={{
+        position: "fixed", // or absolute depending on your needs
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1000,
+        background: "var(--white)"
+    }}>
+        <Spinner
+            accessibilityLabel="Loading..."
+            label="Loading..."
+            show={true}
+        />
+    </div>
+}
 
 function MemoizedActionDropdownExample() {
     const { settings: globalSettings } = useContext(DemoContext)
@@ -189,10 +226,11 @@ function MemoizedActionDropdownExample() {
 }
 
 function ActionDropdownExample({ settings }: { settings: any }) {
-    const fetcher = useFetcher();
     const { example } = useContext(DemoContext)
     const { setActionData } = useGlobalState();
     const navigate = useNavigate()
+    const { fetcher } = useContext(DemoContext)
+    const formRef = useRef(null)
 
     useEffect(() => {
         if (fetcher.data) {
@@ -212,24 +250,35 @@ function ActionDropdownExample({ settings }: { settings: any }) {
     const loading = fetcher.state === "submitting"
     const disabled = loading || !example?.url
 
+    function onSelect(example: any) {
+        fetcher.submit(
+            {
+                type: example?.type,
+                value: example?.value,
+                example: example?.url
+            },
+            { action: "/api/try", method: "post" }
+        );
+    }
+
     return (
         <div className="banner-container">
             <div className="banner-left">
                 <GithubStars settings={settings} />
             </div>
 
-            <fetcher.Form method="POST" action="/api/try">
+            <fetcher.Form method="POST" action="/api/try" ref={formRef}>
                 <input type="hidden" name="type" value={example?.type} />
                 <input type="hidden" name="value" value={example?.value} />
                 <Flex alignItems="center" gap={2}>
                     <UniformURLInput />
 
                     <Flex>
-                        <Button type="submit" size="sm" text="Try!" disabled={disabled}/>
+                        <Button type="submit" size="sm" text="Try!" disabled={disabled} />
                     </Flex>
 
                     <Flex width="100%">
-                        <SelectPredefinedUniformURL />
+                        <SelectPredefinedUniformURL onSelect={onSelect} />
                     </Flex>
                     {/* TODO: in the futures */}
                     {/* <Flex width="100%">
@@ -237,9 +286,7 @@ function ActionDropdownExample({ settings }: { settings: any }) {
                     </Flex> */}
                 </Flex>
             </fetcher.Form>
-            <div className="banner-right">
-                Right
-            </div>
+            <div/>
         </div>
     );
 }
@@ -265,8 +312,10 @@ function GithubStars({ settings }: { settings: any }) {
         }
     </>
 }
-function SelectPredefinedUniformURL() {
-    const { setExample } = useContext(DemoContext)
+function SelectPredefinedUniformURL({
+    onSelect: onSelectCb
+}) {
+    const { setExample, example } = useContext(DemoContext)
 
     const exmaples = {
         openai: {
@@ -284,17 +333,22 @@ function SelectPredefinedUniformURL() {
     }
 
     const [open, setOpen] = useState(false);
-    const [selected, setSelected] = useState(null);
     const anchorRef = useRef(null);
+    // const [selected, setSelected] = useState(null)
 
+    const selected = Object.values(exmaples).find(entry => entry.url === example?.url)
+
+    console.log(selected, "selected")
     const onSelect = ({ item }) => {
-        setSelected(item)
+        console.log(item, 343)
+        // setSelected(item)
         setOpen(false)
 
         const example = exmaples[item?.value]
         if (!example) return
 
         setExample(example)
+        onSelectCb?.(example)
     };
 
     return <>
@@ -320,7 +374,10 @@ function SelectPredefinedUniformURL() {
                     <Dropdown.Item
                         onSelect={onSelect}
                         option={{ value: example.value, label: example.label }}
-                        selected={selected}
+                        selected={{
+                            value: selected?.value || "",
+                            label: selected?.label || ""
+                        }}
                         badge={{
                             text: example.type === "openapi" ? "OpenAPI" : "GraphQL",
                             type: example.type === "openapi" ? "success" : "recommendation"
@@ -439,35 +496,6 @@ function SelectTheme() {
         }
     </>
 }
-
-function UniformURLInputV3() {
-    const { example } = useContext(DemoContext)
-    const [input, setInput] = useState(example?.url);
-
-    return (
-        <Flex
-            alignItems="center"
-            gap={4}
-            height="100%"
-            width="100%"
-        >
-            <Box width={400}>
-                <TextField
-                    id="header-example"
-                    onChange={({ value }) => {
-                        setInput(value);
-                    }}
-                    placeholder="URL to OpenAPI / GraphQL / React"
-                    type="text"
-                    size="sm"
-                    value={input || example?.url}
-                    name="example"
-                />
-            </Box>
-        </Flex>
-    );
-}
-
 
 function UniformURLInput() {
     const { example, setExample } = useContext(DemoContext)

@@ -1,7 +1,15 @@
 import type { Plugin as Vite } from "vite"
+import React from "react"
 
 import { type UniformPlugin as Uniform } from "@xyd-js/uniform"
 import { Settings } from "@xyd-js/core"
+import type { SurfaceTarget } from "@xyd-js/framework/react"
+
+// TODO: share with theme-api ?
+export interface PluginCustomComponents {
+    component: React.ComponentType<any>
+    surface: SurfaceTarget
+}
 
 /**
  * Plugin interface
@@ -33,9 +41,12 @@ export interface PluginConfig {
 
     uniform?: Uniform<any>[] // TODO: fix any
 
-    atlas?: {
-        components?: any
-    }
+    // atlas?: { // TODO: in the future
+    //     components?: any
+    // }
+    customComponents?: {
+        [name: string]: PluginCustomComponents
+    } 
 }
 
 export type Plugin = (settings: Settings) => PluginConfig

@@ -20,7 +20,7 @@ Our mission is to create the Docs Platform for future dev.
 
 - Batteries Included - everything to build docs at scale is here.
 
-- Open - we believe that docs frameworks should be open source.
+- Open - we believe that docs frameworks should be fully open source.
 
 ## Developer Experience
 
@@ -37,11 +37,16 @@ Create documentation that goes beyond static text. Our platform supports interac
 ## Batteries Included
 
 Everything you need to build documentation at scale is built right in. Our platform includes:
-- Custom content rich framework 
-- API docs for OpenAPI, GraphQL, TypeScript, React and more
-- Search functionality
-- Analytics and insights
-- Deployment tools
+- Custom [content rich framework](/docs/guides/special-symbols) 
+
+- API docs for OpenAPI, GraphQL, TypeScript, React and [more](/docs/guides/apitoolchain)
+
+- [Search](/docs/guides/integrations/search/search-integrations) functionality
+
+- [Analytics](/docs/guides/integrations/analytics/analytics-integrations) and insights
+
+- [Deployment tools](/docs/guides/deploy)
+
 - And much more
 
 ## Open Source

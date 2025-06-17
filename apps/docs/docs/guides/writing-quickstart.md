@@ -59,11 +59,16 @@ You can use it to add additional TOC items.
 
 ## TOC Changed [toc="toc changed"]
 It display 'toc changed' in TOC section instead of 'TOC Changed'.
+It's visible on the page too.
 
 ## TOC Force [+toc]
 It adds heading to the TOC despite of `maxTocDepth`. 
-It's visible on content too.
+It's visible on the page too.
 ```
+
+:::callout
+Learn more about Page Meta options for TOC [here](/docs/guides/pages#toc). 
+:::
 
 ## Content
 To write a content for your page, you can use the [MDX](https://mdxjs.com/) or [Markdown](https://www.markdownguide.org/) syntax.

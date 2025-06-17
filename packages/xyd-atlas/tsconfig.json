@@ -17,7 +17,7 @@
     ],
     "module": "esnext",
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "target": "ES6",
     "lib": [
       "dom",

@@ -46,7 +46,11 @@ export const routes = [
 
     // TODO: in the future better sitemap + robots.txt
     route("/sitemap.xml", "./sitemap.ts"),
-    route("/robots.txt", "./robots.ts")
+    route("/robots.txt", "./robots.ts"),
+    route(
+        "/.well-known/appspecific/com.chrome.devtools.json",
+        "./debug-null.tsx",
+      ),
 ]
 
 if (globalThis.__xydStaticFiles?.length) {

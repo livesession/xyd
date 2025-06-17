@@ -7,7 +7,7 @@ import {
 } from "@xyd-js/uniform";
 
 import {OasJSONSchema} from "./types";
-import { BUILT_IN_PROPERTIES } from "./const";
+import {BUILT_IN_PROPERTIES} from "./const";
 
 export function schemaObjectToUniformDefinitionProperties(
     schemaObject: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject,
@@ -34,7 +34,7 @@ export function schemaObjectToUniformDefinitionProperties(
             properties.push(property);
         }
     } else if ('oneOf' in schemaObject && schemaObject.oneOf) {
-        const property = schemaObjectToUniformDefinitionProperty("", schemaObject, false,false, visitedRefs)
+        const property = schemaObjectToUniformDefinitionProperty("", schemaObject, false, false, visitedRefs)
 
         if (property) {
             if (rootProperty) {
@@ -245,9 +245,11 @@ export function schemaObjectToUniformDefinitionProperty(
                     console.warn("Invalid refPath type in allOf schema", oasSchema);
                 }
             }
-          
+
             const property = schemaObjectToUniformDefinitionProperty(name, variantSchema, required, false, visitedRefs);
             if (property) {
+                // if (isOfType(property.type)) { TODO: in the future?
+                // }
                 properties.push({
                     ...property,
                     name: variantSchema.title || property.name || "",
@@ -344,6 +346,29 @@ export function schemaObjectToUniformDefinitionProperty(
                         }
                     }
                 }
+            } else {
+                const property = schemaObjectToUniformDefinitionProperty(
+                    "",
+                    variantSchema,
+                    false,
+                    false,
+                    visitedRefs
+                );
+                if (property) {
+                    if (isOfType(property.type)) {
+                        mergedProperty.ofProperty = property
+                    } else {
+                        if (!mergedProperty.properties?.length) {
+                            mergedProperty.properties = []
+                        }
+
+                        if (mergedProperty.ofProperty) {
+                            mergedProperty.description = property.description || mergedProperty.ofProperty.description || ""
+                        } else {
+                            mergedProperty.properties.push(property);
+                        }
+                    }
+                }
             }
         }
 
@@ -412,7 +437,7 @@ export function schemaObjectToUniformDefinitionProperty(
                     propName,
                     propSchema,
                     schema.required?.includes(propName),
-                    false,
+                    propSchema?.type === "array" ? true : false,
                     visitedRefs,
                 );
 
@@ -432,7 +457,7 @@ export function schemaObjectToUniformDefinitionProperty(
             };
 
             const itemsProperty = schemaObjectToUniformDefinitionProperty("", schema.items, required, true, visitedRefs, arrayProperty);
-            
+
             if (itemsProperty) {
                 if (arrayOf || isOfType(itemsProperty.type) || itemsProperty.ofProperty?.type) {
                     arrayProperty.ofProperty = {
@@ -550,4 +575,5 @@ function isMergeType(type: string) {
 function isOfType(type: string) {
     return type === DEFINED_DEFINITION_PROPERTY_TYPE.XOR
         || type === DEFINED_DEFINITION_PROPERTY_TYPE.UNION
+        || type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY
 }

@@ -1,7 +1,8 @@
-import * as documan from "@xyd-js/documan"
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+
+import * as documan from "@xyd-js/documan"
 
 export async function build(root: string, options: any = {}) {
     const __filename = fileURLToPath(import.meta.url);
@@ -34,9 +35,13 @@ export async function build(root: string, options: any = {}) {
 }
 
 export async function dev(root: string, options: any = {}) {
-    await documan.dev()
+    await documan.dev(options)
 
     // keep `xyd dev` alive
     await new Promise(() => {
     });
+}
+
+export async function install(root: string, options: any = {}) {
+    await documan.install()
 }

@@ -9,6 +9,13 @@ export const UnderlineNavHost = css`
             background-color: var(--xyd-underlinenav-bgcolor);
             border-bottom: 1px solid var(--xyd-underlinenav-border-color);
             z-index: 99;
+
+            &[data-kind="secondary"] {
+                border-bottom: none;
+                border-radius: 8px;
+                padding: 4px;
+                background-color: var(--xyd-tabs-bgcolor);
+            }
         }
 
         [part="list"] {
@@ -19,6 +26,10 @@ export const UnderlineNavHost = css`
             list-style: none;
             padding: 0;
             white-space: nowrap;
+
+            [data-kind="secondary"] & {
+                gap: 4px;
+            }
         }
 
         [part="item"] {
@@ -32,6 +43,13 @@ export const UnderlineNavHost = css`
             &[data-state="active"] {
                 a {
                     border-bottom-color: var(--xyd-underlinenav-color--active);
+                }
+
+                [data-kind="secondary"] & a {
+                    border-bottom-color: transparent;
+                    color: var(--xyd-tabs-color--active);
+                    background-color: var(--xyd-tabs-bgcolor--active);
+                    box-shadow: 0 1px 2px 0 var(--xyd-tabs-shadow-color--active);
                 }
             }
             &[data-state="inactive"] {
@@ -53,11 +71,26 @@ export const UnderlineNavHost = css`
             &:hover {
                 color: var(--xyd-underlinenav-color--active);
             }
+
+            [data-kind="secondary"] & {
+                border-bottom: none;
+                padding: 5px 16px;
+                border-radius: 0.375rem;
+                color: var(--xyd-tabs-color);
+
+                &:hover {
+                    color: var(--xyd-tabs-color--active);
+                }
+            }
         }
 
         [part="content"] {
             position: relative;
             overflow: hidden;
+
+            [data-kind="secondary"] & {
+                margin-top: 16px;
+            }
         }
     }
 `;

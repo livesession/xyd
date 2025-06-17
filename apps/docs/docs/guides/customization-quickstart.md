@@ -19,7 +19,7 @@ There are three main approaches for customization:
 1. Customization via [settings file](/docs/guides/settings) - choose from a variety of [pre-built themes](/docs/guides/themes) 
 and tweak using available [theme settings](/docs/guides/customization-introduction#theme-reference)
 
-2. [Extending the default theme](/docs/guides/extending-default-theme) - build upon the existing design while adding your own enhancements via code
+2. [Extending the default theme](/docs/guides/theme-api) - build upon the existing design while adding your own enhancements via code
 
 3. [Creating a new theme](/docs/guides/custom-theme) - develop a completely new theme from scratch via code
 

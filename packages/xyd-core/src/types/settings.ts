@@ -150,7 +150,7 @@ export interface Icons {
 }
 
 /** Available theme preset names */
-export type ThemePresetName = "poetry" | "cosmo" | "opener"
+export type ThemePresetName = "poetry" | "cosmo" | "opener" | "picasso"
 
 /** Search bar location options */
 export type SearchType = "side" | "top"
