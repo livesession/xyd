@@ -1,7 +1,9 @@
 export interface XDocs {
+    route?: string
+    
     codeLanguages?: string[]
 
-    sidebarPathStrategy: "inherit"
+    sidebarPathStrategy?: "inherit"
 
     sidebar?: XDocsSidebar[]
 }

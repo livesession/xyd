@@ -33,7 +33,7 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
 
     "code-group": "DirectiveCodeGroup", 
 
-    tabs: "UnderlineNav",
+    tabs: "Tabs",
 
     atlas: true,
 
@@ -73,7 +73,7 @@ const codeComponents: MarkdownComponentDirectiveMap = {
 }
 
 const navComponents: MarkdownComponentDirectiveMap = {
-    tabs: "UnderlineNav",
+    tabs: "Tabs",
 }
 
 const parseMarkdown = (content: string) => {
@@ -132,7 +132,6 @@ function recreateComponent(
                 settings,
             );
 
-            console.log("attributes", attributes);
             mdNav(node, directivesMap, attributes);
             return;
         }
@@ -167,7 +166,7 @@ function recreateComponent(
             type: 'mdxJsxFlowElement',
             name: componentName,
             attributes: attributes,
-            children: node.children
+            children: node.children,
         };
 
         Object.assign(node, jsxNode);
@@ -249,7 +248,7 @@ function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap, attribut
         }
     });
 
-    // Create the UnderlineNav component with tabs and content
+    // Create the Tabs component with tabs and content
     const jsxNode = {
         type: 'mdxJsxFlowElement',
         name: componentName,
@@ -261,8 +260,6 @@ function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap, attribut
     };
 
     Object.assign(node, jsxNode);
-
-    console.log("NODE", node)
 
     return;
 }

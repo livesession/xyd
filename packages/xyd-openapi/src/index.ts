@@ -16,4 +16,6 @@ export * from "./utils"
 
 export * from "./xdocs/types"
 
+export {getXDocs} from "./xdocs"
+
 export {uniformPluginXDocsSidebar} from "./xdocs/pluginSidebar"

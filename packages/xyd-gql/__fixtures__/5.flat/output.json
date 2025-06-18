@@ -15,13 +15,13 @@
     "examples": {
       "groups": [
         {
-          "description": "Example request",
+          "description": "",
           "examples": [
             {
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "Query reference",
+                    "title": "",
                     "language": "graphql",
                     "code": "query author($id: ID!) {\n  author(id: $id) {\n    # author fields\n  }\n}"
                   }
@@ -52,8 +52,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           },
           {
@@ -69,8 +69,8 @@
             },
             "properties": [],
             "meta": [],
-            "typeDef": {
-              "symbolId": "inputs/authordetailsinput"
+            "symbolDef": {
+              "canonical": "inputs/authordetailsinput"
             }
           }
         ]
@@ -79,7 +79,7 @@
         "title": "Returns",
         "properties": [
           {
-            "name": "author",
+            "name": "",
             "type": "Author",
             "description": "",
             "context": {
@@ -88,14 +88,9 @@
               "graphqlBuiltInType": false
             },
             "properties": [],
-            "meta": [
-              {
-                "name": "flat",
-                "value": "true"
-              }
-            ],
-            "typeDef": {
-              "symbolCanonical": "objects/author"
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/author"
             }
           }
         ]
@@ -118,13 +113,13 @@
     "examples": {
       "groups": [
         {
-          "description": "Example request",
+          "description": "",
           "examples": [
             {
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "Query reference",
+                    "title": "",
                     "language": "graphql",
                     "code": "query authorDelete($id: ID!) {\n  authorDelete(id: $id) {\n    # authorDelete fields\n  }\n}"
                   }
@@ -155,8 +150,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]
@@ -165,7 +160,7 @@
         "title": "Returns",
         "properties": [
           {
-            "name": "authorDelete",
+            "name": "",
             "type": "Boolean",
             "description": "",
             "context": {
@@ -175,8 +170,8 @@
             },
             "properties": [],
             "meta": [],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]
@@ -201,6 +196,17 @@
     },
     "definitions": [
       {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
         "title": "Fields",
         "properties": [
           {
@@ -219,8 +225,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           },
           {
@@ -239,8 +245,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           },
           {
@@ -259,9 +265,15 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolCanonical": "objects/authordetails"
+            "symbolDef": {
+              "canonical": "objects/authordetails"
             }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
           }
         ]
       }
@@ -285,6 +297,17 @@
     },
     "definitions": [
       {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
         "title": "Fields",
         "properties": [
           {
@@ -298,9 +321,15 @@
             },
             "properties": [],
             "meta": [],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
           }
         ]
       }
@@ -337,8 +366,8 @@
             },
             "properties": [],
             "meta": [],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]

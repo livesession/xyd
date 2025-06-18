@@ -1,10 +1,13 @@
 import path from "node:path";
 import fs from "node:fs";
+import { fileURLToPath } from "node:url";
 
 import {expect} from "vitest";
 
 import {gqlSchemaToReferences} from "../src";
 import {GQLSchemaToReferencesOptions} from "../src/types";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Helper function to run a test with a specific fixture
 export async function testGqlSchemaToReferences(fixtureName: string, options?: GQLSchemaToReferencesOptions) {
@@ -35,4 +38,8 @@ function fullFixturePath(name: string) {
 
 function saveResultAsOutput(fixtureName: string, result: any) {
     fs.writeFileSync(fullFixturePath(fixtureName + "/output.json"), JSON.stringify(result, null, 2));
+}
+
+export function getFixturePath(name: string): string {
+    return path.join(__dirname, "../__fixtures__", name);
 }

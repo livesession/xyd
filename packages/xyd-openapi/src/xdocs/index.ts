@@ -10,7 +10,7 @@ export function xDocsLanguages(oasDoc: OpenAPIV3.Document): string[] | null {
     return xDocs?.codeLanguages ?? null
 }
 
-function getXDocs(oasDoc: OpenAPIV3.Document): XDocs | null {
+export function getXDocs(oasDoc: OpenAPIV3.Document): XDocs | null {
     if (!("x-docs" in oasDoc)) {
         return null
     }

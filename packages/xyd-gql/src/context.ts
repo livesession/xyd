@@ -1,3 +1,4 @@
+import { GraphQLSchema } from "graphql";
 import {GQLSchemaToReferencesOptions, NestedGraphqlType} from "./types";
 
 export class Context {
@@ -8,7 +9,8 @@ export class Context {
             flatReturn?: boolean,
             flat?: boolean,
             flatArg?: boolean,
-        }
+        },
+        public schema?: GraphQLSchema
     ) {
     }
 }

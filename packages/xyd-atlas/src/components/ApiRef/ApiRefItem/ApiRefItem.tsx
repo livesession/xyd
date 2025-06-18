@@ -155,7 +155,9 @@ function $Definitions({
         })
 
         // Process each definition to merge argument properties
-        definitions = gqlDefinitions.map(definition => {
+        definitions = gqlDefinitions
+            .filter(definition => definition?.properties?.length)
+            .map(definition => {
             if (!definition.properties?.length) return definition
 
             // For each property in the definition

@@ -1,0 +1,48 @@
+type Query
+type Mutation
+
+extend schema @docs(
+    group: ["API & Reference"]
+    # above is the root group that every node will inherit
+)
+
+type User @doc(
+    group: ["Users", "Objects"],
+) {
+    id: ID!
+    name: String!
+    email: String!
+}
+
+type Todo @doc(
+    group: ["Todos", "Objects"],
+) {
+    id: ID!
+    title: String!
+    completed: Boolean!
+}
+
+extend type Query @doc(
+    group: ["Users", "Queries"],
+    path: "users/queries"
+) {
+    getUser(id: ID!): User
+    @doc(
+        path: "get"
+    )
+}
+
+extend type Query @doc(
+    group: ["Todos", "Queries"],
+    path: "todos/queries"
+) {
+    getTodo(id: ID!): User
+}
+
+extend type Mutation @doc(
+    group: ["Users", "Mutations"],
+    path: "users/mutations"
+) {
+    createUser(name: String!, email: String!): User
+    # if `path` is not specified, it will be derived from the operation name
+}

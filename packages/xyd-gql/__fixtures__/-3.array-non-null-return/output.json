@@ -15,13 +15,13 @@
     "examples": {
       "groups": [
         {
-          "description": "Example request",
+          "description": "",
           "examples": [
             {
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "Query reference",
+                    "title": "",
                     "language": "graphql",
                     "code": "query books($book_id: ID!) {\n  books(book_id: $book_id) {\n    # books fields\n  }\n}"
                   }
@@ -52,8 +52,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]
@@ -62,7 +62,7 @@
         "title": "Returns",
         "properties": [
           {
-            "name": "books",
+            "name": "",
             "type": "[Book!]!",
             "description": "",
             "context": {
@@ -75,14 +75,10 @@
               {
                 "name": "required",
                 "value": "true"
-              },
-              {
-                "name": "flat",
-                "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": "objects/book"
+            "symbolDef": {
+              "canonical": "objects/book"
             }
           }
         ]
@@ -107,6 +103,17 @@
     },
     "definitions": [
       {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
         "title": "Fields",
         "properties": [
           {
@@ -125,9 +132,15 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": ""
+            "symbolDef": {
+              "canonical": ""
             }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
           }
         ]
       }

@@ -1,4 +1,4 @@
-import {css} from "@linaria/core";
+import { css } from "@linaria/core";
 
 export const TabsSecondaryHost = css`
     @layer defaults {
@@ -38,33 +38,40 @@ export const TabsSecondaryHost = css`
             margin-left: 4px;
         }
 
-        [part="button"] {
-            padding: 5px 16px;
-
-            border-radius: 0.375rem;
-            white-space: nowrap;
-
-            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 300ms;
-
-            color: var(--xyd-tabs-color);
-
-            &:hover {
-                color: var(--xyd-tabs-color--active);
-            }
-
-            &[data-state="active"] {
-                color: var(--xyd-tabs-color--active);
-                background-color: var(--xyd-tabs-bgcolor--active);
-                box-shadow: 0 1px 2px 0 var(--xyd-tabs-shadow-color--active);
-            }
-        }
-
         [part="content"] {
             margin-top: 16px;
         }
     }
 `;
 
+export const TabsSecondaryItem = css`
+    @layer defaults {
+        &[data-state="inactive"] {
+            a, button {
+                color: unset;
+            }
+        }
 
+        display: inline-block;
+        padding: 5px 16px;
+
+        border-radius: 0.375rem;
+        white-space: nowrap;
+
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 300ms;
+
+        color: var(--xyd-tabs-color);
+
+        &:hover {
+            color: var(--xyd-tabs-color--active);
+        }
+
+        &[data-state="active"] {
+            color: var(--xyd-tabs-color--active);
+            background-color: var(--xyd-tabs-bgcolor--active);
+            box-shadow: 0 1px 2px 0 var(--xyd-tabs-shadow-color--active);
+        }
+    }
+`

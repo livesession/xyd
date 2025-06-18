@@ -48,6 +48,15 @@ if component does not have a children prop you can use shorter directive syntax(
 ::my-component{label="Cool"}
 ```
 
+if nested components, parent must use extra `:`:
+```mdx
+::::my-parent-component
+  :::my-component
+  You can pass nested too!
+  :::
+:::
+```
+
 ## `Function Calling`
 Function Calling (`@<function>`) is used to execute [functions](/docs/reference/functions) within your markdown content:
 

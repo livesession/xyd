@@ -13,6 +13,7 @@ export function gqlInputToUniformRef(ctx: Context, gqlType: GraphQLInputObjectTy
     )
 
     return uniformify(
+        ctx,
         gqlType,
         [
             {

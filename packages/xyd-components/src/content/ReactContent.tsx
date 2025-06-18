@@ -275,7 +275,7 @@ export function writerContent() {
         Details,
         GuideCard: GuideCardContent,
         Steps,
-        Tabs,
+        Tabs: UnderlineNavContent,
         Table,
         Badge,
         Button,
@@ -316,7 +316,7 @@ function $UnderlineNavContentComponent(props) {
     const [value, setValue] = useState(props.value)
 
     return <UnderlineNavContentContext value={{ value, onChange: setValue }}>
-        <UnderlineNav
+        <Tabs
             {...props}
             value={value}
             onChange={val => {
@@ -356,7 +356,7 @@ function $UnderlineNavContentContentComponent(this: ReactContent, props) {
         tabsMatch = undefined
     }
 
-    return <UnderlineNav.Content {...props} defaultActive={tabsMatch} />
+    return <Tabs.Content {...props} defaultActive={tabsMatch} />
 }
 
 function $UnderlineNavItemContentComponent(props) {
@@ -380,7 +380,7 @@ function $UnderlineNavItemContentComponent(props) {
         }
     }, [tabsMatch])
 
-    return <UnderlineNav.Item
+    return <Tabs.Item
         {...props}
         as={this?.options?.Link}
         defaultActive={tabsMatch}

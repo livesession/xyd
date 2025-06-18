@@ -3,6 +3,7 @@ import {Tabs as RadixTabs} from "radix-ui"; // TODO: remove and use separation
 
 import * as cn from "./TabsPrimary.styles"
 import {useValueChange} from "./useValueChange";
+import { Tabs } from "./Tabs";
 
 /**
  * Context for managing the navigation direction in the TabsPrimary component
@@ -50,13 +51,13 @@ export function TabsPrimary({
         child => {
             return React.isValidElement(child) &&
                 (child.type === TabsPrimary.Item ||
-                    (typeof child.type === 'function' && 'displayName' in child.type && child.type.displayName === "TabsPrimary.Item"))
+                    (typeof child.type === 'function' && 'displayName' in child.type && child.type.displayName === "UnderlineNav.Item"))
         }
     );
     const otherChildren = childrenArray.filter(
         child => !React.isValidElement(child) ||
             (child.type !== TabsPrimary.Item &&
-                !(typeof child.type === 'function' && 'displayName' in child.type && child.type.displayName === "TabsPrimary.Item"))
+                !(typeof child.type === 'function' && 'displayName' in child.type && child.type.displayName === "UnderlineNav.Item"))
     );
 
     const [direction, value, handleValueChange] = useValueChange(

@@ -20,8 +20,8 @@ Your document must follow OpenAPI specification 3.0+.
 :::
 
 ## Configuration Quickstart
-The fastest way to get started with OpenAPI is to add an `openapi` field to a `api` in the [`settings`](#) file. 
-This field can contain either the path to an OpenAPI document in your docs or the URL of a hosted OpenAPI document.
+The fastest way to get started with OpenAPI is to add an `openapi` field to `api` in the [`settings`](/docs/guides/settings) file. 
+This field can contain either the relative path to an OpenAPI document in your docs or the URL of a hosted OpenAPI document.
 
 :::tabs{kind="secondary"}
 1. [docs.json](routing=docs.json)
@@ -36,29 +36,35 @@ This field can contain either the path to an OpenAPI document in your docs or th
         },
     }
     ```
+
 2. [OpenAPI](routing=openapi)
 
-    You can also manage routing from OpenAPI spec:
+    You can also manage routing directly from OpenAPI spec:
 
-    ```json
-    {
-        // ... rest of settings
-        "api": {
-            "openapi": "./api/rest/openapi.yaml"
-        },
-    }
-    ```
+    :::steps
+    1. define `openapi` in `docs.json`:
 
-    then define `route` in `x-docs` extension: 
+      ```json
+        {
+            // ... rest of settings
+            "api": {
+                "openapi": "./api/rest/openapi.yaml"
+            },
+        }
+      ```
+
+    2. then define `route` in [`x-docs`](/docs/guides/openapi#x-docs-extension) extension: 
+
     ```yaml
     x-docs:
       route: "docs/api/rest"
       sidebar:
       # ...
     ```
+    :::
 :::
 
-This will create a new route for your OpenAPI specification at `docs/api/rest/*`.
+This will create a new route based on your OpenAPI specification at `docs/api/rest/*`.
 
 :::callout
 You can also use URL-based paths to OpenAPI spec instead of local files.
@@ -67,7 +73,7 @@ You can also use URL-based paths to OpenAPI spec instead of local files.
 ## Multi Spec Configuration
 Creating multi API specs for more advanced use cases is also possible:
 
-:::tabs
+:::tabs{kind="secondary"}
 1. [docs.json](multi=docs.json)
 
     ```json
@@ -88,7 +94,46 @@ Creating multi API specs for more advanced use cases is also possible:
     }
     ```
 
-2. [docs.json + name keys](multi=docs.json-named)
+2. [OpenAPI](multi=openapi)
+
+    ::::steps
+    1. define multiple `openapi` in `docs.json`
+      ```json
+      {
+          // ... rest of settings
+          "api": {
+              "openapi": [
+                "./api/rest/openapi.yaml",
+                "./api/webhooks/openapi.yaml"
+              ]
+          },
+      }
+      ```
+
+    2. then define `route` in [`x-docs`](/docs/guides/openapi#x-docs-extension) extension for each OpenAPI file: 
+      :::code-group
+        ```yaml api/rest/openapi.yaml
+        x-docs:
+          route: "docs/api/rest"
+          sidebar:
+          # ...
+        ```
+
+        ```yaml api/webhooks/openapi.yaml
+        x-docs:
+          route: "docs/api/webhooks"
+          sidebar:
+          # ...
+        ```
+      :::
+
+    ::::
+
+3. [docs.json + name keys](multi=docs.json-named)
+
+    :::callout
+    This method is still in experimental stage.
+    :::
 
     ```json
     {
@@ -107,48 +152,13 @@ Creating multi API specs for more advanced use cases is also possible:
         },
     }
     ```
+        
     :::callout
-    Name keys configuration is still in experimental stage.
-    :::
-
-4. [OpenAPI](multi=openapi)
-
-    ```json
-    {
-        // ... rest of settings
-        "api": {
-            "openapi": [
-              "./api/rest/openapi.yaml",
-              "./api/webhooks/openapi.yaml"
-            ]
-        },
-    }
-    ```
-
-    then define `route` in `x-docs` extension for eaach OpenAPI file: 
-    :::code-group
-      ```yaml api/rest/openapi.yaml
-      x-docs:
-        route: "docs/api/rest"
-        sidebar:
-        # ...
-      ```
-
-      ```yaml api/webhooks/openapi.yaml
-      x-docs:
-        route: "docs/api/webhooks"
-        sidebar:
-        # ...
-      ```
-    :::
-
-
-    :::callout
-    OpenAPI does not support name keys.
+    Name keys are not supported through OpenAPI files. 
     :::
 :::
 
-Thanks to this configuration, you'll have two routes: `docs/api/rest*` and `docs/api/webhooks/*`.
+Thanks to this configuration, you'll have two routes: `docs/api/rest/*` and `docs/api/webhooks/*`.
 
 ## API Docs Generation Guides
 
@@ -180,6 +190,7 @@ You can define a complete navigation structure using the `sidebar` property in t
 ```yaml
 # ...
 x-docs:
+  route: docs/api-reference # `route` is optional
   sidebar:
     - group: API & Reference
       pages:
@@ -213,11 +224,78 @@ Above example will create sidebar:
     * [{title}]({route}/users/posts)
     * [{title}]({route}/users/posts/create)
 ```
-
 :::callout
-[`route`](/docs/guides/openapi#setup-openapi-configuration) is generated based on the **route** property in the **openapi** configuration
-and `title` is generated based on the [generation guides](/docs/guides/openapi#api-docs-generation-explanation).
+`title` comes from generated OpenAPI spec and `route` from `docs.json`/`x-docs.route`.
 :::
+
+::::details{kind="secondary" label="Sidebar Customization Details" title="Learn More"}
+  #### Route
+  The `route` property defines the base URL path for your API documentation. This is where all your API documentation pages will be served from.
+
+  ```yaml
+  route: "docs/api/rest"
+  ```
+
+  :::callout
+  If you define `route` in `docs.json` it will overwrite the route in OpenAPI spec. 
+  :::
+
+  #### Path
+  Adding a `path` for each of pages helps to create a clean and organized URLs in your API documentation. The path property determines the URL segment for each page in your documentation.
+
+  For example:
+  ```yaml
+  x-docs:
+    route: docs/api/rest # or from docs.json
+    sidebar:
+      - group: API & Reference
+        pages:
+          - group: Users
+            path: users
+            pages:
+              - type: endpoint
+                key: GET /users
+                path: get
+              - type: endpoint
+                key: GET /users/{userId}
+                path: get-by-id
+  ```
+
+  This configuration will generate URLs like:
+  - `/docs/api/rest/users/get`
+  - `/docs/api/rest//users/get-by-id`
+
+  :::callout
+  The final URL is constructed by combining the base route with the path segments from each level of the sidebar configuration.
+  :::
+
+
+  #### Type
+
+  The `type` property in the sidebar configuration specifies what kind of content will be displayed. There are two main types:
+
+  - `endpoint`: Used for API endpoints. The `key` can be either:
+    - A path and method combination (e.g., `GET /users`)
+    - An `operationId` from your OpenAPI spec
+
+  - `object`: Used for schema definitions. The `key` should match the schema name in your OpenAPI spec
+
+  Example:
+  ```yaml
+  x-docs:
+    # ...
+    pages:
+      - type: endpoint
+        key: GET /users
+
+      - type: endpoint
+        key: createUser
+
+      - type: object
+        key: User
+  ```
+::::
+
 
 ### Request Code Snippets
 You can also specify supported programming languages for request code snippets using `x-docs.codeLanguages`:
@@ -266,4 +344,4 @@ paths:
 Support for OpenAPI webhook documentation is currently in development and will be available in the future.
 
 ## API Docs Demo
-You can also check out our [interactive API Docs Demo](http://apidocs-playground.xyd.dev/) to see these features in action and experiment with different OpenAPI configurations in real-time.
+You can also check out our [interactive API Docs Demo](http://apidocs-demo.xyd.dev/) to see these features in action and experiment with different OpenAPI configurations in real-time.

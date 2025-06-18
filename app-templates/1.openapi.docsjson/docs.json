@@ -1,0 +1,36 @@
+{
+    "theme": {
+        "name": "opener",
+        "logo": "/public/assets/logo.svg",
+        "favicon": "/public/assets/favicon.png",
+        "maxTocDepth": 2
+    },
+    "integrations": {
+        "search": {
+            "orama": true
+        }
+    },
+    "navigation": {
+        "header": [
+            {
+                "name": "API Reference",
+                "url": "/docs/api-reference"
+            },
+            {
+                "name": "API Reference 2",
+                "url": "/docs/api-reference2"
+            }
+        ]
+    },
+    "api": {
+        "openapi": [
+            {
+                "source": "./openapi.yaml"
+            },
+            {
+                "source": "./openapi2.yaml",
+                "route": "docs/api-reference2"
+            }
+        ]
+    }
+}

@@ -1,10 +1,10 @@
 import path from "path";
-import {promises as fs} from "fs";
-import {fileURLToPath} from "node:url";
+import { promises as fs } from "fs";
+import { fileURLToPath } from "node:url";
 
 import matterStringify from "gray-matter/lib/stringify";
-import {Plugin as VitePlugin} from "vite"
-import {route} from "@react-router/dev/routes";
+import { Plugin as VitePlugin } from "vite"
+import { route } from "@react-router/dev/routes";
 
 import {
     Settings,
@@ -20,13 +20,13 @@ import uniform, {
     OpenAPIReferenceContext,
     GraphQLReferenceContext
 } from "@xyd-js/uniform";
-import {uniformPluginXDocsSidebar} from "@xyd-js/openapi";
+import { uniformPluginXDocsSidebar } from "@xyd-js/openapi";
 
-import {Preset, PresetData} from "../../types";
+import { Preset, PresetData } from "../../types";
 
-import {createRequire} from 'module';
-import {VIRTUAL_CONTENT_FOLDER} from "../../const";
-import {getHostPath} from "../../utils";
+import { createRequire } from 'module';
+import { VIRTUAL_CONTENT_FOLDER } from "../../const";
+import { getHostPath } from "../../utils";
 
 const require = createRequire(import.meta.url);
 const matter = require('gray-matter'); // TODO: !!! BETTER SOLUTION !!!
@@ -34,16 +34,16 @@ const matter = require('gray-matter'); // TODO: !!! BETTER SOLUTION !!!
 export async function ensureAndCleanupVirtualFolder() {
     try {
         // Create directory recursively if it doesn't exist
-        await fs.mkdir(VIRTUAL_CONTENT_FOLDER, {recursive: true});
+        await fs.mkdir(VIRTUAL_CONTENT_FOLDER, { recursive: true });
 
         // Read all files and directories in the folder
-        const entries = await fs.readdir(VIRTUAL_CONTENT_FOLDER, {withFileTypes: true});
+        const entries = await fs.readdir(VIRTUAL_CONTENT_FOLDER, { withFileTypes: true });
 
         // Delete each entry recursively
         for (const entry of entries) {
             const fullPath = path.join(VIRTUAL_CONTENT_FOLDER, entry.name);
             if (entry.isDirectory()) {
-                await fs.rm(fullPath, {recursive: true, force: true});
+                await fs.rm(fullPath, { recursive: true, force: true });
             } else {
                 await fs.unlink(fullPath);
             }
@@ -59,6 +59,7 @@ export interface uniformPresetOptions {
     urlPrefix?: string
     sourceTheme?: boolean
     disableFSWrite?: boolean
+    fileRouting?: { [key: string]: string }
 }
 
 function flatPages(
@@ -199,26 +200,27 @@ async function uniformResolver(
         })
     }
 
-    if (!urlPrefix) {
+    const resolvedApiFile = path.relative(process.cwd(), path.resolve(process.cwd(), apiFile))
+    const uniformRefs = await uniformApiResolver(resolvedApiFile)
+    const plugins = globalThis.__xydUserUniformVitePlugins || []
+
+    if (!urlPrefix && options?.fileRouting?.[resolvedApiFile]) {
+        matchRoute = options.fileRouting[resolvedApiFile]
+    }
+
+    if (!urlPrefix && matchRoute) {
         sidebar?.push({
             route: matchRoute,
             items: []
         })
         urlPrefix = matchRoute
     }
-
     if (!urlPrefix && options?.urlPrefix) {
         urlPrefix = options.urlPrefix
     }
-
     if (!urlPrefix) {
         throw new Error('(uniformResolver): urlPrefix not found')
     }
-
-
-    const apiFilePath = path.join(root, apiFile); // TODO: support https
-    const uniformRefs = await uniformApiResolver(apiFilePath)
-    const plugins = globalThis.__xydUserUniformVitePlugins || []
 
     if (uniformType === "openapi") {
         plugins.push(uniformPluginXDocsSidebar)
@@ -304,6 +306,15 @@ async function uniformResolver(
         }
     }
 
+    {
+        const routeFolder = path.join(root, matchRoute)
+        try {
+            await fs.access(routeFolder);
+        } catch {
+            await fs.mkdir(routeFolder, { recursive: true });
+        }
+    }
+
     let composedFileMap: Record<string, string> = {}
     if (!settings.engine?.uniform?.store) {
         composedFileMap = await composeFileMap(root, matchRoute)
@@ -312,7 +323,6 @@ async function uniformResolver(
     const basePath = settings.engine?.uniform?.store
         ? root
         : path.join(root, VIRTUAL_CONTENT_FOLDER)
-
 
     await Promise.all(
         uniformWithNavigation.references.map(async (ref) => {
@@ -331,7 +341,17 @@ async function uniformResolver(
                 layout: "wide"
             }
 
-            const resolvedApiFile = path.join("~/", apiFile)
+
+            // const mdFilePath = path.join(basePath, byCanonical)
+            const absoluteApiFile = path.join(
+                process.cwd(),
+                apiFile,
+            )
+            // const relativeApiFile = path.relative(
+            //     mdFilePath,
+            //     absoluteApiFile
+            // )
+            const resolvedApiFile = absoluteApiFile // TODO: leave absolute or relative?
             let region = ""
             // TODO: in the future more advanced composition? - not only like `GET /users/{id}`
             switch (uniformType) {
@@ -369,13 +389,13 @@ async function uniformResolver(
                 composedContent = resp.content
             }
 
-            const content = matterStringify({content: composedContent}, meta);
+            const content = matterStringify({ content: composedContent }, meta);
 
             if (!disableFSWrite) {
                 try {
                     await fs.access(path.dirname(mdPath));
                 } catch {
-                    await fs.mkdir(path.dirname(mdPath), {recursive: true});
+                    await fs.mkdir(path.dirname(mdPath), { recursive: true });
                 }
 
                 await fs.writeFile(mdPath, content)
@@ -385,7 +405,12 @@ async function uniformResolver(
 
     if (!sidebar) {
         return {
-            sidebar: uniformWithNavigation.out.sidebar,
+            sidebar: [
+                {
+                    route: matchRoute,
+                    items: uniformWithNavigation.out.sidebar
+                }
+            ],
             data: uniformData.data
         }
     }
@@ -399,7 +424,10 @@ async function uniformResolver(
         }
     }
 
-    sidebar.unshift(...uniformWithNavigation.out.sidebar)
+    sidebar.unshift({
+        route: matchRoute,
+        items: uniformWithNavigation.out.sidebar
+    })
 
     return {
         data: uniformData.data,
@@ -426,7 +454,7 @@ async function composeFileMap(basePath: string, matchRoute: string) {
     const routeMap: Record<string, string> = {};
 
     async function processDirectory(dirPath: string) {
-        const entries = await fs.readdir(dirPath, {withFileTypes: true});
+        const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
         for (const entry of entries) {
             const fullPath = path.join(dirPath, entry.name);
@@ -436,7 +464,7 @@ async function composeFileMap(basePath: string, matchRoute: string) {
             } else if (entry.isFile() && (entry.name.endsWith('.md') || entry.name.endsWith('.mdx'))) {
                 try {
                     const content = await fs.readFile(fullPath, 'utf-8');
-                    const {data: frontmatter} = matter(content);
+                    const { data: frontmatter } = matter(content);
 
                     if (frontmatter && frontmatter.openapi) {
                         const route = frontmatter.openapi;
@@ -459,9 +487,10 @@ function preinstall(
     uniformApiResolver: (filePath: string) => Promise<Reference[]>,
     apiFile: APIFile,
     uniformType: UniformType,
-    disableFSWrite?: boolean
+    disableFSWrite?: boolean,
+    options?: uniformPresetOptions,
 ) {
-    return function preinstallInner(options: uniformPresetOptions) {
+    return function preinstallInner(innerOptions: any) {
         return async function uniformPluginInner(settings: Settings, data: PresetData) {
             const root = process.cwd()
 
@@ -483,7 +512,10 @@ function preinstall(
                     apiFile,
                     uniformApiResolver,
                     settings?.navigation?.sidebar,
-                    options,
+                    {
+                        ...options,
+                        ...innerOptions,
+                    },
                     uniformType,
                     disableFSWrite
                 )
@@ -516,7 +548,10 @@ function preinstall(
                         uniform,
                         uniformApiResolver,
                         settings?.navigation?.sidebar,
-                        options,
+                        {
+                            ...options,
+                            ...innerOptions,
+                        },
                         uniformType,
                         disableFSWrite
                     )
@@ -543,12 +578,9 @@ function preinstall(
                     await resolve(apiFile["route"], apiFile["source"])
                 } else {
                     for (const apiKey in apiFile) {
-                        const uniform = apiFile?.[apiKey]?.source || ""
+                        const uniform = apiFile?.[apiKey]?.source || apiFile?.[apiKey] || ""
                         const routeMatch = settings.api?.[id]?.[apiKey]?.route || ""
 
-                        if (!routeMatch) {
-                            throw new Error(`route match not found for ${apiKey}`)
-                        }
                         if (!uniform) {
                             throw new Error(`uniform not found for ${apiKey}`)
                         }
@@ -566,8 +598,8 @@ function preinstall(
 function vitePluginUniformContent(pluginId: string) {
     return function vitePluginUniformContentInner() {
         return async function ({
-                                   preinstall
-                               }): Promise<VitePlugin> {
+            preinstall
+        }): Promise<VitePlugin> {
             return {
                 name: `virtual:xyd-plugin-docs/${pluginId}`, // TODO: unique name per plugin ?
                 resolveId(id) {
@@ -642,14 +674,21 @@ function uniformPreset(
 
         return {
             preinstall: [
-                preinstall(id, uniformApiResolver, apiFile, uniformType, disableFSWrite)
+                preinstall(
+                    id,
+                    uniformApiResolver,
+                    apiFile,
+                    uniformType,
+                    disableFSWrite,
+                    options
+                )
             ],
             routes: routeMatches.map((routeMatch, i) => route(
-                    `${routeMatch}/*`,
-                    path.join(basePath, pageTheme), {
-                        id: `xyd-plugin-docs/${id}-${i}`,
-                    }
-                ),
+                `${routeMatch}/*`,
+                path.join(basePath, pageTheme), {
+                id: `xyd-plugin-docs/${id}-${i}`,
+            }
+            ),
             ),
             vitePlugins: [
                 vitePluginUniformContent(id),
@@ -663,6 +702,7 @@ function uniformPreset(
 export abstract class UniformPreset {
     private _urlPrefix: string;
     private _sourceTheme: boolean;
+    private _fileRouting: { [key: string]: string } = {};
 
     protected constructor(
         private presetId: string,
@@ -686,6 +726,12 @@ export abstract class UniformPreset {
         return this
     }
 
+    protected fileRouting(file: string, route: string): this {
+        this._fileRouting[file] = route
+
+        return this
+    }
+
     protected newUniformPreset() {
         return uniformPreset(
             this.presetId,
@@ -694,6 +740,7 @@ export abstract class UniformPreset {
             {
                 urlPrefix: this._urlPrefix,
                 sourceTheme: this._sourceTheme,
+                fileRouting: this._fileRouting,
             },
             this.uniformRefResolver,
             this.disableFSWrite

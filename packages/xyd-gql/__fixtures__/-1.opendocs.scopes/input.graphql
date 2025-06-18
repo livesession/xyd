@@ -1,0 +1,33 @@
+extend enum OpenDocsScope {
+    USER_READ @scope(value: "user:read")
+
+    USER_WRITE @scope(value: "user:write")
+}
+
+type User {
+    id: ID!
+
+    name: String!
+
+    details: UserDetails!
+}
+
+type UserDetails {
+    birthDate: String
+}
+
+input UserWrite {
+    name: String!
+}
+
+type Query {
+    user(id: ID!): User
+    @doc(
+        scopes: [USER_READ]
+    )
+
+    userAdd(input: UserWrite!): User
+    @doc(
+        scopes: [USER_READ, "user:write"]
+    )
+}

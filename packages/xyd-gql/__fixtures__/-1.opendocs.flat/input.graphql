@@ -1,4 +1,4 @@
-extend schema @od_schema(
+extend schema @docs(
     flattenTypes: true
 )
 

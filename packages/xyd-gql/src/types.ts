@@ -33,6 +33,7 @@ export interface GQLSchemaToReferencesOptions {
 
     flat?: boolean;
     sort?: OpenDocsSortConfig;
+    route?: string
 }
 
 export type NestedGraphqlType = {

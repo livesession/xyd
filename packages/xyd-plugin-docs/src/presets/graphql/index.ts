@@ -33,6 +33,8 @@ class GraphQLUniformPreset extends UniformPreset {
             settings?.navigation?.sidebar || [],
             options.disableFSWrite
         )
+
+        this.uniformRefResolver = this.uniformRefResolver.bind(this)
     }
 
     static new(
@@ -51,7 +53,17 @@ class GraphQLUniformPreset extends UniformPreset {
             return []
         }
 
-        return await gqlSchemaToReferences(filePath)
+        const resp = await gqlSchemaToReferences(filePath)
+
+        if ("__UNSAFE_route" in resp && typeof resp.__UNSAFE_route === "function") {
+            // If the route is a function, we need to call it to get the actual route
+            const route = resp.__UNSAFE_route();
+            if (route) {
+                this.fileRouting(filePath, route);
+            }
+        }
+
+        return resp
     }
 }
 

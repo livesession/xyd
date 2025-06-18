@@ -1,5 +1,5 @@
 import path from "path";
-import fs from "fs";
+import fs from "fs/promises";
 
 import yaml from "js-yaml";
 import { OpenAPIV3 } from "openapi-types";
@@ -17,6 +17,10 @@ export function slug(str: string): string {
 // dereferenced means that all $ref references are resolved automatically
 export async function deferencedOpenAPI(openApiPath: string) {
     const openApiSpec = await readOpenApiSpec(openApiPath);
+    if (!openApiSpec) {
+        return
+    }
+
     const cwd = process.cwd();
 
     const remoteOasPath = openApiPath.startsWith('http://') || openApiPath.startsWith('https://') ? true : false
@@ -89,7 +93,13 @@ async function readOpenApiSpec(filePath: string) {
         }
         content = await response.text();
     } else {
-        content = fs.readFileSync(filePath, 'utf-8');
+        try {
+            await fs.access(filePath);
+        } catch (error) {
+            console.log(`⚠️ "${filePath}" is defined in the docs.json navigation but the file does not exist.`)
+            return
+        }
+        content = await fs.readFile(filePath, 'utf-8');
     }
 
     const ext = path.extname(filePath).toLowerCase();

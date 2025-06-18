@@ -1,4 +1,4 @@
-type Checkout @opendocs(
+type Checkout @doc(
     group: ["Checkout"],
 ) {
     id: ID!
@@ -7,7 +7,7 @@ type Checkout @opendocs(
     @deprecated(reason: "Use `id` instead.")
 }
 
-type CheckoutLine @opendocs(
+type CheckoutLine @doc(
     group: ["Checkout"],
 ) {
     id: ID!

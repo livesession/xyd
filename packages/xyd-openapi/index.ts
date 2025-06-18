@@ -6,6 +6,7 @@ export {
 
     oapResponseOperationToUniformDefinition,
 
+    getXDocs,
     uniformPluginXDocsSidebar
 } from "./src";
 

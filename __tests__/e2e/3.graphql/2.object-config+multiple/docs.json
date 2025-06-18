@@ -1,0 +1,14 @@
+{
+  "api": {
+    "graphql": [
+      {
+        "source": "../../../__fixtures__/graphql/basic.graphql",
+        "route": "docs/api-reference"
+      },
+      {
+        "source": "../../../__fixtures__/graphql/basic2.graphql",
+        "route": "docs/api-reference2"
+      }
+    ]
+  }
+}

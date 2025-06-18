@@ -16,8 +16,12 @@ export default {
                 margin-top: var(--space-medium);
             }
             
+            details {
+                margin-top: var(--space-medium);
+            }
+
             hr {
-                margin: 35px 0px;
+                margin: var(--space-xxlarge) 0;
             }
             
             p {

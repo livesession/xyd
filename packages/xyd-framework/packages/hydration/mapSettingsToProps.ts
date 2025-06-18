@@ -239,7 +239,7 @@ function mapNavToLinks(
     hiddenPages: { [key: string]: boolean }
 ): INavLinks | undefined {
     if (!currentNav.group) {
-        console.error("current nav need group to calculate navlinks")
+        console.debug("current nav need group to calculate navlinks")
         return
     }
 

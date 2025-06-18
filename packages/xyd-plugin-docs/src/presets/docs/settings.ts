@@ -25,7 +25,7 @@ const extensions = ['tsx', 'ts', 'json'];
  * 
  * @throws May throw errors if file reading or parsing fails
  */
-export async function readSettings(): Promise<Settings | string | null> {
+export async function readSettings() {
     const dirPath = process.cwd();
     const baseFileName = 'docs';
 
@@ -62,7 +62,7 @@ export async function readSettings(): Promise<Settings | string | null> {
     } else {
         const rawJsonSettings = await fs.readFile(settingsFilePath, 'utf-8');
         try {
-            let json = JSON.parse(rawJsonSettings);
+            let json = JSON.parse(rawJsonSettings) as Settings
 
 
             return json

@@ -38,7 +38,7 @@ export * from "./Steps"
 
 export * from "./Table"
 
-export * from "./Tabs"
+// export * from "./Tabs"
 
 export * from "./Text"
 

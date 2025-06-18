@@ -22,7 +22,7 @@ interface DevOptions {
 }
 export async function dev(options?: DevOptions) {
     const spinner = new CLI('dots');
-    spinner.startSpinner('Preparing local xyd instance...');
+    spinner.startSpinner('Preparing local xyd instance... \n');
 
     const skip = await preWorkspaceSetup()
 

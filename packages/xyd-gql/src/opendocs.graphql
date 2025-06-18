@@ -1,6 +1,35 @@
-directive @opendocs(
+directive @scope(value: String!) on ENUM_VALUE
+
+enum OpenDocsScope {
+    _PLACEHOLDER_
+}
+
+directive @docs(
+    route: String
+    sort: OpenDocsSortInput
+    flattenTypes: Boolean
+    sidebar: [OpenDocsPage]
+    group: [String]
+) repeatable on SCHEMA
+
+input OpenDocsPage {
+    type: OpenDocsSidebarItemType!
+    key: String!
+    group: String
+    path: String
+    pages: [OpenDocsPage]
+}
+
+enum OpenDocsSidebarItemType {
+    OPERATION
+    TYPE
+}
+
+directive @doc(
     group: [String!],
-    example: OpenDocsExampleInput
+    path: String,
+    example: OpenDocsExampleInput,
+    scopes: [OpenDocsScope],
 ) on QUERY |
     FIELD_DEFINITION |
     MUTATION |
@@ -9,11 +38,6 @@ directive @opendocs(
     INPUT_OBJECT |
     ENUM |
     SCALAR
-
-directive @od_schema(
-    flattenTypes: Boolean!
-    sort: OpenDocsSortInput
-) on SCHEMA
 
 # TODO: finish
 input OpenDocsExampleInput {

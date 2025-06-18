@@ -27,6 +27,7 @@ export function graphqlQueriesToUniformReferences(
         references.push(...gqlOperationToUniformRef(
             ReferenceType.GRAPHQL_QUERY,
             filteredQueryFields,
+            schema,
             options
         ))
     }

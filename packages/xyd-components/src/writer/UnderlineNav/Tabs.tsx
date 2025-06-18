@@ -1,19 +1,19 @@
 import React, { createContext, useContext } from "react"
 
 import { TabsPrimary, TabsPrimaryProps } from "./TabsPrimary"
-import { TabsSecondary, } from "./TabsSecondary";
+import { TabsSecondary, TabsSecondaryProps } from "./TabsSecondary";
 
-// TODO: in the future unify the TabsPrimary and TabsSecondary components?
-interface TabsProps {
-    /** The variant of the navigation */
+interface TabsPropsCommon {
     kind?: 'secondary' | null
 }
+// TODO: in the future unify the TabsPrimary and TabsSecondary components?
+type TabsProps<T> = T & TabsPropsCommon
 
-const TabsContext = createContext<TabsProps>({
+const TabsContext = createContext<TabsPropsCommon>({
     kind: null
 })
 
-export function Tabs(props: TabsPrimaryProps<any>) {
+export function Tabs(props: TabsProps<TabsSecondaryProps | TabsPrimaryProps>) {
     if (props.kind === 'secondary') {
         return (
             <TabsContext value={{ kind: 'secondary' }}>

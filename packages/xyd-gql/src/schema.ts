@@ -1,4 +1,6 @@
 import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {buildSchema, print} from "graphql";
 import {mergeTypeDefs} from '@graphql-tools/merge';
@@ -11,18 +13,25 @@ import {DEFAULT_SORT_ORDER} from "./types";
 import {graphqlTypesToUniformReferences} from "./converters/gql-types";
 import {graphqlQueriesToUniformReferences} from "./converters/gql-query";
 import {graphqlMutationsToUniformReferences} from "./converters/gql-mutation";
+import {graphqlSubscriptionsToUniformReferences} from "./converters/gql-subscription";
 import {openDocsExtensionsToOptions} from "./opendocs";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 // TODO: support multi graphql files
-// TODO: !!! CIRCULAR_DEPENDENCY !!!
 // TODO: sort by tag??
-// TODO: support subscriptions
 export async function gqlSchemaToReferences(
     schemaLocation: string | string[],
     options?: GQLSchemaToReferencesOptions
 ): Promise<Reference[]> {
     // 1. Convert schemaLocation to array
     const schemaLocations = Array.isArray(schemaLocation) ? schemaLocation : [schemaLocation];
+
+    // Add opendocs.graphql to schema locations (first)
+    const opendocsPath = path.join(__dirname, 'opendocs.graphql');
+    if (fs.existsSync(opendocsPath)) {
+        schemaLocations.unshift(opendocsPath);
+    }
 
     // 2. Read all schema contents
     const schemaContents = await Promise.all(schemaLocations.map(async location => {
@@ -54,7 +63,6 @@ export async function gqlSchemaToReferences(
 
     if (!options.hasOwnProperty('flat')) {
         options.flat = true; // Default flat is true
-
     }
     options = {
         ...options,
@@ -72,7 +80,8 @@ export async function gqlSchemaToReferences(
         // mutations
         ...graphqlMutationsToUniformReferences(schema, options),
 
-        // subscriptions TODO: finish
+        // subscriptions
+        ...graphqlSubscriptionsToUniformReferences(schema, options),
     ]
 
     // Sort references using provided sort config or defaults
@@ -85,6 +94,11 @@ export async function gqlSchemaToReferences(
         return aOrder - bOrder;
     });
 
+    if (options.route) {
+        // TODO: types or better solution!!!
+        // @ts-ignore
+        references.__UNSAFE_route = () => options.route
+    }
     return references
 }
 

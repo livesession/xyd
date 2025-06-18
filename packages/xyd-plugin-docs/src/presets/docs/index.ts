@@ -38,7 +38,12 @@ function preinstall() {
         const root = process.cwd()
 
         const settings = await readSettings()
-
+        if (settings && !settings.theme) {
+            settings.theme = {
+                name: DEFAULT_THEME
+            }
+        }
+        
         let themeRoutesExists = false
         try {
             await fs.access(path.join(root, THEME_CONFIG_FOLDER, "./routes.ts"))

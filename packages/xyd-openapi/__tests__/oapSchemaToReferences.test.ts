@@ -27,19 +27,19 @@ const tests: {
     //     // }
     // },
 
-    // {
-    //     name: "4.abc",
-    //     url: "https://raw.githubusercontent.com/bump-sh-examples/train-travel-api/main/openapi.yaml",
-    //     // url: "https://raw.githubusercontent.com/digitalocean/openapi/main/specification/DigitalOcean-public.v2.yaml",
-    //     // url: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/ghes-3.0/ghes-3.0.json",
-    //     // url: "https://raw.githubusercontent.com/box/box-openapi/main/openapi.json",
-    //     // url: "https://api.apis.guru/v2/specs/nytimes.com/article_search/1.0.0/openapi.yaml",
-    //     // url: "https://developers.intercom.com/_spec/docs/references/@2.11/rest-api/api.intercom.io.json",
-    //     description: "",
-    //     // plugins: [
-    //     //     uniformOpenAIMeta,
-    //     // ],
-    // }
+    {
+        name: "4.abc",
+        // url: "https://raw.githubusercontent.com/bump-sh-examples/train-travel-api/main/openapi.yaml",
+        // url: "https://raw.githubusercontent.com/digitalocean/openapi/main/specification/DigitalOcean-public.v2.yaml",
+        // url: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/ghes-3.0/ghes-3.0.json",
+        // url: "https://raw.githubusercontent.com/box/box-openapi/main/openapi.json",
+        // url: "https://api.apis.guru/v2/specs/nytimes.com/article_search/1.0.0/openapi.yaml",
+        // url: "https://developers.intercom.com/_spec/docs/references/@2.11/rest-api/api.intercom.io.json",
+        description: "",
+        plugins: [
+            uniformPluginXDocsSidebar
+        ]
+    }
 
     // {
     //     name: "1.basic",
@@ -71,10 +71,10 @@ const tests: {
     //     ]
     // }
 
-    {
-        name: "6.codeSamples",
-        description: "x-codeSamples OpenAPI API example",
-    },
+    // {
+    //     name: "6.codeSamples",
+    //     description: "x-codeSamples OpenAPI API example",
+    // },
 ]
 
 describe("oapSchemaToReferences", {timeout: 15000}, () => {

@@ -1,0 +1,74 @@
+extend schema @docs(
+    sort: {
+        scalars: 1,
+        enums: 2,
+        interfaces: 3,
+        inputObjects: 4,
+        objects: 5,
+        unions: 6,
+        queries: 7,
+        mutations: 8,
+        subscriptions: 9
+    }
+)
+
+# Custom scalar
+scalar DateTime
+
+# Enum
+enum UserRole {
+    ADMIN
+    USER
+    GUEST
+}
+
+# Interface
+interface Node {
+    id: ID!
+}
+
+# Input object
+input UserInput {
+    name: String!
+    email: String!
+    role: UserRole
+}
+
+# Object
+type User implements Node {
+    id: ID!
+    name: String!
+    email: String!
+    role: UserRole!
+    createdAt: DateTime!
+}
+
+# Union
+union SearchResult = User | Post
+
+type Post implements Node {
+    id: ID!
+    title: String!
+    content: String!
+    author: User!
+}
+
+# Query
+type Query {
+    user(id: ID!): User
+    users: [User!]!
+    search(query: String!): [SearchResult!]!
+}
+
+# Mutation
+type Mutation {
+    createUser(input: UserInput!): User!
+    updateUser(id: ID!, input: UserInput!): User!
+}
+
+# Subscription
+type Subscription {
+    userCreated: User!
+    userUpdated: User!
+}
+

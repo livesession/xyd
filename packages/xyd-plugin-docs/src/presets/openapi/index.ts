@@ -1,5 +1,5 @@
 import {Settings} from "@xyd-js/core";
-import {deferencedOpenAPI, oapSchemaToReferences} from "@xyd-js/openapi";
+import {deferencedOpenAPI, oapSchemaToReferences, getXDocs} from "@xyd-js/openapi";
 import type {Reference} from "@xyd-js/uniform";
 
 import {Preset} from "../../types"
@@ -33,6 +33,7 @@ class OpenAPIUniformPreset extends UniformPreset {
             settings?.navigation?.sidebar || [],
             options.disableFSWrite
         )
+        this.uniformRefResolver = this.uniformRefResolver.bind(this)
     }
 
     static new(
@@ -52,8 +53,14 @@ class OpenAPIUniformPreset extends UniformPreset {
         }
 
         const schema = await deferencedOpenAPI(filePath)
+        if (schema) {
+            const xdocs = getXDocs(schema)
+            if (xdocs?.route) {
+                this.fileRouting(filePath, xdocs.route)
+            }
+        }
+
         return oapSchemaToReferences(schema)
     }
-
 }
 

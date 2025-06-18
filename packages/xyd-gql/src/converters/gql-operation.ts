@@ -1,17 +1,18 @@
-import {GraphQLFieldMap, OperationTypeNode} from "graphql";
-import {Definition, Example, Reference, ReferenceType,} from "@xyd-js/uniform";
+import { GraphQLFieldMap, GraphQLSchema, OperationTypeNode } from "graphql";
+import { Definition, Example, Reference, ReferenceType, } from "@xyd-js/uniform";
 
-import {type GQLSchemaToReferencesOptions, GQLOperation} from "../types";
-import {gqlArgToUniformDefinitionProperty} from "./gql-arg";
-import {gqlFieldToUniformDefinitionProperty} from "./gql-field";
-import {simpleGraphqlExample} from "./gql-sample";
-import {uniformify} from "../gql-core";
-import {Context} from "../context";
+import { type GQLSchemaToReferencesOptions, GQLOperation } from "../types";
+import { gqlArgToUniformDefinitionProperty } from "./gql-arg";
+import { gqlFieldToUniformDefinitionProperty } from "./gql-field";
+import { simpleGraphqlExample } from "./gql-sample";
+import { uniformify } from "../gql-core";
+import { Context } from "../context";
 
 // gqlOperationToUniformRef is a helper function to create a list of xyd reference for a GraphQL operation (query or mutation).
 export function gqlOperationToUniformRef(
-    operationType: ReferenceType.GRAPHQL_MUTATION | ReferenceType.GRAPHQL_QUERY,
+    operationType: ReferenceType.GRAPHQL_MUTATION | ReferenceType.GRAPHQL_QUERY | ReferenceType.GRAPHQL_SUBSCRIPTION,
     fieldsMap: GraphQLFieldMap<any, any>,
+    schema: GraphQLSchema,
     options?: GQLSchemaToReferencesOptions,
 ) {
     const references: Reference[] = []
@@ -34,7 +35,8 @@ export function gqlOperationToUniformRef(
             {
                 flat,
                 flatArg: argFlat,
-            }
+            },
+            schema
         ), operationField.args)
 
 
@@ -43,7 +45,8 @@ export function gqlOperationToUniformRef(
             options,
             {
                 flatReturn
-            }
+            },
+            schema
         ), operationField)
         let returnProperties = returns.properties || []
         if (options?.flat) {
@@ -95,16 +98,30 @@ export function gqlOperationToUniformRef(
                 operation.__operationType = OperationTypeNode.MUTATION;
                 break;
             }
+            case ReferenceType.GRAPHQL_SUBSCRIPTION: {
+                operation.__operationType = OperationTypeNode.SUBSCRIPTION;
+                break;
+            }
             default: {
                 console.error(`Invalid operation type: ${operationType}`);
             }
         }
 
-        references.push(uniformify(
+        const ref = uniformify(
+            new Context(
+                new Set(),
+                options,
+                {},
+                schema
+            ),
             operation,
             definitions,
             [exampleGroup]
-        ))
+        )
+        
+        if (ref) {
+            references.push(ref)
+        }
     }
 
     return references

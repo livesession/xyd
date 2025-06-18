@@ -67,6 +67,7 @@ export function gqlObjectToUniformRef(
     })
 
     return uniformify(
+        ctx,
         gqlType,
         definitions,
         []

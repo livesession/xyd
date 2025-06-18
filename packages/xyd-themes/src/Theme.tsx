@@ -7,7 +7,7 @@ import { ReactContent } from "@xyd-js/components/content";
 export abstract class Theme {
   constructor() {
     // TODO: !!!better API for this!!!
-    this.settings = globalThis.__xydThemeSettings // TODO: DELETE
+    this.settings = globalThis.__xydThemeSettings 
     this.theme = globalThis.__xydThemeSettings
 
     this.surfaces = globalThis.__xydSurfaces

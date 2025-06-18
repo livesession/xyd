@@ -44,11 +44,23 @@ const tests: {
     //     name: "8.example",
     //     description: "Example",
     // },
-    //
+    // //
     // {
-    //     name: "-1.od_gqls.flat",
+    //     name: "-1.opendocs.flat",
     //     description: "OpenDocs GraphQL Schema directive example with flat generation",
     // },
+    // {
+    //     name: "-1.opendocs.sort",
+    //     description: "OpenDocs GraphQL Schema directive example with sort generation",
+    // },
+    // {
+    //     name: "-1.opendocs.scopes",
+    //     description: "OpenDocs GraphQL Schema directive example with scopes generation",
+    // },
+    {
+        name: "-1.opendocs.docs-nested",
+        description: "OpenDocs GraphQL Schema directive example with nested docs",
+    },
     //
     // {
     //     name: "-3.array-non-null-return",
@@ -66,14 +78,14 @@ const tests: {
     //         flat: true
     //     }
     // },
-    {
-        name: "-2.complex.github",
-        description: "Github GraphQL API example",
-        // TODO: Github API is very, very huge. Currently. xyd does not support such big schemas well so we need to flat all types.
-        options: {
-            flat: true
-        }
-    }
+    // {
+    //     name: "-2.complex.github",
+    //     description: "Github GraphQL API example",
+    //     // TODO: Github API is very, very huge. Currently. xyd does not support such big schemas well so we need to flat all types.
+    //     options: {
+    //         flat: true
+    //     }
+    // }
     // {
     //     name: "-2.complex.livesession",
     //     description: "LiveSession GraphQL API example"
@@ -83,7 +95,7 @@ const tests: {
 describe("gqlSchemaToReferences", () => {
     tests.forEach((test) => {
         it(`[${test.name}]: ${test.description}`, async () => {
-            await testGqlSchemaToReferences(test);
+            await testGqlSchemaToReferences(test.name, test.options);
         });
     });
 });

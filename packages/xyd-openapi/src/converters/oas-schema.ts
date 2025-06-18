@@ -21,6 +21,9 @@ export function oapSchemaToReferences(
     schema: OpenAPIV3.Document,
     options?: uniformOasOptions,
 ): Reference[] {
+    if (!schema) {
+        return []
+    }
     const references: Reference[] = [];
     const oas = new Oas(schema as any);
 

@@ -76,7 +76,7 @@ However, if you only want to customize styles, you can simply use `index.css` wi
 
 
 :::callout
-Learn more about [extending the default theme](/docs/guides/extending-default-theme)
+Learn more about [extending the default theme](/docs/guides/theme-api)
 or [creating a custom theme](/docs/guides/custom-theme) via code.
 :::
 

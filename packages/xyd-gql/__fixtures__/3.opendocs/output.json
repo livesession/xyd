@@ -15,13 +15,13 @@
     "examples": {
       "groups": [
         {
-          "description": "Example request",
+          "description": "",
           "examples": [
             {
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "Query reference",
+                    "title": "",
                     "language": "graphql",
                     "code": "query checkout($id: ID!) {\n  checkout(id: $id) {\n    # checkout fields\n  }\n}"
                   }
@@ -52,8 +52,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]
@@ -62,47 +62,18 @@
         "title": "Returns",
         "properties": [
           {
-            "name": "id",
-            "type": "ID!",
+            "name": "",
+            "type": "Checkout",
             "description": "",
             "context": {
-              "graphqlName": "id",
-              "graphqlTypeFlat": "ID",
-              "graphqlBuiltInType": true
+              "graphqlName": "checkout",
+              "graphqlTypeFlat": "Checkout",
+              "graphqlBuiltInType": false
             },
             "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "typeDef": {
-              "symbolId": ""
-            }
-          },
-          {
-            "name": "checkoutId",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "checkoutId",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              },
-              {
-                "name": "deprecated",
-                "value": "Use `id` instead."
-              }
-            ],
-            "typeDef": {
-              "symbolId": ""
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/checkout"
             }
           }
         ]
@@ -125,13 +96,13 @@
     "examples": {
       "groups": [
         {
-          "description": "Example request",
+          "description": "",
           "examples": [
             {
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "Query reference",
+                    "title": "",
                     "language": "graphql",
                     "code": "query checkoutLine($id: ID!) {\n  checkoutLine(id: $id) {\n    # checkoutLine fields\n  }\n}"
                   }
@@ -162,8 +133,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]
@@ -172,47 +143,18 @@
         "title": "Returns",
         "properties": [
           {
-            "name": "id",
-            "type": "ID!",
+            "name": "",
+            "type": "CheckoutLine",
             "description": "",
             "context": {
-              "graphqlName": "id",
-              "graphqlTypeFlat": "ID",
-              "graphqlBuiltInType": true
+              "graphqlName": "checkoutLine",
+              "graphqlTypeFlat": "CheckoutLine",
+              "graphqlBuiltInType": false
             },
             "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "typeDef": {
-              "symbolId": ""
-            }
-          },
-          {
-            "name": "checkoutLineId",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "checkoutLineId",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              },
-              {
-                "name": "deprecated",
-                "value": "true"
-              }
-            ],
-            "typeDef": {
-              "symbolId": ""
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/checkoutline"
             }
           }
         ]
@@ -237,6 +179,17 @@
     },
     "definitions": [
       {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
         "title": "Fields",
         "properties": [
           {
@@ -255,8 +208,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": ""
+            "symbolDef": {
+              "canonical": ""
             }
           },
           {
@@ -279,9 +232,15 @@
                 "value": "Use `id` instead."
               }
             ],
-            "typeDef": {
-              "symbolId": ""
+            "symbolDef": {
+              "canonical": ""
             }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
           }
         ]
       }
@@ -305,6 +264,17 @@
     },
     "definitions": [
       {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
         "title": "Fields",
         "properties": [
           {
@@ -323,8 +293,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": ""
+            "symbolDef": {
+              "canonical": ""
             }
           },
           {
@@ -347,9 +317,15 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolId": ""
+            "symbolDef": {
+              "canonical": ""
             }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
           }
         ]
       }

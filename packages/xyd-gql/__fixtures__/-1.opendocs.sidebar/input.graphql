@@ -1,0 +1,44 @@
+extend schema @docs(
+    sidebar: [
+        {
+            group: "API & Reference",
+            pages: [
+                {
+                    group: "Users",
+                    path: "users",
+                    pages:  [
+                        {
+                            type: "operation",
+                            key: "query getUser",
+                            path: "get",
+                        },
+                        {
+                            type: "operation",
+                            key: "mutation createUser",
+                            path: "create"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+)
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+}
+
+type Query {
+    getUser(id: ID!): User
+}
+
+type Mutation{}
+
+extend type Mutation @doc(
+    group: ["API & Reference", "Users"],
+    path: "users"
+) {
+    createUser(name: String!, email: String!): User
+}

@@ -1,11 +1,12 @@
-import React, {useState, useRef, useEffect} from 'react'
-import {Tabs as RadixTabs} from "radix-ui"; // TODO: remove and use separation
-import {ChevronLeft, ChevronRight} from "lucide-react"
+import React, { useState, useRef, useEffect } from 'react'
+import { Tabs as RadixTabs } from "radix-ui"; // TODO: remove and use separation
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import * as cn from "./TabsSecondary.styles";
-import {useValueChange} from './useValueChange';
+import { useValueChange } from './useValueChange';
+import { TabsPrimary } from './TabsPrimary';
 
-export interface TabsProps {
+export interface TabsSecondaryProps {
     /** The currently selected tab value */
     value?: string
     children: React.ReactNode;
@@ -13,7 +14,7 @@ export interface TabsProps {
     onChange?: (value: string) => void
 }
 
-export function TabsSecondary({children, value: controlledValue, onChange, className}: TabsProps) {
+export function TabsSecondary({ children, value: controlledValue, onChange, className }: TabsSecondaryProps) {
     const [showLeftArrow, setShowLeftArrow] = useState(false)
     const [showRightArrow, setShowRightArrow] = useState(false)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -23,13 +24,13 @@ export function TabsSecondary({children, value: controlledValue, onChange, class
         child => {
             return React.isValidElement(child) &&
                 (child.type === TabsSecondary.Item ||
-                    (typeof child.type === 'function' && 'displayName' in child.type && child.type.displayName === "TabsSecondary.Item"))
+                    (typeof child.type === 'function' && 'displayName' in child.type && child.type.displayName === "UnderlineNav.Item"))
         }
     );
     const otherChildren = childrenArray.filter(
         child => !React.isValidElement(child) ||
             (child.type !== TabsSecondary.Item &&
-                !(typeof child.type === 'function' && 'displayName' in child.type && child.type.displayName === "TabsSecondary.Item"))
+                !(typeof child.type === 'function' && 'displayName' in child.type && child.type.displayName === "UnderlineNav.Item"))
     );
 
     const [_, value, handleValueChange] = useValueChange(
@@ -40,7 +41,7 @@ export function TabsSecondary({children, value: controlledValue, onChange, class
 
     const handleScroll = () => {
         if (scrollContainerRef.current) {
-            const {scrollLeft, scrollWidth, clientWidth} = scrollContainerRef.current
+            const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
             setShowLeftArrow(scrollLeft > 0)
             setShowRightArrow(scrollLeft < scrollWidth - clientWidth)
         }
@@ -55,7 +56,7 @@ export function TabsSecondary({children, value: controlledValue, onChange, class
     const scroll = (direction: 'left' | 'right') => {
         if (scrollContainerRef.current) {
             const scrollAmount = direction === 'left' ? -200 : 200
-            scrollContainerRef.current.scrollBy({left: scrollAmount, behavior: 'smooth'})
+            scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
         }
     }
 
@@ -71,7 +72,7 @@ export function TabsSecondary({children, value: controlledValue, onChange, class
                             onClick={() => scroll('left')}
                             part="arrow"
                         >
-                            <ChevronLeft part="arrow-icon"/>
+                            <ChevronLeft part="arrow-icon" />
                         </button>
                     )}
 
@@ -94,7 +95,7 @@ export function TabsSecondary({children, value: controlledValue, onChange, class
                             onClick={() => scroll('right')}
                             part="arrow"
                         >
-                            <ChevronRight part="arrow-icon"/>
+                            <ChevronRight part="arrow-icon" />
                         </button>
                     )}
                 </div>
@@ -107,15 +108,60 @@ export function TabsSecondary({children, value: controlledValue, onChange, class
     )
 }
 
-TabsSecondary.Item = function TabsContent({children, value}) {
-    return <RadixTabs.Trigger asChild value={value}>
-        <button part="button">
-            {children}
-        </button>
-    </RadixTabs.Trigger>
+/**
+ * Props for the TabsPrimary.Item component
+ */
+export interface TabsSecondaryItemProps {
+    /** Child elements to be rendered within the navigation item */
+    children: React.ReactNode
+
+    /** Unique identifier for the navigation item */
+    value: string
+
+    /** URL for the navigation item link */
+    href?: string
+
+    /** Custom component to render as the link element */
+    as?: React.ElementType
+
+    /** Whether this item should be active by default */
+    defaultActive?: boolean
 }
 
-TabsSecondary.Content = function TabsContent({children, value}) {
+TabsSecondary.Item = function TabsPrimaryItem({ children, value, href, as, defaultActive }: TabsSecondaryItemProps) {
+    const Link = as || _Link;
+    const controlByItem = typeof defaultActive === "boolean"
+    const [defaultActiveState, setDefaultActiveState] = useState(controlByItem ? (defaultActive ? "active" : "inactive") : undefined)
+
+    let activeProps = controlByItem && defaultActiveState != undefined
+        ? { "data-state": defaultActiveState }
+        : undefined
+
+    useEffect(() => {
+        if (!controlByItem) {
+            return
+        }
+
+        setDefaultActiveState(undefined)
+    }, [])
+
+    return (
+        <RadixTabs.Trigger className={cn.TabsSecondaryItem} value={value} asChild {...activeProps}>
+            <div>
+                <Link href={href}>
+                    {children}
+                </Link>
+            </div>
+        </RadixTabs.Trigger>
+    );
+}
+
+function _Link({ ...props }) {
+    return <a {...props}>{props.children}</a>
+}
+
+
+TabsSecondary.Content = function TabsContent({ children, value }) {
     return <RadixTabs.Content asChild value={value}>
         <div>
             {children}

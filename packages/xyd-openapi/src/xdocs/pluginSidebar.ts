@@ -291,11 +291,15 @@ export function uniformPluginXDocsSidebar({
             return
         }
 
-        let id = methodPath.operationId
-        if (!id) {
-            id = (oapMethod?.httpMethod?.toUpperCase() + " " + oapMethod?.path || "").trim()
+        const operationId = methodPath.operationId
+        if (operationId) {
+            refByOperationId[operationId] = ref
         }
-        refByOperationId[id] = ref
+
+        const methodId = (oapMethod?.httpMethod?.toUpperCase() + " " + oapMethod?.path || "").trim()
+        if (methodId) {
+            refByOperationId[methodId] = ref
+        }
 
         const meta = (methodPath as any)["x-docs"]
         if (!meta) {

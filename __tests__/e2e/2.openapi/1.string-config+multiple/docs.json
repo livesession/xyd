@@ -1,0 +1,8 @@
+{
+  "api": {
+    "openapi": [
+      "../../../__fixtures__/openapi/basic.xdocs+route.yaml",
+      "../../../__fixtures__/openapi/basic2.xdocs+route.yaml"
+    ]
+  }
+}

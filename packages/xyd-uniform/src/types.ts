@@ -14,22 +14,16 @@ export interface Reference<
     definitions: Definition<M, VM>[] // TODO: in the future from generic?
     examples: ExampleRoot
 
-    /**
-     * @unsafe
-     */
+
     category?: ReferenceCategory; // TODO: do we need that?
-    /**
-     * @unsafe
-     */
+
     type?: ReferenceType; // TODO: do we need that?
-    /**
-     * @unsafe
-     */
+
     context?: C;
 
     /**
      * TODO: !!!! BETTER !!!!
-     * @unsafe
+     * @internal
      */
     __UNSAFE_selector?: (selector: string) => any;
 }
