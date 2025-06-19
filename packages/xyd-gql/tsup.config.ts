@@ -17,7 +17,10 @@ export default defineConfig({
     esbuildOptions: (options) => {
         options.platform = 'node'; // Ensure the platform is set to Node.js
         options.external = ['node:fs/promises']; // Mark 'node:fs/promises' as external
-        options.loader = {'.js': 'jsx'}; // Ensure proper handling of .js files
+        options.loader = {
+            '.js': 'jsx', // Ensure proper handling of .js files
+            '.graphql': 'text' // Load .graphql files as text
+        };
     },
     onSuccess: async () => {
         // Copy opendocs.graphql to dist

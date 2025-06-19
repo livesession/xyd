@@ -128,10 +128,10 @@ function Examples({title, children}) {
 :::
 
 ## `Read Variable` {label="Coming Soon"}
-Read Variable (`{<read_variable>}`) is used to access read variables from frontmatter and other pages:
+Read Variable (`{<read_variable>}`) is used to access read variables from page meta and other pages:
 
 ```mdx
-{frontmatter.title}
+{page.title}
 ```
 
 ## `Attributes`
@@ -162,7 +162,7 @@ title: Special symbols usage
 :::
 @end
 
-# {frontmatter.title}
+# {page.title}
 
 ## Import Example {toc="Import example"}
 You can import code snippets using the `@import` function:
@@ -180,13 +180,6 @@ These special symbols provide powerful ways to enhance your markdown documentati
 - **Components**: Add rich UI elements directly in markdown
 - **Functions**: Import and execute code dynamically
 - **Variables**: Pass data between content files
-- **Frontmatter Access**: Use metadata from your content files
+- **Page Meta Access**: Use metadata from your content files
 
 By combining these features, you can create interactive and dynamic documentation with minimal effort.
-
-:::callout
-Some possibitlies from special symbols are availalbe in MDX due to it's nature, e.g importing files.
-
-The main difference between symbols and MDX is a simple, more markdown like
-grammar and text-based hierarchy instead of component-like.
-:::

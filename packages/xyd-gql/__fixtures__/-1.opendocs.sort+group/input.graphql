@@ -1,0 +1,111 @@
+type Query
+type Mutation
+type Subscription
+
+extend schema @docs(
+    group: ["API & Reference"],
+    sortStack: [
+        ["Queries", "Mutations", "Subscriptions", "Inputs", "Objects", "Interfaces", "Unions", "Enums", "Scalars"],
+        ["Interfaces", "Unions", "Objects", "Inputs", "Enums", "Scalars"]
+    ],
+    sort: [
+        {
+            group: ["Users"],
+        },
+        {
+            group: ["Search"],
+        },
+        {
+            group: ["GraphQL Types"],
+            stack: 1,
+        },
+    ]
+)
+
+# Custom scalar
+
+scalar DateTime
+@doc(
+    group: ["GraphQL Types", "Scalars"]
+)
+
+# Enum
+enum UserRole  @doc(
+    group: ["Users", "Enums"]
+){
+    ADMIN
+    USER
+    GUEST
+}
+
+# Interface
+interface Node @doc(
+    group: ["GraphQL Types", "Interfaces"]
+)  {
+    id: ID!
+}
+
+# Input object
+input UserInput @doc(
+    group: ["Users", "Inputs"]
+) {
+    name: String!
+    email: String!
+    role: UserRole
+}
+
+# Object
+type User implements Node @doc(
+    group: ["Users", "Objects"]
+) {
+    id: ID!
+    name: String!
+    email: String!
+    role: UserRole!
+    createdAt: DateTime!
+}
+
+# Union
+union SearchResult @doc(
+    group: ["Search", "Unions"]
+) = User | Post
+
+type Post implements Node @doc(
+    group: ["Search", "Objects"]
+) {
+    id: ID!
+    title: String!
+    content: String!
+    author: User!
+}
+
+# Query
+extend type Query @doc(
+    group: ["Users", "Queries"]
+) {
+    user(id: ID!): User
+    users: [User!]!
+}
+
+extend type Query @doc(
+    group: ["Search", "Queries"]
+) {
+    search(query: String!): [SearchResult!]!
+}
+
+# Mutation
+extend type Mutation @doc(
+    group: ["Users", "Mutations"]
+) {
+    createUser(input: UserInput!): User!
+    updateUser(id: ID!, input: UserInput!): User!
+}
+
+# Subscription
+extend type Subscription @doc(
+    group: ["Users", "Subscriptions"]
+) {
+    userCreated: User!
+    userUpdated: User!
+}
+

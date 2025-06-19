@@ -23,3 +23,23 @@ Python `Get Users` SDK snippet:
 {snippet}
 ```
 
+## Local context
+
+~~~ts
+```ts [#mySnippet]
+export function build() {
+    return "xyd build"
+}
+```
+@let(
+    .mySnippet.descHead="TIP"
+    .mySnippet.desc = (
+         Install CLI to **run** and **build** your [docs](https://xyd.dev).
+
+         * Define reusable content blocks for your documentation
+         * Use variables to avoid repetition across multiple pages
+         * Create dynamic content that can be referenced elsewhere
+    )
+)
+~~~
+

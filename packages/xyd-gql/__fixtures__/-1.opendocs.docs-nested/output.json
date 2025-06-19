@@ -1,277 +1,8 @@
 [
   {
-    "title": "getUser",
-    "description": "",
-    "canonical": "todos/queries/get",
-    "category": "graphql",
-    "type": "graphql_query",
-    "context": {
-      "graphqlTypeShort": "query",
-      "graphqlName": "getUser",
-      "group": [
-        "API & Reference",
-        "Queries"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": [
-        {
-          "description": "",
-          "examples": [
-            {
-              "codeblock": {
-                "tabs": [
-                  {
-                    "title": "",
-                    "language": "graphql",
-                    "code": "query getUser($id: ID!) {\n  getUser(id: $id) {\n    # getUser fields\n  }\n}"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [
-          {
-            "name": "id",
-            "type": "ID!",
-            "description": "",
-            "context": {
-              "graphqlName": "id",
-              "graphqlTypeFlat": "ID",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/id"
-            }
-          }
-        ]
-      },
-      {
-        "title": "Returns",
-        "properties": [
-          {
-            "name": "",
-            "type": "User",
-            "description": "",
-            "context": {
-              "graphqlName": "getUser",
-              "graphqlTypeFlat": "User",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/user"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "getTodo",
-    "description": "",
-    "canonical": "todos/queries/getTodo",
-    "category": "graphql",
-    "type": "graphql_query",
-    "context": {
-      "graphqlTypeShort": "query",
-      "graphqlName": "getTodo",
-      "group": [
-        "API & Reference",
-        "Queries"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": [
-        {
-          "description": "",
-          "examples": [
-            {
-              "codeblock": {
-                "tabs": [
-                  {
-                    "title": "",
-                    "language": "graphql",
-                    "code": "query getTodo($id: ID!) {\n  getTodo(id: $id) {\n    # getTodo fields\n  }\n}"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [
-          {
-            "name": "id",
-            "type": "ID!",
-            "description": "",
-            "context": {
-              "graphqlName": "id",
-              "graphqlTypeFlat": "ID",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/id"
-            }
-          }
-        ]
-      },
-      {
-        "title": "Returns",
-        "properties": [
-          {
-            "name": "",
-            "type": "User",
-            "description": "",
-            "context": {
-              "graphqlName": "getTodo",
-              "graphqlTypeFlat": "User",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/user"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "createUser",
-    "description": "",
-    "canonical": "users/mutations/createUser",
-    "category": "graphql",
-    "type": "graphql_mutation",
-    "context": {
-      "graphqlTypeShort": "mutation",
-      "graphqlName": "createUser",
-      "group": [
-        "API & Reference",
-        "Mutations"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": [
-        {
-          "description": "",
-          "examples": [
-            {
-              "codeblock": {
-                "tabs": [
-                  {
-                    "title": "",
-                    "language": "graphql",
-                    "code": "mutation createUser($name: String!, $email: String!) {\n  createUser(name: $name, email: $email) {\n    # createUser fields\n  }\n}"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [
-          {
-            "name": "name",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "name",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/name"
-            }
-          },
-          {
-            "name": "email",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "email",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/email"
-            }
-          }
-        ]
-      },
-      {
-        "title": "Returns",
-        "properties": [
-          {
-            "name": "",
-            "type": "User",
-            "description": "",
-            "context": {
-              "graphqlName": "createUser",
-              "graphqlTypeFlat": "User",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/user"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
     "title": "User",
     "description": "",
-    "canonical": "objects/user",
+    "canonical": "objects/User",
     "category": "graphql",
     "type": "graphql_object",
     "context": {
@@ -373,9 +104,96 @@
     ]
   },
   {
+    "title": "createUserInput",
+    "description": "",
+    "canonical": "inputs/createUserInput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "createUserInput",
+      "group": [
+        "API & Reference",
+        "Users",
+        "Inputs"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/name"
+            }
+          },
+          {
+            "name": "email",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "email",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/email"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Email",
+    "description": "",
+    "canonical": "scalars/Email",
+    "category": "graphql",
+    "type": "graphql_scalar",
+    "context": {
+      "graphqlTypeShort": "scalar",
+      "graphqlName": "Email",
+      "group": [
+        "API & Reference",
+        "Scalars"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": []
+  },
+  {
     "title": "Todo",
     "description": "",
-    "canonical": "objects/todo",
+    "canonical": "objects/Todo",
     "category": "graphql",
     "type": "graphql_object",
     "context": {
@@ -471,6 +289,263 @@
           {
             "name": "type",
             "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "getUser",
+    "description": "",
+    "canonical": "users/queries/get",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "getUser",
+      "group": [
+        "API & Reference",
+        "Users",
+        "Queries"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "query getUser($id: ID!) {\n  getUser(id: $id) {\n    # getUser fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "User",
+            "description": "",
+            "context": {
+              "graphqlName": "getUser",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "getTodo",
+    "description": "",
+    "canonical": "todos/queries/getTodo",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "getTodo",
+      "group": [
+        "API & Reference",
+        "Todos",
+        "Queries"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "query getTodo($id: ID!) {\n  getTodo(id: $id) {\n    # getTodo fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "User",
+            "description": "",
+            "context": {
+              "graphqlName": "getTodo",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "createUser",
+    "description": "",
+    "canonical": "users/mutations/createUser",
+    "category": "graphql",
+    "type": "graphql_mutation",
+    "context": {
+      "graphqlTypeShort": "mutation",
+      "graphqlName": "createUser",
+      "group": [
+        "API & Reference",
+        "Users",
+        "Mutations"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "mutation createUser($input: createUserInput!) {\n  createUser(input: $input) {\n    # createUser fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "input",
+            "type": "createUserInput!",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "input",
+              "graphqlName": "createUserInput",
+              "group": [
+                "API & Reference",
+                "Users",
+                "Inputs"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "inputs/createUserInput"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "User",
+            "description": "",
+            "context": {
+              "graphqlName": "createUser",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
           }
         ]
       }

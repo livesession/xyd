@@ -1,15 +1,33 @@
 extend schema @docs(
-    sort: {
-        scalars: 1,
-        enums: 2,
-        interfaces: 3,
-        inputObjects: 4,
-        objects: 5,
-        unions: 6,
-        queries: 7,
-        mutations: 8,
-        subscriptions: 9
-    }
+    sort: [
+        {
+            node: "scalar",
+        },
+        {
+            node: "enum",
+        },
+        {
+            node: "interface",
+        },
+        {
+            node: "input",
+        },
+        {
+            node: "object",
+        },
+        {
+            node: "union",
+        },
+        {
+            node: "query",
+        },
+        {
+            node: "mutation",
+        },
+        {
+            node: "subscription",
+        }
+    ]
 )
 
 # Custom scalar

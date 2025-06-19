@@ -2,7 +2,7 @@
   {
     "title": "Book",
     "description": "",
-    "canonical": "objects/book",
+    "canonical": "objects/Book",
     "category": "graphql",
     "type": "graphql_object",
     "context": {
@@ -10,7 +10,8 @@
       "graphqlName": "Book",
       "group": [
         "Objects"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
@@ -35,7 +36,7 @@
                 "properties": [],
                 "meta": [],
                 "symbolDef": {
-                  "canonical": ""
+                  "canonical": "/first"
                 }
               },
               {
@@ -50,7 +51,7 @@
                 "properties": [],
                 "meta": [],
                 "symbolDef": {
-                  "canonical": ""
+                  "canonical": "/after"
                 }
               },
               {
@@ -70,7 +71,7 @@
                   }
                 ],
                 "symbolDef": {
-                  "canonical": ""
+                  "canonical": "/limit"
                 }
               }
             ],
@@ -101,7 +102,7 @@
                   }
                 ],
                 "symbolDef": {
-                  "canonical": ""
+                  "canonical": "/limit"
                 }
               }
             ],
@@ -140,7 +141,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "objects/author"
+              "canonical": "objects/Author"
             }
           },
           {
@@ -160,7 +161,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "objects/library"
+              "canonical": "objects/Library"
             }
           }
         ],
@@ -176,7 +177,7 @@
   {
     "title": "Author",
     "description": "",
-    "canonical": "objects/author",
+    "canonical": "objects/Author",
     "category": "graphql",
     "type": "graphql_object",
     "context": {
@@ -184,7 +185,8 @@
       "graphqlName": "Author",
       "group": [
         "Objects"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
@@ -221,7 +223,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/name"
             }
           }
         ],
@@ -237,7 +239,7 @@
   {
     "title": "Library",
     "description": "",
-    "canonical": "objects/library",
+    "canonical": "objects/Library",
     "category": "graphql",
     "type": "graphql_object",
     "context": {
@@ -245,7 +247,8 @@
       "graphqlName": "Library",
       "group": [
         "Objects"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
@@ -282,7 +285,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/name"
             }
           }
         ],

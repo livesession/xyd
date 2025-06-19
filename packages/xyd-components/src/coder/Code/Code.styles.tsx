@@ -1,11 +1,16 @@
-import {css} from "@linaria/core";
+import { css } from "@linaria/core";
 
 export const LineNumberHost = css`
     @layer defaults {
         display: flex;
+        position: relative;
         
         [part="line-number"] {
-            margin: 0 12px 0px 4px;
+            /* margin: 0 12px 0px 4px; */
+            width: 25px;
+            left: -15px;
+            position: absolute;
+            margin: 0;
             text-align: right;
             user-select: none;
             opacity: 0.5;
@@ -26,6 +31,8 @@ export const MarkHost = css`
         }
 
         &[data-diff="true"] {
+            position: relative;
+
             &[data-query="-"] {
                 border-color: var(--xyd-text-color--error--active);
                 background-color: var(--xyd-text-color--error--muted);
@@ -35,10 +42,20 @@ export const MarkHost = css`
                 border-color: var(--xyd-text-color--success--active);
                 background-color: var(--xyd-text-color--success--muted);
             }
+
+            & > :first-child {
+                position: absolute;
+                left: 5px;
+            }
         }
 
         [part="line"] {
             flex: 1 1 0%;
+        }
+
+        xyd-code-linenumber [part="line"]{
+            position: relative;
+            left: 25px;
         }
     }
 `;
@@ -91,7 +108,7 @@ export const CodeHost = css`
 
         overflow-y: scroll;
 
-        [data-size="full"] {
+        &[data-size="full"] {
             max-height: 100%;   
         }
 
@@ -100,3 +117,25 @@ export const CodeHost = css`
     }
 `;
 
+
+export const CodeDescription = css`
+    padding: 17px 20px 10px;
+    background-color: var(--white);
+    border-radius: 0 0 8px 7px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    color: var(--text-primary);
+
+    & > div:first-child {
+        display: flex;
+        align-items: center;
+        padding-top: 5px;
+    }
+
+    & > div:last-child {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+`

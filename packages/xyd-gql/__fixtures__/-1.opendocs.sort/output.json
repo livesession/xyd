@@ -2,7 +2,7 @@
   {
     "title": "DateTime",
     "description": "",
-    "canonical": "scalars/datetime",
+    "canonical": "scalars/DateTime",
     "category": "graphql",
     "type": "graphql_scalar",
     "context": {
@@ -10,7 +10,8 @@
       "graphqlName": "DateTime",
       "group": [
         "Scalars"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
@@ -20,7 +21,7 @@
   {
     "title": "UserRole",
     "description": "",
-    "canonical": "enums/userrole",
+    "canonical": "enums/UserRole",
     "category": "graphql",
     "type": "graphql_enum",
     "context": {
@@ -28,7 +29,8 @@
       "graphqlName": "UserRole",
       "group": [
         "Enums"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
@@ -59,7 +61,7 @@
   {
     "title": "Node",
     "description": "",
-    "canonical": "interfaces/node",
+    "canonical": "interfaces/Node",
     "category": "graphql",
     "type": "graphql_interface",
     "context": {
@@ -67,7 +69,8 @@
       "graphqlName": "Node",
       "group": [
         "Interfaces"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
@@ -93,7 +96,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/id"
             }
           }
         ]
@@ -103,7 +106,7 @@
   {
     "title": "UserInput",
     "description": "",
-    "canonical": "inputs/userinput",
+    "canonical": "inputs/UserInput",
     "category": "graphql",
     "type": "graphql_input",
     "context": {
@@ -111,7 +114,8 @@
       "graphqlName": "UserInput",
       "group": [
         "Inputs"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
@@ -137,7 +141,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/name"
             }
           },
           {
@@ -157,7 +161,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/email"
             }
           },
           {
@@ -172,7 +176,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "enums/userrole"
+              "canonical": "enums/UserRole"
             }
           }
         ]
@@ -182,7 +186,7 @@
   {
     "title": "User",
     "description": "",
-    "canonical": "objects/user",
+    "canonical": "objects/User",
     "category": "graphql",
     "type": "graphql_object",
     "context": {
@@ -190,7 +194,8 @@
       "graphqlName": "User",
       "group": [
         "Objects"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
@@ -227,7 +232,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/id"
             }
           },
           {
@@ -247,7 +252,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/name"
             }
           },
           {
@@ -267,7 +272,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/email"
             }
           },
           {
@@ -287,7 +292,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "enums/userrole"
+              "canonical": "enums/UserRole"
             }
           },
           {
@@ -307,7 +312,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "scalars/datetime"
+              "canonical": "scalars/DateTime"
             }
           }
         ],
@@ -321,9 +326,70 @@
     ]
   },
   {
+    "title": "SearchResult",
+    "description": "",
+    "canonical": "unions/SearchResult",
+    "category": "graphql",
+    "type": "graphql_union",
+    "context": {
+      "graphqlTypeShort": "union",
+      "graphqlName": "SearchResult",
+      "group": [
+        "Unions"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Possible types",
+        "properties": [
+          {
+            "name": "User",
+            "type": "User",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "object",
+              "graphqlName": "User",
+              "group": [
+                "Objects"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          },
+          {
+            "name": "Post",
+            "type": "Post",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "object",
+              "graphqlName": "Post",
+              "group": [
+                "Objects"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/Post"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "title": "Post",
     "description": "",
-    "canonical": "objects/post",
+    "canonical": "objects/Post",
     "category": "graphql",
     "type": "graphql_object",
     "context": {
@@ -331,7 +397,8 @@
       "graphqlName": "Post",
       "group": [
         "Objects"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
@@ -368,7 +435,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/id"
             }
           },
           {
@@ -388,7 +455,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/title"
             }
           },
           {
@@ -408,7 +475,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/content"
             }
           },
           {
@@ -428,7 +495,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "objects/user"
+              "canonical": "objects/User"
             }
           }
         ],
@@ -436,145 +503,6 @@
           {
             "name": "type",
             "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Subscription",
-    "description": "",
-    "canonical": "objects/subscription",
-    "category": "graphql",
-    "type": "graphql_object",
-    "context": {
-      "graphqlTypeShort": "object",
-      "graphqlName": "Subscription",
-      "group": [
-        "Objects"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [],
-        "variants": [],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          }
-        ]
-      },
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "userCreated",
-            "type": "User!",
-            "description": "",
-            "context": {
-              "graphqlName": "userCreated",
-              "graphqlTypeFlat": "User",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "objects/user"
-            }
-          },
-          {
-            "name": "userUpdated",
-            "type": "User!",
-            "description": "",
-            "context": {
-              "graphqlName": "userUpdated",
-              "graphqlTypeFlat": "User",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "objects/user"
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "SearchResult",
-    "description": "",
-    "canonical": "unions/searchresult",
-    "category": "graphql",
-    "type": "graphql_union",
-    "context": {
-      "graphqlTypeShort": "union",
-      "graphqlName": "SearchResult",
-      "group": [
-        "Unions"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Possible types",
-        "properties": [
-          {
-            "name": "User",
-            "type": "User",
-            "description": "",
-            "context": {
-              "graphqlTypeShort": "object",
-              "graphqlName": "User",
-              "group": [
-                "Objects"
-              ]
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/user"
-            }
-          },
-          {
-            "name": "Post",
-            "type": "Post",
-            "description": "",
-            "context": {
-              "graphqlTypeShort": "object",
-              "graphqlName": "Post",
-              "group": [
-                "Objects"
-              ]
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/post"
-            }
           }
         ]
       }
@@ -591,7 +519,8 @@
       "graphqlName": "user",
       "group": [
         "Queries"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -634,7 +563,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/id"
             }
           }
         ]
@@ -654,7 +583,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "objects/user"
+              "canonical": "objects/User"
             }
           }
         ]
@@ -672,7 +601,8 @@
       "graphqlName": "users",
       "group": [
         "Queries"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -719,7 +649,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "objects/user"
+              "canonical": "objects/User"
             }
           }
         ]
@@ -737,7 +667,8 @@
       "graphqlName": "search",
       "group": [
         "Queries"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -780,7 +711,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/query"
             }
           }
         ]
@@ -805,7 +736,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "unions/searchresult"
+              "canonical": "unions/SearchResult"
             }
           }
         ]
@@ -815,7 +746,7 @@
   {
     "title": "createUser",
     "description": "",
-    "canonical": "mutations/createuser",
+    "canonical": "mutations/createUser",
     "category": "graphql",
     "type": "graphql_mutation",
     "context": {
@@ -823,7 +754,8 @@
       "graphqlName": "createUser",
       "group": [
         "Mutations"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -858,7 +790,8 @@
               "graphqlName": "UserInput",
               "group": [
                 "Inputs"
-              ]
+              ],
+              "scopes": []
             },
             "properties": [],
             "meta": [
@@ -868,7 +801,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "inputs/userinput"
+              "canonical": "inputs/UserInput"
             }
           }
         ]
@@ -893,7 +826,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "objects/user"
+              "canonical": "objects/User"
             }
           }
         ]
@@ -903,7 +836,7 @@
   {
     "title": "updateUser",
     "description": "",
-    "canonical": "mutations/updateuser",
+    "canonical": "mutations/updateUser",
     "category": "graphql",
     "type": "graphql_mutation",
     "context": {
@@ -911,7 +844,8 @@
       "graphqlName": "updateUser",
       "group": [
         "Mutations"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -954,7 +888,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/id"
             }
           },
           {
@@ -966,7 +900,8 @@
               "graphqlName": "UserInput",
               "group": [
                 "Inputs"
-              ]
+              ],
+              "scopes": []
             },
             "properties": [],
             "meta": [
@@ -976,7 +911,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "inputs/userinput"
+              "canonical": "inputs/UserInput"
             }
           }
         ]
@@ -1001,7 +936,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "objects/user"
+              "canonical": "objects/User"
             }
           }
         ]
@@ -1011,13 +946,16 @@
   {
     "title": "userCreated",
     "description": "",
-    "canonical": "subscriptions/usercreated",
+    "canonical": "subscriptions/userCreated",
     "category": "graphql",
     "type": "graphql_subscription",
     "context": {
       "graphqlTypeShort": "subscription",
       "graphqlName": "userCreated",
-      "group": []
+      "group": [
+        "Subscriptions"
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -1064,7 +1002,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "objects/user"
+              "canonical": "objects/User"
             }
           }
         ]
@@ -1074,13 +1012,16 @@
   {
     "title": "userUpdated",
     "description": "",
-    "canonical": "subscriptions/userupdated",
+    "canonical": "subscriptions/userUpdated",
     "category": "graphql",
     "type": "graphql_subscription",
     "context": {
       "graphqlTypeShort": "subscription",
       "graphqlName": "userUpdated",
-      "group": []
+      "group": [
+        "Subscriptions"
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -1127,7 +1068,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "objects/user"
+              "canonical": "objects/User"
             }
           }
         ]

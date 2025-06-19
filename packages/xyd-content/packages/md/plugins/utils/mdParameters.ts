@@ -34,11 +34,38 @@ function sanitizeParameters(value: string): string {
 }
 
 function removeParameters(text: string): string {
-    // Remove square brackets and their content
-    text = text.replace(/\[[^\]]*\]/g, '');
-    // Remove curly braces and their content
-    text = text.replace(/\{[^}]*\}/g, '');
-    return text.trim();
+    // Use a stack-based approach to handle nested brackets
+    let result = '';
+    let stack = 0;
+    let inQuotes = false;
+    let quoteChar = '';
+    
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        
+        // Handle quotes
+        if ((char === '"' || char === "'") && !inQuotes) {
+            inQuotes = true;
+            quoteChar = char;
+        } else if (char === quoteChar && inQuotes) {
+            inQuotes = false;
+            quoteChar = '';
+        }
+        
+        // Only process brackets when not in quotes
+        if (!inQuotes) {
+            if (char === '[' || char === '{') {
+                stack++;
+            } else if (char === ']' || char === '}') {
+                stack--;
+            } else if (stack === 0) {
+                result += char;
+            }
+        }
+    }
+    
+    // Clean up multiple spaces and trim
+    return result.replace(/\s+/g, ' ').trim();
 }
 
 function parseParameters(
@@ -47,14 +74,11 @@ function parseParameters(
     closingDelimiter: string
 ) {
     const attributes: Record<string, string> = {};
-
-    // First, find all parameter blocks
-    const blockRegex = new RegExp(`\\${delimiter}([^\\${closingDelimiter}]*)\\${closingDelimiter}`, 'g');
-    let blockMatch;
     
-    while ((blockMatch = blockRegex.exec(text)) !== null) {
-        const blockContent = blockMatch[1];
-        
+    // Find all parameter blocks using stack-based approach
+    const blocks = findNestedBlocks(text, delimiter, closingDelimiter);
+    
+    for (const blockContent of blocks) {
         // Then parse individual parameters within the block
         const paramRegex = /(!)?([^=\s]+)(?:=(?:"([^"]*)"|([^\s]*)))?/g;
         let paramMatch;
@@ -77,4 +101,43 @@ function parseParameters(
     }
 
     return attributes;
+}
+
+function findNestedBlocks(text: string, openDelimiter: string, closeDelimiter: string): string[] {
+    const blocks: string[] = [];
+    let stack = 0;
+    let startIndex = -1;
+    let inQuotes = false;
+    let quoteChar = '';
+    
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        
+        // Handle quotes
+        if ((char === '"' || char === "'") && !inQuotes) {
+            inQuotes = true;
+            quoteChar = char;
+        } else if (char === quoteChar && inQuotes) {
+            inQuotes = false;
+            quoteChar = '';
+        }
+        
+        // Only process delimiters when not in quotes
+        if (!inQuotes) {
+            if (char === openDelimiter) {
+                if (stack === 0) {
+                    startIndex = i + 1; // +1 to skip the opening delimiter
+                }
+                stack++;
+            } else if (char === closeDelimiter) {
+                stack--;
+                if (stack === 0 && startIndex !== -1) {
+                    blocks.push(text.substring(startIndex, i));
+                    startIndex = -1;
+                }
+            }
+        }
+    }
+    
+    return blocks;
 }

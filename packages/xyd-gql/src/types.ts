@@ -3,29 +3,34 @@ import {GraphQLField, OperationTypeNode} from "graphql";
 
 import type {DefinitionProperty} from "@xyd-js/uniform";
 
-export interface OpenDocsSortConfig {
-    queries?: number;
-    mutations?: number;
-    subscriptions?: number;
-    interfaces?: number;
-    objects?: number;
-    inputObjects?: number;
-    unions?: number;
-    enums?: number;
-    scalars?: number;
+// New sorting types based on the documentation
+export interface SortItem {
+    node?: string;
+    group?: string[];
+    stack?: number;
 }
 
-export const DEFAULT_SORT_ORDER: OpenDocsSortConfig = {
-    queries: 1,
-    mutations: 2,
-    objects: 3,
-    interfaces: 4,
-    enums: 5,
-    unions: 6,
-    inputObjects: 7,
-    scalars: 8,
-    subscriptions: 9
-};
+export interface SortStack {
+    sortStack?: string[][];
+    sort?: SortItem[];
+}
+
+export interface OpenDocsSortConfig {
+    sortStack?: string[][];
+    sort?: SortItem[];
+}
+
+export const DEFAULT_SORT_ORDER: SortItem[] = [
+    { node: "query" },
+    { node: "mutation" },
+    { node: "subscription" },
+    { node: "object" },
+    { node: "interface" },
+    { node: "union" },
+    { node: "input" },
+    { node: "enum" },
+    { node: "scalar" },
+];
 
 export interface GQLSchemaToReferencesOptions {
     // TODO: support line ranged in the future?
@@ -84,5 +89,15 @@ export class GQLOperation implements GraphQLField<any, any> {
 
 export interface GQLTypeInfo {
     typeFlat?: GraphQLNamedType
+}
+
+export interface FieldMetadata {
+    path?: string;
+    groups?: string[];
+}
+
+export interface GQLSchemaMetadata {
+    fields: Map<string, FieldMetadata>;
+    rootGroups?: string[];
 }
 

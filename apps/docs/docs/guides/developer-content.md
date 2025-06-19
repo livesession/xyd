@@ -51,7 +51,6 @@ const MyComponent = () => {
   return <div>Hello, world!</div>
 }
 ```
-
 You can also specify multiple single lines or ranges:
 
 * Multiple single lines: `{1,3,5}`
@@ -141,6 +140,76 @@ pnpm add -g xyd-js
 ```
 :::
 
+## Code Attributes [maxTocDepth=3]
+
+Code attributes allow you to customize the behavior and appearance of code blocks. Attributes are specified within square brackets `[]` after the language identifier and before the code content.
+
+**Syntax:**
+~~~
+```language [attribute1 attribute2]
+your code here
+```
+~~~
+
+### Line Numbers
+You can add line numbers to code blocks by adding the `lines` attribute after the language identifier.
+
+**Input:**
+~~~
+```bash [lines]
+npm i -g xyd-js
+```
+~~~
+
+**Output:**
+```bash [lines]
+npm i -g xyd-js
+```
+
+### Disable Scroll
+To make a code snippet display in full height without scrolling, you can use the `!scroll` attribute:
+
+**Input:**
+~~~
+```bash [!scroll]
+# your long code snippet but want to show in full height
+```
+~~~
+
+**Output:**
+```bash [!scroll]
+# your long code snippet but want to show in full height
+```
+
+### Code Description
+**Input:**
+~~~
+```bash [descHead="Tip" desc="Install CLI to **run** and **build** your docs."]
+npm i -g xyd-js
+```
+~~~
+
+**Output:**
+```bash [descHead="Tip" desc="Install CLI to **run** and **build** your docs."]
+npm i -g xyd-js
+```
+
+:::callout
+Currently `desc` supports a basic markdown syntax like `**`, `*` or `~~` but **DOES NOT** support more [advanced writing](/docs/guides/special-symbols) features.
+:::
+
+you can also use custom [icon](/docs/guides/icons):
+~~~
+```bash [descIcon="folder-code"]
+npm i -g xyd-js
+```
+~~~
+
+**Output:**
+```bash [descIcon="folder-code" descHead="Tip" desc="Install CLI to **run** and **build** your docs."]
+npm i -g xyd-js
+```
+
 ## Import Code
 
 You can import code from a file using the [`@importCode`](/docs/reference/functions/importCode) function:
@@ -153,4 +222,5 @@ You can import code from a file using the [`@importCode`](/docs/reference/functi
 You can also render changelog page using the [`@changelog`](/docs/reference/functions/changelog) function:
 ```md
 @changelog "~/CHANGELOG.md"
+```
 ```

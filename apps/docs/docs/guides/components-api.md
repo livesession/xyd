@@ -120,7 +120,7 @@ This will generate an API documentation page that shows:
 Please make sure you mentioned `@category Component` or `@component` in TypeDoc comment.
 :::
 
-## Composition
+## Composition {label="Coming Soon"}
 
 You can use [composition](/docs/guides/compose-content) to make your component API page more custom:
 
@@ -138,17 +138,20 @@ uniform: "@components/writer/Callout/Callout.tsx"
 Note that you must have an Admin or Owner role to manage webhook settings.
 :::
 
-<<<examples
-```tsx
-<Callout>
-Note that you must have an Admin or Owner role to manage webhook settings.
-</Callout>
-```
 
-```md
-:::callout
-Note that you must have an Admin or Owner role to manage webhook settings.
-:::
-```
-<<<
+@let(
+  examples=(
+    ```tsx
+    <Callout>
+    Note that you must have an Admin or Owner role to manage webhook settings.
+    </Callout>
+    ```
+
+    ```md
+    :::callout
+    Note that you must have an Admin or Owner role to manage webhook settings.
+    :::
+    ```
+  )
+)
 ~~~

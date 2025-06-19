@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { HighlightedCode } from 'codehike/code';
 
 import {
@@ -441,6 +441,18 @@ function $Pre(
     }
     const lang = (props?.children?.props?.className || "").replace("language-", "")
 
+    let descriptionContent: React.ReactNode | undefined = undefined
+    if (props?.descriptionContent) {
+        const code = mdxContent(props?.descriptionContent)
+        if (code?.component) {
+            const Component = MemoMDXComponent(code?.component)
+
+            descriptionContent = <Component components={this.components()} />
+        }
+    }
+
+    console.log("descriptionContent", descriptionContent)
+
     return <CodeSample
         theme={this.settings?.theme?.markdown?.syntaxHighlight || undefined}
         name={lang}
@@ -453,7 +465,11 @@ function $Pre(
                 highlighted,
             }
         ]}
-        size="full" // TODO: in the future configurable
+        lineNumbers={props?.lineNumbers}
+        size={props?.size}
+        descriptionHead={props?.descriptionHead}
+        descriptionContent={descriptionContent}
+        descriptionIcon={props?.descriptionIcon}
     />
 }
 
@@ -483,3 +499,77 @@ function $Link({
         {children}
     </Link>
 }
+
+// TODO: move to content?
+function mdxExport(code: string) {
+    // Create a wrapper around React.createElement that adds keys to elements in lists
+    const scope = {
+        Fragment: React.Fragment,
+        jsxs: createElementWithKeys,
+        jsx: createElementWithKeys,
+        jsxDEV: createElementWithKeys,
+    }
+    const fn = new Function(...Object.keys(scope), code)
+
+    return fn(scope)
+}
+
+function MemoMDXComponent(codeComponent: any) {
+    return useMemo(
+        () => codeComponent ? codeComponent : null,
+        [codeComponent]
+    )
+}
+
+
+// // TODO: move to content?
+function mdxContent(code: string) {
+    const content = mdxExport(code) // TODO: fix any
+    if (!mdxExport) {
+        return {}
+    }
+
+    return {
+        component: content?.default,
+    }
+}
+
+const createElementWithKeys = (type: any, props: any) => {
+    // Process children to add keys to all elements
+    const processChildren = (childrenArray: any[]): any[] => {
+        return childrenArray.map((child, index) => {
+            // If the child is a React element and doesn't have a key, add one
+            if (React.isValidElement(child) && !child.key) {
+                return React.cloneElement(child, {key: `mdx-${index}`});
+            }
+            // If the child is an array, process it recursively
+            if (Array.isArray(child)) {
+                return processChildren(child);
+            }
+            return child;
+        });
+    };
+
+    // Handle both cases: children as separate args or as props.children
+    let processedChildren;
+
+    if (props && props.children) {
+        if (Array.isArray(props.children)) {
+            processedChildren = processChildren(props.children);
+        } else if (React.isValidElement(props.children) && !props.children.key) {
+            // Single child without key
+            processedChildren = React.cloneElement(props.children, {key: 'mdx-child'});
+        } else {
+            // Single child with key or non-React element
+            processedChildren = props.children;
+        }
+    } else {
+        processedChildren = [];
+    }
+
+    // Create the element with processed children
+    return React.createElement(type, {
+        ...props,
+        children: processedChildren
+    });
+};

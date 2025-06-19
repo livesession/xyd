@@ -1,8 +1,455 @@
 [
   {
+    "title": "Role",
+    "description": "",
+    "canonical": "enums/Role",
+    "category": "graphql",
+    "type": "graphql_enum",
+    "context": {
+      "graphqlTypeShort": "enum",
+      "graphqlName": "Role",
+      "group": [
+        "Enums"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Valid values",
+        "properties": [
+          {
+            "name": "USER",
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "ADMIN",
+            "type": "string",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Data",
+    "description": "",
+    "canonical": "objects/Data",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Data",
+      "group": [
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          },
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/name"
+            }
+          },
+          {
+            "name": "metadata",
+            "type": "Metadata!",
+            "description": "",
+            "context": {
+              "graphqlName": "metadata",
+              "graphqlTypeFlat": "Metadata",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/Metadata"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Metadata",
+    "description": "",
+    "canonical": "objects/Metadata",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Metadata",
+      "group": [
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "active",
+            "type": "Boolean!",
+            "description": "",
+            "context": {
+              "graphqlName": "active",
+              "graphqlTypeFlat": "Boolean",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/active"
+            }
+          },
+          {
+            "name": "tags",
+            "type": "[String!]!",
+            "description": "",
+            "context": {
+              "graphqlName": "tags",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/tags"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "DataInput",
+    "description": "",
+    "canonical": "inputs/DataInput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "DataInput",
+      "group": [
+        "Inputs"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "name",
+            "type": "String",
+            "description": "",
+            "context": {
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "defaults",
+                "value": "default"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/name"
+            }
+          },
+          {
+            "name": "count",
+            "type": "Int",
+            "description": "",
+            "context": {
+              "graphqlName": "count",
+              "graphqlTypeFlat": "Int",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "defaults",
+                "value": 0
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/count"
+            }
+          },
+          {
+            "name": "isActive",
+            "type": "Boolean",
+            "description": "",
+            "context": {
+              "graphqlName": "isActive",
+              "graphqlTypeFlat": "Boolean",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "defaults",
+                "value": true
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/isActive"
+            }
+          },
+          {
+            "name": "role",
+            "type": "Role",
+            "description": "",
+            "context": {
+              "graphqlName": "role",
+              "graphqlTypeFlat": "Role",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "defaults",
+                "value": "USER"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "enums/Role"
+            }
+          },
+          {
+            "name": "tags",
+            "type": "[String!]",
+            "description": "",
+            "context": {
+              "graphqlName": "tags",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "defaults",
+                "value": [
+                  "tag1",
+                  "tag2"
+                ]
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/tags"
+            }
+          },
+          {
+            "name": "metadata",
+            "type": "MetadataInput",
+            "description": "",
+            "context": {
+              "graphqlName": "metadata",
+              "graphqlTypeFlat": "MetadataInput",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "defaults",
+                "value": {
+                  "active": true,
+                  "tags": [
+                    "default"
+                  ]
+                }
+              }
+            ],
+            "symbolDef": {
+              "canonical": "inputs/MetadataInput"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "MetadataInput",
+    "description": "",
+    "canonical": "inputs/MetadataInput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "MetadataInput",
+      "group": [
+        "Inputs"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "active",
+            "type": "Boolean",
+            "description": "",
+            "context": {
+              "graphqlName": "active",
+              "graphqlTypeFlat": "Boolean",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "defaults",
+                "value": false
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/active"
+            }
+          },
+          {
+            "name": "tags",
+            "type": "[String!]",
+            "description": "",
+            "context": {
+              "graphqlName": "tags",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "defaults",
+                "value": [
+                  "default"
+                ]
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/tags"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "title": "getData",
     "description": "",
-    "canonical": "queries/getdata",
+    "canonical": "queries/getData",
     "category": "graphql",
     "type": "graphql_query",
     "context": {
@@ -10,7 +457,8 @@
       "graphqlName": "getData",
       "group": [
         "Queries"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -45,7 +493,8 @@
               "graphqlName": "DataInput",
               "group": [
                 "Inputs"
-              ]
+              ],
+              "scopes": []
             },
             "properties": [],
             "meta": [
@@ -55,7 +504,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "inputs/datainput"
+              "canonical": "inputs/DataInput"
             }
           }
         ]
@@ -75,7 +524,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "objects/data"
+              "canonical": "objects/Data"
             }
           }
         ]
@@ -85,7 +534,7 @@
   {
     "title": "getDataList",
     "description": "",
-    "canonical": "queries/getdatalist",
+    "canonical": "queries/getDataList",
     "category": "graphql",
     "type": "graphql_query",
     "context": {
@@ -93,7 +542,8 @@
       "graphqlName": "getDataList",
       "group": [
         "Queries"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -140,7 +590,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/limit"
             }
           },
           {
@@ -160,7 +610,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/offset"
             }
           },
           {
@@ -175,7 +625,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/page"
             }
           }
         ]
@@ -195,449 +645,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "objects/data"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Data",
-    "description": "",
-    "canonical": "objects/data",
-    "category": "graphql",
-    "type": "graphql_object",
-    "context": {
-      "graphqlTypeShort": "object",
-      "graphqlName": "Data",
-      "group": [
-        "Objects"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [],
-        "variants": [],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          }
-        ]
-      },
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "id",
-            "type": "ID!",
-            "description": "",
-            "context": {
-              "graphqlName": "id",
-              "graphqlTypeFlat": "ID",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "name",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "name",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "metadata",
-            "type": "Metadata!",
-            "description": "",
-            "context": {
-              "graphqlName": "metadata",
-              "graphqlTypeFlat": "Metadata",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "objects/metadata"
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Metadata",
-    "description": "",
-    "canonical": "objects/metadata",
-    "category": "graphql",
-    "type": "graphql_object",
-    "context": {
-      "graphqlTypeShort": "object",
-      "graphqlName": "Metadata",
-      "group": [
-        "Objects"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [],
-        "variants": [],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          }
-        ]
-      },
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "active",
-            "type": "Boolean!",
-            "description": "",
-            "context": {
-              "graphqlName": "active",
-              "graphqlTypeFlat": "Boolean",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "tags",
-            "type": "[String!]!",
-            "description": "",
-            "context": {
-              "graphqlName": "tags",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Role",
-    "description": "",
-    "canonical": "enums/role",
-    "category": "graphql",
-    "type": "graphql_enum",
-    "context": {
-      "graphqlTypeShort": "enum",
-      "graphqlName": "Role",
-      "group": [
-        "Enums"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Valid values",
-        "properties": [
-          {
-            "name": "USER",
-            "type": "string",
-            "description": ""
-          },
-          {
-            "name": "ADMIN",
-            "type": "string",
-            "description": ""
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "DataInput",
-    "description": "",
-    "canonical": "inputs/datainput",
-    "category": "graphql",
-    "type": "graphql_input",
-    "context": {
-      "graphqlTypeShort": "input",
-      "graphqlName": "DataInput",
-      "group": [
-        "Inputs"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "name",
-            "type": "String",
-            "description": "",
-            "context": {
-              "graphqlName": "name",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "defaults",
-                "value": "default"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "count",
-            "type": "Int",
-            "description": "",
-            "context": {
-              "graphqlName": "count",
-              "graphqlTypeFlat": "Int",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "defaults",
-                "value": 0
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "isActive",
-            "type": "Boolean",
-            "description": "",
-            "context": {
-              "graphqlName": "isActive",
-              "graphqlTypeFlat": "Boolean",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "defaults",
-                "value": true
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "role",
-            "type": "Role",
-            "description": "",
-            "context": {
-              "graphqlName": "role",
-              "graphqlTypeFlat": "Role",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "defaults",
-                "value": "USER"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "enums/role"
-            }
-          },
-          {
-            "name": "tags",
-            "type": "[String!]",
-            "description": "",
-            "context": {
-              "graphqlName": "tags",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              },
-              {
-                "name": "defaults",
-                "value": [
-                  "tag1",
-                  "tag2"
-                ]
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "metadata",
-            "type": "MetadataInput",
-            "description": "",
-            "context": {
-              "graphqlName": "metadata",
-              "graphqlTypeFlat": "MetadataInput",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "defaults",
-                "value": {
-                  "active": true,
-                  "tags": [
-                    "default"
-                  ]
-                }
-              }
-            ],
-            "symbolDef": {
-              "canonical": "inputs/metadatainput"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "MetadataInput",
-    "description": "",
-    "canonical": "inputs/metadatainput",
-    "category": "graphql",
-    "type": "graphql_input",
-    "context": {
-      "graphqlTypeShort": "input",
-      "graphqlName": "MetadataInput",
-      "group": [
-        "Inputs"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "active",
-            "type": "Boolean",
-            "description": "",
-            "context": {
-              "graphqlName": "active",
-              "graphqlTypeFlat": "Boolean",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "defaults",
-                "value": false
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "tags",
-            "type": "[String!]",
-            "description": "",
-            "context": {
-              "graphqlName": "tags",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              },
-              {
-                "name": "defaults",
-                "value": [
-                  "default"
-                ]
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
+              "canonical": "objects/Data"
             }
           }
         ]

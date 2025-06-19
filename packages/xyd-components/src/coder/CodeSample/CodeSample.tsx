@@ -18,9 +18,21 @@ export interface CodeSampleProps {
     codeblocks?: CodeThemeBlockProps[];
     theme?: Theme
     size?: "full"
+    lineNumbers?: boolean
+    descriptionHead?: string
+    descriptionContent?: string | React.ReactNode
+    descriptionIcon?: string
     kind?: "secondary"
     controlByMeta?: boolean // TODO: BETTER IN THE FUTURE
 }
+
+const CodeContext = React.createContext<{
+    size?: "full"
+    lineNumbers?: boolean
+    descriptionHead?: string
+    descriptionContent?: string | React.ReactNode
+    descriptionIcon?: string
+}>({})
 
 export function CodeSample(props: CodeSampleProps) {
     return <Code
@@ -35,30 +47,58 @@ function $ThemedCodeSample(props: CodeSampleProps) {
     const { highlighted } = useCodeTheme()
 
     if (props.kind === "secondary") {
-        return <Code.Pre
-            codeblock={highlighted[0]}
-            handlers={[
-                annotations.mark,
-                annotations.bg,
-                annotations.lineNumbers
-            ]}
-        />
+        return <CodeContext value={{
+            size: props.size,
+            lineNumbers: props.lineNumbers,
+            descriptionHead: props.descriptionHead,
+            descriptionContent: props.descriptionContent,
+            descriptionIcon: props.descriptionIcon,
+        }}>
+            <Code.Pre
+                codeblock={highlighted[0]}
+                handlers={[
+                    annotations.mark,
+                    annotations.bg,
+                    annotations.lineNumbers
+                ]}
+            />
+        </CodeContext>
     }
-    return <$CodeSampleTabs
-        description={props.description}
-        highlighted={highlighted}
-        size={props.size}
-        controlByMeta={props.controlByMeta}
-    />
+
+    return <CodeContext value={{
+        size: props.size,
+        lineNumbers: props.lineNumbers,
+        descriptionHead: props.descriptionHead,
+        descriptionContent: props.descriptionContent,
+        descriptionIcon: props.descriptionIcon,
+    }}>
+        <$CodeSampleTabs
+            description={props.description}
+            highlighted={highlighted}
+            controlByMeta={props.controlByMeta}
+        />
+    </CodeContext>
 }
 
-const $CodeSampleTabs = withCodeTabs((props) => <Code.Pre
-    {...props}
-    handlers={[
+const $CodeSampleTabs = withCodeTabs((props) => {
+    const { lineNumbers, size, descriptionHead, descriptionContent, descriptionIcon } = React.useContext(CodeContext)
+    const handlers = [
         annotations.mark,
         annotations.bg,
-        annotations.lineNumbers,
         annotations.diff
-    ]}
-/>)
+    ]
+
+    if (lineNumbers) {
+        handlers.push(annotations.lineNumbers)
+    }
+
+    return <Code.Pre
+        {...props}
+        descriptionHead={descriptionHead}
+        descriptionContent={descriptionContent}
+        descriptionIcon={descriptionIcon}
+        size={size}
+        handlers={handlers}
+    />
+})
 

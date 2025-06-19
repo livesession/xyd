@@ -13,7 +13,7 @@ import { mdHeadingId } from "./mdHeadingId";
 import { rehypeHeading } from "./rehypeHeading";
 import { mdComponentDirective } from "./component-directives";
 import { mdFunctionChangelog, mdFunctionImportCode, mdFunctionUniform } from "./functions"
-import { mdServerHighlight } from "./developer-writing";
+import { mdCodeRehype } from "./developer-writing";
 import { mdMeta } from "./meta";
 import { mdComposer } from "./composer/mdComposer";
 import { outputVars } from "./output-variables";
@@ -66,6 +66,6 @@ function remarkFunctionPlugins(settings?: Settings) {
 export function defaultRehypePlugins(settings?: Settings) {
     return [
         rehypeHeading,
-        mdServerHighlight(settings)
+        mdCodeRehype(settings)
     ]
 }

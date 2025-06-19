@@ -9,18 +9,11 @@ import {
     GraphQLObjectType,
     GraphQLScalarType,
     GraphQLUnionType,
-    GraphQLNamedType,
     ConstValueNode,
     StringValueNode,
-    FieldDefinitionNode,
-    ObjectTypeDefinitionNode,
-    InterfaceTypeDefinitionNode,
-    TypeExtensionNode,
-    ObjectTypeExtensionNode,
-    Kind
 } from "graphql";
 
-import {GQLOperation, GQLSchemaToReferencesOptions, OpenDocsSortConfig} from "./types";
+import {GQLOperation, GQLSchemaToReferencesOptions, OpenDocsSortConfig, SortItem} from "./types";
 import {GraphqlUniformReferenceType} from "./gql-core";
 import {Context} from "./context";
 
@@ -44,14 +37,43 @@ export function openDocsExtensionsToOptions(
                             } else if (arg.value.value === false) {
                                 options.flat = false
                             }
-                        } else if (arg.name.value === 'sort' && arg.value.kind === 'ObjectValue') {
-                            const sortConfig: OpenDocsSortConfig = {};
-                            for (const field of arg.value.fields) {
-                                if (field.value.kind === 'IntValue') {
-                                    sortConfig[field.name.value as keyof OpenDocsSortConfig] = parseInt(field.value.value);
+                        } else if (arg.name.value === 'sort' && arg.value.kind === 'ListValue') {
+                            const sortItems: SortItem[] = [];
+                            for (const item of arg.value.values) {
+                                if (item.kind === 'ObjectValue') {
+                                    const sortItem: SortItem = {};
+                                    for (const field of item.fields) {
+                                        if (field.name.value === 'node' && field.value.kind === 'StringValue') {
+                                            sortItem.node = field.value.value;
+                                        } else if (field.name.value === 'group' && field.value.kind === 'ListValue') {
+                                            sortItem.group = field.value.values
+                                                .filter((v): v is StringValueNode => v.kind === 'StringValue')
+                                                .map(v => v.value);
+                                        } else if (field.name.value === 'stack' && field.value.kind === 'IntValue') {
+                                            sortItem.stack = parseInt(field.value.value);
+                                        }
+                                    }
+                                    sortItems.push(sortItem);
                                 }
                             }
-                            options.sort = sortConfig;
+                            if (!options.sort) {
+                                options.sort = {};
+                            }
+                            options.sort.sort = sortItems;
+                        } else if (arg.name.value === 'sortStack' && arg.value.kind === 'ListValue') {
+                            const sortStacks: string[][] = [];
+                            for (const item of arg.value.values) {
+                                if (item.kind === 'ListValue') {
+                                    const stack = item.values
+                                        .filter((v): v is StringValueNode => v.kind === 'StringValue')
+                                        .map(v => v.value);
+                                    sortStacks.push(stack);
+                                }
+                            }
+                            if (!options.sort) {
+                                options.sort = {};
+                            }
+                            options.sort.sortStack = sortStacks;
                         } else if (arg.name.value === 'route' && arg.value.kind === 'StringValue') {
                             options.route = arg.value.value;
                         }
@@ -65,6 +87,7 @@ export function openDocsExtensionsToOptions(
 }
 
 type OpenDocsGQLNode =
+    | GQLOperation
     | GraphQLScalarType
     | GraphQLObjectType
     | GraphQLField<any, any>
@@ -75,135 +98,74 @@ type OpenDocsGQLNode =
     | GraphQLEnumValue
     | GraphQLInputObjectType
 
-function isObjectTypeExtension(node: any): node is ObjectTypeExtensionNode {
-    return node.kind === Kind.OBJECT_TYPE_EXTENSION
-}
-
-function findFieldExtension(
-    schema: GraphQLSchema,
-    typeName: string,
-    fieldName: string
-): ObjectTypeExtensionNode | undefined {
-    // Look through all type extensions
-    for (const extension of schema.extensionASTNodes || []) {
-        // Type guard to check if this is an object type extension
-        if ('fields' in extension && 'name' in extension && extension.kind === Kind.OBJECT_TYPE_EXTENSION) {
-            if (extension.name.value === typeName) {
-                // Check if this extension contains our field
-                const field = extension.fields?.find((f: FieldDefinitionNode) => f.name.value === fieldName)
-                if (field) {
-                    return extension as ObjectTypeExtensionNode
-                }
-            }
-        }
-    }
-    return undefined
-}
-
 export function openDocsToGroup(
+    ctx: Context | undefined,
     odGqlNode: OpenDocsGQLNode,
-    gqlSchema?: GraphQLSchema
 ): string[] {
     let groups: string[] = []
-    let rootGroups: string[] = []
 
-    // Get root level groups from schema @docs directive
-    if (gqlSchema) {
-        // Check schema definition
-        if (gqlSchema.astNode?.directives) {
-            for (const directive of gqlSchema.astNode.directives) {
-                if (directive.name.value === OPEN_DOCS_SCHEMA_DIRECTIVE_NAME) {
-                    const groupArg = directive.arguments?.find((arg: { name: { value: string } }) => arg.name.value === 'group')
-                    if (groupArg?.value.kind === 'ListValue') {
-                        rootGroups = groupArg.value.values
-                            .filter((v: ConstValueNode): v is StringValueNode => v.kind === 'StringValue')
-                            .map(v => v.value)
+    const metadata = (ctx?.schema as any).__metadata;
+
+    if (metadata?.rootGroups) {
+        groups = [...metadata.rootGroups];
+    }
+
+    let directiveGroups = false
+
+    // Check schema metadata for field-specific groups (for operations)
+    if (ctx?.schema && 'name' in odGqlNode) {
+        const metadata = (ctx.schema as any).__metadata;
+        if (metadata?.fields) {
+            if ("_operationType" in odGqlNode) {
+                let fieldKey = ""
+
+                switch (odGqlNode._operationType) {
+                    case "query": {
+                        fieldKey = `Query.${odGqlNode.name}`;
+                        break;
+                    }
+                    case "mutation": {
+                        fieldKey = `Mutation.${odGqlNode.name}`;
+                        break;
+                    }
+                    case "subscription": {
+                        fieldKey = `Subscription.${odGqlNode.name}`;
+                        break;
                     }
                 }
-            }
-        }
 
-        // Check schema extensions
-        if (gqlSchema.extensionASTNodes) {
-            for (const extension of gqlSchema.extensionASTNodes) {
-                if (extension.kind === 'SchemaExtension') {
-                    for (const directive of extension.directives || []) {
-                        if (directive.name.value === OPEN_DOCS_SCHEMA_DIRECTIVE_NAME) {
-                            const groupArg = directive.arguments?.find((arg: { name: { value: string } }) => arg.name.value === 'group')
-                            if (groupArg?.value.kind === 'ListValue') {
-                                rootGroups = groupArg.value.values
-                                    .filter((v: ConstValueNode): v is StringValueNode => v.kind === 'StringValue')
-                                    .map(v => v.value)
-                            }
-                        }
-                    }
+                const fieldMetadata = metadata.fields.get(fieldKey);
+                if (fieldMetadata?.groups) {
+                    directiveGroups = true
+                    groups.push(...fieldMetadata.groups);
                 }
             }
         }
     }
 
-    // For fields, get groups from the specific extension that defines them
-    if ('astNode' in odGqlNode && odGqlNode.astNode?.kind === 'FieldDefinition') {
-        const parentType = getParentType(odGqlNode, gqlSchema)
-        if (parentType?.astNode?.directives && gqlSchema) {
-            // Find the specific extension that defines this field
-            const fieldName = odGqlNode.name
-            const typeName = parentType.name
-            const extension = findFieldExtension(gqlSchema, typeName, fieldName)
-            
-            if (extension?.directives) {
-                // Get groups from the extension
-                for (const directive of extension.directives) {
-                    if (directive.name.value === OPEN_DOCS_DIRECTIVE_NAME) {
-                        const groupArg = directive.arguments?.find((arg: { name: { value: string } }) => arg.name.value === 'group')
-                        if (groupArg?.value.kind === 'ListValue') {
-                            groups = groupArg.value.values
-                                .filter((v: ConstValueNode): v is StringValueNode => v.kind === 'StringValue')
-                                .map(v => v.value)
-                        }
-                    }
-                }
-            }
-
-            // If no groups on the extension, check the field itself
-            if (!groups?.length) {
-                const parentNode = parentType.astNode
-                if (parentNode.kind === 'ObjectTypeDefinition' || parentNode.kind === 'InterfaceTypeDefinition') {
-                    const fieldDef = parentNode.fields?.find((f: FieldDefinitionNode) => f.name.value === fieldName)
-                    
-                    if (fieldDef?.directives) {
-                        for (const directive of fieldDef.directives) {
-                            if (directive.name.value === OPEN_DOCS_DIRECTIVE_NAME) {
-                                const groupArg = directive.arguments?.find((arg: { name: { value: string } }) => arg.name.value === 'group')
-                                if (groupArg?.value.kind === 'ListValue') {
-                                    groups = groupArg.value.values
-                                        .filter((v: ConstValueNode): v is StringValueNode => v.kind === 'StringValue')
-                                        .map(v => v.value)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    } else {
-        // For non-fields, get groups from the node itself
-        if (odGqlNode.astNode?.directives) {
-            for (const directive of odGqlNode.astNode.directives) {
-                if (directive.name.value === OPEN_DOCS_DIRECTIVE_NAME) {
-                    const groupArg = directive.arguments?.find((arg: { name: { value: string } }) => arg.name.value === 'group')
+    // If no groups from metadata, try getting groups from the node itself
+    if (!directiveGroups && odGqlNode.astNode?.directives) {
+        for (const directive of odGqlNode.astNode.directives) {
+            switch (directive.name.value) {
+                case OPEN_DOCS_DIRECTIVE_NAME: {
+                    const groupArg = directive.arguments?.find((arg: {
+                        name: { value: string }
+                    }) => arg.name.value === 'group')
                     if (groupArg?.value.kind === 'ListValue') {
-                        groups = groupArg.value.values
+                        directiveGroups = true
+                        groups.push(...groupArg.value.values
                             .filter((v: ConstValueNode): v is StringValueNode => v.kind === 'StringValue')
                             .map(v => v.value)
+                        )
                     }
+                    break
                 }
             }
         }
     }
 
     // If still no groups, use default based on type
-    if (!groups?.length) {
+    if (!directiveGroups) {
         if (odGqlNode instanceof GraphQLObjectType) {
             groups.push("Objects")
         } else if (odGqlNode instanceof GraphQLInterfaceType) {
@@ -226,13 +188,12 @@ export function openDocsToGroup(
                     groups.push("Mutations")
                     break;
                 }
+                case "subscription": {
+                    groups.push("Subscriptions")
+                    break;
+                }
             }
         }
-    }
-
-    // Always include root groups if they exist
-    if (rootGroups.length > 0) {
-        return [...rootGroups, ...groups]
     }
 
     return groups
@@ -243,89 +204,50 @@ export function openDocsCanonical(
     gqlType: GraphqlUniformReferenceType,
 ) {
     let path = ""
-    let parentPath = ""
 
     // Get parent path if this is a field
     if ('astNode' in gqlType && gqlType.astNode?.kind === 'FieldDefinition' && ctx?.schema) {
-        // Find the parent type by looking at the schema's types
-        for (const type of Object.values(ctx.schema.getTypeMap())) {
-            if (type.astNode?.kind === 'ObjectTypeDefinition' || type.astNode?.kind === 'InterfaceTypeDefinition') {
-                const fields = type.astNode.fields || []
-                const fieldDef = fields.find(field => field.name.value === gqlType.name)
-                if (fieldDef) {
-                    // Found the parent type
-                    // Get its path
-                    if (type.astNode.directives) {
-                        for (const directive of type.astNode.directives) {
-                            if (directive.name.value === "doc") {
-                                const pathArg = directive.arguments?.find((arg: {
-                                    name: { value: string }
-                                }) => arg.name.value === 'path')
-                                if (pathArg?.value.kind === 'StringValue') {
-                                    parentPath = pathArg.value.value
-                                }
-                            }
-                        }
-                    }
+        // Check schema metadata for field-specific path
+        const metadata = (ctx.schema as any).__metadata;
+        if (metadata?.fields && 'name' in gqlType) {
+            if ("_operationType" in gqlType) {
+                let fieldKey = ""
 
-                    // Get field's path
-                    if (fieldDef.directives) {
-                        for (const directive of fieldDef.directives) {
-                            if (directive.name.value === "doc") {
-                                const pathArg = directive.arguments?.find((arg: {
-                                    name: { value: string }
-                                }) => arg.name.value === 'path')
-                                if (pathArg?.value.kind === 'StringValue') {
-                                    path = pathArg.value.value
-                                }
-                            }
-                        }
+                switch (gqlType._operationType) {
+                    case "query": {
+                        fieldKey = `Query.${gqlType.name}`;
+                        break;
                     }
-                    break
+                    case "mutation": {
+                        fieldKey = `Mutation.${gqlType.name}`;
+                        break;
+                    }
+                    case "subscription": {
+                        fieldKey = `Subscription.${gqlType.name}`;
+                        break;
+                    }
                 }
-            }
-        }
-    } else {
-        // For non-fields, get path from the node itself
-        if (gqlType.astNode?.directives) {
-            for (const directive of gqlType.astNode.directives) {
-                if (directive.name.value === OPEN_DOCS_DIRECTIVE_NAME) {
-                    const pathArg = directive.arguments?.find(arg => arg.name.value === 'path')
-                    if (pathArg?.value.kind === 'StringValue') {
-                        path = pathArg.value.value
-                    }
+                const fieldMetadata = metadata.fields.get(fieldKey);
+
+
+                if (fieldMetadata?.path) {
+                    path = fieldMetadata.path;
                 }
             }
         }
     }
 
-    let canonicalParts: string[] = []
-    if (parentPath) {
-        canonicalParts = [parentPath, path || gqlType.name || ""]
-    } else {
-        canonicalParts = [path]
-    }
-
-    return canonicalParts.filter(Boolean).join("/")
-}
-
-function getParentType(
-    gqlNode: OpenDocsGQLNode,
-    schema?: GraphQLSchema
-): GraphQLNamedType | undefined {
-    if (!schema) return undefined
-
-    // For fields, we need to find their parent type
-    if ('astNode' in gqlNode && (gqlNode.astNode?.kind === 'FieldDefinition' || gqlNode.astNode?.kind === 'InputValueDefinition')) {
-        // Find the parent type by looking at the schema's types
-        for (const type of Object.values(schema.getTypeMap())) {
-            if (type.astNode?.kind === 'ObjectTypeDefinition' || type.astNode?.kind === 'InterfaceTypeDefinition') {
-                const fields = type.astNode.fields || []
-                if (fields.some(field => field.name.value === gqlNode.name)) {
-                    return type
+    // Extract path from @doc directive if present
+    if (!path && gqlType.astNode?.directives) {
+        for (const directive of gqlType.astNode.directives) {
+            if (directive.name.value === OPEN_DOCS_DIRECTIVE_NAME) {
+                const pathArg = directive.arguments?.find(arg => arg.name.value === 'path')
+                if (pathArg?.value.kind === 'StringValue') {
+                    path = pathArg.value.value
                 }
             }
         }
     }
-    return undefined
+
+    return path
 }

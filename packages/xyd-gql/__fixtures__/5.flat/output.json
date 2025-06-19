@@ -1,5 +1,204 @@
 [
   {
+    "title": "Author",
+    "description": "",
+    "canonical": "objects/Author",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Author",
+      "group": [
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          },
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/name"
+            }
+          },
+          {
+            "name": "details",
+            "type": "AuthorDetails!",
+            "description": "",
+            "context": {
+              "graphqlName": "details",
+              "graphqlTypeFlat": "AuthorDetails",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/AuthorDetails"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "AuthorDetails",
+    "description": "",
+    "canonical": "objects/AuthorDetails",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "AuthorDetails",
+      "group": [
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "birthDate",
+            "type": "String",
+            "description": "",
+            "context": {
+              "graphqlName": "birthDate",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "/birthDate"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "AuthorDetailsInput",
+    "description": "",
+    "canonical": "inputs/AuthorDetailsInput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "AuthorDetailsInput",
+      "group": [
+        "Inputs"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "birthDate",
+            "type": "String",
+            "description": "",
+            "context": {
+              "graphqlName": "birthDate",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "/birthDate"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "title": "author",
     "description": "",
     "canonical": "queries/author",
@@ -10,7 +209,8 @@
       "graphqlName": "author",
       "group": [
         "Queries"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -53,7 +253,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/id"
             }
           },
           {
@@ -65,12 +265,13 @@
               "graphqlName": "AuthorDetailsInput",
               "group": [
                 "Inputs"
-              ]
+              ],
+              "scopes": []
             },
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "inputs/authordetailsinput"
+              "canonical": "inputs/AuthorDetailsInput"
             }
           }
         ]
@@ -90,7 +291,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "objects/author"
+              "canonical": "objects/Author"
             }
           }
         ]
@@ -100,7 +301,7 @@
   {
     "title": "authorDelete",
     "description": "",
-    "canonical": "queries/authordelete",
+    "canonical": "queries/authorDelete",
     "category": "graphql",
     "type": "graphql_query",
     "context": {
@@ -108,7 +309,8 @@
       "graphqlName": "authorDelete",
       "group": [
         "Queries"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -151,7 +353,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/id"
             }
           }
         ]
@@ -171,203 +373,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": ""
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Author",
-    "description": "",
-    "canonical": "objects/author",
-    "category": "graphql",
-    "type": "graphql_object",
-    "context": {
-      "graphqlTypeShort": "object",
-      "graphqlName": "Author",
-      "group": [
-        "Objects"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [],
-        "variants": [],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          }
-        ]
-      },
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "id",
-            "type": "ID!",
-            "description": "",
-            "context": {
-              "graphqlName": "id",
-              "graphqlTypeFlat": "ID",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "name",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "name",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "details",
-            "type": "AuthorDetails!",
-            "description": "",
-            "context": {
-              "graphqlName": "details",
-              "graphqlTypeFlat": "AuthorDetails",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "objects/authordetails"
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "AuthorDetails",
-    "description": "",
-    "canonical": "objects/authordetails",
-    "category": "graphql",
-    "type": "graphql_object",
-    "context": {
-      "graphqlTypeShort": "object",
-      "graphqlName": "AuthorDetails",
-      "group": [
-        "Objects"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [],
-        "variants": [],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          }
-        ]
-      },
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "birthDate",
-            "type": "String",
-            "description": "",
-            "context": {
-              "graphqlName": "birthDate",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": ""
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "AuthorDetailsInput",
-    "description": "",
-    "canonical": "inputs/authordetailsinput",
-    "category": "graphql",
-    "type": "graphql_input",
-    "context": {
-      "graphqlTypeShort": "input",
-      "graphqlName": "AuthorDetailsInput",
-      "group": [
-        "Inputs"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "birthDate",
-            "type": "String",
-            "description": "",
-            "context": {
-              "graphqlName": "birthDate",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": ""
+              "canonical": "/authorDelete"
             }
           }
         ]

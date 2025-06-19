@@ -1,5 +1,6 @@
-import {visit} from "unist-util-visit";
+import { visit } from "unist-util-visit";
 import { parseImportPath } from "./functions/utils";
+import { mdParameters } from "./utils/mdParameters";
 
 /**
  * This plugin injects the code meta into the code node's data
@@ -15,16 +16,44 @@ export function remarkInjectCodeMeta() {
             node.data.regions = regions
             node.data.lineRanges = lineRanges
 
-            node.data.hProperties = {
-                ...(node.data.hProperties || {}),
+            const { attributes, sanitizedText } = mdParameters(node.meta || "");
+
+            const props: { [prop: string]: any } = {
                 regions: JSON.stringify(node.data.regions),
                 lineRanges: JSON.stringify(node.data.lineRanges)
             }
 
-            if (node.meta) {
+            let meta = ""
+            if (attributes && attributes.lines === "true") {
+                props.lineNumbers = true
+            }
+            if (attributes && attributes.scroll === "false") {
+                props.size = "full"
+            }
+            if (attributes && attributes.descHead && attributes.descHead !== "false") {
+                props.descriptionHead = attributes.descHead
+            }
+            if (attributes && attributes.desc && attributes.desc !== "false") {
+                props.descriptionContent = attributes.desc
+            }
+            if (attributes && attributes.descIcon && attributes.descIcon !== "false") {
+                props.descriptionIcon = attributes.descIcon
+            }
+            if (attributes && attributes.meta && attributes.meta !== "false") {
+                meta = attributes.meta
+                node.meta = meta
+            }
+
+            node.data.hProperties = {
+                ...(node.data.hProperties || {}),
+                ...props
+            }
+
+            meta = meta || sanitizedText
+            if (meta) {
                 node.data.hProperties = {
                     ...(node.data.hProperties || {}),
-                    meta: node.meta,
+                    meta: meta
                 };
             }
         });

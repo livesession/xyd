@@ -12,7 +12,6 @@ import * as cn from "./CodeTabs.styles"; // TODO: style by highlighted?
 export interface CodeTabsProps {
     description: string;
     highlighted: HighlightedCode[]
-    size?: "full"
     className?: string
     controlByMeta?: boolean // TODO: BETTER IN THE FUTURE
 }
@@ -31,6 +30,7 @@ export function withCodeTabs(PreComponent) {
         if (props?.highlighted?.length === 0) { 
             return null
         }
+
 
         return (
             <xyd-codetabs className={`${cn.CodeTabsHost} ${props.className || ""}`}>

@@ -1,64 +1,75 @@
 extend schema @docs(
-  route: "docs/api-reference",
-  group: ["API & Reference"]
+    route: "docs/api-reference",
+    group: ["API & Reference"],
+    sort: [
+        {
+            group: ["Queries"],
+        },
+        {
+            group: ["Mutations"],
+        },
+        {
+            group: ["GraphQL Types"],
+        }
+    ]
 )
 
 scalar DateTime
 @doc(
-  group: ["GraphQL Types"],
-  path: "datetime"
+    group: ["GraphQL Types"],
+    path: "datetime"
 )
 
 type Todo @doc(
     group: ["GraphQL Types"],
     path: "todo"
 ){
-  id: ID!
-  title: String!
-  completed: Boolean!
-  createdAt: DateTime!
+    id: ID!
+    title: String!
+    completed: Boolean!
+    createdAt: DateTime!
 }
 
 input TodoInput @doc(
     group: ["GraphQL Types"],
     path: "todo-input"
 ){
-  title: String!
-  completed: Boolean
+    title: String!
+    completed: Boolean
 }
 
 type Query @doc(
     group: ["Queries"],
     path: "queries"
 ){
-  todos: [Todo!]!
-  @doc(
-      path: "todos"
-  )
-  
-  todo(id: ID!): Todo
-  @doc(
-      path: "todo-by-id"
-  )
+    todos: [Todo!]!
+    @doc(
+        path: "todos"
+    )
+
+    todo(id: ID!): Todo
+    @doc(
+        path: "todo-by-id"
+    )
 }
 
 type Mutation @doc(
     group: ["Mutations"],
     path: "mutations"
 ){
-  createTodo(input: TodoInput!): Todo!
-  @doc(
-      path: "create-todo"
-  )
-  
-  updateTodo(id: ID!, input: TodoInput!): Todo!
-  @doc(
-      path: "update-todo"
-  )
+    createTodo(input: TodoInput!): Todo!
+    @doc(
+        path: "create-todo"
+    )
 
-  deleteTodo(id: ID!): Boolean!
-  @doc(
-      path: "delete-todo"
-  )
+    updateTodo(id: ID!, input: TodoInput!): Todo!
+    @doc(
+        path: "update-todo"
+    )
+
+    deleteTodo(id: ID!): Boolean!
+    @doc(
+        path: "delete-todo"
+    )
 }
 

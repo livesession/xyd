@@ -10,7 +10,6 @@ import {
     GraphQLField,
     GraphQLInputField,
     GraphQLNamedType,
-    GraphQLSchema,
 
     isIntrospectionType,
     isSpecifiedScalarType, GraphQLNonNull,
@@ -109,8 +108,6 @@ export function uniformify(
     let graphqlTypeShort = ""
     let refType: ReferenceType | undefined = undefined
 
-    let parentType: GraphQLNamedType | undefined
-
     if (gqlType instanceof GraphQLScalarType) {
         canonicalPrefix = "scalars"
         graphqlTypeShort = "scalar"
@@ -166,7 +163,9 @@ export function uniformify(
     }
 
     const slugger = new GithubSlugger();
-    const slug = slugger.slug(gqlType.name);
+    // const slug = slugger.slug(gqlType.name);
+    const slug = gqlType.name;
+
     const odCanonical = openDocsCanonical(ctx, gqlType);
 
     let canonical = ""
@@ -188,7 +187,7 @@ export function uniformify(
         context: {
             graphqlTypeShort: graphqlTypeShort,
             graphqlName: gqlType.name,
-            group: openDocsToGroup(parentType || gqlType, ctx?.schema),
+            group: openDocsToGroup(ctx, gqlType),
             scopes
         },
 

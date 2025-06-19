@@ -1,6 +1,11 @@
 ---
 title: Getting started
 icon: rocket
+tocCard: 
+    link: https://github.com/xyd-js/starter
+    title: Starter Kit
+    description: Learn how to start building docs
+    icon: docs:github
 ---
 
 # Quickstart
@@ -45,7 +50,7 @@ xyd
 
 ## CLI versioning
 Please note that each CLI release is associated with a specific version of <code>xyd</code>.
-If your local website doesn’t align with the production version, please update the CLI:
+If your local website doesn't align with the production version, please update the CLI:
 :::code-group{title="xyd update"}
 ```bash npm
 npm i -g xyd-js
@@ -64,3 +69,6 @@ pnpm add -g xyd-js
 Publishing changes depends on your preferences, the simplest way is to
 use the one of infrastructure providers like Netlify or Vercel.
 Learn more about [deploy](/docs/guides/deploy).
+
+## Starter
+Use our [starter kit](https://github.com/xyd-js/starter) to get up and running quickly.

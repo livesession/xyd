@@ -86,4 +86,6 @@ Theme settings are defined as an object with the following reference:
 
 ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Theme'})"}
 
-Full settings reference you can read [here](/docs/guides/settings#reference)
+:::callout
+Full settings reference you can read [here](/docs/reference/core/settings).
+:::

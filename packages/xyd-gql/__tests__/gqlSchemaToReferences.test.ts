@@ -9,66 +9,74 @@ const tests: {
         flat?: boolean;
     };
 }[] = [
-    // {
-    //     name: "1.basic",
-    //     description: "A basic example",
-    // },
-    // {
-    //     name: "2.circular",
-    //     description: "A circular dependency reference example",
-    // },
-    // {
-    //     name: "3.opendocs",
-    //     description: "An opendocs directive example",
-    // },
-    // {
-    //     name: "4.union",
-    //     description: "An opendocs directive example",
-    // },
-    // {
-    //     name: "5.flat",
-    //     description: "Flat generation only via code options",
-    //     options: {
-    //         flat: true
-    //     }
-    // },
-    // {
-    //     name: "6.default-values",
-    //     description: "Default values example",
-    // },
-    // {
-    //     name: "7.type-args",
-    //     description: "Type args",
-    // },
-    // {
-    //     name: "8.example",
-    //     description: "Example",
-    // },
-    // //
-    // {
-    //     name: "-1.opendocs.flat",
-    //     description: "OpenDocs GraphQL Schema directive example with flat generation",
-    // },
-    // {
-    //     name: "-1.opendocs.sort",
-    //     description: "OpenDocs GraphQL Schema directive example with sort generation",
-    // },
-    // {
-    //     name: "-1.opendocs.scopes",
-    //     description: "OpenDocs GraphQL Schema directive example with scopes generation",
-    // },
+    {
+        name: "1.basic",
+        description: "A basic example",
+    },
+    {
+        name: "2.circular",
+        description: "A circular dependency reference example",
+    },
+    {
+        name: "3.opendocs",
+        description: "An opendocs directive example",
+    },
+    {
+        name: "4.union",
+        description: "An opendocs directive example",
+    },
+    {
+        name: "5.flat",
+        description: "Flat generation only via code options",
+        options: {
+            flat: true
+        }
+    },
+    {
+        name: "6.default-values",
+        description: "Default values example",
+    },
+    {
+        name: "7.type-args",
+        description: "Type args",
+    },
+    {
+        name: "8.example",
+        description: "Example",
+    },
+    //
+    {
+        name: "-1.opendocs.flat",
+        description: "OpenDocs GraphQL Schema directive example with flat generation",
+    },
+    {
+        name: "-1.opendocs.sort",
+        description: "OpenDocs GraphQL Schema directive example with sort generation",
+    },
+    {
+        name: "-1.opendocs.sort+group",
+        description: "OpenDocs GraphQL Schema directive example with group sort generation",
+    },
+    {
+        name: "-1.opendocs.sort+group+path",
+        description: "OpenDocs GraphQL Schema directive example with group + path sort generation",
+    },
+    {
+        name: "-1.opendocs.scopes",
+        description: "OpenDocs GraphQL Schema directive example with scopes generation",
+    },
     {
         name: "-1.opendocs.docs-nested",
         description: "OpenDocs GraphQL Schema directive example with nested docs",
     },
     //
-    // {
-    //     name: "-3.array-non-null-return",
-    //     description: "case: Array non-null return",
-    //     options: {
-    //         flat: true
-    //     }
-    // },
+    {
+        name: "-3.array-non-null-return",
+        description: "case: Array non-null return",
+        options: {
+            flat: true
+        }
+    },
 
     // TODO: uncomment when ready
     // {

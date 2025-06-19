@@ -118,7 +118,7 @@
                         "pages": [
                             "docs/guides/openapi",
                             "docs/guides/graphql",
-                            "docs/guides/components",
+                            "docs/guides/components-api",
                             {
                                 "group": "Source Code",
                                 "icon": "square-code",

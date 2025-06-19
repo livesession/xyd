@@ -13,6 +13,6 @@
     "incremental": true,
     "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo"
   },
-  "include": ["examples/basic-example/**/*.ts", "src/**/*.ts"],
+  "include": ["examples/basic-example/**/*.ts", "src/**/*.ts", "declarations.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

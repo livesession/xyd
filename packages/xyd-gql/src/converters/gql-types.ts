@@ -39,6 +39,7 @@ export function graphqlTypesToUniformReferences(
             isIntrospectionType(gqlType) ||
             gqlType.name === "Mutation" ||
             gqlType.name === "Query" ||
+            gqlType.name === "Subscription" ||
             isInternalOpenDocsType(gqlType)
 
         if (builtInType) {
@@ -186,7 +187,9 @@ function isInternalOpenDocsType(type: GraphQLNamedType): boolean {
         'OpenDocsSidebarItemType',
         'OpenDocsPage',
         'OpenDocsExampleInput',
-        'OpenDocsSortInput'
+        'OpenDocsSortInput',
+        'OpenDocsSortStackInput'
+
     ]
     return internalTypes.includes(type.name)
 }

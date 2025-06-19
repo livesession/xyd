@@ -6,7 +6,8 @@ enum OpenDocsScope {
 
 directive @docs(
     route: String
-    sort: OpenDocsSortInput
+    sort: [OpenDocsSortInput!]
+    sortStack: [[String!]!]
     flattenTypes: Boolean
     sidebar: [OpenDocsPage]
     group: [String]
@@ -37,7 +38,8 @@ directive @doc(
     OBJECT |
     INPUT_OBJECT |
     ENUM |
-    SCALAR
+    SCALAR |
+    UNION
 
 # TODO: finish
 input OpenDocsExampleInput {
@@ -48,13 +50,7 @@ input OpenDocsExampleInput {
 }
 
 input OpenDocsSortInput {
-    queries: Int
-    mutations: Int
-    subscriptions: Int
-    interfaces: Int
-    objects: Int
-    inputObjects: Int
-    unions: Int
-    enums: Int
-    scalars: Int
+    node: String
+    group: [String!]
+    stack: Int
 }

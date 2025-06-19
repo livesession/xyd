@@ -47,6 +47,8 @@ Everything you need to build documentation at scale is built right in. Our platf
 
 - [Deployment tools](/docs/guides/deploy)
 
+- [SDK generation tooling](/docs/guides/sdk-quickstart)
+
 - And much more
 
 ## Open Source

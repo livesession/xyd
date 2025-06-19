@@ -1,8 +1,359 @@
 [
   {
+    "title": "Book",
+    "description": "A book type",
+    "canonical": "objects/Book",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Book",
+      "group": [
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "The title of the book",
+            "context": {
+              "graphqlName": "title",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/title"
+            }
+          },
+          {
+            "name": "author_name",
+            "type": "String!",
+            "description": "The author of the book",
+            "context": {
+              "graphqlName": "author_name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/author_name"
+            }
+          },
+          {
+            "name": "info",
+            "type": "BookInfo!",
+            "description": "The nested book information",
+            "context": {
+              "graphqlName": "info",
+              "graphqlTypeFlat": "BookInfo",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/BookInfo"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "BookInfo",
+    "description": "A nested book information type",
+    "canonical": "objects/BookInfo",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "BookInfo",
+      "group": [
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "date",
+            "type": "String!",
+            "description": "The date of the book",
+            "context": {
+              "graphqlName": "date",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/date"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Author",
+    "description": "An author type",
+    "canonical": "objects/Author",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Author",
+      "group": [
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "The name of the author",
+            "context": {
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/name"
+            }
+          },
+          {
+            "name": "books",
+            "type": "[String]",
+            "description": "The books of the author",
+            "context": {
+              "graphqlName": "books",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "/books"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "BookInput",
+    "description": "The input object for the getBook query",
+    "canonical": "inputs/BookInput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "BookInput",
+      "group": [
+        "Inputs"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "The title of the book",
+            "context": {
+              "graphqlName": "title",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/title"
+            }
+          },
+          {
+            "name": "info",
+            "type": "BookInfoInput!",
+            "description": "The author of the book",
+            "context": {
+              "graphqlName": "info",
+              "graphqlTypeFlat": "BookInfoInput",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "inputs/BookInfoInput"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "BookInfoInput",
+    "description": "A nested book information input",
+    "canonical": "inputs/BookInfoInput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "BookInfoInput",
+      "group": [
+        "Inputs"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "date",
+            "type": "String!",
+            "description": "The date of the book",
+            "context": {
+              "graphqlName": "date",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/date"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "title": "getBookByTitle",
     "description": "Get a book by title",
-    "canonical": "queries/getbookbytitle",
+    "canonical": "queries/getBookByTitle",
     "category": "graphql",
     "type": "graphql_query",
     "context": {
@@ -10,7 +361,8 @@
       "graphqlName": "getBookByTitle",
       "group": [
         "Queries"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -53,7 +405,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/title"
             }
           },
           {
@@ -65,12 +417,13 @@
               "graphqlName": "BookInfoInput",
               "group": [
                 "Inputs"
-              ]
+              ],
+              "scopes": []
             },
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "inputs/bookinfoinput"
+              "canonical": "inputs/BookInfoInput"
             }
           }
         ]
@@ -90,7 +443,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "objects/book"
+              "canonical": "objects/Book"
             }
           }
         ]
@@ -100,7 +453,7 @@
   {
     "title": "addBook",
     "description": "Add a book",
-    "canonical": "mutations/addbook",
+    "canonical": "mutations/addBook",
     "category": "graphql",
     "type": "graphql_mutation",
     "context": {
@@ -108,7 +461,8 @@
       "graphqlName": "addBook",
       "group": [
         "Mutations"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -143,7 +497,8 @@
               "graphqlName": "BookInput",
               "group": [
                 "Inputs"
-              ]
+              ],
+              "scopes": []
             },
             "properties": [],
             "meta": [
@@ -153,7 +508,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "inputs/bookinput"
+              "canonical": "inputs/BookInput"
             }
           }
         ]
@@ -178,7 +533,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "objects/book"
+              "canonical": "objects/Book"
             }
           }
         ]
@@ -188,7 +543,7 @@
   {
     "title": "addAuthor",
     "description": "Add an author",
-    "canonical": "mutations/addauthor",
+    "canonical": "mutations/addAuthor",
     "category": "graphql",
     "type": "graphql_mutation",
     "context": {
@@ -196,7 +551,8 @@
       "graphqlName": "addAuthor",
       "group": [
         "Mutations"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
@@ -239,7 +595,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": ""
+              "canonical": "/name"
             }
           }
         ]
@@ -264,353 +620,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "objects/author"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Book",
-    "description": "A book type",
-    "canonical": "objects/book",
-    "category": "graphql",
-    "type": "graphql_object",
-    "context": {
-      "graphqlTypeShort": "object",
-      "graphqlName": "Book",
-      "group": [
-        "Objects"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [],
-        "variants": [],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          }
-        ]
-      },
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "title",
-            "type": "String!",
-            "description": "The title of the book",
-            "context": {
-              "graphqlName": "title",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "author_name",
-            "type": "String!",
-            "description": "The author of the book",
-            "context": {
-              "graphqlName": "author_name",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "info",
-            "type": "BookInfo!",
-            "description": "The nested book information",
-            "context": {
-              "graphqlName": "info",
-              "graphqlTypeFlat": "BookInfo",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "objects/bookinfo"
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "BookInfo",
-    "description": "A nested book information type",
-    "canonical": "objects/bookinfo",
-    "category": "graphql",
-    "type": "graphql_object",
-    "context": {
-      "graphqlTypeShort": "object",
-      "graphqlName": "BookInfo",
-      "group": [
-        "Objects"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [],
-        "variants": [],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          }
-        ]
-      },
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "date",
-            "type": "String!",
-            "description": "The date of the book",
-            "context": {
-              "graphqlName": "date",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Author",
-    "description": "An author type",
-    "canonical": "objects/author",
-    "category": "graphql",
-    "type": "graphql_object",
-    "context": {
-      "graphqlTypeShort": "object",
-      "graphqlName": "Author",
-      "group": [
-        "Objects"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [],
-        "variants": [],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          }
-        ]
-      },
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "name",
-            "type": "String!",
-            "description": "The name of the author",
-            "context": {
-              "graphqlName": "name",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "books",
-            "type": "[String]",
-            "description": "The books of the author",
-            "context": {
-              "graphqlName": "books",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": ""
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "BookInput",
-    "description": "The input object for the getBook query",
-    "canonical": "inputs/bookinput",
-    "category": "graphql",
-    "type": "graphql_input",
-    "context": {
-      "graphqlTypeShort": "input",
-      "graphqlName": "BookInput",
-      "group": [
-        "Inputs"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "title",
-            "type": "String!",
-            "description": "The title of the book",
-            "context": {
-              "graphqlName": "title",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
-            }
-          },
-          {
-            "name": "info",
-            "type": "BookInfoInput!",
-            "description": "The author of the book",
-            "context": {
-              "graphqlName": "info",
-              "graphqlTypeFlat": "BookInfoInput",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "inputs/bookinfoinput"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "BookInfoInput",
-    "description": "A nested book information input",
-    "canonical": "inputs/bookinfoinput",
-    "category": "graphql",
-    "type": "graphql_input",
-    "context": {
-      "graphqlTypeShort": "input",
-      "graphqlName": "BookInfoInput",
-      "group": [
-        "Inputs"
-      ]
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "date",
-            "type": "String!",
-            "description": "The date of the book",
-            "context": {
-              "graphqlName": "date",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": ""
+              "canonical": "objects/Author"
             }
           }
         ]
