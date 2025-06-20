@@ -1,0 +1,20 @@
+{
+    "navigation": {
+        "sidebar": [
+            {
+                "group": "Get Started",
+                "pages": [
+                    "docs/guides/introduction",
+                    "docs/guides/getting-started",
+                    {
+                        "group": "Deployment",
+                        "pages": [
+                            "docs/guides/deploy/overview",
+                            "docs/guides/deploy/netlify"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

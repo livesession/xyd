@@ -1,19 +1,19 @@
-import { Navigation, Settings } from "@xyd-js/core";
-import type { Plugin as VitePlugin } from "vite";
-import { RouteConfigEntry } from "@react-router/dev/routes";
-import type { PageURL, Sidebar, SidebarRoute } from "@xyd-js/core";
+import {Navigation, Settings} from "@xyd-js/core";
+import type {Plugin as VitePlugin} from "vite";
+import {RouteConfigEntry} from "@react-router/dev/routes";
+import type {PageURL, Sidebar, SidebarRoute} from "@xyd-js/core";
 import fs from "fs";
 import path from "path";
 
-import { docsPreset } from "./presets/docs";
-import { graphqlPreset } from "./presets/graphql";
-import { openapiPreset } from "./presets/openapi";
-import { sourcesPreset } from "./presets/sources";
+import {docsPreset} from "./presets/docs";
+import {graphqlPreset} from "./presets/graphql";
+import {openapiPreset} from "./presets/openapi";
+import {sourcesPreset} from "./presets/sources";
 
-import type { PluginOutput, Plugin } from "./types";
-import { ensureAndCleanupVirtualFolder } from "./presets/uniform";
+import type {PluginOutput, Plugin} from "./types";
+import {ensureAndCleanupVirtualFolder} from "./presets/uniform";
 
-export { readSettings } from "./presets/docs/settings"
+export {readSettings} from "./presets/docs/settings"
 
 export interface PluginDocsOptions {
     disableAPIGeneration?: boolean
@@ -75,7 +75,6 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
     }
 
     await ensureAndCleanupVirtualFolder()
-
 
     // graphql preset setup
     if (!options?.disableAPIGeneration && settings?.api?.graphql) {
@@ -159,9 +158,7 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
         const src = sourcesPreset(settings, opt)
         src.preinstall = src.preinstall || []
 
-        let preinstallMerge = {
-
-        }
+        let preinstallMerge = {}
 
         for (const preinstall of src.preinstall) {
             const resp = await preinstall(opt)(settings, {
@@ -208,11 +205,14 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
     }
 }
 
-function sortSidebarGroups(sidebar: (SidebarRoute | Sidebar)[]) {
+function sortSidebarGroups(sidebar: (SidebarRoute | Sidebar | string)[]) {
     // Sort items within each SidebarRoute
     for (const group of sidebar) {
-        if ('items' in group) {
-            group.items.sort((a, b) => {
+        if (typeof group === 'string') {
+            continue // Skip string entries
+        }
+        if ('pages' in group && Array.isArray(group.pages)) {
+            group.pages.sort((a, b) => {
                 // If both have numeric sort values, compare them
                 if (typeof a.sort === 'number' && typeof b.sort === 'number') {
                     return a.sort - b.sort
@@ -272,19 +272,28 @@ function mapNavigationToPagePathMapping(navigation: Navigation) {
         }
     }
 
+    let sidebarFlatOnly = false
     // Process each sidebar route
     for (const sidebar of navigation.sidebar) {
-        if ('items' in sidebar) {
+        if (typeof sidebar === 'string') {
+            sidebarFlatOnly = true
+            break
+        } else if ('pages' in sidebar && "route" in sidebar) {
             // Handle SidebarRoute
-            for (const item of sidebar.items) {
-                if (item.pages) {
+            for (const item of sidebar.pages) {
+                if (item?.pages) {
                     processPages(item.pages)
                 }
             }
-        } else if (sidebar.pages) {
+        } else if ('pages' in sidebar) {
             // Handle Sidebar
-            processPages(sidebar.pages)
+            processPages(sidebar.pages || [])
         }
+    }
+
+    if (sidebarFlatOnly) {
+        const sidebar = navigation.sidebar as string[]
+        processPages(sidebar)
     }
 
     return mapping

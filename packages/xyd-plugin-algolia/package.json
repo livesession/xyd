@@ -28,6 +28,9 @@
     "@xyd-js/content": "workspace:*",
     "@xyd-js/core": "workspace:*"
   },
+  "peerDependencies": {
+    "@xyd-js/plugins": "workspace:*"
+  },
   "devDependencies": {
     "@vitest/coverage-v8": "^1.6.1",
     "rimraf": "^3.0.2",

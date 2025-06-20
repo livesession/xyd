@@ -69,7 +69,7 @@ function flatPages(
 ) {
     sidebar.map(async side => {
         if ("route" in side) {
-            side.items.map(item => {
+            side?.pages.map(item => {
                 return flatPages([item], groups, resp)
             })
 
@@ -106,7 +106,7 @@ function flatGroups(
 ) {
     sidebar.map(async side => {
         if ("route" in side) {
-            side.items.map(item => {
+            side?.pages.map(item => {
                 return flatGroups([item], resp)
             })
 
@@ -211,7 +211,7 @@ async function uniformResolver(
     if (!urlPrefix && matchRoute) {
         sidebar?.push({
             route: matchRoute,
-            items: []
+            pages: []
         })
         urlPrefix = matchRoute
     }
@@ -417,7 +417,7 @@ async function uniformResolver(
 
     if (matchRoute) {
         // TODO: in the future custom position - before / after
-        uniformSidebars[0].items.unshift(...uniformWithNavigation.out.sidebar)
+        uniformSidebars[0].pages.unshift(...uniformWithNavigation.out.sidebar)
 
         return {
             data: uniformData.data,
@@ -426,7 +426,7 @@ async function uniformResolver(
 
     sidebar.unshift({
         route: matchRoute,
-        items: uniformWithNavigation.out.sidebar
+        pages: uniformWithNavigation.out.sidebar
     })
 
     return {

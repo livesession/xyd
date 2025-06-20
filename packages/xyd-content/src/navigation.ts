@@ -45,7 +45,7 @@ export function filterNavigationByLevels(
     slug: string
 ) {
     const topLevelTabMatcher = headers?.reduce((acc: any, header) => {
-        const tabLevel = header?.url?.split("/")?.length
+        const tabLevel = header?.page?.split("/")?.length
 
         if (!tabLevel) {
             return {
@@ -56,13 +56,13 @@ export function filterNavigationByLevels(
         if (!acc[tabLevel]) {
             return {
                 ...acc,
-                [tabLevel]: new Set().add(header?.url)
+                [tabLevel]: new Set().add(header?.page)
             }
         }
 
         return {
             ...acc,
-            [tabLevel]: acc[tabLevel].add(header?.url)
+            [tabLevel]: acc[tabLevel].add(header?.page)
         }
     }, {}) as { [level: number]: Set<string> }
 

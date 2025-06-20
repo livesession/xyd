@@ -338,9 +338,7 @@ function SelectPredefinedUniformURL({
 
     const selected = Object.values(exmaples).find(entry => entry.url === example?.url)
 
-    console.log(selected, "selected")
     const onSelect = ({ item }) => {
-        console.log(item, 343)
         // setSelected(item)
         setOpen(false)
 

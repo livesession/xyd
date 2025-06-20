@@ -144,75 +144,77 @@ function $HamburgerLine({ active }: { active: boolean }) {
     />
 }
 
+const SCROLL_DOWN_TRIGGER_THRESHOLD = 200;
+const SCROLL_UP_TRIGGER_THRESHOLD = 100;
+
 // TODO: move to `xyd-foo` or somewhere else
 // TODO  better solution than `key`
 function useSubHeader(ref: React.RefObject<HTMLDivElement | null> | null, key?: any) {
     const [hideMainHeader, setHideMainHeader] = useState(false)
-    const [scrollTop, setScrollTop] = useState(0)
-    const [controlScrollPos, setControlScrollPos] = useState(0)
-    const [lastScrollDirection, setLastScrollDirection] = useState<'up' | 'down' | null>(null)
+    const [lastScrollTop, setLastScrollTop] = useState(0)
+    const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null)
+    const [scrollThreshold, setScrollThreshold] = useState(0)
+    const [scrollStartPosition, setScrollStartPosition] = useState(0)
+    const [isScrolling, setIsScrolling] = useState(false)
 
     function reset() {
         setHideMainHeader(false)
-        setScrollTop(0)
-        setControlScrollPos(0)
+        setLastScrollTop(0)
+        setScrollDirection(null)
+        setScrollThreshold(0)
+        setScrollStartPosition(0)
+        setIsScrolling(false)
     }
 
     useEffect(() => {
         reset()
     }, [key])
 
-    useEffect(() => {
-        if (scrollTop === controlScrollPos) {
-            return
-        }
-
-        // Get the header height from CSS variable
-        const headerHeight = parseInt(
-            getComputedStyle(document.documentElement)
-                .getPropertyValue('--xyd-nav-height')
-                .trim() || '0',
-            10
-        );
-        const checkpoint = headerHeight / 2;
-        const diff = scrollTop - controlScrollPos
-        const reversePosDiff = Math.abs(scrollTop - controlScrollPos)
-
-        // Determine scroll direction
-        const direction = diff > 0 ? 'down' : 'up'
-        setLastScrollDirection(direction)
-
-        // Always show header when near the top of the page
-        if (scrollTop < headerHeight) {
-            setHideMainHeader(false)
-            return
-        }
-
-        if (diff > checkpoint) {
-            setHideMainHeader(true)
-        } else if (reversePosDiff > checkpoint) {
-            setHideMainHeader(false)
-        }
-    }, [
-        scrollTop,
-        controlScrollPos,
-    ]);
-
     function onScroll(e: Event) {
         if (!(e.target instanceof HTMLElement)) {
             return
         }
 
-        const scroll = e.target?.scrollTop
-        setScrollTop(scroll)
-    }
+        const currentScrollTop = e.target.scrollTop
 
-    function onScrollFinish(e: Event) {
-        if (!(e.target instanceof HTMLElement)) {
+        // Always show header when near the top of the page
+        if (currentScrollTop < SCROLL_UP_TRIGGER_THRESHOLD) {
+            setHideMainHeader(false)
+            setScrollThreshold(0)
+            setLastScrollTop(currentScrollTop)
+            setIsScrolling(false)
             return
         }
 
-        setControlScrollPos(e.target?.scrollTop)
+        // Determine scroll direction
+        const direction = currentScrollTop > lastScrollTop ? 'down' : 'up'
+        
+        // If direction changed, reset scroll tracking
+        if (direction !== scrollDirection) {
+            setScrollDirection(direction)
+            setScrollStartPosition(currentScrollTop)
+            setIsScrolling(true)
+        }
+
+        // Calculate total scroll distance from start position
+        const totalScrollDistance = Math.abs(currentScrollTop - scrollStartPosition)
+
+        // Only trigger header changes if we've scrolled enough distance in the current direction
+        if (direction === 'down' && totalScrollDistance > SCROLL_DOWN_TRIGGER_THRESHOLD) {
+            // When scrolling down, hide header
+            setHideMainHeader(true)
+            setScrollThreshold(currentScrollTop)
+            // Reset scroll tracking after triggering
+            setScrollStartPosition(currentScrollTop)
+        } else if (direction === 'up' && totalScrollDistance > SCROLL_UP_TRIGGER_THRESHOLD) {
+            // When scrolling up, show header
+            setHideMainHeader(false)
+            setScrollThreshold(currentScrollTop)
+            // Reset scroll tracking after triggering
+            setScrollStartPosition(currentScrollTop)
+        }
+
+        setLastScrollTop(currentScrollTop)
     }
 
     useEffect(() => {
@@ -221,13 +223,11 @@ function useSubHeader(ref: React.RefObject<HTMLDivElement | null> | null, key?: 
         }
 
         ref.current.addEventListener("scroll", onScroll)
-        ref.current.addEventListener("scrollend", onScrollFinish)
 
         return () => {
             ref.current?.removeEventListener("scroll", onScroll)
-            ref.current?.removeEventListener("scrollend", onScrollFinish)
         }
-    }, [ref, key]);
+    }, [ref, key, lastScrollTop, scrollDirection, scrollThreshold, scrollStartPosition]);
 
     return {
         hideMainHeader,

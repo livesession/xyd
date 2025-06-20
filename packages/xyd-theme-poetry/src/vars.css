@@ -19,6 +19,10 @@
 }
 
 :root {
+    --xyd-font-weight-semibold: 700;
+}
+
+:root {
     --xyd-codetabs-bgcolor: var(--poetry-gray80);
     --xyd-codetabs-color: var(--white);
     --xyd-codetabs-color--hover: var(--poetry-gray64);

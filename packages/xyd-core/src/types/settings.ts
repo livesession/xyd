@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
+import type {Theme as SyntaxHighlight} from "@code-hike/lighter";
 
 /**
  * Main settings interface for the application
@@ -24,7 +24,7 @@ export interface Settings {
     /**
      * @internal
      * @unsafe
-     * 
+     *
      * Redirects configuration
      */
     redirects?: Redirects[]
@@ -45,10 +45,10 @@ export interface Settings {
  * Theme configuration that changes the look and feel of the project
  */
 export interface Theme {
-    /** 
-     * A preset theme configuration that changes the look and feel of the project. 
-     * A theme is a set of default styling configurations. 
-     * 
+    /**
+     * A preset theme configuration that changes the look and feel of the project.
+     * A theme is a set of default styling configurations.
+     *
      * Example built-in themes: `cosmo`, `gusto`, `poetry`, `picasso`
      */
     readonly name: ThemePresetName | (string & {})
@@ -56,8 +56,8 @@ export interface Theme {
     /** Markdown configuration for the theme, including options like syntax highlighting */
     markdown?: Markdown
 
-    /** 
-     * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to. 
+    /**
+     * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to.
      * SVG format is recommended as it does not pixelate and the file size is generally smaller.
      */
     logo?: string | Logo | React.JSX.Element
@@ -85,6 +85,7 @@ export interface Theme {
      */
     scripts?: Script[]
 }
+
 // #endregion Theme
 
 /**
@@ -164,16 +165,16 @@ export type SearchType = "side" | "top"
  */
 export interface Navigation {
     /** Definition of sidebar - an array of groups with all the pages within that group */
-    sidebar: (SidebarRoute | Sidebar)[]
+    sidebar: (SidebarRoute | Sidebar | string)[]
 
     /** Array of headers */
     header?: Header[]
 
-    /** Array of sub headers */
-    subheader?: SubHeader[]
+    /** Array of segments */
+    segments?: Segment[]
 
     /**
-     * Array of version names. Only use this if you want to show different versions of docs 
+     * Array of version names. Only use this if you want to show different versions of docs
      * with a dropdown in the navigation bar.
      */
     // versions?: string[]
@@ -189,8 +190,8 @@ export interface SidebarRoute {
     /** Route for this sidebar group */
     route: string
 
-    /** Sidebar items within this group */
-    items: Sidebar[]
+    /** Sidebar pages within this group */
+    pages: Sidebar[]
 }
 
 /**
@@ -200,7 +201,7 @@ export interface Sidebar {
     /** The name of the group */
     group?: string
 
-    /** 
+    /**
      * The relative paths to the markdown files that will serve as pages.
      * Note: groups are recursive, so to add a sub-folder add another group object in the page array.
      */
@@ -224,19 +225,19 @@ export type PageURL = string | VirtualPage | Sidebar
 
 /**
  * @internal
- * 
+ *
  * Virtual page type
- * 
+ *
  * Virtual pages are composition of pages, needed for templating e.g in uniform
- * 
+ *
  * Example:
- * 
+ *
  * {
  *  pages: [0
  *    ".xyd/.cache/.content/docs/rest/todo:docs/rest/todo",
  *  ]
  * }
- * 
+ *
  * above will be rendered as docs/rest/todo.md using composition from xyd's `.content`
  */
 export type VirtualPage = string | {
@@ -252,17 +253,23 @@ export type VirtualPage = string | {
 
 
 /**
- * Sub-header configuration
+ * Segment configuration
  */
-export interface SubHeader {
-    /** Route for this sub-header */
+export interface Segment {
+    /** Route for this segment */
     route: string
 
-    /** Name of this sub-header */
-    name: string
+    /** Title of this segment */
+    title: string
 
-    /** Items within this sub-header */
-    items: Header[]
+    /** Items within this segment */
+    pages: SegmentPage[]
+}
+
+export interface SegmentPage {
+    page: string
+
+    title: string
 }
 
 /**
@@ -270,10 +277,10 @@ export interface SubHeader {
  */
 export type Header = {
     /** The name of the button */
-    name?: string
+    title?: string
 
     /** The url once you click on the button */
-    url?: string
+    page?: string
 
     /** Float the header to the right */
     float?: "right"
@@ -289,8 +296,8 @@ export interface Anchor {
     /** The name of the anchor label */
     name?: string
 
-    /** 
-     * The start of the URL that marks what pages go in the anchor. 
+    /**
+     * The start of the URL that marks what pages go in the anchor.
      * Generally, this is the name of the folder you put your pages in.
      */
     url?: string
@@ -312,7 +319,7 @@ export interface AnchorRoot {
  * API configuration interface
  */
 export interface API {
-    /** 
+    /**
      * OpenAPI configuration
      */
     openapi?: APIFile
@@ -359,8 +366,8 @@ export type APIFileAdvanced = {
  * API information configuration
  */
 export interface APIInfo {
-    /** 
-     * The base url for all API endpoints. If baseUrl is an array, it will enable 
+    /**
+     * The base url for all API endpoints. If baseUrl is an array, it will enable
      * for multiple base url options that the user can toggle.
      */
     baseUrl?: string
@@ -368,7 +375,7 @@ export interface APIInfo {
     /** Authentication information */
     auth?: APIAuth
 
-    /** 
+    /**
      * The name of the authentication parameter used in the API playground.
      * If method is basic, the format should be [usernameName]:[passwordName]
      */
@@ -411,7 +418,7 @@ export interface APIInfoRequest {
     example?: {
         /**
          * An array of strings that determine the order of the languages of the auto-generated request examples.
-         * You can either define custom languages utilizing x-codeSamples or use our default languages which include 
+         * You can either define custom languages utilizing x-codeSamples or use our default languages which include
          * bash, python, javascript, php, go, java
          */
         languages?: string[]
@@ -426,14 +433,14 @@ export interface APIInfoRequest {
  * Integrations configuration
  */
 export interface Integrations {
-    /** 
-     * Configurations to add third-party analytics integrations. 
+    /**
+     * Configurations to add third-party analytics integrations.
      * See full list of supported analytics here.
      */
     analytics?: IntegrationAnalytics
 
     /**
-     * Configurations to add third-party search integrations. 
+     * Configurations to add third-party search integrations.
      * See full list of supported search here.
      */
     search?: IntegrationSearch
@@ -452,6 +459,7 @@ export interface IntegrationAnalytics {
         trackId: string
     }
 }
+
 // #endregion IntegrationAnalytics
 
 /**
@@ -481,7 +489,7 @@ export interface IntegrationSearch {
 
 export interface IntegrationApps {
     /**
-     * Github star app configuration. 
+     * Github star app configuration.
      * List of all [options](https://github.com/buttons/react-github-btn).
      */
     githubStar?: IntegrationAppGithubStar
@@ -502,7 +510,7 @@ export interface IntegrationAppGithubStar {
      * The href of the Github project
      */
     href: string
-    
+
     /**
      * The data-show-count of the Github project
      */
@@ -538,7 +546,7 @@ export interface IntegrationAppGithubStar {
  *    "livesession",
  *  ]
  * }
- * 
+ *
  * or 2)
  * {
  *  plugins: [
@@ -546,20 +554,20 @@ export interface IntegrationAppGithubStar {
  *      "livesession",
  *      "accountID.websiteID",
  *      {
- *          keystrokes: true 
+ *          keystrokes: true
  *      }
  *    ]
  *  ]
  * }
- * 
+ *
  * @example [audience:dev]
  * You can also use the type to define the plugin config in your code:
- * 
+ *
  * const livesessionPlugin: PluginConfig<"livesession", [string, { keystrokes: boolean }]> = [
  *    "livesession",
  *    "accountID.websiteID",
  *    {
- *        keystrokes: true 
+ *        keystrokes: true
  *    }
  * ]
  */
@@ -607,9 +615,9 @@ export interface SEO {
  * Config configuration
  */
 export interface Engine {
-    /** 
+    /**
      * Path aliases for imports. Avoid long relative paths by creating shortcuts.
-     * 
+     *
      * @example
      * ```json
      * {
@@ -619,12 +627,12 @@ export interface Engine {
      *   }
      * }
      * ```
-     * 
+     *
      * Usage:
      * ```typescript
      * // Instead of
      * @importCode("../../../my-package/src/components/Badge.tsx")
-     * 
+     *
      * // Use
      * @importCode("@my-package/src/components/Badge.tsx")
      * ```
@@ -633,9 +641,9 @@ export interface Engine {
 
     /**
      * @unsafe
-     * 
+     *
      * Uniform configuration
-     * 
+     *
      */
     uniform?: EngineUniform
 }

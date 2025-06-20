@@ -89,6 +89,24 @@ export const ButtonHost = css`
             }
         }
 
+        &[data-theme="ghost"] {
+            background-color: unset;
+            border: unset;
+
+            &:hover {
+                background-color: unset;
+                border: unset;
+                
+                svg {
+                    color: var(--dark64)
+                }
+            }
+
+            svg {
+                color: var(--dark48)
+            }
+        }
+
         &:disabled {
             opacity: 0.5;
             cursor: not-allowed;

@@ -25,7 +25,7 @@ This section contains the full reference for the docs.json file:
 ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Settings'})"}
 
 
-## JSON Schema Validation
+## JSON Schema Validation {label="Coming Soon"}
 The `docs.json` file is validated against a JSON schema to ensure proper configuration. You can reference the schema by including:
 
 ```json
@@ -37,7 +37,7 @@ The `docs.json` file is validated against a JSON schema to ensure proper configu
 
 &nbsp;
 
-## Code-Based Settings {label="Coming soon"}
+## Code-Based Settings {label="Coming Soon"}
 If you feel that the JSON configuration is not enough, you can use the TypeScript/React based configuration
 to have more control and use APIs that are not available in the JSON configuration.
 

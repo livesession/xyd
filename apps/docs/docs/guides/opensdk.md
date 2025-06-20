@@ -3,7 +3,7 @@ title: OpenSDK
 icon: layers
 ---
 
-# OpenSDK {label="Coming soon"}
+# OpenSDK {label="Coming Soon"}
 :::subtitle
 Open specification for SDK generation
 :::

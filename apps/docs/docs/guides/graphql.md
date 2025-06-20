@@ -315,7 +315,7 @@ extend schema @docs(
 ```
 
 :::callout
-Default sort order is: `queries`,`mutations`, `subscriptions`, `objects`, `interfaces`, `unions`, `inputObjects` and `scalars`
+Default sort order is: `query`,`mutation`, `subscription`, `object`, `interface`, `union`, `input` and `scalar`
 :::
 
 or if you want to sort by groups:

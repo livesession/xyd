@@ -22,10 +22,10 @@ export function UISidebar({ children, footerItems, className }: UISidebarProps) 
                 const elementTop = activeElement.getBoundingClientRect().top;
                 const elementHeight = activeElement.clientHeight;
                 const scrollTop = listRef.current.scrollTop;
-                
+
                 // Calculate the position to center the element
                 const targetScroll = scrollTop + elementTop - (containerHeight / 2) + (elementHeight / 2);
-                
+
                 listRef.current.scrollTo({
                     top: targetScroll,
                     behavior: 'auto'
@@ -111,10 +111,12 @@ UISidebar.Item = function SidebarItem({
 
 export interface UISidebarItemHeaderProps {
     children: React.ReactNode;
+    icon?: React.ReactNode;
 }
 
-UISidebar.ItemHeader = function SidebarItemHeader({ children }: UISidebarItemHeaderProps) {
+UISidebar.ItemHeader = function SidebarItemHeader({ children, icon }: UISidebarItemHeaderProps) {
     return <li part="item-header" className={cn.ItemHeaderHost}>
+        {icon}
         {children}
     </li>
 }

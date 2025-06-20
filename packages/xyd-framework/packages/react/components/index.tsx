@@ -1,17 +1,17 @@
-import React, {isValidElement, useState} from "react";
-import {Link, type To, useLocation, useMatches} from "react-router";
+import React, { isValidElement, useState } from "react";
+import { Link, type To, useLocation, useMatches } from "react-router";
 
-import {Header} from "@xyd-js/core";
-import type {ITOC} from "@xyd-js/ui";
-import {Nav, SubNav, Toc, UISidebar} from "@xyd-js/ui"
-import {Anchor, Breadcrumbs, Button, Icon, NavLinks} from "@xyd-js/components/writer";
+import { Header } from "@xyd-js/core";
+import type { ITOC } from "@xyd-js/ui";
+import { Nav, SubNav, Toc, UISidebar } from "@xyd-js/ui"
+import { Anchor, Breadcrumbs, Button, Icon, NavLinks } from "@xyd-js/components/writer";
 
-import {Surface, SurfaceTarget} from "./Surfaces";
+import { Surface, SurfaceTarget } from "./Surfaces";
 
-import {useBreadcrumbs, useNavLinks, useRawPage, useSettings, useSidebarGroups, useToC} from "../contexts";
-import {FwSidebarGroupContext, FwSidebarItemGroup, FwSidebarItemProps} from "./Sidebar";
+import { useBreadcrumbs, useNavLinks, useRawPage, useSettings, useSidebarGroups, useToC } from "../contexts";
+import { FwSidebarGroupContext, FwSidebarItemGroup, FwSidebarItemProps } from "./Sidebar";
 
-import {useMatchedSubNav} from "../hooks";
+import { useMatchedSubNav } from "../hooks";
 
 function FwNavLogo() {
     const settings = useSettings()
@@ -23,11 +23,11 @@ function FwNavLogo() {
     }
 
     return <a href="/">
-        <img part="logo" src={logo}/>
+        <img part="logo" src={logo} />
     </a>
 }
 
-export function FwNav({kind}: { kind?: "middle" }) {
+export function FwNav({ kind }: { kind?: "middle" }) {
     const matches = useMatches()
     const matchedSubnav = useMatchedSubNav()
     const settings = useSettings()
@@ -38,20 +38,20 @@ export function FwNav({kind}: { kind?: "middle" }) {
 
     const active = header.find(item => {
         if (matchedSubnav) {
-            return item.url?.startsWith(matchedSubnav?.route || "")
+            return pageLink(item.page || "") === pageLink(matchedSubnav?.route)
         }
 
-        return item.url === lastMatch?.id
+        return pageLink(item.page || "") === lastMatch?.id
     })
 
     function createHeader(item: Header) {
         return <Nav.Item
-            key={(item.url || "") + item.name}
-            href={item?.url || ""}
-            value={item.url || ""}
+            key={(item.page || "") + item.page}
+            href={pageLink(item?.page || "")}
+            value={item.page || ""}
             as={$Link}
         >
-            {item.name}
+            {item.title}
         </Nav.Item>
     }
 
@@ -65,23 +65,34 @@ export function FwNav({kind}: { kind?: "middle" }) {
 
     const rightHeaderExists = headerMap["right"]?.length > 0
 
+    function changeColorScheme() {
+        const html = document.querySelector("html");
+        if (!html) return;
+        
+        const currentScheme = html.getAttribute("data-color-scheme");
+        const newScheme = currentScheme === "dark" ? "light" : "dark";
+        
+        html.setAttribute("data-color-scheme", newScheme);
+    }
     // TODO: in the future better floating system - just pure css?
     return <Nav
-        value={active?.url || ""}
+        value={active?.page || ""}
         kind={kind}
-        logo={<FwNavLogo/>}
+        logo={<FwNavLogo />}
         rightSurface={<>
             {
                 rightHeaderExists
                     ? <Nav.Tab
-                        value={active?.url || ""}
+                        value={active?.page || ""}
                     >
                         {headerMap["right"]}
                     </Nav.Tab>
                     : null
             }
 
-            <Surface target={SurfaceTarget.NavRight}/>
+            <Surface target={SurfaceTarget.NavRight} />
+
+            <Button size="sm" theme="ghost" icon={<IconLightMode />} onClick={changeColorScheme}/>
         </>}
     >
         {headerMap["default"]}
@@ -98,23 +109,25 @@ export function FwSubNav() {
     }
 
     // TODO: in the future routing props from settings like {match: "/docs/api/browser"}
-    const active = matchedSubnav?.items.findLast(item => pathname.startsWith(item.url || ""))
+    const active = matchedSubnav?.pages.findLast(item => {
+        return pathname.startsWith(pageLink(item.page || ""))
+    })
 
     // TODO: value
     return <SubNav
-        title={matchedSubnav?.name || ""}
-        value={active?.url || ""}
+        title={matchedSubnav?.title || ""}
+        value={active?.page || ""}
         onChange={() => {
         }}
     >
-        {matchedSubnav?.items.map((item, index) => {
+        {matchedSubnav?.pages.map((item, index) => {
             return <SubNav.Item
-                value={item.url || ""}
-                href={item.url}
+                value={item.page || ""}
+                href={pageLink(item.page || "")}
                 as={$Link}
 
             >
-                {item.name}
+                {item.title}
             </SubNav.Item>
         })}
     </SubNav>
@@ -130,7 +143,7 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
     const settings = useSettings()
 
     const footerItems = settings.navigation?.anchors?.bottom?.map(anchor => {
-        return <UISidebar.FooterItem href={anchor.url} icon={<Icon name={anchor.icon || ""}/>}>
+        return <UISidebar.FooterItem href={anchor.url} icon={<Icon name={anchor.icon || ""} />}>
             {anchor.name}
         </UISidebar.FooterItem>
     })
@@ -159,7 +172,7 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
         initialActiveItems={initialActiveItems}
     >
         <UISidebar footerItems={footerItems && footerItems}>
-            <Surface target={SurfaceTarget.SidebarTop}/>
+            <Surface target={SurfaceTarget.SidebarTop} />
 
             {
                 groups?.map((group, index) => <FwSidebarItemGroup
@@ -235,7 +248,7 @@ export function FwLogo() {
     const settings = useSettings()
 
     if (typeof settings?.theme?.logo === "string") {
-        return <img src={settings?.theme?.logo}/>
+        return <img src={settings?.theme?.logo} />
     }
 
     if (isValidElement(settings?.theme?.logo)) {
@@ -247,7 +260,7 @@ export function FwLogo() {
     return null
 }
 
-export function FwLink({children, ...rest}) {
+export function FwLink({ children, ...rest }) {
     return <Anchor {...rest} as={$Link}>
         {children}
     </Anchor>
@@ -268,14 +281,14 @@ export function FwCopyPage() {
     }
 
     // TODO: `xyd` icons must be always loaded
-    return <Button icon={isCopied ? <Icon name="check" size={12}/> : <Icon name="copy" size={12}/>} onClick={handleCopy}>
+    return <Button icon={isCopied ? <Icon name="check" size={12} /> : <Icon name="copy" size={12} />} onClick={handleCopy}>
         Copy page
     </Button>
 }
 
-function $Link({children, ...rest}) {
+function $Link({ children, ...rest }) {
     let to: To = ""
-                
+
     if (rest.href) {
         try {
             new URL(rest.href)
@@ -333,4 +346,155 @@ function recursiveSearch(items: FwSidebarItemProps[], href: string, levels: any[
 
 function trailingSlash(path: string) {
     return path.endsWith("/") ? path.slice(0, -1) : path
+}
+
+function pageLink(page: string) {
+    return page.startsWith("/") ? page : `/${page}`
+}
+
+function IconLightMode() {
+    return <svg
+        width={16}
+        height={16}
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <g clipPath="url(#clip0_2880_7340)">
+            <path
+                d="M8 1.11133V2.00022"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M12.8711 3.12891L12.2427 3.75735"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M14.8889 8H14"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M12.8711 12.8711L12.2427 12.2427"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M8 14.8889V14"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M3.12891 12.8711L3.75735 12.2427"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M1.11133 8H2.00022"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M3.12891 3.12891L3.75735 3.75735"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M8.00043 11.7782C10.0868 11.7782 11.7782 10.0868 11.7782 8.00043C11.7782 5.91402 10.0868 4.22266 8.00043 4.22266C5.91402 4.22266 4.22266 5.91402 4.22266 8.00043C4.22266 10.0868 5.91402 11.7782 8.00043 11.7782Z"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </g>
+        <defs>
+            <clipPath id="clip0_2880_7340">
+                <rect width={16} height={16} fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
+}
+
+function IconDarkMode() {
+    return <svg
+        width={16}
+        height={16}
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-4 w-4 block text-gray-400 dark:hidden group-hover:text-gray-600"
+    >
+        <g clipPath="url(#clip0_2880_7340)">
+            <path
+                d="M8 1.11133V2.00022"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M12.8711 3.12891L12.2427 3.75735"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M14.8889 8H14"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M12.8711 12.8711L12.2427 12.2427"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M8 14.8889V14"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M3.12891 12.8711L3.75735 12.2427"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M1.11133 8H2.00022"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M3.12891 3.12891L3.75735 3.75735"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <path
+                d="M8.00043 11.7782C10.0868 11.7782 11.7782 10.0868 11.7782 8.00043C11.7782 5.91402 10.0868 4.22266 8.00043 4.22266C5.91402 4.22266 4.22266 5.91402 4.22266 8.00043C4.22266 10.0868 5.91402 11.7782 8.00043 11.7782Z"
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </g>
+        <defs>
+            <clipPath id="clip0_2880_7340">
+                <rect width={16} height={16} fill="white" />
+            </clipPath>
+        </defs>
+    </svg>
 }

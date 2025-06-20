@@ -55,16 +55,12 @@ sidebarTitlte:  Quickstart # visible in sidebar
 ## Description
 The description field is used for SEO purposes and will be displayed in search engine results. It should be a concise summary of the page content.
 
-```md
+```md [descHead="Tip" desc="More SEO page meta you can find [here](/docs/guides/seo)."]
 ---
 title: My title
 description: A brief summary of what this page is about
 ---
 ```
-
-:::callout
-More SEO page meta you can find [here](/docs/guides/seo).
-:::
 
 ## Sidebar icons
 You can customize the sidebar [icons](/docs/guides/icons) for each page by specifying an icon name. The icon will be displayed next to the page title in the navigation.
@@ -77,12 +73,12 @@ icon: book
 ```
 &nbsp;
 
-## Page layout
+## Page layout [maxTocDepth=3]
 
 The Page Layout setting allows you to customize the appearance of your page through different layout modes. 
 This setting is optional - if not specified, the page will use the `default` layout settings.
 
-#### Default layout
+### Default
 If no specific mode is given, the `page` will default to standard settings. 
 This means the page will display with the default table of contents (if headings are present) and other standard elements, providing a typical layout without any special adjustments.
 ```md
@@ -91,7 +87,7 @@ title: My title
 ---
 ```
 
-#### Wide layout
+### Wide
 In Wide Mode, you can hide the table of contents (ToC) on the right side of the page. 
 This is particularly useful if your page doesn't have any headings or if you prefer to utilize the extra horizontal space for other content.
 ```md
@@ -101,14 +97,14 @@ layout: wide
 ---
 ```
 
-#### Center layout
-Center Mode removes the sidebar and the table of contents, and centers the page content. 
-This mode is great for changelogs or any page where you want to focus on the content.
+### Custom {label="Coming Soon"}
+Custom layout mode allows you to define your own page layout by specifying a custom component. 
+This gives you full control over the page structure and styling, enabling you to create unique layouts for specific pages.
 
 ```md
 ---
 title: My title
-layout: center
+layout: custom
 ---
 ```
 
@@ -117,19 +113,16 @@ The Table of Contents (TOC) is automatically generated based on the headings in 
 
 ### Depth
 You can customize the depth level of TOCs per page:
-```md
+```md [descHead="Tip" desc="If you want to change the depth level globally, please check out [settings](/docs/guides/settings#reference)."]
 ---
 maxTocDepth: 2
 ---
 ```
-:::callout
-If you want to change the depth level globally, please check out [settings](/docs/guides/settings#reference).
-:::
 
 ### Card
 `tocCard` meta is useful for showing additional card below table of contents with addional info to your content.
 
-```md
+```md [descHead="Tip" desc="If you want to learn more about toc anchors, check out [here](/docs/guides/writing-quickstart#toc-anchors)."]
 ---
 tocCard: 
     link: https://github.com/xyd-js/customization-samples
@@ -138,10 +131,6 @@ tocCard:
     icon: github
 ---
 ```
-
-:::callout
-If you want to learn more about toc anchors, check out [here](/docs/guides/writing-quickstart#toc-anchors).
-:::
 
 ## Uniform
 

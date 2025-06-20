@@ -3,8 +3,9 @@ import React from "react";
 import * as cn from "./Button.styles";
 
 export interface ButtonProps {
-    children: React.ReactNode;
-    kind?: "primary" | "secondary" | "tertiary";
+    children?: React.ReactNode;
+    kind?: "primary" | "secondary" | "tertiary" | undefined
+    theme?: "ghost";
     size?: "sm" | "md" | "lg";
     className?: string;
     onClick?: () => void;
@@ -17,6 +18,7 @@ export interface ButtonProps {
 export function Button({
     children,
     kind = "primary",
+    theme,
     size = "md",
     className,
     onClick,
@@ -36,11 +38,17 @@ export function Button({
         }
     }
 
+    if (theme === "ghost") {
+        kind = undefined
+    }
+
     return (
         <Component
             className={`${cn.ButtonHost} ${className || ''}`}
+            data-button={true}
             data-kind={kind}
             data-size={size}
+            data-theme={theme}
             data-has-icon={!!icon}
             data-icon-position={iconPosition}
             onClick={onClick}
@@ -52,9 +60,11 @@ export function Button({
                     {icon}
                 </span>
             )}
-            <span part="content">
-                {children}
-            </span>
+            {
+                children ? <span part="content">
+                    {children}
+                </span> : null
+            }
             {icon && iconPosition === "right" && (
                 <span part="icon" className={cn.ButtonIcon}>
                     {icon}

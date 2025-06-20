@@ -160,6 +160,10 @@ export const ItemHeaderHost = css`
         padding-left: var(--xyd-sidebar-item-padding-left);
         margin-bottom: 8px;
         margin-top: 24px;
+
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 `;
 

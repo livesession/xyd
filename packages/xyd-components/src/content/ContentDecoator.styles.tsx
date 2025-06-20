@@ -12,12 +12,29 @@ export default {
             font-size: var(--xyd-font-size-medium);
             line-height: var(--xyd-line-height-medium);
 
-            p:not(li p):not(ul p):not(xyd-callout p):not(xyd-codetabs p):not(xyd-guidecard p) {
+            p:not(li p):not(ul p):not(xyd-callout p):not(xyd-codetabs p):not(xyd-guidecard p):not([data-button="true"] p) {
                 margin-top: var(--space-medium);
             }
             
             details {
+                --xyd-callout-bgcolor: var(--white);
                 margin-top: var(--space-medium);
+
+                summary {
+                    [part="summary-deep"], [part="summary-deep-label"] {
+                        font-size: var(--xyd-font-size-small);
+                        line-height: var(--xyd-line-height-small);
+                    }
+                    [part="summary-deep-label"] {
+                        font-weight: bold;
+                    }
+                }
+
+                &[data-kind="secondary"] {
+                    code {
+                        background: var(--xyd-details-bgcolor--secondary);
+                    }
+                }
             }
 
             hr {
@@ -46,16 +63,7 @@ export default {
                 }
             }
             
-            details summary {
-                [part="summary-deep"], [part="summary-deep-label"] {
-                    font-size: var(--xyd-font-size-small);
-                    line-height: var(--xyd-line-height-small);
-                }
-                [part="summary-deep-label"] {
-                    font-weight: bold;
-                }
-            }
-            
+       
             ul:not(xyd-underlinenav ul), ol:not(xyd-underlinenav ol) {
                 margin-top: var(--space-medium);
             }

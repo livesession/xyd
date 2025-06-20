@@ -65,7 +65,7 @@ export default class MyTheme extends BaseTheme {
 You can add as many style file as you want. Also names of your imported styles are your own.
 :::
 
-## Overriding an Existing Components {label="Coming soon"}
+## Overriding an Existing Components {label="Coming Soon"}
 
  :::code-group{}
   ```tsx Settings
@@ -104,7 +104,7 @@ You can add as many style file as you want. Also names of your imported styles a
   ``` 
 :::
 
-## Adding a Custom Component {label="Coming soon"}
+## Adding a Custom Component {label="Coming Soon"}
 
 Here's an example of how to add a custom component to your theme:
 

@@ -60,8 +60,8 @@ export async function action({
     const settings = JSON.parse(JSON.stringify(SETTINGS))
     const apisidebar = settings?.navigation?.sidebar.find(sidebar => sidebar.route === prefix) || null
 
-    if (uniformData?.out?.sidebar?.length && apisidebar?.items) {
-        apisidebar.items[0].pages.push(...uniformData?.out?.sidebar || [])
+    if (uniformData?.out?.sidebar?.length && apisidebar?.pages) {
+        apisidebar.pages[0].pages.push(...uniformData?.out?.sidebar || [])
     }
 
     const frontmatter = uniformData?.out?.pageFrontMatter || {}

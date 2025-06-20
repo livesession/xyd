@@ -1,6 +1,6 @@
 {
     "theme": {
-        "name": "picasso",
+        "name": "poetry",
         "logo": "/public/assets/logo.svg",
         "favicon": "/public/assets/logo.svg",
         "banner": {
@@ -35,38 +35,38 @@
     "navigation": {
         "header": [
             {
-                "name": "Guides",
-                "url": "/docs"
+                "title": "Guides",
+                "page": "docs"
             },
             {
-                "name": "Components",
-                "url": "/docs/components"
+                "title": "Components",
+                "page": "docs/components"
             },
             {
-                "name": "Reference",
-                "url": "/docs/reference"
+                "title": "Reference",
+                "page": "docs/reference"
             }
         ],
-        "subheader": [
+        "segments": [
             {
-                "name": "API",
                 "route": "docs/reference",
-                "items": [
+                "title": "API",
+                "pages": [
                     {
-                        "name": "Core",
-                        "url": "/docs/reference/core"
+                        "title": "Core",
+                        "page": "docs/reference/core"
                     },
                     {
-                        "name": "Functions",
-                        "url": "/docs/reference/functions"
+                        "title": "Functions",
+                        "page": "docs/reference/functions"
                     },
                     {
-                        "name": "Composer",
-                        "url": "/docs/reference/composer"
+                        "title": "Composer",
+                        "page": "docs/reference/composer"
                     },
                     {
-                        "name": "CLI",
-                        "url": "/docs/reference/cli"
+                        "title": "CLI",
+                        "page": "docs/reference/cli"
                     }
                 ]
             }
@@ -74,7 +74,7 @@
         "sidebar": [
             {
                 "route": "docs",
-                "items": [
+                "pages": [
                     {
                         "group": "Get Started",
                         "pages": [
@@ -188,7 +188,7 @@
             },
             {
                 "route": "docs/components",
-                "items": [
+                "pages": [
                     {
                         "group": "Components",
                         "pages": [
@@ -206,53 +206,59 @@
                 ]
             },
             {
-                "route": "docs/reference/functions",
-                "items": [
+                "route": "docs/reference",
+                "pages": [
                     {
-                        "group": "Reference",
+                        "route": "docs/reference/core",
                         "pages": [
-                            "docs/reference/functions/overview",
-                            "docs/reference/functions/importCode",
-                            "docs/reference/functions/uniform",
-                            "docs/reference/functions/changelog",
-                            "docs/reference/functions/let",
-                            "docs/reference/functions/out"
+                            {
+                                "group": "Reference",
+                                "pages": [
+                                    "docs/reference/core/overview",
+                                    "docs/reference/core/settings",
+                                    "docs/reference/core/sidebar",
+                                    "docs/reference/core/theme",
+                                    "docs/reference/core/pagemeta"
+                                ]
+                            }
                         ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/reference/core",
-                "items": [
+                    },
                     {
-                        "group": "Reference",
+                        "route": "docs/reference/functions",
                         "pages": [
-                            "docs/reference/core/overview",
-                            "docs/reference/core/settings",
-                            "docs/reference/core/theme",
-                            "docs/reference/core/pagemeta"
+                            {
+                                "group": "Reference",
+                                "pages": [
+                                    "docs/reference/functions/overview",
+                                    "docs/reference/functions/importCode",
+                                    "docs/reference/functions/uniform",
+                                    "docs/reference/functions/changelog",
+                                    "docs/reference/functions/let",
+                                    "docs/reference/functions/out"
+                                ]
+                            }
                         ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/reference/composer",
-                "items": [
+                    },
                     {
-                        "group": "Reference",
+                        "route": "docs/reference/composer",
                         "pages": [
-                            "docs/reference/composer/overview"
+                            {
+                                "group": "Reference",
+                                "pages": [
+                                    "docs/reference/composer/overview"
+                                ]
+                            }
                         ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/reference/cli",
-                "items": [
+                    },
                     {
-                        "group": "Reference",
+                        "route": "docs/reference/cli",
                         "pages": [
-                            "docs/reference/cli/overview"
+                            {
+                                "group": "Reference",
+                                "pages": [
+                                    "docs/reference/cli/overview"
+                                ]
+                            }
                         ]
                     }
                 ]

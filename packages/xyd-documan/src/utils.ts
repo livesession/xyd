@@ -301,9 +301,12 @@ export function pluginIconSet(settings: Settings): VitePluginOption {
                 if (settings.theme?.icons?.library) {
                     resp = await processIconLibrary(settings.theme.icons.library);
                 } else {
-                    // If no icons configured, use default
-                    resp = new Map<string, { svg: string }>();
-                    await addIconsToMap(resp, DEFAULT_ICON_SET);
+                    resp = await processIconLibrary([
+                        {
+                            name: DEFAULT_ICON_SET,
+                            default: true,
+                        }
+                    ]);
                 }
 
                 return `

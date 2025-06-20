@@ -34,6 +34,19 @@ const MyComponent = () => {
 You can also customize syntax highlighting. Please see [theme settings](/docs/guides/customization-quickstart#theme-reference) for more details.
 :::
 
+## Syntax Highlighting 
+Default syntax highlighting depends on used theme but you can override it via [`docs.json`](/docs/guides/settings):
+```json
+{
+  "theme": {
+    "markdown": {
+      "syntaxHighlight": "<name> or <theme>"
+    }
+  }
+}
+```
+
+&nbsp;
 ## Line Highlighting
 
 **Input:**
@@ -82,6 +95,7 @@ const MyComponent = () => {
 }
 ```
 
+&nbsp;
 ## Code diff
 **Input:**
 ~~~
@@ -105,6 +119,7 @@ const MyComponent = () => {
 }
 ```
 
+&nbsp;
 ## Code Groups
 You can use the `code-group` component to group multiple code blocks together.
 
@@ -140,6 +155,7 @@ pnpm add -g xyd-js
 ```
 :::
 
+&nbsp;
 ## Code Attributes [maxTocDepth=3]
 
 Code attributes allow you to customize the behavior and appearance of code blocks. Attributes are specified within square brackets `[]` after the language identifier and before the code content.
@@ -210,6 +226,7 @@ npm i -g xyd-js
 npm i -g xyd-js
 ```
 
+&nbsp;
 ## Import Code
 
 You can import code from a file using the [`@importCode`](/docs/reference/functions/importCode) function:
@@ -217,6 +234,7 @@ You can import code from a file using the [`@importCode`](/docs/reference/functi
 @importCode "./relative-to-current-file.tsx"
 ```
 
+&nbsp;
 ## Changelog
 
 You can also render changelog page using the [`@changelog`](/docs/reference/functions/changelog) function:

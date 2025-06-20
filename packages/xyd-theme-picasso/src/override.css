@@ -13,7 +13,7 @@
 
         [part="page"] {
             position: absolute;
-            left: 260px;
+            left: 250px;
             right: 0;
         }
 
@@ -57,9 +57,20 @@
             justify-content: flex-start;
         }
     }
+    xyd-subnav {
+        border-top: 1px solid var(--dark32);
+        border-radius: 0px;
+        margin-top: 0px;
+    }
+
+    xyd-layout-primary[data-hide-subheader="true"] {
+        xyd-subnav {
+            border-top: none;
+        }
+    }
 
     header[part="header"] {
-        border-bottom: 2px solid var(--dark32);
+        border-bottom: 1px solid var(--dark32);
     }
 
     /* Code */

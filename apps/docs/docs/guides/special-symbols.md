@@ -68,7 +68,7 @@ Function Calling (`@<function>`) is used to execute [functions](/docs/reference/
 :::
 
 ## `Output Variable` {label="Coming Soon"}
-Output Variable (`@out(<name>=<expression>)`) is used to pass output variables from content files, useful for [composing](/docs/guides/compose-content) documentation content:
+[Output Variable](/docs/reference/functions/out) (`@out(<name>=<expression>)`) is used to pass output variables from content files, useful for [composing](/docs/guides/compose-content) documentation content:
 
 ~~~md
 @out(examples=(

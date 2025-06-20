@@ -28,7 +28,10 @@ export const LayoutPrimaryHost = css`
         }
 
         &[data-hide-subheader="true"] > [part="header"] {
-            transform: translateY(calc(-1 * var(--xyd-nav-height) - 5px));
+            transform: translateY(calc(-1 * var(--xyd-nav-height)));
+        }
+        &[data-hide-subheader="true"] > [part="header"] > [part="header-content"] {
+            visibility: hidden;
         }
 
         &[data-subheader="true"] > [part="header"] {
@@ -102,6 +105,9 @@ export const LayoutPrimaryHost = css`
 
         &[data-subheader="true"][data-hide-subheader="false"] [part="main"] {
             top: calc(var(--xyd-header-total-height) + var(--xyd-header-warning-height));
+        }
+        &[data-subheader="true"][data-hide-subheader="true"] [part="main"] {
+            top: calc(var(--xyd-subnav-height) + var(--xyd-header-warning-height));
         }
 
         [part="sidebar"] {

@@ -2,7 +2,11 @@
     /* Layout */
     xyd-layout-primary {
         > [part="header"] {
-            margin-left: 16rem;
+            margin-left: var(--xyd-sidebar-width);
+        }
+
+        [part="main"] {
+            background: var(--dark16);
         }
 
         [part="sidebar"] {
@@ -13,8 +17,10 @@
 
         [part="page"] {
             position: absolute;
-            left: 260px;
+            left: 250px;
             right: 0;
+            background: var(--white);
+            border-top-left-radius: 8px;
         }
 
         @media (max-width: 1024px) {
@@ -37,6 +43,11 @@
         [part="list"] {
             justify-content: flex-start;
         }
+    }
+    xyd-subnav {
+        border-radius: 0px;
+        margin-top: 0px;
+        background-color: var(--xyd-sidebar-bgcolor);
     }
 
     /* Code */

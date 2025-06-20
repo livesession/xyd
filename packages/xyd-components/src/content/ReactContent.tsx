@@ -451,8 +451,6 @@ function $Pre(
         }
     }
 
-    console.log("descriptionContent", descriptionContent)
-
     return <CodeSample
         theme={this.settings?.theme?.markdown?.syntaxHighlight || undefined}
         name={lang}

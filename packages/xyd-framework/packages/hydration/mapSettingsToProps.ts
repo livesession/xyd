@@ -1,7 +1,7 @@
 // server-only
 
 import { Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL } from "@xyd-js/core";
-import { filterNavigationByLevels, pageFrontMatters } from "@xyd-js/content";
+import { pageFrontMatters } from "@xyd-js/content";
 import { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
 import { FwSidebarGroupProps } from "../react";
@@ -48,7 +48,7 @@ export async function mapSettingsToProps(
             console.error("frontmatters not found")
             return null
         }
-        
+
         if (typeof page !== "string" && !("virtual" in page)) {
             const items = page.pages
                 ?.map((p) => mapItems(p, page, nav))
@@ -134,6 +134,15 @@ export async function mapSettingsToProps(
         .map((nav) => {
             // TODO: finish
             if ("route" in nav) {
+                if (nav.pages?.length) {
+                    const items = (nav.pages?.map((p) => mapItems(p, nav, filteredNav)) || [])
+                        .filter(Boolean)
+
+                    return {
+                        items
+                    } as FwSidebarGroupProps
+                }
+
                 return {
                     group: "",
                     items: [],
@@ -146,6 +155,7 @@ export async function mapSettingsToProps(
 
             return {
                 group: nav.group,
+                icon: nav?.icon,
                 items
             } as FwSidebarGroupProps
         }) || []
@@ -164,7 +174,9 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
 
     let multiSidebarMatch: SidebarRoute | null = null
 
-    settings?.navigation?.sidebar.filter(sidebar => {
+    let flatPagesOnly = false
+
+    function findRoute(sidebar: Sidebar | SidebarRoute) {
         if ("route" in sidebar) {
             const sideMatch = normalizeHref(sidebar.route)
             const normalizeSlug = normalizeHref(slug)
@@ -183,20 +195,43 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
                 }
             }
 
+            if ("pages" in sidebar && sidebar.pages?.length) {
+                for (const page of sidebar.pages) {
+                    findRoute(page)
+                }
+            }
+        }
+
+        return
+    }
+
+    settings?.navigation?.sidebar.filter(sidebar => {
+        if (flatPagesOnly) {
+            return
+        }
+        if (typeof sidebar === "string") {
+            flatPagesOnly = true
             return
         }
 
-        // TODO: better algorithm
-        const ok = filterNavigationByLevels(settings?.navigation?.header || [], slug)(sidebar)
+        if ("route" in sidebar) {
+            findRoute(sidebar)
 
-        if (ok) {
-            sidebarItems.push(sidebar)
+            return
         }
+
+        sidebarItems.push(sidebar)
     })
 
     if (multiSidebarMatch != null) {
         const side = multiSidebarMatch as SidebarRoute
-        sidebarItems.push(...side.items)
+        sidebarItems.push(...(side?.pages || []))
+    }
+
+    if (flatPagesOnly) {
+        sidebarItems.push({
+            pages: settings?.navigation?.sidebar as string[]
+        })
     }
 
     return sidebarItems

@@ -14,14 +14,17 @@ Learn how to make your docs available to the public
 :::
 
 You must follow the following steps to deploy your `xyd` docs:
-* [xyd](http://npmjs.com/package/xyd-js) is installed on CI / locally.
+:::steps
+1. [xyd](http://npmjs.com/package/xyd-js) is installed on CI / locally.
 
-* You run `xyd` command inside your docs project.
+2. You run `xyd` command inside your docs project.
+:::
+
 
 ## Build
 
 Run this command to build the docs:
-```bash
+```bash 
 $ xyd build
 ```
 

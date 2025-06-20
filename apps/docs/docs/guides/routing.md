@@ -24,52 +24,48 @@ You can customize the routing by adding a routes in [`docs.json`](/docs/guides/s
 
 The `navigation` property controls the hierarchy of your documentation. It's grouped into multiple properties:
 
-* [`sidebar`](#sidebar) - Main navigation, usually displayed on the left side of the page.
-* [`header`](#header) - Sub navigation, usually displayed on the top of the page.
-* [`anchors`](#anchors) - Fixed navigation, helpful for displaying a static navigation/links.
+* [`sidebar`](/docs/guides/routing#sidebar) - Main navigation, usually displayed on the left side of the page.
+* [`header`](/docs/guides/routing#header) - Sub navigation, usually displayed on the top of the page.
+* [`anchors`](/docs/guides/routing#anchors) - Fixed navigation, helpful for displaying a static navigation/links.
 
 :::callout
 Dividing a `navigation` into multiple properties helps you to organize your documentation better.
 :::
 
 ### Sidebar
-If you don't want any hierarchy, you can just define pages within your navigation field.
-Each entry of the pages array must be a path to a file that exists within your repo:
-
-```json
+The simples way to define `sidebar` is declaring a pages within it:
+```json [descHead="Important" desc="Each entry of the pages **MUST** be a path to a file that exists within your docs."]
 {
   "navigation": {
     "sidebar": [
-      "overview",
-      "quickstart",
-      "guides/introduction"
+      "overview", // overview.md
+      "quickstart", // quickstart.md
+      "guides/introduction" // guides/introduction.md
     ]
   }
 }
 ```
 
 :::callout
-Note you do not need to append `.md` or `.mdx` to the file paths.
+Note you do not need to append `.md`/`.mdx` or `/` at beginning to the file paths.
 :::
 
-#### Groups in Sidebar
-Groups allow you to group your pages:
-
-```json
+#### Groups
+If you need more advanced structures, define sidebar as object:
+```json [descHead="Tip" desc="Group shows on the sidebar above the sidebar items."]
 {
   "sidebar": [
     {
-        {
-            // !diff +
-            "group": "Get Started",
-            "pages": [
-                "docs/guides/introduction",
-                "docs/guides/getting-started",
-                "docs/guides/deploy"
-            ]
-        },
-        // ... other groups
+      // !diff +
+      "group": "Get Started",
+      "icon": "code",
+      "pages": [
+          "docs/guides/introduction",
+          "docs/guides/getting-started",
+          "docs/guides/deploy"
+      ]
     }
+    // ... other groups
   ]
 }
 ```
@@ -78,30 +74,28 @@ Groups allow you to group your pages:
 `group` property shows the name as the separator in the sidebar.
 :::
 
-#### Nested Groups in Sidebar
-You can also define nested groups with pages:
+#### Nested Groups
+You can also define nested groups:
 
-```json
+```json [!scroll descHead="Reference" desc="Check the reference of [Sidebar](/docs/reference/core/sidebar)".]
 {
   "sidebar": [
     {
-        {
-            "group": "Get Started",
+      "group": "Get Started",
+      "pages": [
+          "docs/guides/introduction",
+          "docs/guides/getting-started",
+          // !diff +
+          {
+            "group": "Deployment",
             "pages": [
-                "docs/guides/introduction",
-                "docs/guides/getting-started",
-                // !diff +
-                {
-                  "group": "Deployment",
-                  "pages": [
-                    "docs/guides/deploy/overview",
-                    "docs/guides/deploy/netlify"
-                  ]
-                }
+              "docs/guides/deploy/overview",
+              "docs/guides/deploy/netlify"
             ]
-        },
-        // ... other groups
+          }
+      ]
     }
+    // ... other groups
   ]
 }
 ```
@@ -110,41 +104,37 @@ You can also define nested groups with pages:
 Please not that order of your sidebar items depends on place in the config file. 
 :::
 
-#### Routing in Sidebar
+#### Routing
 You can also do more advanced routing in the sidebar, like matching based on the specific route:
 
-```json
+```json [!scroll]
 {
     "sidebar": [
         {
             // !diff +
             "route": "docs",
-            "items": [
+            "pages": [
                 {
                     "group": "Getting Started",
                     "pages": [
-                        "docs/introduction",
+                       "docs/introduction",
                        "docs/components"
                     ]
                 },
                 {
-                    "group": "Guides",
-                    "pages": [
-                        "docs/guides/introduction",
-                        "docs/guides/components"
-                    ]
+                    // ...
                 }
-            ],
+            ]
         },
         {
             // !diff +
             "route": "docs/api",
-            "items": [
+            "pages": [
                 {
                     "group": "API",
                     "pages": [
                         "docs/api/introduction",
-                        "docs/api/error-handling",
+                        "docs/api/error-handling"
                     ]
                 }
             ]
@@ -153,7 +143,7 @@ You can also do more advanced routing in the sidebar, like matching based on the
 }
 ```
 :::callout
-This approuch gives you more control over the routing and allows you to create more complex navigation structures.
+This approach gives you more control over the routing and allows you to create more complex navigation structures.
 :::
 
 ### Header
@@ -165,53 +155,53 @@ The header navigation allows you to create a top-level navigation bar.
   "navigation": {
     "header": [
       {
-        "name": "Documentation",
-        "url": "/docs"
+        "title": "Documentation",
+        "page": "docs"
       },
       {
-        "name": "API Reference",
-        "url": "/docs/api"
+        "title": "API Reference",
+        "page": "docs/api"
       }
     ]
   }
 }
 ```
 
-#### Subheader
+### Segments
 
-you can also define a sub header for a specific routes:
+Segments allows you to create smaller navigational structures based on specific `route`.
+Thanks to that you can create for example a subheader that will shown only on specific `route`: 
 
-```json
+```json [!scroll descHead="Tip" desc="Check out how to create a subheader using segments [here](https://github.com/xyd-js/navigation-samples/tree/master/subheader)."]
 {
   "navigation": {
-    "subheader": [
+    // !diff +
+    "segments": [
       {
-        // !diff +
         "route": "docs/api",
-        "name": "API",
-        "items": [
+        "title": "API",
+        "pages": [
           {
-            "name": "Getting Started",
-            "url": "/docs/api"
+            "title": "Getting Started",
+            "page": "docs/api"
           },
           {
-            "name": "Authentication",
-            "url": "/docs/api/auth"
+            "title": "Authentication",
+            "page": "docs/api/auth"
           },
         ]
       },
       {
-        // !diff +
         "route": "docs/guides",
-        "name": "Guides",
+        "title": "Guides",
         "items": [
           {
-            "name": "Quick Start",
-            "url": "/docs/guides/quickstart"
+            "title": "Quick Start",
+            "page": "docs/guides/quickstart"
           },
           {
-            "name": "Tutorials",
-            "url": "/docs/guides/tutorials"
+            "title": "Tutorials",
+            "page": "docs/guides/tutorials"
           }
         ]
       }
@@ -219,11 +209,6 @@ you can also define a sub header for a specific routes:
   }
 }
 ```
-Subheader usually shows under header but it depends on theme.
-
-:::callout
-The `route` property in `subheader` determines which the header should be visible.
-:::
 
 ### Anchors {label="Coming Soon"}
 
@@ -260,7 +245,7 @@ Anchors provide a way to add fixed navigation elements, typically at the bottom 
 }
 ```
 
-##  File-Convention Routing {label="Coming soon"}
+##  File-Convention Routing {label="Coming Soon"}
 :::callout
 File-convention routing is powerful because you don't need any configuration but also has some limitations. 
 <br/>

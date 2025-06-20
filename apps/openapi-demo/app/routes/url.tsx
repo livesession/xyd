@@ -44,7 +44,6 @@ export default function Url() {
 const AtlasContent = memo(({ canonical, references }: { canonical: string, references: any[] }) => {
     const { BaseThemePage } = useContext(UrlContext)
 
-    console.log("rerender", canonical)
     return (
         <BaseThemePage>
             <Loader/>

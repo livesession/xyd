@@ -1,0 +1,999 @@
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/overview'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/importCode'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/uniform'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/changelog'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/let'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/out'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core/overview'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core/settings'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core/sidebar'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core/theme'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core/pagemeta'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/composer'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/composer/overview'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/cli'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/cli/overview'
+  }
+] 3333
+DOCS ROUTES [
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/introduction'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/quickstart'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/deploy'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/settings'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/themes'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/pages'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/routing'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/special-symbols'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/writing-quickstart'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/developer-content'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/compose-content'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/seo'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/customization-quickstart'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/theme-api'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/custom-theme'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/icons'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/custom-scripts'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/plugins'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/openapi'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/graphql'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/components-api'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/typescript'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/python'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/golang'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/asyncapi'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/apitoolchain'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/sdk-quickstart'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/opensdk'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/integrations/analytics/analytics-integrations'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/integrations/analytics/livesession'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/integrations/search/search-integrations'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/integrations/search/algolia'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/integrations/search/orama'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/guides/integrations/apps/github-star'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/development/roadmap'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/development/contributing'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/development/changelog'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/resources/migration-tool'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/resources/examples'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/resources/showcase'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/components'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/components/text'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/components/heading'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/components/callouts'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/components/details'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/components/guide-card'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/components/tables'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/components/steps'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/components/tabs'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/components/grid'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/overview'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/importCode'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/uniform'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/changelog'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/let'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/functions/out'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core/overview'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core/settings'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core/sidebar'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core/theme'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/core/pagemeta'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/composer'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/composer/overview'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/cli'
+  },
+  {
+    file: '/Users/zdunecki/Code/livesession/xyd/.xyd/host/plugins/xyd-plugin-docs/src/pages/layout.tsx',
+    children: [ [Object] ],
+    id: 'layout:/docs/reference/cli/overview'
+  }
+] 3333
+  ➜  Local:   http://localhost:5175/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+[
+  {
+    "group": "Reference",
+    "items": [
+      {
+        "title": "Overview",
+        "href": "/docs/reference/functions/overview",
+        "active": false,
+        "uniqIndex": 0,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "Overview"
+        }
+      },
+      {
+        "title": "@importCode",
+        "href": "/docs/reference/functions/importCode",
+        "active": false,
+        "uniqIndex": 1,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "@importCode"
+        }
+      },
+      {
+        "title": "@uniform",
+        "href": "/docs/reference/functions/uniform",
+        "active": false,
+        "uniqIndex": 2,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "@uniform"
+        }
+      },
+      {
+        "title": "@changelog",
+        "href": "/docs/reference/functions/changelog",
+        "active": false,
+        "uniqIndex": 3,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "@changelog"
+        }
+      },
+      {
+        "title": "@let",
+        "href": "/docs/reference/functions/let",
+        "active": false,
+        "uniqIndex": 4,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "@let"
+        }
+      },
+      {
+        "title": "@out",
+        "href": "/docs/reference/functions/out",
+        "active": false,
+        "uniqIndex": 5,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "@out"
+        }
+      }
+    ]
+  }
+] 55555
+[
+  {
+    "group": "Reference",
+    "items": [
+      {
+        "title": "Overview",
+        "href": "/docs/reference/functions/overview",
+        "active": false,
+        "uniqIndex": 0,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "Overview"
+        }
+      },
+      {
+        "title": "@importCode",
+        "href": "/docs/reference/functions/importCode",
+        "active": false,
+        "uniqIndex": 1,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "@importCode"
+        }
+      },
+      {
+        "title": "@uniform",
+        "href": "/docs/reference/functions/uniform",
+        "active": false,
+        "uniqIndex": 2,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "@uniform"
+        }
+      },
+      {
+        "title": "@changelog",
+        "href": "/docs/reference/functions/changelog",
+        "active": false,
+        "uniqIndex": 3,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "@changelog"
+        }
+      },
+      {
+        "title": "@let",
+        "href": "/docs/reference/functions/let",
+        "active": false,
+        "uniqIndex": 4,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "@let"
+        }
+      },
+      {
+        "title": "@out",
+        "href": "/docs/reference/functions/out",
+        "active": false,
+        "uniqIndex": 5,
+        "icon": "",
+        "sidebarTitle": "",
+        "pageMeta": {
+          "title": "@out"
+        }
+      }
+    ]
+  }
+] 55555
+matchedSubnav undefined [
+  {
+    id: 'root',
+    pathname: '/',
+    params: { '*': '' },
+    data: undefined,
+    handle: undefined
+  },
+  {
+    id: 'layout:/docs/reference/functions/overview',
+    pathname: '/',
+    params: { '*': '' },
+    data: {
+      sidebarGroups: [Array],
+      breadcrumbs: [Array],
+      navlinks: [Object],
+      slug: 'docs/reference/functions/overview',
+      metadata: [Object],
+      bannerContentCode: '"use strict";\n' +
+        'const {jsx: _jsx} = arguments[0];\n' +
+        'const toc = [];\n' +
+        'const frontmatter = undefined;\n' +
+        'function _createMdxContent(props) {\n' +
+        '  const _components = {\n' +
+        '    p: "p",\n' +
+        '    strong: "strong",\n' +
+        '    ...props.components\n' +
+        '  }, {Button} = _components;\n' +
+        '  if (!Button) _missingMdxReference("Button", true);\n' +
+        '  return _jsx(Button, {\n' +
+        '    href: "https://xyd.dev",\n' +
+        '    size: "sm",\n' +
+        '    kind: "secondary",\n' +
+        '    children: _jsx(_components.p, {\n' +
+        '      children: _jsx(_components.strong, {\n' +
+        '        children: "xyd 0.1.0-alpha is coming soon!"\n' +
+        '      })\n' +
+        '    })\n' +
+        '  });\n' +
+        '}\n' +
+        'function MDXContent(props = {}) {\n' +
+        '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+        '  return MDXLayout ? _jsx(MDXLayout, {\n' +
+        '    ...props,\n' +
+        '    children: _jsx(_createMdxContent, {\n' +
+        '      ...props\n' +
+        '    })\n' +
+        '  }) : _createMdxContent(props);\n' +
+        '}\n' +
+        'return {\n' +
+        '  toc,\n' +
+        '  frontmatter,\n' +
+        '  default: MDXContent\n' +
+        '};\n' +
+        'function _missingMdxReference(id, component) {\n' +
+        '  throw new Error("Expected " + (component ? "component" : "object") + " `" + id + "` to be defined: you likely forgot to import, pass, or provide it.");\n' +
+        '}\n'
+    },
+    handle: undefined
+  },
+  {
+    id: '/docs/reference/functions/overview',
+    pathname: '/docs/reference/functions/overview',
+    params: { '*': '' },
+    data: {
+      sidebarGroups: [Array],
+      breadcrumbs: [Array],
+      navlinks: [Object],
+      slug: 'docs/reference/functions/overview',
+      code: '"use strict";\n' +
+        'const {Fragment: _Fragment, jsx: _jsx, jsxs: _jsxs} = arguments[0];\n' +
+        'const toc = [{\n' +
+        '  "depth": 2,\n' +
+        '  "id": "features",\n' +
+        '  "value": "Features",\n' +
+        '  "attributes": {\n' +
+        '    "hProperties": {\n' +
+        '      "id": "features"\n' +
+        '    }\n' +
+        '  },\n' +
+        '  "children": [],\n' +
+        '  "maxTocDepth": undefined\n' +
+        '}, {\n' +
+        '  "depth": 2,\n' +
+        '  "id": "next-steps",\n' +
+        '  "value": "Next Steps",\n' +
+        '  "attributes": {\n' +
+        '    "hProperties": {\n' +
+        '      "id": "next-steps"\n' +
+        '    }\n' +
+        '  },\n' +
+        '  "children": [],\n' +
+        '  "maxTocDepth": undefined\n' +
+        '}];\n' +
+        'const frontmatter = {\n' +
+        '  "title": "Overview"\n' +
+        '};\n' +
+        'function _createMdxContent(props) {\n' +
+        '  const _components = {\n' +
+        '    a: "a",\n' +
+        '    h1: "h1",\n' +
+        '    h2: "h2",\n' +
+        '    li: "li",\n' +
+        '    p: "p",\n' +
+        '    strong: "strong",\n' +
+        '    ul: "ul",\n' +
+        '    ...props.components\n' +
+        '  }, {Subtitle} = _components;\n' +
+        '  if (!Subtitle) _missingMdxReference("Subtitle", true);\n' +
+        '  return _jsxs(_Fragment, {\n' +
+        '    children: [_jsx(_components.h1, {\n' +
+        '      id: "functions-api",\n' +
+        '      label: "Experimental",\n' +
+        '      children: "Functions API"\n' +
+        '    }), "\\n", _jsx(Subtitle, {\n' +
+        '      children: _jsx(_components.p, {\n' +
+        '        children: "Reference for dynamic content capabilities through functions"\n' +
+        '      })\n' +
+        '    }), "\\n", _jsx(_components.p, {\n' +
+        '      children: "Guide to using functions in XYD for enhancing your documentation with dynamic content and code integration."\n' +
+        '    }), "\\n", _jsx(_components.p, {\n' +
+        '      children: "In XYD markdown files, you can use special functions to reference code, generate documentation, and reuse content. These functions help you create more maintainable and interactive documentation."\n' +
+        '    }), "\\n", _jsx(_components.h2, {\n' +
+        '      id: "features",\n' +
+        '      children: "Features"\n' +
+        '    }), "\\n", _jsxs(_components.ul, {\n' +
+        '      children: ["\\n", _jsxs(_components.li, {\n' +
+        '        children: [_jsx(_components.strong, {\n' +
+        '          children: "Code Integration"\n' +
+        '        }), ": Import and display code from external sources"]\n' +
+        '      }), "\\n", _jsxs(_components.li, {\n' +
+        '        children: [_jsx(_components.strong, {\n' +
+        '          children: "API Documentation"\n' +
+        '        }), ": Automatically generate comprehensive API references"]\n' +
+        '      }), "\\n", _jsxs(_components.li, {\n' +
+        '        children: [_jsx(_components.strong, {\n' +
+        '          children: "Content Reuse"\n' +
+        '        }), ": Share and maintain content across multiple pages"]\n' +
+        '      }), "\\n"]\n' +
+        '    }), "\\n", _jsx(_components.h2, {\n' +
+        '      id: "next-steps",\n' +
+        '      children: "Next Steps"\n' +
+        '    }), "\\n", _jsxs(_components.ul, {\n' +
+        '      children: ["\\n", _jsxs(_components.li, {\n' +
+        '        children: ["Learn about ", _jsx(_components.a, {\n' +
+        '          href: "/docs/guides/customization-introduction",\n' +
+        '          children: "theme customization"\n' +
+        '        })]\n' +
+        '      }), "\\n", _jsxs(_components.li, {\n' +
+        '        children: ["Explore ", _jsx(_components.a, {\n' +
+        '          href: "/docs/components",\n' +
+        '          children: "component documentation"\n' +
+        '        })]\n' +
+        '      }), "\\n", _jsxs(_components.li, {\n' +
+        '        children: ["Read about ", _jsx(_components.a, {\n' +
+        '          href: "/docs/guides/api-reference",\n' +
+        '          children: "API reference generation"\n' +
+        '        })]\n' +
+        '      }), "\\n"]\n' +
+        '    })]\n' +
+        '  });\n' +
+        '}\n' +
+        'function MDXContent(props = {}) {\n' +
+        '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+        '  return MDXLayout ? _jsx(MDXLayout, {\n' +
+        '    ...props,\n' +
+        '    children: _jsx(_createMdxContent, {\n' +
+        '      ...props\n' +
+        '    })\n' +
+        '  }) : _createMdxContent(props);\n' +
+        '}\n' +
+        'return {\n' +
+        '  toc,\n' +
+        '  frontmatter,\n' +
+        '  default: MDXContent\n' +
+        '};\n' +
+        'function _missingMdxReference(id, component) {\n' +
+        '  throw new Error("Expected " + (component ? "component" : "object") + " `" + id + "` to be defined: you likely forgot to import, pass, or provide it.");\n' +
+        '}\n',
+      metadata: [Object],
+      rawPage: '---\n' +
+        'title: Overview\n' +
+        '---\n' +
+        '\n' +
+        '# Functions API {label="Experimental"}\n' +
+        ':::subtitle\n' +
+        'Reference for dynamic content capabilities through functions\n' +
+        ':::\n' +
+        '\n' +
+        'Guide to using functions in XYD for enhancing your documentation with dynamic content and code integration.\n' +
+        '\n' +
+        'In XYD markdown files, you can use special functions to reference code, generate documentation, and reuse content. These functions help you create more maintainable and interactive documentation.\n' +
+        '\n' +
+        '## Features\n' +
+        '\n' +
+        '- **Code Integration**: Import and display code from external sources\n' +
+        '- **API Documentation**: Automatically generate comprehensive API references\n' +
+        '- **Content Reuse**: Share and maintain content across multiple pages\n' +
+        '\n' +
+        '## Next Steps\n' +
+        '\n' +
+        '- Learn about [theme customization](/docs/guides/customization-introduction)\n' +
+        '- Explore [component documentation](/docs/components)\n' +
+        '- Read about [API reference generation](/docs/guides/api-reference)\n'
+    },
+    handle: undefined
+  }
+] /docs/reference/functions/overview
+matchedSubnav undefined [
+  {
+    id: 'root',
+    pathname: '/',
+    params: { '*': '' },
+    data: undefined,
+    handle: undefined
+  },
+  {
+    id: 'layout:/docs/reference/functions/overview',
+    pathname: '/',
+    params: { '*': '' },
+    data: {
+      sidebarGroups: [Array],
+      breadcrumbs: [Array],
+      navlinks: [Object],
+      slug: 'docs/reference/functions/overview',
+      metadata: [Object],
+      bannerContentCode: '"use strict";\n' +
+        'const {jsx: _jsx} = arguments[0];\n' +
+        'const toc = [];\n' +
+        'const frontmatter = undefined;\n' +
+        'function _createMdxContent(props) {\n' +
+        '  const _components = {\n' +
+        '    p: "p",\n' +
+        '    strong: "strong",\n' +
+        '    ...props.components\n' +
+        '  }, {Button} = _components;\n' +
+        '  if (!Button) _missingMdxReference("Button", true);\n' +
+        '  return _jsx(Button, {\n' +
+        '    href: "https://xyd.dev",\n' +
+        '    size: "sm",\n' +
+        '    kind: "secondary",\n' +
+        '    children: _jsx(_components.p, {\n' +
+        '      children: _jsx(_components.strong, {\n' +
+        '        children: "xyd 0.1.0-alpha is coming soon!"\n' +
+        '      })\n' +
+        '    })\n' +
+        '  });\n' +
+        '}\n' +
+        'function MDXContent(props = {}) {\n' +
+        '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+        '  return MDXLayout ? _jsx(MDXLayout, {\n' +
+        '    ...props,\n' +
+        '    children: _jsx(_createMdxContent, {\n' +
+        '      ...props\n' +
+        '    })\n' +
+        '  }) : _createMdxContent(props);\n' +
+        '}\n' +
+        'return {\n' +
+        '  toc,\n' +
+        '  frontmatter,\n' +
+        '  default: MDXContent\n' +
+        '};\n' +
+        'function _missingMdxReference(id, component) {\n' +
+        '  throw new Error("Expected " + (component ? "component" : "object") + " `" + id + "` to be defined: you likely forgot to import, pass, or provide it.");\n' +
+        '}\n'
+    },
+    handle: undefined
+  },
+  {
+    id: '/docs/reference/functions/overview',
+    pathname: '/docs/reference/functions/overview',
+    params: { '*': '' },
+    data: {
+      sidebarGroups: [Array],
+      breadcrumbs: [Array],
+      navlinks: [Object],
+      slug: 'docs/reference/functions/overview',
+      code: '"use strict";\n' +
+        'const {Fragment: _Fragment, jsx: _jsx, jsxs: _jsxs} = arguments[0];\n' +
+        'const toc = [{\n' +
+        '  "depth": 2,\n' +
+        '  "id": "features",\n' +
+        '  "value": "Features",\n' +
+        '  "attributes": {\n' +
+        '    "hProperties": {\n' +
+        '      "id": "features"\n' +
+        '    }\n' +
+        '  },\n' +
+        '  "children": [],\n' +
+        '  "maxTocDepth": undefined\n' +
+        '}, {\n' +
+        '  "depth": 2,\n' +
+        '  "id": "next-steps",\n' +
+        '  "value": "Next Steps",\n' +
+        '  "attributes": {\n' +
+        '    "hProperties": {\n' +
+        '      "id": "next-steps"\n' +
+        '    }\n' +
+        '  },\n' +
+        '  "children": [],\n' +
+        '  "maxTocDepth": undefined\n' +
+        '}];\n' +
+        'const frontmatter = {\n' +
+        '  "title": "Overview"\n' +
+        '};\n' +
+        'function _createMdxContent(props) {\n' +
+        '  const _components = {\n' +
+        '    a: "a",\n' +
+        '    h1: "h1",\n' +
+        '    h2: "h2",\n' +
+        '    li: "li",\n' +
+        '    p: "p",\n' +
+        '    strong: "strong",\n' +
+        '    ul: "ul",\n' +
+        '    ...props.components\n' +
+        '  }, {Subtitle} = _components;\n' +
+        '  if (!Subtitle) _missingMdxReference("Subtitle", true);\n' +
+        '  return _jsxs(_Fragment, {\n' +
+        '    children: [_jsx(_components.h1, {\n' +
+        '      id: "functions-api",\n' +
+        '      label: "Experimental",\n' +
+        '      children: "Functions API"\n' +
+        '    }), "\\n", _jsx(Subtitle, {\n' +
+        '      children: _jsx(_components.p, {\n' +
+        '        children: "Reference for dynamic content capabilities through functions"\n' +
+        '      })\n' +
+        '    }), "\\n", _jsx(_components.p, {\n' +
+        '      children: "Guide to using functions in XYD for enhancing your documentation with dynamic content and code integration."\n' +
+        '    }), "\\n", _jsx(_components.p, {\n' +
+        '      children: "In XYD markdown files, you can use special functions to reference code, generate documentation, and reuse content. These functions help you create more maintainable and interactive documentation."\n' +
+        '    }), "\\n", _jsx(_components.h2, {\n' +
+        '      id: "features",\n' +
+        '      children: "Features"\n' +
+        '    }), "\\n", _jsxs(_components.ul, {\n' +
+        '      children: ["\\n", _jsxs(_components.li, {\n' +
+        '        children: [_jsx(_components.strong, {\n' +
+        '          children: "Code Integration"\n' +
+        '        }), ": Import and display code from external sources"]\n' +
+        '      }), "\\n", _jsxs(_components.li, {\n' +
+        '        children: [_jsx(_components.strong, {\n' +
+        '          children: "API Documentation"\n' +
+        '        }), ": Automatically generate comprehensive API references"]\n' +
+        '      }), "\\n", _jsxs(_components.li, {\n' +
+        '        children: [_jsx(_components.strong, {\n' +
+        '          children: "Content Reuse"\n' +
+        '        }), ": Share and maintain content across multiple pages"]\n' +
+        '      }), "\\n"]\n' +
+        '    }), "\\n", _jsx(_components.h2, {\n' +
+        '      id: "next-steps",\n' +
+        '      children: "Next Steps"\n' +
+        '    }), "\\n", _jsxs(_components.ul, {\n' +
+        '      children: ["\\n", _jsxs(_components.li, {\n' +
+        '        children: ["Learn about ", _jsx(_components.a, {\n' +
+        '          href: "/docs/guides/customization-introduction",\n' +
+        '          children: "theme customization"\n' +
+        '        })]\n' +
+        '      }), "\\n", _jsxs(_components.li, {\n' +
+        '        children: ["Explore ", _jsx(_components.a, {\n' +
+        '          href: "/docs/components",\n' +
+        '          children: "component documentation"\n' +
+        '        })]\n' +
+        '      }), "\\n", _jsxs(_components.li, {\n' +
+        '        children: ["Read about ", _jsx(_components.a, {\n' +
+        '          href: "/docs/guides/api-reference",\n' +
+        '          children: "API reference generation"\n' +
+        '        })]\n' +
+        '      }), "\\n"]\n' +
+        '    })]\n' +
+        '  });\n' +
+        '}\n' +
+        'function MDXContent(props = {}) {\n' +
+        '  const {wrapper: MDXLayout} = props.components || ({});\n' +
+        '  return MDXLayout ? _jsx(MDXLayout, {\n' +
+        '    ...props,\n' +
+        '    children: _jsx(_createMdxContent, {\n' +
+        '      ...props\n' +
+        '    })\n' +
+        '  }) : _createMdxContent(props);\n' +
+        '}\n' +
+        'return {\n' +
+        '  toc,\n' +
+        '  frontmatter,\n' +
+        '  default: MDXContent\n' +
+        '};\n' +
+        'function _missingMdxReference(id, component) {\n' +
+        '  throw new Error("Expected " + (component ? "component" : "object") + " `" + id + "` to be defined: you likely forgot to import, pass, or provide it.");\n' +
+        '}\n',
+      metadata: [Object],
+      rawPage: '---\n' +
+        'title: Overview\n' +
+        '---\n' +
+        '\n' +
+        '# Functions API {label="Experimental"}\n' +
+        ':::subtitle\n' +
+        'Reference for dynamic content capabilities through functions\n' +
+        ':::\n' +
+        '\n' +
+        'Guide to using functions in XYD for enhancing your documentation with dynamic content and code integration.\n' +
+        '\n' +
+        'In XYD markdown files, you can use special functions to reference code, generate documentation, and reuse content. These functions help you create more maintainable and interactive documentation.\n' +
+        '\n' +
+        '## Features\n' +
+        '\n' +
+        '- **Code Integration**: Import and display code from external sources\n' +
+        '- **API Documentation**: Automatically generate comprehensive API references\n' +
+        '- **Content Reuse**: Share and maintain content across multiple pages\n' +
+        '\n' +
+        '## Next Steps\n' +
+        '\n' +
+        '- Learn about [theme customization](/docs/guides/customization-introduction)\n' +
+        '- Explore [component documentation](/docs/components)\n' +
+        '- Read about [API reference generation](/docs/guides/api-reference)\n'
+    },
+    handle: undefined
+  }
+] /docs/reference/functions/overview
+4:23:26 PM [vite] (client) ✨ new dependencies optimized: openux-js, pluganalytics, @code-hike/lighter, radix-ui, lucide-react, mdast-util-to-markdown, mdast-util-mdx, mdast-util-to-hast, hast-util-to-html, @babel/parser, codehike/code, marked, mdast-util-from-markdown, html-to-jsx-transform, remark-frontmatter, remark-mdx-frontmatter, remark-gfm, remark-directive, unist-util-visit, github-slugger, unified, mdast-util-to-string, acorn-jsx, estree-util-is-identifier-name, vfile, @mdx-js/mdx, vfile-matter, mdast-util-mdx-jsx, react-element-to-jsx-string, typescript, typedoc, graphql, @graphql-tools/merge, js-yaml, @apidevtools/json-schema-ref-parser, oas, @readme/oas-to-snippet, openapi-sampler, react-github-btn, @orama/orama, @orama/react-components
+4:23:26 PM [vite] (client) ✨ optimized dependencies changed. reloading

@@ -196,13 +196,18 @@ async function processSections(pages: { name: string, path: string }[], xydSetti
 
 // TODO: !!!! DRY !!!
 function flatPages(
-    sidebar: (SidebarRoute | Sidebar)[],
+    sidebar: (SidebarRoute | Sidebar | string)[],
     groups: { [key: string]: string },
     resp: string[] = [],
 ) {
     sidebar.map(async side => {
+        if (typeof side === "string") {
+          resp.push(side)
+          return
+        }
+
         if ("route" in side) {
-            side.items?.map(item => {
+            side.pages?.map(item => {
                 return flatPages([item], groups, resp)
             })
             return

@@ -21,8 +21,10 @@ export interface FwSidebarGroupProps {
 }
 
 export function FwSidebarItemGroup(props: FwSidebarGroupProps) {
+    const icon = props.icon ? <Icon name={props.icon || ""} size={16} /> : null
+
     return <>
-        <UISidebar.ItemHeader>
+        <UISidebar.ItemHeader icon={icon}>
             {props.group}
         </UISidebar.ItemHeader>
 
