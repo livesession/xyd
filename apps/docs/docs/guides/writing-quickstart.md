@@ -74,15 +74,16 @@ Learn more about Page Meta options for TOC [here](/docs/guides/pages#toc).
 To write a content for your page, you can use the [MDX](https://mdxjs.com/) or [Markdown](https://www.markdownguide.org/) syntax.
 You can also leverage built in [components](/docs/components) or [special symbols](/docs/guides/special-symbols) to enhance your content:
 
-:::code-group
+::::code-group
 
 ~~~md
 # Quickstart
 
 This is a quickstart guide for the `xyd` project.
 
-callout
+:::callout
 Tip: You can use the React `<Callout>` component to render a callout too
+:::
 ~~~
 
 ~~~mdx
@@ -94,7 +95,7 @@ This is a quickstart guide for the `xyd` project.
 Tip: You can use the React `<Callout>` component to render a callout too
 </Callout>
 ~~~
-:::
+::::
 
 :::callout
 While MDX is powerful, xyd makes writing docs much easier using markdown [special symbols](/docs/guides/special-symbols).
@@ -130,58 +131,6 @@ Hello World, **Bold**, _Italic_, ~~Hidden~~
 | ----- | ----------- |
 | Hello | World       |
 ```
-
-## MDX 
-MDX combines Markdown with JSX, letting you use React components in your docs.
-
-### Reusable components {label="Coming Soon"}
-
-1. Creating a reusable component:
-    ```mdx my-component.mdx
-    Hello, this is my reusable component
-    ```
-    <br/>
-2. Now, you can use it in your MDX files:
-    ```tsx my-content.mdx
-    import MyComponent from './my-component'
-
-    <MyComponent />
-    ```
-
-### Reusable variables {label="Coming Soon"}
-
-1. You can also use MDX for reusable variables, by exporting data from your MDX files:
-    ```tsx reusable-variables.mdx
-    export const title = 'Getting Starte';
-
-    export const data = { category: "fantasy" };
-    ```
-    <br/>
-    
-2. Now, you can use it in your MDX files:
-    ```mdx my-content.mdx
-    ---
-    title: My title
-    description: My Description
-    ---
-
-    import { title, data } from './reusable-variables';
-
-    Hello, my title is {title} and I like {data.category}.
-    ```
-
-### Exporting component variables {label="Coming Soon"}
-1. You can also add variables that can be filled in via props when you import the file:
-    ```mdx component-variables.mdx
-    My favourite favurite book's category is {category}
-    ```
-    <br/>
-2. And then pass variables as props:
-    ```tsx
-    import MyComponent from './component-variables'
-
-    <MyComponent category="fantasy" />
-    ```
 
 ## Component Directives
 Use markdown directives (`:::`) to render components in markdown syntax (instead of MDX), the full list of components you can find [here](/docs/components).
@@ -242,6 +191,58 @@ For creating tabs, you can use the following syntax:
     Content for the Code tab
 :::
 ~~~
+
+## MDX {label="Experimental"}
+MDX combines Markdown with JSX, letting you use React components in your docs.
+
+### Reusable components {label="Coming Soon"}
+
+1. Creating a reusable component:
+    ```mdx my-component.mdx
+    Hello, this is my reusable component
+    ```
+    <br/>
+2. Now, you can use it in your MDX files:
+    ```tsx my-content.mdx
+    import MyComponent from './my-component'
+
+    <MyComponent />
+    ```
+
+### Reusable variables {label="Coming Soon"}
+
+1. You can also use MDX for reusable variables, by exporting data from your MDX files:
+    ```tsx reusable-variables.mdx
+    export const title = 'Getting Starte';
+
+    export const data = { category: "fantasy" };
+    ```
+    <br/>
+    
+2. Now, you can use it in your MDX files:
+    ```mdx my-content.mdx
+    ---
+    title: My title
+    description: My Description
+    ---
+
+    import { title, data } from './reusable-variables';
+
+    Hello, my title is {title} and I like {data.category}.
+    ```
+
+### Exporting component variables {label="Coming Soon"}
+1. You can also add variables that can be filled in via props when you import the file:
+    ```mdx component-variables.mdx
+    My favourite favurite book's category is {category}
+    ```
+    <br/>
+2. And then pass variables as props:
+    ```tsx
+    import MyComponent from './component-variables'
+
+    <MyComponent category="fantasy" />
+    ```
 
 This creates a navigation component with two tabs: "CLI" and "Code", each with its own content. The content for each tab follows the tab definition.
 

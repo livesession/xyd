@@ -2,7 +2,7 @@ import React from "react"
 
 import { Text } from "@xyd-js/components/writer"
 import { UISidebar } from "@xyd-js/ui"
-import { FwLogo } from "@xyd-js/framework/react"
+import { FwLogo, FwNav } from "@xyd-js/framework/react"
 import { BaseTheme } from "@xyd-js/themes"
 
 // @ts-ignore
@@ -29,6 +29,12 @@ export default class ThemePoetry extends BaseTheme {
         }
 
         this.surfaces.define("sidebar.top", <_Search />);
+    }
+
+    protected Navbar() {
+        return <>
+            <FwNav />
+        </>
     }
 }
 

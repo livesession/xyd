@@ -1,5 +1,5 @@
-import {describe, it, expect} from 'vitest';
-import {mdParameters} from './mdParameters';
+import { describe, it, expect } from 'vitest';
+import { mdParameters } from './mdParameters';
 
 describe('mdParameters', () => {
     describe("attributes", () => {
@@ -49,6 +49,34 @@ describe('mdParameters', () => {
                 title: 'tooltip'
             });
             expect(result.sanitizedText).toBe('Hello world');
+        });
+    })
+
+    describe("attributes + htmlMd option", () => {
+        it('1.basic', () => {
+            const result = mdParameters(
+                `[desc="Produces static files within <code>.xyd/build/client</code> which you an deploy easily."]`,
+                {
+                    htmlMd: true
+                }
+            );
+            expect(result.attributes).toEqual({
+                desc: "Produces static files within `.xyd/build/client` which you an deploy easily."
+            });
+
+            expect(result.sanitizedText).toBe('');
+        });
+
+        it('2.multiple HTML tags in attribute', () => {
+            const result = mdParameters(
+                `[desc="This is <strong>bold</strong> and <em>italic</em> text with <code>inline code</code>."]`,
+                {
+                    htmlMd: true
+                }
+            );
+            expect(result.attributes).toEqual({
+                desc: "This is **bold** and *italic* text with `inline code`."
+            });
         });
     })
 });

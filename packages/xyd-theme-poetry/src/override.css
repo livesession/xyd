@@ -40,6 +40,10 @@
             display: none;
         }
 
+        [part="nav"] {
+            justify-content: space-between;
+        }
+        
         [part="list"] {
             justify-content: flex-start;
         }
@@ -62,5 +66,20 @@
 
     xyd-search-button {
         background: var(--white);
+    }
+
+    [data-color-scheme="dark"] {
+        xyd-layout-primary {
+            [part="main"] {
+                background: var(--white);
+            }
+        }
+    }
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) xyd-layout-primary {
+            [part="main"] {
+                background: var(--white);
+            }
+        }
     }
 }

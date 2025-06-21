@@ -58,3 +58,12 @@
 
     --XydAtlas-Sys-Color-Text-Primary: var(--color-text);
 }
+
+[data-color-scheme="dark"] {
+    --xyd-codetabs-color: var(--black);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        --xyd-codetabs-color: var(--black);
+    }
+}

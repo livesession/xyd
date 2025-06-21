@@ -16,7 +16,9 @@ export function remarkInjectCodeMeta() {
             node.data.regions = regions
             node.data.lineRanges = lineRanges
 
-            const { attributes, sanitizedText } = mdParameters(node.meta || "");
+            const { attributes, sanitizedText } = mdParameters(node.meta || "", {
+                htmlMd: true
+            });
 
             const props: { [prop: string]: any } = {
                 regions: JSON.stringify(node.data.regions),

@@ -1,3 +1,7 @@
+:root {
+    color-scheme: light dark;
+}
+
 /* Global */
 :root {
     --white: #fff;
@@ -28,8 +32,86 @@
     --text-secondary: var(--dark80);
     --text-tertiary: var(--dark60);
 
-    --color-primary: var(--purple80);
-    --color-primary--active: var(--purple100);
+    --color-primary: var(--theme-color-primary, var(--purple80));
+    --color-primary--active: var(--theme-color-primary-active, var(--purple100));
+}
+
+/* Dark Mode Global */
+[data-color-scheme="dark"] {
+    --white: #0e0e10;
+    --black: #fff;
+    --dark8: #1a1a1a;
+    --dark16: #2d2d2d;
+    --dark32: #404040;
+    --dark40: #525252;
+    --dark48: #9E9E9E;
+    --dark60: #a3a3a3;
+    --dark80: #d4d4d4;
+    --dark100: var(--black);
+    --purple80: #7051d4;
+    --purple100: #2e108e;
+    --blue16: #e4edff;
+    --blue32: #60A5FA;
+    --blue80: #1971a8;
+    --green80: #28a745;
+    --green100: #108944;
+    --red80: #dc3545;
+    --red100: #b91c1c;
+    --yellow80: #ffc107;
+
+    --color-bg: var(--white);
+    --color-text: var(--dark100);
+
+    --text-primary: var(--color-text);
+    --text-secondary: var(--dark80);
+    --text-tertiary: var(--dark60);
+
+    --color-primary: var(--theme-color-primary, var(--purple80));
+    --color-primary--active: var(--theme-color-primary-active, var(--purple100));
+    
+    body {
+        color: var(--xyd-text-color--default);
+    }
+}
+
+/* System Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        --white: #0e0e10;
+        --black: #fff;
+        --dark8: #1a1a1a;
+        --dark16: #2d2d2d;
+        --dark32: #404040;
+        --dark40: #525252;
+        --dark48: #9E9E9E;
+        --dark60: #a3a3a3;
+        --dark80: #d4d4d4;
+        --dark100: var(--black);
+        --purple80: #7051d4;
+        --purple100: #2e108e;
+        --blue16: #e4edff;
+        --blue32: #60A5FA;
+        --blue80: #1971a8;
+        --green80: #28a745;
+        --green100: #108944;
+        --red80: #dc3545;
+        --red100: #b91c1c;
+        --yellow80: #ffc107;
+
+        --color-bg: var(--white);
+        --color-text: var(--dark100);
+
+        --text-primary: var(--color-text);
+        --text-secondary: var(--dark80);
+        --text-tertiary: var(--dark60);
+
+        --color-primary: var(--theme-color-primary, var(--purple80));
+        --color-primary--active: var(--theme-color-primary-active, var(--purple100));
+    }
+    
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) body {
+        color: var(--xyd-text-color--default);
+    }
 }
 
 /* Layout */
@@ -124,6 +206,11 @@
     --xyd-button-tertiary-border: transparent;
     --xyd-button-tertiary-bg-hover: var(--dark16);
     --xyd-button-tertiary-border-hover: var(--dark32);
+
+    /* Card */
+    --xyd-card-bgcolor: var(--color-bg);
+    --xyd-card-shadow-color: var(--dark32);
+    --xyd-card-border-color: var(--dark32);
 
     /* Coder */
     --xyd-code-bgcolor: linear-gradient(45deg, var(--dark8) 0%, var(--dark8) 100%);
@@ -309,4 +396,19 @@
     --XydAtlas-Ref-Palette-Neutral-80: var(--dark80);
     --XydAtlas-Ref-Palette-Neutral-100: var(--dark100);
 
+}
+
+[data-color-scheme="dark"] {
+    --xyd-sidebar-bgcolor: var(--white);
+    --xyd-text-color--default: var(--dark48);
+    --xyd-heading-color--muted: var(--dark80);
+}
+
+/* System dark mode support for sidebar - only when OS preference is enabled */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        --xyd-sidebar-bgcolor: var(--white);
+        --xyd-text-color--default: var(--dark48);
+        --xyd-heading-color--muted: var(--dark80);
+    }
 }

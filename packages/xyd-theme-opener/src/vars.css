@@ -58,3 +58,12 @@
     --XydAtlas-Ref-Palette-Neutral-80: var(--dark60);
     --XydAtlas-Ref-Palette-Neutral-100: var(--dark80);
 }
+
+[data-color-scheme="dark"] {
+    --xyd-codetabs-color: var(--black);
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        --xyd-codetabs-color: var(--black);
+    }
+}

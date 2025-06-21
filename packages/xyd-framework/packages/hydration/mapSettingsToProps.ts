@@ -267,7 +267,7 @@ function safePageLink(page: string): string {
 
 // TODO: support next-prev for different 'groups' levels
 function mapNavToLinks(
-    page: string | Sidebar,
+    page: string,
     currentNav: Sidebar,
     nav: Sidebar[],
     frontmatters: MetadataMap,
@@ -278,78 +278,73 @@ function mapNavToLinks(
         return
     }
 
-    const currentPageIndex = currentNav?.pages?.findIndex(p => page === p)
-    const foundPageIndex = currentPageIndex != undefined && currentPageIndex !== -1
-
-    if (!foundPageIndex) {
-        return
+    // Flatten all pages from all groups to find the sequence
+    const allPages: Array<{ page: string, group: string, groupIndex: number, pageIndex: number }> = []
+    
+    nav.forEach((group, groupIndex) => {
+        if (group.pages) {
+            group.pages.forEach((pageItem, pageIndex) => {
+                let pageName = ""
+                if (typeof pageItem === "string") {
+                    pageName = pageItem
+                } else if ("virtual" in pageItem) {
+                    pageName = pageItem.virtual
+                } else if ("pages" in pageItem) {
+                    // This is a nested Sidebar, skip for now as it's not supported
+                    return
+                } else if ("page" in pageItem && typeof pageItem === "object") {
+                    // This is a VirtualPage object with page property
+                    pageName = (pageItem as { page: string }).page
+                }
+                
+                if (pageName && !hiddenPages[pageName]) {
+                    allPages.push({
+                        page: pageName,
+                        group: group.group || "",
+                        groupIndex,
+                        pageIndex
+                    })
+                }
+            })
+        }
+    })
+    
+    // Find current page in the flattened list
+    const currentPageIndex = allPages.findIndex(p => p.page === page)
+    
+    if (currentPageIndex === -1) {
+        return undefined
     }
-
-    // same group level
-    {
-        let prev = currentNav?.pages?.[currentPageIndex - 1]
-        let next = currentNav?.pages?.[currentPageIndex + 1]
-
-        const atLeastOne = prev || next
-
-        if (!atLeastOne) {
-            return {}
-        }
-
-        if (prev && typeof prev !== "string" && "virtual" in prev) {
-            prev = prev.virtual
-        }
-        if (next && typeof next !== "string" && "virtual" in next) {
-            next = next.virtual
-        }
-
-        if (prev && typeof prev !== "string") {
-            console.error("currently nested pages for navlinks are not supported (step 1)")
-            return
-        }
-
-        if (next && typeof next !== "string") {
-            console.error("currently nested pages for navlinks are not supported (step 1)")
-            return
-        }
-
-        let prevTitle = prev ? frontmatters[prev]?.title || "" : ""
-        let nextTitle = next ? frontmatters[next]?.title || "" : ""
-
-        if (typeof prevTitle !== "string") {
-            console.error("currently navlink 'prev' must be a string")
-            return
-        }
-
-        if (typeof nextTitle !== "string") {
-            console.error("currently navlink 'next' must be a string")
-            return
-        }
-
-
-        let prevLink
-        let nextLink
-
-        if (prev && !hiddenPages[prev]) {
+    
+    // Get previous and next pages
+    const prevPage = allPages[currentPageIndex - 1]
+    const nextPage = allPages[currentPageIndex + 1]
+    
+    let prevLink
+    let nextLink
+    
+    if (prevPage) {
+        const prevTitle = frontmatters[prevPage.page]?.title || prevPage.page
+        if (typeof prevTitle === "string") {
             prevLink = {
                 title: prevTitle,
-                href: safePageLink(prev),
+                href: safePageLink(prevPage.page),
             }
-        }
-
-        if (next && !hiddenPages[next]) {
-            nextLink = {
-                title: nextTitle,
-                href: safePageLink(next),
-            }
-        }
-
-        return {
-            prev: prevLink || undefined,
-            next: nextLink || undefined,
         }
     }
-
-
-    return {}
+    
+    if (nextPage) {
+        const nextTitle = frontmatters[nextPage.page]?.title || nextPage.page
+        if (typeof nextTitle === "string") {
+            nextLink = {
+                title: nextTitle,
+                href: safePageLink(nextPage.page),
+            }
+        }
+    }
+    
+    return {
+        prev: prevLink || undefined,
+        next: nextLink || undefined,
+    }
 }

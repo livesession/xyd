@@ -1,17 +1,31 @@
-export function mdParameters(text: string) {
+export function mdParameters(
+    text: string,
+    options = {
+        htmlMd: false,
+    }
+) {
+    const attributes = parseAttributes(text, options.htmlMd);
+    const props = parseProps(text, options.htmlMd);
+    let sanitizedText = removeParameters(text);
+    
+    // Apply HTML to markdown transformation if requested
+    if (options?.htmlMd) {
+        sanitizedText = transformHtmlToMarkdown(sanitizedText);
+    }
+    
     return {
-        attributes: parseAttributes(text),
-        props: parseProps(text),
-        sanitizedText: removeParameters(text)
+        attributes,
+        props,
+        sanitizedText
     }
 }
 
-function parseAttributes(text: string) {
-    return parseParameters(text, '[', ']');
+function parseAttributes(text: string, htmlMd: boolean = false) {
+    return parseParameters(text, '[', ']', htmlMd);
 }
 
-function parseProps(text: string) {
-    return parseParameters(text, '{', '}');
+function parseProps(text: string, htmlMd: boolean = false) {
+    return parseParameters(text, '{', '}', htmlMd);
 }
 
 function sanitizeParameters(value: string): string {
@@ -71,7 +85,8 @@ function removeParameters(text: string): string {
 function parseParameters(
     text: string,
     delimiter: string,
-    closingDelimiter: string
+    closingDelimiter: string,
+    htmlMd: boolean = false
 ) {
     const attributes: Record<string, string> = {};
     
@@ -87,9 +102,21 @@ function parseParameters(
             const [_, isNegated, prop, quotedValue, unquotedValue] = paramMatch;
             const value = quotedValue !== undefined ? quotedValue : unquotedValue;
 
-            // Sanitize both the property name and value
+            // Sanitize the property name
             let sanitizedParam = sanitizeParameters(prop);
-            let sanitizedValue = value ? sanitizeParameters(value) : (isNegated ? 'false' : 'true');
+            
+            // Handle the value - apply HTML to markdown transformation first if requested
+            let sanitizedValue: string;
+            if (value) {
+                if (htmlMd) {
+                    // Apply HTML to markdown transformation first, then sanitize
+                    sanitizedValue = sanitizeParameters(transformHtmlToMarkdown(value));
+                } else {
+                    sanitizedValue = sanitizeParameters(value);
+                }
+            } else {
+                sanitizedValue = isNegated ? 'false' : 'true';
+            }
 
             if (sanitizedParam.startsWith("#") && sanitizedValue === "true") {
                 sanitizedValue = sanitizedParam.replace("#", "").trim()
@@ -140,4 +167,47 @@ function findNestedBlocks(text: string, openDelimiter: string, closeDelimiter: s
     }
     
     return blocks;
+}
+
+function transformHtmlToMarkdown(text: string): string {
+    // Transform common HTML tags to markdown
+    return text
+        // <code> tags to backticks
+        .replace(/<code\b[^>]*>(.*?)<\/code>/gi, '`$1`')
+        // <strong> and <b> tags to bold
+        .replace(/<(strong|b)\b[^>]*>(.*?)<\/(strong|b)>/gi, '**$2**')
+        // <em> and <i> tags to italic
+        .replace(/<(em|i)\b[^>]*>(.*?)<\/(em|i)>/gi, '*$2*')
+        // <a> tags to markdown links
+        .replace(/<a\b[^>]*href=["']([^"']*)["'][^>]*>(.*?)<\/a>/gi, '[$2]($1)')
+        // <br> tags to line breaks
+        .replace(/<br\b[^>]*>/gi, '\n')
+        // <p> tags to paragraphs (with line breaks)
+        .replace(/<p\b[^>]*>(.*?)<\/p>/gi, '$1\n\n')
+        // <h1> to <h6> tags to markdown headers
+        .replace(/<h1\b[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
+        .replace(/<h2\b[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
+        .replace(/<h3\b[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
+        .replace(/<h4\b[^>]*>(.*?)<\/h4>/gi, '#### $1\n\n')
+        .replace(/<h5\b[^>]*>(.*?)<\/h5>/gi, '##### $1\n\n')
+        .replace(/<h6\b[^>]*>(.*?)<\/h6>/gi, '###### $1\n\n')
+        // <ul> and <ol> lists
+        .replace(/<ul\b[^>]*>(.*?)<\/ul>/gis, (match, content) => {
+            return content.replace(/<li\b[^>]*>(.*?)<\/li>/gi, '- $1\n') + '\n';
+        })
+        .replace(/<ol\b[^>]*>(.*?)<\/ol>/gis, (match, content) => {
+            let counter = 1;
+            return content.replace(/<li\b[^>]*>(.*?)<\/li>/gi, () => `${counter++}. $1\n`) + '\n';
+        })
+        // <blockquote> tags
+        .replace(/<blockquote\b[^>]*>(.*?)<\/blockquote>/gis, (match, content) => {
+            return content.split('\n').map(line => `> ${line}`).join('\n') + '\n\n';
+        })
+        // <pre> tags for code blocks
+        .replace(/<pre\b[^>]*>(.*?)<\/pre>/gis, '```\n$1\n```\n\n')
+        // Remove any remaining HTML tags
+        .replace(/<[^>]*>/g, '')
+        // Clean up multiple line breaks
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
 }

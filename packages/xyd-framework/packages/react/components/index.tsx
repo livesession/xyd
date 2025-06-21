@@ -66,13 +66,25 @@ export function FwNav({ kind }: { kind?: "middle" }) {
     const rightHeaderExists = headerMap["right"]?.length > 0
 
     function changeColorScheme() {
+        let colorScheme = ""
+
+        const preferredColorScheme = getPreferredColorScheme()
+        if (preferredColorScheme) {
+            colorScheme = preferredColorScheme === "dark" ? "light" : "dark"
+        }
+
         const html = document.querySelector("html");
         if (!html) return;
-        
+
         const currentScheme = html.getAttribute("data-color-scheme");
-        const newScheme = currentScheme === "dark" ? "light" : "dark";
-        
-        html.setAttribute("data-color-scheme", newScheme);
+        if (currentScheme && currentScheme !== "os") {
+            colorScheme = currentScheme === "dark" ? "light" : "dark";
+        }
+        if (!colorScheme) {
+            colorScheme = "light"
+        }
+
+        html.setAttribute("data-color-scheme", colorScheme);
     }
     // TODO: in the future better floating system - just pure css?
     return <Nav
@@ -92,7 +104,7 @@ export function FwNav({ kind }: { kind?: "middle" }) {
 
             <Surface target={SurfaceTarget.NavRight} />
 
-            <Button size="sm" theme="ghost" icon={<IconLightMode />} onClick={changeColorScheme}/>
+            <Button size="sm" theme="ghost" icon={<IconLightMode />} onClick={changeColorScheme} />
         </>}
     >
         {headerMap["default"]}
@@ -497,4 +509,16 @@ function IconDarkMode() {
             </clipPath>
         </defs>
     </svg>
+}
+
+function getPreferredColorScheme() {
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+    }
+
+    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        return 'light';
+    }
+
+    return null
 }

@@ -1,19 +1,19 @@
 import { css } from "@linaria/core"
 
 export const CardHost = css`
-    background-color: #fff;
+    background-color: var(--xyd-card-bgcolor);
     border-radius: 8px;
-    box-shadow: 0 1px 2px 0 #0000001a;
+    box-shadow: 0 1px 2px 0 var(--xyd-card-shadow-color);
     flex-direction: column;
     display: flex;
     overflow: hidden;
 
     &[data-shadow="md"] {
-        box-shadow: 0 5px 40px #0003;
+        box-shadow: 0 5px 40px var(--xyd-card-shadow-color);
     }
 
     [part="image-container"] {
-        border-bottom: 2px solid #ebedf0;
+        border-bottom: 2px solid var(--xyd-card-border-color);
         height: 200px;
         overflow: hidden;
         position: relative;

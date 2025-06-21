@@ -1,0 +1,36 @@
+{
+    "navigation": {
+        "header": [
+            {
+                "title": "Guides",
+                "page": ""
+            },
+            {
+                "title": "API Reference",
+                "page": "api"
+            }
+        ],
+        "sidebar": [
+            {
+                "group": "Get Started",
+                "pages": [
+                    "introduction"
+                ]
+            },
+            {
+                "group": "Writing",
+                "pages": [
+                    "markdown",
+                    "developer-content"
+                ]
+            },
+            {
+                "group": "Customization",
+                "pages": [
+                    "make-docs-yours",
+                    "icons"
+                ]
+            }
+        ]
+    }
+}

@@ -53,14 +53,36 @@ export interface Theme {
      */
     readonly name: ThemePresetName | (string & {})
 
-    /** Markdown configuration for the theme, including options like syntax highlighting */
-    markdown?: Markdown
-
     /**
      * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to.
      * SVG format is recommended as it does not pixelate and the file size is generally smaller.
      */
     logo?: string | Logo | React.JSX.Element
+
+
+    /** Markdown configuration for the theme, including options like syntax highlighting */
+    markdown?: Markdown // TOOD: use `coder.syntaxHighlight`
+
+    /**
+     * Coder configuration for the theme, including options like syntax highlighting.
+     */
+    coder?: {
+        /**
+         * If `true` then code blocks will have line numbers.
+         */
+        lines?: boolean
+
+        /**
+         * If `true` then code blocks will have a scrollbar.
+         */
+        scroll?: boolean
+
+        /**
+         * Syntax highlighting configuration.
+         */
+        syntaxHighlight?: SyntaxHighlight
+    }
+
 
     /**
      * Banner configuration for the theme.
