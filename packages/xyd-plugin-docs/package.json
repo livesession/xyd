@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-docs",
-  "version": "0.1.0-xyd.2",
+  "version": "0.1.0-xyd.5",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -11,6 +11,7 @@
   },
   "files": [
     "dist",
+    "src",
     "package.json"
   ],
   "scripts": {

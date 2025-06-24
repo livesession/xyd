@@ -1,9 +1,10 @@
 {
   "name": "@xyd-js/host",
-  "version": "0.1.0-xyd.2",
+  "version": "0.1.0-xyd.3",
   "type": "module",
   "scripts": {},
   "dependencies": {
+    "@xyd-js/analytics": "workspace:*",
     "@xyd-js/core": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/framework": "workspace:*",

@@ -91,13 +91,34 @@ export function virtualComponentsPlugin(): VitePluginOption {
         name: 'xyd-plugin-virtual-components',
         enforce: 'pre',
         config: () => {
-            const componentsDist = path.resolve(getHostPath(), "./node_modules/@xyd-js/components/dist")
+            const hostPath = getHostPath();
+            const componentsDist = path.resolve(hostPath, "./node_modules/@xyd-js/components/dist");
+            
+            // Check if the components path exists, if not, try alternative paths
+            let resolvedPath = path.resolve(componentsDist, "system.js");
+            
+            if (!fs.existsSync(resolvedPath)) {
+                // Try to find the components in the global CLI installation
+                const globalComponentsPath = path.resolve(__dirname, "../../../node_modules/@xyd-js/components/dist/system.js");
+                if (fs.existsSync(globalComponentsPath)) {
+                    resolvedPath = globalComponentsPath;
+                } else {
+                    // Fallback: try to find it in the current working directory
+                    const cwdComponentsPath = path.resolve(process.cwd(), "node_modules/@xyd-js/components/dist/system.js");
+                    if (fs.existsSync(cwdComponentsPath)) {
+                        resolvedPath = cwdComponentsPath;
+                    } else {
+                        // Last resort: use a relative path that might work
+                        resolvedPath = path.resolve(process.cwd(), ".xyd/host/node_modules/@xyd-js/components/dist/system.js");
+                    }
+                }
+            }
 
             return {
                 resolve: {
                     alias: {
                         // TODO: type-safe virtual-components
-                        'virtual-component:Search': path.resolve(componentsDist, "system.js")
+                        'virtual-component:Search': resolvedPath
                     }
                 }
             }
@@ -271,15 +292,15 @@ export function pluginIconSet(settings: Settings): VitePluginOption {
                 } else {
                     // IconLibrary configuration
                     const { name, version, default: isDefault, noprefix } = item;
-                    const noPrefix = isDefault || noprefix;
+                    const noPrefix = isDefault || noprefix === true;
                     await addIconsToMap(resp, name, version, noPrefix);
                 }
             }
         } else {
             // Single IconLibrary configuration
             const { name, version, default: isDefault, noprefix } = library;
-            const prefix = (isDefault || noprefix) ? undefined : name;
-            await addIconsToMap(resp, name, version, prefix);
+            const noPrefix = isDefault || noprefix === true;
+            await addIconsToMap(resp, name, version, noPrefix);
         }
 
         return resp;
@@ -445,7 +466,7 @@ export async function preWorkspaceSetup(options: {
 
     const hostTemplate = process.env.XYD_DEV_MODE
         ? path.resolve(__dirname, "../../xyd-host")
-        : path.resolve(__dirname, "../node_modules/@xyd-js/host")
+        : path.resolve(__dirname, "../../host")
         // : await downloadPackage("@xyd-js/host", HOST_VERSION)
 
     // if (hostTemplate instanceof Error) {
@@ -463,7 +484,7 @@ export async function preWorkspaceSetup(options: {
     if (process.env.XYD_DEV_MODE) {
         pluginDocsPath = path.resolve(__dirname, "../../xyd-plugin-docs")
     } else {
-        pluginDocsPath = path.resolve(__dirname, "../node_modules/@xyd-js/plugin-docs")
+        pluginDocsPath = path.resolve(__dirname, "../../plugin-docs")
 
         // // Get plugin-docs version from host's package.json
         // const hostPackageJsonPath = path.join(hostPath, 'package.json')

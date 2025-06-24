@@ -1,5 +1,23 @@
 # @xyd-js/plugin-docs
 
+## 0.1.0-xyd.5
+
+### Patch Changes
+
+- update
+
+## 0.1.0-xyd.4
+
+### Patch Changes
+
+- update
+
+## 0.1.0-xyd.3
+
+### Patch Changes
+
+- documan + plugin-docs
+
 ## 0.1.0-xyd.2
 
 ### Patch Changes

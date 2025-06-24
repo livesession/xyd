@@ -1,5 +1,11 @@
 # @xyd-js/host
 
+## 0.1.0-xyd.3
+
+### Patch Changes
+
+- update
+
 ## 0.1.0-xyd.2
 
 ### Patch Changes
