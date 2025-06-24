@@ -9,6 +9,7 @@
     --dark8: #f7f7f8;
     --dark16: #f9f9f9;
     --dark32: #ececf1;
+    --dark32-rgb: 236, 236, 241;
     --dark40: #c5c5d2;
     --dark48: #6e6e80;
     --dark60: #443a3a;
@@ -19,8 +20,11 @@
     --blue16: #e4edff;
     --blue32: #60A5FA;
     --blue80: #1971a8;
+    --green32: #d4f5e7;
+    --green60: #14c397;
     --green80: #28a745;
-    --green100: #108944;
+    /* --green100: #108944; */
+    --green100: #00936f;
     --red80: #dc3545;
     --red100: #b91c1c;
     --yellow80: #ffc107;
@@ -43,6 +47,7 @@
     --dark8: #1a1a1a;
     --dark16: #2d2d2d;
     --dark32: #404040;
+    --dark32-rgb: 64, 64, 64;
     --dark40: #525252;
     --dark48: #9E9E9E;
     --dark60: #a3a3a3;
@@ -82,6 +87,7 @@
         --dark8: #1a1a1a;
         --dark16: #2d2d2d;
         --dark32: #404040;
+        --dark32-rgb: 64, 64, 64;
         --dark40: #525252;
         --dark48: #9E9E9E;
         --dark60: #a3a3a3;
@@ -129,7 +135,6 @@
     --xyd-layout-sidebar-bgcolor: var(--color-bg);
 
     --xyd-header-total-height: calc(var(--xyd-nav-height) + var(--xyd-subnav-height));
-    --xyd-header-warning-height: calc(var(--xyd-banner-height));
 
     --xyd-layout-width-small: 800px;
     --xyd-layout-width-medium: 1000px;
@@ -178,6 +183,11 @@
 :root {
     --xyd-cubic-bezier: cubic-bezier(.65, 0, .35, 1);
 
+}
+
+/* Sizes */
+:root {
+    --xyd-padding-default: 16px;
 }
 
 /* Components */
@@ -240,10 +250,10 @@
     --xyd-badge-bgcolor--info: var(--blue80);
 
     /* Banner */
-    --xyd-banner-height: 35px;
     --xyd-banner-bgcolor: var(--blue16);
+    --xyd-banner-border-color: unset;
     --xyd-banner-color: var(--black);
-
+    --xyd-banner-boxshadow: 0 2px 5px rgba(0, 0, 0, .1);
 
     /* Breadcrumbs */
     --xyd-breadcrumbs-color: var(--dark48);
@@ -362,7 +372,7 @@
     --xyd-sidebar-item-bgcolor--active-mark: var(--color-primary);
     --xyd-sidebar-item-color: var(--dark48);
     --xyd-sidebar-item-header-color: var(--text-primary);
-    --xyd-sidebar-item-padding-left: 16px;
+    --xyd-sidebar-item-padding-left: var(--xyd-padding-default);
 
     /* SubNav */
     --xyd-subnav-height: 44px;
@@ -385,6 +395,7 @@
 
 /* Atlas */
 :root {
+    --XydAtlas-Ref-Palette-White: var(--white);
     --XydAtlas-Ref-Palette-Primary-60: var(--purple80);
     --XydAtlas-Ref-Palette-Primary-70: var(--purple80);
     --XydAtlas-Ref-Palette-Primary-80: var(--purple80);
@@ -402,6 +413,7 @@
     --xyd-sidebar-bgcolor: var(--white);
     --xyd-text-color--default: var(--dark48);
     --xyd-heading-color--muted: var(--dark80);
+    --xyd-button-primary-color: var(--black);
 }
 
 /* System dark mode support for sidebar - only when OS preference is enabled */
@@ -410,5 +422,6 @@
         --xyd-sidebar-bgcolor: var(--white);
         --xyd-text-color--default: var(--dark48);
         --xyd-heading-color--muted: var(--dark80);
+        --xyd-button-primary-color: var(--black);
     }
 }

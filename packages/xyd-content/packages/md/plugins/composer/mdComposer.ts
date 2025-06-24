@@ -86,7 +86,7 @@ export function mdComposer(settings?: Settings): Plugin {
                 value: node.value,
                 lang: node.lang,
                 meta: node.meta,
-            }, settings?.theme?.markdown?.syntaxHighlight || "github-dark")
+            }, settings?.theme?.coder?.syntaxHighlight || "github-dark")
 
             if (group && context) {
                 group.push(highlighted)

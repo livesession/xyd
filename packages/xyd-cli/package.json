@@ -1,13 +1,13 @@
 {
   "name": "@xyd-js/cli",
-  "version": "0.1.0-xyd.35",
+  "version": "0.1.0-xyd.37",
   "keywords": [],
   "author": "",
   "description": "",
   "type": "module",
-  "main": ".cli/index.js",
+  "main": "dist/index.js",
   "bin": {
-    "xyd": ".cli/bin.js"
+    "xyd": "dist/index.js"
   },
   "files": [
     "dist",
@@ -17,6 +17,8 @@
     "build": "tsup"
   },
   "dependencies": {
+    "@xyd-js/documan": "workspace:*",
+    "@xyd-js/host": "workspace:*",
     "@graphql-markdown/core": "^1.12.0",
     "@graphql-markdown/graphql": "^1.1.4",
     "@graphql-markdown/types": "^1.4.0",
@@ -59,7 +61,6 @@
     "yaml": "^2.6.0"
   },
   "devDependencies": {
-    "@xyd-js/documan": "workspace:*",
     "arg": "^5.0.2",
     "colors": "^1.4.0",
     "semver": "^7.6.3",

@@ -171,7 +171,7 @@ export function uniformify(
     let canonical = ""
     if (odCanonical) {
         canonical = odCanonical;
-    } else {
+    } else if (canonicalPrefix) {
         canonical = [canonicalPrefix, slug].join("/")
     }
 

@@ -33,7 +33,7 @@ export interface FrameworkProps {
     metadata: Metadata,
     sidebarGroups: FwSidebarGroupProps[],
     surfaces: Surfaces,
-    BannerComponent: React.ComponentType<any>
+    BannerContent: React.ComponentType<any>
 }
 
 export function Framework(props: FrameworkProps) {
@@ -41,35 +41,29 @@ export function Framework(props: FrameworkProps) {
 
     const [metadata, setMetadata] = useState<Metadata | undefined>(props.metadata)
 
-    const BannerComponent = props.BannerComponent || null
-  
+    const BannerContent = props.BannerContent || null
+    const BannerComponent = props?.settings?.theme?.banner?.kind === "secondary" ? Banner.Secondary : Banner
     return <>
-      {/*  TODO: better place*/}
-      <style>{`
-        ${!BannerComponent ? `
-         :root {
-             --xyd-banner-height: 0px;
-         }
-        ` : ''}
-     `}</style>
-
         <FrameworkContext value={{
-        settings: Object.freeze({ ...props.settings }),
-        sidebarGroups: Object.freeze([...props.sidebarGroups]),
-        metadata: Object.freeze({ ...metadata, title: metadata?.title || "" }),
-        setMetadata: setMetadata,
-    }}>
-        <SurfaceContext value={{
-            surfaces: props.surfaces
+            settings: Object.freeze({ ...props.settings }),
+            sidebarGroups: Object.freeze([...props.sidebarGroups]),
+            metadata: Object.freeze({ ...metadata, title: metadata?.title || "" }),
+            setMetadata: setMetadata,
         }}>
-            <ProgressBar isActive={navigation.state === 'loading'} />
-            {BannerComponent ? <Banner>
-                <BannerComponent />
-            </Banner> : null}
+            <SurfaceContext value={{
+                surfaces: props.surfaces
+            }}>
+                <ProgressBar isActive={navigation.state === 'loading'} />
+                {BannerContent ? <BannerComponent
+                    label={props.settings?.theme?.banner?.label}
+                    icon={props.settings?.theme?.banner?.icon}
+                >
+                    <BannerContent />
+                </BannerComponent> : null}
 
-            {props.children}
-        </SurfaceContext>
-    </FrameworkContext>
+                {props.children}
+            </SurfaceContext>
+        </FrameworkContext>
     </>
 }
 

@@ -326,67 +326,6 @@
     ]
   },
   {
-    "title": "SearchResult",
-    "description": "",
-    "canonical": "unions/SearchResult",
-    "category": "graphql",
-    "type": "graphql_union",
-    "context": {
-      "graphqlTypeShort": "union",
-      "graphqlName": "SearchResult",
-      "group": [
-        "Unions"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Possible types",
-        "properties": [
-          {
-            "name": "User",
-            "type": "User",
-            "description": "",
-            "context": {
-              "graphqlTypeShort": "object",
-              "graphqlName": "User",
-              "group": [
-                "Objects"
-              ],
-              "scopes": []
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/User"
-            }
-          },
-          {
-            "name": "Post",
-            "type": "Post",
-            "description": "",
-            "context": {
-              "graphqlTypeShort": "object",
-              "graphqlName": "Post",
-              "group": [
-                "Objects"
-              ],
-              "scopes": []
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/Post"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
     "title": "Post",
     "description": "",
     "canonical": "objects/Post",
@@ -503,6 +442,67 @@
           {
             "name": "type",
             "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "SearchResult",
+    "description": "",
+    "canonical": "unions/SearchResult",
+    "category": "graphql",
+    "type": "graphql_union",
+    "context": {
+      "graphqlTypeShort": "union",
+      "graphqlName": "SearchResult",
+      "group": [
+        "Unions"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Possible types",
+        "properties": [
+          {
+            "name": "User",
+            "type": "User",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "object",
+              "graphqlName": "User",
+              "group": [
+                "Objects"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          },
+          {
+            "name": "Post",
+            "type": "Post",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "object",
+              "graphqlName": "Post",
+              "group": [
+                "Objects"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/Post"
+            }
           }
         ]
       }

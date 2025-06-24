@@ -26,7 +26,8 @@ import {
     Icon,
     Image,
     Update,
-    Card
+    Card,
+    ColorSchemeButton
 } from '../writer'
 import { CodeSample } from "../coder";
 import { GridDecorator } from './GridDecorator';
@@ -187,7 +188,7 @@ export function stdContent(
             return <$Link {...props} as={this?.options?.Link} />
         },
         br: (props) => {
-            return <br/>
+            return <br />
         },
         img: (props) => {
             return <Image {...props} />
@@ -207,7 +208,7 @@ interface HeadingContentProps {
     style?: any
 }
 
-function $Heading({ id, depth, children, label, subtitle,noanchor, style }: HeadingContentProps) {
+function $Heading({ id, depth, children, label, subtitle, noanchor, style }: HeadingContentProps) {
     // const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
     // const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
     const navigation = this?.options?.useNavigation() // TODO: !!!! BETTER API !!!!!
@@ -288,7 +289,8 @@ export function writerContent() {
             </Heading>
         },
         Update,
-        Card: $Card.bind(this)
+        Card: $Card.bind(this),
+        ColorSchemeButton: ColorSchemeButton
     }
 }
 
@@ -408,7 +410,7 @@ export function directiveContent(
         DirectiveCodeGroup: (props) => {
             return <CodeSample
                 {...props}
-                theme={this.settings?.theme?.markdown?.syntaxHighlight || undefined}
+                theme={this.settings?.theme?.coder?.syntaxHighlight || undefined}
                 codeblocks={JSON.parse(props.codeblocks)}
             />
         }
@@ -452,7 +454,7 @@ function $Pre(
     }
 
     return <CodeSample
-        theme={this.settings?.theme?.markdown?.syntaxHighlight || undefined}
+        theme={this.settings?.theme?.coder?.syntaxHighlight || undefined}
         name={lang}
         description={props?.children?.props?.meta}
         codeblocks={[
@@ -538,7 +540,7 @@ const createElementWithKeys = (type: any, props: any) => {
         return childrenArray.map((child, index) => {
             // If the child is a React element and doesn't have a key, add one
             if (React.isValidElement(child) && !child.key) {
-                return React.cloneElement(child, {key: `mdx-${index}`});
+                return React.cloneElement(child, { key: `mdx-${index}` });
             }
             // If the child is an array, process it recursively
             if (Array.isArray(child)) {
@@ -556,7 +558,7 @@ const createElementWithKeys = (type: any, props: any) => {
             processedChildren = processChildren(props.children);
         } else if (React.isValidElement(props.children) && !props.children.key) {
             // Single child without key
-            processedChildren = React.cloneElement(props.children, {key: 'mdx-child'});
+            processedChildren = React.cloneElement(props.children, { key: 'mdx-child' });
         } else {
             // Single child with key or non-React element
             processedChildren = props.children;

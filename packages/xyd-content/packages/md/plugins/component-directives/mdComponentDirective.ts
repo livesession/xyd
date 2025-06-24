@@ -56,6 +56,7 @@ const supportedTextDirectives: MarkdownComponentDirectiveMap = {
 const supportedLeafDirectives: MarkdownComponentDirectiveMap = {
     atlas: true,
     card: true,
+    "color-scheme-button": "ColorSchemeButton",
 }
 
 const tableComponents: MarkdownComponentDirectiveMap = {
@@ -379,7 +380,7 @@ function mdCode(node: any, promises: Promise<any>[], directivesMap: MarkdownComp
                     value: value,
                     lang,
                     meta: meta || lang || ""
-                }, settings?.theme?.markdown?.syntaxHighlight || "github-dark") // TODO: theme
+                }, settings?.theme?.coder?.syntaxHighlight || "github-dark") // TODO: theme
 
                 codeblocks.push({ value, lang, meta, highlighted: highlighted });
                 rewriteNode()

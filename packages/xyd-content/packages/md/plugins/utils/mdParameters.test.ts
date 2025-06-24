@@ -79,4 +79,36 @@ describe('mdParameters', () => {
             });
         });
     })
+
+    describe("attributes + :::component", () => {
+        it('1.basic', () => {
+            const result = mdParameters(`[desc="Choose between light/dark mode. :::button \n **xyd 0.1.0-alpha is coming soon!** \n :::"]`);
+            const expectedText = `Choose between light/dark mode.\n :::button \n **xyd 0.1.0-alpha is coming soon!**\n :::`;
+
+            expect(result.attributes).toEqual({
+                desc: expectedText
+            });
+            expect(result.sanitizedText).toBe('');
+        })
+
+        it("2", () => {
+            const result = mdParameters(`[desc=":::button\\n **xyd 0.1.0-alpha is coming soon!**\\n"]`);
+            const expectedText = `:::button\n **xyd 0.1.0-alpha is coming soon!**\n:::`;
+
+            expect(result.attributes).toEqual({
+                desc: expectedText
+            });
+            expect(result.sanitizedText).toBe('');
+        })
+
+        it("3", () => {
+            const result = mdParameters(`[desc="Choose between :::color-scheme-button\\n::: mode"]`);
+            const expectedText = `Choose between\n :::color-scheme-button\n :::\n  mode`;
+
+            expect(result.attributes).toEqual({
+                desc: expectedText
+            });
+            expect(result.sanitizedText).toBe('');
+        })
+    })
 });

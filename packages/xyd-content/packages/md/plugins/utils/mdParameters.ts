@@ -29,17 +29,53 @@ function parseProps(text: string, htmlMd: boolean = false) {
 }
 
 function sanitizeParameters(value: string): string {
+    // Convert escaped newlines to actual newlines
+    value = value.replace(/\\n/g, '\n');
+
     // Remove any HTML tags
     value = value.replace(/<[^>]*>/g, '');
 
     // Remove any script tags and their content
     value = value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 
-    // Remove any potentially dangerous characters
-    value = value.replace(/[<>'"]/g, '');
+    // Remove any potentially dangerous characters, but preserve newlines, :::component syntax, and markdown
+    // Don't remove quotes, colons, or asterisks as they're needed for ::: components and markdown
+    value = value.replace(/[<>]/g, '');
 
-    // Remove any control characters
-    value = value.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+    // Remove any control characters except newlines (\n = \x0A)
+    value = value.replace(/[\x00-\x09\x0B-\x1F\x7F-\x9F]/g, '');
+
+    // Ensure proper spacing around ::: components
+    // Add newline before ::: if there isn't one already
+    value = value.replace(/([^\n])\s*:::/g, '$1\n :::');
+
+    // Auto-close ::: components if they're not already closed
+    // Check if there's a ::: component that's not properly closed
+    if (value.includes(':::')) {
+        // Count the number of ::: occurrences
+        const colonCount = (value.match(/:::/g) || []).length;
+        
+        // If we have an odd number of ::: components, we need to add a closing one
+        if (colonCount % 2 === 1) {
+            // Only add closing ::: if the string doesn't already end with it
+            if (!value.trim().endsWith(':::')) {
+                // Add newline before closing ::: if the string doesn't end with newline
+                if (!value.endsWith('\n')) {
+                    value = value + '\n';
+                }
+                value = value + ':::';
+            }
+        } else {
+            // Even number of ::: components, but we need to ensure proper formatting
+            // Look for patterns like "::: text" and convert to ":::\n text"
+            // Handle both cases: "::: text" and ":::\n text"
+            value = value.replace(/:::\s+([^\n]+)/g, ':::\n $1');
+            // Also handle the case where there's already a newline but we need to ensure proper spacing
+            value = value.replace(/:::\n\s*([^\n]+)/g, ':::\n $1');
+            // Specific case: if we have ":::\n text", ensure it becomes ":::\n text"
+            value = value.replace(/:::\n([^\n]+)/g, ':::\n $1');
+        }
+    }
 
     // Trim whitespace
     value = value.trim();

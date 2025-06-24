@@ -217,7 +217,7 @@ export class Composer {
                                 value: tab.code,
                                 lang: tab.language,
                                 meta: tab.title,
-                            }, themeSettings?.markdown?.syntaxHighlight || "github-dark")
+                            }, themeSettings?.coder?.syntaxHighlight || "github-dark")
 
                             tab.highlighted = highlighted
                         }

@@ -4,11 +4,11 @@ import { Link, type To, useLocation, useMatches } from "react-router";
 import { Header } from "@xyd-js/core";
 import type { ITOC } from "@xyd-js/ui";
 import { Nav, SubNav, Toc, UISidebar } from "@xyd-js/ui"
-import { Anchor, Breadcrumbs, Button, Icon, NavLinks } from "@xyd-js/components/writer";
+import { Anchor, Breadcrumbs, Button, ColorSchemeButton, Icon, NavLinks, useColorScheme } from "@xyd-js/components/writer";
 
 import { Surface, SurfaceTarget } from "./Surfaces";
 
-import { useBreadcrumbs, useNavLinks, useRawPage, useSettings, useSidebarGroups, useToC } from "../contexts";
+import { useBreadcrumbs, useMetadata, useNavLinks, useRawPage, useSettings, useSidebarGroups, useToC } from "../contexts";
 import { FwSidebarGroupContext, FwSidebarItemGroup, FwSidebarItemProps } from "./Sidebar";
 
 import { useMatchedSubNav } from "../hooks";
@@ -16,14 +16,14 @@ import { useMatchedSubNav } from "../hooks";
 function FwNavLogo() {
     const settings = useSettings()
 
-    const logo = typeof settings?.theme?.logo === "string" ? settings?.theme?.logo : undefined
+    const logo = typeof settings?.theme?.logo
 
     if (!logo) {
         return null
     }
 
     return <a href="/">
-        <img part="logo" src={logo} />
+        <FwLogo />
     </a>
 }
 
@@ -65,27 +65,6 @@ export function FwNav({ kind }: { kind?: "middle" }) {
 
     const rightHeaderExists = headerMap["right"]?.length > 0
 
-    function changeColorScheme() {
-        let colorScheme = ""
-
-        const preferredColorScheme = getPreferredColorScheme()
-        if (preferredColorScheme) {
-            colorScheme = preferredColorScheme === "dark" ? "light" : "dark"
-        }
-
-        const html = document.querySelector("html");
-        if (!html) return;
-
-        const currentScheme = html.getAttribute("data-color-scheme");
-        if (currentScheme && currentScheme !== "os") {
-            colorScheme = currentScheme === "dark" ? "light" : "dark";
-        }
-        if (!colorScheme) {
-            colorScheme = "light"
-        }
-
-        html.setAttribute("data-color-scheme", colorScheme);
-    }
     // TODO: in the future better floating system - just pure css?
     return <Nav
         value={active?.page || ""}
@@ -104,7 +83,7 @@ export function FwNav({ kind }: { kind?: "middle" }) {
 
             <Surface target={SurfaceTarget.NavRight} />
 
-            <Button size="sm" theme="ghost" icon={<IconLightMode />} onClick={changeColorScheme} />
+            <ColorSchemeButton />
         </>}
     >
         {headerMap["default"]}
@@ -198,32 +177,31 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
 }
 
 export function FwToc() {
+    const metadata = useMetadata()
+    const settings = useSettings()
     const toc = useToC()
 
     if (!toc) {
         return null
     }
 
-    let maxDepth = 2
+    const maxDepth = metadata?.maxTocDepth || settings?.theme?.maxTocDepth || 2
 
-    const renderTocItems = (items: Readonly<ITOC[]>, depth: number = 0) => {
-        if (depth > maxDepth) {
-            maxDepth = depth
-        }
-
+    const renderTocItems = (items: Readonly<ITOC[]>, uiDepth = 0) => {
         return items.map((item) => (
             <React.Fragment key={item.id}>
                 <Toc.Item
                     id={item.id}
-                    depth={depth}
+                    depth={uiDepth}
                 >
                     {item.value}
                 </Toc.Item>
-                {item.children && item.children.length > 0 && renderTocItems(item.children, depth + 1)}
+                {item.children && item.children.length > 0 && renderTocItems(item.children, uiDepth + 1)}
             </React.Fragment>
         ))
     }
 
+    // TODO: maxDepth for specific `#heading`
     return <Toc maxDepth={maxDepth}>
         {renderTocItems(toc)}
     </Toc>
@@ -258,6 +236,7 @@ export function FwNavLinks() {
 
 export function FwLogo() {
     const settings = useSettings()
+    const [colorScheme] = useColorScheme()
 
     if (typeof settings?.theme?.logo === "string") {
         return <img src={settings?.theme?.logo} />
@@ -267,6 +246,10 @@ export function FwLogo() {
         return <a href="/">
             {settings?.theme?.logo}
         </a>
+    }
+
+    if (typeof settings?.theme?.logo === "object" && colorScheme) {
+        return <img src={settings?.theme?.logo[colorScheme as "light" | "dark"]} />
     }
 
     return null
@@ -362,163 +345,4 @@ function trailingSlash(path: string) {
 
 function pageLink(page: string) {
     return page.startsWith("/") ? page : `/${page}`
-}
-
-function IconLightMode() {
-    return <svg
-        width={16}
-        height={16}
-        viewBox="0 0 16 16"
-        fill="none"
-        stroke="currentColor"
-        xmlns="http://www.w3.org/2000/svg"
-    >
-        <g clipPath="url(#clip0_2880_7340)">
-            <path
-                d="M8 1.11133V2.00022"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M12.8711 3.12891L12.2427 3.75735"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M14.8889 8H14"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M12.8711 12.8711L12.2427 12.2427"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M8 14.8889V14"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M3.12891 12.8711L3.75735 12.2427"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M1.11133 8H2.00022"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M3.12891 3.12891L3.75735 3.75735"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M8.00043 11.7782C10.0868 11.7782 11.7782 10.0868 11.7782 8.00043C11.7782 5.91402 10.0868 4.22266 8.00043 4.22266C5.91402 4.22266 4.22266 5.91402 4.22266 8.00043C4.22266 10.0868 5.91402 11.7782 8.00043 11.7782Z"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-        </g>
-        <defs>
-            <clipPath id="clip0_2880_7340">
-                <rect width={16} height={16} fill="white" />
-            </clipPath>
-        </defs>
-    </svg>
-}
-
-function IconDarkMode() {
-    return <svg
-        width={16}
-        height={16}
-        viewBox="0 0 16 16"
-        fill="none"
-        stroke="currentColor"
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-4 w-4 block text-gray-400 dark:hidden group-hover:text-gray-600"
-    >
-        <g clipPath="url(#clip0_2880_7340)">
-            <path
-                d="M8 1.11133V2.00022"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M12.8711 3.12891L12.2427 3.75735"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M14.8889 8H14"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M12.8711 12.8711L12.2427 12.2427"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M8 14.8889V14"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M3.12891 12.8711L3.75735 12.2427"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M1.11133 8H2.00022"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M3.12891 3.12891L3.75735 3.75735"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-            <path
-                d="M8.00043 11.7782C10.0868 11.7782 11.7782 10.0868 11.7782 8.00043C11.7782 5.91402 10.0868 4.22266 8.00043 4.22266C5.91402 4.22266 4.22266 5.91402 4.22266 8.00043C4.22266 10.0868 5.91402 11.7782 8.00043 11.7782Z"
-                strokeWidth={1.5}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-        </g>
-        <defs>
-            <clipPath id="clip0_2880_7340">
-                <rect width={16} height={16} fill="white" />
-            </clipPath>
-        </defs>
-    </svg>
-}
-
-function getPreferredColorScheme() {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return 'dark';
-    }
-
-    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-        return 'light';
-    }
-
-    return null
 }

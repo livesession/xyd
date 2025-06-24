@@ -1,5 +1,282 @@
 [
   {
+    "title": "getBookByTitle",
+    "description": "Get a book by title",
+    "canonical": "queries/getBookByTitle",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "getBookByTitle",
+      "group": [
+        "Queries"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "{\n  getBookByTitle(title: \"example-title\") {\n    # getBookByTitle fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "The title of the book",
+            "context": {
+              "graphqlName": "title",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/title"
+            }
+          },
+          {
+            "name": "info",
+            "type": "BookInfoInput",
+            "description": "The book info input",
+            "context": {
+              "graphqlTypeShort": "input",
+              "graphqlName": "BookInfoInput",
+              "group": [
+                "Inputs"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "inputs/BookInfoInput"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "Book",
+            "description": "Get a book by title",
+            "context": {
+              "graphqlName": "getBookByTitle",
+              "graphqlTypeFlat": "Book",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/Book"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "addBook",
+    "description": "Add a book",
+    "canonical": "mutations/addBook",
+    "category": "graphql",
+    "type": "graphql_mutation",
+    "context": {
+      "graphqlTypeShort": "mutation",
+      "graphqlName": "addBook",
+      "group": [
+        "Mutations"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "mutation addBook($input: BookInput!) {\n  addBook(input: $input) {\n    # addBook fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "input",
+            "type": "BookInput!",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "input",
+              "graphqlName": "BookInput",
+              "group": [
+                "Inputs"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "inputs/BookInput"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "Book!",
+            "description": "Add a book",
+            "context": {
+              "graphqlName": "addBook",
+              "graphqlTypeFlat": "Book",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/Book"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "addAuthor",
+    "description": "Add an author",
+    "canonical": "mutations/addAuthor",
+    "category": "graphql",
+    "type": "graphql_mutation",
+    "context": {
+      "graphqlTypeShort": "mutation",
+      "graphqlName": "addAuthor",
+      "group": [
+        "Mutations"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "mutation addAuthor($name: String!) {\n  addAuthor(name: $name) {\n    # addAuthor fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/name"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "Author!",
+            "description": "Add an author",
+            "context": {
+              "graphqlName": "addAuthor",
+              "graphqlTypeFlat": "Author",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/Author"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "title": "Book",
     "description": "A book type",
     "canonical": "objects/Book",
@@ -344,283 +621,6 @@
             ],
             "symbolDef": {
               "canonical": "/date"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "getBookByTitle",
-    "description": "Get a book by title",
-    "canonical": "queries/getBookByTitle",
-    "category": "graphql",
-    "type": "graphql_query",
-    "context": {
-      "graphqlTypeShort": "query",
-      "graphqlName": "getBookByTitle",
-      "group": [
-        "Queries"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": [
-        {
-          "description": "",
-          "examples": [
-            {
-              "codeblock": {
-                "tabs": [
-                  {
-                    "title": "",
-                    "language": "graphql",
-                    "code": "{\n  getBookByTitle(title: \"example-title\") {\n    # getBookByTitle fields\n  }\n}"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [
-          {
-            "name": "title",
-            "type": "String!",
-            "description": "The title of the book",
-            "context": {
-              "graphqlName": "title",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/title"
-            }
-          },
-          {
-            "name": "info",
-            "type": "BookInfoInput",
-            "description": "The book info input",
-            "context": {
-              "graphqlTypeShort": "input",
-              "graphqlName": "BookInfoInput",
-              "group": [
-                "Inputs"
-              ],
-              "scopes": []
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "inputs/BookInfoInput"
-            }
-          }
-        ]
-      },
-      {
-        "title": "Returns",
-        "properties": [
-          {
-            "name": "",
-            "type": "Book",
-            "description": "Get a book by title",
-            "context": {
-              "graphqlName": "getBookByTitle",
-              "graphqlTypeFlat": "Book",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/Book"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "addBook",
-    "description": "Add a book",
-    "canonical": "mutations/addBook",
-    "category": "graphql",
-    "type": "graphql_mutation",
-    "context": {
-      "graphqlTypeShort": "mutation",
-      "graphqlName": "addBook",
-      "group": [
-        "Mutations"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": [
-        {
-          "description": "",
-          "examples": [
-            {
-              "codeblock": {
-                "tabs": [
-                  {
-                    "title": "",
-                    "language": "graphql",
-                    "code": "mutation addBook($input: BookInput!) {\n  addBook(input: $input) {\n    # addBook fields\n  }\n}"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [
-          {
-            "name": "input",
-            "type": "BookInput!",
-            "description": "",
-            "context": {
-              "graphqlTypeShort": "input",
-              "graphqlName": "BookInput",
-              "group": [
-                "Inputs"
-              ],
-              "scopes": []
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "inputs/BookInput"
-            }
-          }
-        ]
-      },
-      {
-        "title": "Returns",
-        "properties": [
-          {
-            "name": "",
-            "type": "Book!",
-            "description": "Add a book",
-            "context": {
-              "graphqlName": "addBook",
-              "graphqlTypeFlat": "Book",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "objects/Book"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "addAuthor",
-    "description": "Add an author",
-    "canonical": "mutations/addAuthor",
-    "category": "graphql",
-    "type": "graphql_mutation",
-    "context": {
-      "graphqlTypeShort": "mutation",
-      "graphqlName": "addAuthor",
-      "group": [
-        "Mutations"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": [
-        {
-          "description": "",
-          "examples": [
-            {
-              "codeblock": {
-                "tabs": [
-                  {
-                    "title": "",
-                    "language": "graphql",
-                    "code": "mutation addAuthor($name: String!) {\n  addAuthor(name: $name) {\n    # addAuthor fields\n  }\n}"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [
-          {
-            "name": "name",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "name",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/name"
-            }
-          }
-        ]
-      },
-      {
-        "title": "Returns",
-        "properties": [
-          {
-            "name": "",
-            "type": "Author!",
-            "description": "Add an author",
-            "context": {
-              "graphqlName": "addAuthor",
-              "graphqlTypeFlat": "Author",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "objects/Author"
             }
           }
         ]

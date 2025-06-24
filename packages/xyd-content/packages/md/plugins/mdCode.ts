@@ -32,6 +32,9 @@ export function remarkInjectCodeMeta() {
             if (attributes && attributes.scroll === "false") {
                 props.size = "full"
             }
+            if (attributes && attributes.scroll === "true") {
+                props.size = ""
+            }
             if (attributes && attributes.descHead && attributes.descHead !== "false") {
                 props.descriptionHead = attributes.descHead
             }

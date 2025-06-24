@@ -1,10 +1,15 @@
 {
     "theme": {
         "name": "poetry",
-        "logo": "/public/assets/logo.svg",
+        "logo": {
+            "light": "/public/assets/logo.svg",
+            "dark": "/public/assets/logo-dark.svg"
+        },
         "favicon": "/public/assets/logo.svg",
         "banner": {
-            "content": ":::button{href='https://xyd.dev' size='sm' kind='secondary'}\n **xyd 0.1.0-alpha is coming soon!**\n:::"
+            "content": "**xyd 0.1.0-alpha** - Docs platform for future dev.",
+            "label": "Coming Soon",
+            "icon": "sparkles"
         },
         "icons": {
             "library": [

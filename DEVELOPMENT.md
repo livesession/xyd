@@ -178,6 +178,11 @@ changeset publish
 pnpm changeset publish --otp=<OTP_CODE>
 ```
 
+# changeset verdaccio publish
+```
+pnpm changeset publish --registry http://localhost:4873
+``
+
 deprecate package
 ```
 pnpm deprecate <PACKAGE> "<MESSAGE>"

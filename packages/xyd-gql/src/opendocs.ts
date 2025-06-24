@@ -13,7 +13,7 @@ import {
     StringValueNode,
 } from "graphql";
 
-import {GQLOperation, GQLSchemaToReferencesOptions, OpenDocsSortConfig, SortItem} from "./types";
+import {GQLOperation, GQLSchemaToReferencesOptions, SortItem} from "./types";
 import {GraphqlUniformReferenceType} from "./gql-core";
 import {Context} from "./context";
 

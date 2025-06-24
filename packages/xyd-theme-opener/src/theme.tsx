@@ -24,10 +24,10 @@ export default class ThemeOpener extends BaseTheme {
     constructor() {
         super()
 
-        if (this.settings.markdown) {
-            this.settings.markdown.syntaxHighlight = "dark-plus";
+        if (this.settings.coder) {
+            this.settings.coder.syntaxHighlight = "dark-plus";
         } else {
-            this.settings.markdown = {
+            this.settings.coder = {
                 syntaxHighlight: "dark-plus",
             }
         }

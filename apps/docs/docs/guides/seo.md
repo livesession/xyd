@@ -52,14 +52,6 @@ Your documentation automatically includes:
 For good `sitemap.xml` generation make sure you filled [`seo.domain`](/docs/guides/settings).
 :::
 
-By default, only pages listed in `docs.json` are included. To include all pages, configure your `docs.json`:
-
-```json
-"seo": {
-    "indexing": "all"
-}
-```
-
 ### Controlling Indexing
 
 To prevent search engines from indexing specific pages, add to the page's frontmatter:

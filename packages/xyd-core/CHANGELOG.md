@@ -1,5 +1,17 @@
 # @xyd-js/core
 
+## 0.1.0-xyd.15
+
+### Patch Changes
+
+- test
+
+## 0.1.0-xyd.14
+
+### Patch Changes
+
+- update packages
+
 ## 0.1.0-xyd.13
 
 ### Patch Changes

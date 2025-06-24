@@ -1,5 +1,31 @@
 # @xyd-js/content
 
+## 0.1.0-xyd.16
+
+### Patch Changes
+
+- test
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.13
+  - @xyd-js/context@0.1.0-xyd.2
+  - @xyd-js/core@0.1.0-xyd.15
+  - @xyd-js/gql@0.1.0-xyd.15
+  - @xyd-js/openapi@0.1.0-xyd.13
+  - @xyd-js/sources@0.1.1-xyd.5
+
+## 0.1.0-xyd.15
+
+### Patch Changes
+
+- update packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.12
+  - @xyd-js/context@0.1.0-xyd.1
+  - @xyd-js/core@0.1.0-xyd.14
+  - @xyd-js/gql@0.1.0-xyd.14
+  - @xyd-js/openapi@0.1.0-xyd.12
+  - @xyd-js/sources@0.1.1-xyd.4
+
 ## 0.1.0-xyd.14
 
 ### Patch Changes

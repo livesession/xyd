@@ -11,22 +11,21 @@ export const SubNavHost = css`
         width: 100%;
         height: var(--xyd-subnav-height);
         margin-top: 3px;
-        padding: 0 0.25rem;
+        padding: 0 var(--xyd-padding-default);
 
         [part="prefix"] {
             color: var(--xyd-subnav-prefix-color);
             font-weight: var(--xyd-font-weight-semibold);
-            padding-left: 0.50rem;
-            padding-right: 1.50rem;
+            padding: 0 var(--xyd-padding-default);
             position: relative;
 
             &:after {
                 background: var(--xyd-subnav-prefix-marker-color);
                 border-radius: 1px;
                 content: " ";
-                height: 0.75rem;
+                height: 12px;
                 position: absolute;
-                right: 0.50rem;
+                right: 4px;
                 top: 50%;
                 transform: translateY(-50%);
                 width: 2px;

@@ -1,300 +1,5 @@
 [
   {
-    "title": "User",
-    "description": "",
-    "canonical": "objects/User",
-    "category": "graphql",
-    "type": "graphql_object",
-    "context": {
-      "graphqlTypeShort": "object",
-      "graphqlName": "User",
-      "group": [
-        "API & Reference",
-        "Users",
-        "Objects"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [],
-        "variants": [],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          }
-        ]
-      },
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "id",
-            "type": "ID!",
-            "description": "",
-            "context": {
-              "graphqlName": "id",
-              "graphqlTypeFlat": "ID",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/id"
-            }
-          },
-          {
-            "name": "name",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "name",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/name"
-            }
-          },
-          {
-            "name": "email",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "email",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/email"
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "createUserInput",
-    "description": "",
-    "canonical": "inputs/createUserInput",
-    "category": "graphql",
-    "type": "graphql_input",
-    "context": {
-      "graphqlTypeShort": "input",
-      "graphqlName": "createUserInput",
-      "group": [
-        "API & Reference",
-        "Users",
-        "Inputs"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "name",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "name",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/name"
-            }
-          },
-          {
-            "name": "email",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "email",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/email"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "Email",
-    "description": "",
-    "canonical": "scalars/Email",
-    "category": "graphql",
-    "type": "graphql_scalar",
-    "context": {
-      "graphqlTypeShort": "scalar",
-      "graphqlName": "Email",
-      "group": [
-        "API & Reference",
-        "Scalars"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": []
-  },
-  {
-    "title": "Todo",
-    "description": "",
-    "canonical": "objects/Todo",
-    "category": "graphql",
-    "type": "graphql_object",
-    "context": {
-      "graphqlTypeShort": "object",
-      "graphqlName": "Todo",
-      "group": [
-        "API & Reference",
-        "Todos",
-        "Objects"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": []
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [],
-        "variants": [],
-        "meta": [
-          {
-            "name": "type",
-            "value": "arguments"
-          }
-        ]
-      },
-      {
-        "title": "Fields",
-        "properties": [
-          {
-            "name": "id",
-            "type": "ID!",
-            "description": "",
-            "context": {
-              "graphqlName": "id",
-              "graphqlTypeFlat": "ID",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/id"
-            }
-          },
-          {
-            "name": "title",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "title",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/title"
-            }
-          },
-          {
-            "name": "completed",
-            "type": "Boolean!",
-            "description": "",
-            "context": {
-              "graphqlName": "completed",
-              "graphqlTypeFlat": "Boolean",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/completed"
-            }
-          }
-        ],
-        "meta": [
-          {
-            "name": "type",
-            "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
     "title": "getUser",
     "description": "",
     "canonical": "users/queries/get",
@@ -550,5 +255,300 @@
         ]
       }
     ]
+  },
+  {
+    "title": "User",
+    "description": "",
+    "canonical": "objects/User",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "User",
+      "group": [
+        "API & Reference",
+        "Users",
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          },
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/name"
+            }
+          },
+          {
+            "name": "email",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "email",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/email"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Todo",
+    "description": "",
+    "canonical": "objects/Todo",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Todo",
+      "group": [
+        "API & Reference",
+        "Todos",
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          },
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "title",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/title"
+            }
+          },
+          {
+            "name": "completed",
+            "type": "Boolean!",
+            "description": "",
+            "context": {
+              "graphqlName": "completed",
+              "graphqlTypeFlat": "Boolean",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/completed"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "createUserInput",
+    "description": "",
+    "canonical": "inputs/createUserInput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "createUserInput",
+      "group": [
+        "API & Reference",
+        "Users",
+        "Inputs"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/name"
+            }
+          },
+          {
+            "name": "email",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "email",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/email"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Email",
+    "description": "",
+    "canonical": "scalars/Email",
+    "category": "graphql",
+    "type": "graphql_scalar",
+    "context": {
+      "graphqlTypeShort": "scalar",
+      "graphqlName": "Email",
+      "group": [
+        "API & Reference",
+        "Scalars"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": []
   }
 ]

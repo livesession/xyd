@@ -13,8 +13,8 @@ export {
 } from "./Code"
 //
 
-export type {CodeSampleProps} from "./CodeSample";
-export {CodeSample} from "./CodeSample";
+export type { CodeSampleProps } from "./CodeSample";
+export { CodeSample } from "./CodeSample";
 //
 
 export type {
@@ -25,9 +25,13 @@ export {
 } from "./CodeTabs";
 //
 
-export type {CodeThemeProps, CodeThemeBlockProps} from "./CodeTheme";
+export type { CodeThemeProps, CodeThemeBlockProps } from "./CodeTheme";
 export {
     CodeTheme,
 
     useCodeTheme
 } from "./CodeTheme";
+
+export {
+    CoderProvider
+} from "./CoderProvider";

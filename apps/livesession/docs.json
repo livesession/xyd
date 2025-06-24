@@ -1,0 +1,162 @@
+{
+  "theme": {
+    "name": "picasso",
+    "logo": {
+      "light": "/public/logo.svg",
+      "dark": "/public/logo-dark.svg"
+    }
+  },
+  "navigation": {
+    "header": [
+      {
+        "title": "Docs",
+        "page": "docs"
+      },
+      {
+        "title": "APIs and references",
+        "page": "docs/api"
+      }
+    ],
+    "segments": [
+      {
+        "route": "/docs/api",
+        "title": "API",
+        "pages": [
+          {
+            "title": "Get started",
+            "page": "docs/api"
+          },
+          {
+            "title": "Browser SDK",
+            "page": "docs/api/browser"
+          },
+          {
+            "title": "REST API",
+            "page": "docs/api/rest"
+          },
+          {
+            "title": "GraphQL",
+            "page": "docs/api/graphql"
+          },
+          {
+            "title": "Webhooks",
+            "page": "docs/api/webhooks"
+          }
+        ]
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "docs",
+        "pages": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "docs/get-started/quickstart",
+              "docs/get-started/frameworks"
+            ]
+          },
+          {
+            "group": "Capabilities",
+            "pages": [
+              "docs/capabilities/alerts",
+              "docs/capabilities/funnels",
+              "docs/capabilities/metrics",
+              "docs/capabilities/user-paths"
+            ]
+          }
+        ]
+      },
+      {
+        "route": "docs/api",
+        "pages": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "docs/api/quickstart",
+              "docs/api/authentication",
+              "docs/api/access-scopes"
+            ]
+          }
+        ]
+      },
+      {
+        "route": "docs/api/browser",
+        "pages": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "docs/api/browser/introduction",
+              "docs/api/browser/identification",
+              "docs/api/browser/recording-conditions",
+              "docs/api/browser/methods"
+            ]
+          }
+        ]
+      },
+      {
+        "route": "docs/api/rest",
+        "pages": [
+          {
+            "group": "Types",
+            "pages": [
+              "docs/api/rest/EventKind",
+              "docs/api/rest/RelativeDateString"
+            ]
+          }
+        ]
+      },
+      {
+        "route": "docs/api/graphql",
+        "pages": [
+          {
+            "group": "Overview",
+            "pages": [
+              "docs/api/graphql/overview/introduction"
+            ],
+            "sort": 0
+          }
+        ]
+      },
+      {
+        "route": "docs/api/webhooks",
+        "pages": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "docs/api/webhooks/configuration",
+              "docs/api/webhooks/delivery",
+              "docs/api/webhooks/verify"
+            ]
+          },
+          {
+            "group": "Event Types",
+            "pages": [
+              "docs/api/webhooks/type-session-event"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "api": {
+    "openapi": {
+      "source": "./api/rest/openapi.yaml",
+      "route": "docs/api/rest"
+    },
+    "graphql": {
+      "source": "./api/graphql/schema.graphql",
+      "route": "docs/api/graphql"
+    }
+  },
+  "engine": {
+    "paths": {
+      "@core/*": [
+        "../../packages/xyd-core/src/*"
+      ],
+      "@snippets/*": [
+        "./snippets/src/*"
+      ]
+    }
+  }
+}

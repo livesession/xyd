@@ -16,6 +16,8 @@ export * from "./Card"
 
 export * from "./Code"
 
+export * from "./ColorSchemeButton"
+
 export * from "./Details"
 
 export * from "./GuideCard"

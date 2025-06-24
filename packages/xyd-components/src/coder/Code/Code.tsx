@@ -101,7 +101,7 @@ Code.Pre = function CodePre(props: {
     fixLastToken(codeblock)
 
     let description: React.ReactNode | null = null
-
+    
     if (props.descriptionHead || props.descriptionContent) {
         description = <div className={cn.CodeDescription}>
             <div>
@@ -112,9 +112,9 @@ Code.Pre = function CodePre(props: {
                 <Text weight="bold">
                     {props.descriptionHead}
                 </Text>
-                <Text>
+                <span>
                     {props.descriptionContent}
-                </Text>
+                </span>
             </div>
         </div>
 

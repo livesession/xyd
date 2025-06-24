@@ -2,7 +2,7 @@ import React from "react"
 
 import {Hr, Heading} from "@xyd-js/components/writer"
 import {UISidebar} from "@xyd-js/ui"
-import {FwLogo, SurfaceTarget} from "@xyd-js/framework/react"
+import {FwLogo, FwNav, SurfaceTarget} from "@xyd-js/framework/react"
 import {BaseTheme} from "@xyd-js/themes"
 
 // @ts-ignore
@@ -22,10 +22,10 @@ export default class ThemePicasso extends BaseTheme {
     constructor() {
         super();
 
-        if (this.settings?.markdown) {
-            this.settings.markdown.syntaxHighlight = syntaxHighlight;
+        if (this.settings?.coder) {
+            this.settings.coder.syntaxHighlight = syntaxHighlight;
         } else {
-            this.settings.markdown = {
+            this.settings.coder = {
                 syntaxHighlight: syntaxHighlight,
             }
         }
@@ -33,6 +33,12 @@ export default class ThemePicasso extends BaseTheme {
         this.surfaces.define(SurfaceTarget.SidebarTop, <_Search/>);
     }
 
+    protected Navbar() {
+        return <>
+            <FwNav />
+        </>
+    }
+    
     public override reactContentComponents() {
         const components = super.reactContentComponents();
         const H2 = components.h2;

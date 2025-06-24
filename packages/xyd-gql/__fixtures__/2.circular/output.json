@@ -1,5 +1,87 @@
 [
   {
+    "title": "getBookByTitle",
+    "description": "",
+    "canonical": "queries/getBookByTitle",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "getBookByTitle",
+      "group": [
+        "Queries"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "{\n  getBookByTitle(title: \"example-title\") {\n    # getBookByTitle fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "title",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/title"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "Book",
+            "description": "",
+            "context": {
+              "graphqlName": "getBookByTitle",
+              "graphqlTypeFlat": "Book",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/Book"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "title": "Author",
     "description": "",
     "canonical": "objects/Author",
@@ -158,88 +240,6 @@
           {
             "name": "type",
             "value": "fields"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "getBookByTitle",
-    "description": "",
-    "canonical": "queries/getBookByTitle",
-    "category": "graphql",
-    "type": "graphql_query",
-    "context": {
-      "graphqlTypeShort": "query",
-      "graphqlName": "getBookByTitle",
-      "group": [
-        "Queries"
-      ],
-      "scopes": []
-    },
-    "examples": {
-      "groups": [
-        {
-          "description": "",
-          "examples": [
-            {
-              "codeblock": {
-                "tabs": [
-                  {
-                    "title": "",
-                    "language": "graphql",
-                    "code": "{\n  getBookByTitle(title: \"example-title\") {\n    # getBookByTitle fields\n  }\n}"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [
-          {
-            "name": "title",
-            "type": "String!",
-            "description": "",
-            "context": {
-              "graphqlName": "title",
-              "graphqlTypeFlat": "String",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/title"
-            }
-          }
-        ]
-      },
-      {
-        "title": "Returns",
-        "properties": [
-          {
-            "name": "",
-            "type": "Book",
-            "description": "",
-            "context": {
-              "graphqlName": "getBookByTitle",
-              "graphqlTypeFlat": "Book",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/Book"
-            }
           }
         ]
       }

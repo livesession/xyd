@@ -36,10 +36,10 @@ You can also customize syntax highlighting. Please see [theme settings](/docs/gu
 
 ## Syntax Highlighting 
 Default syntax highlighting depends on used theme but you can override it via [`docs.json`](/docs/guides/settings):
-```json
+```json [descHead="Tip" desc="Check out syntax highlighting [samples](https://github.com/xyd-js/syntax-highlighting-samples)."]
 {
   "theme": {
-    "markdown": {
+    "coder": {
       "syntaxHighlight": "<name> or <theme>"
     }
   }
@@ -182,6 +182,17 @@ npm i -g xyd-js
 npm i -g xyd-js
 ```
 
+you can also manage line numbers globally:
+```json docs.json
+{
+  "theme": {
+    "coder": {
+      "lines": true | false
+    }
+  }
+}
+```
+
 ### Disable Scroll
 To make a code snippet display in full height without scrolling, you can use the `!scroll` attribute:
 
@@ -195,6 +206,17 @@ To make a code snippet display in full height without scrolling, you can use the
 **Output:**
 ```bash [!scroll]
 # your long code snippet but want to show in full height
+```
+
+you can also manage scroll globally:
+```json docs.json
+{
+  "theme": {
+    "coder": {
+      "scroll": false | true
+    }
+  }
+}
 ```
 
 ### Code Description
@@ -240,5 +262,4 @@ You can import code from a file using the [`@importCode`](/docs/reference/functi
 You can also render changelog page using the [`@changelog`](/docs/reference/functions/changelog) function:
 ```md
 @changelog "~/CHANGELOG.md"
-```
 ```

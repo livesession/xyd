@@ -166,11 +166,11 @@ const Layout2 = React.memo(function Layout2({
             title: "OpenAPI Demo"
         }}
         surfaces={surfaces}
-        BannerComponent={MemoizedActionDropdownExample}
+        BannerContent={MemoizedActionDropdownExample}
     >
         <AtlasContext
             value={{
-                syntaxHighlight: effectiveActionData.settings?.theme?.markdown?.syntaxHighlight || null,
+                syntaxHighlight: effectiveActionData.settings?.theme?.coder?.syntaxHighlight || null,
                 baseMatch: "/docs/api",
                 variantToggles: atlasVariantToggles,
                 Link: FwLink,

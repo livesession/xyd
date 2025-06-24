@@ -45,7 +45,7 @@ export function mdCodeRehype(settings?: Settings) {
                             value: code,
                             lang: lang,
                             meta: lang || "",
-                        }, settings?.theme?.markdown?.syntaxHighlight || "github-dark")
+                        }, settings?.theme?.coder?.syntaxHighlight || "github-dark")
 
                         if (lineRanges && lineRanges.length) {
                             highlighted.annotations = lineRanges.map((range) => ({

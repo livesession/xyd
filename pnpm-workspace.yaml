@@ -1,7 +1,6 @@
 packages:
-  - 'apps/*'
-  - 'apps/docs/.xyd/build'
+  # - 'apps/*'
   - 'packages/*'
-  - 'cli'
-  - '.xyd/host'
-  - '!hack/**'
+  # - 'cli'
+  # - '.xyd/host'
+  # - '!hack/**'

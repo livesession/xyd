@@ -44,6 +44,7 @@
 
 /* Atlas */
 :root {
+    --XydAtlas-Ref-Palette-White: var(--white);
     --XydAtlas-Ref-Palette-Primary-60: var(--color-primary);
     --XydAtlas-Ref-Palette-Primary-70: var(--color-primary--active);
     --XydAtlas-Ref-Palette-Primary-80: var(--color-primary--active);
@@ -61,9 +62,11 @@
 
 [data-color-scheme="dark"] {
     --xyd-codetabs-color: var(--black);
+    --color-text: var(--black);
 }
 @media (prefers-color-scheme: dark) {
     :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
         --xyd-codetabs-color: var(--black);
+        --color-text: var(--black);
     }
 }

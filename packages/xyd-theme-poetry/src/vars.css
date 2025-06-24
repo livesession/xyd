@@ -32,6 +32,7 @@
 }
 
 :root {
+    --XydAtlas-Ref-Palette-White: var(--white);
     --XydAtlas-Ref-Palette-Primary-60: var(--color-primary);
     --XydAtlas-Ref-Palette-Primary-70: var(--color-primary--active);
     --XydAtlas-Ref-Palette-Primary-80: var(--color-primary--active);

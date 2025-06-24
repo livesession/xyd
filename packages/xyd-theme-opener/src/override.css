@@ -1,6 +1,9 @@
 @layer themes {
     header {
-        border-bottom: 1px solid var(--dark32);
+        [part="header-content"] {
+            border-bottom: 1px solid var(--dark32);
+            border-top: 1px solid var(--dark32);
+        }
     }
 
     xyd-sidebar {
@@ -9,7 +12,7 @@
     }
 
     xyd-subnav {
-        border-top: 1px solid var(--dark32);
+        border-bottom: 1px solid var(--dark32);
         border-radius: 0;
         background: var(--white);
     }
@@ -21,6 +24,13 @@
     }
 
     xyd-layout-primary {
+        [part="sidebar"] {
+            position: sticky;
+            height: 100vh;
+            top: 0;
+            z-index: 1;
+        }
+
         &:not([data-layout="wide"]) {
             [part="page-container"] {
                 max-width: 100%;
@@ -75,3 +85,4 @@
         }
     }
 }
+

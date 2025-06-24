@@ -1,5 +1,25 @@
 # @xyd-js/themes
 
+## 0.1.1-xyd.5
+
+### Patch Changes
+
+- test
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.13
+  - @xyd-js/core@0.1.0-xyd.15
+  - @xyd-js/framework@0.1.0-xyd.34
+
+## 0.1.1-xyd.4
+
+### Patch Changes
+
+- update packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.12
+  - @xyd-js/core@0.1.0-xyd.14
+  - @xyd-js/framework@0.1.0-xyd.33
+
 ## 0.1.1-xyd.3
 
 ### Patch Changes

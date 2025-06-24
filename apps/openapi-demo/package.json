@@ -1,6 +1,7 @@
 {
   "name": "@xyd-js/openapi-demo",
   "type": "module",
+  "version": "0.0.0",
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",

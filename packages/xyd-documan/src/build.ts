@@ -8,7 +8,9 @@ import { appInit, calculateFolderChecksum, commonVitePlugins, getAppRoot, getBui
 
 // Define the main function to run the builds
 export async function build() {
-    const skip = await preWorkspaceSetup()
+    const skip = await preWorkspaceSetup({
+        force: true
+    })
 
     const { respPluginDocs, resolvedPlugins } = await appInit()
     const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)

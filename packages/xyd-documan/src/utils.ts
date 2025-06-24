@@ -445,11 +445,12 @@ export async function preWorkspaceSetup(options: {
 
     const hostTemplate = process.env.XYD_DEV_MODE
         ? path.resolve(__dirname, "../../xyd-host")
-        : await downloadPackage("@xyd-js/host", HOST_VERSION)
+        : path.resolve(__dirname, "../node_modules/@xyd-js/host")
+        // : await downloadPackage("@xyd-js/host", HOST_VERSION)
 
-    if (hostTemplate instanceof Error) {
-        throw hostTemplate
-    }
+    // if (hostTemplate instanceof Error) {
+    //     throw hostTemplate
+    // }
 
     const hostPath = getHostPath()
 
@@ -462,27 +463,30 @@ export async function preWorkspaceSetup(options: {
     if (process.env.XYD_DEV_MODE) {
         pluginDocsPath = path.resolve(__dirname, "../../xyd-plugin-docs")
     } else {
-        // Get plugin-docs version from host's package.json
-        const hostPackageJsonPath = path.join(hostPath, 'package.json')
-        if (fs.existsSync(hostPackageJsonPath)) {
-            const hostPackageJson = JSON.parse(fs.readFileSync(hostPackageJsonPath, 'utf-8'))
-            const pluginDocsVersion = hostPackageJson.dependencies?.['@xyd-js/plugin-docs']
+        pluginDocsPath = path.resolve(__dirname, "../node_modules/@xyd-js/plugin-docs")
 
-            if (pluginDocsVersion) {
-                pluginDocsPath = await downloadPackage('@xyd-js/plugin-docs', pluginDocsVersion)
-            } else {
-                console.warn('No @xyd-js/plugin-docs dependency found in host package.json')
-                return
-            }
-        } else {
-            console.warn('No host package.json found')
-            return
-        }
+        // // Get plugin-docs version from host's package.json
+        // const hostPackageJsonPath = path.join(hostPath, 'package.json')
+        // if (fs.existsSync(hostPackageJsonPath)) {
+        //     const hostPackageJson = JSON.parse(fs.readFileSync(hostPackageJsonPath, 'utf-8'))
+        //     const pluginDocsVersion = hostPackageJson.dependencies?.['@xyd-js/plugin-docs']
+
+        //     if (pluginDocsVersion) {
+        //         pluginDocsPath = path.resolve(__dirname, "../node_modules/@xyd-js/plugin-docs")
+        //         // pluginDocsPath = await downloadPackage('@xyd-js/plugin-docs', pluginDocsVersion)
+        //     } else {
+        //         console.warn('No @xyd-js/plugin-docs dependency found in host package.json')
+        //         return
+        //     }
+        // } else {
+        //     console.warn('No host package.json found')
+        //     return
+        // }
     }
 
-    if (pluginDocsPath instanceof Error) {
-        throw pluginDocsPath
-    }
+    // if (pluginDocsPath instanceof Error) {
+    //     throw pluginDocsPath
+    // }
 
     const pagesSourcePath = path.join(pluginDocsPath, "src/pages")
     const pagesTargetPath = path.join(hostPath, "plugins/xyd-plugin-docs/src/pages")
@@ -555,27 +559,27 @@ function shouldIgnoreEntry(entryName: string, ignorePatterns: string[]): boolean
     })
 }
 
-async function downloadPackage(packageName: string, version: string): Promise<string | Error> {
-    const tempDir = path.join(process.cwd(), CACHE_FOLDER_PATH, 'temp')
-    const packageDir = path.join(tempDir, packageName.replace('/', '-'))
+// async function downloadPackage(packageName: string, version: string): Promise<string | Error> {
+//     const tempDir = path.join(process.cwd(), CACHE_FOLDER_PATH, 'temp')
+//     const packageDir = path.join(tempDir, packageName.replace('/', '-'))
 
-    // Clean up existing temp directory if it exists
-    if (fs.existsSync(packageDir)) {
-        fs.rmSync(packageDir, { recursive: true, force: true })
-    }
+//     // Clean up existing temp directory if it exists
+//     if (fs.existsSync(packageDir)) {
+//         fs.rmSync(packageDir, { recursive: true, force: true })
+//     }
 
-    // Create temp directory
-    fs.mkdirSync(packageDir, { recursive: true })
+//     // Create temp directory
+//     fs.mkdirSync(packageDir, { recursive: true })
 
-    try {
-        nodeDownloadPackage(packageName, version, tempDir, packageDir)
+//     try {
+//         nodeDownloadPackage(packageName, version, tempDir, packageDir)
 
-        return packageDir
-    } catch (error) {
-        console.error(`Failed to download ${packageName}@${version}:`, error)
-        return new Error(`Failed to download ${packageName}@${version}`)
-    }
-}
+//         return packageDir
+//     } catch (error) {
+//         console.error(`Failed to download ${packageName}@${version}:`, error)
+//         return new Error(`Failed to download ${packageName}@${version}`)
+//     }
+// }
 
 async function copyHostTemplate(sourcePath: string, targetPath: string) {
     if (!fs.existsSync(sourcePath)) {
@@ -731,37 +735,37 @@ function nodeInstallPackages(hostPath: string) {
     execSync(cmd, execOptions)
 }
 
-function nodeDownloadPackage(
-    packageName: string,
-    version: string,
-    extractDir: string,
-    finalOutputDir: string,
-) {
-    const cmd = process.env.XYD_DEV_MODE
-        ? `pnpm pack ${packageName}@${version} --pack-destination ${extractDir}`
-        : `npm pack ${packageName}@${version} --pack-destination ${extractDir}`
+// function nodeDownloadPackage(
+//     packageName: string,
+//     version: string,
+//     extractDir: string,
+//     finalOutputDir: string,
+// ) {
+//     const cmd = process.env.XYD_DEV_MODE
+//         ? `pnpm pack ${packageName}@${version} --pack-destination ${extractDir}`
+//         : `npm pack ${packageName}@${version} --pack-destination ${extractDir}`
 
-    const execOptions: ExecSyncOptions = {}
-    if (process.env.XYD_VERBOSE) {
-        execOptions.stdio = 'inherit'
-    }
-    execSync(cmd, execOptions)
+//     const execOptions: ExecSyncOptions = {}
+//     if (process.env.XYD_VERBOSE) {
+//         execOptions.stdio = 'inherit'
+//     }
+//     execSync(cmd, execOptions)
 
-    const tarball = fs.readdirSync(extractDir).find(file => file.endsWith('.tgz'))
-    if (!tarball) {
-        throw new Error(`No tarball found for ${packageName}@${version}`)
-    }
-    execSync(`tar -xzf ${path.join(extractDir, tarball)} -C ${extractDir}`, execOptions)
+//     const tarball = fs.readdirSync(extractDir).find(file => file.endsWith('.tgz'))
+//     if (!tarball) {
+//         throw new Error(`No tarball found for ${packageName}@${version}`)
+//     }
+//     execSync(`tar -xzf ${path.join(extractDir, tarball)} -C ${extractDir}`, execOptions)
 
-    // Move package contents to outputDir
-    const extractedDir = path.join(extractDir, 'package')
-    if (fs.existsSync(extractedDir)) {
-        fs.renameSync(extractedDir, finalOutputDir)
-    }
+//     // Move package contents to outputDir
+//     const extractedDir = path.join(extractDir, 'package')
+//     if (fs.existsSync(extractedDir)) {
+//         fs.renameSync(extractedDir, finalOutputDir)
+//     }
 
-    // Clean up tarball
-    fs.unlinkSync(path.join(extractDir, tarball))
-}
+//     // Clean up tarball
+//     fs.unlinkSync(path.join(extractDir, tarball))
+// }
 
 async function shouldSkipHostSetup(): Promise<boolean> {
     const hostPath = getHostPath();

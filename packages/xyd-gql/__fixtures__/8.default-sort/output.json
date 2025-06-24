@@ -1,0 +1,1078 @@
+[
+  {
+    "title": "user",
+    "description": "",
+    "canonical": "queries/user",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "user",
+      "group": [
+        "Queries"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "query user($id: ID!) {\n  user(id: $id) {\n    # user fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "User",
+            "description": "",
+            "context": {
+              "graphqlName": "user",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "users",
+    "description": "",
+    "canonical": "queries/users",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "users",
+      "group": [
+        "Queries"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "{\n  users {\n    # users fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": []
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "[User!]!",
+            "description": "",
+            "context": {
+              "graphqlName": "users",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "search",
+    "description": "",
+    "canonical": "queries/search",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "search",
+      "group": [
+        "Queries"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "{\n  search(query: \"example-query\") {\n    # search fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "query",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "query",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/query"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "[SearchResult!]!",
+            "description": "",
+            "context": {
+              "graphqlName": "search",
+              "graphqlTypeFlat": "SearchResult",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "unions/SearchResult"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "createUser",
+    "description": "",
+    "canonical": "mutations/createUser",
+    "category": "graphql",
+    "type": "graphql_mutation",
+    "context": {
+      "graphqlTypeShort": "mutation",
+      "graphqlName": "createUser",
+      "group": [
+        "Mutations"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "mutation createUser($input: UserInput!) {\n  createUser(input: $input) {\n    # createUser fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "input",
+            "type": "UserInput!",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "input",
+              "graphqlName": "UserInput",
+              "group": [
+                "Inputs"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "inputs/UserInput"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "User!",
+            "description": "",
+            "context": {
+              "graphqlName": "createUser",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "updateUser",
+    "description": "",
+    "canonical": "mutations/updateUser",
+    "category": "graphql",
+    "type": "graphql_mutation",
+    "context": {
+      "graphqlTypeShort": "mutation",
+      "graphqlName": "updateUser",
+      "group": [
+        "Mutations"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "mutation updateUser($id: ID!, $input: UserInput!) {\n  updateUser(id: $id, input: $input) {\n    # updateUser fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          },
+          {
+            "name": "input",
+            "type": "UserInput!",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "input",
+              "graphqlName": "UserInput",
+              "group": [
+                "Inputs"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "inputs/UserInput"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "User!",
+            "description": "",
+            "context": {
+              "graphqlName": "updateUser",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "userCreated",
+    "description": "",
+    "canonical": "subscriptions/userCreated",
+    "category": "graphql",
+    "type": "graphql_subscription",
+    "context": {
+      "graphqlTypeShort": "subscription",
+      "graphqlName": "userCreated",
+      "group": [
+        "Subscriptions"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "subscription {\n  userCreated {\n    # userCreated fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": []
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "User!",
+            "description": "",
+            "context": {
+              "graphqlName": "userCreated",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "userUpdated",
+    "description": "",
+    "canonical": "subscriptions/userUpdated",
+    "category": "graphql",
+    "type": "graphql_subscription",
+    "context": {
+      "graphqlTypeShort": "subscription",
+      "graphqlName": "userUpdated",
+      "group": [
+        "Subscriptions"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "subscription {\n  userUpdated {\n    # userUpdated fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": []
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "User!",
+            "description": "",
+            "context": {
+              "graphqlName": "userUpdated",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "User",
+    "description": "",
+    "canonical": "objects/User",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "User",
+      "group": [
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          },
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/name"
+            }
+          },
+          {
+            "name": "email",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "email",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/email"
+            }
+          },
+          {
+            "name": "role",
+            "type": "UserRole!",
+            "description": "",
+            "context": {
+              "graphqlName": "role",
+              "graphqlTypeFlat": "UserRole",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "enums/UserRole"
+            }
+          },
+          {
+            "name": "createdAt",
+            "type": "DateTime!",
+            "description": "",
+            "context": {
+              "graphqlName": "createdAt",
+              "graphqlTypeFlat": "DateTime",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "scalars/DateTime"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Post",
+    "description": "",
+    "canonical": "objects/Post",
+    "category": "graphql",
+    "type": "graphql_object",
+    "context": {
+      "graphqlTypeShort": "object",
+      "graphqlName": "Post",
+      "group": [
+        "Objects"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          },
+          {
+            "name": "title",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "title",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/title"
+            }
+          },
+          {
+            "name": "content",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "content",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/content"
+            }
+          },
+          {
+            "name": "author",
+            "type": "User!",
+            "description": "",
+            "context": {
+              "graphqlName": "author",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Node",
+    "description": "",
+    "canonical": "interfaces/Node",
+    "category": "graphql",
+    "type": "graphql_interface",
+    "context": {
+      "graphqlTypeShort": "interface",
+      "graphqlName": "Node",
+      "group": [
+        "Interfaces"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "SearchResult",
+    "description": "",
+    "canonical": "unions/SearchResult",
+    "category": "graphql",
+    "type": "graphql_union",
+    "context": {
+      "graphqlTypeShort": "union",
+      "graphqlName": "SearchResult",
+      "group": [
+        "Unions"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Possible types",
+        "properties": [
+          {
+            "name": "User",
+            "type": "User",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "object",
+              "graphqlName": "User",
+              "group": [
+                "Objects"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          },
+          {
+            "name": "Post",
+            "type": "Post",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "object",
+              "graphqlName": "Post",
+              "group": [
+                "Objects"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/Post"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "UserInput",
+    "description": "",
+    "canonical": "inputs/UserInput",
+    "category": "graphql",
+    "type": "graphql_input",
+    "context": {
+      "graphqlTypeShort": "input",
+      "graphqlName": "UserInput",
+      "group": [
+        "Inputs"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Fields",
+        "properties": [
+          {
+            "name": "name",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "name",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/name"
+            }
+          },
+          {
+            "name": "email",
+            "type": "String!",
+            "description": "",
+            "context": {
+              "graphqlName": "email",
+              "graphqlTypeFlat": "String",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/email"
+            }
+          },
+          {
+            "name": "role",
+            "type": "UserRole",
+            "description": "",
+            "context": {
+              "graphqlName": "role",
+              "graphqlTypeFlat": "UserRole",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "enums/UserRole"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "UserRole",
+    "description": "",
+    "canonical": "enums/UserRole",
+    "category": "graphql",
+    "type": "graphql_enum",
+    "context": {
+      "graphqlTypeShort": "enum",
+      "graphqlName": "UserRole",
+      "group": [
+        "Enums"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Valid values",
+        "properties": [
+          {
+            "name": "ADMIN",
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "USER",
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "GUEST",
+            "type": "string",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "DateTime",
+    "description": "",
+    "canonical": "scalars/DateTime",
+    "category": "graphql",
+    "type": "graphql_scalar",
+    "context": {
+      "graphqlTypeShort": "scalar",
+      "graphqlName": "DateTime",
+      "group": [
+        "Scalars"
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": []
+  }
+]

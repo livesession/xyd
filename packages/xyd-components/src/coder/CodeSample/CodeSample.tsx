@@ -11,6 +11,7 @@ import {
     withCodeTabs
 } from "../CodeTabs";
 import { useCodeTheme } from "../CodeTheme";
+import { useCoder } from "../CoderProvider";
 
 export interface CodeSampleProps {
     name: string;
@@ -45,6 +46,7 @@ export function CodeSample(props: CodeSampleProps) {
 
 function $ThemedCodeSample(props: CodeSampleProps) {
     const { highlighted } = useCodeTheme()
+    const coder = useCoder()
 
     if (props.kind === "secondary") {
         return <CodeContext value={{
@@ -65,9 +67,18 @@ function $ThemedCodeSample(props: CodeSampleProps) {
         </CodeContext>
     }
 
+    let size: "full" | undefined = undefined
+    if (typeof props.size === "string") {
+        size = props.size
+    } else if (typeof coder.scroll === "boolean" && !coder.scroll) {
+        size = "full"
+    }
+
+    const lineNumbers = props.lineNumbers ?? coder.lines
+
     return <CodeContext value={{
-        size: props.size,
-        lineNumbers: props.lineNumbers,
+        size,
+        lineNumbers,
         descriptionHead: props.descriptionHead,
         descriptionContent: props.descriptionContent,
         descriptionIcon: props.descriptionIcon,

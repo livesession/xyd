@@ -176,6 +176,8 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
 
     let flatPagesOnly = false
 
+    let foundRoute = false
+
     function findRoute(sidebar: Sidebar | SidebarRoute) {
         if ("route" in sidebar) {
             const sideMatch = normalizeHref(sidebar.route)
@@ -188,9 +190,19 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
                     const urlMatchLvl = sideMatch.split("/").length
 
                     if (urlMatchLvl > findByMatchLvl) {
+                        if (!foundRoute) {
+                            foundRoute = true
+                            sidebarItems.length = 0
+                        }
+                        
                         multiSidebarMatch = sidebar
                     }
                 } else {
+                    if (!foundRoute) {
+                        foundRoute = true
+                        sidebarItems.length = 0
+                    }
+                  
                     multiSidebarMatch = sidebar
                 }
             }
@@ -217,6 +229,10 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
         if ("route" in sidebar) {
             findRoute(sidebar)
 
+            return
+        }
+
+        if (foundRoute) {
             return
         }
 
@@ -280,7 +296,7 @@ function mapNavToLinks(
 
     // Flatten all pages from all groups to find the sequence
     const allPages: Array<{ page: string, group: string, groupIndex: number, pageIndex: number }> = []
-    
+
     nav.forEach((group, groupIndex) => {
         if (group.pages) {
             group.pages.forEach((pageItem, pageIndex) => {
@@ -288,7 +304,7 @@ function mapNavToLinks(
                 if (typeof pageItem === "string") {
                     pageName = pageItem
                 } else if ("virtual" in pageItem) {
-                    pageName = pageItem.virtual
+                    pageName = pageItem.page
                 } else if ("pages" in pageItem) {
                     // This is a nested Sidebar, skip for now as it's not supported
                     return
@@ -296,7 +312,7 @@ function mapNavToLinks(
                     // This is a VirtualPage object with page property
                     pageName = (pageItem as { page: string }).page
                 }
-                
+
                 if (pageName && !hiddenPages[pageName]) {
                     allPages.push({
                         page: pageName,
@@ -308,21 +324,21 @@ function mapNavToLinks(
             })
         }
     })
-    
+
     // Find current page in the flattened list
     const currentPageIndex = allPages.findIndex(p => p.page === page)
-    
+
     if (currentPageIndex === -1) {
         return undefined
     }
-    
+
     // Get previous and next pages
     const prevPage = allPages[currentPageIndex - 1]
     const nextPage = allPages[currentPageIndex + 1]
-    
+
     let prevLink
     let nextLink
-    
+
     if (prevPage) {
         const prevTitle = frontmatters[prevPage.page]?.title || prevPage.page
         if (typeof prevTitle === "string") {
@@ -332,7 +348,7 @@ function mapNavToLinks(
             }
         }
     }
-    
+
     if (nextPage) {
         const nextTitle = frontmatters[nextPage.page]?.title || nextPage.page
         if (typeof nextTitle === "string") {
@@ -342,7 +358,7 @@ function mapNavToLinks(
             }
         }
     }
-    
+
     return {
         prev: prevLink || undefined,
         next: nextLink || undefined,

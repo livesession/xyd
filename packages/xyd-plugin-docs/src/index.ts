@@ -195,7 +195,7 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
     }
 
     sortSidebarGroups(settings?.navigation?.sidebar || [])
-
+    
     return {
         vitePlugins,
         settings,

@@ -16,8 +16,9 @@
         }
 
         [part="page"] {
-            position: absolute;
-            left: 250px;
+            position: relative;
+            left: var(--xyd-sidebar-width);
+            margin-right: var(--xyd-sidebar-width);
             right: 0;
             background: var(--white);
             border-top-left-radius: 8px;
@@ -30,6 +31,7 @@
 
             [part="page"] {
                 left: 0;
+                margin-right: 0;
             }
         }
     }

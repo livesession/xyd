@@ -8,6 +8,7 @@ export default {
             --space-large: 20px;
             --space-xlarge: 24px;
             --space-xxlarge: 32px;
+            --space-2xlarge: 50px;
 
             font-size: var(--xyd-font-size-medium);
             line-height: var(--xyd-line-height-medium);
@@ -57,6 +58,13 @@ export default {
                     display: block;
                 }
             }
+            h2 {
+                margin-top: var(--space-2xlarge);
+            }
+            h2:first-of-type {
+                margin-top: var(--space-xxlarge);
+            }
+
             h4 {
                 &[data-kind="muted"] {
                     margin: 4px 0 16px;

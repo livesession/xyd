@@ -33,22 +33,13 @@ export default class MyTheme extends BaseTheme {
 }
 ```
 
-## Overriding Using Theme API
-You can also override theme settings via Theme API through `.docs/theme/index.ts`:
-```ts 
-import {BaseTheme} from "xyd-js/themes"
-
-export default class MyTheme extends BaseTheme {
-    constructor() {
-        super();
-        
-        // !diff +
-        this.theme.markdown.syntaxHighlight = "github-dark";
-    }
-}
+for example:
+```ts
+// !diff +
+this.theme.markdown.syntaxHighlight = "github-dark";
 ```
 
-### Style Customization
+## Style Customization
 
 Create an `index.css` file in your `.docs/theme` directory and import that to add custom styles:
 
@@ -65,7 +56,7 @@ export default class MyTheme extends BaseTheme {
 You can add as many style file as you want. Also names of your imported styles are your own.
 :::
 
-## Overriding an Existing Components {label="Coming Soon"}
+## Overriding Components {label="Coming Soon"}
 
  :::code-group{}
   ```tsx Settings
@@ -104,7 +95,7 @@ You can add as many style file as you want. Also names of your imported styles a
   ``` 
 :::
 
-## Adding a Custom Component {label="Coming Soon"}
+## Custom Components [maxTocDepth=3] {label="Coming Soon"}
 
 Here's an example of how to add a custom component to your theme:
 
@@ -165,7 +156,7 @@ If you not set name in [`customComponents`](/docs/reference/source/BaseTheme#reg
 convert PascalCase to kebab-case for markdown syntax.
 :::
 
-### Component Surfaces [+toc] {label="Coming Soon"}
+###  Surfaces {label="Coming Soon"}
 If you want to add your custom components into specific place inside docs, you can use `surface`:
  :::code-group{}
   ```tsx Settings

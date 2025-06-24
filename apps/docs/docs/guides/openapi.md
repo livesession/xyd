@@ -152,10 +152,6 @@ Creating multi API specs for more advanced use cases is also possible:
         },
     }
     ```
-        
-    :::callout
-    Name keys are not supported through OpenAPI files. 
-    :::
 :::
 
 Thanks to this configuration, you'll have two routes: `docs/api/rest/*` and `docs/api/webhooks/*`.
@@ -190,7 +186,7 @@ You can define a complete navigation structure using the `sidebar` property in t
 ```yaml [!scroll]
 # ...
 x-docs:
-  route: docs/api-reference # `route` is optional
+  route: docs/api-reference # or from docs.json
   sidebar:
     - group: API & Reference
       pages:
@@ -217,16 +213,14 @@ x-docs:
 ```
 
 above example will create sidebar:
-```
+
+```md [descHead="Info" desc="<code>title</code> comes from generated OpenAPI spec and <code>route</code> from <code>docs.json</code>/<code>x-docs.route</code>."]
 "API & Reference > Endpoints > Users":
     * [{title}]({route}/users/get)
     * [{title}]({route}/users/userId)
-    * [{title}]({route}/users/posts)
     * [{title}]({route}/users/posts/create)
+    * [{title}]({route}/users/object)
 ```
-:::callout
-`title` comes from generated OpenAPI spec and `route` from `docs.json`/`x-docs.route`.
-:::
 
 ::::details{kind="secondary" label="Navigation Customization Details" title="Learn More"}
   #### Route
@@ -346,3 +340,6 @@ Support for OpenAPI webhook documentation is currently in development and will b
 
 ## API Docs Demo
 You can also check out our [interactive API Docs Demo](http://apidocs-demo.xyd.dev/) to see these features in action and experiment with different OpenAPI configurations in real-time.
+
+## OpenAPI Samples
+Learn [how to setup OpenAPI pages](#).

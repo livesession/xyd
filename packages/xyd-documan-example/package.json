@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/documan-example",
-  "version": "0.0.0",
+  "version": "0.0.1-xyd.0",
   "main": "index.js",
   "directories": {
     "doc": "docs"

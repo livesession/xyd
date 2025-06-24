@@ -6,7 +6,7 @@ import { BaseTheme } from "@xyd-js/themes"
 // @ts-ignore
 import { SearchButton } from 'virtual-component:Search'
 
-import { syntaxThemeCosmoLight } from "./syntaxTheme"
+import { syntaxThemeCosmo } from "./syntaxTheme"
 
 import "./imports.css"
 
@@ -20,11 +20,11 @@ export default class ThemeCosmo extends BaseTheme {
     constructor() {
         super();
 
-        if (this.settings?.markdown) {
-            this.settings.markdown.syntaxHighlight = syntaxThemeCosmoLight;
+        if (this.settings?.coder) {
+            this.settings.coder.syntaxHighlight = syntaxThemeCosmo;
         } else {
-            this.settings.markdown = {
-                syntaxHighlight: syntaxThemeCosmoLight,
+            this.settings.coder = {
+                syntaxHighlight: syntaxThemeCosmo,
             }
         }
 

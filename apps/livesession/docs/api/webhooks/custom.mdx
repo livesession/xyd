@@ -1,0 +1,17 @@
+---
+title: Custom
+group: [EVENT TYPES, session.event]
+---
+
+<API
+    extraProps={{
+        content: <>
+            # Custom
+            Triggers when a custom event is handled. These events are made during recording through the `__ls(“track”)` Browser API function.
+            The payload includes event specifics and potential validation errors for added properties.
+
+            The properties field is a map with varying value types. Value type depends on the property key.
+            For instance, "_str" suffixed keys hold string values and "_bool" suffixed keys contain boolean values. Additional details are available in the knowledge base.
+        </>
+    }}
+/>

@@ -122,7 +122,7 @@ maxTocDepth: 2
 ### Card
 `tocCard` meta is useful for showing additional card below table of contents with addional info to your content.
 
-```md [descHead="Tip" desc="If you want to learn more about toc anchors, check out [here](/docs/guides/writing-quickstart#toc-anchors)."]
+```md
 ---
 tocCard: 
     link: https://github.com/xyd-js/customization-samples
@@ -131,6 +131,10 @@ tocCard:
     icon: github
 ---
 ```
+
+:::callout
+If you want to learn more about toc anchors, check out [here](/docs/guides/writing-quickstart#toc-anchors).
+:::
 
 ## Uniform
 

@@ -25,8 +25,8 @@ export const NavHost = css`
             align-items: center;
             justify-content: flex-end;
             gap: 8px;
-            padding-left: calc(max(env(safe-area-inset-left), 16px));
-            padding-right: calc(max(env(safe-area-inset-right), 16px));
+            padding-left: calc(max(env(safe-area-inset-left), var(--xyd-padding-default)));
+            padding-right: calc(max(env(safe-area-inset-right), var(--xyd-padding-default)));
         }
         &[data-kind="middle"] [part="nav"] {
             display: grid;
@@ -62,7 +62,7 @@ export const ItemHost = css`
         position: relative;
         white-space: nowrap;
         color: var(--xyd-nav-item-color);
-        padding: 8px 16px;
+        padding: calc(var(--xyd-padding-default) / 2) var(--xyd-padding-default);
         display: flex;
         align-items: center;
         justify-content: center;

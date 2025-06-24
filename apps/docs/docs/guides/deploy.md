@@ -24,12 +24,9 @@ You must follow the following steps to deploy your `xyd` docs:
 ## Build
 
 Run this command to build the docs:
-```bash 
+```bash [descHead="Info" desc="it produces a static files availalbe at <code>.xyd/build/client</code> folder within your docs project. You can serve that locally using popular static web servers or just deploy it on production."]
 $ xyd build
 ```
-
-it produces a static files availalbe at `.xyd/build/client` folder within your docs project.
-You can serve that locally using popular static web servers or just deploy it on production.
 
 ## Deployment
 Since `xyd build` produces static files you can deploy it on any infrastructure you want very easy.

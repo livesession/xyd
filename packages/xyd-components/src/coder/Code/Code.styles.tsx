@@ -137,5 +137,10 @@ export const CodeDescription = css`
         display: flex;
         flex-direction: column;
         gap: 4px;
+
+        > span {
+            display: flex;
+            align-items: center;
+        }
     }
 `

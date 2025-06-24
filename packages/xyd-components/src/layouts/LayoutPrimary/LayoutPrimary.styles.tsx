@@ -9,18 +9,19 @@ export const LayoutPrimaryHost = css`
         width: 100%;
         overflow-x: hidden;
         background: var(--xyd-page-body-bgcolor);
-        display: block;
+        display: contents;
 
         > [part="header"] {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: fixed;
-            top: var(--xyd-header-warning-height);
+            position: sticky;
+            top: 0;
             right: var(--xyd-page-gutter);
             left: var(--xyd-page-gutter);
             height: var(--xyd-nav-height);
             background: var(--xyd-layout-header-bgcolor);
+            z-index: 3;
 
             @media (max-width: ${mobileBreakpoint}) {
                 padding: 0;
@@ -93,21 +94,14 @@ export const LayoutPrimaryHost = css`
         }
 
         [part="main"] {
-            position: fixed;
+            position: relative;
             display: flex;
-            top: calc(var(--xyd-nav-height) + var(--xyd-header-warning-height));
+            top: 0;
             bottom: 0;
             left: 0;
             right: 0;
             padding: var(--xyd-page-gutter);
-            overflow: hidden;
-        }
-
-        &[data-subheader="true"][data-hide-subheader="false"] [part="main"] {
-            top: calc(var(--xyd-header-total-height) + var(--xyd-header-warning-height));
-        }
-        &[data-subheader="true"][data-hide-subheader="true"] [part="main"] {
-            top: calc(var(--xyd-subnav-height) + var(--xyd-header-warning-height));
+            overflow: visible;
         }
 
         [part="sidebar"] {
@@ -223,15 +217,15 @@ export const LayoutPrimaryHost = css`
 
         [part="page"] {
             position: relative;
+            overflow: visible;
             flex: 1;
             background: var(--xyd-page-body-bgcolor);
-            overflow: hidden;
             min-width: 0;
             height: 100%;
         }
 
         [part="page-scroll"] {
-            overflow-y: auto;
+            overflow-y: visible;
             height: 100%;
             -webkit-overflow-scrolling: touch;
             padding: 0 48px;
@@ -285,12 +279,12 @@ export const LayoutPrimaryHost = css`
 
         [part="page-article-nav"] {
             display: flex;
+            flex: none;
             flex-direction: column;
             gap: 16px;
-            flex: none;
             width: var(--xyd-layout-nav-width-medium);
             position: sticky;
-            top: 0;
+            top: var(--xyd-header-total-height);
             height: fit-content;
             max-height: 100vh;
             overflow-y: auto;

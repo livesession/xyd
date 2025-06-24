@@ -1,8 +1,5 @@
 :root {
-    --xyd-banner-height: 45px !important;
     --xyd-nav-height: 0px !important;
-
-    /* --xyd-page-gutter: var(--xyd-banner-height) !important; */
 }
 
 xyd-banner {

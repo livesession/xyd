@@ -134,9 +134,11 @@ function getSortOrder(reference: Reference, sortConfig: OpenDocsSortConfig): num
             // Calculate position within this group using the stack
             const positionInGroup = calculatePositionInGroup(reference, stackIndex, sortStacks);
 
+            const result = (groupIndex * 1000) + positionInGroup;
+            
             // Return order: groupIndex * 1000 + positionInGroup
             // This ensures all items in group 0 come before all items in group 1, etc.
-            return (groupIndex * 1000) + positionInGroup;
+            return result;
         }
     }
 
@@ -144,13 +146,23 @@ function getSortOrder(reference: Reference, sortConfig: OpenDocsSortConfig): num
 }
 
 function matchesPrimaryGroup(reference: Reference, sortItem: SortItem): boolean {
+    // Check node match first
+    if (sortItem.node) {
+        const context = reference.context as any;
+        if (context?.graphqlTypeShort === sortItem.node) {
+            return true;
+        }
+        // If node is specified but doesn't match, return false (don't fall through)
+        return false;
+    }
+
     // Check group match
     if (sortItem.group && sortItem.group.length > 0) {
         const referenceGroups = getReferenceGroups(reference);
-        return sortItem.group.some(group => referenceGroups.includes(group));
+        const match = sortItem.group.some(group => referenceGroups.includes(group));
+        return match;
     }
 
-    // If no group specified, it's a catch-all
     return true;
 }
 
@@ -196,11 +208,6 @@ function getReferenceGroups(reference: Reference): string[] {
 
     return [];
 }
-
-type DocDirectiveInfo = {
-    groups?: string[];
-    path?: string;
-};
 
 function docDirectiveChain(
     rawSDL: string,

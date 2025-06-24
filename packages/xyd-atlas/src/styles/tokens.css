@@ -42,6 +42,7 @@
   /* ApiRef Item */
   --XydAtlas-Component-ApiRef-Item__color-border: var(--XydAtlas-Sys-Color-Border);
   --XydAtlas-Component-ApiRef-Item__color-navbar: var(--XydAtlas-Sys-Color-Text-Secondary);
+  --XydAtlas-Component-ApiRef-Item__background-navbar: var(--XydAtlas-Ref-Palette-Neutral-10);
 
   /* Code Sample */
   --XydAtlas-Component-Code-Sample__color-border: var(--XydAtlas-Sys-Color-Border);

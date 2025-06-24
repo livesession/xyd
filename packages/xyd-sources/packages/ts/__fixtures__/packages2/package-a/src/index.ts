@@ -240,7 +240,7 @@ export interface Header {
     /** The name of the button */
     name?: string
 
-    /** The url once you click on the button. Example: https://mintlify.com/contact */
+    /** The url once you click on the button */
     url?: string
 
     /** Sub-header configuration */

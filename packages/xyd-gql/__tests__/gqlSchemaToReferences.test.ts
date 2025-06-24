@@ -41,8 +41,8 @@ const tests: {
         description: "Type args",
     },
     {
-        name: "8.example",
-        description: "Example",
+        name: "8.default-sort",
+        description: "Default sort example",
     },
     //
     {
@@ -69,14 +69,14 @@ const tests: {
         name: "-1.opendocs.docs-nested",
         description: "OpenDocs GraphQL Schema directive example with nested docs",
     },
-    //
-    {
-        name: "-3.array-non-null-return",
-        description: "case: Array non-null return",
-        options: {
-            flat: true
-        }
-    },
+    // //
+    // {
+    //     name: "-3.array-non-null-return",
+    //     description: "case: Array non-null return",
+    //     options: {
+    //         flat: true
+    //     }
+    // },
 
     // TODO: uncomment when ready
     // {

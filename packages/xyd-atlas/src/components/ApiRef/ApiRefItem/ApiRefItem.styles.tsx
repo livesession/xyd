@@ -12,7 +12,7 @@ export const ApiRefItemNavbarHost = css`
 `;
 
 export const ApiRefItemNavbarContainer = css`
-    background: linear-gradient(45deg, rgb(247, 247, 248) 0%, rgb(247, 247, 248) 100%);
+    background: linear-gradient(45deg, var(--XydAtlas-Component-ApiRef-Item__background-navbar) 0%, var(--XydAtlas-Component-ApiRef-Item__background-navbar) 100%);
     padding: 8px;
     border: 1px solid var(--XydAtlas-Component-ApiRef-Item__color-border);
     border-radius: 8px;

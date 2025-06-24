@@ -15,7 +15,7 @@ export interface LayoutPrimaryProps {
 }
 
 const LayoutPrimaryContext = React.createContext<{
-    scrollRef: React.RefObject<HTMLDivElement | null>;
+    scrollRef: React.RefObject<HTMLDivElement | Window | null>;
     isMobileNavOpen: boolean;
     setIsMobileNavOpen: (isOpen: boolean) => void;
 }>({
@@ -26,9 +26,13 @@ const LayoutPrimaryContext = React.createContext<{
 
 // TODO: move scroller to xyd-foo
 export function LayoutPrimary(props: LayoutPrimaryProps) {
-    const scrollRef = useRef<HTMLDivElement>(null)
+    const scrollRef = useRef<HTMLDivElement | Window>(null)
     const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
     const { hideMainHeader } = useSubHeader(props.subheader ? scrollRef : null, props.scrollKey)
+
+    useEffect(() => {
+        scrollRef.current = window
+    }, [])
 
     return <LayoutPrimaryContext value={{
         scrollRef,
@@ -111,11 +115,9 @@ interface LayoutPrimaryPageProps {
     contentNav?: React.ReactNode;
 }
 LayoutPrimary.Page = function LayoutPrimaryPage(props: LayoutPrimaryPageProps) {
-    const { scrollRef } = useContext(LayoutPrimaryContext)
-
     return <>
         <div part="page">
-            <div part="page-scroll" ref={scrollRef}>
+            <div part="page-scroll">
                 <div part="page-container">
                     <div part="page-article-container">
 
@@ -149,7 +151,7 @@ const SCROLL_UP_TRIGGER_THRESHOLD = 100;
 
 // TODO: move to `xyd-foo` or somewhere else
 // TODO  better solution than `key`
-function useSubHeader(ref: React.RefObject<HTMLDivElement | null> | null, key?: any) {
+function useSubHeader(ref: React.RefObject<HTMLDivElement | Window | null> | null, key?: any) {
     const [hideMainHeader, setHideMainHeader] = useState(false)
     const [lastScrollTop, setLastScrollTop] = useState(0)
     const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null)

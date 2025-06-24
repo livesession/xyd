@@ -6,7 +6,6 @@ tocCard:
     title: Routing Samples
     description: Learn how to setup Routing
     icon: docs:github
-
 maxTocDepth: 4
 ---
 
@@ -25,9 +24,10 @@ You can customize the routing by adding a routes in [`docs.json`](/docs/guides/s
 The `navigation` property controls the hierarchy of your documentation. It's grouped into multiple properties:
 
 * [`sidebar`](/docs/guides/routing#sidebar) - Main navigation, usually displayed on the left side of the page.
-* [`header`](/docs/guides/routing#header) - Sub navigation, usually displayed on the top of the page.
+* [`header`](/docs/guides/routing#header) - Top-level navigation bar, typically displayed at the top of the page.
+* [`segments`](/docs/guides/routing#segments) - Smaller navigational structures based on specific `route`.
 * [`anchors`](/docs/guides/routing#anchors) - Fixed navigation, helpful for displaying a static navigation/links.
-
+s
 :::callout
 Dividing a `navigation` into multiple properties helps you to organize your documentation better.
 :::
@@ -70,10 +70,6 @@ If you need more advanced structures, define sidebar as object:
 }
 ```
 
-:::callout
-`group` property shows the name as the separator in the sidebar.
-:::
-
 #### Nested Groups
 You can also define nested groups:
 
@@ -107,7 +103,7 @@ Please not that order of your sidebar items depends on place in the config file.
 #### Routing
 You can also do more advanced routing in the sidebar, like matching based on the specific route:
 
-```json [!scroll]
+```json [!scroll descHead="Tip" desc="This approach gives you more control over the routing and allows you to create more complex navigation structures."]
 {
     "sidebar": [
         {
@@ -142,9 +138,6 @@ You can also do more advanced routing in the sidebar, like matching based on the
     ]
 }
 ```
-:::callout
-This approach gives you more control over the routing and allows you to create more complex navigation structures.
-:::
 
 ### Header
 
@@ -153,6 +146,7 @@ The header navigation allows you to create a top-level navigation bar.
 ```json
 {
   "navigation": {
+    // !diff +
     "header": [
       {
         "title": "Documentation",

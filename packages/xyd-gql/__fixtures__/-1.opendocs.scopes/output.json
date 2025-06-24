@@ -1,5 +1,177 @@
 [
   {
+    "title": "user",
+    "description": "",
+    "canonical": "queries/user",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "user",
+      "group": [
+        "Queries"
+      ],
+      "scopes": [
+        "user:read"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "query user($id: ID!) {\n  user(id: $id) {\n    # user fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "id",
+            "type": "ID!",
+            "description": "",
+            "context": {
+              "graphqlName": "id",
+              "graphqlTypeFlat": "ID",
+              "graphqlBuiltInType": true
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "/id"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "User",
+            "description": "",
+            "context": {
+              "graphqlName": "user",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "userAdd",
+    "description": "",
+    "canonical": "queries/userAdd",
+    "category": "graphql",
+    "type": "graphql_query",
+    "context": {
+      "graphqlTypeShort": "query",
+      "graphqlName": "userAdd",
+      "group": [
+        "Queries"
+      ],
+      "scopes": [
+        "user:read",
+        "user:write"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "",
+                    "language": "graphql",
+                    "code": "query userAdd($input: UserWrite!) {\n  userAdd(input: $input) {\n    # userAdd fields\n  }\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "input",
+            "type": "UserWrite!",
+            "description": "",
+            "context": {
+              "graphqlTypeShort": "input",
+              "graphqlName": "UserWrite",
+              "group": [
+                "Inputs"
+              ],
+              "scopes": []
+            },
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": "inputs/UserWrite"
+            }
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "properties": [
+          {
+            "name": "",
+            "type": "User",
+            "description": "",
+            "context": {
+              "graphqlName": "userAdd",
+              "graphqlTypeFlat": "User",
+              "graphqlBuiltInType": false
+            },
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/User"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
     "title": "User",
     "description": "",
     "canonical": "objects/User",
@@ -197,178 +369,6 @@
             ],
             "symbolDef": {
               "canonical": "/name"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "user",
-    "description": "",
-    "canonical": "queries/user",
-    "category": "graphql",
-    "type": "graphql_query",
-    "context": {
-      "graphqlTypeShort": "query",
-      "graphqlName": "user",
-      "group": [
-        "Queries"
-      ],
-      "scopes": [
-        "user:read"
-      ]
-    },
-    "examples": {
-      "groups": [
-        {
-          "description": "",
-          "examples": [
-            {
-              "codeblock": {
-                "tabs": [
-                  {
-                    "title": "",
-                    "language": "graphql",
-                    "code": "query user($id: ID!) {\n  user(id: $id) {\n    # user fields\n  }\n}"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [
-          {
-            "name": "id",
-            "type": "ID!",
-            "description": "",
-            "context": {
-              "graphqlName": "id",
-              "graphqlTypeFlat": "ID",
-              "graphqlBuiltInType": true
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "/id"
-            }
-          }
-        ]
-      },
-      {
-        "title": "Returns",
-        "properties": [
-          {
-            "name": "",
-            "type": "User",
-            "description": "",
-            "context": {
-              "graphqlName": "user",
-              "graphqlTypeFlat": "User",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/User"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title": "userAdd",
-    "description": "",
-    "canonical": "queries/userAdd",
-    "category": "graphql",
-    "type": "graphql_query",
-    "context": {
-      "graphqlTypeShort": "query",
-      "graphqlName": "userAdd",
-      "group": [
-        "Queries"
-      ],
-      "scopes": [
-        "user:read",
-        "user:write"
-      ]
-    },
-    "examples": {
-      "groups": [
-        {
-          "description": "",
-          "examples": [
-            {
-              "codeblock": {
-                "tabs": [
-                  {
-                    "title": "",
-                    "language": "graphql",
-                    "code": "query userAdd($input: UserWrite!) {\n  userAdd(input: $input) {\n    # userAdd fields\n  }\n}"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "definitions": [
-      {
-        "title": "Arguments",
-        "properties": [
-          {
-            "name": "input",
-            "type": "UserWrite!",
-            "description": "",
-            "context": {
-              "graphqlTypeShort": "input",
-              "graphqlName": "UserWrite",
-              "group": [
-                "Inputs"
-              ],
-              "scopes": []
-            },
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ],
-            "symbolDef": {
-              "canonical": "inputs/UserWrite"
-            }
-          }
-        ]
-      },
-      {
-        "title": "Returns",
-        "properties": [
-          {
-            "name": "",
-            "type": "User",
-            "description": "",
-            "context": {
-              "graphqlName": "userAdd",
-              "graphqlTypeFlat": "User",
-              "graphqlBuiltInType": false
-            },
-            "properties": [],
-            "meta": [],
-            "symbolDef": {
-              "canonical": "objects/User"
             }
           }
         ]

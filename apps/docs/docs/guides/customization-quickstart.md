@@ -41,21 +41,17 @@ For more details on the theme settings, see the [reference](/docs/guides/customi
 
 ## Customization via Code [maxTocDepth=3]
 To customize your documentation via code, you'll need to work with a `.docs/theme` directory inside your project root:
-```
+```md [descHead="CSS Tokens" desc="List of all available css tokens you can find [here](https://github.com/livesession/xyd/blob/master/packages/xyd-themes/src/styles/tokens.css)."]
 .
 ├─ .docs            # .docs root
 │  └─ theme
 │     ├─ index.ts   # theme entry
 │     └─ index.css  # theme styles entry
 |
-└─ docs.json            # settings file
+└─ docs.json        # settings file
 ```
 
-### Theme Styles Entry
-Thanks to `index.css` inside `.docs/theme/index.css` you can customize base theme styles.
-List of all available css tokens you can find [here](https://github.com/livesession/xyd/blob/master/packages/xyd-themes/src/styles/tokens.css).
-
-### Theme Entry {label="Experimental"}
+### theme/index.ts {label="Experimental"}
 <code>xyd</code> will lookup for `index.ts` if you want to modify or create new theme behavior. 
 This file is only necessary when you need to extend default theme's functionality or create a new theme:
 

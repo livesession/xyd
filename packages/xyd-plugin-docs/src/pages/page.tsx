@@ -177,17 +177,24 @@ export function meta(props: any) {
 
     const metaTags: MetaTag[] = [
         { title: title },
-        {
+    ]
+
+    if (description) {
+        metaTags.push({
             name: "description",
             content: description,
-        },
-    ]
+        })
+    }
 
     const metaTagsMap: {[key: string]: MetaTag} = {}
 
     for (const key in settings?.seo?.metatags) {
         const metaType = SUPPORTED_META_TAGS[key]
         if (!metaType) {
+            continue
+        }
+
+        if (description && key === "description") {
             continue
         }
         
@@ -201,6 +208,10 @@ export function meta(props: any) {
     for (const key in props?.data?.metadata) {
         const metaType = SUPPORTED_META_TAGS[key]
         if (!metaType) {
+            continue
+        }
+
+        if (description && key === "description") {
             continue
         }
 

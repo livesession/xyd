@@ -25,22 +25,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request GET \\\n     --url 'http://api.example.com/v1/users?limit=20&offset=0' \\\n     --header 'accept: application/json'"
+                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('http://api.example.com/v1/users?limit=20&offset=0', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'GET'};\n\nfetch('http://api.example.com/v1/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users?limit=20&offset=0\"\n\nheaders = {\"accept\": \"application/json\"}\n\nresponse = requests.get(url, headers=headers)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users\"\n\nresponse = requests.get(url)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users?limit=20&offset=0\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -55,7 +55,7 @@
                 "title": "200",
                 "tabs": [
                   {
-                    "title": "json",
+                    "title": "application/json",
                     "language": "json",
                     "code": "[\n  {\n    \"id\": 0,\n    \"username\": \"string\",\n    \"email\": \"user@example.com\",\n    \"status\": \"active\",\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"updatedAt\": \"2019-08-24T14:15:22Z\"\n  }\n]"
                   }
@@ -104,80 +104,77 @@
           {
             "title": "200",
             "description": "A JSON array of users",
-            "properties": [
-              {
-                "name": "id",
-                "type": "integer",
-                "description": "",
-                "properties": [],
-                "meta": [
-                  {
-                    "name": "required",
-                    "value": "true"
-                  }
-                ]
-              },
-              {
-                "name": "username",
-                "type": "string",
-                "description": "",
-                "properties": [],
-                "meta": [
-                  {
-                    "name": "required",
-                    "value": "true"
-                  }
-                ]
-              },
-              {
-                "name": "email",
-                "type": "string",
-                "description": "",
-                "properties": [],
-                "meta": []
-              },
-              {
-                "name": "status",
-                "type": "string",
-                "description": "",
-                "properties": [
-                  {
-                    "name": "active",
-                    "type": "string",
-                    "description": "",
-                    "properties": [],
-                    "meta": []
-                  },
-                  {
-                    "name": "inactive",
-                    "type": "string",
-                    "description": "",
-                    "properties": [],
-                    "meta": []
-                  }
-                ],
-                "meta": [
-                  {
-                    "name": "enum",
-                    "value": "true"
-                  }
-                ]
-              },
-              {
-                "name": "createdAt",
-                "type": "string",
-                "description": "",
-                "properties": [],
-                "meta": []
-              },
-              {
-                "name": "updatedAt",
-                "type": "string",
-                "description": "",
-                "properties": [],
-                "meta": []
-              }
-            ],
+            "properties": [],
+            "rootProperty": {
+              "type": "$$array",
+              "properties": [
+                {
+                  "name": "id",
+                  "type": "integer",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "username",
+                  "type": "string",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "email",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "status",
+                  "type": "$$enum",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "enum-type",
+                      "value": "string"
+                    }
+                  ],
+                  "properties": [
+                    {
+                      "name": "active",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    },
+                    {
+                      "name": "inactive",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    }
+                  ]
+                },
+                {
+                  "name": "createdAt",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "updatedAt",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ]
+            },
             "meta": [
               {
                 "name": "status",
@@ -186,11 +183,12 @@
               {
                 "name": "contentType",
                 "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
               }
-            ],
-            "typeDef": {
-              "symbolId": "#/components/schemas/User"
-            }
+            ]
           }
         ],
         "properties": []
@@ -223,22 +221,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request POST \\\n     --url http://api.example.com/v1/users \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"username\": \"string\",\n  \"email\": \"user@example.com\",\n  \"status\": \"active\"\n}\n'"
+                    "code": "curl --request POST \\\n     --url http://api.example.com/v1/users"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {\n  method: 'POST',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({username: 'string', email: 'user@example.com', status: 'active'})\n};\n\nfetch('http://api.example.com/v1/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'POST'};\n\nfetch('http://api.example.com/v1/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users\"\n\npayload = {\n    \"username\": \"string\",\n    \"email\": \"user@example.com\",\n    \"status\": \"active\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users\"\n\nresponse = requests.post(url)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users\"\n\n\tpayload := strings.NewReader(\"{\\\"username\\\":\\\"string\\\",\\\"email\\\":\\\"user@example.com\\\",\\\"status\\\":\\\"active\\\"}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -253,7 +251,7 @@
                 "title": "201",
                 "tabs": [
                   {
-                    "title": "json",
+                    "title": "application/json",
                     "language": "json",
                     "code": "{\n  \"id\": 0,\n  \"username\": \"string\",\n  \"email\": \"user@example.com\",\n  \"status\": \"active\",\n  \"createdAt\": \"2019-08-24T14:15:22Z\",\n  \"updatedAt\": \"2019-08-24T14:15:22Z\"\n}"
                   }
@@ -267,64 +265,73 @@
     "definitions": [
       {
         "title": "Request body",
-        "properties": [
+        "variants": [
           {
-            "name": "username",
-            "type": "string",
-            "description": "",
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ]
-          },
-          {
-            "name": "email",
-            "type": "string",
-            "description": "",
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ]
-          },
-          {
-            "name": "status",
-            "type": "string",
+            "title": "application/json",
             "description": "",
             "properties": [
               {
-                "name": "active",
+                "name": "username",
                 "type": "string",
                 "description": "",
-                "properties": [],
-                "meta": []
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
               },
               {
-                "name": "inactive",
+                "name": "email",
                 "type": "string",
                 "description": "",
-                "properties": [],
-                "meta": []
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "status",
+                "type": "$$enum",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "enum-type",
+                    "value": "string"
+                  }
+                ],
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "string",
+                    "description": "",
+                    "meta": []
+                  },
+                  {
+                    "name": "inactive",
+                    "type": "string",
+                    "description": "",
+                    "meta": []
+                  }
+                ]
               }
             ],
             "meta": [
               {
-                "name": "enum",
+                "name": "contentType",
+                "value": "application/json"
+              },
+              {
+                "name": "required",
                 "value": "true"
               }
             ]
           }
         ],
+        "properties": [],
         "meta": [
-          {
-            "name": "contentType",
-            "value": "application/json"
-          },
           {
             "name": "required",
             "value": "true"
@@ -342,7 +349,6 @@
                 "name": "id",
                 "type": "integer",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -354,7 +360,6 @@
                 "name": "username",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -366,33 +371,30 @@
                 "name": "email",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               },
               {
                 "name": "status",
-                "type": "string",
+                "type": "$$enum",
                 "description": "",
+                "meta": [
+                  {
+                    "name": "enum-type",
+                    "value": "string"
+                  }
+                ],
                 "properties": [
                   {
                     "name": "active",
                     "type": "string",
                     "description": "",
-                    "properties": [],
                     "meta": []
                   },
                   {
                     "name": "inactive",
                     "type": "string",
                     "description": "",
-                    "properties": [],
                     "meta": []
-                  }
-                ],
-                "meta": [
-                  {
-                    "name": "enum",
-                    "value": "true"
                   }
                 ]
               },
@@ -400,14 +402,12 @@
                 "name": "createdAt",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               },
               {
                 "name": "updatedAt",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               }
             ],
@@ -419,11 +419,12 @@
               {
                 "name": "contentType",
                 "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
               }
-            ],
-            "typeDef": {
-              "symbolId": "#/components/schemas/User"
-            }
+            ]
           }
         ],
         "properties": []
@@ -456,22 +457,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users/userId \\\n     --header 'accept: application/json'"
+                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users/userId"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('http://api.example.com/v1/users/userId', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'GET'};\n\nfetch('http://api.example.com/v1/users/userId', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId\"\n\nheaders = {\"accept\": \"application/json\"}\n\nresponse = requests.get(url, headers=headers)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId\"\n\nresponse = requests.get(url)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -486,7 +487,7 @@
                 "title": "200",
                 "tabs": [
                   {
-                    "title": "json",
+                    "title": "application/json",
                     "language": "json",
                     "code": "{\n  \"id\": 0,\n  \"username\": \"string\",\n  \"email\": \"user@example.com\",\n  \"status\": \"active\",\n  \"createdAt\": \"2019-08-24T14:15:22Z\",\n  \"updatedAt\": \"2019-08-24T14:15:22Z\"\n}"
                   }
@@ -509,7 +510,6 @@
                 "name": "id",
                 "type": "integer",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -521,7 +521,6 @@
                 "name": "username",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -533,33 +532,30 @@
                 "name": "email",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               },
               {
                 "name": "status",
-                "type": "string",
+                "type": "$$enum",
                 "description": "",
+                "meta": [
+                  {
+                    "name": "enum-type",
+                    "value": "string"
+                  }
+                ],
                 "properties": [
                   {
                     "name": "active",
                     "type": "string",
                     "description": "",
-                    "properties": [],
                     "meta": []
                   },
                   {
                     "name": "inactive",
                     "type": "string",
                     "description": "",
-                    "properties": [],
                     "meta": []
-                  }
-                ],
-                "meta": [
-                  {
-                    "name": "enum",
-                    "value": "true"
                   }
                 ]
               },
@@ -567,14 +563,12 @@
                 "name": "createdAt",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               },
               {
                 "name": "updatedAt",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               }
             ],
@@ -586,11 +580,23 @@
               {
                 "name": "contentType",
                 "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
               }
-            ],
-            "typeDef": {
-              "symbolId": "#/components/schemas/User"
-            }
+            ]
+          },
+          {
+            "title": "404",
+            "description": "User not found",
+            "properties": [],
+            "meta": [
+              {
+                "name": "status",
+                "value": "404"
+              }
+            ]
           }
         ],
         "properties": []
@@ -623,22 +629,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request PUT \\\n     --url http://api.example.com/v1/users/userId \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"username\": \"string\",\n  \"email\": \"user@example.com\",\n  \"status\": \"active\"\n}\n'"
+                    "code": "curl --request PUT \\\n     --url http://api.example.com/v1/users/userId"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({username: 'string', email: 'user@example.com', status: 'active'})\n};\n\nfetch('http://api.example.com/v1/users/userId', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'PUT'};\n\nfetch('http://api.example.com/v1/users/userId', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId\"\n\npayload = {\n    \"username\": \"string\",\n    \"email\": \"user@example.com\",\n    \"status\": \"active\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId\"\n\nresponse = requests.put(url)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId\"\n\n\tpayload := strings.NewReader(\"{\\\"username\\\":\\\"string\\\",\\\"email\\\":\\\"user@example.com\\\",\\\"status\\\":\\\"active\\\"}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId\"\n\n\treq, _ := http.NewRequest(\"PUT\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -653,7 +659,7 @@
                 "title": "200",
                 "tabs": [
                   {
-                    "title": "json",
+                    "title": "application/json",
                     "language": "json",
                     "code": "{\n  \"id\": 0,\n  \"username\": \"string\",\n  \"email\": \"user@example.com\",\n  \"status\": \"active\",\n  \"createdAt\": \"2019-08-24T14:15:22Z\",\n  \"updatedAt\": \"2019-08-24T14:15:22Z\"\n}"
                   }
@@ -667,64 +673,73 @@
     "definitions": [
       {
         "title": "Request body",
-        "properties": [
+        "variants": [
           {
-            "name": "username",
-            "type": "string",
-            "description": "",
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ]
-          },
-          {
-            "name": "email",
-            "type": "string",
-            "description": "",
-            "properties": [],
-            "meta": [
-              {
-                "name": "required",
-                "value": "true"
-              }
-            ]
-          },
-          {
-            "name": "status",
-            "type": "string",
+            "title": "application/json",
             "description": "",
             "properties": [
               {
-                "name": "active",
+                "name": "username",
                 "type": "string",
                 "description": "",
-                "properties": [],
-                "meta": []
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
               },
               {
-                "name": "inactive",
+                "name": "email",
                 "type": "string",
                 "description": "",
-                "properties": [],
-                "meta": []
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "status",
+                "type": "$$enum",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "enum-type",
+                    "value": "string"
+                  }
+                ],
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "string",
+                    "description": "",
+                    "meta": []
+                  },
+                  {
+                    "name": "inactive",
+                    "type": "string",
+                    "description": "",
+                    "meta": []
+                  }
+                ]
               }
             ],
             "meta": [
               {
-                "name": "enum",
+                "name": "contentType",
+                "value": "application/json"
+              },
+              {
+                "name": "required",
                 "value": "true"
               }
             ]
           }
         ],
+        "properties": [],
         "meta": [
-          {
-            "name": "contentType",
-            "value": "application/json"
-          },
           {
             "name": "required",
             "value": "true"
@@ -742,7 +757,6 @@
                 "name": "id",
                 "type": "integer",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -754,7 +768,6 @@
                 "name": "username",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -766,33 +779,30 @@
                 "name": "email",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               },
               {
                 "name": "status",
-                "type": "string",
+                "type": "$$enum",
                 "description": "",
+                "meta": [
+                  {
+                    "name": "enum-type",
+                    "value": "string"
+                  }
+                ],
                 "properties": [
                   {
                     "name": "active",
                     "type": "string",
                     "description": "",
-                    "properties": [],
                     "meta": []
                   },
                   {
                     "name": "inactive",
                     "type": "string",
                     "description": "",
-                    "properties": [],
                     "meta": []
-                  }
-                ],
-                "meta": [
-                  {
-                    "name": "enum",
-                    "value": "true"
                   }
                 ]
               },
@@ -800,14 +810,12 @@
                 "name": "createdAt",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               },
               {
                 "name": "updatedAt",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               }
             ],
@@ -819,11 +827,12 @@
               {
                 "name": "contentType",
                 "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
               }
-            ],
-            "typeDef": {
-              "symbolId": "#/components/schemas/User"
-            }
+            ]
           }
         ],
         "properties": []
@@ -856,22 +865,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request PATCH \\\n     --url http://api.example.com/v1/users/userId \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"username\": \"string\",\n  \"email\": \"user@example.com\",\n  \"status\": \"active\"\n}\n'"
+                    "code": "curl --request PATCH \\\n     --url http://api.example.com/v1/users/userId"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {\n  method: 'PATCH',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({username: 'string', email: 'user@example.com', status: 'active'})\n};\n\nfetch('http://api.example.com/v1/users/userId', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'PATCH'};\n\nfetch('http://api.example.com/v1/users/userId', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId\"\n\npayload = {\n    \"username\": \"string\",\n    \"email\": \"user@example.com\",\n    \"status\": \"active\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.patch(url, json=payload, headers=headers)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId\"\n\nresponse = requests.patch(url)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId\"\n\n\tpayload := strings.NewReader(\"{\\\"username\\\":\\\"string\\\",\\\"email\\\":\\\"user@example.com\\\",\\\"status\\\":\\\"active\\\"}\")\n\n\treq, _ := http.NewRequest(\"PATCH\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId\"\n\n\treq, _ := http.NewRequest(\"PATCH\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -886,7 +895,7 @@
                 "title": "200",
                 "tabs": [
                   {
-                    "title": "json",
+                    "title": "application/json",
                     "language": "json",
                     "code": "{\n  \"id\": 0,\n  \"username\": \"string\",\n  \"email\": \"user@example.com\",\n  \"status\": \"active\",\n  \"createdAt\": \"2019-08-24T14:15:22Z\",\n  \"updatedAt\": \"2019-08-24T14:15:22Z\"\n}"
                   }
@@ -900,54 +909,59 @@
     "definitions": [
       {
         "title": "Request body",
-        "properties": [
+        "variants": [
           {
-            "name": "username",
-            "type": "string",
-            "description": "",
-            "properties": [],
-            "meta": []
-          },
-          {
-            "name": "email",
-            "type": "string",
-            "description": "",
-            "properties": [],
-            "meta": []
-          },
-          {
-            "name": "status",
-            "type": "string",
+            "title": "application/json",
             "description": "",
             "properties": [
               {
-                "name": "active",
+                "name": "username",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               },
               {
-                "name": "inactive",
+                "name": "email",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
+              },
+              {
+                "name": "status",
+                "type": "$$enum",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "enum-type",
+                    "value": "string"
+                  }
+                ],
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "string",
+                    "description": "",
+                    "meta": []
+                  },
+                  {
+                    "name": "inactive",
+                    "type": "string",
+                    "description": "",
+                    "meta": []
+                  }
+                ]
               }
             ],
             "meta": [
               {
-                "name": "enum",
-                "value": "true"
+                "name": "contentType",
+                "value": "application/json"
               }
             ]
           }
         ],
+        "properties": [],
         "meta": [
-          {
-            "name": "contentType",
-            "value": "application/json"
-          },
           {
             "name": "required",
             "value": "true"
@@ -965,7 +979,6 @@
                 "name": "id",
                 "type": "integer",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -977,7 +990,6 @@
                 "name": "username",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -989,33 +1001,30 @@
                 "name": "email",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               },
               {
                 "name": "status",
-                "type": "string",
+                "type": "$$enum",
                 "description": "",
+                "meta": [
+                  {
+                    "name": "enum-type",
+                    "value": "string"
+                  }
+                ],
                 "properties": [
                   {
                     "name": "active",
                     "type": "string",
                     "description": "",
-                    "properties": [],
                     "meta": []
                   },
                   {
                     "name": "inactive",
                     "type": "string",
                     "description": "",
-                    "properties": [],
                     "meta": []
-                  }
-                ],
-                "meta": [
-                  {
-                    "name": "enum",
-                    "value": "true"
                   }
                 ]
               },
@@ -1023,14 +1032,12 @@
                 "name": "createdAt",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               },
               {
                 "name": "updatedAt",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               }
             ],
@@ -1042,11 +1049,12 @@
               {
                 "name": "contentType",
                 "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
               }
-            ],
-            "typeDef": {
-              "symbolId": "#/components/schemas/User"
-            }
+            ]
           }
         ],
         "properties": []
@@ -1106,7 +1114,19 @@
     "definitions": [
       {
         "title": "Response",
-        "variants": [],
+        "variants": [
+          {
+            "title": "204",
+            "description": "User deleted successfully",
+            "properties": [],
+            "meta": [
+              {
+                "name": "status",
+                "value": "204"
+              }
+            ]
+          }
+        ],
         "properties": []
       }
     ]
@@ -1137,22 +1157,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users/userId/posts \\\n     --header 'accept: application/json'"
+                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users/userId/posts"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('http://api.example.com/v1/users/userId/posts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'GET'};\n\nfetch('http://api.example.com/v1/users/userId/posts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId/posts\"\n\nheaders = {\"accept\": \"application/json\"}\n\nresponse = requests.get(url, headers=headers)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId/posts\"\n\nresponse = requests.get(url)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId/posts\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId/posts\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -1167,7 +1187,7 @@
                 "title": "200",
                 "tabs": [
                   {
-                    "title": "json",
+                    "title": "application/json",
                     "language": "json",
                     "code": "[\n  {\n    \"id\": 0,\n    \"title\": \"string\",\n    \"content\": \"string\",\n    \"userId\": 0,\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"updatedAt\": \"2019-08-24T14:15:22Z\"\n  }\n]"
                   }
@@ -1185,70 +1205,68 @@
           {
             "title": "200",
             "description": "List of user's posts",
-            "properties": [
-              {
-                "name": "id",
-                "type": "integer",
-                "description": "",
-                "properties": [],
-                "meta": [
-                  {
-                    "name": "required",
-                    "value": "true"
-                  }
-                ]
-              },
-              {
-                "name": "title",
-                "type": "string",
-                "description": "",
-                "properties": [],
-                "meta": [
-                  {
-                    "name": "required",
-                    "value": "true"
-                  }
-                ]
-              },
-              {
-                "name": "content",
-                "type": "string",
-                "description": "",
-                "properties": [],
-                "meta": [
-                  {
-                    "name": "required",
-                    "value": "true"
-                  }
-                ]
-              },
-              {
-                "name": "userId",
-                "type": "integer",
-                "description": "",
-                "properties": [],
-                "meta": [
-                  {
-                    "name": "required",
-                    "value": "true"
-                  }
-                ]
-              },
-              {
-                "name": "createdAt",
-                "type": "string",
-                "description": "",
-                "properties": [],
-                "meta": []
-              },
-              {
-                "name": "updatedAt",
-                "type": "string",
-                "description": "",
-                "properties": [],
-                "meta": []
-              }
-            ],
+            "properties": [],
+            "rootProperty": {
+              "type": "$$array",
+              "properties": [
+                {
+                  "name": "id",
+                  "type": "integer",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "title",
+                  "type": "string",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "content",
+                  "type": "string",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "userId",
+                  "type": "integer",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "createdAt",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "updatedAt",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ]
+            },
             "meta": [
               {
                 "name": "status",
@@ -1257,11 +1275,12 @@
               {
                 "name": "contentType",
                 "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
               }
-            ],
-            "typeDef": {
-              "symbolId": "#/components/schemas/Post"
-            }
+            ]
           }
         ],
         "properties": []
@@ -1294,22 +1313,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request POST \\\n     --url http://api.example.com/v1/users/userId/posts \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"title\": \"string\",\n  \"content\": \"string\"\n}\n'"
+                    "code": "curl --request POST \\\n     --url http://api.example.com/v1/users/userId/posts"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {\n  method: 'POST',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({title: 'string', content: 'string'})\n};\n\nfetch('http://api.example.com/v1/users/userId/posts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'POST'};\n\nfetch('http://api.example.com/v1/users/userId/posts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId/posts\"\n\npayload = {\n    \"title\": \"string\",\n    \"content\": \"string\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId/posts\"\n\nresponse = requests.post(url)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId/posts\"\n\n\tpayload := strings.NewReader(\"{\\\"title\\\":\\\"string\\\",\\\"content\\\":\\\"string\\\"}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId/posts\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -1324,7 +1343,7 @@
                 "title": "201",
                 "tabs": [
                   {
-                    "title": "json",
+                    "title": "application/json",
                     "language": "json",
                     "code": "{\n  \"id\": 0,\n  \"title\": \"string\",\n  \"content\": \"string\",\n  \"userId\": 0,\n  \"createdAt\": \"2019-08-24T14:15:22Z\",\n  \"updatedAt\": \"2019-08-24T14:15:22Z\"\n}"
                   }
@@ -1338,25 +1357,39 @@
     "definitions": [
       {
         "title": "Request body",
-        "properties": [
+        "variants": [
           {
-            "name": "title",
-            "type": "string",
+            "title": "application/json",
             "description": "",
-            "properties": [],
+            "properties": [
+              {
+                "name": "title",
+                "type": "string",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "content",
+                "type": "string",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              }
+            ],
             "meta": [
               {
-                "name": "required",
-                "value": "true"
-              }
-            ]
-          },
-          {
-            "name": "content",
-            "type": "string",
-            "description": "",
-            "properties": [],
-            "meta": [
+                "name": "contentType",
+                "value": "application/json"
+              },
               {
                 "name": "required",
                 "value": "true"
@@ -1364,11 +1397,8 @@
             ]
           }
         ],
+        "properties": [],
         "meta": [
-          {
-            "name": "contentType",
-            "value": "application/json"
-          },
           {
             "name": "required",
             "value": "true"
@@ -1386,7 +1416,6 @@
                 "name": "id",
                 "type": "integer",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -1398,7 +1427,6 @@
                 "name": "title",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -1410,7 +1438,6 @@
                 "name": "content",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -1422,7 +1449,6 @@
                 "name": "userId",
                 "type": "integer",
                 "description": "",
-                "properties": [],
                 "meta": [
                   {
                     "name": "required",
@@ -1434,14 +1460,12 @@
                 "name": "createdAt",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               },
               {
                 "name": "updatedAt",
                 "type": "string",
                 "description": "",
-                "properties": [],
                 "meta": []
               }
             ],
@@ -1453,11 +1477,12 @@
               {
                 "name": "contentType",
                 "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
               }
-            ],
-            "typeDef": {
-              "symbolId": "#/components/schemas/Post"
-            }
+            ]
           }
         ],
         "properties": []
@@ -1502,9 +1527,28 @@
           },
           {
             "name": "status",
-            "type": "string",
+            "type": "$$enum",
             "description": "",
-            "meta": []
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "string"
+              }
+            ],
+            "properties": [
+              {
+                "name": "active",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "inactive",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ]
           },
           {
             "name": "createdAt",
@@ -1519,18 +1563,30 @@
             "meta": []
           }
         ],
-        "meta": [
-          {
-            "name": "contentType",
-            "value": "application/json"
-          }
-        ]
+        "meta": []
       }
     ],
     "examples": {
-      "groups": []
+      "groups": [
+        {
+          "description": "Example",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"id\": 0,\n  \"username\": \"\",\n  \"email\": \"\",\n  \"status\": \"\",\n  \"createdAt\": \"\",\n  \"updatedAt\": \"\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
     },
-    "type": "graphql_object",
+    "type": "rest_component_schema",
     "context": {
       "componentSchema": "User",
       "group": [
@@ -1570,23 +1626,54 @@
           },
           {
             "name": "status",
-            "type": "string",
+            "type": "$$enum",
             "description": "",
-            "meta": []
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "string"
+              }
+            ],
+            "properties": [
+              {
+                "name": "active",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "inactive",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ]
           }
         ],
-        "meta": [
-          {
-            "name": "contentType",
-            "value": "application/json"
-          }
-        ]
+        "meta": []
       }
     ],
     "examples": {
-      "groups": []
+      "groups": [
+        {
+          "description": "Example",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"username\": \"\",\n  \"email\": \"\",\n  \"status\": \"\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
     },
-    "type": "graphql_object",
+    "type": "rest_component_schema",
     "context": {
       "componentSchema": "UserInput",
       "group": [
@@ -1616,23 +1703,54 @@
           },
           {
             "name": "status",
-            "type": "string",
+            "type": "$$enum",
             "description": "",
-            "meta": []
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "string"
+              }
+            ],
+            "properties": [
+              {
+                "name": "active",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "inactive",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ]
           }
         ],
-        "meta": [
-          {
-            "name": "contentType",
-            "value": "application/json"
-          }
-        ]
+        "meta": []
       }
     ],
     "examples": {
-      "groups": []
+      "groups": [
+        {
+          "description": "Example",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"username\": \"\",\n  \"email\": \"\",\n  \"status\": \"\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
     },
-    "type": "graphql_object",
+    "type": "rest_component_schema",
     "context": {
       "componentSchema": "UserUpdate",
       "group": [
@@ -1705,18 +1823,30 @@
             "meta": []
           }
         ],
-        "meta": [
-          {
-            "name": "contentType",
-            "value": "application/json"
-          }
-        ]
+        "meta": []
       }
     ],
     "examples": {
-      "groups": []
+      "groups": [
+        {
+          "description": "Example",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"id\": 0,\n  \"title\": \"\",\n  \"content\": \"\",\n  \"userId\": 0,\n  \"createdAt\": \"\",\n  \"updatedAt\": \"\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
     },
-    "type": "graphql_object",
+    "type": "rest_component_schema",
     "context": {
       "componentSchema": "Post",
       "group": [
@@ -1755,18 +1885,30 @@
             ]
           }
         ],
-        "meta": [
-          {
-            "name": "contentType",
-            "value": "application/json"
-          }
-        ]
+        "meta": []
       }
     ],
     "examples": {
-      "groups": []
+      "groups": [
+        {
+          "description": "Example",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"title\": \"\",\n  \"content\": \"\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
     },
-    "type": "graphql_object",
+    "type": "rest_component_schema",
     "context": {
       "componentSchema": "PostInput",
       "group": [

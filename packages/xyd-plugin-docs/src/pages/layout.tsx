@@ -1,4 +1,4 @@
-import {useMemo} from "react";
+import { useMemo } from "react";
 import {
     Outlet,
     useLoaderData,
@@ -8,24 +8,24 @@ import {
     useMatches
 } from "react-router";
 
-import {mapSettingsToProps} from "@xyd-js/framework/hydration";
+import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 
-import type {Metadata, MetadataMap, Theme as ThemeSettings} from "@xyd-js/core";
-import type {INavLinks, IBreadcrumb} from "@xyd-js/ui";
-import {Framework, FwLink, useSettings, type FwSidebarGroupProps} from "@xyd-js/framework/react";
-import {ReactContent} from "@xyd-js/components/content";
-import {Atlas, AtlasContext, type VariantToggleConfig} from "@xyd-js/atlas";
+import type { Metadata, MetadataMap, Theme as ThemeSettings } from "@xyd-js/core";
+import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
+import { Framework, FwLink, useSettings, type FwSidebarGroupProps } from "@xyd-js/framework/react";
+import { ReactContent } from "@xyd-js/components/content";
+import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
 import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
 
-import {Surfaces} from "@xyd-js/framework/react";
-import {Composer} from "@xyd-js/composer";
+import { Surfaces } from "@xyd-js/framework/react";
+import { Composer } from "@xyd-js/composer";
 // @ts-ignore
-import {iconSet} from 'virtual:xyd-icon-set';
+import { iconSet } from 'virtual:xyd-icon-set';
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
 // @ts-ignore
-const {settings: getSettings} = virtualSettings
+const { settings: getSettings } = virtualSettings
 // const settings = globalThis.__xydSettings
 import Theme from "virtual:xyd-theme";
 
@@ -33,11 +33,12 @@ import Theme from "virtual:xyd-theme";
 import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
 
-import {PageContext} from "./context";
+import { PageContext } from "./context";
 import React from "react";
-import {markdownPlugins} from "@xyd-js/content/md";
-import {ContentFS} from "@xyd-js/content";
-import {IconProvider} from "@xyd-js/components/writer";
+import { markdownPlugins } from "@xyd-js/content/md";
+import { ContentFS } from "@xyd-js/content";
+import { IconProvider } from "@xyd-js/components/writer";
+import { CoderProvider } from "@xyd-js/components/coder";
 
 globalThis.__xydSettings = getSettings
 
@@ -70,7 +71,7 @@ globalThis.__xydSurfaces = surfaces
 
 const theme = new Theme()
 
-const {Layout: BaseThemeLayout} = theme
+const { Layout: BaseThemeLayout } = theme
 
 interface LoaderData {
     sidebarGroups: FwSidebarGroupProps[]
@@ -82,7 +83,7 @@ interface LoaderData {
     bannerContentCode?: string
 }
 
-export async function loader({request}: { request: any }) {
+export async function loader({ request }: { request: any }) {
     const slug = getPathname(request.url || "index") || "index"
 
     const {
@@ -130,23 +131,23 @@ export default function Layout() {
     // TODO: BETTER HANDLE THAT
     if (loaderData.metadata?.openapi) {
         atlasVariantToggles = [
-            {key: "status", defaultValue: "200"},
-            {key: "contentType", defaultValue: "application/json"}
+            { key: "status", defaultValue: "200" },
+            { key: "contentType", defaultValue: "application/json" }
         ];
     } else {
         atlasVariantToggles = [
-            {key: "symbolName", defaultValue: ""}
+            { key: "symbolName", defaultValue: "" }
         ];
     }
 
-    let BannerComponent: any = null
+    let bannerContent: any = null
     // TODO: !!!! BETTER API !!!!
     if (loaderData.bannerContentCode) {
-        const bannerContent = mdxContent(loaderData.bannerContentCode)
-        const BannerContent = MemoMDXComponent(bannerContent.component)
+        const content = mdxContent(loaderData.bannerContentCode)
+        const BannerContent = MemoMDXComponent(content.component)
 
-        BannerComponent = function () {
-            return <BannerContent components={theme.reactContentComponents()}/>
+        bannerContent = function () {
+            return <BannerContent components={theme.reactContentComponents()} />
         }
     }
 
@@ -159,20 +160,22 @@ export default function Layout() {
                 sidebarGroups={loaderData.sidebarGroups || []}
                 metadata={loaderData.metadata || {}}
                 surfaces={surfaces}
-                BannerComponent={BannerComponent}
+                BannerContent={bannerContent}
             >
                 <AtlasContext
                     value={{
-                        syntaxHighlight: settings?.theme?.markdown?.syntaxHighlight || null,
+                        syntaxHighlight: settings?.theme?.coder?.syntaxHighlight || null,
                         baseMatch: lastMatchId || "",
                         variantToggles: atlasVariantToggles
                     }}
                 >
-                    <BaseThemeLayout>
-                        <PageContext value={{theme}}>
-                            <Outlet/>
-                        </PageContext>
-                    </BaseThemeLayout>
+                    <CoderProvider lines={settings?.theme?.coder?.lines} scroll={settings?.theme?.coder?.scroll}>
+                        <BaseThemeLayout>
+                            <PageContext value={{ theme }}>
+                                <Outlet />
+                            </PageContext>
+                        </BaseThemeLayout>
+                    </CoderProvider>
                 </AtlasContext>
             </Framework>
         </IconProvider>
@@ -218,7 +221,7 @@ const createElementWithKeys = (type: any, props: any) => {
         return childrenArray.map((child, index) => {
             // If the child is a React element and doesn't have a key, add one
             if (React.isValidElement(child) && !child.key) {
-                return React.cloneElement(child, {key: `mdx-${index}`});
+                return React.cloneElement(child, { key: `mdx-${index}` });
             }
             // If the child is an array, process it recursively
             if (Array.isArray(child)) {
@@ -236,7 +239,7 @@ const createElementWithKeys = (type: any, props: any) => {
             processedChildren = processChildren(props.children);
         } else if (React.isValidElement(props.children) && !props.children.key) {
             // Single child without key
-            processedChildren = React.cloneElement(props.children, {key: 'mdx-child'});
+            processedChildren = React.cloneElement(props.children, { key: 'mdx-child' });
         } else {
             // Single child with key or non-React element
             processedChildren = props.children;

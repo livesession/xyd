@@ -28,7 +28,7 @@ You can use our CLI to convert your existing documentation to xyd:
 Alternatively you can use web scraper tool to convert your documentation by providing an URL to your docs.
 
 :::callout
-Don't see your docs framework or have a home grown system? We can still help! Please [contact us](https://github.com/livesession/xyd).
+Don't see your docs framework or have a home grown system? [Contact us](https://github.com/livesession/xyd).
 :::
 
 ## Commands

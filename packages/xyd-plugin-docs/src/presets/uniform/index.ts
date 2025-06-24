@@ -408,9 +408,9 @@ async function uniformResolver(
             sidebar: [
                 {
                     route: matchRoute,
-                    items: uniformWithNavigation.out.sidebar
+                    pages: uniformWithNavigation.out.sidebar
                 }
-            ],
+            ] as SidebarRoute[],
             data: uniformData.data
         }
     }

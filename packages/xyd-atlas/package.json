@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/atlas",
-  "version": "0.1.0-xyd.16",
+  "version": "0.1.0-xyd.18",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

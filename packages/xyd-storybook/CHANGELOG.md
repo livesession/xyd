@@ -1,5 +1,29 @@
 # @xyd-js/storybook
 
+## 0.0.1-xyd.12
+
+### Patch Changes
+
+- test
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.18
+  - @xyd-js/components@0.1.0-xyd.13
+  - @xyd-js/content@0.1.0-xyd.16
+  - @xyd-js/theme-poetry@0.1.0-xyd.29
+  - @xyd-js/ui@0.1.0-xyd.18
+
+## 0.0.1-xyd.11
+
+### Patch Changes
+
+- update packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.17
+  - @xyd-js/components@0.1.0-xyd.12
+  - @xyd-js/content@0.1.0-xyd.15
+  - @xyd-js/theme-poetry@0.1.0-xyd.28
+  - @xyd-js/ui@0.1.0-xyd.17
+
 ## 0.0.1-xyd.10
 
 ### Patch Changes

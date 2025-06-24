@@ -52,8 +52,7 @@ export function Toc({ children, defaultValue, className, maxDepth = 2 }: TocProp
   }, [])
 
   function getScrollElement(): HTMLElement | Window {
-    const el = document.querySelector('[part=page-scroll]') as HTMLElement
-    return el || window
+    return window
   }
 
   function trackHeight() {

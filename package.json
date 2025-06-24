@@ -15,11 +15,14 @@
     "build:packages": "pnpm run --filter=\"./packages/*\" build",
     "build:website": "pnpm run --filter=\"./apps/website\" build",
     "clean": "./clear.sh",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.3",
     "@changesets/cli": "^2.28.1",
+    "@playwright/test": "^1.53.1",
     "@types/node": "20.9.0",
     "@types/react": "^19.0.0",
     "husky": "^9.1.6",

@@ -179,7 +179,7 @@ While the generator automatically organizes your schema, you can customize the n
 
 Here's an example of how to use the `@doc` directive:
 
-```graphql [lines !scroll descHead="Tip" desc="Check out our GraphQL docs directives [sample](https://github.com/xyd-js/graphql-samples/tree/master/navigation-docs-directive)."]
+```graphql [lines descHead="Tip" desc="Check out our GraphQL docs directives [sample](https://github.com/xyd-js/graphql-samples/tree/master/navigation-docs-directive)."]
 type Query
 type Mutation
 
@@ -248,39 +248,37 @@ You can define scopes in two ways:
 
 1. Directly as string values:
 
-```graphql
-type Query {
-    user(id: ID!): User
-    @doc(
-        scopes: ["user:read"]
-    )
-}
-```
+    ```graphql
+    type Query {
+        user(id: ID!): User
+        @doc(
+            scopes: ["user:read"]
+        )
+    }
+    ```
+
 2. Define scopes as enum via `OpenDocsScope`:
 
-```graphql
-extend enum OpenDocsScope {
-    USER_READ @scope(value: "user:read")
+    ```graphql [descHead="CAUTION" desc="This **DO NOT** protect your API, its only for docs purposes."]
+    extend enum OpenDocsScope {
+        USER_READ @scope(value: "user:read")
 
-    USER_WRITE @scope(value: "user:write")
-}
+        USER_WRITE @scope(value: "user:write")
+    }
 
 
-type Mutation {
-    userAdd(input: UserWrite!): User
-    @doc(
-        scopes: [USER_READ, USER_WRITE]
-    )
-}
-```
-:::callout
-This **DO NOT** protect your API, its only for docs purposes.
-:::
+    type Mutation {
+        userAdd(input: UserWrite!): User
+        @doc(
+            scopes: [USER_READ, USER_WRITE]
+        )
+    }
+    ```
 
 ### Sort
 Customize the order in the documentation using the `sort` parameter in the `@docs` directive:
 
-```graphql [!scroll]
+```graphql [!scroll descHead="Info" desc="Default sort order is: <code>query</code>, <code>mutation</code>, <code>subscription</code>, <code>object</code>, <code>interface</code>, <code>union</code>, <code>input</code> and <code>scalar<code/>"]
 extend schema @docs(
     sort: [
         {
@@ -314,12 +312,8 @@ extend schema @docs(
 )
 ```
 
-:::callout
-Default sort order is: `query`,`mutation`, `subscription`, `object`, `interface`, `union`, `input` and `scalar`
-:::
-
 or if you want to sort by groups:
-```graphql
+```graphql [descHead="Important" desc="Please make sure your Queries/Mutations/Subscriptions use <code>extend type</code> syntax, otherwise they will not be grouped correctly."]
 extend schema @docs(
     sort: [
         {
@@ -331,9 +325,6 @@ extend schema @docs(
     ]
 )
 ```
-:::callout
-Please make sure your Queries/Mutations/Subscriptions use `extend type` syntax, otherwise they will not begrouped correctly.
-:::
 
 if you dont want to repeat a sort patterns you can use `sortStack`:
 
@@ -348,7 +339,7 @@ extend schema @docs(
             "stack": 0 
         },
         {
-            "group": ["Todos"],
+            "group": ["Todos"], # + ...
             # if not specified it will get sort #0 automatically
         }
     ]
@@ -366,7 +357,7 @@ extend schema @docs(
     sort: [
         #...
          {
-            "group": ["GraphQL Types"],
+            "group": ["GraphQL Types"] # + ["Scalars", "Objects", "Inputs"],
             # !diff +
             "stack": 1
         }
@@ -375,6 +366,9 @@ extend schema @docs(
 ```
 
 ## API Docs Demo
-You can also check out our [interactive API Docs Demo](http://apidocs-demo.xyd.dev/) to see these features in action and experiment with different OpenAPI configurations in real-time.
+You can also check out our [interactive API Docs Demo](http://apidocs-demo.xyd.dev/) to see these features in action and experiment with different GraphQL configurations in real-time.
+
+## GraphQL Samples
+Learn [how to setup GraphQL pages](#).
 
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import type {Theme as SyntaxHighlight} from "@code-hike/lighter";
+import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
 
 /**
  * Main settings interface for the application
@@ -54,35 +54,20 @@ export interface Theme {
     readonly name: ThemePresetName | (string & {})
 
     /**
+     * The default color scheme to use.
+     */
+    defaultColorScheme?: "light" | "dark" | "os"
+
+    /**
      * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to.
      * SVG format is recommended as it does not pixelate and the file size is generally smaller.
      */
     logo?: string | Logo | React.JSX.Element
 
-
-    /** Markdown configuration for the theme, including options like syntax highlighting */
-    markdown?: Markdown // TOOD: use `coder.syntaxHighlight`
-
     /**
      * Coder configuration for the theme, including options like syntax highlighting.
      */
-    coder?: {
-        /**
-         * If `true` then code blocks will have line numbers.
-         */
-        lines?: boolean
-
-        /**
-         * If `true` then code blocks will have a scrollbar.
-         */
-        scroll?: boolean
-
-        /**
-         * Syntax highlighting configuration.
-         */
-        syntaxHighlight?: SyntaxHighlight
-    }
-
+    coder?: Coder
 
     /**
      * Banner configuration for the theme.
@@ -107,8 +92,27 @@ export interface Theme {
      */
     scripts?: Script[]
 }
-
 // #endregion Theme
+
+/**
+ * Coder configuration for the theme, including options like syntax highlighting.
+ */
+export interface Coder {
+    /**
+     * If `true` then code blocks will have line numbers.
+     */
+    lines?: boolean
+
+    /**
+     * If `true` then code blocks will have a scrollbar.
+     */
+    scroll?: boolean
+
+    /**
+     * Syntax highlighting configuration.
+     */
+    syntaxHighlight?: SyntaxHighlight
+}
 
 /**
  * Configuration type for head elements that can be added to the HTML head.
@@ -120,14 +124,6 @@ export type HeadConfig =
     | [string, Record<string, string | boolean>]
 
 export type Script = string
-
-/**
- * Markdown configuration interface
- */
-export interface Markdown {
-    /** Syntax highlighting configuration */
-    syntaxHighlight?: SyntaxHighlight
-}
 
 /**
  * Logo configuration interface
@@ -151,6 +147,21 @@ export interface Banner {
      * Banner content.
      */
     content: string | React.JSX.Element
+
+    /**
+     * Banner label.
+     */
+    label?: string
+
+    /**
+     * Banner kind.
+     */
+    kind?: "secondary"
+
+    /**
+     * Banner icon.
+     */
+    icon?: string
 }
 
 export interface IconLibrary {

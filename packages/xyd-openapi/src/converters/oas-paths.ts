@@ -21,6 +21,7 @@ import {
     slug
 } from "../utils";
 import {OasJSONSchema} from "../types";
+import path from "node:path";
 
 // oapPathToReference converts an OpenAPI path to a uniform Reference
 export function oapPathToReference(
@@ -48,8 +49,8 @@ export function oapPathToReference(
     const group = [tag]
 
     const endpointRef: Reference = {
-        title: oapMethod?.summary || oapMethod.operationId || "",
-        canonical: oapMethod.operationId || slug(oapMethod?.summary || ""),
+        title: title(oapMethod, httpMethod, path),
+        canonical: canonical(oapMethod, httpMethod, path),
         description: oapMethod?.description || oapMethod?.summary,
         type: mType,
         category: ReferenceCategory.REST,
@@ -303,10 +304,51 @@ function definitionPropertyTypeDef(
     return typeDef
 }
 
+
+function title(
+    oapMethod: OpenAPIV3.OperationObject,
+    httpMethod: string,
+    httpPath: string,
+) {
+    const tit = oapMethod?.summary || oapMethod.operationId || ""
+    if (tit) {
+        return tit
+    }
+
+    if (!httpMethod || !httpPath) {
+        throw new Error("httpMethod and path are required to generate title")
+    }
+
+    return path.join(httpMethod, cleanPath(httpPath))
+}
+
+function canonical(
+    oapMethod: OpenAPIV3.OperationObject,
+    httpMethod: string,
+    httpPath: string,
+) {
+    let canon = oapMethod.operationId || slug(oapMethod?.summary || "")
+
+    if (canon) {
+        return canon
+    }
+
+    if (!httpMethod || !httpPath) {
+        throw new Error("httpMethod and path are required to generate canonical")
+    }
+
+    return path.join(httpMethod, cleanPath(httpPath))
+}
+
 function getFirstTag(oapMethod: OpenAPIV3.OperationObject) {
     for (const tag of oapMethod?.tags || []) {
         return tag
     }
 
     return ""
+}
+
+// Helper function to remove curly braces from path parameters
+function cleanPath(httpPath: string): string {
+    return httpPath.replace(/\{([^}]+)\}/g, '$1')
 }

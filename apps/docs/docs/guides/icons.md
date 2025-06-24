@@ -27,7 +27,7 @@ You can also use multiple icon libraries at once.
 
 Icons(:icon{name="image" size=16}) can be configured in your settings file: 
 
-```json
+```json [!scroll]
 {
   "theme": {
     "icons": {
@@ -53,10 +53,10 @@ Icons(:icon{name="image" size=16}) can be configured in your settings file:
 
 ## Usage
 Icons can be loaded in three places:
-:::steps 
+::::steps 
 
-1. Page meta:
-```md my-page.md
+1. [Page meta](/docs/guides/pages):
+```md my-page.md [descHead="Info" desc="This allows to add icon into sidebar page item."]
 ---
 icon: <icon_prefix>:<icon_name>
 
@@ -64,10 +64,9 @@ icon: <icon_prefix>:<icon_name>
 icon: <icon_name>
 ---
 ```
-this allows to add icon into sidebar page item.
 
-2. Sidebar group:
-```json
+2. [Sidebar group](/docs/guides/routing#groups):
+```json [descHead="Info" desc="This allows to add icon into specified sidebar group. "]
 {
 "group": "Integrations",
 "pages": [
@@ -81,10 +80,10 @@ this allows to add icon into sidebar page item.
 ]
 }
 ```
-this allows to add icon into specified sidebar group. 
 
-3. Page content:
+3. [Page content](/docs/guides/writing-quickstart):
 
+:::code-group
 ```md
 You can use :icon{name="image" size=16} inside your markdown page content too.
 ```
@@ -94,3 +93,5 @@ alternatively inside mdx:
 You can use <Icon name="image" size={16}/> inside your mdx page content too.
 ```
 :::
+
+::::
