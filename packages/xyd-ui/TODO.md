@@ -1,1 +1,1 @@
-rename to `@xyd-js/system-ui` ?
+move to `@xyd-js/components/system` ?

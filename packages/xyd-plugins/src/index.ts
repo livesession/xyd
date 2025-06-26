@@ -1,9 +1,9 @@
-import type { Plugin as Vite } from "vite"
+import type {Plugin as Vite} from "vite"
 import React from "react"
 
-import { type UniformPlugin as Uniform } from "@xyd-js/uniform"
-import { Settings } from "@xyd-js/core"
-import type { SurfaceTarget } from "@xyd-js/framework/react"
+import {type UniformPlugin as Uniform} from "@xyd-js/uniform"
+import {Settings} from "@xyd-js/core"
+import type {SurfaceTarget} from "@xyd-js/framework"
 
 // TODO: share with theme-api ?
 export interface PluginCustomComponents {
@@ -13,7 +13,7 @@ export interface PluginCustomComponents {
 
 /**
  * Plugin interface
- * 
+ *
  * @example
  * ```ts
  * function myPlugin(): Plugin {
@@ -46,7 +46,12 @@ export interface PluginConfig {
     // }
     customComponents?: {
         [name: string]: PluginCustomComponents
-    } 
+    },
+    components?: {
+        component: React.ComponentType<any>,
+        name: string,
+        dist: string
+    }[]
 }
 
 export type Plugin = (settings: Settings) => PluginConfig

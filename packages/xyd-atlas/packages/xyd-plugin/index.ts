@@ -1,6 +1,6 @@
 import { Settings } from "@xyd-js/core"
 import { Plugin } from "@xyd-js/plugins"
-import { SurfaceTarget } from "@xyd-js/framework/react"
+import { SurfaceTarget } from "@xyd-js/framework"
 
 import { SidebarItemRight } from "./SidebarItem"
 
@@ -17,3 +17,4 @@ export default function XydAtlasPlugin(): Plugin {
         }
     }
 }
+

@@ -1,12 +1,12 @@
-import React, { useState, lazy, Suspense, useEffect, useCallback } from "react"
-import { createPortal } from 'react-dom'
-import { create, insertMultiple } from '@orama/orama'
+import React, {useState, lazy, Suspense, useEffect, useCallback} from "react"
+import {createPortal} from 'react-dom'
+import {create, insertMultiple} from '@orama/orama'
 
-const OramaSearchBox = lazy(() => import('@orama/react-components').then(mod => ({ default: mod.OramaSearchBox })));
+import {SearchButton} from "@xyd-js/components/system"
 
-import { SearchButton as XydSearchButton } from "@xyd-js/components/system"
+const OramaSearchBox = lazy(() => import('@orama/react-components').then(mod => ({default: mod.OramaSearchBox})));
 
-export function SearchButton() {
+export default function OramaSearch() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const handleClick = useCallback(() => {
@@ -22,16 +22,15 @@ export function SearchButton() {
     }, [])
 
     return <>
-        <XydSearchButton onClick={handleClick} />
+        <SearchButton onClick={handleClick}/>
 
         <Suspense>
-            <$OramaSearchBoxWrapper isSearchOpen={isSearchOpen} onModalClosed={onModalClosed} />
+            <$OramaSearchBoxWrapper isSearchOpen={isSearchOpen} onModalClosed={onModalClosed}/>
         </Suspense>
     </>
 }
 
-
-function $OramaSearchBoxWrapper({ isSearchOpen, onModalClosed }: { isSearchOpen: boolean, onModalClosed: () => void }) {
+function $OramaSearchBoxWrapper({isSearchOpen, onModalClosed}: { isSearchOpen: boolean, onModalClosed: () => void }) {
     const [oramaLocalClientInstance, setOramaLocalClientInstance] = useState<any>(null);
     const [pluginOptions, setPluginOptions] = useState<any>(null);
 

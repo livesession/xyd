@@ -2,19 +2,9 @@
 
 ## Prerequisites
 
-- Node.js >= 20.17.0
-- pnpm >= 9.0.0
+- Node.js >= 22.12.0
+- pnpm >= 9.9.0
 - Git
-
-## Project Structure
-
-This is a monorepo using pnpm workspaces. The main packages are:
-
-- `@xyd-js/components`: Core UI components library
-- `@xyd-js/ui`: UI package
-- `@xyd-js/gql`: GraphQL related functionality
-- `@xyd-js/uniform`: Uniform integration
-- `@xyd-js/atlas`: Atlas package with Storybook
 
 ## Getting Started
 
@@ -156,6 +146,22 @@ Run dev mode for style packages
 ```
 pnpm run dev:styles
 ```
+
+Instal xyd-js cli from verdaccio
+```
+npm install -g @xyd-js/cli --registry http://localhost:4873
+```
+
+npm cache cleaning
+```
+rm -rf $HOME/.npm/_cacache
+```
+
+local cli installation from verdaccio
+```
+npm install -g @xyd-js/cli --registry http://localhost:4873 
+```
+
 ### Release process
 
 run changeset
@@ -178,9 +184,14 @@ changeset publish
 pnpm changeset publish --otp=<OTP_CODE>
 ```
 
+```
+npm uninstall -g @xyd-js/cli
+```
+
 # changeset verdaccio publish
 ```
 pnpm changeset publish --registry http://localhost:4873
+npm_config_registry=http://localhost:4873 pnpm changeset publish
 ``
 
 deprecate package
@@ -233,11 +244,10 @@ This approach is equivalent to running `xyd dev` but allows for better integrati
 When developing documents, you can use the following environment flags:
 
 - `XYD_DEV_MODE=1`: Enables development mode
-- `XYD_DEV_CLI_NOINSTALL=1`: Skips CLI packages installation after a build
 
 Example with flags:
 ```bash
-XYD_DEV_MODE=1 XYD_DEV_CLI_NOINSTALL=1 pnpm run --filter "./packages/xyd-documan" build
+XYD_DEV_MODE=1 pnpm run --filter "./packages/xyd-documan" build
 ```
 
 Note: This is the recommended approach during development as it:

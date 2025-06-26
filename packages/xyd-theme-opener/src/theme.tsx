@@ -1,15 +1,11 @@
 import React, { } from "react"
 
-import { Text } from "@xyd-js/components/writer"
 import { UISidebar } from "@xyd-js/ui"
 import { BaseTheme } from "@xyd-js/themes"
 import { ContentDecorator } from "@xyd-js/components/content"
-import { FwNavLinks, FwCopyPage, useMetadata } from "@xyd-js/framework/react"
+import { FwNavLinks, FwCopyPage, useMetadata, useComponents } from "@xyd-js/framework/react"
 
 import { useContentComponent } from "@xyd-js/framework/react";
-
-// @ts-ignore
-import { SearchButton } from 'virtual-component:Search'
 
 import "./imports.css"
 
@@ -92,9 +88,16 @@ function isDefaultContent(meta: Metadata) {
 }
 
 function _Search() {
+    const components = useComponents()
+
+    const SearchComponent = components?.Search
+    if (!SearchComponent) {
+        return null
+    }
+
     return <>
         <UISidebar.Item button anchor>
-            <SearchButton />
+            <SearchComponent />
         </UISidebar.Item>
     </>
 }

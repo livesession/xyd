@@ -2,11 +2,9 @@ import React from "react"
 
 import {Hr, Heading} from "@xyd-js/components/writer"
 import {UISidebar} from "@xyd-js/ui"
-import {FwLogo, FwNav, SurfaceTarget} from "@xyd-js/framework/react"
+import {FwLogo, FwNav, useComponents} from "@xyd-js/framework/react"
+import {SurfaceTarget} from "@xyd-js/framework"
 import {BaseTheme} from "@xyd-js/themes"
-
-// @ts-ignore
-import {SearchButton} from 'virtual-component:Search'
 
 import syntaxHighlight from "./syntaxHighlight"
 
@@ -56,6 +54,13 @@ export default class ThemePicasso extends BaseTheme {
 }
 
 function _Search() {
+    const components = useComponents()
+
+    const SearchComponent = components?.Search
+    if (!SearchComponent) {
+        return null
+    }
+
     return <>
         <UISidebar.Item button anchor>
             <a href="/">
@@ -64,7 +69,7 @@ function _Search() {
         </UISidebar.Item>
 
         <UISidebar.Item button anchor>
-            <SearchButton/>
+            <SearchComponent/>
         </UISidebar.Item>
     </>
 }

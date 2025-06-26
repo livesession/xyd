@@ -1,10 +1,7 @@
 import React from "react"
 
-import { Theme as ThemeSettings } from "@xyd-js/core"
 import { BaseTheme } from "@xyd-js/themes"
-
-// @ts-ignore
-import { SearchButton } from 'virtual-component:Search'
+import { useComponents } from "@xyd-js/framework/react"
 
 import { syntaxThemeCosmo } from "./syntaxTheme"
 
@@ -34,7 +31,14 @@ export default class ThemeCosmo extends BaseTheme {
 
 
 function _Search() {
-    return <SearchButton />
+    const components = useComponents()
+
+    const SearchComponent = components?.Search
+    if (!SearchComponent) {
+        return null
+    }
+
+    return <SearchComponent />
 }
 
 

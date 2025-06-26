@@ -3,7 +3,7 @@ import path from 'path';
 import Oas from 'oas';
 import {OpenAPIV3} from "openapi-types";
 import oasToSnippet from '@readme/oas-to-snippet';
-import OpenAPISampler from 'openapi-sampler';
+import { sample } from '@xyd-js/openapi-sampler';
 import type {JSONSchema7} from 'json-schema';
 
 import {
@@ -27,7 +27,7 @@ import {
             return
         }
 
-        const fakeData = OpenAPISampler.sample(schema)
+        const fakeData = sample(schema)
 
         const {code} = oasToSnippet(oas, operation, {
             body: fakeData

@@ -41,23 +41,23 @@ const tests: {
     //     ]
     // }
     //
-    // {
-    //     name: "1.basic",
-    //     description: "Basic OpenAPI API example",
-    // },
-    // {
-    //     name: "2.more",
-    //     description: "More OpenAPI API example",
-    // },
+    {
+        name: "1.basic",
+        description: "Basic OpenAPI API example",
+    },
+    {
+        name: "2.more",
+        description: "More OpenAPI API example",
+    },
     // {
     //     name: "3.multiple-responses",
     //     description: "Multiple responses OpenAPI API example",
     // },
     //
-    {
-        name: "4.abc",
-        description: "abc"
-    },
+    // {
+    //     name: "4.abc",
+    //     description: "abc"
+    // },
 
     // {
     //     name: "5.xdocs.codeLanguages",

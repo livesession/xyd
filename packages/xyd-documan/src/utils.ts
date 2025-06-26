@@ -15,15 +15,11 @@ import type { IconLibrary } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
 
-import hostPackageJson from "../../xyd-host/package.json"
-
 import { BUILD_FOLDER_PATH, CACHE_FOLDER_PATH, HOST_FOLDER_PATH } from "./const";
 import { CLI } from './cli';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const HOST_VERSION = hostPackageJson?.version
 
 export async function appInit(options?: PluginDocsOptions) {
     const readPreloadSettings = await readSettings() // TODO: in the future better solution - currently we load settings twice (pluginDocs and here)
@@ -55,13 +51,18 @@ export async function appInit(options?: PluginDocsOptions) {
     {
         resolvedPlugins = await loadPlugins(preloadSettings) || []
         const userUniformVitePlugins: UniformPlugin<any>[] = []
+        const componentPlugins: any[] = [] // TODO: fix any
 
         resolvedPlugins?.forEach(p => {
             if (p.uniform) {
                 userUniformVitePlugins.push(...p.uniform)
             }
+            if (p.components) {
+                componentPlugins.push(...p.components)
+            }
         })
         globalThis.__xydUserUniformVitePlugins = userUniformVitePlugins
+        globalThis.__xydUserComponents = componentPlugins
     }
 
     const respPluginDocs = await pluginDocs(options)
@@ -86,44 +87,54 @@ export async function appInit(options?: PluginDocsOptions) {
     }
 }
 
-export function virtualComponentsPlugin(): VitePluginOption {
+function virtualComponentsPlugin() {
     return {
         name: 'xyd-plugin-virtual-components',
-        enforce: 'pre',
-        config: () => {
-            const hostPath = getHostPath();
-            const componentsDist = path.resolve(hostPath, "./node_modules/@xyd-js/components/dist");
-            
-            // Check if the components path exists, if not, try alternative paths
-            let resolvedPath = path.resolve(componentsDist, "system.js");
-            
-            if (!fs.existsSync(resolvedPath)) {
-                // Try to find the components in the global CLI installation
-                const globalComponentsPath = path.resolve(__dirname, "../../../node_modules/@xyd-js/components/dist/system.js");
-                if (fs.existsSync(globalComponentsPath)) {
-                    resolvedPath = globalComponentsPath;
-                } else {
-                    // Fallback: try to find it in the current working directory
-                    const cwdComponentsPath = path.resolve(process.cwd(), "node_modules/@xyd-js/components/dist/system.js");
-                    if (fs.existsSync(cwdComponentsPath)) {
-                        resolvedPath = cwdComponentsPath;
-                    } else {
-                        // Last resort: use a relative path that might work
-                        resolvedPath = path.resolve(process.cwd(), ".xyd/host/node_modules/@xyd-js/components/dist/system.js");
-                    }
-                }
+        resolveId(id) {
+            if (id === 'virtual:xyd-user-components') {
+                return id + '.jsx'; // Return the module with .jsx extension
             }
-
-            return {
-                resolve: {
-                    alias: {
-                        // TODO: type-safe virtual-components
-                        'virtual-component:Search': resolvedPath
-                    }
-                }
-            }
+            return null;
         },
-    }
+        async load(id) {
+            if (id === 'virtual:xyd-user-components.jsx') {
+                const userComponents = globalThis.__xydUserComponents || []
+                
+                // If we have components with dist paths, pre-bundle them at build time
+                if (userComponents.length > 0 && userComponents[0]?.dist) {
+                    // Generate imports for all components
+                    const imports = userComponents.map((component, index) => 
+                        `import Component${index} from '${component.dist}';`
+                    ).join('\n');
+                    
+                    // Generate component objects for all components
+                    const componentObjects = userComponents.map((component, index) => 
+                        `{
+                                component: Component${index},
+                                name: '${component.name}',
+                                dist: '${component.dist}'
+                            }`
+                    ).join(',\n                            ');
+                    
+                    // This will be resolved by Vite at build time
+                    return `
+                        // Pre-bundled at build time - no async loading needed
+                        ${imports}
+                        
+                        export const components = [
+                            ${componentObjects}
+                        ];
+                    `
+                }
+                
+                // Fallback to runtime loading
+                return `
+                    export const components = globalThis.__xydUserComponents || {}
+                `
+            }
+            return null;
+        },
+    };
 }
 
 export function virtualProvidersPlugin(
@@ -467,11 +478,6 @@ export async function preWorkspaceSetup(options: {
     const hostTemplate = process.env.XYD_DEV_MODE
         ? path.resolve(__dirname, "../../xyd-host")
         : path.resolve(__dirname, "../../host")
-        // : await downloadPackage("@xyd-js/host", HOST_VERSION)
-
-    // if (hostTemplate instanceof Error) {
-    //     throw hostTemplate
-    // }
 
     const hostPath = getHostPath()
 
@@ -485,29 +491,7 @@ export async function preWorkspaceSetup(options: {
         pluginDocsPath = path.resolve(__dirname, "../../xyd-plugin-docs")
     } else {
         pluginDocsPath = path.resolve(__dirname, "../../plugin-docs")
-
-        // // Get plugin-docs version from host's package.json
-        // const hostPackageJsonPath = path.join(hostPath, 'package.json')
-        // if (fs.existsSync(hostPackageJsonPath)) {
-        //     const hostPackageJson = JSON.parse(fs.readFileSync(hostPackageJsonPath, 'utf-8'))
-        //     const pluginDocsVersion = hostPackageJson.dependencies?.['@xyd-js/plugin-docs']
-
-        //     if (pluginDocsVersion) {
-        //         pluginDocsPath = path.resolve(__dirname, "../node_modules/@xyd-js/plugin-docs")
-        //         // pluginDocsPath = await downloadPackage('@xyd-js/plugin-docs', pluginDocsVersion)
-        //     } else {
-        //         console.warn('No @xyd-js/plugin-docs dependency found in host package.json')
-        //         return
-        //     }
-        // } else {
-        //     console.warn('No host package.json found')
-        //     return
-        // }
     }
-
-    // if (pluginDocsPath instanceof Error) {
-    //     throw pluginDocsPath
-    // }
 
     const pagesSourcePath = path.join(pluginDocsPath, "src/pages")
     const pagesTargetPath = path.join(hostPath, "plugins/xyd-plugin-docs/src/pages")
@@ -521,7 +505,7 @@ export async function preWorkspaceSetup(options: {
 
 export function calculateFolderChecksum(folderPath: string): string {
     const hash = crypto.createHash('sha256');
-    const ignorePatterns = [...getGitignorePatterns(folderPath), '.xydchecksum'];
+    const ignorePatterns = [...getGitignorePatterns(folderPath), '.xydchecksum', "node_modules", "dist", ".react-router"];
 
     function processFile(filePath: string) {
         const relativePath = path.relative(folderPath, filePath);
@@ -561,6 +545,7 @@ export function calculateFolderChecksum(folderPath: string): string {
     return hash.digest('hex');
 }
 
+// TODO: xyd-host .gitignore is not copied to npm registry 
 function getGitignorePatterns(folderPath: string): string[] {
     const gitignorePath = path.join(folderPath, '.gitignore')
     if (fs.existsSync(gitignorePath)) {
@@ -579,28 +564,6 @@ function shouldIgnoreEntry(entryName: string, ignorePatterns: string[]): boolean
         return regex.test(entryName)
     })
 }
-
-// async function downloadPackage(packageName: string, version: string): Promise<string | Error> {
-//     const tempDir = path.join(process.cwd(), CACHE_FOLDER_PATH, 'temp')
-//     const packageDir = path.join(tempDir, packageName.replace('/', '-'))
-
-//     // Clean up existing temp directory if it exists
-//     if (fs.existsSync(packageDir)) {
-//         fs.rmSync(packageDir, { recursive: true, force: true })
-//     }
-
-//     // Create temp directory
-//     fs.mkdirSync(packageDir, { recursive: true })
-
-//     try {
-//         nodeDownloadPackage(packageName, version, tempDir, packageDir)
-
-//         return packageDir
-//     } catch (error) {
-//         console.error(`Failed to download ${packageName}@${version}:`, error)
-//         return new Error(`Failed to download ${packageName}@${version}`)
-//     }
-// }
 
 async function copyHostTemplate(sourcePath: string, targetPath: string) {
     if (!fs.existsSync(sourcePath)) {
@@ -734,7 +697,7 @@ export async function postWorkspaceSetup(settings: Settings) {
 
         spinner.stopSpinner();
         spinner.log('✔ Local xyd framework installed successfully');
-    } catch(error) {
+    } catch (error) {
         spinner.stopSpinner();
         spinner.error('❌ Failed to install xyd framework');
         throw error;
@@ -742,51 +705,27 @@ export async function postWorkspaceSetup(settings: Settings) {
 }
 
 function nodeInstallPackages(hostPath: string) {
-    const cmd = process.env.XYD_DEV_MODE ? 'pnpm i' : 'npm i'
+    const cmd = process.env.XYD_DEV_MODE ? 'pnpm i' : 'npm i' // TODO: issues with pnpm in production mode
     const execOptions: ExecSyncOptions = {
         cwd: hostPath,
         env: {
             ...process.env,
-            NODE_ENV: "" // since 'production' does not install it well
+            NODE_ENV: "" // since 'production' does not install it well,
         }
     }
+    const customRegistry = process.env.XYD_NPM_REGISTRY || process.env.npm_config_registry
+    if (customRegistry) {
+        if (!execOptions.env) {
+            execOptions.env = {}
+        }
+        execOptions.env["npm_config_registry"] = customRegistry
+    }
+
     if (process.env.XYD_VERBOSE) {
         execOptions.stdio = 'inherit'
     }
     execSync(cmd, execOptions)
 }
-
-// function nodeDownloadPackage(
-//     packageName: string,
-//     version: string,
-//     extractDir: string,
-//     finalOutputDir: string,
-// ) {
-//     const cmd = process.env.XYD_DEV_MODE
-//         ? `pnpm pack ${packageName}@${version} --pack-destination ${extractDir}`
-//         : `npm pack ${packageName}@${version} --pack-destination ${extractDir}`
-
-//     const execOptions: ExecSyncOptions = {}
-//     if (process.env.XYD_VERBOSE) {
-//         execOptions.stdio = 'inherit'
-//     }
-//     execSync(cmd, execOptions)
-
-//     const tarball = fs.readdirSync(extractDir).find(file => file.endsWith('.tgz'))
-//     if (!tarball) {
-//         throw new Error(`No tarball found for ${packageName}@${version}`)
-//     }
-//     execSync(`tar -xzf ${path.join(extractDir, tarball)} -C ${extractDir}`, execOptions)
-
-//     // Move package contents to outputDir
-//     const extractedDir = path.join(extractDir, 'package')
-//     if (fs.existsSync(extractedDir)) {
-//         fs.renameSync(extractedDir, finalOutputDir)
-//     }
-
-//     // Clean up tarball
-//     fs.unlinkSync(path.join(extractDir, tarball))
-// }
 
 async function shouldSkipHostSetup(): Promise<boolean> {
     const hostPath = getHostPath();

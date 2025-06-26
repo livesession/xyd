@@ -94,7 +94,6 @@ function vitePluginSettings() {
     }
 }
 
-
 export function vitePluginThemeCSS() {
     return async function ({
         preinstall

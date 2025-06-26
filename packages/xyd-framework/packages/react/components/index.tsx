@@ -6,7 +6,8 @@ import type { ITOC } from "@xyd-js/ui";
 import { Nav, SubNav, Toc, UISidebar } from "@xyd-js/ui"
 import { Anchor, Breadcrumbs, Button, ColorSchemeButton, Icon, NavLinks, useColorScheme } from "@xyd-js/components/writer";
 
-import { Surface, SurfaceTarget } from "./Surfaces";
+import { Surface } from "./Surfaces";
+import { SurfaceTarget } from "../../../src";
 
 import { useBreadcrumbs, useMetadata, useNavLinks, useRawPage, useSettings, useSidebarGroups, useToC } from "../contexts";
 import { FwSidebarGroupContext, FwSidebarItemGroup, FwSidebarItemProps } from "./Sidebar";

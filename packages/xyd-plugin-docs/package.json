@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-docs",
-  "version": "0.1.0-xyd.5",
+  "version": "0.1.0-xyd.34",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -35,21 +35,21 @@
     "@xyd-js/components": "workspace:*",
     "@xyd-js/content": "workspace:*",
     "@xyd-js/core": "workspace:*",
-    "@react-router/dev": "^7.5.0",
-    "@react-router/node": "^7.5.0",
-    "@react-router/serve": "^7.5.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router": "^7.5.0"
+    "@react-router/dev": "^7.6.2",
+    "@react-router/node": "^7.6.2",
+    "@react-router/serve": "^7.6.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router": "^7.6.2"
   },
   "devDependencies": {
-    "@types/react-dom": "^19.0.0",
-    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/react": "^19.1.0",
     "@vitejs/plugin-react": "^4.3.2",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",
-    "vite": "^6.1.0",
-    "vite-tsconfig-paths": "^5.0.1",
+    "vite": "^7.0.0",
+    "vite-tsconfig-paths": "^5.1.4",
     "rimraf": "^3.0.2"
   }
 }

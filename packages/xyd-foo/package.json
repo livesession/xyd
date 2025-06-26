@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/foo",
-  "version": "0.1.0-xyd.3",
+  "version": "0.1.0-xyd.32",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -22,7 +22,7 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.1.0"
   },
   "devDependencies": {
     "@linaria/atomic": "^6.2.0",

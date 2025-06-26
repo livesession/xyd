@@ -1,4 +1,5 @@
 import {
+    index,
     route,
 } from "@react-router/dev/routes";
 import {pathRoutes} from "./pathRoutes";

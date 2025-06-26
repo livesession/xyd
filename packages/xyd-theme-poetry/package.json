@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-poetry",
-  "version": "0.1.0-xyd.29",
+  "version": "0.1.0-xyd.58",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -29,9 +29,9 @@
     "@xyd-js/components": "workspace:*",
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/themes": "workspace:*",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router": "^7.5.0"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router": "^7.6.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",

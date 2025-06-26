@@ -3,7 +3,7 @@ import Oas from "oas";
 // @ts-ignore
 import {Operation} from 'oas/operation'; // TODO: fix ts
 import oasToSnippet from "@readme/oas-to-snippet";
-import OpenAPISampler from "openapi-sampler";
+import { sample as openApiSampler } from '@xyd-js/openapi-sampler';
 import type {JSONSchema7} from "json-schema";
 
 import {ExampleGroup, Example, CodeBlockTab} from "@xyd-js/uniform";
@@ -42,7 +42,7 @@ function langFallback(lang: string): string {
 
 function smartDeepCopy<T>(obj: T, excludeProps: string[] = []): T {
     const seen = new WeakMap();
-    
+
     function copy(value: any): any {
         // Handle primitives and null
         if (value === null || typeof value !== 'object') {
@@ -126,7 +126,7 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
 
             let value = param.example
             if (!value && param.schema) {
-                value = OpenAPISampler.sample(sanitizeSchema(param.schema as JSONSchema7))
+                value = openApiSampler(sanitizeSchema(param.schema as JSONSchema7))
             }
             if (value !== undefined) {
                 acc[location][param.name] = value
@@ -159,7 +159,7 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
                 }
 
                 if (!requestData) {
-                    requestData = OpenAPISampler.sample(schema)
+                    requestData = openApiSampler(schema as any) // TODO; fix any
                 }
 
                 if (contentType === 'application/x-www-form-urlencoded') {
@@ -297,7 +297,7 @@ function resBodyExmaples(operation: Operation, oas: Oas, vistedExamples?: Map<JS
 
                 // If no example found, generate sample data from schema
                 if (!responseData) {
-                    responseData = OpenAPISampler.sample(sanitizeSchema(schema))
+                    responseData = openApiSampler(sanitizeSchema(schema))
                 }
 
                 let extension = "text"

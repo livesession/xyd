@@ -1,11 +1,12 @@
-import type { Plugin as VitePlugin, ResolvedConfig } from 'vite'
+import type {Plugin as VitePlugin, ResolvedConfig} from 'vite'
 
-import type { Settings } from '@xyd-js/core'
-import type { Plugin } from '@xyd-js/plugins'
-import { mapSettingsToDocSections, type DocSectionSchema } from '@xyd-js/content/md'
+import type {Settings} from '@xyd-js/core'
+import type {Plugin} from '@xyd-js/plugins'
+import {mapSettingsToDocSections, type DocSectionSchema} from '@xyd-js/content/md'
 
-import { DEFAULT_SUGGESTIONS } from './const'
-import type { OramaPluginOptions, OramaCloudConfig, OramaSectionSchema } from './types'
+import {DEFAULT_SUGGESTIONS} from './const'
+import type {OramaPluginOptions, OramaCloudConfig, OramaSectionSchema} from './types'
+import Search from './Search'
 
 export default function OramaPlugin(
     pluginOptions: OramaPluginOptions = {}
@@ -18,6 +19,13 @@ export default function OramaPlugin(
                     settings,
                     pluginOptions,
                 )
+            ],
+            components: [
+                {
+                    component: Search,
+                    name: "Search",
+                    dist: "@xyd-js/plugin-orama/Search" // TODO: better in the future
+                }
             ]
         }
     }
@@ -35,14 +43,6 @@ function vitePlugin(
     return {
         name: 'xyd-plugin-orama',
         enforce: 'pre',
-
-        config: () => ({
-            resolve: {
-                alias: {
-                    'virtual-component:Search': new URL('./Search.tsx', import.meta.url).pathname
-                }
-            }
-        }),
 
         async configResolved(config: ResolvedConfig) {
             if (resolveConfig) {

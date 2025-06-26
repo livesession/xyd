@@ -6,7 +6,8 @@ import { type ITOC, type IBreadcrumb, type INavLinks, ProgressBar } from "@xyd-j
 import { Banner, Button } from "@xyd-js/components/writer";
 
 import { FwSidebarGroupProps } from "../components/Sidebar";
-import { SurfaceContext, Surfaces } from "../components/Surfaces";
+import { SurfaceContext } from "../components/Surfaces";
+import {Surfaces} from "../../../src"
 
 export interface IFramework {
     settings: Readonly<Settings>
@@ -14,6 +15,7 @@ export interface IFramework {
     sidebarGroups: Readonly<FwSidebarGroupProps[]>
     metadata: Readonly<Metadata>
     setMetadata: (metadata: Metadata) => void
+    components?: Readonly<{[componentName: string]: React.ComponentType<any>}>
 }
 
 const framework: IFramework = {
@@ -23,6 +25,7 @@ const framework: IFramework = {
     },
     sidebarGroups: [],
     setMetadata: () => { },
+    components: {}
 }
 const FrameworkContext = createContext<IFramework>(framework)
 
@@ -33,6 +36,7 @@ export interface FrameworkProps {
     metadata: Metadata,
     sidebarGroups: FwSidebarGroupProps[],
     surfaces: Surfaces,
+    components?: {[componentName: string]: React.ComponentType<any>},
     BannerContent: React.ComponentType<any>
 }
 
@@ -49,6 +53,7 @@ export function Framework(props: FrameworkProps) {
             sidebarGroups: Object.freeze([...props.sidebarGroups]),
             metadata: Object.freeze({ ...metadata, title: metadata?.title || "" }),
             setMetadata: setMetadata,
+            components: Object.freeze(props.components || {})
         }}>
             <SurfaceContext value={{
                 surfaces: props.surfaces
@@ -130,6 +135,12 @@ export function useMetadata() {
     const ctx = useContext(FrameworkContext)
 
     return ctx.metadata
+}
+
+export function useComponents() {
+    const ctx = useContext(FrameworkContext)
+
+    return ctx.components
 }
 
 export function useToC() {

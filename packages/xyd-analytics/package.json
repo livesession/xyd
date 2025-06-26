@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/analytics",
-  "version": "0.1.0-xyd.2",
+  "version": "0.1.0-xyd.31",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -30,17 +30,14 @@
   "peerDependencies": {
     "openux-js": "0.0.0-pre.0",
     "pluganalytics": "0.0.0-pre.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router": "^7.5.0"
+    "react": "^19.1.0",
+    "react": "^19.1.0",
+    "react-router": "^7.6.2"
   },
   "devDependencies": {
-    "@types/node": "22.5.5",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.1.0",
     "rimraf": "^3.0.2",
     "tsup": "^8.3.0",
-    "typescript": "5.6.2",
-    "vite": "^6.1.0"
+    "typescript": "5.6.2"
   }
 }

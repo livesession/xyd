@@ -8,7 +8,7 @@ import { SearchButton as XydSearchButton } from "@xyd-js/components/system"
 import '@docsearch/css';
 import { AlgoliaPluginOptions } from "./types";
 
-export function SearchButton() {
+export default function AlgoliaSearch() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const handleClick = useCallback(() => {

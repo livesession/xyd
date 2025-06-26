@@ -1,5 +1,6 @@
 import * as React from "react"
-import { useMetadata, Surfaces } from "@xyd-js/framework/react";
+import { useMetadata } from "@xyd-js/framework/react";
+import { Surfaces } from "@xyd-js/framework"
 import { type Theme as ThemeSettings } from "@xyd-js/core"
 
 import { ReactContent } from "@xyd-js/components/content";
@@ -7,7 +8,7 @@ import { ReactContent } from "@xyd-js/components/content";
 export abstract class Theme {
   constructor() {
     // TODO: !!!better API for this!!!
-    this.settings = globalThis.__xydThemeSettings 
+    this.settings = globalThis.__xydThemeSettings
     this.theme = globalThis.__xydThemeSettings
 
     this.surfaces = globalThis.__xydSurfaces

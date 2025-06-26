@@ -1,5 +1,6 @@
 import path from "node:path";
 import fs from "node:fs";
+import { fileURLToPath } from "node:url";
 
 import { build as viteBuild, Plugin as VitePlugin } from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -24,7 +25,7 @@ export async function build() {
     }
 
     {
-        setupInstallableEnvironmentV2() // TODO: fix in the future
+        await setupInstallableEnvironmentV2()
     }
 
     try {
@@ -91,8 +92,6 @@ function setupInstallableEnvironmentV2() {
         type: "module",
         scripts: {},
         dependencies: {
-            // "@react-router/node": "^7.5.0",
-            // "isbot": "^5"
         },
         devDependencies: {}
     };
@@ -104,6 +103,32 @@ function setupInstallableEnvironmentV2() {
 
     // Write the package.json file
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
+
+    // Create symlink to node_modules
+    const buildNodeModulesPath = path.join(buildDir, 'node_modules');
+    const dirname = path.dirname(fileURLToPath(import.meta.url));
+    let workspaceNodeModulesPath = '';
+    if (process.env.XYD_DEV_MODE) {
+        workspaceNodeModulesPath = path.resolve(dirname, '../../../node_modules');
+    } else {
+        workspaceNodeModulesPath = path.resolve(dirname, '../../../');
+    }
+
+    console.log("workspaceNodeModulesPath", workspaceNodeModulesPath)
+
+    // Remove existing symlink or directory if it exists
+    if (fs.existsSync(buildNodeModulesPath)) {
+        if (fs.lstatSync(buildNodeModulesPath).isSymbolicLink()) {
+            fs.unlinkSync(buildNodeModulesPath);
+        } else {
+            fs.rmSync(buildNodeModulesPath, { recursive: true, force: true });
+        }
+    }
+
+    // Create symlink to workspace node_modules
+    fs.symlinkSync(workspaceNodeModulesPath, buildNodeModulesPath, 'dir');
+
+    // TOOD: symlink to node_modules
 }
 
 // TODO: not so good solution

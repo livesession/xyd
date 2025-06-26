@@ -1,4 +1,6 @@
 {
   "name": "@xyd-js/theme-gusto",
-  "version": "0.0.1-xyd.1"
+  "version": "0.0.1-xyd.30",
+  "dependencies": {},
+  "devDependencies": {}
 }
