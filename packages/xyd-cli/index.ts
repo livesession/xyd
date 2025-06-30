@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import {run} from "./src/run";
+import { cli } from "./src/cli";
 
-run().then(
+cli().then(
     () => {
         process.exit(0);
     },

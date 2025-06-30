@@ -1,5 +1,249 @@
 # @xyd-js/atlas
 
+## 0.1.0-xyd.89
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.84
+  - @xyd-js/core@0.1.0-xyd.86
+  - @xyd-js/framework@0.1.0-xyd.105
+  - @xyd-js/plugins@0.1.0-xyd.73
+  - @xyd-js/uniform@0.1.0-xyd.88
+
+## 0.1.0-xyd.88
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.83
+  - @xyd-js/core@0.1.0-xyd.85
+  - @xyd-js/framework@0.1.0-xyd.104
+  - @xyd-js/plugins@0.1.0-xyd.72
+  - @xyd-js/uniform@0.1.0-xyd.87
+
+## 0.1.0-xyd.87
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.82
+  - @xyd-js/core@0.1.0-xyd.84
+  - @xyd-js/framework@0.1.0-xyd.103
+  - @xyd-js/plugins@0.1.0-xyd.71
+  - @xyd-js/uniform@0.1.0-xyd.86
+
+## 0.1.0-xyd.86
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.81
+  - @xyd-js/core@0.1.0-xyd.83
+  - @xyd-js/framework@0.1.0-xyd.102
+  - @xyd-js/plugins@0.1.0-xyd.70
+  - @xyd-js/uniform@0.1.0-xyd.85
+
+## 0.1.0-xyd.85
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.80
+  - @xyd-js/core@0.1.0-xyd.82
+  - @xyd-js/framework@0.1.0-xyd.101
+  - @xyd-js/plugins@0.1.0-xyd.69
+  - @xyd-js/uniform@0.1.0-xyd.84
+
+## 0.1.0-xyd.84
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.79
+  - @xyd-js/core@0.1.0-xyd.81
+  - @xyd-js/framework@0.1.0-xyd.100
+  - @xyd-js/plugins@0.1.0-xyd.68
+  - @xyd-js/uniform@0.1.0-xyd.83
+
+## 0.1.0-xyd.83
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.78
+  - @xyd-js/core@0.1.0-xyd.80
+  - @xyd-js/framework@0.1.0-xyd.99
+  - @xyd-js/plugins@0.1.0-xyd.67
+  - @xyd-js/uniform@0.1.0-xyd.82
+
+## 0.1.0-xyd.82
+
+### Patch Changes
+
+- update all packages
+- update all packages
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.77
+  - @xyd-js/core@0.1.0-xyd.79
+  - @xyd-js/framework@0.1.0-xyd.98
+  - @xyd-js/plugins@0.1.0-xyd.66
+  - @xyd-js/uniform@0.1.0-xyd.81
+
+## 0.1.0-xyd.81
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.76
+  - @xyd-js/core@0.1.0-xyd.78
+  - @xyd-js/framework@0.1.0-xyd.97
+  - @xyd-js/plugins@0.1.0-xyd.65
+  - @xyd-js/uniform@0.1.0-xyd.80
+
+## 0.1.0-xyd.80
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.75
+  - @xyd-js/core@0.1.0-xyd.77
+  - @xyd-js/framework@0.1.0-xyd.96
+  - @xyd-js/plugins@0.1.0-xyd.64
+  - @xyd-js/uniform@0.1.0-xyd.79
+
+## 0.1.0-xyd.79
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.74
+  - @xyd-js/core@0.1.0-xyd.76
+  - @xyd-js/framework@0.1.0-xyd.95
+  - @xyd-js/plugins@0.1.0-xyd.63
+  - @xyd-js/uniform@0.1.0-xyd.78
+
+## 0.1.0-xyd.78
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.73
+  - @xyd-js/core@0.1.0-xyd.75
+  - @xyd-js/framework@0.1.0-xyd.94
+  - @xyd-js/plugins@0.1.0-xyd.62
+  - @xyd-js/uniform@0.1.0-xyd.77
+
+## 0.1.0-xyd.77
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.72
+  - @xyd-js/core@0.1.0-xyd.74
+  - @xyd-js/framework@0.1.0-xyd.93
+  - @xyd-js/plugins@0.1.0-xyd.61
+  - @xyd-js/uniform@0.1.0-xyd.76
+
+## 0.1.0-xyd.76
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.71
+  - @xyd-js/core@0.1.0-xyd.73
+  - @xyd-js/framework@0.1.0-xyd.92
+  - @xyd-js/plugins@0.1.0-xyd.60
+  - @xyd-js/uniform@0.1.0-xyd.75
+
+## 0.1.0-xyd.75
+
+### Patch Changes
+
+- update all packages
+- update all packages
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.70
+  - @xyd-js/core@0.1.0-xyd.72
+  - @xyd-js/framework@0.1.0-xyd.91
+  - @xyd-js/plugins@0.1.0-xyd.59
+  - @xyd-js/uniform@0.1.0-xyd.74
+
+## 0.1.0-xyd.74
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.69
+  - @xyd-js/core@0.1.0-xyd.71
+  - @xyd-js/framework@0.1.0-xyd.90
+  - @xyd-js/plugins@0.1.0-xyd.58
+  - @xyd-js/uniform@0.1.0-xyd.73
+
+## 0.1.0-xyd.73
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.68
+  - @xyd-js/core@0.1.0-xyd.70
+  - @xyd-js/framework@0.1.0-xyd.89
+  - @xyd-js/plugins@0.1.0-xyd.57
+  - @xyd-js/uniform@0.1.0-xyd.72
+
+## 0.1.0-xyd.72
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.67
+  - @xyd-js/core@0.1.0-xyd.69
+  - @xyd-js/framework@0.1.0-xyd.88
+  - @xyd-js/plugins@0.1.0-xyd.56
+  - @xyd-js/uniform@0.1.0-xyd.71
+
+## 0.1.0-xyd.71
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.66
+  - @xyd-js/core@0.1.0-xyd.68
+  - @xyd-js/framework@0.1.0-xyd.87
+  - @xyd-js/plugins@0.1.0-xyd.55
+  - @xyd-js/uniform@0.1.0-xyd.70
+
+## 0.1.0-xyd.70
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.65
+  - @xyd-js/core@0.1.0-xyd.67
+  - @xyd-js/framework@0.1.0-xyd.86
+  - @xyd-js/plugins@0.1.0-xyd.54
+  - @xyd-js/uniform@0.1.0-xyd.69
+
 ## 0.1.0-xyd.69
 
 ### Patch Changes

@@ -51,8 +51,23 @@ Just point to generated folder which you could upload to your provider.
     ```
 
 2. [Vercel](platform=vercel)
-    ```bash [descHead="Tip" desc="Check out [Vercel Deployment Sample](#)."]
-    $ xyd build
+    ```json [descHead="Tip" desc="Check out [Vercel Deployment Sample](#)."]
+    {
+      "buildCommand": "npx @xyd-js/cli build",
+      "outputDirectory": ".xyd/build/client",
+      "redirects": [
+        {
+          "source": "/",
+          "destination": "/introduction/",
+          "permanent": true
+        },
+        {
+          "source": "/index.html",
+          "destination": "/introduction/",
+          "permanent": true
+        }
+      ]
+    } 
     ```
 
 3. [Cloudflare](platform=cloudflare)

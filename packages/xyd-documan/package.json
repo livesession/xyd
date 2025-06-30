@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/documan",
-  "version": "0.1.0-xyd.85",
+  "version": "0.1.0-xyd.105",
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
@@ -29,6 +29,9 @@
     "@react-router/serve": "^7.6.2",
     "cli-spinners": "^3.0.0",
     "vite-tsconfig-paths": "^5.1.4"
+  },
+  "peerDependencies": {
+    "@xyd-js/host": "workspace:*"
   },
   "devDependencies": {
     "@mdx-js/rollup": "^3.1.0",

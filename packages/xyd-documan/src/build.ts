@@ -55,6 +55,9 @@ export async function build() {
                     process: 'process/browser'
                 }
             },
+            // ssr: {
+            //     noExternal: ["react", "react-dom", "react-router"]
+            // }
         });
 
         // Build the SSR bundle
@@ -62,7 +65,10 @@ export async function build() {
             mode: "production",
             root: appRoot,
             build: {
-                ssr: true
+                ssr: true,
+                // rollupOptions: {
+                //     external: ["@xyd-js/framework/hydration", "fs"]
+                // }
             },
             plugins: [
                 fixManifestPlugin(appRoot),
@@ -70,6 +76,8 @@ export async function build() {
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
+                // include: ["react", "react-dom", "react/jsx-runtime", "react-router"],
+                // force: true
             },
             define: {
                 'process.env.NODE_ENV': JSON.stringify('production'),
@@ -77,9 +85,14 @@ export async function build() {
             },
             resolve: {
                 alias: {
-                    process: 'process/browser'
+                    process: 'process/browser',
+                    // react: path.resolve(workspaceNodeModulesPath, "react"),
+                    // "react-dom": path.resolve(workspaceNodeModulesPath, "react-dom")
                 }
             },
+            // ssr: {
+            //     noExternal: ["react", "react-dom", "react-router"]
+            // }
         });
     } catch (error) {
         console.error('Build failed:', error);  // TODO: better message
@@ -87,31 +100,25 @@ export async function build() {
 }
 
 function setupInstallableEnvironmentV2() {
-    // TODO: probably we should have better mechanism - maybe bundle?
-
-    const buildDir = getBuildPath()
-
+    const buildDir = getBuildPath();
     const packageJsonPath = path.join(buildDir, 'package.json');
 
     const packageJsonContent = {
         type: "module",
         scripts: {},
-        dependencies: {
-        },
+        dependencies: {},
         devDependencies: {}
     };
 
-    // Ensure the build directory exists
     if (!fs.existsSync(buildDir)) {
         fs.mkdirSync(buildDir, { recursive: true });
     }
 
-    // Write the package.json file
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
 
-    // Create symlink to node_modules
     const buildNodeModulesPath = path.join(buildDir, 'node_modules');
     const dirname = path.dirname(fileURLToPath(import.meta.url));
+
     let workspaceNodeModulesPath = '';
     if (process.env.XYD_DEV_MODE) {
         workspaceNodeModulesPath = path.resolve(dirname, '../../../node_modules');
@@ -119,22 +126,20 @@ function setupInstallableEnvironmentV2() {
         workspaceNodeModulesPath = path.resolve(dirname, '../../../');
     }
 
-    console.log("workspaceNodeModulesPath", workspaceNodeModulesPath)
+    console.log("workspaceNodeModulesPath", workspaceNodeModulesPath);
 
-    // Remove existing symlink or directory if it exists
-    if (fs.existsSync(buildNodeModulesPath)) {
-        if (fs.lstatSync(buildNodeModulesPath).isSymbolicLink()) {
-            fs.unlinkSync(buildNodeModulesPath);
-        } else {
-            fs.rmSync(buildNodeModulesPath, { recursive: true, force: true });
-        }
-    }
+    // if (fs.existsSync(buildNodeModulesPath)) {
+    //     if (fs.lstatSync(buildNodeModulesPath).isSymbolicLink()) {
+    //         fs.unlinkSync(buildNodeModulesPath);
+    //     } else {
+    //         fs.rmSync(buildNodeModulesPath, { recursive: true, force: true });
+    //     }
+    // }
+    // fs.symlinkSync(workspaceNodeModulesPath, buildNodeModulesPath, 'dir');
 
-    // Create symlink to workspace node_modules
-    fs.symlinkSync(workspaceNodeModulesPath, buildNodeModulesPath, 'dir');
-
-    // TOOD: symlink to node_modules
+    // return workspaceNodeModulesPath;
 }
+
 
 // TODO: not so good solution
 // fixManifestPlugin is needed for fixing server manifest for react-router cuz we use different `root` and output

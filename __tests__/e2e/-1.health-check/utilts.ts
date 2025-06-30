@@ -52,32 +52,11 @@ export async function installCLI(pm: typeof PACKAGE_MANAGER[0]): Promise<void> {
             ...process.env,
         }
         
-        // Handle pnpm global bin directory
-        if (pm.name === 'pnpm') {
-            fixPnpm(env)
-        }
-
         execSync(pm.install, {
             stdio: 'inherit',
             env
         })
     }
-}
-
-function fixPnpm(env: NodeJS.ProcessEnv) {
-    try {
-        // First try to run pnpm setup to ensure global bin is configured
-        execSync('pnpm setup', { stdio: 'pipe', env })
-        console.log('✅ pnpm setup completed')
-        return
-    } catch (error) {
-        console.log('⚠️ pnpm setup failed, continuing with manual config')
-    }
-    
-    const pnpmHome = getPnpmHome()
-    env.PNPM_HOME = pnpmHome
-    env.PATH = `${pnpmHome}:${env.PATH || ''}`
-    console.log(`🔧 Set PNPM_HOME to: ${pnpmHome}`)
 }
 
 export function createTempWorkspace(testConfig: TestConfig): string {

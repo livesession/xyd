@@ -51,7 +51,6 @@ import {SearchButton} from "@xyd-js/components/system"
 globalThis.__xydSettings = getSettings
 globalThis.__xydUserComponents = userComponents // Add user components to global scope TODO: problematic
 
-new Composer() // TODO: better API TODO: problematic
 const settings = globalThis.__xydSettings
 
 const surfaces = new Surfaces()
@@ -94,6 +93,8 @@ interface LoaderData {
 }
 
 export async function loader({request}: { request: any }) {
+    new Composer() // TODO: better API
+    
     const slug = getPathname(request.url || "index") || "index"
 
     const {

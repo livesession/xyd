@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-docs",
-  "version": "0.1.0-xyd.56",
+  "version": "0.1.0-xyd.76",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

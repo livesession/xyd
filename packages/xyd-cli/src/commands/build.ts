@@ -1,10 +1,9 @@
-import { spawn } from 'child_process';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
-import * as documan from "@xyd-js/documan"
-
-export async function build(root: string, options: any = {}) {
+// TODO: in the future better build cuz problems with    NODE_ENV: 'production',
+export async function build() {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
     const buildScript = join(__dirname, '..', 'dist', 'build.js');
@@ -32,16 +31,4 @@ export async function build(root: string, options: any = {}) {
             reject(err);
         });
     });
-}
-
-export async function dev(root: string, options: any = {}) {
-    await documan.dev(options)
-
-    // keep `xyd dev` alive
-    await new Promise(() => {
-    });
-}
-
-export async function install(root: string, options: any = {}) {
-    await documan.install()
 }

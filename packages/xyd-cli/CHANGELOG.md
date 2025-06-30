@@ -1,5 +1,287 @@
 # @xyd-js/cli
 
+## 0.1.0-xyd.177
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.176
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.105
+  - @xyd-js/host@0.1.0-xyd.74
+
+## 0.1.0-xyd.175
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.174
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.104
+  - @xyd-js/host@0.1.0-xyd.73
+
+## 0.1.0-xyd.173
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.172
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.103
+  - @xyd-js/host@0.1.0-xyd.72
+
+## 0.1.0-xyd.171
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.170
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.102
+  - @xyd-js/host@0.1.0-xyd.71
+
+## 0.1.0-xyd.169
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.168
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.101
+  - @xyd-js/host@0.1.0-xyd.70
+
+## 0.1.0-xyd.167
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.166
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.100
+  - @xyd-js/host@0.1.0-xyd.69
+
+## 0.1.0-xyd.165
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.164
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.99
+  - @xyd-js/host@0.1.0-xyd.68
+
+## 0.1.0-xyd.163
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.162
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.98
+  - @xyd-js/host@0.1.0-xyd.67
+
+## 0.1.0-xyd.161
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.160
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.97
+  - @xyd-js/host@0.1.0-xyd.66
+
+## 0.1.0-xyd.159
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.158
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.96
+  - @xyd-js/host@0.1.0-xyd.65
+
+## 0.1.0-xyd.157
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.156
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.95
+  - @xyd-js/host@0.1.0-xyd.64
+
+## 0.1.0-xyd.155
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.154
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.94
+  - @xyd-js/host@0.1.0-xyd.63
+
+## 0.1.0-xyd.153
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.152
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.93
+  - @xyd-js/host@0.1.0-xyd.62
+
+## 0.1.0-xyd.151
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.150
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.92
+  - @xyd-js/host@0.1.0-xyd.61
+
+## 0.1.0-xyd.149
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.148
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.91
+  - @xyd-js/host@0.1.0-xyd.60
+
+## 0.1.0-xyd.147
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.146
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.90
+  - @xyd-js/host@0.1.0-xyd.59
+
+## 0.1.0-xyd.145
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.144
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.89
+  - @xyd-js/host@0.1.0-xyd.58
+
+## 0.1.0-xyd.143
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.142
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.88
+  - @xyd-js/host@0.1.0-xyd.57
+
+## 0.1.0-xyd.141
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.140
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.87
+  - @xyd-js/host@0.1.0-xyd.56
+
+## 0.1.0-xyd.139
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.138
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.86
+  - @xyd-js/host@0.1.0-xyd.55
+
 ## 0.1.0-xyd.137
 
 ### Patch Changes

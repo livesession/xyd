@@ -705,10 +705,8 @@ export async function postWorkspaceSetup(settings: Settings) {
 }
 
 function nodeInstallPackages(hostPath: string) {
-    let cmd = process.env.XYD_NODE_PM ? `${process.env.XYD_NODE_PM} i` : 'npm i'
-    if (process.env.XYD_DEV_MODE) {
-        cmd = "pnpm i"
-    }
+    const cmdInstall = pmInstall()
+
     const execOptions: ExecSyncOptions = {
         cwd: hostPath,
         env: {
@@ -727,7 +725,88 @@ function nodeInstallPackages(hostPath: string) {
     if (process.env.XYD_VERBOSE) {
         execOptions.stdio = 'inherit'
     }
-    execSync(cmd, execOptions)
+
+    execSync(cmdInstall, execOptions)
+}
+
+function pmInstall() {
+    if (process.env.XYD_NODE_PM) {
+        return `${process.env.XYD_NODE_PM} install`
+    }
+
+    if (hasBun()) {
+        return bunInstall()
+    }
+
+    const { pnpm } = runningPm()
+
+    console.log("ℹ️ consider install xyd via bun: `bun add -g xyd-js` for better performance");
+  
+    if (pnpm) {
+        return pnpmInstall()
+    }
+
+    return npmInstall()
+}
+
+function hasBun(): boolean {
+    try {
+        execSync('bun --version', { stdio: 'ignore' });
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function runningPm() {
+    let pnpm = false
+    let bun = false
+
+    // Detect package manager from npm_execpath
+    if (process.env.npm_execpath) {
+        if (process.env.npm_execpath.includes('pnpm')) {
+            pnpm = true
+        } else if (process.env.npm_execpath.includes('bun')) {
+            bun = true
+        }
+    }
+
+    if (process.env.NODE_PATH) {
+        const nodePath = process.env.NODE_PATH
+
+        if (nodePath.includes('.pnpm')) {
+            pnpm = true
+        } else if (nodePath.includes('.bun')) {
+            bun = true
+        }
+    }
+
+    if (
+        process.execPath.includes('bun') ||
+        path.dirname(process.argv?.[1] || "").includes('bun')
+    ) {
+        bun = true
+    }
+
+    return {
+        pnpm,
+        bun
+    }
+}
+
+function pnpmInstall() {
+    console.log(`\n🔄 install xyd framework dependencies via pnpm...\n`);
+    return 'pnpm install'
+}
+
+function bunInstall() {
+    console.log(`\n🔄 install xyd framework dependencies via bun...\n`);
+    return 'bun install'
+}
+
+function npmInstall() {
+    console.log(`\n🔄 install xyd framework dependencies via npm...\n`);
+    return 'npm install'
 }
 
 async function shouldSkipHostSetup(): Promise<boolean> {
