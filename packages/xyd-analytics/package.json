@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/analytics",
-  "version": "0.1.0-xyd.51",
+  "version": "0.1.0-xyd.53",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

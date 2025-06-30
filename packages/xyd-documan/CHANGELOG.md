@@ -1,5 +1,31 @@
 # @xyd-js/documan
 
+## 0.1.0-xyd.85
+
+### Patch Changes
+
+- update all packages
+- update all packages
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/content@0.1.0-xyd.67
+  - @xyd-js/core@0.1.0-xyd.66
+  - @xyd-js/plugin-docs@0.1.0-xyd.56
+  - @xyd-js/plugins@0.1.0-xyd.53
+  - @xyd-js/uniform@0.1.0-xyd.68
+
+## 0.1.0-xyd.84
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/content@0.1.0-xyd.66
+  - @xyd-js/core@0.1.0-xyd.65
+  - @xyd-js/plugin-docs@0.1.0-xyd.55
+  - @xyd-js/plugins@0.1.0-xyd.52
+  - @xyd-js/uniform@0.1.0-xyd.67
+
 ## 0.1.0-xyd.83
 
 ### Patch Changes

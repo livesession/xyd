@@ -1,5 +1,18 @@
 # @xyd-js/theme-gusto
 
+## 0.0.1-xyd.52
+
+### Patch Changes
+
+- update all packages
+- update all packages
+
+## 0.0.1-xyd.51
+
+### Patch Changes
+
+- update all packages
+
 ## 0.0.1-xyd.50
 
 ### Patch Changes

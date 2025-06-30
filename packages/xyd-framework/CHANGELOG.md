@@ -1,5 +1,29 @@
 # @xyd-js/framework
 
+## 0.1.0-xyd.85
+
+### Patch Changes
+
+- update all packages
+- update all packages
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.64
+  - @xyd-js/content@0.1.0-xyd.67
+  - @xyd-js/core@0.1.0-xyd.66
+  - @xyd-js/ui@0.1.0-xyd.69
+
+## 0.1.0-xyd.84
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.63
+  - @xyd-js/content@0.1.0-xyd.66
+  - @xyd-js/core@0.1.0-xyd.65
+  - @xyd-js/ui@0.1.0-xyd.68
+
 ## 0.1.0-xyd.83
 
 ### Patch Changes

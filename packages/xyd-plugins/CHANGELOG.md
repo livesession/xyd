@@ -1,5 +1,25 @@
 # @xyd-js/plugins
 
+## 0.1.0-xyd.53
+
+### Patch Changes
+
+- update all packages
+- update all packages
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-xyd.85
+  - @xyd-js/uniform@0.1.0-xyd.68
+
+## 0.1.0-xyd.52
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-xyd.84
+  - @xyd-js/uniform@0.1.0-xyd.67
+
 ## 0.1.0-xyd.51
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @xyd-js/theme-cosmo
 
+## 0.1.0-xyd.53
+
+### Patch Changes
+
+- update all packages
+- update all packages
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.69
+  - @xyd-js/components@0.1.0-xyd.64
+  - @xyd-js/framework@0.1.0-xyd.85
+  - @xyd-js/themes@0.1.1-xyd.56
+
+## 0.1.0-xyd.52
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.68
+  - @xyd-js/components@0.1.0-xyd.63
+  - @xyd-js/framework@0.1.0-xyd.84
+  - @xyd-js/themes@0.1.1-xyd.55
+
 ## 0.1.0-xyd.51
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @xyd-js/components
 
+## 0.1.0-xyd.64
+
+### Patch Changes
+
+- update all packages
+- update all packages
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.66
+
+## 0.1.0-xyd.63
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.65
+
 ## 0.1.0-xyd.62
 
 ### Patch Changes
