@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/uniform",
-  "version": "0.1.0-xyd.46",
+  "version": "0.1.0-xyd.66",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",
@@ -20,9 +20,7 @@
   "dependencies": {
     "@xyd-js/core": "workspace:*",
     "codehike": "^1.0.3",
-    "gray-matter": "^4.0.3",
     "mdast-util-from-markdown": "^2.0.2",
-    "mdast-util-to-markdown": "^2.1.2",
     "remark": "^15.0.1",
     "remark-stringify": "^11.0.0",
     "unist-builder": "^4.0.0",

@@ -24,7 +24,7 @@ const __dirname = path.dirname(__filename);
 export async function appInit(options?: PluginDocsOptions) {
     const readPreloadSettings = await readSettings() // TODO: in the future better solution - currently we load settings twice (pluginDocs and here)
     if (!readPreloadSettings) {
-        throw new Error("cannot preload settings")
+        return null
     }
 
     const preloadSettings = typeof readPreloadSettings === "string" ? JSON.parse(readPreloadSettings) : readPreloadSettings
@@ -99,23 +99,23 @@ function virtualComponentsPlugin() {
         async load(id) {
             if (id === 'virtual:xyd-user-components.jsx') {
                 const userComponents = globalThis.__xydUserComponents || []
-                
+
                 // If we have components with dist paths, pre-bundle them at build time
                 if (userComponents.length > 0 && userComponents[0]?.dist) {
                     // Generate imports for all components
-                    const imports = userComponents.map((component, index) => 
+                    const imports = userComponents.map((component, index) =>
                         `import Component${index} from '${component.dist}';`
                     ).join('\n');
-                    
+
                     // Generate component objects for all components
-                    const componentObjects = userComponents.map((component, index) => 
+                    const componentObjects = userComponents.map((component, index) =>
                         `{
                                 component: Component${index},
                                 name: '${component.name}',
                                 dist: '${component.dist}'
                             }`
                     ).join(',\n                            ');
-                    
+
                     // This will be resolved by Vite at build time
                     return `
                         // Pre-bundled at build time - no async loading needed
@@ -126,7 +126,7 @@ function virtualComponentsPlugin() {
                         ];
                     `
                 }
-                
+
                 // Fallback to runtime loading
                 return `
                     export const components = globalThis.__xydUserComponents || {}
@@ -505,7 +505,7 @@ export async function preWorkspaceSetup(options: {
 
 export function calculateFolderChecksum(folderPath: string): string {
     const hash = crypto.createHash('sha256');
-    const ignorePatterns = [...getGitignorePatterns(folderPath), '.xydchecksum', "node_modules", "dist", ".react-router"];
+    const ignorePatterns = [...getGitignorePatterns(folderPath), '.xydchecksum', "node_modules", "dist", ".react-router", "package-lock.json", "pnpm-lock.yaml"];
 
     function processFile(filePath: string) {
         const relativePath = path.relative(folderPath, filePath);
@@ -705,7 +705,10 @@ export async function postWorkspaceSetup(settings: Settings) {
 }
 
 function nodeInstallPackages(hostPath: string) {
-    const cmd = process.env.XYD_DEV_MODE ? 'pnpm i' : 'npm i' // TODO: issues with pnpm in production mode
+    let cmd = process.env.XYD_NODE_PM ? `${process.env.XYD_NODE_PM} i` : 'npm i'
+    if (process.env.XYD_DEV_MODE) {
+        cmd = "pnpm i"
+    }
     const execOptions: ExecSyncOptions = {
         cwd: hostPath,
         env: {

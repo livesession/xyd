@@ -57,17 +57,17 @@ export interface Definition<
     meta?: M[];
 
     /**
-     * @unsafe
+     * @internal
      */
     symbolDef?: SymbolDef;
 
     /**
-     * @unsafe
+     * @internal
      */
     id?: string;
 
     /**
-     * @unsafe
+     * @internal
      */
     type?: string;
 }
@@ -237,7 +237,7 @@ export interface BaseReferenceContext {
 
 export interface GraphQLReferenceContext extends BaseReferenceContext {
     /**
-     * @unsafe
+     * @internal
      */
     graphqlTypeShort: string;
 

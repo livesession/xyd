@@ -362,6 +362,8 @@
     --xyd-progressbar-bgcolor--active: var(--color-primary);
 
     /* Sidebar */
+    --xyd-sidebar-padding: 8px;
+
     --xyd-sidebar-bgcolor: var(--dark16);
     --xyd-sidebar-divider-color: var(--dark32);
     --xyd-sidebar-divider-shadow-color: var(--dark32);

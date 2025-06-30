@@ -13,7 +13,12 @@ export async function build() {
         force: true
     })
 
-    const { respPluginDocs, resolvedPlugins } = await appInit()
+    const inited = await appInit()
+    if (!inited) {
+        return
+    }
+    const { respPluginDocs, resolvedPlugins } = inited
+
     const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)
     const appRoot = getAppRoot();
 

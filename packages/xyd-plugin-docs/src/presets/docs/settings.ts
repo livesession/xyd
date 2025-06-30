@@ -67,7 +67,7 @@ export async function readSettings() {
 
             return json
         } catch (e) {
-            console.error(e)
+            console.error("⚠️ Error parsing settings file")
 
             return null
         }

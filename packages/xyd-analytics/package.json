@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/analytics",
-  "version": "0.1.0-xyd.31",
+  "version": "0.1.0-xyd.51",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -30,7 +30,6 @@
   "peerDependencies": {
     "openux-js": "0.0.0-pre.0",
     "pluganalytics": "0.0.0-pre.3",
-    "react": "^19.1.0",
     "react": "^19.1.0",
     "react-router": "^7.6.2"
   },

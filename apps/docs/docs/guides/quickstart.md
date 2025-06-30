@@ -16,52 +16,40 @@ Start building modern documentation in record time
 Follow the instructions below to learn how to run, deploy, update and supercharge your documentation with `xyd`.
 
 :::callout
-**Prerequisite:** Please install Node.js (version 22 or higher) before proceeding.
+**Prerequisite:**  Node 22.12+
 :::
 
-<!-- <UnderlineNav value={activeTab}>
-    <UnderlineNav.Item value="cli" href="#cli">
-        CLI
-    </UnderlineNav.Item>
-    <UnderlineNav.Item value="code" href="#code">
-        Code
-    </UnderlineNav.Item>
-</UnderlineNav>  -->
+## Installation
 
-**Step 1:** Install the <code>xyd</code> CLI:
+
+::::steps
+1. Install the <code>xyd</code> CLI:
 :::code-group{title="xyd installation"}
 ```bash npm
 npm i -g xyd-js
 ```
 
-```bash yarn
-yarn global add xyd-js
-```
-
-```bash pnpm
-pnpm add -g xyd-js
+```bash bun
+bun add -g @xyd-js/cli
 ```
 :::
 
-**Step 2:** Navigate to the docs directory (where the [settings file](/docs/guides/settings) is located) and execute the following command:
-```bash
+2. Navigate to the docs directory (where the [settings file](/docs/guides/settings) is located) and execute the following command:
+```bash [descHead="Info" desc="Above command runs a dev server"]
 xyd
 ```
+::::
 
 ## CLI versioning
 Please note that each CLI release is associated with a specific version of <code>xyd</code>.
-If your local website doesn't align with the production version, please update the CLI:
+If you have troubles, please update the CLI:
 :::code-group{title="xyd update"}
 ```bash npm
 npm i -g xyd-js
 ```
 
-```bash yarn
-yarn global add xyd-js
-```
-
-```bash pnpm
-pnpm add -g xyd-js
+```bash bun
+bun add -g @xyd-js/cli
 ```
 :::
 

@@ -26,7 +26,7 @@ Python `Get Users` SDK snippet:
 ## Local context
 
 ~~~ts
-```ts [#mySnippet]
+```ts [=mySnippet]
 export function build() {
     return "xyd build"
 }

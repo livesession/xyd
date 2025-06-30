@@ -1,5 +1,255 @@
 # @xyd-js/theme-poetry
 
+## 0.1.0-xyd.78
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.67
+  - @xyd-js/components@0.1.0-xyd.62
+  - @xyd-js/framework@0.1.0-xyd.83
+  - @xyd-js/themes@0.1.1-xyd.54
+  - @xyd-js/ui@0.1.0-xyd.67
+
+## 0.1.0-xyd.77
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.66
+  - @xyd-js/components@0.1.0-xyd.61
+  - @xyd-js/framework@0.1.0-xyd.82
+  - @xyd-js/themes@0.1.1-xyd.53
+  - @xyd-js/ui@0.1.0-xyd.66
+
+## 0.1.0-xyd.76
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.65
+  - @xyd-js/components@0.1.0-xyd.60
+  - @xyd-js/framework@0.1.0-xyd.81
+  - @xyd-js/themes@0.1.1-xyd.52
+  - @xyd-js/ui@0.1.0-xyd.65
+
+## 0.1.0-xyd.75
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.64
+  - @xyd-js/components@0.1.0-xyd.59
+  - @xyd-js/framework@0.1.0-xyd.80
+  - @xyd-js/themes@0.1.1-xyd.51
+  - @xyd-js/ui@0.1.0-xyd.64
+
+## 0.1.0-xyd.74
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.63
+  - @xyd-js/components@0.1.0-xyd.58
+  - @xyd-js/framework@0.1.0-xyd.79
+  - @xyd-js/themes@0.1.1-xyd.50
+  - @xyd-js/ui@0.1.0-xyd.63
+
+## 0.1.0-xyd.73
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.62
+  - @xyd-js/components@0.1.0-xyd.57
+  - @xyd-js/framework@0.1.0-xyd.78
+  - @xyd-js/themes@0.1.1-xyd.49
+  - @xyd-js/ui@0.1.0-xyd.62
+
+## 0.1.0-xyd.72
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.61
+  - @xyd-js/components@0.1.0-xyd.56
+  - @xyd-js/framework@0.1.0-xyd.77
+  - @xyd-js/themes@0.1.1-xyd.48
+  - @xyd-js/ui@0.1.0-xyd.61
+
+## 0.1.0-xyd.71
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.60
+  - @xyd-js/components@0.1.0-xyd.55
+  - @xyd-js/framework@0.1.0-xyd.76
+  - @xyd-js/themes@0.1.1-xyd.47
+  - @xyd-js/ui@0.1.0-xyd.60
+
+## 0.1.0-xyd.70
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.59
+  - @xyd-js/components@0.1.0-xyd.54
+  - @xyd-js/framework@0.1.0-xyd.75
+  - @xyd-js/themes@0.1.1-xyd.46
+  - @xyd-js/ui@0.1.0-xyd.59
+
+## 0.1.0-xyd.69
+
+### Patch Changes
+
+- update all packages
+- update all packages
+- update all packages
+- update all packages
+- update all packages
+- update all packages
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.58
+  - @xyd-js/components@0.1.0-xyd.53
+  - @xyd-js/framework@0.1.0-xyd.74
+  - @xyd-js/themes@0.1.1-xyd.45
+  - @xyd-js/ui@0.1.0-xyd.58
+
+## 0.1.0-xyd.68
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.57
+  - @xyd-js/components@0.1.0-xyd.52
+  - @xyd-js/framework@0.1.0-xyd.73
+  - @xyd-js/themes@0.1.1-xyd.44
+  - @xyd-js/ui@0.1.0-xyd.57
+
+## 0.1.0-xyd.67
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.56
+  - @xyd-js/components@0.1.0-xyd.51
+  - @xyd-js/framework@0.1.0-xyd.72
+  - @xyd-js/themes@0.1.1-xyd.43
+  - @xyd-js/ui@0.1.0-xyd.56
+
+## 0.1.0-xyd.66
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.55
+  - @xyd-js/components@0.1.0-xyd.50
+  - @xyd-js/framework@0.1.0-xyd.71
+  - @xyd-js/themes@0.1.1-xyd.42
+  - @xyd-js/ui@0.1.0-xyd.55
+
+## 0.1.0-xyd.65
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.54
+  - @xyd-js/components@0.1.0-xyd.49
+  - @xyd-js/framework@0.1.0-xyd.70
+  - @xyd-js/themes@0.1.1-xyd.41
+  - @xyd-js/ui@0.1.0-xyd.54
+
+## 0.1.0-xyd.64
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.53
+  - @xyd-js/components@0.1.0-xyd.48
+  - @xyd-js/framework@0.1.0-xyd.69
+  - @xyd-js/themes@0.1.1-xyd.40
+  - @xyd-js/ui@0.1.0-xyd.53
+
+## 0.1.0-xyd.63
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.52
+  - @xyd-js/components@0.1.0-xyd.47
+  - @xyd-js/framework@0.1.0-xyd.68
+  - @xyd-js/themes@0.1.1-xyd.39
+  - @xyd-js/ui@0.1.0-xyd.52
+
+## 0.1.0-xyd.62
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.51
+  - @xyd-js/components@0.1.0-xyd.46
+  - @xyd-js/framework@0.1.0-xyd.67
+  - @xyd-js/themes@0.1.1-xyd.38
+  - @xyd-js/ui@0.1.0-xyd.51
+
+## 0.1.0-xyd.61
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.50
+  - @xyd-js/components@0.1.0-xyd.45
+  - @xyd-js/framework@0.1.0-xyd.66
+  - @xyd-js/themes@0.1.1-xyd.37
+  - @xyd-js/ui@0.1.0-xyd.50
+
+## 0.1.0-xyd.60
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.49
+  - @xyd-js/components@0.1.0-xyd.44
+  - @xyd-js/framework@0.1.0-xyd.65
+  - @xyd-js/themes@0.1.1-xyd.36
+  - @xyd-js/ui@0.1.0-xyd.49
+
+## 0.1.0-xyd.59
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.48
+  - @xyd-js/components@0.1.0-xyd.43
+  - @xyd-js/framework@0.1.0-xyd.64
+  - @xyd-js/themes@0.1.1-xyd.35
+  - @xyd-js/ui@0.1.0-xyd.48
+
 ## 0.1.0-xyd.58
 
 ### Patch Changes

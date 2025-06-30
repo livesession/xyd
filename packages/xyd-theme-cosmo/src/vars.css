@@ -48,3 +48,10 @@
         --ch-27: #df3079;
     }
 }
+
+:root {
+    --xyd-sidebar-width: 280px;
+    --xyd-sidebar-padding: 16px;
+    --xyd-subnav-height: 50px;
+}
+

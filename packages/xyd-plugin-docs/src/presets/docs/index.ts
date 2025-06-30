@@ -43,7 +43,7 @@ function preinstall() {
                 name: DEFAULT_THEME
             }
         }
-        
+
         let themeRoutesExists = false
         try {
             await fs.access(path.join(root, THEME_CONFIG_FOLDER, "./routes.ts"))
@@ -68,31 +68,87 @@ function preinstall() {
 }
 
 // TODO: maybe later as a separate plugin?
+// function vitePluginSettings() {
+//     return async function ({ preinstall }): Promise<VitePlugin> {
+//         return {
+//             name: 'virtual:xyd-settings',
+//             resolveId(id) {
+//                 if (id === 'virtual:xyd-settings') {
+//                     return id + '.jsx'; // Return the module with .jsx extension
+//                 }
+//                 return null;
+//             },
+//             async load(id) { // TODO: better cuz we probably dont neeed `get settings()`
+//                 if (id === 'virtual:xyd-settings.jsx') {
+//                     return `
+//                         export default {
+//                             get settings() {
+//                                 return globalThis.__xydSettings || ${typeof preinstall.settings === "string" ? preinstall.settings : JSON.stringify(preinstall.settings)}
+//                             }
+//                         }
+//                     `
+//                 }
+//                 return null;
+//             },
+//         };
+//     }
+// }
+
+
 function vitePluginSettings() {
     return async function ({ preinstall }): Promise<VitePlugin> {
+        const virtualId = 'virtual:xyd-settings';
+        const resolvedId = virtualId + '.jsx';
+
+        let currentSettings = globalThis.__xydSettings
+        if (!currentSettings && preinstall?.settings) {
+            currentSettings = typeof preinstall?.settings === "string" ? preinstall?.settings : JSON.stringify(preinstall?.settings || {})
+        }
+
         return {
-            name: 'virtual:xyd-settings',
+            name: 'xyd:virtual-settings',
+
             resolveId(id) {
-                if (id === 'virtual:xyd-settings') {
-                    return id + '.jsx'; // Return the module with .jsx extension
+                if (id === virtualId) {
+                    return resolvedId;
                 }
                 return null;
             },
+
+
             async load(id) { // TODO: better cuz we probably dont neeed `get settings()`
                 if (id === 'virtual:xyd-settings.jsx') {
                     return `
-                        export default {
-                            get settings() {
-                                return globalThis.__xydSettings || ${typeof preinstall.settings === "string" ? preinstall.settings : JSON.stringify(preinstall.settings)}
+                    export default {
+                        get settings() {
+                             return globalThis.__xydSettings || ${typeof preinstall.settings === "string" ? preinstall.settings : JSON.stringify(preinstall.settings)}
                             }
                         }
                     `
                 }
                 return null;
             },
+
+            async hotUpdate(ctx) {
+                const isPageFileChanged = ctx.file.includes('xyd-plugin-docs/src/pages/layout.tsx')
+                 || ctx.file.includes('xyd-plugin-docs/src/pages/page.tsx')
+
+                if (!isPageFileChanged) {
+                    return
+                }
+
+                const newSettings = await readSettings();
+                if (!newSettings) {
+                    return
+                }
+
+                globalThis.__xydSettings = newSettings;
+            },
         };
     }
+
 }
+
 
 export function vitePluginThemeCSS() {
     return async function ({

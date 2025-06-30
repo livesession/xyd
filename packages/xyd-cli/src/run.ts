@@ -1,7 +1,9 @@
 import arg from "arg";
 import semver from "semver";
 import colors from "picocolors";
-import { version } from "../package.json";
+import {version} from "../package.json";
+import updateNotifier from 'update-notifier';
+import packageJson from '../package.json' assert {type: 'json'};
 
 import * as commands from "./commands";
 
@@ -9,27 +11,37 @@ const helpText = `
 ${colors.blueBright("xyd")}
 
   ${colors.underline("Usage")}:
-    $ xyd build [${colors.yellowBright("projectDir")}]
-    $ xyd start [${colors.yellowBright("projectDir")}]
     $ xyd dev [${colors.yellowBright("projectDir")}]
+    $ xyd build [${colors.yellowBright("projectDir")}]
+    $ xyd install [${colors.yellowBright("projectDir")}]
 
   ${colors.underline("Options")}:
     --help, -h          Print this help message and exit
     --version, -v       Print the CLI version and exit
     --verbose           Show debug messages
 
+  ${colors.underline("Run your project locally in development")}:
+
+  $ xyd dev
+
   ${colors.underline("Build your project")}:
 
     $ xyd build
 
-  ${colors.underline("Install the xyd framework")}:
+  ${colors.underline("Install the xyd framework manually")}:
 
     $ xyd install
-
-  ${colors.underline("Run your project locally in development")}:
-
-    $ xyd dev
 `;
+
+const notifier = updateNotifier({
+    pkg: {
+        ...packageJson,
+    },
+    updateCheckInterval: 60 * 60 * 1,
+});
+notifier.notify({
+    defer: false,
+});
 
 /**
  * Programmatic interface for running the xyd CLI with the given command line
@@ -74,7 +86,8 @@ export async function run(argv: string[] = process.argv.slice(2)) {
         process.env.XYD_VERBOSE = "true"
     } else {
         // Override console.debug to be silent when not in verbose mode
-        console.debug = () => {};
+        console.debug = () => {
+        };
     }
 
     let input = args._;
@@ -98,14 +111,14 @@ export async function run(argv: string[] = process.argv.slice(2)) {
 
     // Note: Keep each case in this switch statement small.
     switch (command) {
+        case "dev":
+            await commands.dev(input[1], flags);
+            break;
         case "build":
             await commands.build(input[1], flags);
             break;
         case "install":
             await commands.install(input[1], flags);
-            break;
-        case "dev":
-            await commands.dev(input[1], flags);
             break;
         default:
             // `xyd` is shorthand for `xyd dev`

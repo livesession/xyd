@@ -22,14 +22,12 @@ export interface Settings {
     plugins?: Plugins
 
     /**
-     * @unsafe
      *
      * Redirects configuration
      */
     redirects?: Redirects[]
 
     /**
-     * @unsafe
      * SEO configuration
      */
     seo?: SEO
@@ -575,7 +573,6 @@ export interface Engine {
     paths?: EnginePaths
 
     /**
-     * @unsafe
      *
      * Uniform configuration
      *

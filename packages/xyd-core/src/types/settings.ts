@@ -23,14 +23,12 @@ export interface Settings {
 
     /**
      * @internal
-     * @unsafe
      *
      * Redirects configuration
      */
     redirects?: Redirects[]
 
     /**
-     * @unsafe
      * SEO configuration
      */
     seo?: SEO
@@ -198,7 +196,7 @@ export type SearchType = "side" | "top"
  */
 export interface Navigation {
     /** Definition of sidebar - an array of groups with all the pages within that group */
-    sidebar: (SidebarRoute | Sidebar | string)[]
+    sidebar: SidebarNavigation
 
     /** Array of headers */
     header?: Header[]
@@ -215,6 +213,11 @@ export interface Navigation {
     /** Anchors, includes the icon, name, and url */
     anchors?: AnchorRoot
 }
+
+/**
+ * Sidebar navigation type
+ */
+export type SidebarNavigation = (SidebarRoute | Sidebar | string)[]
 
 /**
  * Sidebar multi-group configuration
@@ -673,7 +676,6 @@ export interface Engine {
     paths?: EnginePaths
 
     /**
-     * @unsafe
      *
      * Uniform configuration
      *

@@ -100,8 +100,11 @@ export const CodeHost = css`
         padding: 8px 16px;
 
         border-top: 1px solid var(--xyd-coder-code-border-color);
-        border-bottom-left-radius: 10px;
-        border-bottom-right-radius: 10px;
+        
+        &:not(:has(+ [part="code-description"])) {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
 
         white-space: pre-wrap;
         word-break: break-all;

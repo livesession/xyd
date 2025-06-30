@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/sources",
-  "version": "0.1.1-xyd.34",
+  "version": "0.1.1-xyd.54",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",
@@ -24,6 +24,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "typescript": "^5.8.3",
     "@types/react": "^19.1.0",
     "react-docgen": "^7.1.1",
     "typedoc": "^0.28.1"

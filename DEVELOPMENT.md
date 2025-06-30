@@ -157,11 +157,6 @@ npm cache cleaning
 rm -rf $HOME/.npm/_cacache
 ```
 
-local cli installation from verdaccio
-```
-npm install -g @xyd-js/cli --registry http://localhost:4873 
-```
-
 ### Release process
 
 run changeset

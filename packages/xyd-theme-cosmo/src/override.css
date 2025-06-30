@@ -1,4 +1,8 @@
 @layer themes {
+    :root {
+        --cosmo-scrollbar-bgcolor: var(--xyd-toc-scroll-bgcolor);
+    }
+
     xyd-layout-primary {
         [part="sidebar"] {
             position: sticky;
@@ -10,6 +14,64 @@
         &[data-subheader="true"][data-hide-subheader="false"] [part="sidebar"] {
             top: calc(var(--xyd-header-total-height) + var(--xyd-page-gutter, 8px));
             height: calc(100vh - var(--xyd-header-total-height) - calc(var(--xyd-page-gutter, 8px) * 2));
+        }
+
+        xyd-sidebar {
+            [part="item-header"] {
+                position: sticky;
+                top: calc(var(--xyd-sidebar-padding) * -1);
+                background: var(--xyd-sidebar-bgcolor);
+                z-index: 1;
+                padding-left: var(--xyd-sidebar-item-padding-left);
+                padding-bottom: 8px;
+                padding-top: 16px;
+            }
+
+            [part="item-header"]:first-child {
+                margin: 0;
+            }
+
+            scrollbar-color: transparent transparent;
+            scrollbar-width: thin;
+        }
+
+        xyd-sidebar::-webkit-scrollbar-corner,
+        xyd-sidebar::-webkit-scrollbar-thumb,
+        xyd-sidebar::-webkit-scrollbar-track {
+            background: none;
+        }
+
+        xyd-sidebar::-webkit-scrollbar-thumb {
+            background: var(--xyd-sidebar-border-color, var(--cosmo-scrollbar-bgcolor));
+            background-clip: content-box;
+            border: 1px solid transparent;
+            border-radius: 10px;
+        }
+
+        /* Hover effect for scrollbar */
+        xyd-sidebar:hover {
+            scrollbar-color: var(--xyd-sidebar-border-color, var(--cosmo-scrollbar-bgcolor)) transparent;
+        }
+
+        xyd-sidebar:hover::-webkit-scrollbar-thumb {
+            background: var(--xyd-sidebar-border-color, var(--cosmo-scrollbar-bgcolor));
+            background-clip: content-box;
+            border: 1px solid transparent;
+            border-radius: 10px;
+        }
+
+        /* Mobile responsive scrollbar */
+        @media screen and (max-width: 640px) {
+            xyd-sidebar {
+                scrollbar-color: var(--xyd-sidebar-border-color, var(--cosmo-scrollbar-bgcolor)) transparent;
+            }
+
+            xyd-sidebar::-webkit-scrollbar-thumb {
+                background: var(--xyd-sidebar-border-color, var(--cosmo-scrollbar-bgcolor));
+                background-clip: content-box;
+                border: 1px solid transparent;
+                border-radius: 10px;
+            }
         }
     }
 }

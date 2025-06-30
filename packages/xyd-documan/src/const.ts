@@ -8,8 +8,8 @@ export const SUPPORTED_SETTINGS_FILES = [
     'docs.tsx'
 ]
 
-export const SUPPORTED_WATCH_FILES = [
+export const SUPPORTED_CONTENT_FILES = [
     '.md',
     '.mdx',
-    ...SUPPORTED_SETTINGS_FILES
 ]
+

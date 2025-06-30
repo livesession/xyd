@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-poetry",
-  "version": "0.1.0-xyd.58",
+  "version": "0.1.0-xyd.78",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

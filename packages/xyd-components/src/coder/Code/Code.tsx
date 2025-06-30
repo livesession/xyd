@@ -103,7 +103,7 @@ Code.Pre = function CodePre(props: {
     let description: React.ReactNode | null = null
     
     if (props.descriptionHead || props.descriptionContent) {
-        description = <div className={cn.CodeDescription}>
+        description = <div part="code-description" className={cn.CodeDescription}>
             <div>
                 {props.descriptionIcon ? <Icon name={props.descriptionIcon} size={16} /> : <_DefaultDescriptionIcon />}
             </div>

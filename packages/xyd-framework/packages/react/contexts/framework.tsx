@@ -65,7 +65,6 @@ export function Framework(props: FrameworkProps) {
                 >
                     <BannerContent />
                 </BannerComponent> : null}
-
                 {props.children}
             </SurfaceContext>
         </FrameworkContext>

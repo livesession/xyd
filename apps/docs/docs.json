@@ -7,7 +7,7 @@
         },
         "favicon": "/public/assets/logo.svg",
         "banner": {
-            "content": "**xyd 0.1.0-alpha** - Docs platform for future dev.",
+            "content": "**xyd 0.1.0** - Docs platform for future dev",
             "label": "Coming Soon",
             "icon": "sparkles"
         },

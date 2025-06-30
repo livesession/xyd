@@ -130,12 +130,8 @@ You can use the `code-group` component to group multiple code blocks together.
 npm i -g xyd-js
 ```
 
-```bash yarn
-yarn global add xyd-js
-```
-
-```bash pnpm
-pnpm add -g xyd-js
+```bash bun
+bun add -g @xyd-js/cli
 ```
 :::
 ~~~
@@ -146,12 +142,8 @@ pnpm add -g xyd-js
 npm i -g xyd-js
 ```
 
-```bash yarn
-yarn global add xyd-js
-```
-
-```bash pnpm
-pnpm add -g xyd-js
+```bash bun
+bun add -g @xyd-js/cli
 ```
 :::
 

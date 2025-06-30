@@ -4,7 +4,11 @@
 pnpm store prune
 
 # Clear Nx cache
-nx reset
+npx nx reset
+
+# Clear Lerna cache
+npx lerna clean --yes
+rm -rf .lerna
 
 # Define the directories to clean
 root_directories=("node_modules" "pnpm-lock.yaml" "dist" "cli", ".xyd")

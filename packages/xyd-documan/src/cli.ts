@@ -44,6 +44,7 @@ export class CLI {
             this.spinnerInterval = null;
         }
         this.isSpinning = false;
+        
         this.clearLine();
     }
 

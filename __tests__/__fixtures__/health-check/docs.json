@@ -1,0 +1,56 @@
+{
+    "theme": {
+        "name": "picasso",
+        "logo": {
+            "light": "/public/assets/logo.svg",
+            "dark": "/public/assets/logo-dark.svg"
+        },
+        "favicon": "/public/assets/logo.svg",
+        "banner": {
+            "content": "**xyd 0.1.0** - Docs platform for future dev.",
+            "label": "Coming Soon",
+            "icon": "sparkles"
+        }
+    },
+    "navigation": {
+        "header": [
+            {
+                "title": "Guides",
+                "page": ""
+            },
+            {
+                "title": "API Reference",
+                "page": "api-reference"
+            }
+        ],
+        "sidebar": [
+            {
+                "group": "Get Started",
+                "pages": [
+                    "introduction",
+                    "pages-and-routing"
+                ]
+            },
+            {
+                "group": "Writing",
+                "pages": [
+                    "markdown",
+                    "developer-content"
+                ]
+            },
+            {
+                "group": "Customization",
+                "pages": [
+                    "make-docs-yours",
+                    "icons"
+                ]
+            }
+        ]
+    },
+    "api": {
+        "openapi": {
+            "source": "openapi.json",
+            "route": "api-reference"
+        }
+    }
+}

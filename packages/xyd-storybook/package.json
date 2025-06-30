@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/storybook",
-  "version": "0.0.1-xyd.41",
+  "version": "0.0.1-xyd.61",
   "type": "module",
   "scripts": {
     "dev": "storybook dev -p 6006",
@@ -8,21 +8,24 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@mdx-js/react": "^3.0.1",
-    "@mdx-js/rollup": "^3.0.1",
     "@xyd-js/atlas": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/content": "workspace:*",
     "@xyd-js/ui": "workspace:*",
+    "@xyd-js/theme-cosmo": "workspace:*",
+    "@xyd-js/theme-opener": "workspace:*",
+    "@xyd-js/theme-picasso": "workspace:*",
     "@xyd-js/theme-poetry": "workspace:*",
-    "acorn": "^8.14.1",
-    "acorn-jsx": "^5.3.2",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "rehype-stringify": "^10.0.1",
-    "remark-gfm": "^4.0.0"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.0",
+    "@mdx-js/react": "^3.0.1",
+    "@mdx-js/rollup": "^3.0.1",
+    "acorn": "^8.14.1",
+    "acorn-jsx": "^5.3.2",
     "@chromatic-com/storybook": "^1.9.0",
     "@eslint/js": "^9.11.1",
     "@storybook/addon-essentials": "^8.3.5",

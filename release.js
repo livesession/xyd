@@ -4,6 +4,9 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Check if --prod flag is provided
+const isProduction = process.argv.includes('--prod');
+
 // Helper function to run commands
 function runCommand(command, description) {
     console.log(`\n🔄 ${description}...\n`);
@@ -52,6 +55,7 @@ async function main() {
         // Step 2: Changeset for all CLI dependencies packages
         console.log('🔄 Creating changeset for CLI dependencies packages...');
         createChangeset([
+            '@xyd-js/openapi-sampler',
             '@xyd-js/analytics',
             '@xyd-js/atlas',
             '@xyd-js/components',
@@ -70,6 +74,7 @@ async function main() {
             '@xyd-js/plugin-orama',
             '@xyd-js/plugins',
             '@xyd-js/sources',
+            '@xyd-js/storybook',
             '@xyd-js/theme-cosmo',
             '@xyd-js/theme-gusto',
             '@xyd-js/theme-opener',
@@ -78,7 +83,6 @@ async function main() {
             '@xyd-js/themes',
             '@xyd-js/ui',
             '@xyd-js/uniform',
-            '@xyd-js/openapi-sampler'
         ], 'update all packages');
 
         // Step 3: Clear npm cache
@@ -88,7 +92,10 @@ async function main() {
         runCommand('pnpm changeset version', 'Versioning CLI dependencies packages');
 
         // Step 5: Publish all CLI dependencies packages
-        runCommand('npm_config_registry=http://localhost:4873 pnpm changeset publish', 'Publishing packages');
+        const publishCommand = isProduction 
+            ? 'pnpm changeset publish' 
+            : 'npm_config_registry=http://localhost:4873 pnpm changeset publish';
+        runCommand(publishCommand, 'Publishing packages');
     }
 
     {
@@ -102,7 +109,10 @@ async function main() {
         runCommand('pnpm changeset version', 'Versioning packages');
 
         // Step 8: Publish packages
-        runCommand('npm_config_registry=http://localhost:4873 pnpm changeset publish', 'Publishing packages');
+        const publishCommand = isProduction 
+            ? 'pnpm changeset publish' 
+            : 'npm_config_registry=http://localhost:4873 pnpm changeset publish';
+        runCommand(publishCommand, 'Publishing packages');
     }
 
     console.log('🎉 Release process completed successfully!\n');
