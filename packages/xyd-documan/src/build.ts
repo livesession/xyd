@@ -1,11 +1,22 @@
 import path from "node:path";
 import fs from "node:fs";
-import { fileURLToPath } from "node:url";
+import {fileURLToPath} from "node:url";
 
-import { build as viteBuild, Plugin as VitePlugin } from 'vite';
+import {build as viteBuild, Plugin as VitePlugin} from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
 
-import { appInit, calculateFolderChecksum, commonVitePlugins, getAppRoot, getBuildPath, getHostPath, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
+import {
+    appInit,
+    calculateFolderChecksum,
+    commonVitePlugins,
+    getAppRoot,
+    getBuildPath,
+    getHostPath,
+    getXydFolderPath,
+    postWorkspaceSetup,
+    preWorkspaceSetup,
+    storeChecksum
+} from "./utils";
 
 // Define the main function to run the builds
 export async function build() {
@@ -17,7 +28,7 @@ export async function build() {
     if (!inited) {
         return
     }
-    const { respPluginDocs, resolvedPlugins } = inited
+    const {respPluginDocs, resolvedPlugins} = inited
 
     const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)
     const appRoot = getAppRoot();
@@ -73,6 +84,8 @@ export async function build() {
             plugins: [
                 fixManifestPlugin(appRoot),
                 ...commonRunVitePlugins,
+
+                tsconfigPaths(),
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
@@ -100,33 +113,46 @@ export async function build() {
 }
 
 function setupInstallableEnvironmentV2() {
-    const buildDir = getBuildPath();
-    const packageJsonPath = path.join(buildDir, 'package.json');
+    const symbolicXydNodeModules = path.join(getXydFolderPath(), "node_modules")
+    const hostNodeModules = path.join(getHostPath(), "node_modules")
 
-    const packageJsonContent = {
-        type: "module",
-        scripts: {},
-        dependencies: {},
-        devDependencies: {}
-    };
-
-    if (!fs.existsSync(buildDir)) {
-        fs.mkdirSync(buildDir, { recursive: true });
+    if (fs.existsSync(symbolicXydNodeModules)) {
+        if (fs.lstatSync(symbolicXydNodeModules).isSymbolicLink()) {
+            fs.unlinkSync(symbolicXydNodeModules);
+        } else {
+            fs.rmSync(symbolicXydNodeModules, { recursive: true, force: true });
+        }
     }
+    fs.symlinkSync(hostNodeModules, symbolicXydNodeModules, 'dir');
 
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
+    // const buildDir = getBuildPath();
+    // const packageJsonPath = path.join(buildDir, 'package.json');
 
-    const buildNodeModulesPath = path.join(buildDir, 'node_modules');
-    const dirname = path.dirname(fileURLToPath(import.meta.url));
+    // const packageJsonContent = {
+    //     type: "module",
+    //     scripts: {},
+    //     dependencies: {},
+    //     devDependencies: {}
+    // };
 
-    let workspaceNodeModulesPath = '';
-    if (process.env.XYD_DEV_MODE) {
-        workspaceNodeModulesPath = path.resolve(dirname, '../../../node_modules');
-    } else {
-        workspaceNodeModulesPath = path.resolve(dirname, '../../../');
-    }
+    // if (!fs.existsSync(buildDir)) {
+    //     fs.mkdirSync(buildDir, {recursive: true});
+    // }
 
-    console.log("workspaceNodeModulesPath", workspaceNodeModulesPath);
+    // fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
+
+    // const buildNodeModulesPath = path.join(buildDir, 'node_modules');
+    // const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+    // let workspaceNodeModulesPath = '';
+    // if (process.env.XYD_DEV_MODE) {
+    //     workspaceNodeModulesPath = path.resolve(dirname, '../../../node_modules');
+    // } else {
+    //     // TODO: check if works for npm
+    //     workspaceNodeModulesPath = getXydFolderPath()
+    // }
+
+    // console.log("workspaceNodeModulesPath", workspaceNodeModulesPath);
 
     // if (fs.existsSync(buildNodeModulesPath)) {
     //     if (fs.lstatSync(buildNodeModulesPath).isSymbolicLink()) {
@@ -148,6 +174,7 @@ function fixManifestPlugin(
 ): VitePlugin {
     const manifestPath = path.join(
         getBuildPath(),
+        // getAppRoot(),
         "./server/.vite/manifest.json"
     );
 

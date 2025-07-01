@@ -25,12 +25,16 @@ Follow the instructions below to learn how to run, deploy, update and supercharg
 ::::steps
 1. Install the <code>xyd</code> CLI:
 :::code-group{title="xyd installation"}
-```bash npm
-npm i -g xyd-js
+```bash bun
+bun add -g xyd-js
 ```
 
-```bash bun
-bun add -g @xyd-js/cli
+```bash pnpm
+pnpm add -g xyd-js
+```
+
+```bash npm
+npm i -g xyd-js
 ```
 :::
 
@@ -44,12 +48,16 @@ xyd
 Please note that each CLI release is associated with a specific version of <code>xyd</code>.
 If you have troubles, please update the CLI:
 :::code-group{title="xyd update"}
-```bash npm
-npm i -g xyd-js
+```bash bun
+bun add -g xyd-js
 ```
 
-```bash bun
-bun add -g @xyd-js/cli
+```bash pnpm
+pnpm add -g xyd-js
+```
+
+```bash npm
+npm i -g xyd-js
 ```
 :::
 

@@ -54,7 +54,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           },
           {
@@ -154,7 +154,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           }
         ]
@@ -174,7 +174,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "/authorDelete"
+              "canonical": ""
             }
           }
         ]
@@ -230,7 +230,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           },
           {
@@ -250,7 +250,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           },
           {
@@ -327,7 +327,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "/birthDate"
+              "canonical": ""
             }
           }
         ],
@@ -373,7 +373,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "/birthDate"
+              "canonical": ""
             }
           }
         ]

@@ -1,5 +1,59 @@
 # @xyd-js/openapi-sampler
 
+## 0.1.0-xyd.63
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.62
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.61
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.60
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.59
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.58
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.57
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.56
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.55
+
+### Patch Changes
+
+- update all packages
+
 ## 0.1.0-xyd.54
 
 ### Patch Changes

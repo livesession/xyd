@@ -1,22 +1,32 @@
-import { defineConfig, defineWorkspace } from 'vitest/config'
+import {defineConfig} from 'vitest/config'
 
-export default defineWorkspace([
-    {
-        // extends: './vite.config.ts',
-        test: {
-            name: 'unit',
-            include: ['**/unit/**/*.test.ts'],
-            environment: 'node',
-            globals: true,
-        },
+export default defineConfig({
+    test: {
+        globals: true,
+        environment: 'node',
+        include: [
+            'packages/**/*.test.ts',
+            'packages/**/__tests__/**/*.test.ts',
+            '__tests__/**/*.test.ts'
+        ],
+        exclude: [
+            '__tests__/e2e/**',
+            '**/node_modules/**',
+            '**/dist/**',
+            '**/build/**'
+        ]
     },
-    {
-        // extends: './vite.config.ts',
-        test: {
-            name: 'integration',
-            include: ['**/integration/**/*.test.ts'],
-            environment: 'node',
-            globals: true,
-        },
-    },
-])
+    plugins: [
+        {
+            name: 'graphql-raw',
+            transform(code, id) {
+                if (id.endsWith('.graphql')) {
+                    return {
+                        code: `export default ${JSON.stringify(code)};`,
+                        map: null
+                    }
+                }
+            }
+        }
+    ]
+})

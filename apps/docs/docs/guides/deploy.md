@@ -15,7 +15,7 @@ Learn how to make your docs available to the public
 
 You must follow the following steps to deploy your `xyd` docs:
 :::steps
-1. [npx](https://docs.npmjs.com/cli/v8/commands/npx) / [xyd CLI](http://npmjs.com/package/xyd-js) installed on CI.
+1. [bunx](https://bun.sh/docs/cli/bunx) /[npx](https://docs.npmjs.com/cli/v8/commands/npx) / [xyd CLI](http://npmjs.com/package/xyd-js) installed on CI.
 
 2. You run build command inside your docs project.
 :::
@@ -26,6 +26,11 @@ You must follow the following steps to deploy your `xyd` docs:
 Run this command to build the docs:
 
 :::tabs{kind="secondary"}
+1. [bunx](type=bunx)
+    ```bash [descHead="Info" desc="This produces a static files availalbe at <code>.xyd/build/client</code> folder within your docs project. You can serve that locally using popular static web servers or just deploy it on production."]
+    $ bunx xyd-js build
+    ```
+
 1. [npx](type=npx)
     ```bash [descHead="Info" desc="This produces a static files availalbe at <code>.xyd/build/client</code> folder within your docs project. You can serve that locally using popular static web servers or just deploy it on production."]
     $ npx xyd-js build
@@ -46,27 +51,15 @@ Just point to generated folder which you could upload to your provider.
 1. [Netlify](platform=netlify)
     ```toml netlify.toml [descHead="Tip" desc="Check out [Netlify Deployment Sample](#)."]
     [build]
-    command = "npx xyd-js build"
+    command = "bunx xyd-js build"
     publish = ".xyd/build/client"
     ```
 
 2. [Vercel](platform=vercel)
-    ```json [descHead="Tip" desc="Check out [Vercel Deployment Sample](#)."]
+    ```json vercel.json [descHead="Tip" desc="Check out [Vercel Deployment Sample](#)."]
     {
-      "buildCommand": "npx @xyd-js/cli build",
-      "outputDirectory": ".xyd/build/client",
-      "redirects": [
-        {
-          "source": "/",
-          "destination": "/introduction/",
-          "permanent": true
-        },
-        {
-          "source": "/index.html",
-          "destination": "/introduction/",
-          "permanent": true
-        }
-      ]
+      "buildCommand": "bunx xyd-js build",
+      "outputDirectory": ".xyd/build/client"
     } 
     ```
 

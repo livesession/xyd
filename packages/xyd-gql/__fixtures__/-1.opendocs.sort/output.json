@@ -96,7 +96,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           }
         ]
@@ -141,7 +141,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           },
           {
@@ -161,7 +161,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/email"
+              "canonical": ""
             }
           },
           {
@@ -232,7 +232,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           },
           {
@@ -252,7 +252,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           },
           {
@@ -272,7 +272,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/email"
+              "canonical": ""
             }
           },
           {
@@ -374,7 +374,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           },
           {
@@ -394,7 +394,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/title"
+              "canonical": ""
             }
           },
           {
@@ -414,7 +414,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/content"
+              "canonical": ""
             }
           },
           {
@@ -563,7 +563,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           }
         ]
@@ -711,7 +711,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/query"
+              "canonical": ""
             }
           }
         ]
@@ -888,7 +888,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           },
           {

@@ -1,5 +1,86 @@
 # @xyd-js/openapi
 
+## 0.1.0-xyd.93
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-xyd.63
+  - @xyd-js/uniform@0.1.0-xyd.97
+
+## 0.1.0-xyd.92
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-xyd.62
+  - @xyd-js/uniform@0.1.0-xyd.96
+
+## 0.1.0-xyd.91
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-xyd.61
+  - @xyd-js/uniform@0.1.0-xyd.95
+
+## 0.1.0-xyd.90
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-xyd.60
+  - @xyd-js/uniform@0.1.0-xyd.94
+
+## 0.1.0-xyd.89
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-xyd.59
+  - @xyd-js/uniform@0.1.0-xyd.93
+
+## 0.1.0-xyd.88
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-xyd.58
+  - @xyd-js/uniform@0.1.0-xyd.92
+
+## 0.1.0-xyd.87
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-xyd.57
+  - @xyd-js/uniform@0.1.0-xyd.91
+
+## 0.1.0-xyd.86
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-xyd.56
+  - @xyd-js/uniform@0.1.0-xyd.90
+
+## 0.1.0-xyd.85
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-xyd.55
+  - @xyd-js/uniform@0.1.0-xyd.89
+
 ## 0.1.0-xyd.84
 
 ### Patch Changes

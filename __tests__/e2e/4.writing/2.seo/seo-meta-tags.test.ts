@@ -1,6 +1,6 @@
 import { test, expect, Locator } from '@playwright/test';
 
-import { createXydServer, XydServer } from '../../utils/xyd-server';
+import {createXydServer, createXydServerWithTemplate, XydServer} from '../../utils/xyd-server';
 
 const SEO_DOMAIN = "https://your-domain.com"
 const DEFAULT_DESCRIPTION = "Your default site description"
@@ -65,7 +65,7 @@ test.describe('SEO Meta Tags', () => {
 
   test.beforeAll(async () => {
     // Start XYD server for this test directory
-    server = await createXydServer(__dirname);
+    server = await createXydServerWithTemplate(__dirname);
   });
 
   test.afterAll(async () => {

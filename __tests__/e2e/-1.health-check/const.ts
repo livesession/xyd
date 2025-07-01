@@ -26,11 +26,12 @@ export const NODE_VERSIONS = [
 ]
 // TODO: xyd-js version
 export const PACKAGE_MANAGER = [
-    // {name: 'npm', install: 'npm install -g @xyd-js/cli', use: 'xyd'},
-    // { name: 'pnpm', install: 'pnpm add -g @xyd-js/cli', use: 'xyd' },
-    {name: "bun", install: 'bun add -g @xyd-js/cli', use: 'xyd'},
-    // { name: 'yarn', install: 'yarn global add @xyd-js/cli', use: 'xyd' }, // TODO: some issues
-    // {name: 'npx', install: '', use: 'npx @xyd-js/cli'}
+    // {name: 'npm', install: 'npm install -g @xyd-js/cli', use: 'xyd', env: []},
+    // {name: 'pnpm', install: 'pnpm add -g @xyd-js/cli', use: 'xyd', env: ["XYD_NODE_PM=pnpm"]},
+    // {name: "bun", install: 'bun add -g @xyd-js/cli', use: 'xyd', env: []},
+    // {name: 'npx', install: '', use: 'npx @xyd-js/cli', env: []},
+    {name: 'bunx', install: '', use: 'bunx @xyd-js/cli', env: []},
+    // { name: 'yarn', install: 'yarn global add @xyd-js/cli', use: 'xyd', env: []}, // TODO: some issues, support in the future
 ]
 
 // Test configuration array - each entry defines a test scenario

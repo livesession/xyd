@@ -1,6 +1,6 @@
 import {execSync} from 'node:child_process'
-import {existsSync, mkdtempSync, rmSync, cpSync} from 'node:fs'
-import {join} from 'node:path'
+import fs, {existsSync, mkdtempSync, rmSync, cpSync} from 'node:fs'
+import path, {join} from 'node:path'
 import {spawn} from 'node:child_process'
 import {chromium} from '@playwright/test'
 import {setTimeout as wait} from 'node:timers/promises'
@@ -8,15 +8,23 @@ import {tmpdir} from 'node:os'
 import {PACKAGE_MANAGER, TestResult, TestConfig} from './const'
 import {Socket} from 'node:net'
 
-// Helper function to get pnpm home directory
-function getPnpmHome(): string {
-    try {
-        // Try to get pnpm home using 'pnpm config get global-dir'
-        const result = execSync('pnpm config get global-dir', { encoding: 'utf8' }).trim()
-        return result
-    } catch (error) {
-        throw error
+// Helper function to create environment with package manager specific variables
+function createEnvWithPmVars(pm: typeof PACKAGE_MANAGER[0]): NodeJS.ProcessEnv {
+    const env: NodeJS.ProcessEnv = {
+        ...process.env,
     }
+    
+    // Add package manager specific environment variables
+    if (pm.env) {
+        pm.env.forEach(envVar => {
+            const [key, value] = envVar.split('=')
+            if (key && value) {
+                env[key] = value
+            }
+        })
+    }
+    
+    return env
 }
 
 // Helper functions
@@ -47,10 +55,7 @@ export async function setupPackageManager(pm: typeof PACKAGE_MANAGER[0]): Promis
 export async function installCLI(pm: typeof PACKAGE_MANAGER[0]): Promise<void> {
     console.log(`Installing XYD CLI with ${pm.name}...`)
     if (pm.name !== 'npx' && pm.install) {
-        // Set up environment with package manager specific configs
-        const env: NodeJS.ProcessEnv = {
-            ...process.env,
-        }
+        const env = createEnvWithPmVars(pm)
         
         execSync(pm.install, {
             stdio: 'inherit',
@@ -91,10 +96,11 @@ export function cleanupTempWorkspace(tempDir: string): void {
 export async function testBuild(pm: typeof PACKAGE_MANAGER[0], testConfig: TestConfig, tempDir: string): Promise<boolean> {
     console.log(`Testing build command with ${pm.name} for config: ${testConfig.name}...`)
     console.log("TEMP_DIR", tempDir)
+    
+    const env = createEnvWithPmVars(pm)
+    
     execSync(`${pm.use} build`, {
-        cwd: tempDir, stdio: 'inherit', env: {
-            ...process.env,
-        }
+        cwd: tempDir, stdio: 'inherit', env
     })
 
     const buildDir = join(tempDir, '.xyd', 'build', 'client')
@@ -116,13 +122,13 @@ export async function testDevServer(pm: typeof PACKAGE_MANAGER[0], testConfig: T
     console.log(`Testing dev server with ${pm.name} for config: ${testConfig.name}...`)
     const port = 3000 + Math.floor(Math.random() * 1000)
 
+    const env = createEnvWithPmVars(pm)
+
     const server = spawn(pm.use, ['dev', '--port', port.toString()], {
         cwd: tempDir,
         stdio: 'inherit',
         shell: true,
-        env: {
-            ...process.env,
-        },
+        env,
     }) as any
 
     let browser: any = null
@@ -281,6 +287,52 @@ export function resultSummary(testResults: TestResult[]) {
     } else {
         console.log('\n🎉 All tests passed!')
     }
+
+    supportReport(testResults)
+}
+
+export function supportReport(results: TestResult[]) {
+    const outputPath = '__tests__/reports/support.md'
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true })
+
+    const matrix = new Map<string, Map<string, boolean>>() // Map<PackageManager, Map<NodeVersion, boolean>>
+
+    for (const result of results) {
+        if (result.testType !== 'build-and-serve') continue // Only report build-and-serve phase
+
+        const node = result.nodeVersion
+        const pm = result.packageManager
+
+        if (!matrix.has(pm)) {
+            matrix.set(pm, new Map())
+        }
+
+        matrix.get(pm)!.set(node, result.success)
+    }
+
+    // Get all Node versions (columns)
+    const nodeVersions = Array.from(
+        new Set(results.map(r => r.nodeVersion))
+    ).sort((a, b) => parseFloat(a) - parseFloat(b))
+
+    // Table header
+    let md = `# 🧪 Support Table\n\n`
+    md += `| Package Manager | ${nodeVersions.map(n => `Node ${n}`).join(' | ')} |\n`
+    md += `|-----------------|${nodeVersions.map(() => '---------').join('|')}|\n`
+
+    for (const [pm, nodeMap] of matrix.entries()) {
+        const row = [pm]
+
+        for (const node of nodeVersions) {
+            const ok = nodeMap.get(node)
+            row.push(ok ? '✅' : '❌')
+        }
+
+        md += `| ${row.join(' | ')} |\n`
+    }
+
+    fs.writeFileSync(outputPath, md)
+    console.log(`✅ Compatibility table written to ${outputPath}`)
 }
 
 // Helper function to check if server is running on a port

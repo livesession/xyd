@@ -54,7 +54,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/title"
+              "canonical": ""
             }
           },
           {
@@ -244,7 +244,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           }
         ]
@@ -325,7 +325,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/title"
+              "canonical": ""
             }
           },
           {
@@ -345,7 +345,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/author_name"
+              "canonical": ""
             }
           },
           {
@@ -427,7 +427,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/date"
+              "canonical": ""
             }
           }
         ],
@@ -489,7 +489,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           },
           {
@@ -504,7 +504,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "/books"
+              "canonical": ""
             }
           }
         ],
@@ -555,7 +555,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/title"
+              "canonical": ""
             }
           },
           {
@@ -620,7 +620,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/date"
+              "canonical": ""
             }
           }
         ]

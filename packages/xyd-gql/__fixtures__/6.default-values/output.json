@@ -143,7 +143,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/limit"
+              "canonical": ""
             }
           },
           {
@@ -163,7 +163,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/offset"
+              "canonical": ""
             }
           },
           {
@@ -178,7 +178,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "/page"
+              "canonical": ""
             }
           }
         ]
@@ -254,7 +254,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           },
           {
@@ -274,7 +274,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           },
           {
@@ -356,7 +356,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/active"
+              "canonical": ""
             }
           },
           {
@@ -376,7 +376,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/tags"
+              "canonical": ""
             }
           }
         ],
@@ -427,7 +427,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           },
           {
@@ -447,7 +447,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/count"
+              "canonical": ""
             }
           },
           {
@@ -467,7 +467,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/isActive"
+              "canonical": ""
             }
           },
           {
@@ -514,7 +514,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/tags"
+              "canonical": ""
             }
           },
           {
@@ -584,7 +584,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/active"
+              "canonical": ""
             }
           },
           {
@@ -610,7 +610,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/tags"
+              "canonical": ""
             }
           }
         ]

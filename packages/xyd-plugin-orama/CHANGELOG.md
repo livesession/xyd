@@ -1,5 +1,104 @@
 # @xyd-js/plugin-orama
 
+## 0.1.0-xyd.82
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.93
+  - @xyd-js/content@0.1.0-xyd.96
+  - @xyd-js/core@0.1.0-xyd.95
+  - @xyd-js/plugins@0.1.0-xyd.82
+
+## 0.1.0-xyd.81
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.92
+  - @xyd-js/content@0.1.0-xyd.95
+  - @xyd-js/core@0.1.0-xyd.94
+  - @xyd-js/plugins@0.1.0-xyd.81
+
+## 0.1.0-xyd.80
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.91
+  - @xyd-js/content@0.1.0-xyd.94
+  - @xyd-js/core@0.1.0-xyd.93
+  - @xyd-js/plugins@0.1.0-xyd.80
+
+## 0.1.0-xyd.79
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.90
+  - @xyd-js/content@0.1.0-xyd.93
+  - @xyd-js/core@0.1.0-xyd.92
+  - @xyd-js/plugins@0.1.0-xyd.79
+
+## 0.1.0-xyd.78
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.89
+  - @xyd-js/content@0.1.0-xyd.92
+  - @xyd-js/core@0.1.0-xyd.91
+  - @xyd-js/plugins@0.1.0-xyd.78
+
+## 0.1.0-xyd.77
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.88
+  - @xyd-js/content@0.1.0-xyd.91
+  - @xyd-js/core@0.1.0-xyd.90
+  - @xyd-js/plugins@0.1.0-xyd.77
+
+## 0.1.0-xyd.76
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.87
+  - @xyd-js/content@0.1.0-xyd.90
+  - @xyd-js/core@0.1.0-xyd.89
+  - @xyd-js/plugins@0.1.0-xyd.76
+
+## 0.1.0-xyd.75
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.86
+  - @xyd-js/content@0.1.0-xyd.89
+  - @xyd-js/core@0.1.0-xyd.88
+  - @xyd-js/plugins@0.1.0-xyd.75
+
+## 0.1.0-xyd.74
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.85
+  - @xyd-js/content@0.1.0-xyd.88
+  - @xyd-js/core@0.1.0-xyd.87
+  - @xyd-js/plugins@0.1.0-xyd.74
+
 ## 0.1.0-xyd.73
 
 ### Patch Changes

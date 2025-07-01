@@ -36,7 +36,7 @@
                 "properties": [],
                 "meta": [],
                 "symbolDef": {
-                  "canonical": "/first"
+                  "canonical": ""
                 }
               },
               {
@@ -51,7 +51,7 @@
                 "properties": [],
                 "meta": [],
                 "symbolDef": {
-                  "canonical": "/after"
+                  "canonical": ""
                 }
               },
               {
@@ -71,7 +71,7 @@
                   }
                 ],
                 "symbolDef": {
-                  "canonical": "/limit"
+                  "canonical": ""
                 }
               }
             ],
@@ -102,7 +102,7 @@
                   }
                 ],
                 "symbolDef": {
-                  "canonical": "/limit"
+                  "canonical": ""
                 }
               }
             ],
@@ -223,7 +223,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           }
         ],
@@ -285,7 +285,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           }
         ],

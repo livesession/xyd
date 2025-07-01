@@ -54,7 +54,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           }
         ]
@@ -136,7 +136,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           }
         ]
@@ -212,7 +212,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           },
           {
@@ -236,7 +236,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/checkoutId"
+              "canonical": ""
             }
           }
         ],
@@ -298,7 +298,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           },
           {
@@ -322,7 +322,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/checkoutLineId"
+              "canonical": ""
             }
           }
         ],

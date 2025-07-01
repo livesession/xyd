@@ -1,5 +1,59 @@
 # @xyd-js/core
 
+## 0.1.0-xyd.95
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.94
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.93
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.92
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.91
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.90
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.89
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.88
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.87
+
+### Patch Changes
+
+- update all packages
+
 ## 0.1.0-xyd.86
 
 ### Patch Changes

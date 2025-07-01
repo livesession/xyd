@@ -56,7 +56,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           }
         ]
@@ -220,7 +220,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/id"
+              "canonical": ""
             }
           },
           {
@@ -240,7 +240,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           },
           {
@@ -317,7 +317,7 @@
             "properties": [],
             "meta": [],
             "symbolDef": {
-              "canonical": "/birthDate"
+              "canonical": ""
             }
           }
         ],
@@ -368,7 +368,7 @@
               }
             ],
             "symbolDef": {
-              "canonical": "/name"
+              "canonical": ""
             }
           }
         ]

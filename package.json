@@ -11,6 +11,7 @@
     "build": "./build.sh",
     "clean": "./clear.sh",
     "prepare": "husky",
+    "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

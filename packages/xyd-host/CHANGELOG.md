@@ -1,5 +1,194 @@
 # @xyd-js/host
 
+## 0.1.0-xyd.83
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-xyd.82
+  - @xyd-js/atlas@0.1.0-xyd.98
+  - @xyd-js/components@0.1.0-xyd.93
+  - @xyd-js/composer@0.1.0-xyd.82
+  - @xyd-js/content@0.1.0-xyd.96
+  - @xyd-js/core@0.1.0-xyd.95
+  - @xyd-js/framework@0.1.0-xyd.114
+  - @xyd-js/plugin-algolia@0.1.0-xyd.82
+  - @xyd-js/plugin-orama@0.1.0-xyd.82
+  - @xyd-js/theme-cosmo@0.1.0-xyd.82
+  - @xyd-js/theme-opener@0.1.0-xyd.82
+  - @xyd-js/theme-picasso@0.1.0-xyd.82
+  - @xyd-js/theme-poetry@0.1.0-xyd.109
+  - @xyd-js/themes@0.1.1-xyd.85
+
+## 0.1.0-xyd.82
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-xyd.81
+  - @xyd-js/atlas@0.1.0-xyd.97
+  - @xyd-js/components@0.1.0-xyd.92
+  - @xyd-js/composer@0.1.0-xyd.81
+  - @xyd-js/content@0.1.0-xyd.95
+  - @xyd-js/core@0.1.0-xyd.94
+  - @xyd-js/framework@0.1.0-xyd.113
+  - @xyd-js/plugin-algolia@0.1.0-xyd.81
+  - @xyd-js/plugin-orama@0.1.0-xyd.81
+  - @xyd-js/theme-cosmo@0.1.0-xyd.81
+  - @xyd-js/theme-opener@0.1.0-xyd.81
+  - @xyd-js/theme-picasso@0.1.0-xyd.81
+  - @xyd-js/theme-poetry@0.1.0-xyd.108
+  - @xyd-js/themes@0.1.1-xyd.84
+
+## 0.1.0-xyd.81
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-xyd.80
+  - @xyd-js/atlas@0.1.0-xyd.96
+  - @xyd-js/components@0.1.0-xyd.91
+  - @xyd-js/composer@0.1.0-xyd.80
+  - @xyd-js/content@0.1.0-xyd.94
+  - @xyd-js/core@0.1.0-xyd.93
+  - @xyd-js/framework@0.1.0-xyd.112
+  - @xyd-js/plugin-algolia@0.1.0-xyd.80
+  - @xyd-js/plugin-orama@0.1.0-xyd.80
+  - @xyd-js/theme-cosmo@0.1.0-xyd.80
+  - @xyd-js/theme-opener@0.1.0-xyd.80
+  - @xyd-js/theme-picasso@0.1.0-xyd.80
+  - @xyd-js/theme-poetry@0.1.0-xyd.107
+  - @xyd-js/themes@0.1.1-xyd.83
+
+## 0.1.0-xyd.80
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-xyd.79
+  - @xyd-js/atlas@0.1.0-xyd.95
+  - @xyd-js/components@0.1.0-xyd.90
+  - @xyd-js/composer@0.1.0-xyd.79
+  - @xyd-js/content@0.1.0-xyd.93
+  - @xyd-js/core@0.1.0-xyd.92
+  - @xyd-js/framework@0.1.0-xyd.111
+  - @xyd-js/plugin-algolia@0.1.0-xyd.79
+  - @xyd-js/plugin-orama@0.1.0-xyd.79
+  - @xyd-js/theme-cosmo@0.1.0-xyd.79
+  - @xyd-js/theme-opener@0.1.0-xyd.79
+  - @xyd-js/theme-picasso@0.1.0-xyd.79
+  - @xyd-js/theme-poetry@0.1.0-xyd.106
+  - @xyd-js/themes@0.1.1-xyd.82
+
+## 0.1.0-xyd.79
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-xyd.78
+  - @xyd-js/atlas@0.1.0-xyd.94
+  - @xyd-js/components@0.1.0-xyd.89
+  - @xyd-js/composer@0.1.0-xyd.78
+  - @xyd-js/content@0.1.0-xyd.92
+  - @xyd-js/core@0.1.0-xyd.91
+  - @xyd-js/framework@0.1.0-xyd.110
+  - @xyd-js/plugin-algolia@0.1.0-xyd.78
+  - @xyd-js/plugin-orama@0.1.0-xyd.78
+  - @xyd-js/theme-cosmo@0.1.0-xyd.78
+  - @xyd-js/theme-opener@0.1.0-xyd.78
+  - @xyd-js/theme-picasso@0.1.0-xyd.78
+  - @xyd-js/theme-poetry@0.1.0-xyd.105
+  - @xyd-js/themes@0.1.1-xyd.81
+
+## 0.1.0-xyd.78
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-xyd.77
+  - @xyd-js/atlas@0.1.0-xyd.93
+  - @xyd-js/components@0.1.0-xyd.88
+  - @xyd-js/composer@0.1.0-xyd.77
+  - @xyd-js/content@0.1.0-xyd.91
+  - @xyd-js/core@0.1.0-xyd.90
+  - @xyd-js/framework@0.1.0-xyd.109
+  - @xyd-js/plugin-algolia@0.1.0-xyd.77
+  - @xyd-js/plugin-orama@0.1.0-xyd.77
+  - @xyd-js/theme-cosmo@0.1.0-xyd.77
+  - @xyd-js/theme-opener@0.1.0-xyd.77
+  - @xyd-js/theme-picasso@0.1.0-xyd.77
+  - @xyd-js/theme-poetry@0.1.0-xyd.104
+  - @xyd-js/themes@0.1.1-xyd.80
+
+## 0.1.0-xyd.77
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-xyd.76
+  - @xyd-js/atlas@0.1.0-xyd.92
+  - @xyd-js/components@0.1.0-xyd.87
+  - @xyd-js/composer@0.1.0-xyd.76
+  - @xyd-js/content@0.1.0-xyd.90
+  - @xyd-js/core@0.1.0-xyd.89
+  - @xyd-js/framework@0.1.0-xyd.108
+  - @xyd-js/plugin-algolia@0.1.0-xyd.76
+  - @xyd-js/plugin-orama@0.1.0-xyd.76
+  - @xyd-js/theme-cosmo@0.1.0-xyd.76
+  - @xyd-js/theme-opener@0.1.0-xyd.76
+  - @xyd-js/theme-picasso@0.1.0-xyd.76
+  - @xyd-js/theme-poetry@0.1.0-xyd.103
+  - @xyd-js/themes@0.1.1-xyd.79
+
+## 0.1.0-xyd.76
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-xyd.75
+  - @xyd-js/atlas@0.1.0-xyd.91
+  - @xyd-js/components@0.1.0-xyd.86
+  - @xyd-js/composer@0.1.0-xyd.75
+  - @xyd-js/content@0.1.0-xyd.89
+  - @xyd-js/core@0.1.0-xyd.88
+  - @xyd-js/framework@0.1.0-xyd.107
+  - @xyd-js/plugin-algolia@0.1.0-xyd.75
+  - @xyd-js/plugin-orama@0.1.0-xyd.75
+  - @xyd-js/theme-cosmo@0.1.0-xyd.75
+  - @xyd-js/theme-opener@0.1.0-xyd.75
+  - @xyd-js/theme-picasso@0.1.0-xyd.75
+  - @xyd-js/theme-poetry@0.1.0-xyd.102
+  - @xyd-js/themes@0.1.1-xyd.78
+
+## 0.1.0-xyd.75
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-xyd.74
+  - @xyd-js/atlas@0.1.0-xyd.90
+  - @xyd-js/components@0.1.0-xyd.85
+  - @xyd-js/composer@0.1.0-xyd.74
+  - @xyd-js/content@0.1.0-xyd.88
+  - @xyd-js/core@0.1.0-xyd.87
+  - @xyd-js/framework@0.1.0-xyd.106
+  - @xyd-js/plugin-algolia@0.1.0-xyd.74
+  - @xyd-js/plugin-orama@0.1.0-xyd.74
+  - @xyd-js/theme-cosmo@0.1.0-xyd.74
+  - @xyd-js/theme-opener@0.1.0-xyd.74
+  - @xyd-js/theme-picasso@0.1.0-xyd.74
+  - @xyd-js/theme-poetry@0.1.0-xyd.101
+  - @xyd-js/themes@0.1.1-xyd.77
+
 ## 0.1.0-xyd.74
 
 ### Patch Changes

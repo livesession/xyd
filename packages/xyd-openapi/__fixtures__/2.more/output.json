@@ -25,22 +25,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request GET \\\n     --url https://example.com/users \\\n     --header 'accept: application/json'"
+                    "code": "curl --request GET \\\n     --url https://example.com/users"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://example.com/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'GET'};\n\nfetch('https://example.com/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"https://example.com/users\"\n\nheaders = {\"accept\": \"application/json\"}\n\nresponse = requests.get(url, headers=headers)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"https://example.com/users\"\n\nresponse = requests.get(url)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://example.com/users\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://example.com/users\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -55,7 +55,7 @@
                 "title": "200",
                 "tabs": [
                   {
-                    "title": "json",
+                    "title": "application/json",
                     "language": "json",
                     "code": "[\n  {\n    \"message\": \"string\",\n    \"id\": 0,\n    \"username\": \"string\",\n    \"email\": \"user@example.com\",\n    \"status\": \"active\",\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"updatedAt\": \"2019-08-24T14:15:22Z\"\n  }\n]"
                   }
@@ -113,12 +113,12 @@
                 },
                 {
                   "name": "status",
-                  "type": "string",
+                  "type": "$$enum",
                   "description": "",
                   "meta": [
                     {
-                      "name": "enum",
-                      "value": "true"
+                      "name": "enum-type",
+                      "value": "string"
                     }
                   ],
                   "properties": [
@@ -158,13 +158,14 @@
               {
                 "name": "contentType",
                 "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
               }
             ],
             "symbolDef": {
-              "id": [
-                "#/components/schemas/Response",
-                "#/components/schemas/User"
-              ]
+              "id": []
             }
           }
         ],
@@ -191,7 +192,24 @@
       }
     ],
     "examples": {
-      "groups": []
+      "groups": [
+        {
+          "description": "Example",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"message\": \"\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
     },
     "type": "rest_component_schema",
     "context": {
@@ -239,12 +257,12 @@
           },
           {
             "name": "status",
-            "type": "string",
+            "type": "$$enum",
             "description": "",
             "meta": [
               {
-                "name": "enum",
-                "value": "true"
+                "name": "enum-type",
+                "value": "string"
               }
             ],
             "properties": [
@@ -279,7 +297,24 @@
       }
     ],
     "examples": {
-      "groups": []
+      "groups": [
+        {
+          "description": "Example",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"id\": 0,\n  \"username\": \"\",\n  \"email\": \"\",\n  \"status\": \"\",\n  \"createdAt\": \"\",\n  \"updatedAt\": \"\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
     },
     "type": "rest_component_schema",
     "context": {

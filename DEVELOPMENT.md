@@ -11,7 +11,7 @@
 1. Clone the repository
 2. Install dependencies:
    ```bash
-   pnpm install
+   pnpm i
    ```
 3. Set up Git hooks:
    ```bash
@@ -26,12 +26,6 @@
 - `pnpm dev:styles`: Runs the watch mode for UI components and styles
 - `pnpm build`: Builds all packages
 - `pnpm clean`: Cleans build artifacts
-
-### Package-Specific Builds
-
-- `pnpm build:gql`: Builds the GraphQL package
-- `pnpm build:uniform`: Builds the Uniform package
-- `pnpm build:atlas-storybook`: Builds the Atlas Storybook
 
 ## Code Quality
 
@@ -135,21 +129,27 @@ Clear
 
 Start packages development mode
 ```
-XYD_DEV_MODE=1 XYD_DEV_CLI_NOINSTALL=1 pnpm run dev
+pnpm run dev
 ```
 
 Build CLI in dev mode
 ```
-XYD_DEV_MODE=1 pnpm run build
+pnpm run build
 ```
+
 Run dev mode for style packages
 ```
 pnpm run dev:styles
 ```
 
-Instal xyd-js cli from verdaccio
+Install xyd-js cli from verdaccio
 ```
 npm install -g @xyd-js/cli --registry http://localhost:4873
+```
+
+Run xyd-js cli in dev mode
+```
+XYD_DEV_MODE=1 XYD_NODE_PM=pnpm xyd
 ```
 
 npm cache cleaning

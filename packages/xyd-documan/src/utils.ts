@@ -15,7 +15,7 @@ import type { IconLibrary } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
 
-import { BUILD_FOLDER_PATH, CACHE_FOLDER_PATH, HOST_FOLDER_PATH } from "./const";
+import { BUILD_FOLDER_PATH, CACHE_FOLDER_PATH, HOST_FOLDER_PATH, XYD_FOLDER_PATH } from "./const";
 import { CLI } from './cli';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -347,6 +347,13 @@ export function pluginIconSet(settings: Settings): VitePluginOption {
             }
         }
     } as VitePlugin
+}
+
+export function getXydFolderPath() {
+    return path.join(
+        process.cwd(),
+        XYD_FOLDER_PATH
+    );
 }
 
 export function getHostPath() {
@@ -731,7 +738,21 @@ function nodeInstallPackages(hostPath: string) {
 
 function pmInstall() {
     if (process.env.XYD_NODE_PM) {
-        return `${process.env.XYD_NODE_PM} install`
+        switch (process.env.XYD_NODE_PM) {
+            case 'npm': {
+                return npmInstall();
+            }
+            case 'pnpm': {
+                return pnpmInstall();
+            }
+            case 'bun': {
+                return bunInstall();
+            }
+            default: {
+                console.warn(`Unknown package manager: ${process.env.XYD_NODE_PM}, falling back to npm`);
+                return npmInstall();
+            }
+        }
     }
 
     if (hasBun()) {
@@ -740,7 +761,7 @@ function pmInstall() {
 
     const { pnpm } = runningPm()
 
-    console.log("ℹ️ consider install xyd via bun: `bun add -g xyd-js` for better performance");
+    console.log("ℹ️ consider install `bun` for better performance \n");
   
     if (pnpm) {
         return pnpmInstall()
@@ -795,17 +816,14 @@ function runningPm() {
 }
 
 function pnpmInstall() {
-    console.log(`\n🔄 install xyd framework dependencies via pnpm...\n`);
     return 'pnpm install'
 }
 
 function bunInstall() {
-    console.log(`\n🔄 install xyd framework dependencies via bun...\n`);
     return 'bun install'
 }
 
 function npmInstall() {
-    console.log(`\n🔄 install xyd framework dependencies via npm...\n`);
     return 'npm install'
 }
 
