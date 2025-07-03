@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/documan",
-  "version": "0.1.0-xyd.114",
+  "version": "0.1.0-xyd.115",
   "type": "module",
   "exports": {
     "./package.json": "./package.json",

@@ -1,5 +1,5 @@
 packages:
-  # - 'apps/*'
+  - 'apps/*'
   # - 'cli'
   - 'packages/*'
   - '.xyd/host'

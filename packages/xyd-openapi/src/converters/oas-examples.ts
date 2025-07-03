@@ -3,8 +3,8 @@ import Oas from "oas";
 // @ts-ignore
 import {Operation} from 'oas/operation'; // TODO: fix ts
 import oasToSnippet from "@readme/oas-to-snippet";
-import { sample as openApiSampler } from '@xyd-js/openapi-sampler';
-import type {JSONSchema7} from "json-schema";
+import {JSONSchema, sample as openApiSampler} from '@xyd-js/openapi-sampler';
+import {JSONSchema7, JSONSchema7Definition} from "json-schema";
 
 import {ExampleGroup, Example, CodeBlockTab} from "@xyd-js/uniform";
 
@@ -91,6 +91,10 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
     const examples: Example[] = []
     const tabs: CodeBlockTab[] = []
 
+    if (operation.path === "/v2/domains/{domain}/records") {
+        console.log(5)
+    }
+
     // Handle x-codeSamples if present
     if (operation.schema['x-codeSamples']) {
         const codeSamples = operation.schema['x-codeSamples'] as Array<{ lang: string; source: string }>
@@ -159,7 +163,7 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
                 }
 
                 if (!requestData) {
-                    requestData = openApiSampler(schema as any) // TODO; fix any
+                    requestData = sampleFromSchema(schema)
                 }
 
                 if (contentType === 'application/x-www-form-urlencoded') {
@@ -179,9 +183,14 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
     if (hasParameters || hasRequestBody || (!hasRequestBody && !hasParameters)) {
         const langs = xDocsLanguages(operation.api) || DEFAULT_CODE_LANGUAGES
         langs.forEach(lang => {
-            // TODO: needed for circural references - find better solution?
-            const operationCopy = excludeProperties(operation, ['api.components', 'api.paths']);
-            const {code} = oasToSnippet(oas, operationCopy, {
+            // Sanitize operation to remove circular references before passing to oasToSnippet
+            let snippetOperation = operation
+            const v = operation?.api?.paths?.[operation?.path]?.[operation?.method]
+            if (v) {
+                snippetOperation = fixCircularReferences(v);
+            }
+
+            const {code} = oasToSnippet(oas, snippetOperation, {
                 ...paramData,
                 ...bodyData
             }, null, lang)
@@ -214,6 +223,7 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
 
 function resBodyExmaples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSchema7 | JSONSchema7[], any>): ExampleGroup[] {
     const exampleGroups: ExampleGroup[] = []
+
 
     if (operation.schema.responses) {
         const responses = operation.schema.responses as OpenAPIV3.ResponsesObject
@@ -297,7 +307,7 @@ function resBodyExmaples(operation: Operation, oas: Oas, vistedExamples?: Map<JS
 
                 // If no example found, generate sample data from schema
                 if (!responseData) {
-                    responseData = openApiSampler(sanitizeSchema(schema))
+                    responseData = sampleFromSchema(schema)
                 }
 
                 let extension = "text"
@@ -415,3 +425,92 @@ function sanitizeSchema(
     vistedExamples.set(schema, cleaned);
     return cleaned;
 }
+
+function sampleFromSchema(
+    schema: JSONSchema7
+) {
+    let jsonSchema: JSONSchema | null = null
+
+    let multiSpec: JSONSchema7Definition[] | null = null
+
+    if (schema.oneOf?.length) {
+        // for one of schemas, we take from the last one
+        multiSpec = schema.oneOf
+    } else if (schema.anyOf?.length) {
+        // for any of schemas, we take from the last one
+        multiSpec = schema.anyOf
+    }
+
+    if (multiSpec?.length) {
+        // for one of schemas, we take from the last one
+        for (let i = multiSpec.length - 1; i >= 0; i--) {
+            const spec = multiSpec[i];
+            const sanitized = sanitizeSchema(spec)
+            if (!sanitized) {
+                continue
+            }
+            jsonSchema = sanitized
+
+            if (!jsonSchema?.properties) {
+                continue
+            }
+            break;
+        }
+    } else {
+        jsonSchema = sanitizeSchema(schema)
+    }
+
+    if (jsonSchema) {
+        return openApiSampler(jsonSchema)
+    }
+
+    return null
+}
+
+function fixCircularReferences(schema: any, visited: WeakMap<any, any> = new WeakMap()): any {
+    if (!schema || typeof schema !== 'object') {
+        return schema;
+    }
+
+    // Check if we've already processed this object to prevent infinite recursion
+    if (visited.has(schema)) {
+        return visited.get(schema);
+    }
+
+    // Check if this schema has circular references
+    if ((schema as any).__UNSAFE_circular) {
+        // Return a simplified version without circular references
+        const simplified = {
+            type: 'object',
+            description: 'Circular reference detected - schema simplified'
+        };
+        visited.set(schema, simplified);
+        return simplified;
+    }
+
+    // Handle arrays
+    if (Array.isArray(schema)) {
+        const result = schema.map(item => fixCircularReferences(item, visited));
+        visited.set(schema, result);
+        return result;
+    }
+
+    // Recursively fix circular references in nested objects
+    const fixedSchema: any = {};
+    visited.set(schema, fixedSchema); // Set early to prevent infinite recursion
+    
+    for (const [key, value] of Object.entries(schema)) {
+        if (key === '__UNSAFE_circular' || key === '__UNSAFE_refPath') {
+            continue; // Skip unsafe properties
+        }
+        
+        if (typeof value === 'object' && value !== null) {
+            fixedSchema[key] = fixCircularReferences(value, visited);
+        } else {
+            fixedSchema[key] = value;
+        }
+    }
+
+    return fixedSchema;
+}
+

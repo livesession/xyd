@@ -112,7 +112,7 @@ export function schemaObjectToUniformDefinitionProperties(
             if (BUILT_IN_PROPERTIES[propName]) {
                 continue;
             }
-            if ('$ref' in propSchema) {
+            if (typeof propSchema === "object" && '$ref' in propSchema) {
                 console.warn("$ref is not supported in properties");
 
                 continue; // Skip reference objects

@@ -69,7 +69,8 @@ export const ItemHost = css`
             [part="item-title"] {
                 overflow: hidden;
                 text-overflow: ellipsis;
-                white-space: nowrap;
+                white-space: break-spaces;
+                text-align: left;
             }
         }
         [part="first-item" ][data-active="true"] {

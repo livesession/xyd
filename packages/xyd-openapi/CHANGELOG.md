@@ -1,5 +1,14 @@
 # @xyd-js/openapi
 
+## 0.1.0-xyd.94
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-xyd.64
+  - @xyd-js/uniform@0.1.0-xyd.98
+
 ## 0.1.0-xyd.93
 
 ### Patch Changes

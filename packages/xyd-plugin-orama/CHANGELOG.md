@@ -1,5 +1,16 @@
 # @xyd-js/plugin-orama
 
+## 0.1.0-xyd.83
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.94
+  - @xyd-js/content@0.1.0-xyd.97
+  - @xyd-js/core@0.1.0-xyd.96
+  - @xyd-js/plugins@0.1.0-xyd.83
+
 ## 0.1.0-xyd.82
 
 ### Patch Changes

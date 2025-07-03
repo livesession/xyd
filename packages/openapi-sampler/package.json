@@ -1,6 +1,6 @@
 {
     "name": "@xyd-js/openapi-sampler",
-    "version": "0.1.0-xyd.63",
+    "version": "0.1.0-xyd.64",
     "description": "",
     "main": "./dist/index.js",
     "types": "./src/index.d.ts",
@@ -14,7 +14,7 @@
     "devDependencies": {
         "@rollup/plugin-commonjs": "^25.0.0",
         "@rollup/plugin-node-resolve": "^15.0.0",
-        "openapi-sampler": "^1.5.1",
+        "openapi-sampler": "^1.6.1",
         "rimraf": "^3.0.2",
         "rollup": "^4.0.0"
     }

@@ -2,11 +2,11 @@ import path from "path";
 import fs from "fs/promises";
 
 import yaml from "js-yaml";
-import { OpenAPIV3 } from "openapi-types";
+import {OpenAPIV3} from "openapi-types";
 import GithubSlugger from 'github-slugger';
-import $refParser, { ParserOptions } from "@apidevtools/json-schema-ref-parser";
+import $refParser, {ParserOptions} from "@apidevtools/json-schema-ref-parser";
 
-import { ReferenceType } from "@xyd-js/uniform";
+import {ReferenceType} from "@xyd-js/uniform";
 
 export function slug(str: string): string {
     const slugger = new GithubSlugger();
@@ -25,14 +25,25 @@ export async function deferencedOpenAPI(openApiPath: string) {
 
     const remoteOasPath = openApiPath.startsWith('http://') || openApiPath.startsWith('https://') ? true : false
 
+    const circularRefs: Set<string> = new Set();
+
     const options: ParserOptions = {
         dereference: {
-            onDereference(path: any, value: any, parent: any) {
+            onCircular(defPath: string) {
+                const v = `#${defPath.split('#')[1]}`
+                circularRefs.add(v);
+            },
+            // circular: true, // ignore circular references,
+            // onCi
+            onDereference(defPath: any, value: any, parent: any) {
+                if (circularRefs.has(defPath) || circularRefs.has(path.join(defPath, "properties"))) {
+                    value.__UNSAFE_circular = true; // TODO: BETTER WAY TO MARK CIRCULAR REFS
+                }
                 if (value && typeof value === 'object') {
-                    value.__UNSAFE_refPath = () => path
+                    value.__UNSAFE_refPath = () => defPath
                 }
                 if (parent && typeof parent === 'object') {
-                    parent.__UNSAFE_refPath = () => path
+                    parent.__UNSAFE_refPath = () => defPath
                 }
             }
         }
@@ -78,6 +89,7 @@ export async function deferencedOpenAPI(openApiPath: string) {
     }
 
     await $refParser.dereference(openApiSpec, options);
+    // await $refParser.bundle(openApiSpec, options);
 
     return openApiSpec as OpenAPIV3.Document
 }
@@ -85,13 +97,14 @@ export async function deferencedOpenAPI(openApiPath: string) {
 // readOpenApiSpec reads an OpenAPI spec file or URL and returns the content
 async function readOpenApiSpec(filePath: string) {
     let content: string;
-
+    let fromUrl = false
     if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
         const response = await fetch(filePath);
         if (!response.ok) {
             throw new Error(`Failed to fetch OpenAPI spec from URL: ${response.statusText}`);
         }
         content = await response.text();
+        fromUrl = true
     } else {
         try {
             await fs.access(filePath);
@@ -107,6 +120,12 @@ async function readOpenApiSpec(filePath: string) {
         return yaml.load(content);
     } else if (ext === '.json') {
         return JSON.parse(content);
+    } else if (fromUrl && content.startsWith('{')) {
+        try {
+            return JSON.parse(content);
+        } catch (error) {
+            throw new Error(`Failed to parse JSON from URL: ${error}`);
+        }
     } else {
         throw new Error('Unsupported file format. Use JSON or YAML.');
     }

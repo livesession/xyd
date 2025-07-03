@@ -1,5 +1,11 @@
 # @xyd-js/core
 
+## 0.1.0-xyd.96
+
+### Patch Changes
+
+- update all packages
+
 ## 0.1.0-xyd.95
 
 ### Patch Changes

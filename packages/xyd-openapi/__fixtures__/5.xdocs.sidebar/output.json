@@ -27,22 +27,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users"
+                    "code": "curl --request GET \\\n     --url 'http://api.example.com/v1/users?limit=20&offset=0' \\\n     --header 'accept: application/json'"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {method: 'GET'};\n\nfetch('http://api.example.com/v1/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('http://api.example.com/v1/users?limit=20&offset=0', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users\"\n\nresponse = requests.get(url)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users?limit=20&offset=0\"\n\nheaders = {\"accept\": \"application/json\"}\n\nresponse = requests.get(url, headers=headers)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users?limit=20&offset=0\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -225,22 +225,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users/userId"
+                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users/userId \\\n     --header 'accept: application/json'"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {method: 'GET'};\n\nfetch('http://api.example.com/v1/users/userId', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('http://api.example.com/v1/users/userId', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId\"\n\nresponse = requests.get(url)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId\"\n\nheaders = {\"accept\": \"application/json\"}\n\nresponse = requests.get(url, headers=headers)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -399,22 +399,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users/userId/posts"
+                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users/userId/posts \\\n     --header 'accept: application/json'"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {method: 'GET'};\n\nfetch('http://api.example.com/v1/users/userId/posts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('http://api.example.com/v1/users/userId/posts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId/posts\"\n\nresponse = requests.get(url)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId/posts\"\n\nheaders = {\"accept\": \"application/json\"}\n\nresponse = requests.get(url, headers=headers)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId/posts\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId/posts\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -557,22 +557,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request POST \\\n     --url http://api.example.com/v1/users/userId/posts"
+                    "code": "curl --request POST \\\n     --url http://api.example.com/v1/users/userId/posts \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"title\": \"string\",\n  \"content\": \"string\"\n}\n'"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {method: 'POST'};\n\nfetch('http://api.example.com/v1/users/userId/posts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {\n  method: 'POST',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({title: 'string', content: 'string'})\n};\n\nfetch('http://api.example.com/v1/users/userId/posts', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId/posts\"\n\nresponse = requests.post(url)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users/userId/posts\"\n\npayload = {\n    \"title\": \"string\",\n    \"content\": \"string\"\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId/posts\"\n\n\treq, _ := http.NewRequest(\"POST\", url, nil)\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users/userId/posts\"\n\n\tpayload := strings.NewReader(\"{\\\"title\\\":\\\"string\\\",\\\"content\\\":\\\"string\\\"}\")\n\n\treq, _ := http.NewRequest(\"POST\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }

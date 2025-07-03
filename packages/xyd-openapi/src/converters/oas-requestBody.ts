@@ -16,26 +16,8 @@ export function oapRequestBodyToDefinitionProperties(
 
     let schemaObject: OpenAPIV3.SchemaObject | undefined
 
-    if (schema.allOf) {
-        return schema.allOf.reduce((acc, of) => {
-            const fakeBody: OpenAPIV3.RequestBodyObject = {
-                content: {
-                    [contentType]: {
-                        schema: of
-                    }
-                }
-            }
-
-            const properties = oapRequestBodyToDefinitionProperties(fakeBody, contentType) || []
-            if (!Array.isArray(properties)) {
-                return acc
-            }
-
-            return [
-                ...acc,
-                ...properties
-            ]
-        }, [] as DefinitionProperty[])
+    if (schema.allOf || schema.anyOf || schema.oneOf) {
+        return schemaObjectToUniformDefinitionProperties(schema)
     }
 
     let array = false

@@ -50,7 +50,7 @@ export async function testOasSchemaToReferences(
         result = uni.references;
     }
 
-    // saveResultAsOutput(fixtureName, result) // TODO: comment for prod
+    saveResultAsOutput(fixtureName, result) // TODO: comment for prod
 
     const expectedOutput = readFixtureOutput(`${fixtureName}/output.json`);
     try {

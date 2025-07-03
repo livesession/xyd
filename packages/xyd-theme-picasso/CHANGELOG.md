@@ -1,5 +1,17 @@
 # @xyd-js/theme-picasso
 
+## 0.1.0-xyd.83
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.99
+  - @xyd-js/components@0.1.0-xyd.94
+  - @xyd-js/framework@0.1.0-xyd.115
+  - @xyd-js/themes@0.1.1-xyd.86
+  - @xyd-js/ui@0.1.0-xyd.99
+
 ## 0.1.0-xyd.82
 
 ### Patch Changes
