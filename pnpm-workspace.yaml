@@ -1,5 +1,5 @@
 packages:
-  - 'apps/*'
+  - 'apps/apidocs-demo'
   # - 'cli'
   - 'packages/*'
   - '.xyd/host'

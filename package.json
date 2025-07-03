@@ -9,6 +9,7 @@
     "dev": "pnpm lerna watch -- lerna run build",
     "dev:styles": "pnpm --filter \"@xyd-js/components\" --filter \"@xyd-js/ui\" --parallel dev",
     "build": "./build.sh",
+    "build:apidocs-demo": "pnpm --filter \"@xyd-js/apidocs-demo\" build",
     "clean": "./clear.sh",
     "prepare": "husky",
     "test:unit": "vitest run",
