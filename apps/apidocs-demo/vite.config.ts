@@ -4,12 +4,14 @@ import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig,  PluginOption as VitePluginOption } from "vite";
 // import { createServer,, Plugin as VitePlugin } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { netlifyPlugin } from "@netlify/vite-plugin-react-router";
 
 export default defineConfig({
   plugins: [
     reactRouter(),
     tsconfigPaths(),
-    virtualComponentsPlugin()
+    virtualComponentsPlugin(),
+    netlifyPlugin()
   ],
   ssr: {
     external: ["@xyd-js/framework/hydration", "fs"]
