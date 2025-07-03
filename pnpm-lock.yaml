@@ -236,7 +236,7 @@ importers:
         specifier: ^15.0.0
         version: 15.3.1(rollup@4.44.1)
       openapi-sampler:
-        specifier: ^1.5.1
+        specifier: ^1.6.1
         version: 1.6.1
       rimraf:
         specifier: ^3.0.2
