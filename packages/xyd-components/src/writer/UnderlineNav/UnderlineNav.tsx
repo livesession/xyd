@@ -14,7 +14,7 @@ const UnderlineContext = createContext<{
 
 /**
  * Props for the UnderlineNav component
- */§
+ */
 export interface TabsProps {
     /** Child elements to be rendered within the navigation */
     children: React.ReactNode
