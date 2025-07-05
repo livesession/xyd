@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as Components from "@xyd-js/components/writer";
+import * as Components from "../writer";
 
 export type JsonComponentProps = {
     component: string
