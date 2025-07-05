@@ -26,11 +26,11 @@ export function SidebarTabsDropdown({ options, value }: SidebarTabsDropdownProps
         <Popover.Root>
             <Popover.Trigger asChild>
                 <button part="dropdown-trigger" type="button"  >
-                    <IconWrapper icon={selected.icon} />
+                    <IconWrapper icon={selected?.icon} />
 
                     <span part="dropdown-label-group">
-                        {selected.label && <span part="dropdown-label">{selected.label}</span>}
-                        {selected.description && <span part="dropdown-description">{selected.description}</span>}
+                        {selected?.label && <span part="dropdown-label">{selected?.label}</span>}
+                        {selected?.description && <span part="dropdown-description">{selected?.description}</span>}
                     </span>
 
                     <span part="dropdown-chevron">
