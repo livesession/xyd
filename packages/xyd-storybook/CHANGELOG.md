@@ -1,5 +1,20 @@
 # @xyd-js/storybook
 
+## 0.0.1-xyd.94
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.100
+  - @xyd-js/components@0.1.0-xyd.95
+  - @xyd-js/content@0.1.0-xyd.98
+  - @xyd-js/theme-cosmo@0.1.0-xyd.84
+  - @xyd-js/theme-opener@0.1.0-xyd.84
+  - @xyd-js/theme-picasso@0.1.0-xyd.84
+  - @xyd-js/theme-poetry@0.1.0-xyd.111
+  - @xyd-js/ui@0.1.0-xyd.100
+
 ## 0.0.1-xyd.93
 
 ### Patch Changes

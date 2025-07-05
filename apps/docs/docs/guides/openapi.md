@@ -2,10 +2,15 @@
 title: OpenAPI
 icon: docs:openapiinitiative
 tocCard: 
-    link: https://github.com/xyd-js/openapi-samples
-    title: OpenAPI Samples
-    description: Learn how to setup OpenAPI pages
-    icon: docs:github
+    - link: http://apidocs-demo.xyd.dev/
+      title: API Docs Demo
+      description: Interactive demo of OpenAPI features
+      icon: globe
+
+    - link: https://github.com/xyd-js/openapi-samples
+      title: OpenAPI Samples
+      description: Learn how to setup OpenAPI pages
+      icon: docs:github
 ---
 
 # OpenAPI

@@ -86,19 +86,21 @@ export interface Metadata<P = void> {
      * }
      * ```
      */
-    tocCard?: {
-        /** 'link' to the card */
-        link: string
+    tocCard?: TocCard | TocCard[]
+}
 
-        /** 'title' of the card */
-        title: string
+export interface TocCard {
+   /** 'link' to the card */
+   link: string
 
-        /** 'description' of the card */
-        description: string
+   /** 'title' of the card */
+   title: string
 
-        /** 'icon' of the card */
-        icon?: string
-    }
+   /** 'description' of the card */
+   description: string
+
+   /** 'icon' of the card */
+   icon?: string
 }
 
 export type PageMetaUniform = string | PageMetaUniformDetails;

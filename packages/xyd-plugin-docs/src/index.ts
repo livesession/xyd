@@ -18,6 +18,7 @@ export {readSettings} from "./presets/docs/settings"
 export interface PluginDocsOptions {
     disableAPIGeneration?: boolean
     disableFSWrite?: boolean
+    appInit?: any
 }
 
 // TODO: better plugin runner
@@ -30,11 +31,12 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
 
     // base docs preset setup
     {
-        const options = {
-            urlPrefix: "" // TODO: configurable
+        const presetOptions = {
+            urlPrefix: "", // TODO: configurable,
+            appInit: options?.appInit
         }
 
-        const docs = docsPreset(undefined, options)
+        const docs = docsPreset(undefined, presetOptions)
         docs.preinstall = docs.preinstall || []
 
         let preinstallMerge = {}

@@ -83,6 +83,12 @@
                 padding: 25px 75px;
             }
         }
+
+        @media (min-width: 1024px) {
+            xyd-sidebar-tabs-dropdown {
+                display: none;
+            }
+        }
     }
 }
 

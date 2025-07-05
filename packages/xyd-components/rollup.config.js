@@ -1,24 +1,24 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
 
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
-import { terser } from 'rollup-plugin-terser';
+import {terser} from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';
 import wyw from '@wyw-in-js/rollup';
 
-import { createRequire } from 'module';
+import {createRequire} from 'module';
 
 const require = createRequire(import.meta.url);
 const {
     dependencies,
     peerDependencies,
     devDependencies
-} = require('./package.json', { assert: { type: 'json' } });
+} = require('./package.json', {assert: {type: 'json'}});
 
 const external = [
     ...Object.keys(dependencies),
@@ -36,18 +36,17 @@ const themes = fs.readdirSync(themesDir).reduce((acc, file) => {
     return acc;
 }, {});
 
+const packages = ["coder", "content", "layouts", "pages", "system", "views", "writer"];
+
 export default [
     {
         input: {
             index: 'index.ts',
-            brand: 'src/brand/index.ts',
-            coder: 'coder.ts',
-            content: 'content.ts',
-            layouts: 'layouts.ts',
-            pages: 'src/pages/index.ts',
-            views: 'src/views/index.ts',
-            writer: 'writer.ts',
-            system: 'src/system/index.ts',
+            ...Object.keys(packages).reduce((acc, i) => {
+                const pkg = packages[i];
+                acc[pkg] = `${pkg}.ts`;
+                return acc;
+            }, {}),
             ...themes
         },
         output: [
@@ -67,25 +66,6 @@ export default [
                         '@babel/preset-react'
                     ],
                 },
-                // classNameSlug: (hash, title, {file}) => {
-                //     // Get the full path after 'src/components/'
-                //     const pathParts = file.split('/');
-                //     const componentsIndex = pathParts.indexOf('src');
-                //     if (componentsIndex === -1) return `XydComponents-Component-${title}`;
-
-                //     // Get everything after 'components' directory
-                //     const componentPath = pathParts
-                //         .slice(componentsIndex + 1)
-                //         .filter(part => !part.endsWith('.styles.tsx')) // Remove styles.tsx
-                //         .join('-');
-
-                //     // Use the title as the style name (it's already the variable name)
-                //     const styleName = title.replace(/^\$/, ''); // Remove $ prefix if present
-
-                //     // TODO: in the future hash + system to override styles for specific components if hash
-                //     return `XydComponents-Component-${componentPath}__${styleName}`;
-                //     // return `XydComponents-Component-${componentPath}__${styleName}_${hash}`;
-                // }
             }),
             postcss({
                 extract: true,
@@ -120,78 +100,15 @@ export default [
         plugins: [dts()],
         external
     },
-    {
-        input: 'src/brand/index.ts',
+    ...packages.map(pkg => ({
+        input: `${pkg}.ts`,
         output: {
-            file: 'dist/brand.d.ts',
+            file: `dist/${pkg}.d.ts`,
             format: 'es',
         },
         plugins: [dts()],
         external
-    },
-    {
-        input: 'coder.ts',
-        output: {
-            file: 'dist/coder.d.ts',
-            format: 'es',
-        },
-        plugins: [dts()],
-        external
-    },
-    {
-        input: 'content.ts',
-        output: {
-            file: 'dist/content.d.ts',
-            format: 'es',
-        },
-        plugins: [dts()],
-        external
-    },
-    {
-        input: 'layouts.ts',
-        output: {
-            file: 'dist/layouts.d.ts',
-            format: 'es',
-        },
-        plugins: [dts()],
-        external
-    },
-    {
-        input: 'src/pages/index.ts',
-        output: {
-            file: 'dist/pages.d.ts',
-            format: 'es',
-        },
-        plugins: [dts()],
-        external
-    },
-    {
-        input: 'src/views/index.ts',
-        output: {
-            file: 'dist/views.d.ts',
-            format: 'es',
-        },
-        plugins: [dts()],
-        external
-    },
-    {
-        input: 'writer.ts',
-        output: {
-            file: 'dist/writer.d.ts',
-            format: 'es',
-        },
-        plugins: [dts()],
-        external
-    },
-    {
-        input: 'src/system/index.ts',
-        output: {
-            file: 'dist/system.d.ts',
-            format: 'es',
-        },
-        plugins: [dts()],
-        external
-    },
+    })),
     ...Object.keys(themes).map(theme => ({
         input: themes[theme],
         output: {

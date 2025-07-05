@@ -5,6 +5,8 @@ import { Header } from "@xyd-js/core";
 import type { ITOC } from "@xyd-js/ui";
 import { Nav, SubNav, Toc, UISidebar } from "@xyd-js/ui"
 import { Anchor, Breadcrumbs, Button, ColorSchemeButton, Icon, NavLinks, useColorScheme } from "@xyd-js/components/writer";
+import { SidebarTabsDropdown } from "@xyd-js/ui";
+import * as Components from "@xyd-js/components/writer";
 
 import { Surface } from "./Surfaces";
 import { SurfaceTarget } from "../../../src";
@@ -13,6 +15,7 @@ import { useBreadcrumbs, useMetadata, useNavLinks, useRawPage, useSettings, useS
 import { FwSidebarGroupContext, FwSidebarItemGroup, FwSidebarItemProps } from "./Sidebar";
 
 import { useMatchedSubNav } from "../hooks";
+import { LayoutPrimary } from "@xyd-js/components/layouts";
 
 function FwNavLogo() {
     const settings = useSettings()
@@ -29,6 +32,64 @@ function FwNavLogo() {
 }
 
 export function FwNav({ kind }: { kind?: "middle" }) {
+    const settings = useSettings()
+    const activeHeaderPage = useActiveHeaderPage()
+
+    const header = settings?.navigation?.header || []
+    const headerMap = header.reduce<Record<string, React.ReactNode[]>>((acc, item) => {
+        const float = item.float || "default";
+        return {
+            ...acc,
+            [float]: [...(acc[float] || []), createHeader(item)]
+        };
+    }, {});
+
+    const rightHeaderExists = headerMap["right"]?.length > 0
+
+    // TODO: in the future better floating system - just pure css?
+    return <Nav
+        value={activeHeaderPage}
+        kind={kind}
+        logo={<FwNavLogo />}
+        rightSurface={<>
+            {
+                rightHeaderExists
+                    ? <Nav.Tab
+                        value={activeHeaderPage}
+                    >
+                        {headerMap["right"]}
+                    </Nav.Tab>
+                    : null
+            }
+
+            <Surface target={SurfaceTarget.NavRight} />
+
+            <ColorSchemeButton />
+
+            <LayoutPrimary.Hamburger />
+        </>}
+    >
+        <FwNav.DefaultItems />
+    </Nav>
+}
+
+FwNav.DefaultItems = function DefaultItems() {
+    const defaultItems = useDefaultHeaderItems()
+
+    return defaultItems.map(createHeader)
+}
+
+function useDefaultHeaderItems() {
+    const settings = useSettings()
+
+    const header = settings?.navigation?.header || []
+
+    return header?.filter(item => {
+        return !item.float
+    })
+}
+
+function useActiveHeaderPage() {
     const matches = useMatches()
     const matchedSubnav = useMatchedSubNav()
     const settings = useSettings()
@@ -45,51 +106,27 @@ export function FwNav({ kind }: { kind?: "middle" }) {
         return pageLink(item.page || "") === lastMatch?.id
     })
 
-    function createHeader(item: Header) {
-        return <Nav.Item
-            key={(item.page || "") + item.page}
-            href={pageLink(item?.page || "")}
-            value={item.page || ""}
-            as={$Link}
-        >
-            {item.title}
-        </Nav.Item>
+
+    return active?.page || ""
+}
+
+function createHeader(item: Header) {
+    const Component = Components[item?.component || ""] || function (p: any) {
+        return p.children
     }
 
-    const headerMap = header.reduce<Record<string, React.ReactNode[]>>((acc, item) => {
-        const float = item.float || "default";
-        return {
-            ...acc,
-            [float]: [...(acc[float] || []), createHeader(item)]
-        };
-    }, {});
-
-    const rightHeaderExists = headerMap["right"]?.length > 0
-
-    // TODO: in the future better floating system - just pure css?
-    return <Nav
-        value={active?.page || ""}
-        kind={kind}
-        logo={<FwNavLogo />}
-        rightSurface={<>
-            {
-                rightHeaderExists
-                    ? <Nav.Tab
-                        value={active?.page || ""}
-                    >
-                        {headerMap["right"]}
-                    </Nav.Tab>
-                    : null
-            }
-
-            <Surface target={SurfaceTarget.NavRight} />
-
-            <ColorSchemeButton />
-        </>}
+    return <Nav.Item
+        key={(item.page || "") + item.page}
+        href={pageLink(item.href || "") || pageLink(item?.page || "")}
+        value={item.page || ""}
+        as={$Link}
     >
-        {headerMap["default"]}
-    </Nav>
+        <Component {...item.props || {}}>
+            {item.title}
+        </Component>
+    </Nav.Item>
 }
+
 
 export function FwSubNav() {
     const matchedSubnav = useMatchedSubNav()
@@ -133,6 +170,8 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
     const pathname = trailingSlash(location.pathname)
     const groups = useSidebarGroups()
     const settings = useSettings()
+    const defaultItems = useDefaultHeaderItems()
+    const activeHeaderPage = useActiveHeaderPage()
 
     const footerItems = settings.navigation?.anchors?.bottom?.map(anchor => {
         return <UISidebar.FooterItem href={anchor.url} icon={<Icon name={anchor.icon || ""} />}>
@@ -158,12 +197,32 @@ export function FwSidebarGroups(props: FwSidebarGroupsProps) {
         return group
     })
 
+
     // TODO: better API for elements like logo search
     return <FwSidebarGroupContext
         initialActiveItems={initialActiveItems}
     >
         <UISidebar footerItems={footerItems && footerItems}>
             <Surface target={SurfaceTarget.SidebarTop} />
+            {/* <div part="header-items">
+                {defaultItems.map(item => {
+                    return <UISidebar.Item
+                        href={pageLink(item.page || "")}
+                        active={activeHeaderPage === item.page}
+                    >
+                        {item.title}
+                    </UISidebar.Item>
+                })}
+            </div> */}
+
+            <SidebarTabsDropdown
+                options={defaultItems.map(item => ({
+                    label: item.title ?? "",
+                    value: item.page || "",
+                    icon: item.icon ? <Icon name={item.icon} size={18} /> : null
+                }))}
+                value={activeHeaderPage}
+            />
 
             {
                 groups?.map((group, index) => <FwSidebarItemGroup
@@ -283,11 +342,14 @@ export function FwCopyPage() {
 
 function $Link({ children, ...rest }) {
     let to: To = ""
+    let isExternal = false
 
     if (rest.href) {
         try {
             new URL(rest.href)
             to = rest.href
+            // Check if it's an external link
+            isExternal = rest.href.startsWith("http://") || rest.href.startsWith("https://")
         } catch (error) {
             if (rest.href.startsWith("/")) {
                 const url = new URL(`https://example.com${rest.href}`)
@@ -315,7 +377,7 @@ function $Link({ children, ...rest }) {
         }
     }
 
-    return <Link {...rest} to={to}>
+    return <Link {...rest} to={to} target={isExternal ? "_blank" : rest.target}>
         {children}
     </Link>
 }
@@ -344,5 +406,14 @@ function trailingSlash(path: string) {
 }
 
 function pageLink(page: string) {
+    if (!page) {
+        return ""
+    }
+
+    // If it's an external link (starts with http:// or https://), return it as-is
+    if (page.startsWith("http://") || page.startsWith("https://")) {
+        return page
+    }
+
     return page.startsWith("/") ? page : `/${page}`
 }

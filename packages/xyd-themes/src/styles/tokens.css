@@ -375,6 +375,7 @@
     --xyd-sidebar-item-color: var(--dark48);
     --xyd-sidebar-item-header-color: var(--text-primary);
     --xyd-sidebar-item-padding-left: var(--xyd-padding-default);
+    --xyd-sidebar-anchor-item-padding: 6px 12px 12px var(--xyd-sidebar-item-padding-left);
 
     /* SubNav */
     --xyd-subnav-height: 44px;

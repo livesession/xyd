@@ -1,5 +1,22 @@
 # @xyd-js/plugin-docs
 
+## 0.1.0-xyd.87
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-xyd.95
+  - @xyd-js/composer@0.1.0-xyd.84
+  - @xyd-js/content@0.1.0-xyd.98
+  - @xyd-js/core@0.1.0-xyd.97
+  - @xyd-js/framework@0.1.0-xyd.116
+  - @xyd-js/gql@0.1.0-xyd.97
+  - @xyd-js/openapi@0.1.0-xyd.95
+  - @xyd-js/sources@0.1.1-xyd.87
+  - @xyd-js/themes@0.1.1-xyd.87
+  - @xyd-js/uniform@0.1.0-xyd.99
+
 ## 0.1.0-xyd.86
 
 ### Patch Changes

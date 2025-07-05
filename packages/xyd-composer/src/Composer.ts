@@ -53,6 +53,10 @@ export class Composer {
         vars: AtlasVars,
         treeChilds: readonly RootContent[]
     ) {
+        if (!props.references) {
+            props.references = []
+        }
+
         //@ts-ignore
         const outputVarExamples: ExampleRoot = {
             groups: []

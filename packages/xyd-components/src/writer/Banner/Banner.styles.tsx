@@ -7,10 +7,15 @@ export const BannerHost = css`
         --xyd-banner-color: var(--green100);
         --xyd-text-color--default: var(--xyd-banner-color);
         
+        svg {
+            fill: var( --xyd-text-color--default);
+        }
+        
         font-size: var(--xyd-font-size-small);
         line-height: var(--xyd-line-height-small);
 
         color: var( --xyd-text-color--default);
+       
         display: flex;
         justify-content: center;
         position: relative;

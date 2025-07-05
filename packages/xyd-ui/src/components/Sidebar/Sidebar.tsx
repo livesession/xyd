@@ -80,6 +80,12 @@ UISidebar.Item = function SidebarItem({
     const ButtonOrAnchor = button ? 'button' : Link
 
     let h = href?.endsWith("/") ? href.slice(0, -1) : href
+    
+    let target = ""
+    if (href?.startsWith("http://") || href?.startsWith("https://")) {
+        target = "_blank"
+    }
+
     return <li
         part="item"
         className={cn.ItemHost}
@@ -91,6 +97,7 @@ UISidebar.Item = function SidebarItem({
             href={button ? undefined : h}
             to={h}
             onClick={onClick}
+            target={target}
         >
             <div
                 part="first-item"
@@ -142,14 +149,9 @@ export interface SidebarFooterItemProps {
 }
 
 UISidebar.FooterItem = function SidebarFooterItem({ children, href, icon, as }: SidebarFooterItemProps) {
-    const Link = as || $Link;
-
-    return <li part="footer-item" className={cn.FooterItemHost}>
-        <Link part="footer-link" href={href}>
-            {icon}
-            {children}
-        </Link>
-    </li>
+    return <UISidebar.Item href={href} icon={icon} as={as}>
+        {children}
+    </UISidebar.Item>
 }
 
 function $Link({ children, ...props }) {

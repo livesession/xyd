@@ -29,6 +29,14 @@ title: My Page Title
 # My Header {subtitle="Learn how to use headers"}
 ```
 
+alternatively:
+```md
+# My Header
+:::subtitle
+Learn how to use headers
+:::
+```
+
 with header label:
 ```md
 ---
@@ -180,17 +188,17 @@ For creating steps you can use such us syntax:
 :::
 ~~~
 
-### Tabs {label="Coming Soon"}
+### Tabs 
 For creating tabs, you can use the following syntax:
-~~~
-:::tabs
+```md [descHead="Tip" desc="Check out advanced tabs example [here](https://github.com/xyd-js/examples/tree/master/advanced-tabs)."]
+:::tabs 
 1. [CLI](tab=cli)
     Content for the CLI tab
 
 2. [Code](tab=code)
     Content for the Code tab
 :::
-~~~
+```
 
 ## MDX {label="Experimental"}
 MDX combines Markdown with JSX, letting you use React components in your docs.

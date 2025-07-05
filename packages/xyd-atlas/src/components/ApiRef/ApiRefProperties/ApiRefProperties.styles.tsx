@@ -115,7 +115,7 @@ export const ApiRefPropertiesPropToggleHost = css`
     display: flex;
     align-items: center;
     padding: 0;
-    margin-top: 16px;
+    margin-top: 5px;
 
     background: none;
     outline: inherit;

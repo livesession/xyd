@@ -65,7 +65,10 @@ export async function appInit(options?: PluginDocsOptions) {
         globalThis.__xydUserComponents = componentPlugins
     }
 
-    const respPluginDocs = await pluginDocs(options)
+    const respPluginDocs = await pluginDocs({
+        ...options,
+        appInit
+    })
     if (!respPluginDocs) {
         throw new Error("PluginDocs not found")
     }

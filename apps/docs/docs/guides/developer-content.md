@@ -36,7 +36,7 @@ You can also customize syntax highlighting. Please see [theme settings](/docs/gu
 
 ## Syntax Highlighting 
 Default syntax highlighting depends on used theme but you can override it via [`docs.json`](/docs/guides/settings):
-```json [descHead="Tip" desc="Check out syntax highlighting [samples](https://github.com/xyd-js/syntax-highlighting-samples)."]
+```json [descHead="Tip" desc="Check out syntax highlighting [example](https://github.com/xyd-js/examples/tree/master/syntax-highlighting)."]
 {
   "theme": {
     "coder": {
@@ -126,24 +126,24 @@ You can use the `code-group` component to group multiple code blocks together.
 **Input:**
 ~~~
 :::code-group{title="xyd installation"}
-```bash npm
-npm i -g xyd-js
+```bash bun
+bun add -g xyd-js
 ```
 
-```bash bun
-bun add -g @xyd-js/cli
+```bash npm
+npm i -g xyd-js
 ```
 :::
 ~~~
 
 **Output:**
 :::code-group{title="xyd installation"}
-```bash npm
-npm i -g xyd-js
+```bash bun
+bun add -g xyd-js
 ```
 
-```bash bun
-bun add -g @xyd-js/cli
+```bash npm
+npm i -g xyd-js
 ```
 :::
 

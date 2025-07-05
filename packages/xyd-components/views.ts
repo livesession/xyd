@@ -1,2 +1,2 @@
 // TODO: rename to @xyd-js/components/pages
-export * from "./HomeView";
+export * from "./src/views/HomeView";

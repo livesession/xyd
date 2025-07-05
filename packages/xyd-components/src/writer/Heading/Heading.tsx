@@ -1,7 +1,7 @@
 import React, { } from "react"
 
 import * as cn from "./Heading.styles";
-import { Badge } from "writer";
+import { Badge } from "../../../writer";
 
 /**
  * Props for the Heading component

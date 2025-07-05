@@ -1,5 +1,14 @@
 # @xyd-js/gql
 
+## 0.1.0-xyd.97
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-xyd.97
+  - @xyd-js/uniform@0.1.0-xyd.99
+
 ## 0.1.0-xyd.96
 
 ### Patch Changes

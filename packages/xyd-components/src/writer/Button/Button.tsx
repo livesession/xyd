@@ -1,12 +1,14 @@
 import React from "react";
 
+import {Icon} from "../Icon/Icon"
+
 import * as cn from "./Button.styles";
 
 export interface ButtonProps {
     children?: React.ReactNode;
     kind?: "primary" | "secondary" | "tertiary" | undefined
     theme?: "ghost";
-    size?: "sm" | "md" | "lg";
+    size?: "xs" | "sm" | "md" | "lg";
     className?: string;
     onClick?: () => void;
     disabled?: boolean;
@@ -57,7 +59,7 @@ export function Button({
         >
             {icon && iconPosition === "left" && (
                 <span part="icon" className={cn.ButtonIcon}>
-                    {icon}
+                    {typeof icon === "string" ? <Icon name={icon} /> : icon}
                 </span>
             )}
             {
@@ -67,7 +69,7 @@ export function Button({
             }
             {icon && iconPosition === "right" && (
                 <span part="icon" className={cn.ButtonIcon}>
-                    {icon}
+                    {typeof icon === "string" ? <Icon name={icon} /> : icon}
                 </span>
             )}
         </Component>

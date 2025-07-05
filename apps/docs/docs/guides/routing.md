@@ -163,8 +163,8 @@ The header navigation allows you to create a top-level navigation bar.
 
 ### Segments
 
-Segments allows you to create smaller navigational structures based on specific `route`.
-Thanks to that you can create for example a subheader that will shown only on specific `route`: 
+Segments allows you to create smaller navigational structures based on specific [`route`](/docs/guides/routing#routing-1).
+Thanks to that you can create for example a subheader that will shown only on specific [`route`](/docs/guides/routing#routing-1): 
 
 ```json [!scroll descHead="Tip" desc="Check out how to create a subheader using segments [here](https://github.com/xyd-js/navigation-samples/tree/master/subheader)."]
 {
@@ -172,6 +172,7 @@ Thanks to that you can create for example a subheader that will shown only on sp
     // !diff +
     "segments": [
       {
+        // !diff +
         "route": "docs/api",
         "title": "API",
         "pages": [
@@ -186,9 +187,10 @@ Thanks to that you can create for example a subheader that will shown only on sp
         ]
       },
       {
+        // !diff +
         "route": "docs/guides",
         "title": "Guides",
-        "items": [
+        "pages": [
           {
             "title": "Quick Start",
             "page": "docs/guides/quickstart"
@@ -204,7 +206,7 @@ Thanks to that you can create for example a subheader that will shown only on sp
 }
 ```
 
-### Anchors {label="Coming Soon"}
+### Anchors
 
 Anchors provide a way to add fixed navigation elements, typically at the bottom of the page. They're useful for displaying important external links or resources.
 

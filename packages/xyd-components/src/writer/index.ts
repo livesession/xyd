@@ -28,6 +28,8 @@ export * from "./Hr"
 
 export * from "./Icon"
 
+export * from "./IconSocial"
+
 export * from "./Image"
 
 export * from "./List"
@@ -52,3 +54,4 @@ export * from "./Update"
 
 export * from "./VideoGuide"
 
+export { JsonComponent, type JsonComponentProps } from "../utils/JsonComponent"

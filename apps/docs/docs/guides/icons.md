@@ -68,16 +68,17 @@ icon: <icon_name>
 2. [Sidebar group](/docs/guides/routing#groups):
 ```json [descHead="Info" desc="This allows to add icon into specified sidebar group. "]
 {
-"group": "Integrations",
-"pages": [
-    {
-        "group": "Analytics",
-        "icon": "chart-line",
-        "pages": [
-            ...
-        ]
-    }
-]
+  "group": "Integrations",
+  "pages": [
+      {
+          "group": "Analytics",
+          // !diff +
+          "icon": "chart-line",
+          "pages": [
+              ...
+          ]
+      }
+  ]
 }
 ```
 

@@ -144,7 +144,8 @@ pnpm run dev:styles
 
 Install xyd-js cli from verdaccio
 ```
-npm install -g @xyd-js/cli --registry http://localhost:4873
+npm_config_registry=http://localhost:4873 bun add -g @xyd-js/cli 
+npm_config_registry=http://localhost:4873 npm install -g @xyd-js/cli 
 ```
 
 Run xyd-js cli in dev mode
@@ -155,6 +156,11 @@ XYD_DEV_MODE=1 XYD_NODE_PM=pnpm xyd
 npm cache cleaning
 ```
 rm -rf $HOME/.npm/_cacache
+```
+
+run local xyd cli server
+```
+npm_config_registry=http://localhost:4873 xyd
 ```
 
 ### Release process
@@ -185,7 +191,6 @@ npm uninstall -g @xyd-js/cli
 
 # changeset verdaccio publish
 ```
-pnpm changeset publish --registry http://localhost:4873
 npm_config_registry=http://localhost:4873 pnpm changeset publish
 ``
 

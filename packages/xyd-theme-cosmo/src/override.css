@@ -4,6 +4,11 @@
     }
 
     xyd-layout-primary {
+        nav {
+            [part="logo"] {
+                margin-left: var(--xyd-sidebar-padding);
+            }
+        }
         [part="sidebar"] {
             position: sticky;
             height: calc(100vh - var(--xyd-nav-height) - calc(var(--xyd-page-gutter, 8px) * 2));
@@ -27,8 +32,8 @@
                 padding-top: 16px;
             }
 
-            [part="item-header"]:first-child {
-                margin: 0;
+            [part="item-header"]:first-of-type {
+                margin-top: 0;
             }
 
             scrollbar-color: transparent transparent;
@@ -71,6 +76,12 @@
                 background-clip: content-box;
                 border: 1px solid transparent;
                 border-radius: 10px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            xyd-sidebar-tabs-dropdown {
+                display: none;
             }
         }
     }

@@ -22,8 +22,6 @@ export interface Settings {
     plugins?: Plugins
 
     /**
-     * @internal
-     *
      * Redirects configuration
      */
     redirects?: Redirects[]
@@ -157,6 +155,11 @@ export interface Banner {
     kind?: "secondary"
 
     /**
+     * Banner href.
+     */
+    href?: string
+
+    /**
      * Banner icon.
      */
     icon?: string
@@ -203,6 +206,9 @@ export interface Navigation {
 
     /** Array of segments */
     segments?: Segment[]
+
+    /** Footer configuration */
+    footer?: Footer
 
     /**
      * Array of version names. Only use this if you want to show different versions of docs
@@ -318,8 +324,20 @@ export type Header = {
     /** The url once you click on the button */
     page?: string
 
+    /** The href of the button */
+    href?: string
+
     /** Float the header to the right */
     float?: "right"
+
+    /** The iconify icon name */
+    icon?: string
+
+    /** The component to use for the button */
+    component?: string
+
+    /** The props to pass to the component */
+    props?: Record<string, any>
 }
 
 /**
@@ -345,6 +363,40 @@ export interface Anchor {
 export interface AnchorRoot {
     /** Bottom anchors */
     bottom?: Anchor[]
+}
+
+/**
+ * Footer configuration
+ */
+export interface Footer {
+    /** Footer socials */
+    social?: {
+        "x": string
+        "facebook": string
+        "youtube": string
+        "discord": string
+        "slack": string
+        "github": string
+        "linkedin": string
+        "instagram": string
+        "hackernews": string
+        "medium": string
+        "telegram": string
+        "bluesky": string
+        "reddit": string
+    }
+
+    /** Footer links  */
+    links?: {
+        "header": string
+        "items": {
+            "label": string
+            "href": string
+        }[]
+    }[]
+
+    /** Footer footnote */
+    footnote?: string | JsonComponent
 }
 
 // ------ END  settings for structure END ------
@@ -693,3 +745,8 @@ export type EngineUniform = {
 }
 
 // ------ END  settings for config END ------
+
+export interface JsonComponent {
+    component: string
+    props: Record<string, any>
+}

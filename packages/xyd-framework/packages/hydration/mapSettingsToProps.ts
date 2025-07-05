@@ -306,8 +306,23 @@ function mapNavToLinks(
                 } else if ("virtual" in pageItem) {
                     pageName = pageItem.page
                 } else if ("pages" in pageItem) {
-                    // This is a nested Sidebar, skip for now as it's not supported
-                    return
+                    // This is a nested Sidebar, use BFS to resolve all pages
+                    const resolvedPages = findResolvedPagesBFS(pageItem)
+                    if (resolvedPages.length > 0) {
+                        // Add all resolved pages to the allPages array
+                        resolvedPages.forEach((resolvedPage, resolvedIndex) => {
+                            if (!hiddenPages[resolvedPage]) {
+                                allPages.push({
+                                    page: resolvedPage,
+                                    group: group.group || "",
+                                    groupIndex,
+                                    pageIndex: pageIndex + resolvedIndex
+                                })
+                            }
+                        })
+                        // Skip adding the original nested sidebar since we've added all its resolved pages
+                        return
+                    }
                 } else if ("page" in pageItem && typeof pageItem === "object") {
                     // This is a VirtualPage object with page property
                     pageName = (pageItem as { page: string }).page
@@ -363,4 +378,32 @@ function mapNavToLinks(
         prev: prevLink || undefined,
         next: nextLink || undefined,
     }
+}
+
+
+// BFS algorithm to resolve all pages in a nested Sidebar structure
+function findResolvedPagesBFS(sidebar: Sidebar): string[] {
+    if (!sidebar.pages || sidebar.pages.length === 0) {
+        return []
+    }
+
+    const resolvedPages: string[] = []
+    const queue: PageURL[] = [...sidebar.pages]
+
+    while (queue.length > 0) {
+        const current = queue.shift()!
+        
+        if (typeof current === "string") {
+            resolvedPages.push(current)
+        } else if ("virtual" in current) {
+            resolvedPages.push(current.page)
+        } else if ("page" in current && typeof current === "object") {
+            resolvedPages.push((current as { page: string }).page)
+        } else if ("pages" in current && current.pages) {
+            // Add all pages from this nested sidebar to the queue
+            queue.push(...current.pages)
+        }
+    }
+    
+    return resolvedPages
 }

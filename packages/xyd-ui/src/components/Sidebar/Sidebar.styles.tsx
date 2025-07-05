@@ -19,9 +19,13 @@ export const SidebarHost = css`
         }
 
         [part="footer"] {
-            padding: 1rem;
-            box-shadow: 0 -2px 10px var(--xyd-sidebar-divider-shadow-color);
+            padding: var(--xyd-sidebar-padding);
             border-top: 1px solid var(--xyd-sidebar-divider-color);
+
+            svg {
+                width: 16px !important;
+                height: 16px !important;
+            }
         }
     }
 `;
@@ -50,7 +54,7 @@ export const ItemHost = css`
             position: relative;
             
             &[data-anchor="true"] {
-                padding: 6px 12px 12px var(--xyd-sidebar-item-padding-left);
+                padding: var(--xyd-sidebar-anchor-item-padding);
             }
 
             &:not([data-anchor="true"]):hover {
@@ -165,40 +169,6 @@ export const ItemHeaderHost = css`
         display: flex;
         align-items: center;
         gap: 8px;
-    }
-`;
-
-export const FooterItemHost = css`
-    @layer defaults {
-        display: flex;
-        width: 100%;
-        padding: 2px;
-        color: var(--xyd-sidebar-item-color);
-
-        [part="item"] {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            gap: 7px;
-            padding: 4px 8px;
-
-            &:hover {
-                background: var(--xyd-sidebar-item-bgcolor--active-hover);
-                color: var(--xyd-sidebar-item-color--active);
-                border-radius: 4px;
-
-                svg {
-                    fill: var(--xyd-sidebar-item-color--active);
-                }
-            }
-
-            svg {
-                fill: var(--xyd-sidebar-item-color);
-                font-size: var(--xyd-font-size-large);
-                width: 18px;
-                height: 18px;
-            }
-        }
     }
 `;
 

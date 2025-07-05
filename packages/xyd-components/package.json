@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/components",
-  "version": "0.1.0-xyd.94",
+  "version": "0.1.0-xyd.95",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -10,9 +10,6 @@
     "./index.css": "./dist/index.css",
     ".": {
       "import": "./dist/index.js"
-    },
-    "./brand": {
-      "import": "./dist/brand.js"
     },
     "./coder": {
       "import": "./dist/coder.js"
@@ -26,14 +23,14 @@
     "./pages": {
       "import": "./dist/pages.js"
     },
+    "./system": {
+      "import": "./dist/system.js"
+    },
     "./views": {
       "import": "./dist/views.js"
     },
     "./writer": {
       "import": "./dist/writer.js"
-    },
-    "./system": {
-      "import": "./dist/system.js"
     },
     "./coder/themes/*": {
       "import": "./dist/coder/themes/*"

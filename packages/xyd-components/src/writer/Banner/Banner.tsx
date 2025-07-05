@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Icon } from "../../writer";
+import { Button, Icon } from "../../../writer";
 
 import * as cn from "./Banner.styles";
 
@@ -30,7 +30,7 @@ export function Banner(props: BannerProps) {
 
     return <xyd-banner className={cn.BannerHost}>
         <div>
-            <a href={props.href}>
+            <a href={props.href} target="_blank">
                 {icon}
 
                 {props.children}
@@ -40,7 +40,6 @@ export function Banner(props: BannerProps) {
                     props.href ? (
                         <svg
                             viewBox="0 0 20 20"
-                            part="icon"
                             style={{ width: 20, height: 20 }}
                         >
                             <path

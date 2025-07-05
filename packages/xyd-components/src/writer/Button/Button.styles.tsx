@@ -14,6 +14,20 @@ export const ButtonHost = css`
         white-space: nowrap;
         gap: 8px;
 
+        &[data-size="xs"] {
+            height: 24px;
+            padding: 0 8px;
+            gap: 4px;
+
+            font-size: var(--xyd-font-size-xsmall);
+            line-height: var(--xyd-line-height-xsmall);
+
+            p {
+                font-size: var(--xyd-font-size-xsmall);
+                line-height: var(--xyd-line-height-xsmall);
+            }
+        }
+
         &[data-size="sm"] {
             height: 28px;
             padding: 0 12px;

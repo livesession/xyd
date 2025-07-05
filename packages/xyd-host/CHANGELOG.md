@@ -1,5 +1,26 @@
 # @xyd-js/host
 
+## 0.1.0-xyd.85
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-xyd.84
+  - @xyd-js/atlas@0.1.0-xyd.100
+  - @xyd-js/components@0.1.0-xyd.95
+  - @xyd-js/composer@0.1.0-xyd.84
+  - @xyd-js/content@0.1.0-xyd.98
+  - @xyd-js/core@0.1.0-xyd.97
+  - @xyd-js/framework@0.1.0-xyd.116
+  - @xyd-js/plugin-algolia@0.1.0-xyd.84
+  - @xyd-js/plugin-orama@0.1.0-xyd.84
+  - @xyd-js/theme-cosmo@0.1.0-xyd.84
+  - @xyd-js/theme-opener@0.1.0-xyd.84
+  - @xyd-js/theme-picasso@0.1.0-xyd.84
+  - @xyd-js/theme-poetry@0.1.0-xyd.111
+  - @xyd-js/themes@0.1.1-xyd.87
+
 ## 0.1.0-xyd.84
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-algolia",
-  "version": "0.1.0-xyd.83",
+  "version": "0.1.0-xyd.84",
   "author": "",
   "description": "",
   "license": "MIT",
@@ -23,13 +23,13 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@docsearch/react": "^3.9.0",
+    "@docsearch/react": "^3.9.0"
+  },
+  "peerDependencies": {
+    "@xyd-js/plugins": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/content": "workspace:*",
     "@xyd-js/core": "workspace:*"
-  },
-  "peerDependencies": {
-    "@xyd-js/plugins": "workspace:*"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^1.6.1",

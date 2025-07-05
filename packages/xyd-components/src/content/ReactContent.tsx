@@ -28,8 +28,8 @@ import {
     Update,
     Card,
     ColorSchemeButton
-} from '../writer'
-import { CodeSample } from "../coder";
+} from '../../writer'
+import { CodeSample } from "../../coder";
 import { GridDecorator } from './GridDecorator';
 
 interface ReactContentOptions {

@@ -2,17 +2,20 @@ import * as React from 'react'
 import { useLocation } from 'react-router'
 import GitHubButton from 'react-github-btn'
 
-import { TocCard, Text, VideoGuide, useColorScheme } from '@xyd-js/components/writer';
+import { TocCard, Text, VideoGuide, useColorScheme, IconSocial, IconSocialProps, JsonComponent } from '@xyd-js/components/writer';
 import { ContentDecorator } from "@xyd-js/components/content";
 import {
     LayoutPrimary
 } from "@xyd-js/components/layouts";
+import { Footer } from "@xyd-js/components/system";
+
 import {
     FwNav,
     FwNavLinks,
     FwToc,
     FwSubNav,
     FwSidebarGroups,
+    FwLogo,
 
     useMatchedSubNav,
     useMetadata,
@@ -66,6 +69,7 @@ export class BaseTheme extends Theme {
         const location = useLocation()
         const matchedSubNav = useMatchedSubNav()
         const meta = useMetadata()
+        const settings = useSettings()
 
         const subheader = matchedSubNav ? <FwSubNav /> : null
         const sidebar = <$Sidebar />
@@ -90,6 +94,23 @@ export class BaseTheme extends Theme {
 
                 {children}
             </main>
+
+
+            <Footer
+                logo={<FwLogo />}
+                footnote={JsonComponent(settings.navigation?.footer?.footnote || "")}
+                socials={settings.navigation?.footer?.social ? Object.entries(settings.navigation?.footer?.social).map(([key, value]) => ({
+                    logo: <IconSocial kind={key as IconSocialProps["kind"]} />,
+                    href: value
+                })) : undefined}
+                links={settings.navigation?.footer?.links ? settings.navigation?.footer?.links.map((link) => ({
+                    header: link.header,
+                    items: (link.items || []).map((item) => ({
+                        label: item.label,
+                        href: item.href
+                    }))
+                })) : undefined}
+            />
         </LayoutPrimary>
     }
 
@@ -146,9 +167,19 @@ export class BaseTheme extends Theme {
     protected TocBottom() {
         const meta = useMetadata()
         const tocCard = meta?.tocCard
-        const isEmpty = !tocCard || !tocCard.link || !tocCard.title || !tocCard.description
+        const isEmpty = !tocCard || (Array.isArray(tocCard) && tocCard.length === 0) || (!Array.isArray(tocCard) && (!tocCard.link || !tocCard.title || !tocCard.description))
         if (isEmpty) {
             return null
+        }
+
+        if (Array.isArray(tocCard)) {
+            return <>
+                {tocCard.map((card) => (
+                    <div>
+                        <TocCard key={card.link} href={card.link} title={card.title} description={card.description} icon={card.icon} />
+                    </div>
+                ))}
+            </>
         }
 
         return <div>
@@ -192,7 +223,6 @@ export class BaseTheme extends Theme {
                 {/* TODO: in the future */}
                 {/* <Surface target="page.footer.bottom"/> */}
                 {pageFooterBottom}
-
             </xyd-page-footer>
         </>
     }
@@ -223,3 +253,6 @@ function $BuiltWithXYD() {
         </xyd-built-with>
     </a>
 }
+
+
+

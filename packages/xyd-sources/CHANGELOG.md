@@ -1,5 +1,13 @@
 # @xyd-js/sources
 
+## 0.1.1-xyd.87
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/uniform@0.1.0-xyd.99
+
 ## 0.1.1-xyd.86
 
 ### Patch Changes

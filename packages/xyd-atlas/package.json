@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/atlas",
-  "version": "0.1.0-xyd.99",
+  "version": "0.1.0-xyd.100",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -25,8 +25,6 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@xyd-js/uniform": "workspace:*",
-    "@xyd-js/components": "workspace:*",
     "@code-hike/lighter": "^1.0.3",
     "radix-ui": "^1.4.2",
     "codehike": "^1.0.2",
@@ -36,7 +34,9 @@
     "react": "^19.1.0",
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/plugins": "workspace:*",
-    "@xyd-js/core": "workspace:*"
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
+    "@xyd-js/components": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19.1.0",

@@ -8,6 +8,12 @@
             }
         }
 
+        @media (min-width: 1024px) {
+            footer {
+                margin-left: var(--xyd-sidebar-width);
+            }
+        }
+    
         > [part="header"] {
             margin-left: var(--xyd-sidebar-width);
         }
@@ -101,5 +107,11 @@
     xyd-sidebar {
         border-right: 1px solid var(--dark32);
         border-radius: 0;
+    }
+
+    @media (min-width: 1024px) {
+        xyd-sidebar-tabs-dropdown {
+            display: none;
+        }
     }
 }

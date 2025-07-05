@@ -1,13 +1,18 @@
 import React from 'react'
 import * as cn from "./HomePage.styles";
 
-import {
-    GuideCard,
-} from "../../writer"
-import {Button, CTABanner} from "../../brand"
-import {HomeView} from "../../views"
-
+import {HomeView} from "../../../views"
 import {IHomePageHero, IHomePageFeature} from "./types";
+
+function Button() {
+    return <>TODO</>
+}
+function CTABanner() {
+    return <>TODO</>
+}
+function GuideCard() {
+    return <>TODO</>
+}
 
 export interface HomePageProps {
     header: React.ReactNode

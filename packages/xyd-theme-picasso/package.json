@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-picasso",
-  "version": "0.1.0-xyd.83",
+  "version": "0.1.0-xyd.84",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -21,11 +21,11 @@
     "@docsearch/react": "^3.9.0",
     "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0",
-    "@orama/react-components": "^0.7.0",
-    "@xyd-js/atlas": "workspace:*",
-    "@xyd-js/ui": "workspace:*"
+    "@orama/react-components": "^0.7.0"
   },
   "peerDependencies": {
+    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/ui": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/themes": "workspace:*",

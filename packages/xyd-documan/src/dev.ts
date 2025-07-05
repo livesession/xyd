@@ -281,9 +281,33 @@ export async function dev(options?: DevOptions) {
                 return
             } 
 
+            // console.log('🔄 [xyd:dev-watcher] Updating global settings...');
+            // // Update global settings immediately
+            // globalThis.__xydSettings = newSettings;
+            // console.log('✅ [xyd:dev-watcher] Global settings updated');
+            // console.log(4444444)
+
             invalidateSettings(server)
+            // console.log("UPDATE 3333")
             await touchReactRouterConfig()
             await touchLayoutPage()
+            //
+            // // Send HMR update for the virtual settings module
+            // const virtualId = 'virtual:xyd-settings';
+            // const resolvedId = virtualId + '.jsx';
+            // server.ws.send({
+            //     type: 'update',
+            //     updates: [
+            //         {
+            //             type: 'js-update',
+            //             path: `/@id/${resolvedId}`,
+            //             acceptedPath: `/@id/${resolvedId}`,
+            //             timestamp: Date.now(),
+            //         },
+            //     ],
+            // });
+            
+            // Also send full reload to ensure all components update
             server.ws.send({ type: 'full-reload' }); 
         }
     });
@@ -458,6 +482,7 @@ function invalidateSettings(server: ViteDevServer) {
         return
     }
 
+    console.log('🔄 [xyd:dev-watcher] Invalidating settings module...');
     server.moduleGraph.invalidateModule(mod);
     server.ws.send({
         type: 'update',
@@ -470,6 +495,7 @@ function invalidateSettings(server: ViteDevServer) {
             },
         ],
     });
+    console.log('✅ [xyd:dev-watcher] Settings module invalidated and HMR update sent');
 }
 
 async function touchReactRouterConfig() {

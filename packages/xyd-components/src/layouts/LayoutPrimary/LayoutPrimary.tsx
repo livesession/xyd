@@ -63,22 +63,26 @@ LayoutPrimary.Header = function LayoutPrimaryHeader(props: LayoutPrimaryHeaderPr
         <header part="header">
             <div part="header-content">
                 {props.header}
-                <button
-                    part="hamburger-button"
-                    aria-label="Toggle navigation menu"
-                    onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
-                >
-                    <div part="hamburger-icon">
-                        <$HamburgerLine active={isMobileNavOpen} />
-                        <$HamburgerLine active={isMobileNavOpen} />
-                        <$HamburgerLine active={isMobileNavOpen} />
-                    </div>
-                </button>
             </div>
 
             {props.subheader}
         </header>
     </>
+}
+
+LayoutPrimary.Hamburger = function LayoutPrimaryHamburger() {
+    const { isMobileNavOpen, setIsMobileNavOpen } = useContext(LayoutPrimaryContext)
+    return <button
+        part="hamburger-button"
+        aria-label="Toggle navigation menu"
+        onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+    >
+        <div part="hamburger-icon">
+            <$HamburgerLine active={isMobileNavOpen} />
+            <$HamburgerLine active={isMobileNavOpen} />
+            <$HamburgerLine active={isMobileNavOpen} />
+        </div>
+    </button>
 }
 
 interface LayoutPrimaryMobileAsideProps {
@@ -190,7 +194,7 @@ function useSubHeader(ref: React.RefObject<HTMLDivElement | Window | null> | nul
 
         // Determine scroll direction
         const direction = currentScrollTop > lastScrollTop ? 'down' : 'up'
-        
+
         // If direction changed, reset scroll tracking
         if (direction !== scrollDirection) {
             setScrollDirection(direction)

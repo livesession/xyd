@@ -14,7 +14,7 @@ using the Theme API gives you more flexibility and programmable control.
 This approach allows you to build upon the existing design while adding your own customizations, all while maintaining the core functionality of the default theme.
 
 :::callout
-All built-in themes like [poetry](https://github.com/livesession/xyd/tree/master/packages/xyd-theme-poetry) or [opener](https://github.com/livesession/xyd/tree/master/packages/xyd-theme-opener) are based on the default theme and use Theme API.
+All built-in themes like [poetry](https://github.com/livesession/xyd/tree/master/packages/xyd-theme-poetry) or [opener](https://github.com/livesession/xyd/tree/master/packages/xyd-theme-opener) are based on the default theme and use the Theme API.
 :::
 
 ## Getting Started

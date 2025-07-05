@@ -17,7 +17,7 @@ Customizing your documentation allows you to create a unique and branded experie
 There are three main approaches for customization:
 
 1. Customization via [settings file](/docs/guides/settings) - choose from a variety of [pre-built themes](/docs/guides/themes) 
-and tweak using available [theme settings](/docs/guides/customization-introduction#theme-reference)
+and tweak using available [theme settings](/docs/reference/core/theme)
 
 2. [Extending the default theme](/docs/guides/theme-api) - build upon the existing design while adding your own enhancements via code
 
@@ -49,6 +49,12 @@ To customize your documentation via code, you'll need to work with a `.docs/them
 │     └─ index.css  # theme styles entry
 |
 └─ docs.json        # settings file
+```
+
+### theme/index.css
+You can customize theme styles via index.css:
+```css [descHead="Tip" desc="Check out [sample project](https://github.com/xyd-js/examples/blob/master/theme-index.css)."]
+/* your custom css styles */
 ```
 
 ### theme/index.ts {label="Experimental"}

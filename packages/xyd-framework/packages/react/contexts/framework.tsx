@@ -62,6 +62,7 @@ export function Framework(props: FrameworkProps) {
                 {BannerContent ? <BannerComponent
                     label={props.settings?.theme?.banner?.label}
                     icon={props.settings?.theme?.banner?.icon}
+                    href={props.settings?.theme?.banner?.href}
                 >
                     <BannerContent />
                 </BannerComponent> : null}

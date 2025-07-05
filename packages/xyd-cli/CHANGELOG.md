@@ -1,5 +1,19 @@
 # @xyd-js/cli
 
+## 0.1.0-xyd.199
+
+### Patch Changes
+
+- update cli
+
+## 0.1.0-xyd.198
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/documan@0.1.0-xyd.116
+  - @xyd-js/host@0.1.0-xyd.85
+
 ## 0.1.0-xyd.197
 
 ### Patch Changes

@@ -1,10 +1,12 @@
 import React, { } from "react";
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, redirect } from "react-router";
+
+import type { Settings } from "@xyd-js/core";
 
 // // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
-// @ts-ignore
-const { settings } = virtualSettings
+
+const { settings } = virtualSettings as { settings: Settings }
 
 const DEFAULT_FAVICON_PATH = "/public/favicon.png";
 
@@ -15,6 +17,17 @@ type HeadTag = 'meta' | 'link' | 'title' | 'script' | 'style'
 
 export function HydrateFallback() {
     return <div></div>
+}
+
+export function loader({ request }: { request: any }) {
+    const slug = getPathname(request.url || "index") || "index"
+
+    if (settings?.redirects) {
+        const shouldRedirect = settings.redirects.find((redirect) => redirect.source === slug)
+        if (shouldRedirect) {
+            return redirect(shouldRedirect.destination)
+        }
+    }
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -74,9 +87,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
     );
 }
 
-
-
 export default function App() {
     return <Outlet />;
 }
 
+
+function getPathname(url: string) {
+    const parsedUrl = new URL(url);
+    return parsedUrl.pathname.replace(/^\//, '');
+}

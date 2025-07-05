@@ -1,17 +1,18 @@
 ---
-title: Full Examples and Templates
+title: Full Examples, Templates and Clones
 icon: layout-template
+layout: wide
 ---
 
-# Full Examples and Templates
+# Full Examples, Templates and Clones
 :::subtitle
-Ready-to-use examples and templates for xyd docs
+Ready-to-use examples, templates and clones for xyd docs
 :::
 
 ## Clones
 Using xyd to rebuild some inspiring docs.
 
-:::grid
+:::grid{cols=3}
 - 
     - 
         ::card{title="OpenAI Platform" href="https://not-openai.xyd.dev" description="OpenAI Platform clone." imgSrc="/public/assets/not-openai.png"}
@@ -20,19 +21,27 @@ Using xyd to rebuild some inspiring docs.
 :::
 
 ## Templates
+Ready to use templates for your new project.
+
+:::grid{cols=3}
+- 
+    - 
+        ::card{title="Starter" description="Learn how to start with xyd." imgSrc="https://docusaurus.io/assets/ideal-img/algolia.1026fe5.640.png"}
+:::
+
+## Examples
 Examples with minimal content showing how to use xyd.
 
-:::grid
+:::grid{cols=3}
 - 
     - 
         ::card{title="Starter" description="Learn how to start with xyd." imgSrc="https://docusaurus.io/assets/ideal-img/algolia.1026fe5.640.png"}
     - 
         ::card{title="OpenAPI" description="Minimal OpenAPI example." imgSrc="https://docusaurus.io/assets/ideal-img/algolia.1026fe5.640.png"}
+    - 
+        ::card{title="GraphQL API" description="Minimal GraphQL example." imgSrc="https://docusaurus.io/assets/ideal-img/algolia.1026fe5.640.png"}
 
 - 
     - 
-        ::card{title="GraphQL API" description="Minimal GraphQL example." imgSrc="https://docusaurus.io/assets/ideal-img/algolia.1026fe5.640.png"}
-    - 
         ::card{title="React Components API" description="Minimal React Components API docs." imgSrc="https://docusaurus.io/assets/ideal-img/algolia.1026fe5.640.png"}
 :::
-

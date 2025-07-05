@@ -7,7 +7,7 @@ title: Analytics Integrations
 Integrate with an analytics platform to track events
 :::
 
-Automatically send data about your documentation engagement to your third party analytics provider.
+Automatically send data about your documentation engagement to your third party analytics providers.
 
 ## All integrations
 :::grid

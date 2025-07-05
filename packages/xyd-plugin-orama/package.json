@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-orama",
-  "version": "0.1.0-xyd.83",
+  "version": "0.1.0-xyd.84",
   "author": "",
   "description": "",
   "license": "MIT",
@@ -23,10 +23,6 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@xyd-js/core": "workspace:*",
-    "@xyd-js/content": "workspace:*",
-    "@xyd-js/plugins": "workspace:*",
-    "@xyd-js/components": "workspace:*",
     "@orama/orama": "^3.1.6",
     "@orama/plugin-data-persistence": "^3.1.6",
     "@orama/react-components": "^0.7.0",
@@ -39,7 +35,11 @@
   },
   "peerDependencies": {
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/content": "workspace:*",
+    "@xyd-js/plugins": "workspace:*",
+    "@xyd-js/components": "workspace:*"
   },
   "devDependencies": {
     "vite": "^7.0.0",

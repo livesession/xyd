@@ -9,7 +9,7 @@ Our plans for evolving xyd
 :::
 
 :::callout
-Last updated: **June 5, 2025**
+Roadmap details you can find [here](https://github.com/orgs/livesession/projects/4).
 :::
 
 This roadmap outlines the key features and improvements we're working on for xyd. While we have a clear vision,
@@ -26,13 +26,15 @@ Feel free to join the [discussion](https://github.com/livesession/xyd/discussion
 
 List of terms we'd focus:
 
-## Compose
+## Core
 
-Composable architecture for writing docs content.
+Essential features and improvements that form the foundation of xyd.
 
-* **Compose API**: Mechanism for creating and enhancing docs content using declarative or programmatic approaches
+* **Navigation**: Improved site navigation and user experience
 
-* **Interactive Widgets**: Built-in support for creating interactive documentation elements
+* **Internationalization**: Multi-language support
+
+* **Versioning**: Support for multiple documentation versions and version switching
 
 ## APIToolchain
 
@@ -42,7 +44,7 @@ Set of tools to help build API-based docs.
 
 * **SDK Generation**: Generate SDKs for different languages from the API reference
 
-## Themes & Plugins
+## Plugins
 
 Enhanced docs by adding themes and plugins.
 
@@ -57,6 +59,14 @@ Integration with AI systems and making documentation AI-friendly.
 * **AI Search Integration**: Make docs searchable by AI assistants and LLMs
 * **Structured Data**: Enhanced metadata and structured content for better AI comprehension
 * **AI API Access**: Programmatic access to documentation for AI systems
+
+## Compose
+
+Composable architecture for writing docs content.
+
+* **Compose API**: Mechanism for creating and enhancing docs content using declarative or programmatic approaches
+
+* **Interactive Widgets**: Built-in support for creating interactive documentation elements
 
 ## Desktop/Browser app
 

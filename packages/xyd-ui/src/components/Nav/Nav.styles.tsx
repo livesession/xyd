@@ -34,11 +34,22 @@ export const NavHost = css`
             align-items: center;
         }
 
+        @media (max-width: 1024px) {
+            &[data-kind="middle"] [part="nav"] {
+                display: flex;
+            }
+        }
+
         [part="logo"] {
             display: flex;
             align-items: center;
             margin-right: auto;
-            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            [part="logo"] {
+                width: 100%;
+            }
         }
 
         [part="list"] {
@@ -46,12 +57,35 @@ export const NavHost = css`
             align-items: center;
             justify-content: center;
             gap: 8px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: auto;
+        }
+
+        @media (max-width: 1024px) {
+            [part="list"] {
+                display: none;
+            }
         }
 
         [part="right"] {
             display: flex;
             align-items: center;
             justify-content: flex-end;
+        }
+        @media (max-width: 1024px) {
+            [part="right"] {
+               width: 100%;
+               overflow: auto;
+
+               [role="tablist"] {
+                overflow: auto;
+               }
+            }
+        }
+
+        [part="right"] > [role="tablist"] {
+            display: flex;
         }
     }
 `;

@@ -13,21 +13,25 @@ Add custom Tags & JS to your documentation to fully customize its behavior and a
 ## Custom Tags
 Add custom tags to the `<head>` of your xyd site. Can be useful for adding analytics and other third-party scripts and resources:
 
-```json
-"theme": {
-    "head": [
-        ["script", {"async": true, "href": "https://cdn.livesession.io/track.js"}]
-    ]
+```json [descHead="Tip" desc="Check out custom tags example [here](https://github.com/xyd-js/examples/tree/master/custom-tags)."]
+{
+    "theme": {
+        "head": [
+            ["script", {"async": true, "href": "https://cdn.livesession.io/track.js"}]
+        ]
+    }
 }
 ```
 
 ## Custom JS {label="Coming Soon"}
 Custom JS lets you write JavaScript in separate files that are automatically injected across your documentation site. Use it to implement global features or integrate third-party services:
 ```json
-"theme": {
-    "scripts": [
-        "./scripts/livesession.ts"
-    ]
+{
+    "theme": {
+        "scripts": [
+            "./scripts/livesession.ts"
+        ]
+    }
 }
 ```
 

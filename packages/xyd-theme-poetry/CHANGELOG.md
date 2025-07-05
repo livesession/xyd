@@ -1,5 +1,17 @@
 # @xyd-js/theme-poetry
 
+## 0.1.0-xyd.111
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.100
+  - @xyd-js/components@0.1.0-xyd.95
+  - @xyd-js/framework@0.1.0-xyd.116
+  - @xyd-js/themes@0.1.1-xyd.87
+  - @xyd-js/ui@0.1.0-xyd.100
+
 ## 0.1.0-xyd.110
 
 ### Patch Changes

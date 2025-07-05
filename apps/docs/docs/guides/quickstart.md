@@ -21,7 +21,6 @@ Follow the instructions below to learn how to run, deploy, update and supercharg
 
 ## Installation
 
-
 ::::steps
 1. Install the <code>xyd</code> CLI:
 :::code-group{title="xyd installation"}
@@ -69,5 +68,8 @@ Learn more about [deploy](/docs/guides/deploy).
 ## Starter
 Use our [starter kit](https://github.com/xyd-js/starter) to get up and running quickly.
 
-## Online Demo
-Please checkout [CodeSanbox demo](#).
+## CodeSandbox Demo
+Please checkout [CodeSanbox demo](https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox).
+
+## API Docs Playground
+Please checkout [API docs demo](http://apidocs-demo.xyd.dev).

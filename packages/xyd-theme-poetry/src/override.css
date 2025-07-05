@@ -84,4 +84,10 @@
             }
         }
     }
+
+    @media (min-width: 1024px) {
+        xyd-sidebar-tabs-dropdown {
+            display: none;
+        }
+    }
 }

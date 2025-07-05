@@ -1,7 +1,7 @@
 import React from "react";
 
 import cn from "./TocCard.module.css";
-import { Icon } from "writer";
+import { Icon } from "../../../writer";
 
 interface TocCardProps {
     title: string;
