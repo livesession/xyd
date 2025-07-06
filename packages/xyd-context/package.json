@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/context",
-  "version": "0.1.0-xyd.84",
+  "version": "0.1.0-xyd.86",
   "description": "shared xyd context",
   "main": "./dist/index.js",
   "type": "module",

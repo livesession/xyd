@@ -1,5 +1,29 @@
 # @xyd-js/themes
 
+## 0.1.1-xyd.89
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.102
+  - @xyd-js/components@0.1.0-xyd.97
+  - @xyd-js/core@0.1.0-xyd.99
+  - @xyd-js/framework@0.1.0-xyd.118
+  - @xyd-js/ui@0.1.0-xyd.102
+
+## 0.1.1-xyd.88
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.101
+  - @xyd-js/components@0.1.0-xyd.96
+  - @xyd-js/core@0.1.0-xyd.98
+  - @xyd-js/framework@0.1.0-xyd.117
+  - @xyd-js/ui@0.1.0-xyd.101
+
 ## 0.1.1-xyd.87
 
 ### Patch Changes

@@ -1,5 +1,35 @@
 # @xyd-js/storybook
 
+## 0.0.1-xyd.96
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.102
+  - @xyd-js/components@0.1.0-xyd.97
+  - @xyd-js/content@0.1.0-xyd.100
+  - @xyd-js/theme-cosmo@0.1.0-xyd.86
+  - @xyd-js/theme-opener@0.1.0-xyd.86
+  - @xyd-js/theme-picasso@0.1.0-xyd.86
+  - @xyd-js/theme-poetry@0.1.0-xyd.113
+  - @xyd-js/ui@0.1.0-xyd.102
+
+## 0.0.1-xyd.95
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.101
+  - @xyd-js/components@0.1.0-xyd.96
+  - @xyd-js/content@0.1.0-xyd.99
+  - @xyd-js/theme-cosmo@0.1.0-xyd.85
+  - @xyd-js/theme-opener@0.1.0-xyd.85
+  - @xyd-js/theme-picasso@0.1.0-xyd.85
+  - @xyd-js/theme-poetry@0.1.0-xyd.112
+  - @xyd-js/ui@0.1.0-xyd.101
+
 ## 0.0.1-xyd.94
 
 ### Patch Changes

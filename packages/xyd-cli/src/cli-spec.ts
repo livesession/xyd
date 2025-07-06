@@ -88,6 +88,10 @@ export const cliSpec: CLISpec = {
             description: 'Install the xyd framework manually',
             usage: 'xyd install [flags]',
         },
+        migrateme: {
+            description: 'Migrate your docs to the new xyd framework',
+            usage: 'xyd migrateme  <resource> [flags]',
+        },
     },
     globalFlags: {
         'help': {

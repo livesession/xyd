@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/components",
-  "version": "0.1.0-xyd.95",
+  "version": "0.1.0-xyd.97",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

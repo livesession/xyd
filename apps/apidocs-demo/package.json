@@ -1,7 +1,7 @@
 {
   "name": "@xyd-js/apidocs-demo",
   "type": "module",
-  "version": "0.0.1-xyd.0",
+  "version": "0.0.1-xyd.2",
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",

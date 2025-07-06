@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/cli",
-  "version": "0.1.0-xyd.199",
+  "version": "0.1.0-xyd.203",
   "keywords": [],
   "author": "",
   "description": "",
@@ -19,10 +19,18 @@
   "dependencies": {
     "@xyd-js/documan": "workspace:*",
     "@xyd-js/host": "workspace:*",
+    "@xyd-js/core": "workspace:*",
+    "@mdx-js/mdx": "^3.1.0",
     "arg": "^5.0.2",
     "colors": "^1.4.0",
+    "mdast-util-to-string": "^4.0.0",
     "picocolors": "^1.1.1",
+    "remark": "^15.0.1",
+    "remark-directive": "^3.0.0",
+    "remark-mdx": "^3.0.0",
+    "remark-stringify": "^11.0.0",
     "semver": "^7.6.3",
+    "unist-util-visit": "^5.0.0",
     "update-notifier": "^7.3.1"
   },
   "devDependencies": {

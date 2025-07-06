@@ -38,7 +38,15 @@ export async function cli(argv = process.argv.slice(2)) {
         process.exit(1);
     }
 
-    await globalCommands[globalCommand as keyof typeof globalCommands](globalFlags);
+    const args = []
+
+    if (commands.length > 1) {
+        args.push(...commands.slice(1))
+    }
+
+    args.push(globalFlags)
+
+    await globalCommands[globalCommand as keyof typeof globalCommands](...args);
 }
 
 

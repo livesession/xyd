@@ -20,6 +20,10 @@ export function HydrateFallback() {
 }
 
 export function loader({ request }: { request: any }) {
+    if (process.env.NODE_ENV === "production") { 
+        return
+    }
+    
     const slug = getPathname(request.url || "index") || "index"
 
     if (settings?.redirects) {

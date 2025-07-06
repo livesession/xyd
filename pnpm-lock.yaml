@@ -396,6 +396,12 @@ importers:
 
   packages/xyd-cli:
     dependencies:
+      '@mdx-js/mdx':
+        specifier: ^3.1.0
+        version: 3.1.0(acorn@8.15.0)
+      '@xyd-js/core':
+        specifier: workspace:*
+        version: link:../xyd-core
       '@xyd-js/documan':
         specifier: workspace:*
         version: link:../xyd-documan
@@ -408,12 +414,27 @@ importers:
       colors:
         specifier: ^1.4.0
         version: 1.4.0
+      mdast-util-to-string:
+        specifier: ^4.0.0
+        version: 4.0.0
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
+      remark:
+        specifier: ^15.0.1
+        version: 15.0.1
+      remark-mdx:
+        specifier: ^3.0.0
+        version: 3.1.0
+      remark-stringify:
+        specifier: ^11.0.0
+        version: 11.0.0
       semver:
         specifier: ^7.6.3
         version: 7.7.2
+      unist-util-visit:
+        specifier: ^5.0.0
+        version: 5.0.0
       update-notifier:
         specifier: ^7.3.1
         version: 7.3.1
@@ -7718,11 +7739,6 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  jsesc@3.1.0:
-    resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
-    engines: {node: '>=6'}
-    hasBin: true
-
   json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
 
@@ -11241,7 +11257,7 @@ snapshots:
       '@babel/types': 7.28.0
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
-      jsesc: 3.1.0
+      jsesc: 3.0.2
 
   '@babel/helper-annotate-as-pure@7.27.3':
     dependencies:
@@ -17838,8 +17854,6 @@ snapshots:
   jsep@1.4.0: {}
 
   jsesc@3.0.2: {}
-
-  jsesc@3.1.0: {}
 
   json-buffer@3.0.1: {}
 

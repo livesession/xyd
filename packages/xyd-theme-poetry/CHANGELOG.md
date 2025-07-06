@@ -1,5 +1,29 @@
 # @xyd-js/theme-poetry
 
+## 0.1.0-xyd.113
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.102
+  - @xyd-js/components@0.1.0-xyd.97
+  - @xyd-js/framework@0.1.0-xyd.118
+  - @xyd-js/themes@0.1.1-xyd.89
+  - @xyd-js/ui@0.1.0-xyd.102
+
+## 0.1.0-xyd.112
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-xyd.101
+  - @xyd-js/components@0.1.0-xyd.96
+  - @xyd-js/framework@0.1.0-xyd.117
+  - @xyd-js/themes@0.1.1-xyd.88
+  - @xyd-js/ui@0.1.0-xyd.101
+
 ## 0.1.0-xyd.111
 
 ### Patch Changes

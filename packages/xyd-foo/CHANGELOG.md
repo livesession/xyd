@@ -1,5 +1,17 @@
 # @xyd-js/foo
 
+## 0.1.0-xyd.87
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-xyd.86
+
+### Patch Changes
+
+- update all packages
+
 ## 0.1.0-xyd.85
 
 ### Patch Changes
