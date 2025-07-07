@@ -193,6 +193,18 @@ export function stdContent(
         img: (props) => {
             return <Image {...props} />
         },
+        picture: (props) => {
+            const { children, ...rest } = props
+
+            return <picture {...rest}>
+                {children}
+            </picture>
+        },
+        source: (props) => {
+            const { children, ...rest } = props
+
+            return <source {...rest}/>
+        },
 
         React: NoopReactComponent,
     }

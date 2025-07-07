@@ -16,6 +16,14 @@ export default {
             p:not(li p):not(ul p):not(xyd-callout p):not(xyd-codetabs p):not(xyd-guidecard p):not([data-button="true"] p) {
                 margin-top: var(--space-medium);
             }
+
+            img {
+                margin-top: var(--space-medium);
+            }
+
+            xyd-steps {
+                margin-top: var(--space-medium);
+            }
             
             details {
                 --xyd-callout-bgcolor: var(--white);
@@ -64,14 +72,12 @@ export default {
             h2:first-of-type {
                 margin-top: var(--space-xxlarge);
             }
-
             h4 {
                 &[data-kind="muted"] {
                     margin: 4px 0 16px;
                 }
             }
             
-       
             ul:not(xyd-underlinenav ul), ol:not(xyd-underlinenav ol) {
                 margin-top: var(--space-medium);
             }

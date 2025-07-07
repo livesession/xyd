@@ -28,7 +28,6 @@ export class ContentFS {
         return await this.compileContent(content, filePath)
     }
 
-
     public async compileContent(content: string, filePath?: string): Promise<string> {
         const vfile = new VFile({
             path: filePath,

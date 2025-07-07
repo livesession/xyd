@@ -50,7 +50,6 @@ export const GuideHost = css`
         }
 
         [part="icon"] {
-            height: 32px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -62,6 +61,17 @@ export const GuideHost = css`
             svg {
                 width: 24px;
                 height: 24px;
+                fill: var(--color-primary) !important; // TODO: fix important
+                color: var(--color-primary) !important; // TODO: fix important
+            }
+        }
+
+        html[data-color-primary] {
+            [part="icon"] {
+                svg {
+                    fill: var(--color-primary) !important; // TODO: fix important
+                    color: var(--color-primary) !important; // TODO: fix important
+                }
             }
         }
 

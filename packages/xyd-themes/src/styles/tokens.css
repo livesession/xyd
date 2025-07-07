@@ -20,6 +20,7 @@
     --blue16: #e4edff;
     --blue32: #60A5FA;
     --blue80: #1971a8;
+    --blue100: #00529b;
     --green32: #d4f5e7;
     --green60: #14c397;
     --green80: #28a745;
@@ -28,6 +29,7 @@
     --red80: #dc3545;
     --red100: #b91c1c;
     --yellow80: #ffc107;
+    --yellow100: #dea806;
 
     --color-bg: var(--white);
     --color-text: var(--dark100);
@@ -58,12 +60,13 @@
     --blue16: #e4edff;
     --blue32: #60A5FA;
     --blue80: #1971a8;
+    --blue100: #00529b;
     --green80: #28a745;
     --green100: #108944;
     --red80: #dc3545;
     --red100: #b91c1c;
     --yellow80: #ffc107;
-
+    --yellow100: #dea806;
     --color-bg: var(--white);
     --color-text: var(--dark100);
 
@@ -98,11 +101,13 @@
         --blue16: #e4edff;
         --blue32: #60A5FA;
         --blue80: #1971a8;
+        --blue100: #00529b;
         --green80: #28a745;
         --green100: #108944;
         --red80: #dc3545;
         --red100: #b91c1c;
         --yellow80: #ffc107;
+        --yellow100: #dea806;
 
         --color-bg: var(--white);
         --color-text: var(--dark100);
@@ -286,7 +291,12 @@
     --xyd-text-color--success: var(--green80);
     --xyd-text-color--success--active: var(--green100);
     --xyd-text-color--success--muted: rgba(40, 167, 69, 0.3);
+    --xyd-text-color--info: var(--blue80);
+    --xyd-text-color--info--active: var(--blue100);
+    --xyd-text-color--info--muted: rgba(9, 109, 232, 0.3);
     --xyd-text-color--warn: var(--yellow80);
+    --xyd-text-color--warn--active: var(--yellow100);
+    --xyd-text-color--warn--muted: rgba(255, 193, 7, 0.3);
     --xyd-text-color--error: var(--red80);
     --xyd-text-color--error--active: var(--red100);
     --xyd-text-color--error--muted: rgba(220, 53, 69, 0.3);

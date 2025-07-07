@@ -3,6 +3,7 @@ import { writeFile, mkdir, rm, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
+import readline from 'node:readline'
 
 export function isURL(url: string) {
     return url.startsWith("http") || url.startsWith("https")
@@ -135,4 +136,22 @@ export async function downloadGitHubRepo(docsUrl: string, flags: any) {
         console.error('Error downloading repository:', error)
         throw error
     }
+}
+
+export async function askForConfirmation(question: string): Promise<boolean> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    return new Promise((resolve) => {
+        // Add colors to make the question more visible
+        const coloredQuestion = `\x1b[36m${question}\x1b[0m (y/n): `;
+
+        rl.question(coloredQuestion, (answer) => {
+            rl.close();
+            const normalizedAnswer = answer.toLowerCase().trim();
+            resolve(normalizedAnswer === 'y' || normalizedAnswer === 'yes');
+        });
+    });
 }

@@ -66,6 +66,11 @@ export interface Theme {
     coder?: Coder
 
     /**
+     * Styles configuration for the theme.
+     */
+    styles?: Styles
+
+    /**
      * Banner configuration for the theme.
      */
     banner?: Banner
@@ -108,6 +113,25 @@ export interface Coder {
      * Syntax highlighting configuration.
      */
     syntaxHighlight?: SyntaxHighlight
+}
+
+/**
+ * Styles configuration for the theme.
+ */
+export interface Styles {
+    /**
+     * Colors configuration for the theme.
+     */
+    colors?: {
+        primary: string
+        light?: string
+        dark?: string
+    }
+
+    /**
+     * Styles configuration for the theme.
+     */
+    tokens?: Map<string, string>
 }
 
 /**

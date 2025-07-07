@@ -155,7 +155,6 @@ function vitePluginSettings(options: docsPluginOptions) {
                         return
                     }
 
-                    console.log("options.appInit 2", options.appInit, 3333)
                     if (options.appInit) {
                         // TODO: better way to handle that - we need this cuz otherwise its inifiite reloads
                         if (newSettings.engine?.uniform?.store) {

@@ -7,8 +7,12 @@ import { remark } from 'remark'
 import remarkStringify from 'remark-stringify'
 import remarkDirective from 'remark-directive'
 import remarkMdx from 'remark-mdx'
+import { exec } from 'node:child_process'
+import { promisify } from 'node:util'
 
-import { Settings as XydSettings } from '@xyd-js/core'
+import { Header, Settings as XydSettings } from '@xyd-js/core'
+
+const execAsync = promisify(exec)
 
 // https://leaves.mintlify.com/schema/docs.json
 export type MintlifyJSON =
@@ -4293,9 +4297,13 @@ export async function mintlifyMigrator(docsPath: string) {
             name: "poetry",
             icons: {
                 library: [
-                    "fa" // TODO: mintlify supports lucide icons too
+                    {
+                        "name": "fa6-solid", // TODO: mintlify supports lucide icons too
+                        "default": true
+                    }
                 ]
-            }
+            },
+            maxTocDepth: 4,
         },
         navigation: {
             header: [],
@@ -4315,7 +4323,7 @@ export async function mintlifyMigrator(docsPath: string) {
             const hasHref = 'href' in anchor && anchor.href
 
             // Create header navigation entry
-            const headerEntry: any = {
+            const headerEntry: Header = {
                 title: anchor.anchor,
                 icon: typeof anchor.icon === 'string' ? anchor.icon : anchor.icon?.name
             }
@@ -4323,6 +4331,7 @@ export async function mintlifyMigrator(docsPath: string) {
             if (hasHref && !hasGroups) {
                 // External link - use href
                 headerEntry.href = anchor.href
+                headerEntry.float = 'right'
                 console.log(`Created external header link: ${anchor.anchor} -> ${anchor.href}`)
             } else if (hasGroups) {
                 // Internal navigation - create page route
@@ -4340,7 +4349,7 @@ export async function mintlifyMigrator(docsPath: string) {
                     if (hasPages) {
                         const sidebarGroup = {
                             group: group.group,
-                            icon: typeof anchor.icon === 'string' ? anchor.icon : anchor.icon?.name,
+                            icon: typeof group.icon === 'string' ? group.icon : group.icon?.name,
                             pages: convertPagesToXYD(group.pages)
                         }
                         sidebarPages.push(sidebarGroup)
@@ -4365,9 +4374,66 @@ export async function mintlifyMigrator(docsPath: string) {
 
     // Convert theme colors if available
     if (docsJson.colors) {
-        console.log("Mintlify colors are not supported yet")
-        // Note: XYD doesn't have direct color mapping, but we could extend this
-        // console.log('Theme colors found:', docsJson.colors)
+        console.log("Migrating theme colors...")
+
+        // Initialize styles object if it doesn't exist
+        if (!xydSettings.theme!.styles) {
+            xydSettings.theme!.styles = {}
+        }
+
+        xydSettings.theme!.styles!.colors = {
+            primary: docsJson.colors.primary
+        }
+    }
+
+    // Ensure public directory exists
+    const publicDir = join(docsPath, 'public')
+    try {
+        await readdir(publicDir)
+    } catch {
+        console.log("Creating public directory...")
+        await execAsync(`mkdir -p "${publicDir}"`)
+    }
+
+    // Helper function to move resource to public folder
+    async function moveResourceToPublic(resourcePath: string | undefined): Promise<string> {
+        if (!resourcePath) return ''
+
+        // Remove leading slash if present
+        const cleanPath = resourcePath.startsWith('/') ? resourcePath.slice(1) : resourcePath
+
+        // If already in public folder, return as is
+        if (cleanPath.startsWith('public/')) {
+            return `/${cleanPath}`
+        }
+
+        const sourcePath = join(docsPath, cleanPath)
+
+        try {
+            // Check if source file exists
+            await readFile(sourcePath)
+
+            // Create the same directory structure in public
+            const relativePath = cleanPath
+            const destPath = join(publicDir, relativePath)
+
+            // Ensure the destination directory exists
+            const destDir = destPath.substring(0, destPath.lastIndexOf('/'))
+            try {
+                await readdir(destDir)
+            } catch {
+                await execAsync(`mkdir -p "${destDir}"`)
+            }
+
+            // Move file to public directory preserving structure
+            await execAsync(`mv "${sourcePath}" "${destPath}"`)
+            console.log(`Moved resource: ${cleanPath} -> public/${relativePath}`)
+
+            return `/public/${relativePath}`
+        } catch (error) {
+            console.log(`Resource not found or already in public: ${cleanPath}`)
+            return resourcePath
+        }
     }
 
     // Convert logo if available
@@ -4375,11 +4441,11 @@ export async function mintlifyMigrator(docsPath: string) {
         console.log("Migrating logo...")
 
         if (typeof docsJson.logo === 'string') {
-            xydSettings.theme!.logo = docsJson.logo
+            xydSettings.theme!.logo = await moveResourceToPublic(docsJson.logo)
         } else if (typeof docsJson.logo === 'object') {
             xydSettings.theme!.logo = {
-                light: docsJson.logo.light,
-                dark: docsJson.logo.dark,
+                light: await moveResourceToPublic(docsJson.logo.light),
+                dark: await moveResourceToPublic(docsJson.logo.dark),
                 href: docsJson.logo.href
             }
         }
@@ -4390,12 +4456,18 @@ export async function mintlifyMigrator(docsPath: string) {
         console.log("Migrating favicon...")
 
         if (typeof docsJson.favicon === 'string') {
-            xydSettings.theme!.favicon = docsJson.favicon
+            xydSettings.theme!.favicon = await moveResourceToPublic(docsJson.favicon)
         } else if (typeof docsJson.favicon === 'object') {
             // Use light favicon as default, fallback to dark
-            xydSettings.theme!.favicon = docsJson.favicon.light || docsJson.favicon.dark
+            const lightFavicon = await moveResourceToPublic(docsJson.favicon.light)
+            const darkFavicon = await moveResourceToPublic(docsJson.favicon.dark)
+            xydSettings.theme!.favicon = lightFavicon || darkFavicon
         }
     }
+
+    // Scan and move all image resources to public folder
+    console.log("Scanning for image resources...")
+    await scanAndMoveImageResources(docsPath, publicDir)
 
     // Convert navbar links to header if available
     if (docsJson.navbar?.links) {
@@ -4462,6 +4534,102 @@ export async function mintlifyMigrator(docsPath: string) {
     console.log('✅ Mintlify migration completed!')
 }
 
+// TODO: in the future more advanced structuring - currently a basic header pushing migration + sidebar
+function migrateNavigation(
+    docsJson: MintlifyJSON,
+    xydSettings: XydSettings
+) {
+    function migrateNav(navs: GroupsSchema | TabsSchema | DropdownsSchema | AnchorsSchema) {
+        for (const nav of navs) {
+            // Check if this anchor has groups (navigation structure) or is just an external link
+            const hasGroups = 'groups' in nav && nav.groups
+            const hasHref = 'href' in nav && nav.href
+
+            let title = ""
+            if ("group" in nav) {
+                title = nav.group
+            } else if ("tab" in nav) {
+                title = nav.tab
+            } else if ("dropdown" in nav) {
+                title = nav.dropdown
+            } else if ("anchor" in nav) {
+                title = nav.anchor
+            }
+
+            // Create header navigation entry
+            const headerEntry: Header = {
+                title: title,
+                icon: typeof nav.icon === 'string' ? nav.icon : nav.icon?.name
+            }
+
+            if (hasHref && !hasGroups) {
+                // External link - use href
+                headerEntry.href = nav.href
+                headerEntry.float = 'right'
+                console.log(`Created external header link: ${title} -> ${nav.href}`)
+            } else if (hasGroups) {
+                // Internal navigation - create page route
+                const route = title.toLowerCase().replace(/\s+/g, '-')
+                headerEntry.page = route
+                console.log(`Created internal header page: ${title} -> ${route}`)
+
+                // Convert groups to sidebar pages
+                const sidebarPages: any[] = []
+
+                // TODO: support pages only?
+                if ("groups" in nav) {
+                    for (const group of nav.groups as GroupsSchema) {
+                        // Check if group has pages (navigation structure) or is API-related
+                        const hasPages = 'pages' in group && group.pages
+    
+                        if (hasPages) {
+                            const sidebarGroup = {
+                                group: group.group,
+                                icon: typeof group.icon === 'string' ? group.icon : group.icon?.name,
+                                pages: convertPagesToXYD(group.pages)
+                            }
+                            sidebarPages.push(sidebarGroup)
+                        } else {
+                            console.log(`Skipping API group: ${group.group} (no pages property)`)
+                        }
+                    }
+                }
+
+                // Create sidebar route
+                const sidebarRoute = {
+                    route: route,
+                    pages: sidebarPages
+                }
+
+                xydSettings.navigation!.sidebar!.push(sidebarRoute)
+                console.log(`Created sidebar route: ${route} for anchor: ${title}`)
+            }
+
+            xydSettings.navigation!.header!.push(headerEntry)
+        }
+    }
+
+    if ("groups" in docsJson.navigation) {
+        console.log("Migrating groups...")
+        migrateNav(docsJson.navigation.groups)
+    }
+
+    if ("tabs" in docsJson.navigation) {
+        console.log("Migrating links...")
+        migrateNav(docsJson.navigation.tabs)
+    }
+
+    if ("anchors" in docsJson.navigation) {
+        console.log("Migrating anchors...")
+        migrateNav(docsJson.navigation.anchors)
+    }
+
+    if ("dropdowns" in docsJson.navigation) {
+        console.log("Migrating dropdowns...")
+        migrateNav(docsJson.navigation.dropdowns)
+    }
+}
+
 /**
  * Convert Mintlify pages array to XYD pages format
  */
@@ -4483,6 +4651,55 @@ function convertPagesToXYD(pages: any[]): any[] {
     }
 
     return convertedPages
+}
+
+async function scanAndMoveImageResources(docsPath: string, publicDir: string) {
+    const imageExtensions = ['.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico']
+
+    async function scanDirectory(currentDir: string) {
+        const items = await readdir(currentDir, { withFileTypes: true })
+
+        for (const item of items) {
+            const fullPath = join(currentDir, item.name)
+
+            if (item.isDirectory()) {
+                if (!['node_modules', '.git', 'dist', 'build', 'public'].includes(item.name)) {
+                    await scanDirectory(fullPath)
+                }
+            } else if (item.isFile()) {
+                const ext = item.name.toLowerCase().substring(item.name.lastIndexOf('.'))
+                if (imageExtensions.includes(ext)) {
+                    try {
+                        // Calculate relative path from docsPath to maintain structure
+                        const relativePath = fullPath.replace(docsPath, '').replace(/^\/+/, '')
+                        const destPath = join(publicDir, relativePath)
+
+                        // Ensure the destination directory exists
+                        const destDir = destPath.substring(0, destPath.lastIndexOf('/'))
+                        try {
+                            await readdir(destDir)
+                        } catch {
+                            await execAsync(`mkdir -p "${destDir}"`)
+                        }
+
+                        // Check if file already exists in public
+                        try {
+                            await readFile(destPath)
+                            console.log(`Image already exists in public: ${relativePath}`)
+                        } catch {
+                            // Move file to public directory preserving structure
+                            await execAsync(`mv "${fullPath}" "${destPath}"`)
+                            console.log(`Moved image: ${fullPath} -> public/${relativePath}`)
+                        }
+                    } catch (error) {
+                        console.log(`Error moving image ${item.name}:`, error)
+                    }
+                }
+            }
+        }
+    }
+
+    await scanDirectory(docsPath)
 }
 
 async function migrateContent(docsPath: string) {
@@ -4509,8 +4726,7 @@ async function findMdxFiles(dir: string): Promise<string[]> {
             const fullPath = join(currentDir, item.name)
 
             if (item.isDirectory()) {
-                // Skip node_modules, snippets, and other common directories
-                if (!['node_modules', '.git', 'dist', 'build', 'snippets'].includes(item.name)) {
+                if (!['node_modules', '.git', 'dist', 'build'].includes(item.name)) {
                     await scanDirectory(fullPath)
                 }
             } else if (item.isFile() && item.name.endsWith('.mdx')) {
@@ -4565,8 +4781,11 @@ async function convertMintlifyComponents(docsPath: string, content: string, file
             }
         }
 
-        // Create MDX processor
-        const processor = createProcessor()
+        // Create MDX processor with options to prevent entity encoding
+        const processor = createProcessor({
+            jsx: true,
+            development: false
+        })
 
         // Parse MDX to AST
         const ast = await processor.parse(bodyContent)
@@ -4574,8 +4793,47 @@ async function convertMintlifyComponents(docsPath: string, content: string, file
         // Store original MDX string for comment generation
         const originalMdxString = bodyContent
 
+        // Extract title and description from frontmatter
+        let title = ''
+        let description = ''
+        if (hasFrontmatter) {
+            const frontmatterContent = frontmatter.replace(/^---\n/, '').replace(/\n---$/, '')
+            const lines = frontmatterContent.split('\n')
+            for (const line of lines) {
+                if (line.startsWith('title:')) {
+                    title = line.replace('title:', '').trim()
+                } else if (line.startsWith('description:')) {
+                    description = line.replace('description:', '').trim()
+                }
+            }
+        }
+
         // Transform Mintlify components to XYD format
         await transformMintlifyComponents(ast, originalMdxString)
+
+        // Add title and description at the top of the AST
+        if (title || description) {
+            const titleAndDescriptionNodes: any[] = []
+
+            if (title) {
+                titleAndDescriptionNodes.push({
+                    type: 'heading',
+                    depth: 1,
+                    children: [{ type: 'text', value: title }]
+                })
+            }
+
+            if (description) {
+                titleAndDescriptionNodes.push({
+                    type: 'containerDirective',
+                    name: 'subtitle',
+                    children: [{ type: 'text', value: description }]
+                })
+            }
+
+            // Insert at the beginning of the AST
+            ast.children = [...titleAndDescriptionNodes, ...ast.children]
+        }
 
         try {
             // Convert AST back to markdown string
@@ -4585,9 +4843,25 @@ async function convertMintlifyComponents(docsPath: string, content: string, file
                     bullet: '-',
                     fences: true,
                     listItemIndent: 'one',
-                    incrementListMarker: false,
+                    incrementListMarker: true,
+                    quote: '"',
+                    emphasis: '*',
+                    strong: '*',
+                    tightDefinitions: true,
                 })
                 .stringify(ast)
+                .replace(/&#x20;/g, ' ')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'")
+
+                .replace(/\\\[/g, '[')
+                .replace(/\\\]/g, ']')
+                .replace(/\\\(/g, '(')
+                .replace(/\\\)/g, ')')
 
             // Combine frontmatter with transformed content
             const result = frontmatter + '\n\n' + markdown
@@ -4606,80 +4880,390 @@ async function convertMintlifyComponents(docsPath: string, content: string, file
     }
 }
 
+// Shared function to convert Mintlify light/dark mode images to XYD format
+function convertLightDarkImage(node: any): { colorScheme: string; src: string; alt: string } | null {
+    const className = node.attributes?.find((attr: any) => attr.name === 'className')?.value || ''
+    let src = node.attributes?.find((attr: any) => attr.name === 'src')?.value || ''
+    const alt = node.attributes?.find((attr: any) => attr.name === 'alt')?.value || ''
 
+    // Check if it has light/dark mode classes
+    if (className.includes('dark:hidden') || className.includes('dark:block')) {
+        // Determine color scheme based on className
+        let colorScheme = ''
+        if (className.includes('dark:hidden')) {
+            colorScheme = 'light'
+        } else if (className.includes('dark:block')) {
+            colorScheme = 'dark'
+        }
+
+        // Convert relative paths to public paths (but not absolute URLs)
+        if (src.startsWith('/') && !src.startsWith('/public/') && !src.startsWith('http://') && !src.startsWith('https://')) {
+            src = `/public${src}`
+        }
+
+        return { colorScheme, src, alt }
+    }
+
+    return null
+}
 
 async function transformMintlifyComponents(ast: any, originalMdxString: string): Promise<any> {
+    // Track include mappings globally
+    const includeMapping: Record<string, string> = {}
+
     // Use a recursive approach to handle nested structures properly
     async function transformNode(node: any): Promise<any> {
         if (!node) {
             return null
         }
 
-        // Handle nodes without children first
-        if (!node.children) {
-            // Remove MDX-specific nodes that don't have children
-            if (node.type === 'mdxjsEsm' || node.type === 'mdxJsxTextElement' || node.type === 'mdxFlowExpression') {
-                return null
-            }
-            return node
-        }
-
         // Process children first (bottom-up)
         const processedChildren = []
-        for (const child of node.children) {
-            const processedChild = await transformNode(child)
-            if (processedChild) {
-                // Handle case where transformNode returns multiple nodes
-                if (Array.isArray(processedChild)) {
-                    processedChildren.push(...processedChild)
-                } else {
-                    processedChildren.push(processedChild)
+        if (node.children) {
+            for (const child of node.children) {
+                const processedChild = await transformNode(child)
+                if (processedChild) {
+                    // Handle case where transformNode returns multiple nodes
+                    if (Array.isArray(processedChild)) {
+                        processedChildren.push(...processedChild)
+                    } else {
+                        processedChildren.push(processedChild)
+                    }
                 }
             }
         }
 
-        // Now handle the current node
-        if (node.type === 'mdxjsEsm' || node.type === 'mdxJsxTextElement' || node.type === 'mdxFlowExpression') {
-            return null // Remove these nodes
+        // Decode HTML entities in text nodes
+        if (node.type === 'text' && node.value) {
+            node.value = node.value
+                .replace(/&#x20;/g, ' ')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'")
         }
 
-        if (node.type === 'mdxJsxFlowElement') {
+        if (node.type === "mdxjsEsm") {
+            // Parse the import statement from the node
+            const importStatement = node.value || ''
+
+            // Extract the import path using regex
+            const importMatch = importStatement.match(/import\s+(\w+)\s+from\s+["']([^"']+)["']/)
+
+            if (importMatch) {
+                const [, componentName, importPath] = importMatch
+
+                // Convert the import path to XYD format
+                let xydPath = importPath
+
+                // If it's a local path (starts with './' or '/'), convert to XYD format
+                if (importPath.startsWith('./') || importPath.startsWith('/')) {
+                    // Remove leading slash if present and convert to XYD format
+                    xydPath = importPath.replace(/^\.?\//, '~/')
+
+                    // Change .mdx extension to .md for XYD
+                    xydPath = xydPath.replace(/\.mdx$/, '.md')
+                }
+
+                console.log("importMappings", componentName, xydPath)
+
+                // Store the import mapping globally for later use when processing component usage
+                includeMapping[componentName] = xydPath
+
+                // Return null to remove the import statement from the output
+                return null
+            }
+
+            // If we can't parse the import, return a comment
+            return {
+                type: 'html',
+                value: `<!-- Import statement not supported: ${importStatement} -->`
+            }
+        }
+
+        if (
+            node.type === 'mdxJsxFlowElement' ||
+            node.type === 'mdxJsxTextElement' ||
+            node.type === 'mdxFlowExpression'
+        ) {
             const componentName = node.name
             const children = processedChildren
 
             // Convert Mintlify to XYD components
             switch (componentName) {
+                case 'img': {
+                    const imageData = convertLightDarkImage(node)
+                    if (imageData) {
+                        return {
+                            type: 'html',
+                            value: `<img src="${imageData.src}" alt="${imageData.alt}" data-color-scheme="${imageData.colorScheme}" />`
+                        }
+                    }
+                }
+                case 'Columns':
+                case 'CardGroup':
+                    // Convert Mintlify Columns/CardGroup to XYD grid directive with list structure
+                    const colsAttr = node.attributes?.find((attr: any) => attr.name === 'cols')
+                    let cols = '2'
+
+                    if (typeof colsAttr?.value === "string") {
+                        cols = colsAttr.value
+                    } else if (typeof colsAttr?.value?.value === "string") {
+                        cols = colsAttr.value.value
+                    }
+
+                    // Create list items for each child (Card)
+                    const listItems = children.map((child: any) => ({
+                        type: 'listItem',
+                        children: [{
+                            type: 'paragraph',
+                            children: [child]
+                        }]
+                    }))
+
+                    // Create list structure
+                    const list = {
+                        type: 'list',
+                        ordered: false,
+                        children: [
+                            {
+                                type: 'listItem',
+                                children: listItems
+                            }
+                        ]
+                    }
+
+                    // Create the grid directive wrapper with list as children
+                    const gridDirective = {
+                        type: 'containerDirective',
+                        name: 'grid',
+                        attributes: {
+                            cols: cols
+                        },
+                        children: [list]
+                    }
+
+                    return gridDirective
+                case 'Card':
+                    // Convert Mintlify Card to XYD guide-card directive
+                    const title = node.attributes?.find((attr: any) => attr.name === 'title')?.value || ''
+                    const href = node.attributes?.find((attr: any) => attr.name === 'href')?.value || ''
+                    const icon = node.attributes?.find((attr: any) => attr.name === 'icon')?.value || ''
+                    const iconType = node.attributes?.find((attr: any) => attr.name === 'iconType')?.value || ''
+                    const description = node.attributes?.find((attr: any) => attr.name === 'description')?.value || ''
+                    const imgSrc = node.attributes?.find((attr: any) => attr.name === 'imgSrc')?.value || ''
+
+                    // Build attributes for the guide-card directive
+                    const cardAttributes: any = {
+                        kind: 'secondary'
+                    }
+                    if (title) cardAttributes.title = title
+                    if (href) cardAttributes.href = href
+                    if (icon) cardAttributes.icon = icon
+                    if (iconType) cardAttributes.iconType = iconType
+                    if (description) cardAttributes.description = description
+                    if (imgSrc) cardAttributes.imgSrc = imgSrc
+
+                    return {
+                        type: 'containerDirective',
+                        name: 'guide-card',
+                        attributes: cardAttributes,
+                        children: children
+                    }
+                case 'Frame':
+                    // Convert Frame component to XYD picture format with data-color-scheme
+                    // Frame contains light and dark mode images with Tailwind classes
+                    let pictureHtml = '<picture>\n'
+
+                    // Process the original children of the Frame component, not the processed ones
+                    if (node.children) {
+                        for (const child of node.children) {
+                            if (child.type === 'mdxJsxFlowElement' && child.name === 'img') {
+                                const imageData = convertLightDarkImage(child)
+                                if (!imageData) {
+                                    continue
+                                }
+
+                                pictureHtml += `  <img src="${imageData.src}" alt="${imageData.alt}" data-color-scheme="${imageData.colorScheme}" />\n`
+                            }
+                        }
+                    }
+
+                    pictureHtml += '</picture>'
+
+                    return {
+                        type: 'html',
+                        value: pictureHtml
+                    }
+                case 'Note':
                 case 'Info':
                 case 'Warning':
                 case 'Tip':
-                case 'Note':
-                    console.log(`Transforming ${componentName} to callout`)
+                case 'Danger':
+                    let kind = undefined
 
-                    // Create a new callout directive node
+                    switch (componentName) {
+                        case 'Note':
+                            kind = 'note'
+                            break
+                        case 'Warning':
+                            kind = 'warning'
+                            break
+                        case 'Tip':
+                            kind = 'tip'
+                            break
+                        case 'Check':
+                            kind = 'check'
+                            break
+                        case 'Danger':
+                            kind = 'danger'
+                            break
+                    }
+
+                    // Create a new callout directive node with compact formatting
+                    // Wrap all children in a single paragraph to prevent extra line breaks
                     return {
                         type: 'containerDirective',
                         name: 'callout',
                         attributes: {
-                            type: componentName.toLowerCase()
+                            kind
                         },
-                        children: children
+                        children: [{
+                            type: 'paragraph',
+                            children: children
+                        }]
+                    }
+                case 'Steps':
+                    // Convert Steps component to XYD steps directive
+                    // Each child should be a Step component that we'll convert to numbered list items
+                    return {
+                        type: 'containerDirective',
+                        name: 'steps',
+                        attributes: {
+                            kind: "secondary"
+                        },
+                        children: [{
+                            type: 'list',
+                            ordered: true,
+                            start: 1,
+                            children: children
+                        }]
+                    }
+
+                case 'Step':
+                    // Convert Step component to a list item with title and content
+                    const stepTitle = node.attributes?.find((attr: any) => attr.name === 'title')?.value || ''
+                    const stepIcon = node.attributes?.find((attr: any) => attr.name === 'icon')?.value || ''
+                    // const stepIconType = node.attributes?.find((attr: any) => attr.name === 'iconType')?.value || '' // TODO: maybe in the future
+
+                    const attributes = []
+
+                    // Build attributes for the list item
+                    if (stepIcon) {
+                        attributes.push({
+                            name: 'icon',
+                            value: stepIcon
+                        })
+                    }
+                    if (stepTitle) {
+                        attributes.push({
+                            name: 'title',
+                            value: stepTitle
+                        })
+                    }
+
+                    // Create a list item with attributes as text and content
+                    const listItemChildren = []
+
+                    // Add attributes as text if they exist
+                    if (attributes.length > 0) {
+                        const attributeText = attributes.map(attr => `${attr.name}="${attr.value}"`).join(' ')
+                        listItemChildren.push({
+                            type: 'text',
+                            value: `[${attributeText}] `
+                        })
+                    }
+
+                    // Add the content
+                    listItemChildren.push(...children)
+
+                    return {
+                        type: 'listItem',
+                        children: [{
+                            type: 'paragraph',
+                            children: listItemChildren
+                        }]
+                    }
+                case 'Tabs':
+                    // Convert Tabs component to XYD tabs directive
+                    // Each child should be a Tab component that we'll convert to numbered list items
+                    return {
+                        type: 'containerDirective',
+                        name: 'tabs',
+                        attributes: {
+                            kind: "secondary"
+                        },
+                        children: [{
+                            type: 'list',
+                            ordered: true,
+                            start: 1,
+                            children: children
+                        }]
+                    }
+                case 'Tab':
+                    // Convert Tab component to a list item with title and content
+                    const tabTitle = node.attributes?.find((attr: any) => attr.name === 'title')?.value || ''
+
+                    // Create a list item with title as link format
+                    const tabListItemChildren = []
+
+                    // Add title as link format if it exists
+                    if (tabTitle) {
+                        // Convert title to lowercase for type attribute
+                        const typeValue = tabTitle.toLowerCase()
+                        tabListItemChildren.push({
+                            type: 'text',
+                            value: `[${tabTitle}](type=${typeValue})`
+                        })
+                        // Add a line break after the title
+                        tabListItemChildren.push({
+                            type: 'text',
+                            value: '\n'
+                        })
+                    }
+
+                    // Add the content
+                    tabListItemChildren.push(...children)
+
+                    return {
+                        type: 'listItem',
+                        children: [{
+                            type: 'paragraph',
+                            children: tabListItemChildren
+                        }]
                     }
                 default:
-                    // For unsupported MDX components, convert to HTML comments
-                    console.log(`Converting unsupported component ${componentName} to HTML comment`)
+                    // // Check if this is an imported component
+                    if (includeMapping[componentName]) {
+                        // Convert imported component usage to @import directive
+                        return {
+                            type: 'paragraph',
+                            children: [
+                                {
+                                    type: 'text',
+                                    value: `@include "${includeMapping[componentName]}"`
+                                }
+                            ]
+                        }
+                    }
 
-                    // Create HTML comment with the original MDX content
-                    const commentContent = await serializeMdxNode(node)
-
-                    // Split the comment content into lines and create separate HTML comment nodes
-                    const lines = commentContent.split('\n')
-                    const commentNodes = lines.map(line => ({
+                    // If not an imported component, return unsupported comment
+                    return {
                         type: 'html',
-                        value: `<!-- ${line} -->`
-                    }))
-
-                    // Return array of comment nodes
-                    return commentNodes
+                        value: `<!-- ${componentName} NOT SUPPORTED YET -->`
+                    }
             }
         }
 
@@ -4691,48 +5275,6 @@ async function transformMintlifyComponents(ast: any, originalMdxString: string):
     // Transform the entire AST
     const transformedAst = await transformNode(ast)
     return transformedAst || { type: 'root', children: [] }
-}
-
-// Helper function to serialize MDX node back to string with proper formatting
-async function serializeMdxNode(node: any, indent: number = 0): Promise<string> {
-    try {
-        // Create a temporary processor to serialize the node
-        const processor = createProcessor()
-        const result = await processor.stringify(node)
-        return result
-    } catch (error) {
-        // Fallback: try to reconstruct the component manually with proper formatting
-        if (node.type === 'mdxJsxFlowElement') {
-            const indentStr = '    '.repeat(indent)
-            const attributes = node.attributes?.map((attr: any) =>
-                `${attr.name}="${attr.value}"`
-            ).join(' ') || ''
-
-            const openTag = `<${node.name}${attributes ? ' ' + attributes : ''}>`
-            const closeTag = `</${node.name}>`
-
-            // Serialize children with proper indentation
-            const childrenContent = await Promise.all(
-                (node.children || []).map(async (child: any) => {
-                    if (child.type === 'text') {
-                        return child.value
-                    } else if (child.type === 'mdxJsxFlowElement') {
-                        return await serializeMdxNode(child, indent + 1)
-                    } else {
-                        return await serializeMdxNode(child, indent)
-                    }
-                })
-            ).then(results => results.join('\n\n' + indentStr))
-
-            if (node.children && node.children.length > 0) {
-                return `${openTag}\n\n${indentStr}${childrenContent}\n\n${indentStr}${closeTag}`
-            } else {
-                return `${openTag}${childrenContent}${closeTag}`
-            }
-        }
-
-        return `<!-- Unsupported MDX component -->`
-    }
 }
 
 function isMintlifyJson(data: any): boolean {

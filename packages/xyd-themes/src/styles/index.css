@@ -18,7 +18,44 @@
 @import "./tokens.css";
 @import "./reset.css";
 
+/* Color Scheme Visibility Rules */
 @layer defaults {
+    /* When html has data-color-scheme="light", hide dark elements */
+    html[data-color-scheme="light"] [data-color-scheme="dark"]:not(html):not(head):not(body) {
+        display: none;
+    }
+
+    /* When html has data-color-scheme="dark", hide light elements */
+    html[data-color-scheme="dark"] [data-color-scheme="light"]:not(html):not(head):not(body) {
+        display: none;
+    }
+
+    /* When html has data-color-scheme="os", use system preference */
+    @media (prefers-color-scheme: light) {
+        html[data-color-scheme="os"] [data-color-scheme="dark"]:not(html):not(head):not(body) {
+            display: none;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        html[data-color-scheme="os"] [data-color-scheme="light"]:not(html):not(head):not(body) {
+            display: none;
+        }
+    }
+
+    /* Fallback: when no data-color-scheme on html, use system preference */
+    @media (prefers-color-scheme: light) {
+        html:not([data-color-scheme]) [data-color-scheme="dark"]:not(html):not(head):not(body) {
+            display: none;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        html:not([data-color-scheme]) [data-color-scheme="light"]:not(html):not(head):not(body) {
+            display: none;
+        }
+    }
+
     body {
         font-size: var(--xyd-font-size-small);
         line-height: var(--xyd-line-height-small);

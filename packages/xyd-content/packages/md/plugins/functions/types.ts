@@ -1,6 +1,9 @@
 export enum FunctionName {
     ImportCode = '@importCode',
-    Import = '@import',
+
+    Include = '@include',
+
     Uniform = '@uniform',
+
     Changelog = '@changelog',
 }
