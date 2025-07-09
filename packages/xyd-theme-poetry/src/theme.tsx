@@ -1,6 +1,5 @@
 import React from "react"
 
-import { Text } from "@xyd-js/components/writer"
 import { UISidebar } from "@xyd-js/ui"
 import { FwLogo, FwNav, useComponents } from "@xyd-js/framework/react"
 import { BaseTheme } from "@xyd-js/themes"
@@ -25,7 +24,7 @@ export default class ThemePoetry extends BaseTheme {
             }
         }
 
-        this.surfaces.define("sidebar.top", <_Search />);
+        this.surfaces.define("sidebar.top", <_SidebarHeader />);
     }
 
     protected Navbar() {
@@ -35,7 +34,7 @@ export default class ThemePoetry extends BaseTheme {
     }
 }
 
-function _Search() {
+function _SidebarHeader() {
     const components = useComponents()
 
     const SearchComponent = components?.Search
@@ -45,14 +44,15 @@ function _Search() {
 
     return <>
         <UISidebar.Item button anchor>
-            <a href="/">
+            <div part="logo">
                 <FwLogo />
-            </a>
+            </div>
         </UISidebar.Item>
 
-        <UISidebar.Item button anchor>
+        {/* <UISidebar.Item button anchor>
             <SearchComponent />
-        </UISidebar.Item>
+        </UISidebar.Item> */}
     </>
 }
+
 

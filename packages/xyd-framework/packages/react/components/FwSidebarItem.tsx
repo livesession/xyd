@@ -1,34 +1,32 @@
-import React, { } from "react"
+import React, {} from "react"
 
-import { UISidebar } from "@xyd-js/ui";
+import {Metadata} from "@xyd-js/core";
+import {Icon} from "@xyd-js/components/writer";
+import {UISidebar} from "@xyd-js/ui";
 
-import { Icon } from "@xyd-js/components/writer";
-import { Metadata } from "@xyd-js/core";
 
-import { useGroup } from "./SidebarGroup";
-import { Surface } from "../Surfaces";
+import {Surface} from "./Surfaces";
+import {FooSidebarItemProps, useFooSidebar} from "../lib";
 
-// TODO: custom hooks for active onclick handler etc?
-
-export interface FwSidebarGroupProps {
+export interface FwSidebarItemProps {
     group: string
 
     groupIndex: number
 
-    items: FwSidebarItemProps[]
+    items: FwSidebarItemElementProps[]
 
     icon?: string
 }
 
-export function FwSidebarItemGroup(props: FwSidebarGroupProps) {
-    const icon = props.icon ? <Icon name={props.icon || ""} size={16} /> : null
+export function FwSidebarItem(props: FwSidebarItemProps) {
+    const icon = props.icon ? <Icon name={props.icon || ""} size={16}/> : null
 
     return <>
         <UISidebar.ItemHeader icon={icon}>
             {props.group}
         </UISidebar.ItemHeader>
 
-        {props.items.map((item, index) => <FwSidebarItem
+        {props.items.map((item, index) => <FwSidebarItem.Item
             uniqIndex={item.uniqIndex}
             groupIndex={props.groupIndex}
             level={0}
@@ -36,6 +34,7 @@ export function FwSidebarItemGroup(props: FwSidebarGroupProps) {
             key={index + item.href}
             title={item.title}
             sidebarTitle={item.sidebarTitle}
+            url={item.url}
             pageMeta={item.pageMeta}
             href={item.href}
             items={item.items}
@@ -45,31 +44,26 @@ export function FwSidebarItemGroup(props: FwSidebarGroupProps) {
     </>
 }
 
-export interface FwSidebarItemProps {
+export interface FwSidebarItemElementProps extends FooSidebarItemProps {
     title: string
 
     href: string
-
-    uniqIndex: number
 
     icon?: string
 
     sidebarTitle?: string
 
-    items?: FwSidebarItemProps[]
+    items?: FwSidebarItemElementProps[]
 
     active?: boolean
 
-    // internal
-    readonly level?: number
-    readonly groupIndex?: number
-    readonly itemIndex?: number
-    readonly pageMeta?: Metadata
-    // internal
+    url?: string
+
+    pageMeta?: Metadata
 }
 
-function FwSidebarItem(props: FwSidebarItemProps) {
-    const { active } = useGroup()
+FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
+    const {active} = useFooSidebar()
     const [isActive, setActive] = active(props)
 
     const title = props.sidebarTitle || props.title || ""
@@ -97,11 +91,11 @@ function FwSidebarItem(props: FwSidebarItemProps) {
     // Only mark as parent active if it's a parent of an active item with href
     const isParentActive = hasActiveChild
 
-    const icon = <Icon name={props.icon || ""} size={16} />
+    const icon = <Icon name={props.icon || ""} size={16}/>
 
     return <UISidebar.Item
         button={nested}
-        href={props.href}
+        href={props.url || props.href}
         active={isActiveItem}
         isParentActive={isParentActive}
         onClick={handleClick}
@@ -118,6 +112,9 @@ function FwSidebarItem(props: FwSidebarItemProps) {
             <div part="item-title">
                 {title}
             </div>
+
+            {props.url && <Icon.ExternalArrow/>}
+
             <Surface
                 target="sidebar.item.right"
                 props={{
@@ -150,3 +147,4 @@ function FwSidebarItem(props: FwSidebarItemProps) {
         }
     </UISidebar.Item>
 }
+

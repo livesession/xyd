@@ -188,7 +188,7 @@ export function commonVitePlugins(
     return [
         ...(xydContentVitePlugins({
             toc: {
-                maxDepth: respPluginDocs.settings.theme?.maxTocDepth || 2,
+                maxDepth: respPluginDocs.settings.theme?.writer?.maxTocDepth || 2,
             },
             settings: respPluginDocs.settings,
         }) as VitePlugin[]),

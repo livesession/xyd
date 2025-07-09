@@ -56,6 +56,18 @@
         }
     }
 
+    @media (max-width: 1024px) {
+        [data-desktop] {
+            display: none;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        [data-mobile] {
+            display: none;
+        }
+    }
+
     body {
         font-size: var(--xyd-font-size-small);
         line-height: var(--xyd-line-height-small);
@@ -104,11 +116,3 @@
         }
     }
 }
-
-@layer components {
-    xyd-nav xyd-search-button {
-        max-width: 200px;
-    }
-}
-
-

@@ -6,7 +6,7 @@ import { ContentFS } from "../../../../src";
 import { defaultRemarkPlugins } from "..";
 
 export function mdCodeRehype(settings?: Settings) {
-    const maxTocDepth = settings?.theme?.maxTocDepth || 2
+    const maxTocDepth = settings?.theme?.writer?.maxTocDepth || 2
     const remarkPlugins = [...defaultRemarkPlugins({
         maxDepth: maxTocDepth,
     }, settings)]

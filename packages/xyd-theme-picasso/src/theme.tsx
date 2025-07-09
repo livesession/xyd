@@ -1,10 +1,10 @@
 import React from "react"
 
-import {Hr, Heading} from "@xyd-js/components/writer"
-import {UISidebar} from "@xyd-js/ui"
-import {FwLogo, FwNav, useComponents} from "@xyd-js/framework/react"
-import {SurfaceTarget} from "@xyd-js/framework"
-import {BaseTheme} from "@xyd-js/themes"
+import { Hr, Heading } from "@xyd-js/components/writer"
+import { UISidebar } from "@xyd-js/ui"
+import { FwLogo, FwNav, useComponents } from "@xyd-js/framework/react"
+import { SurfaceTarget } from "@xyd-js/framework"
+import { BaseTheme } from "@xyd-js/themes"
 
 import syntaxHighlight from "./syntaxHighlight"
 
@@ -28,7 +28,7 @@ export default class ThemePicasso extends BaseTheme {
             }
         }
 
-        this.surfaces.define(SurfaceTarget.SidebarTop, <_Search/>);
+        this.surfaces.define(SurfaceTarget.SidebarTop, <_Search />);
     }
 
     protected Navbar() {
@@ -36,7 +36,7 @@ export default class ThemePicasso extends BaseTheme {
             <FwNav />
         </>
     }
-    
+
     public override reactContentComponents() {
         const components = super.reactContentComponents();
         const H2 = components.h2;
@@ -45,8 +45,8 @@ export default class ThemePicasso extends BaseTheme {
             ...components,
             h2: (props: any) => {
                 return <>
-                    <Hr/>
-                    <H2 {...props}/>
+                    <Hr />
+                    <H2 {...props} />
                 </>
             },
         }
@@ -63,13 +63,13 @@ function _Search() {
 
     return <>
         <UISidebar.Item button anchor>
-            <a href="/">
-                <FwLogo/>
-            </a>
+            <div part="logo">
+                <FwLogo />
+            </div>
         </UISidebar.Item>
 
         <UISidebar.Item button anchor>
-            <SearchComponent/>
+            <SearchComponent />
         </UISidebar.Item>
     </>
 }

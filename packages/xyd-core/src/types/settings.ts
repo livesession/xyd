@@ -22,17 +22,21 @@ export interface Settings {
     plugins?: Plugins
 
     /**
-     * Redirects configuration
-     */
-    redirects?: Redirects[]
-
-    /**
      * SEO configuration
      */
     seo?: SEO
 
-    /** Engine configuration */
+    /** WebEditor configuration - building blocks for UI editing */
+    webeditor?: WebEditor
+
+    /** Engine configuration - advanced engine-like configuration */
     engine?: Engine
+
+    /**
+     * @internal
+     * Redirects configuration
+     */
+    redirects?: Redirects[]
 }
 
 // ------ START settings for theme START ------
@@ -42,23 +46,36 @@ export interface Settings {
  */
 export interface Theme {
     /**
-     * A preset theme configuration that changes the look and feel of the project.
-     * A theme is a set of default styling configurations.
+     * A theme name.
      *
-     * Example built-in themes: `cosmo`, `gusto`, `poetry`, `picasso`
+     * Example built-in themes: "poetry" | "cosmo" | "opener" | "picasso"
      */
     readonly name: ThemePresetName | (string & {})
 
     /**
-     * The default color scheme to use.
-     */
-    defaultColorScheme?: "light" | "dark" | "os"
-
-    /**
      * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to.
-     * SVG format is recommended as it does not pixelate and the file size is generally smaller.
      */
     logo?: string | Logo | React.JSX.Element
+
+    /**
+     * Path to the favicon image. For example: /path/to/favicon.svg
+     */
+    favicon?: string;
+
+    /**
+     * The iconify library setup.
+     */
+    icons?: Icons
+
+    /**
+     * Appearance configuration for the theme.
+     */
+    appearance?: Appearance
+
+    /**
+     * Writer configuration for the theme.
+     */
+    writer?: Writer
 
     /**
      * Coder configuration for the theme, including options like syntax highlighting.
@@ -66,26 +83,9 @@ export interface Theme {
     coder?: Coder
 
     /**
-     * Styles configuration for the theme.
+     * Head configuration
      */
-    styles?: Styles
-
-    /**
-     * Banner configuration for the theme.
-     */
-    banner?: Banner
-
-    /** Path to the favicon image. For example: /path/to/favicon.svg */
-    favicon?: string;
-
-    /** The defult level of the table of contents. */
-    maxTocDepth?: number
-
-    /** Head configuration */
     head?: HeadConfig[]
-
-    /** The iconify library */
-    icons?: Icons
 
     /**
      * Custom scripts to be added to the head of the every page.
@@ -93,6 +93,7 @@ export interface Theme {
      */
     scripts?: Script[]
 }
+
 // #endregion Theme
 
 /**
@@ -100,12 +101,12 @@ export interface Theme {
  */
 export interface Coder {
     /**
-     * If `true` then code blocks will have line numbers.
+     * If `true` then code blocks will have line numbers by default.
      */
     lines?: boolean
 
     /**
-     * If `true` then code blocks will have a scrollbar.
+     * If `true` then code blocks will have a scrollbar by default.
      */
     scroll?: boolean
 
@@ -115,10 +116,27 @@ export interface Coder {
     syntaxHighlight?: SyntaxHighlight
 }
 
+export interface Writer {
+    /**
+     * The maximum number of table of conten§ts levels.
+     */
+    maxTocDepth?: number
+
+    // /**
+    //  * Copy page button
+    //  */
+    // copyPage?: boolean TODO: in the future
+}
+
 /**
- * Styles configuration for the theme.
+ * Appearance configuration for the theme.
  */
-export interface Styles {
+export interface Appearance {
+    /**
+     * The default color scheme to use.
+     */
+    defaultColorScheme?: "light" | "dark" | "os"
+
     /**
      * Colors configuration for the theme.
      */
@@ -129,9 +147,59 @@ export interface Styles {
     }
 
     /**
-     * Styles configuration for the theme.
+     * CSS tokens for the theme.
      */
-    tokens?: Map<string, string>
+    cssTokens?: { [token: string]: string }
+
+    /**
+     * Search appearance for the theme.
+     */
+    search?: AppearanceSearch
+
+    /**
+     * Header appearance for the theme.
+     */
+    header?: AppearanceHeader
+
+    /**
+     * Sidebar appearance for the theme.
+     */
+    sidebar?: AppearanceSidebar
+
+    /**
+     * Buttons appearance for the theme.
+     */
+    buttons?: AppearanceButtons
+}
+
+export interface AppearanceSearch {
+    /**
+     * If `true` then the search bar will be displayed as a full width.
+     */
+    fullWidth?: boolean
+}
+
+export interface AppearanceHeader {
+    /**
+     * If `true` then the header external links will display an external arrow.
+     */
+    externalArrow?: boolean
+}
+
+export interface AppearanceSidebar {
+    /**
+     * If `true` then the sidebar will display a scroll shadow.
+     */
+    externalArrow?: boolean
+
+    /**
+     * If `true` then the sidebar will display a scroll shadow.
+     */
+    scrollShadow?: boolean
+}
+
+export interface AppearanceButtons {
+    rounded?: boolean | "lg" | "md" | "sm"
 }
 
 /**
@@ -155,38 +223,11 @@ export interface Logo {
     /** Path to the logo in dark mode. For example: `/path/to/logo.svg` */
     dark?: string;
 
-    /** Where clicking on the logo links you to */
+    /** External href to when clicking on the logo */
     href?: string;
-}
 
-/**
- * Banner configuration interface
- */
-export interface Banner {
-    /**
-     * Banner content.
-     */
-    content: string | React.JSX.Element
-
-    /**
-     * Banner label.
-     */
-    label?: string
-
-    /**
-     * Banner kind.
-     */
-    kind?: "secondary"
-
-    /**
-     * Banner href.
-     */
-    href?: string
-
-    /**
-     * Banner icon.
-     */
-    icon?: string
+    /** The page to link to when clicking on the logo */
+    page?: string
 }
 
 export interface IconLibrary {
@@ -222,17 +263,30 @@ export type SearchType = "side" | "top"
  * Navigation configuration interface
  */
 export interface Navigation {
-    /** Definition of sidebar - an array of groups with all the pages within that group */
+    /**
+     * Sidebar navigation - main navigation on the left side of the page.
+     */
     sidebar: SidebarNavigation
 
-    /** Array of headers */
-    header?: Header[]
+    /**
+     * Tabs navigation - navigation through tabs.
+     */
+    tabs?: NavigationItem[]
 
-    /** Array of segments */
+    /**
+     * Sidebar dropdown navigation - navigation through dropdown in the sidebar.
+     */
+    sidebarDropdown?: NavigationItem[]
+
+    /**
+     * Segments navigation - navigation elements visible only on specific routes.
+     */
     segments?: Segment[]
 
-    /** Footer configuration */
-    footer?: Footer
+    /**
+     * Anchors navigation - fixed navigation, for anchor-like elements.
+     */
+    anchors?: Anchors
 
     /**
      * Array of version names. Only use this if you want to show different versions of docs
@@ -240,8 +294,6 @@ export interface Navigation {
      */
     // versions?: string[]
 
-    /** Anchors, includes the icon, name, and url */
-    anchors?: AnchorRoot
 }
 
 /**
@@ -317,7 +369,6 @@ export type VirtualPage = string | {
     templates?: string | string[]
 }
 
-
 /**
  * Segment configuration
  */
@@ -329,70 +380,89 @@ export interface Segment {
     title: string
 
     /** Items within this segment */
-    pages: SegmentPage[]
+    pages: NavigationItem[]
 }
 
-export interface SegmentPage {
-    page: string
-
+export interface NavigationItem {
+    /**
+     * The navigation item title
+     */
     title: string
-}
-
-/**
- * Header configuration
- */
-export type Header = {
-    /** The name of the button */
-    title?: string
-
-    /** The url once you click on the button */
-    page?: string
-
-    /** The href of the button */
-    href?: string
-
-    /** Float the header to the right */
-    float?: "right"
-
-    /** The iconify icon name */
-    icon?: string
-
-    /** The component to use for the button */
-    component?: string
-
-    /** The props to pass to the component */
-    props?: Record<string, any>
-}
-
-/**
- * Anchor configuration
- */
-export interface Anchor {
-    /** The iconify icon name */
-    icon?: string
-
-    /** The name of the anchor label */
-    name?: string
 
     /**
-     * The start of the URL that marks what pages go in the anchor.
-     * Generally, this is the name of the folder you put your pages in.
+     * The navigation item description
      */
-    url?: string
+    description?: string
+
+    /**
+     * The navigation page, if set it redirects to the page + matches based on routing
+     */
+    page?: string
+
+    /**
+     * The navigation href, if set it redirects but does not match based on routing
+     */
+    href?: string
+
+    /**
+     * The navigation item icon
+     */
+    icon?: string
 }
 
 /**
  * Anchor root configuration
  */
-export interface AnchorRoot {
-    /** Bottom anchors */
-    bottom?: Anchor[]
+export interface Anchors {
+    /** Header anchors */
+    header?: NavigationItem[]
+
+    /** Sidebar anchors */
+    sidebar?: {
+        top?: NavigationItem[]
+
+        bottom?: NavigationItem[]
+    }
 }
 
+// TODO: move to webeditor?
+/**
+ * Banner configuration interface
+ */
+export interface Banner {
+    /**
+     * Banner content.
+     */
+    content: ComponentLike
+
+    /**
+     * Banner label.
+     */
+    label?: string
+
+    /**
+     * Banner kind.
+     */
+    kind?: "secondary"
+
+    /**
+     * Banner href.
+     */
+    href?: string
+
+    /**
+     * Banner icon.
+     */
+    icon?: string
+}
+
+// TODO: move to webeditor?
 /**
  * Footer configuration
  */
 export interface Footer {
+    logo?: boolean | ComponentLike
+
     /** Footer socials */
     social?: {
         "x": string
@@ -420,13 +490,112 @@ export interface Footer {
     }[]
 
     /** Footer footnote */
-    footnote?: string | JsonComponent
+    footnote?: ComponentLike
 }
 
-// ------ END  settings for structure END ------
+// ------ END settings for navigation END ------
 
 
-// ------ START  settings for API START ------
+// ------ START settings for webeditor START ------
+/**
+ * WebEditor navigation item configuration
+ */
+export type WebEditorNavigationItem = NavigationItem & Partial<JSONComponent>
+
+export interface WebEditorFooter {
+    logo?: boolean | ComponentLike
+
+    /** Footer socials */
+    social?: {
+        "x": string
+        "facebook": string
+        "youtube": string
+        "discord": string
+        "slack": string
+        "github": string
+        "linkedin": string
+        "instagram": string
+        "hackernews": string
+        "medium": string
+        "telegram": string
+        "bluesky": string
+        "reddit": string
+    }
+
+    /** Footer links  */
+    links?: {
+        "header": string
+        "items": {
+            "label": string
+            "href": string
+        }[]
+    }[]
+
+    /** Footer footnote */
+    footnote?: ComponentLike
+}
+
+export interface WebEditorBanner {
+    /**
+     * Banner content.
+     */
+    content: ComponentLike
+
+    /**
+     * Banner label.
+     */
+    label?: string
+
+    /**
+     * Banner kind.
+     */
+    kind?: "secondary"
+
+    /**
+     * Banner href.
+     */
+    href?: string
+
+    /**
+     * Banner icon.
+     */
+    icon?: string
+}
+
+// TODO: webeditor appearance?
+/**
+ * WebEditor configuration
+ */
+export interface WebEditor {
+    /**
+     * WebEditor header configuration
+     */
+    header?: WebEditorHeader[]
+
+    /**
+     * WebEditor footer configuration
+     */
+    footer?: WebEditorFooter
+
+    /**
+     * WebEditor banner configuration
+     */
+    banner?: WebEditorBanner
+}
+
+/**
+ * WebEditor header configuration
+ */
+export type WebEditorHeader = WebEditorNavigationItem & {
+    /** Float the header to the right */
+    float?: "right" | "center"
+}
+
+// ------ END settings for webeditor END ------
+
+
+
+// ------ START settings for API START ------
 /**
  * API configuration interface
  */
@@ -499,9 +668,6 @@ export interface APIInfo {
      */
     inputPrefix?: string
 
-    /** Configurations for the API playground */
-    playground?: APIPlayground
-
     /** Request configuration */
     request?: APIInfoRequest
 }
@@ -512,14 +678,6 @@ export interface APIInfo {
 export interface APIAuth {
     /** The authentication strategy used for all API endpoints */
     method: "bearer" | "basic" | "key"
-}
-
-/**
- * API playground configuration
- */
-export interface APIPlayground {
-    /** Playground display mode */
-    mode?: "show" | "simple" | "hide"
 }
 
 /**
@@ -558,6 +716,8 @@ export interface Integrations {
     search?: IntegrationSearch
 
     apps?: IntegrationApps
+
+    [".apps"]?: IntegrationApps
 }
 
 // #region IntegrationAnalytics
@@ -566,13 +726,17 @@ export interface Integrations {
  */
 export interface IntegrationAnalytics {
     /** Livesession analytics configuration */
-    livesession?: {
-        /** Livesession's TrackID */
-        trackId: string
-    }
+    livesession?: IntegrationAnalyticsLiveSession
 }
-
 // #endregion IntegrationAnalytics
+
+/**
+ * Livesession analytics configuration
+ */
+export interface IntegrationAnalyticsLiveSession {
+    /** Livesession's TrackID */
+    trackId: string
+}
 
 /**
  * Search configuration
@@ -724,7 +888,7 @@ export interface SEO {
 
 // ------ START settings for engine START ------
 /**
- * Config configuration
+ * Engine configuration
  */
 export interface Engine {
     /**
@@ -770,7 +934,22 @@ export type EngineUniform = {
 
 // ------ END  settings for config END ------
 
-export interface JsonComponent {
+/**
+ * JSON representation of a component.
+ */
+export interface JSONComponent {
+    /**
+     * The component type, e.g. "Button", "Card", etc.
+     */
     component: string
-    props: Record<string, any>
+
+    /**
+     * The component's children, which can be a string, an array of strings, or an array of JSONComponent objects.
+     */
+    props?: Record<string, any>
 }
+
+/**
+ * A type that can be used to represent a component-like structure.
+ */
+export type ComponentLike = React.JSX.Element | JSONComponent | string

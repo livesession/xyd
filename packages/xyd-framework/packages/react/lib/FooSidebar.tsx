@@ -1,40 +1,49 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {createContext, useContext, useState, useEffect} from "react";
+import {useNavigation} from "react-router";
 
-import { FwSidebarItemProps } from "./Sidebar";
-import { useLocation, useNavigation } from "react-router";
+// TODO: better interface
+export interface FooSidebarItemProps {
+    readonly uniqIndex: number
 
-export interface FwGroupContext {
-    active: (item: FwSidebarItemProps) => [boolean, () => void],
+    readonly level?: number
+
+    readonly groupIndex?: number
+
+    readonly itemIndex?: number
 }
 
-const GroupContext = createContext<FwGroupContext>({
+interface IFooSidebarContext {
+    active: (item: FooSidebarItemProps) => [boolean, () => void],
+}
+
+const FooSidebarContext = createContext<IFooSidebarContext>({
     active: () => [false, () => {
     }],
 })
 
-interface FwSidebarGroupContextProps {
+interface FooSidebarProps {
     children: React.ReactNode,
     initialActiveItems: any[]
 }
 
-export function FwSidebarGroupContext(props: FwSidebarGroupContextProps) {
-    const { children, initialActiveItems } = props
+export function FooSidebar(props: FooSidebarProps) {
+    const {children, initialActiveItems} = props
 
     const groupBehaviour = useDefaultBehaviour(initialActiveItems) // TODO: support different behaviours?
 
-    return <GroupContext value={{
+    return <FooSidebarContext value={{
         active: groupBehaviour,
     }}>
         {children}
-    </GroupContext>
+    </FooSidebarContext>
 }
 
-export function useGroup() {
-    return useContext(GroupContext)
+export function useFooSidebar() {
+    return useContext(FooSidebarContext)
 }
 
 // TOOD: issues if same page url on initialitems
-// TODO: the time of chaning is not perfectly the same with react-router 
+// TODO: the time of chaning is not perfectly the same with react-router
 // TODO: better data structure + algorithm
 // TODO: !!!! REFACTOR !!! !!! nagivation loaders !!!
 function useDefaultBehaviour(initialActiveItems: any[]) {
@@ -51,7 +60,7 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
         }
     }, [initialActiveItems, navigation.state]);
 
-    function addItem(item: FwSidebarItemProps) {
+    function addItem(item: FooSidebarItemProps) {
         const key = itemId(item);
 
         setActiveItems(prev => {
@@ -62,7 +71,7 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
         forceUpdate();
     }
 
-    function deleteItem(item: FwSidebarItemProps) {
+    function deleteItem(item: FooSidebarItemProps) {
         const key = itemId(item);
 
         setActiveItems(prev => {
@@ -73,13 +82,13 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
         forceUpdate();
     }
 
-    function hasItem(item: FwSidebarItemProps) {
+    function hasItem(item: FooSidebarItemProps) {
         const key = itemId(item);
 
         return activeItems.get(key) || false;
     }
 
-    return (item: FwSidebarItemProps): [boolean, () => void] => {
+    return (item: FooSidebarItemProps): [boolean, () => void] => {
         return [
             hasItem(item) || false,
             () => {
@@ -93,9 +102,9 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
     }
 }
 
-function itemId(item: FwSidebarItemProps) {
+function itemId(item: FooSidebarItemProps) {
     const id = `${item.uniqIndex}:${item.groupIndex}-${item.level}-${item.itemIndex}`
-    
+
     return id;
 }
 

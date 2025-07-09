@@ -8,7 +8,7 @@ import { MetadataMap, Metadata, Settings } from "@xyd-js/core"
 import { ContentFS } from "@xyd-js/content"
 import { markdownPlugins } from "@xyd-js/content/md"
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
-import { FrameworkPage, type FwSidebarGroupProps } from "@xyd-js/framework/react";
+import { FrameworkPage, type FwSidebarItemProps } from "@xyd-js/framework/react";
 import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
 // @ts-ignore
@@ -24,7 +24,7 @@ function getPathname(url: string) {
 }
 
 interface loaderData {
-    sidebarGroups: FwSidebarGroupProps[]
+    sidebarGroups: FwSidebarItemProps[]
     breadcrumbs: IBreadcrumb[],
     toc: MetadataMap,
     slug: string
@@ -126,7 +126,7 @@ export async function loader({ request }: { request: any }) {
     let rawPage = ""
 
     const mdPlugins = markdownPlugins({
-        maxDepth: metadata?.maxTocDepth || settings?.theme?.maxTocDepth || 2,
+        maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
     
     const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)

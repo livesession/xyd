@@ -1,17 +1,11 @@
 {
     "theme": {
-        "name": "picasso",
+        "name": "poetry",
         "logo": {
             "light": "/public/assets/logo.svg",
             "dark": "/public/assets/logo-dark.svg"
         },
         "favicon": "/public/assets/logo.svg",
-        "banner": {
-            "content": "**xyd 0.1.0** - Docs platform for future dev",
-            "label": "Coming Soon",
-            "icon": "sparkles",
-            "href": "https://github.com/orgs/livesession/projects/4/views/1"
-        },
         "icons": {
             "library": [
                 {
@@ -20,6 +14,21 @@
                 },
                 "./icons/iconify.json"
             ]
+        },
+        "appearance": {
+            "header": {
+                "externalArrow": true
+            },
+            "sidebar": {
+                "externalArrow": true,
+                "scrollShadow": true
+            },
+            "buttons": {
+                "rounded": true
+            },
+            "search": {
+                "fullWidth": true
+            }
         }
     },
     "integrations": {
@@ -39,21 +48,25 @@
         }
     },
     "navigation": {
+        "banner": {
+            "content": "**xyd 0.1.0** - Docs platform for future dev",
+            "label": "Coming Soon",
+            "icon": "sparkles",
+            "href": "https://github.com/orgs/livesession/projects/4/views/1"
+        },
         "header": [
             {
-                "title": "Guides",
-                "page": "docs",
-                "icon": "book"
+                "component": "Search",
+                "float": "center"
             },
             {
-                "title": "Components",
-                "page": "docs/components",
-                "icon": "component"
-            },
-            {
-                "title": "Reference",
-                "page": "docs/reference",
-                "icon": "brackets"
+                "component": "Button",
+                "props": {
+                    "kind": "secondary",
+                    "children": "Ask AI",
+                    "icon": "sparkles"
+                },
+                "float": "center"
             },
             {
                 "title": "Public Roadmap",
@@ -71,7 +84,7 @@
                 "float": "right",
                 "component": "Button",
                 "props": {
-                    "kind": "secondary"
+                    "kind": "primary"
                 }
             },
             {
@@ -375,18 +388,20 @@
             }
         },
         "anchors": {
-            "bottom": [
-                {
-                    "url": "http://xyd-docs.slack.com",
-                    "icon": "docs:slack",
-                    "name": "Slack"
-                },
-                {
-                    "url": "https://github.com/xyd-js/examples",
-                    "icon": "code",
-                    "name": "Example Projects"
-                }
-            ]
+            "sidebar": {
+                "bottom": [
+                    {
+                        "href": "http://xyd-docs.slack.com",
+                        "icon": "docs:slack",
+                        "title": "Slack"
+                    },
+                    {
+                        "href": "https://github.com/xyd-js/examples",
+                        "icon": "code",
+                        "title": "Example Projects"
+                    }
+                ]
+            }
         }
     },
     "engine": {

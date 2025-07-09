@@ -1,5 +1,16 @@
 import { css } from "@linaria/core";
 
+export const globals = css`
+    :global() {
+        html[data-color-primary="true"] {
+            xyd-guidecard [part="icon"] svg {
+                fill: var(--color-primary) !important;  // TODO: fix important
+                color: var(--color-primary) !important; // TODO: fix important
+            }
+        }
+    }
+`
+
 export const GuideHost = css`
     @layer defaults {
         display: block;
@@ -61,17 +72,6 @@ export const GuideHost = css`
             svg {
                 width: 24px;
                 height: 24px;
-                fill: var(--color-primary) !important; // TODO: fix important
-                color: var(--color-primary) !important; // TODO: fix important
-            }
-        }
-
-        html[data-color-primary] {
-            [part="icon"] {
-                svg {
-                    fill: var(--color-primary) !important; // TODO: fix important
-                    color: var(--color-primary) !important; // TODO: fix important
-                }
             }
         }
 

@@ -53,5 +53,3 @@ export * from "./UnderlineNav"
 export * from "./Update"
 
 export * from "./VideoGuide"
-
-export { JsonComponent, type JsonComponentProps } from "../utils/JsonComponent"

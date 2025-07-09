@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 
 import colors from 'picocolors';
 
-import { cliSpec } from './cli-spec';
+import { cliSpec } from './spec';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

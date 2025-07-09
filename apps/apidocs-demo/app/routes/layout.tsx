@@ -46,7 +46,7 @@ function SidebarItemRight(props: any) {
         methodText = "DEL"
     }
     []
-    return <div data-active={props?.active ? "true" : undefined} atlas-oas-method={method}>
+    return <div data-active={props?.active ? "true" : undefined} data-atlas-oas-method={method}>
         <Badge size="xs">
             {methodText}
         </Badge>

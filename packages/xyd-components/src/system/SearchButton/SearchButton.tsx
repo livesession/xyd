@@ -6,6 +6,7 @@ interface SearchButtonProps {
   onClick?: () => void;
   placeholder?: string;
   shortcutKeys?: string[];
+  fullWidth?: boolean;
 }
 
 export function SearchButton({
@@ -29,6 +30,7 @@ export function SearchButton({
       className={cn.SearchButton}
       aria-label="Search"
       onClick={props.onClick}
+      data-fullWidth={props.fullWidth}
     >
       <span part="container">
         <svg

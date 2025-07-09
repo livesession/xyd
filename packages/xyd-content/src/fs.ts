@@ -6,11 +6,6 @@ import { compile as mdxCompile } from "@mdx-js/mdx";
 
 import { Settings } from "@xyd-js/core"
 
-export {
-    pageFrontMatters,
-    filterNavigationByLevels
-} from "./navigation"
-
 export type { VarCode } from "./types"
 
 export class ContentFS {

@@ -512,7 +512,7 @@ function $Navbar({label, subtitle, matchSubtitle}: NavbarProps) {
             <div className={cn.ApiRefItemNavbarContainer}>
                 <div className={cn.ApiRefItemNavbarLabel}>
                     {/* TODO: in the future not only for REST */}
-                    <div data-active="true" atlas-oas-method={label.toUpperCase()}>
+                    <div data-active="true" data-atlas-oas-method={label.toUpperCase()}>
                         <Badge size="xs">
                             {label.toUpperCase()}
                         </Badge>

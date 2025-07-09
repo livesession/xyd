@@ -9,13 +9,17 @@ export const NavHost = css`
         background: transparent;
         display: flex;
 
-        [part="shadow"] {
+        [part="shadow"]::before {
             pointer-events: none;
             position: absolute;
             z-index: -1;
             height: 100%;
             width: 100%;
             background-color: var(--xyd-nav-shadow-bgcolor);
+        }
+
+        [part="nav-left"] {
+            flex: 1;
         }
 
         [part="nav"] {
@@ -25,18 +29,16 @@ export const NavHost = css`
             align-items: center;
             justify-content: flex-end;
             gap: 8px;
-            padding-left: calc(max(env(safe-area-inset-left), var(--xyd-padding-default)));
-            padding-right: calc(max(env(safe-area-inset-right), var(--xyd-padding-default)));
-        }
-        &[data-kind="middle"] [part="nav"] {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            align-items: center;
+            padding: 0 var(--xyd-padding-default);
         }
 
-        @media (max-width: 1024px) {
-            &[data-kind="middle"] [part="nav"] {
+        [part="nav-center"] {
+            flex: 1;
+
+            [role="tablist"] {
                 display: flex;
+                align-items: center;
+                justify-content: center;
             }
         }
 
@@ -44,6 +46,8 @@ export const NavHost = css`
             display: flex;
             align-items: center;
             margin-right: auto;
+            height: 28px;
+            width: auto;
         }
 
         @media (min-width: 1024px) {
@@ -52,10 +56,9 @@ export const NavHost = css`
             }
         }
 
-        [part="list"] {
+        [part="nav-list"] {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -63,33 +66,33 @@ export const NavHost = css`
         }
 
         @media (max-width: 1024px) {
-            [part="list"] {
+            [part="nav-list"] {
                 display: none;
             }
         }
 
-        [part="right"] {
+        [part="nav-right"] {
             display: flex;
             align-items: center;
             justify-content: flex-end;
+            flex: 1;
         }
         @media (max-width: 1024px) {
-            [part="right"] {
+            [part="nav-right"] {
                width: 100%;
                overflow: auto;
+            }
 
-               [role="tablist"] {
+            [role="tablist"] {
                 overflow: auto;
-               }
             }
         }
 
-        [part="right"] > [role="tablist"] {
+        [part="nav-right"] [role="tablist"] {
             display: flex;
         }
     }
-`;
-
+`
 
 export const ItemHost = css`
     @layer defaults {
@@ -100,7 +103,7 @@ export const ItemHost = css`
         display: flex;
         align-items: center;
         justify-content: center;
-        
+
         &:hover {
             color: var(--xyd-nav-item-color--active);
         }
@@ -111,7 +114,7 @@ export const ItemHost = css`
             border-radius: 8px;
         }
 
-        [part="title1"] {
+        [part="nav-item1"] {
             position: absolute;
             inset: 0;
             text-align: center;
@@ -120,7 +123,7 @@ export const ItemHost = css`
             justify-content: center;
         }
 
-        [part="title2"] {
+        [part="nav-item2"] {
             visibility: hidden;
             font-weight: var(--xyd-font-weight-semibold);
         }

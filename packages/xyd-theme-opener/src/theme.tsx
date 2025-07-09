@@ -28,7 +28,7 @@ export default class ThemeOpener extends BaseTheme {
             }
         }
 
-        this.surfaces.define("sidebar.top", <_Search />)
+        // this.surfaces.define("sidebar.top", <_Search />)
     }
 
     public override reactContentComponents() {

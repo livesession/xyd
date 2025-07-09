@@ -1,4 +1,4 @@
-import {css} from "@linaria/core"
+import { css } from "@linaria/core"
 
 export const TabsPrimaryHost = css`
     @layer defaults {
@@ -97,6 +97,50 @@ export const TabsPrimaryHost = css`
 `;
 
 export const TabsPrimaryContent = css`
+    @keyframes fadeInFromRight {
+        from {
+            opacity: 0;
+            transform: translateX(75px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeOutToLeft {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(-75px);
+        }
+    }
+
+    @keyframes fadeInFromLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-75px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeOutToRight {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(75px);
+        }
+    }
+
     @layer defaults {
         position: relative;
         width: 100%;
@@ -129,50 +173,6 @@ export const TabsPrimaryContent = css`
             &[data-direction="backward"][data-state="inactive"] {
                 position: absolute;
                 animation: fadeOutToRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            }
-        }
-
-        @keyframes fadeInFromRight {
-            from {
-                opacity: 0;
-                transform: translateX(75px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes fadeOutToLeft {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(-75px);
-            }
-        }
-
-        @keyframes fadeInFromLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-75px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes fadeOutToRight {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(75px);
             }
         }
 

@@ -2,20 +2,20 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigation } from "react-router";
 
 import { Metadata, Settings } from "@xyd-js/core";
+import { Banner } from "@xyd-js/components/writer";
 import { type ITOC, type IBreadcrumb, type INavLinks, ProgressBar } from "@xyd-js/ui";
-import { Banner, Button } from "@xyd-js/components/writer";
 
-import { FwSidebarGroupProps } from "../components/Sidebar";
+import { FwSidebarItemProps } from "../components/FwSidebarItem";
 import { SurfaceContext } from "../components/Surfaces";
-import {Surfaces} from "../../../src"
+import { Surfaces } from "../../../src"
 
 export interface IFramework {
     settings: Readonly<Settings>
 
-    sidebarGroups: Readonly<FwSidebarGroupProps[]>
+    sidebarGroups: Readonly<FwSidebarItemProps[]>
     metadata: Readonly<Metadata>
     setMetadata: (metadata: Metadata) => void
-    components?: Readonly<{[componentName: string]: React.ComponentType<any>}>
+    components?: Readonly<{ [componentName: string]: React.ComponentType<any> }>
 }
 
 const framework: IFramework = {
@@ -24,7 +24,8 @@ const framework: IFramework = {
         title: "",
     },
     sidebarGroups: [],
-    setMetadata: () => { },
+    setMetadata: () => {
+    },
     components: {}
 }
 const FrameworkContext = createContext<IFramework>(framework)
@@ -34,9 +35,9 @@ export interface FrameworkProps {
 
     settings: Settings,
     metadata: Metadata,
-    sidebarGroups: FwSidebarGroupProps[],
+    sidebarGroups: FwSidebarItemProps[],
     surfaces: Surfaces,
-    components?: {[componentName: string]: React.ComponentType<any>},
+    components?: { [componentName: string]: React.ComponentType<any> },
     BannerContent: React.ComponentType<any>
 }
 
@@ -46,7 +47,7 @@ export function Framework(props: FrameworkProps) {
     const [metadata, setMetadata] = useState<Metadata | undefined>(props.metadata)
 
     const BannerContent = props.BannerContent || null
-    const BannerComponent = props?.settings?.theme?.banner?.kind === "secondary" ? Banner.Secondary : Banner
+    const BannerComponent = props?.settings?.webeditor?.banner?.kind === "secondary" ? Banner.Secondary : Banner
     return <>
         <FrameworkContext value={{
             settings: Object.freeze({ ...props.settings }),
@@ -60,9 +61,9 @@ export function Framework(props: FrameworkProps) {
             }}>
                 <ProgressBar isActive={navigation.state === 'loading'} />
                 {BannerContent ? <BannerComponent
-                    label={props.settings?.theme?.banner?.label}
-                    icon={props.settings?.theme?.banner?.icon}
-                    href={props.settings?.theme?.banner?.href}
+                    label={props.settings?.webeditor?.banner?.label}
+                    icon={props.settings?.webeditor?.banner?.icon}
+                    href={props.settings?.webeditor?.banner?.href}
                 >
                     <BannerContent />
                 </BannerComponent> : null}
@@ -173,4 +174,10 @@ export function useContentComponent() {
     const ctx = useContext(FrameworkPageContext)
 
     return ctx.ContentComponent
+}
+
+export function useAppearance() {
+    const ctx = useContext(FrameworkContext)
+
+    return ctx.settings.theme?.appearance
 }

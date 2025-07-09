@@ -5,7 +5,7 @@ export const ButtonHost = css`
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 6px;
+        border-radius: var(--xyd-button-border-radius, 6px);
         border: 1px solid transparent;
         font-weight: var(--xyd-font-weight-medium);
         transition: all 0.2s ease;
@@ -112,7 +112,7 @@ export const ButtonHost = css`
                 border: unset;
                 
                 svg {
-                    color: var(--dark64)
+                    color: var(--dark60)
                 }
             }
 
@@ -138,14 +138,10 @@ export const ButtonHost = css`
             justify-content: center;
             flex-shrink: 0;
         }
+        &:not([data-theme="ghost"]) [part="icon"] svg {
+                width: 16px !important;
+                height: 16px !important;
+        }
     }
 `;
 
-export const ButtonIcon = css`
-    @layer defaults {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-`; 

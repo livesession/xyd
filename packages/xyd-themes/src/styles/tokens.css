@@ -15,6 +15,7 @@
     --dark60: #443a3a;
     --dark80: #111827;
     --dark100: var(--black);
+    --shadow: var(--dark16);
     --purple80: #7051d4;
     --purple100: #2e108e;
     --blue16: #e4edff;
@@ -55,6 +56,7 @@
     --dark60: #a3a3a3;
     --dark80: #d4d4d4;
     --dark100: var(--black);
+    --shadow: #090D0D;
     --purple80: #7051d4;
     --purple100: #2e108e;
     --blue16: #e4edff;
@@ -96,6 +98,7 @@
         --dark60: #a3a3a3;
         --dark80: #d4d4d4;
         --dark100: var(--black);
+        --shadow: #090D0D;
         --purple80: #7051d4;
         --purple100: #2e108e;
         --blue16: #e4edff;
@@ -146,6 +149,10 @@
     --xyd-layout-width-large: 1200px;
     --xyd-layout-nav-width-small: 200px;
     --xyd-layout-nav-width-medium: 256px;
+
+    --xyd-border-radius-small: 4px;
+    --xyd-border-radius-medium: 8px;
+    --xyd-border-radius-large: 16px;
 }
 
 /* Fonts */
@@ -221,6 +228,7 @@
     --xyd-button-tertiary-border: transparent;
     --xyd-button-tertiary-bg-hover: var(--dark16);
     --xyd-button-tertiary-border-hover: var(--dark32);
+    --xyd-button-border-radius: 6px;
 
     /* Card */
     --xyd-card-bgcolor: var(--color-bg);

@@ -12,7 +12,7 @@ export interface ButtonProps {
     className?: string;
     onClick?: () => void;
     disabled?: boolean;
-    icon?: React.ReactElement;
+    icon?: React.ReactElement | string;
     iconPosition?: "left" | "right";
     href?: string;
 }
@@ -41,7 +41,7 @@ export function Button({
     }
 
     if (theme === "ghost") {
-        kind = undefined
+        kind = undefined as any
     }
 
     return (
@@ -58,7 +58,7 @@ export function Button({
             {...hrefProps}
         >
             {icon && iconPosition === "left" && (
-                <span part="icon" className={cn.ButtonIcon}>
+                <span part="icon">
                     {typeof icon === "string" ? <Icon name={icon} /> : icon}
                 </span>
             )}
@@ -68,7 +68,7 @@ export function Button({
                 </span> : null
             }
             {icon && iconPosition === "right" && (
-                <span part="icon" className={cn.ButtonIcon}>
+                <span part="icon">
                     {typeof icon === "string" ? <Icon name={icon} /> : icon}
                 </span>
             )}

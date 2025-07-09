@@ -54,6 +54,11 @@ export const Footer = css`
     display: flex;
     height: 24px;
 
+    img, svg {
+      height: 28px;
+      width: auto;
+    }
+
     @media (min-width: 1024px) {
         min-width: 140px;
     }

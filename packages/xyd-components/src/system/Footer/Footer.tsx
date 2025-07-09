@@ -3,9 +3,9 @@ import React from "react";
 import * as cn from "./Footer.styles";
 
 export interface FooterProps {
-    logo: React.ReactNode;
-
     footnote: React.ReactNode;
+    
+    logo?: React.ReactNode;
 
     socials?: {
         logo: React.ReactNode;
@@ -25,9 +25,9 @@ export function Footer(props: FooterProps) {
     return <footer className={cn.Footer}>
         <div part="container">
             <div part="content">
-                <div part="first-column">
+                {props.logo && <div part="first-column">
                     {props.logo}
-                </div>
+                </div>}
 
                 {props.links?.length && <div part="columns" data-cols={props.links?.length}>
                     {props.links?.map((link) => (

@@ -2,10 +2,10 @@
 import semver from 'semver';
 import updateNotifier from 'update-notifier';
 
-import {MIN_NODE_VERSION} from "./const";
-import {cliSpec} from './cli-spec';
-import {parseArgs} from './args';
-import {getPackageJson, printHelp} from './utils';
+import { MIN_NODE_VERSION } from "./const";
+import { cliSpec } from './spec';
+import { parseArgs } from './args';
+import { getPackageJson, printHelp } from './utils';
 import * as globalCommands from './commands';
 
 export async function cli(argv = process.argv.slice(2)) {
@@ -17,7 +17,7 @@ export async function cli(argv = process.argv.slice(2)) {
 
     process.env.XYD_CLI = 'true';
 
-    const {globalFlags, commands} = parseArgs(argv);
+    const { globalFlags, commands } = parseArgs(argv);
 
     if (globalFlags.help) {
         return printHelp();
@@ -46,9 +46,8 @@ export async function cli(argv = process.argv.slice(2)) {
 
     args.push(globalFlags)
 
-    await globalCommands[globalCommand as keyof typeof globalCommands](...args);
+    await (globalCommands[globalCommand as keyof typeof globalCommands] as any)(...args);
 }
-
 
 function prerequisites() {
     const nodeVersion = process.versions.node;
@@ -62,6 +61,6 @@ function prerequisites() {
 
 function updateNotify() {
     const packageJson = getPackageJson();
-    const notifier = updateNotifier({pkg: packageJson});
+    const notifier = updateNotifier({ pkg: packageJson });
     notifier.notify();
 }

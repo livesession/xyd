@@ -1,5 +1,5 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { css } from "@linaria/core";
+
 import ChevronIcon from './chevronIcon.svg';
 
 export const SidebarHost = css`
@@ -10,6 +10,24 @@ export const SidebarHost = css`
         border-radius: 4px;
         display: flex;
         flex-direction: column;
+
+        [part="scroll-shadow"]::before {
+            background: var(--shadow);
+            content: "";
+            height: 20px;
+            left: 0;
+            -webkit-mask-image: linear-gradient(0deg, transparent, #000);
+            mask-image: linear-gradient(0deg, transparent, #000);
+            opacity: 1;
+            pointer-events: none;
+            position: absolute;
+            right: 10px;
+            top: 0;
+            transition: opacity .1s ease;
+            z-index: 2;
+            left: 0;
+            right: 0;
+        }
 
         [part="list"] {
             overflow-y: auto;
@@ -22,9 +40,16 @@ export const SidebarHost = css`
             padding: var(--xyd-sidebar-padding);
             border-top: 1px solid var(--xyd-sidebar-divider-color);
 
-            svg {
+            [part="item"] [part="first-item"] > svg {
                 width: 16px !important;
                 height: 16px !important;
+            }
+        }
+
+        [part="logo"] {
+            img {
+                width: auto;
+                height: 28px;
             }
         }
     }

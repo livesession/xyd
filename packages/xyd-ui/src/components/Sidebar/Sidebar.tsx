@@ -1,16 +1,18 @@
 import React, { useEffect, useRef } from "react"
 import { Link } from "react-router"
 
-import * as cn from "./Sidebar.styles";
 import { UICollapse } from "./Collapse";
+
+import * as cn from "./Sidebar.styles";
 
 export interface UISidebarProps {
     children: React.ReactNode;
     footerItems?: React.ReactNode;
     className?: string;
+    scrollShadow?: boolean;
 }
-[]
-export function UISidebar({ children, footerItems, className }: UISidebarProps) {
+
+export function UISidebar({ children, footerItems, className, scrollShadow }: UISidebarProps) {
     const listRef = useRef<HTMLUListElement>(null);
 
     useEffect(() => {
@@ -38,9 +40,12 @@ export function UISidebar({ children, footerItems, className }: UISidebarProps) 
     return <xyd-sidebar
         className={`${cn.SidebarHost} ${className || ""}`}
     >
+        {scrollShadow && <div part="scroll-shadow" />}
+
         <ul part="list" ref={listRef}>
             {children}
         </ul>
+
         {
             footerItems && <div part="footer">
                 <ul>
@@ -80,7 +85,7 @@ UISidebar.Item = function SidebarItem({
     const ButtonOrAnchor = button ? 'button' : Link
 
     let h = href?.endsWith("/") ? href.slice(0, -1) : href
-    
+
     let target = ""
     if (href?.startsWith("http://") || href?.startsWith("https://")) {
         target = "_blank"
@@ -128,6 +133,24 @@ UISidebar.ItemHeader = function SidebarItemHeader({ children, icon }: UISidebarI
     </li>
 }
 
+
+export interface UISidebarItemBody {
+    title: React.ReactNode;
+    right?: React.ReactNode;
+}
+
+UISidebar.ItemBody = function SidebarItemBody({ title, right }: UISidebarItemBody) {
+    return <div part="item-title-container">
+
+        <div part="item-title">
+            {title}
+        </div>
+
+        {right}
+    </div>
+}
+
+
 export interface UISidebarSubTreeProps {
     children: React.ReactNode;
     isOpen?: boolean;
@@ -141,21 +164,3 @@ UISidebar.SubTree = function SidebarSubItem({ children, isOpen }: UISidebarSubTr
     </ul>
 }
 
-export interface SidebarFooterItemProps {
-    children: React.ReactNode;
-    href?: string;
-    icon?: React.ReactNode;
-    as?: React.ElementType;
-}
-
-UISidebar.FooterItem = function SidebarFooterItem({ children, href, icon, as }: SidebarFooterItemProps) {
-    return <UISidebar.Item href={href} icon={icon} as={as}>
-        {children}
-    </UISidebar.Item>
-}
-
-function $Link({ children, ...props }) {
-    return <a {...props}>
-        {children}
-    </a>
-}

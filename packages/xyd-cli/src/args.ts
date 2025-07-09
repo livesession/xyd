@@ -1,5 +1,7 @@
 import arg from 'arg';
-import { cliSpec, CLISpec, FlagType } from './cli-spec';
+
+import { FlagType } from './types';
+import { cliSpec } from './spec';
 
 // Helper type to map flag types to TypeScript types
 type FlagTypeMap<T extends FlagType> =

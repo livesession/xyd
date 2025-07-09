@@ -26,6 +26,9 @@ export interface Metadata<P = void> {
     /** Max depth for table of contents */
     maxTocDepth?: number
 
+    /** External URL for the content */
+    url?: string
+
     /**
      * @internal
      * 
@@ -90,17 +93,17 @@ export interface Metadata<P = void> {
 }
 
 export interface TocCard {
-   /** 'link' to the card */
-   link: string
+    /** 'link' to the card */
+    link: string
 
-   /** 'title' of the card */
-   title: string
+    /** 'title' of the card */
+    title: string
 
-   /** 'description' of the card */
-   description: string
+    /** 'description' of the card */
+    description: string
 
-   /** 'icon' of the card */
-   icon?: string
+    /** 'icon' of the card */
+    icon?: string
 }
 
 export type PageMetaUniform = string | PageMetaUniformDetails;

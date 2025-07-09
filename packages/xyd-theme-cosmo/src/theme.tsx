@@ -25,7 +25,7 @@ export default class ThemeCosmo extends BaseTheme {
             }
         }
 
-        this.surfaces.define("nav.right", <_Search />)
+        // this.surfaces.define("nav.right", <_Search />)
     }
 }
 

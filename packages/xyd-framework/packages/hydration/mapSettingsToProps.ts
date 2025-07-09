@@ -1,10 +1,10 @@
 // server-only
 
-import { Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL } from "@xyd-js/core";
-import { pageFrontMatters } from "@xyd-js/content";
-import { IBreadcrumb, INavLinks } from "@xyd-js/ui";
+import {Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL} from "@xyd-js/core";
+import {pageFrontMatters} from "@xyd-js/content";
+import {IBreadcrumb, INavLinks} from "@xyd-js/ui";
 
-import { FwSidebarGroupProps } from "../react";
+import {FwSidebarItemProps} from "../react";
 
 // TODO: framework vs content responsibility
 
@@ -15,7 +15,7 @@ export async function mapSettingsToProps(
     slug: string,
     frontmatters?: MetadataMap
 ): Promise<{
-    groups: FwSidebarGroupProps[],
+    groups: FwSidebarItemProps[],
     breadcrumbs: IBreadcrumb[]
     navlinks?: INavLinks
     hiddenPages?: { [key: string]: boolean }
@@ -126,6 +126,7 @@ export async function mapSettingsToProps(
             uniqIndex: uniqIndex++,
             icon: meta?.icon || "",
             sidebarTitle: meta?.sidebarTitle || "",
+            url: meta?.url || "",
             pageMeta: meta || null,
         }
     }
@@ -140,14 +141,14 @@ export async function mapSettingsToProps(
 
                     return {
                         items
-                    } as FwSidebarGroupProps
+                    } as FwSidebarItemProps
                 }
 
                 return {
                     group: "",
                     items: [],
                     groupIndex: 0,
-                } as FwSidebarGroupProps
+                } as FwSidebarItemProps
             }
 
             const items = (nav.pages?.map((p) => mapItems(p, nav, filteredNav)) || [])
@@ -157,7 +158,7 @@ export async function mapSettingsToProps(
                 group: nav.group,
                 icon: nav?.icon,
                 items
-            } as FwSidebarGroupProps
+            } as FwSidebarItemProps
         }) || []
 
     return {
@@ -194,7 +195,7 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
                             foundRoute = true
                             sidebarItems.length = 0
                         }
-                        
+
                         multiSidebarMatch = sidebar
                     }
                 } else {
@@ -202,7 +203,7 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
                         foundRoute = true
                         sidebarItems.length = 0
                     }
-                  
+
                     multiSidebarMatch = sidebar
                 }
             }
@@ -392,7 +393,7 @@ function findResolvedPagesBFS(sidebar: Sidebar): string[] {
 
     while (queue.length > 0) {
         const current = queue.shift()!
-        
+
         if (typeof current === "string") {
             resolvedPages.push(current)
         } else if ("virtual" in current) {
@@ -404,6 +405,6 @@ function findResolvedPagesBFS(sidebar: Sidebar): string[] {
             queue.push(...current.pages)
         }
     }
-    
+
     return resolvedPages
 }

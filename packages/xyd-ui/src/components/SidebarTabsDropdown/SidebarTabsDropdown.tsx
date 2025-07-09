@@ -39,7 +39,7 @@ export function SidebarTabsDropdown({ options, value }: SidebarTabsDropdownProps
                 </button>
             </Popover.Trigger>
 
-            <Popover.Content part="dropdown-list" align="start" sideOffset={4}>
+            <Popover.Content part="dropdown-list" align="start" sideOffset={2}>
                 {options.map(opt => (
                     <Link
                         key={opt.value}
@@ -49,11 +49,14 @@ export function SidebarTabsDropdown({ options, value }: SidebarTabsDropdownProps
                     >
                         <IconWrapper icon={opt.icon} />
 
-                        <span part="dropdown-label">{opt.label}</span>
+                        <span part="dropdown-label-group">
+                            <span part="dropdown-label">{opt.label}</span>
+                            {opt.description && <span part="dropdown-description">{opt.description}</span>}
+                        </span>
 
-                        {opt.description && <span part="dropdown-description">{opt.description}</span>}
-
-                        {opt.value === value && <CheckvronCheck />}
+                        <span part="chevron-check">
+                            {opt.value === value && <CheckvronCheck />}
+                        </span>
                     </Link>
                 ))}
             </Popover.Content>

@@ -1,7 +1,8 @@
 import React, { } from "react";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, redirect } from "react-router";
 
-import type { Settings, Styles } from "@xyd-js/core";
+import type { Settings, Appearance } from "@xyd-js/core";
+import * as contentClass from "@xyd-js/components/content"; // TODO: move to appearance
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
@@ -28,13 +29,15 @@ export function loader({ request }: { request: any }) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-    const colorScheme = settings?.theme?.defaultColorScheme || "os"
+    const colorScheme = clientColorScheme() || settings?.theme?.appearance?.defaultColorScheme || "os"
+
+    const { component: UserAppearance, classes: UserAppearanceClasses } = userAppearance()
 
     return (
         <html
             data-color-scheme={colorScheme}
-            data-color-primary={settings?.theme?.styles?.colors?.primary ? "true" : undefined}
-        >
+            data-color-primary={settings?.theme?.appearance?.colors?.primary ? "true" : undefined}
+        >   
             <head>
                 <ColorSchemeScript />
                 <DefaultMetas />
@@ -45,15 +48,42 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Links />
             </head>
 
-            <body>
+            <body className={UserAppearanceClasses}>
                 {children}
                 <ScrollRestoration />
                 <Scripts />
                 <UserStyleTokens />
+                {UserAppearance}
                 {/* TODO: in the future better solution? */}
             </body>
         </html>
     );
+}
+
+function clientColorScheme() {
+    if (typeof window === "undefined") {
+        return
+    }
+
+    try {
+        var theme = localStorage.getItem('xyd-color-scheme') || 'auto';
+        var isDark = false;
+
+        if (theme === 'dark') {
+            isDark = true;
+        } else if (theme === 'auto') {
+            isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+
+        return isDark ? "dark" : undefined
+    } catch (e) {
+        // Fallback to system preference if localStorage fails
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return "dark"
+        }
+    }
+
+    return undefined
 }
 
 export default function App() {
@@ -116,49 +146,114 @@ function UserFavicon() {
     return <link rel="icon" type="image/png" sizes="32x32" href={faviconPath}></link>
 }
 
+// TODO: better than <style>?
 function UserStyleTokens() {
-    const tokensCSS = generateTokensCSS(settings?.theme?.styles)
+    const userCss = generateUserCss(settings?.theme?.appearance)
 
-    if (!tokensCSS) {
+    if (!userCss) {
         return null
     }
 
     return <style
+        data-appearance
         dangerouslySetInnerHTML={{
-            __html: tokensCSS
+            __html: userCss
         }}
     />
 }
 
-// Function to generate CSS custom properties from tokens
-function generateTokensCSS(styles?: Styles): string {
-    const colors = styles?.colors
-    const colorTokens: Record<string, string> = {}
-
-    if (colors?.primary) {
-        colorTokens["--color-primary"] = colors.primary
-        colorTokens["--xyd-sidebar-item-bgcolor--active"] = 'color-mix(in srgb, var(--color-primary) 10%, transparent)'
-        colorTokens["--xyd-sidebar-item-color--active"] = 'var(--color-primary)'
-
-        colorTokens["--theme-color-primary"] = 'var(--color-primary)'
-        colorTokens["--theme-color-primary-active"] = 'var(--color-primary)'
-        colorTokens["--xyd-toc-item-color--active"] = 'var(--color-primary)'
+// TODO: better than <style>?
+function userAppearance() {
+    const theme = {
+        searchWidth: settings?.theme?.appearance?.search?.fullWidth ? "100%" : undefined,
+        buttonsRounded: cssVarSize("--xyd-border-radius", settings?.theme?.appearance?.buttons?.rounded, "lg")
     }
 
-    const tokens = { ...colorTokens, ...(styles?.tokens || {}) }
+    const userAppearanceCss = tokensToCss({
+        "--xyd-search-width": theme.searchWidth || undefined,
+        "--xyd-button-border-radius": theme.buttonsRounded || undefined
+    })
 
+    if (!userAppearanceCss) {
+        return {
+            component: null,
+            classes: ""
+        }
+    }
+
+    const classes = []
+    if (settings?.theme?.appearance?.search?.fullWidth) {
+        classes.push(contentClass.SearchButtonFullWidth)
+    }
+
+    return {
+        component: <style
+            dangerouslySetInnerHTML={{
+                __html: userAppearanceCss
+            }}
+        />,
+        classes: classes.join(" ")
+    }
+}
+
+function generateUserCss(appearance?: Appearance): string {
+    if (!appearance) return '';
+
+    const { colors, cssTokens } = appearance;
+
+    const lightTokens = {
+        ...(colors?.primary ? generateColorTokens(colors.primary) : {}),
+        ...(cssTokens ? cssTokens : {})
+    };
+    const darkTokens = {
+        ...(colors?.light ? generateColorTokens(colors.light) : {}),
+        ...(cssTokens ? cssTokens : {})
+    };
+
+    const lightCss = tokensToCss(lightTokens);
+    const darkCss = generateDarkCss(darkTokens);
+
+    return [lightCss, darkCss].filter(Boolean).join('\n\n');
+}
+
+// TODO: typesafe css variables?
+function generateColorTokens(primary: string): Record<string, string> {
+    return {
+        "--color-primary": primary,
+        "--xyd-sidebar-item-bgcolor--active": 'color-mix(in srgb, var(--color-primary) 10%, transparent)',
+        "--xyd-sidebar-item-color--active": 'var(--color-primary)',
+        "--xyd-toc-item-color--active": 'var(--color-primary)',
+        "--theme-color-primary": 'var(--color-primary)',
+        "--theme-color-primary-active": 'var(--color-primary)',
+    };
+}
+
+function tokensToCss(tokens: Record<string, string | boolean | undefined>, wrapInRoot = true): string {
     if (!Object.keys(tokens).length) {
         return '';
     }
 
-    const entries = Object.entries(tokens);
-    const cssProperties = entries
+    const props = Object.entries(tokens)
+        .filter(([key, value]) => value !== undefined)
         .map(([key, value]) => `${key}: ${value};`)
         .join('\n');
 
-    return `:root {\n${cssProperties}\n}`;
+    return wrapInRoot ? `:root {\n${props}\n}` : props;
 }
 
+function generateDarkCss(tokens: Record<string, string>): string {
+    if (!Object.keys(tokens).length) {
+        return '';
+    }
+
+    const raw = tokensToCss(tokens, false);
+    return [
+        `[data-color-scheme="dark"] {\n${raw}\n}`,
+        `@media (prefers-color-scheme: dark) {`,
+        `    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {\n        ${raw.replace(/\n/g, '\n        ')}\n    }`,
+        `}`
+    ].join('\n');
+}
 
 function UserHeadScripts() {
     const head = settings?.theme?.head || []
@@ -170,4 +265,36 @@ function UserHeadScripts() {
     return head.map(([tag, props]: [string, Record<string, string | boolean>], index: number) => {
         return React.createElement(tag as any, { key: index, ...props })
     })
+}
+
+const cssVarSize = (
+    cssTokenPrefix: string,
+    size?: "lg" | "md" | "sm" | boolean,
+    defaultSize?: "lg" | "md" | "sm"
+) => {
+    if (!size) {
+        return undefined
+    }
+
+    if (typeof size === "boolean") {
+        return cssVarSize(cssTokenPrefix, defaultSize)
+    }
+
+    const sizes = {
+        lg: "large",
+        md: "medium",
+        sm: "small"
+    }
+
+    const found = sizes[size]
+
+    if (!found) {
+        if (defaultSize) {
+            return cssVarSize(cssTokenPrefix, defaultSize)
+        }
+
+        return undefined
+    }
+
+    return `var(${cssTokenPrefix}-${found})`
 }

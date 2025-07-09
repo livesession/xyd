@@ -1,22 +1,56 @@
 import { css } from "@linaria/core";
 
+const triggerPaddingX = 16;
+
+export const globals = css`
+    :global() {
+        html[data-color-primary="true"] {
+            [part="dropdown-icon"] svg {
+                fill: var(--color-primary) !important;  // TODO: fix important
+                color: var(--color-primary) !important; // TODO: fix important
+            }
+            [part="chevron-check"] svg {
+                color: var(--color-primary);
+            }
+        }
+    }
+`
+
 export const DropdownHost = css`
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-4px);
+        }
+    }
+
     @layer defaults {
         display: block;
         padding: var(--xyd-sidebar-anchor-item-padding);
 
-        xyd-sidebar-tabs-dropdown {
-            display: block;
-            width: 100%;
-        }
         button[part="dropdown-trigger"] {
             display: flex;
             align-items: center;
             width: 100%;
             background: var(--white);
             border: 1px solid var(--dark32);
-            border-radius: 16px;
-            padding: 12px 16px;
+            border-radius: var(--xyd-border-radius-large);
+            padding: 12px ${triggerPaddingX}px;
             gap: 12px;
             cursor: pointer;
             transition: border-color 0.2s, box-shadow 0.2s;
@@ -28,11 +62,13 @@ export const DropdownHost = css`
             background: var(--dark16);
         }
         span[part="dropdown-icon"] {
-            width: 24px;
-            height: 24px;
+            width: 34px;
+            height: 34px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 1px solid var(--dark32);
+            border-radius: var(--xyd-border-radius-medium);
         }
         span[part="dropdown-label-group"] {
             display: flex;
@@ -54,7 +90,7 @@ export const DropdownHost = css`
         span[part="dropdown-description"] {
             font-size: var(--xyd-font-size-xsmall);
             line-height: var(--xyd-line-height-xsmall);
-            color: var(--dark64);
+            color: var(--dark60);
             margin-top: 2px;
             white-space: nowrap;
             overflow: hidden;
@@ -77,20 +113,42 @@ export const DropdownHost = css`
         }
         [part="dropdown-list"] {
             background: var(--white);
-            border-radius: 16px;
-            padding: 8px 8px;
+            border-radius: var(--xyd-border-radius-large);
+            padding: 8px;
             /* min-width: 260px; */
             /* width:  */
             width: var(--radix-popover-trigger-width);
             border: 1px solid var(--dark32);
             margin-top: 4px;
             z-index: 999;
+
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-4px);
+            animation-duration: 150ms;
+            animation-timing-function: ease-out;
+            animation-fill-mode: both;
+
+            &[data-state="open"] {
+                opacity: 1;
+                pointer-events: auto;
+                animation-name: fadeIn;
+                transform: translateY(0);
+            }
+
+            &[data-state="closed"] {
+                opacity: 0;
+                pointer-events: none;
+                animation-name: fadeOut;
+                transform: translateY(-4px);
+            }
         }
+
         [part="dropdown-listitem"] {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 20px;
+            padding: 12px ${triggerPaddingX}px;
             cursor: pointer;
             background: none;
             border: none;
@@ -98,9 +156,10 @@ export const DropdownHost = css`
             font: inherit;
             transition: background 0.15s;
             border-radius: 10px;
-        }
-        [part="dropdown-listitem"]:hover {
-            background: var(--dark16);
+
+            &:hover {
+                background: var(--dark16);
+            }
         }
     }
 `;

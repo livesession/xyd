@@ -1,6 +1,6 @@
-import { useMatches } from "react-router";
+import {useMatches} from "react-router";
 
-import { useSettings } from "../contexts";
+import {useSettings} from "../contexts";
 
 // TODO: better data structures
 export function useMatchedSubNav() {
@@ -20,7 +20,6 @@ export function useMatchedSubNav() {
 
     return matchedSubnav || null
 }
-
 
 function sanitizeUrl(url: string) {
     if (url.startsWith("/")) {

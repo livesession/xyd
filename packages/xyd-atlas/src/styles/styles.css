@@ -27,7 +27,7 @@
     }
 
     /* HTTP Method Colors */
-    [atlas-oas-method="GET"] {
+    [data-atlas-oas-method="GET"] {
         --method-color: var(--oas-method-get-color);
         --method-bg: var(--oas-method-get-bg);
 
@@ -37,7 +37,7 @@
         }
     }
 
-    [atlas-oas-method="POST"] {
+    [data-atlas-oas-method="POST"] {
         --method-color: var(--oas-method-post-color);
         --method-bg: var(--oas-method-post-bg);
 
@@ -47,7 +47,7 @@
         }
     }
 
-    [atlas-oas-method="PUT"] {
+    [data-atlas-oas-method="PUT"] {
         --method-color: var(--oas-method-put-color);
         --method-bg: var(--oas-method-put-bg);
 
@@ -57,7 +57,7 @@
         }
     }
 
-    [atlas-oas-method="DELETE"] {
+    [data-atlas-oas-method="DELETE"] {
         --method-color: var(--oas-method-delete-color);
         --method-bg: var(--oas-method-delete-bg);
 
@@ -67,7 +67,7 @@
         }
     }
 
-    [atlas-oas-method="PATCH"] {
+    [data-atlas-oas-method="PATCH"] {
         --method-color: var(--oas-method-patch-color);
         --method-bg: var(--oas-method-patch-bg);
 
@@ -77,11 +77,11 @@
         }
     }
 
-    [atlas-oas-method] {
+    [data-atlas-oas-method] {
         color: var(--method-color);
     }
 
-    [atlas-oas-method] xyd-badge {
+    [data-atlas-oas-method] xyd-badge {
         background-color: var(--method-bg);
         color: var(--method-color);
         font-weight: var(--xyd-font-weight-bold);

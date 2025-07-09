@@ -1,11 +1,12 @@
 export * from "./components"
+
 export type {
-    FwSidebarGroupProps
-} from "./components/Sidebar/Sidebar"
+    FwSidebarItemProps
+} from "./components/FwSidebarItem"
+
 export {
     Surface,
     SurfaceContext,
-
 } from "./components/Surfaces"
 
 export type {FrameworkProps} from "./contexts"

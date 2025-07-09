@@ -12,7 +12,7 @@ import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 
 import type { Metadata, MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core";
 import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
-import { Framework, FwLink, useSettings, type FwSidebarGroupProps } from "@xyd-js/framework/react";
+import { Framework, FwLink, useSettings, type FwSidebarItemProps } from "@xyd-js/framework/react";
 import { ReactContent } from "@xyd-js/components/content";
 import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
 import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
@@ -83,7 +83,7 @@ const { Layout: BaseThemeLayout } = theme
 
 
 interface LoaderData {
-    sidebarGroups: FwSidebarGroupProps[]
+    sidebarGroups: FwSidebarItemProps[]
     breadcrumbs: IBreadcrumb[],
     toc: MetadataMap,
     slug: string
@@ -111,13 +111,13 @@ export async function loader({ request }: { request: any }) {
     let bannerContentCode = ""
 
     const mdPlugins = markdownPlugins({
-        maxDepth: metadata?.maxTocDepth || settings?.theme?.maxTocDepth || 2,
+        maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
     const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
 
-    if (settings?.theme?.banner?.content && typeof settings?.theme?.banner?.content === "string") {
+    if (settings?.webeditor?.banner?.content && typeof settings?.webeditor?.banner?.content === "string") {
         bannerContentCode = await contentFs.compileContent(
-            settings?.theme?.banner?.content,
+            settings?.webeditor?.banner?.content,
         )
     }
 

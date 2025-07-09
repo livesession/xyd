@@ -1,13 +1,13 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { Reference } from '@xyd-js/uniform';
 import type { Settings } from '@xyd-js/core';
-import type { FwSidebarGroupProps } from '@xyd-js/framework/react';
+import type { FwSidebarItemProps } from '@xyd-js/framework/react';
 import { SETTINGS } from './settings';
 
 interface GlobalStateActionData {
   references: Reference[];
   settings: Settings
-  groups: FwSidebarGroupProps[]
+  groups: FwSidebarItemProps[]
   exampleType: "openapi" | "graphql"
 }
 

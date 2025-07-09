@@ -1,76 +1,9 @@
+import { CLI } from "./types";
 import { getVersion } from "./utils";
-
-export type FlagType = 'Boolean' | 'String' | 'Number';
 
 // TODO: in the future cli to uniform
 
-export interface CLISpec {
-    /**
-     * The name of the CLI
-     */
-    name: string;
-
-    /**
-     * The version of the CLI
-     */
-    version: string;
-
-    /**
-     * The description of the CLI
-     */
-    description: string;
-
-    /**
-     * The usage of the CLI
-     */
-    usage: string;
-
-    /**
-     * The commands of the CLI
-     */
-    commands: Record<string, CommandSpec>
-
-    /**
-     * The global flags of the CLI
-     */
-    globalFlags: Record<string, GlobalFlagSpec>;
-}
-
-export interface CommandSpec<F = null> {
-    /**
-     * The description of the command
-     */
-    description: string;
-
-    /**
-     * The usage of the command
-     */
-    usage?: string;
-
-    /**
-     * The flags of the command
-     */
-    flags?: Record<string, F>;
-}
-
-export interface GlobalFlagSpec {
-    /**
-     * The type of the flag
-     */
-    type: FlagType;
-
-    /**
-     * The alias of the flag
-     */
-    alias?: string;
-
-    /**
-     * The description of the flag
-     */
-    description: string;
-}
-
-export const cliSpec: CLISpec = {
+export const cliSpec: CLI = {
     name: 'xyd',
     version: getVersion(),
     description: 'Docs platform for future dev',
