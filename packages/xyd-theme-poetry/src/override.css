@@ -1,4 +1,5 @@
 @layer themes {
+
     /* Layout */
     xyd-layout-primary {
         @media (min-width: 1024px) {
@@ -7,16 +8,35 @@
             }
         }
 
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) xyd-layout-primary {
+                [part="main"] {
+                    background: var(--white);
+                }
+            }
+        }
+
+        [data-color-scheme="dark"] {
+            xyd-layout-primary {
+                [part="main"] {
+                    background: var(--white);
+                }
+            }
+        }
+
+        /* layout: Main */
         [part="main"] {
             background: var(--dark16);
         }
 
+        /* layout: Sidebar */
         [part="sidebar"] {
             position: fixed;
             top: var(--xyd-page-gutter);
             z-index: 10;
         }
 
+        /* layout: Page */
         [part="page"] {
             position: relative;
             left: var(--xyd-sidebar-width);
@@ -27,7 +47,7 @@
         }
 
         @media (max-width: 1024px) {
-            > [part="header"] {
+            >[part="header"] {
                 margin-left: 0
             }
 
@@ -36,61 +56,58 @@
                 margin-right: 0;
             }
         }
-    }
 
-    /* Nav */
-    xyd-nav {
+        /* component: Nav */
+        xyd-nav {
+            @media (min-width: 1024px) {
+                [part="logo"] {
+                    display: none;
+                }
+
+                [part="nav"]>*:first-child {
+                    position: relative;
+                    left: var(--xyd-sidebar-width);
+                }
+            }
+
+            [part="nav"] {
+                justify-content: space-between;
+            }
+
+            [part="list"] {
+                justify-content: flex-start;
+            }
+        }
+
+        /* component: SubNav */
+        xyd-subnav {
+            border-radius: 0px;
+            margin-top: 0px;
+            background-color: var(--xyd-sidebar-bgcolor);
+
+        }
+
         @media (min-width: 1024px) {
-            [part="logo"] {
-                display: none;
-            }
-
-            [part="nav"] > *:first-child {
-                position: relative;
+            xyd-subnav {
                 left: var(--xyd-sidebar-width);
-            }
-        }       
-
-        [part="nav"] {
-            justify-content: space-between;
-        }
-      
-        [part="list"] {
-            justify-content: flex-start;
-        }
-    }
-    xyd-subnav {
-        border-radius: 0px;
-        margin-top: 0px;
-        background-color: var(--xyd-sidebar-bgcolor);
-    }
-
-    /* Code */
-    xyd-codetabs-languages [part=language-trigger][data-state=active] {
-        font-weight: bold;
-        border: none;
-    }
-
-    xyd-code-pre [part="pre"] {
-        border-top: none;
-    }
-
-    xyd-search-button {
-        background: var(--white);
-    }
-
-    [data-color-scheme="dark"] {
-        xyd-layout-primary {
-            [part="main"] {
-                background: var(--white);
+                position: relative;
             }
         }
-    }
-    @media (prefers-color-scheme: dark) {
-        :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) xyd-layout-primary {
-            [part="main"] {
-                background: var(--white);
-            }
+
+        /* component: CodeTabs */
+        xyd-codetabs-languages [part=language-trigger][data-state=active] {
+            font-weight: bold;
+            border: none;
+        }
+
+        /* component: Code */
+        xyd-code-pre [part="pre"] {
+            border-top: none;
+        }
+
+        /* component: SearchButton */
+        xyd-search-button {
+            background: var(--white);
         }
     }
 }

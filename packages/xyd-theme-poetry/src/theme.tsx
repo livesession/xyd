@@ -24,7 +24,7 @@ export default class ThemePoetry extends BaseTheme {
             }
         }
 
-        this.surfaces.define("sidebar.top", <_SidebarHeader />);
+        this.surfaces.define("sidebar.top", <_SidebarTop />);
     }
 
     protected Navbar() {
@@ -34,7 +34,7 @@ export default class ThemePoetry extends BaseTheme {
     }
 }
 
-function _SidebarHeader() {
+function _SidebarTop() {
     const components = useComponents()
 
     const SearchComponent = components?.Search
@@ -43,16 +43,10 @@ function _SidebarHeader() {
     }
 
     return <>
-        <UISidebar.Item button anchor>
+        <UISidebar.Item button ghost>
             <div part="logo">
                 <FwLogo />
             </div>
         </UISidebar.Item>
-
-        {/* <UISidebar.Item button anchor>
-            <SearchComponent />
-        </UISidebar.Item> */}
     </>
 }
-
-

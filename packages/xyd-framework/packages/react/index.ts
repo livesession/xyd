@@ -9,8 +9,8 @@ export {
     SurfaceContext,
 } from "./components/Surfaces"
 
-export type {FrameworkProps} from "./contexts"
-export {Framework, FrameworkPage, useMetadata, useContentComponent, useSettings, useComponents} from "./contexts"
+export type { FrameworkProps } from "./contexts"
+export { Framework, FrameworkPage, useMetadata, useContentComponent, useSettings, useComponents, useAppearance } from "./contexts"
 
 export {
     useMatchedSubNav

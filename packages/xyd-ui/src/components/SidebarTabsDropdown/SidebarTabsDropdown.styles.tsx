@@ -41,7 +41,7 @@ export const DropdownHost = css`
 
     @layer defaults {
         display: block;
-        padding: var(--xyd-sidebar-anchor-item-padding);
+        padding: var(--xyd-sidebar-ghost-item-padding);
 
         button[part="dropdown-trigger"] {
             display: flex;

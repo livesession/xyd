@@ -1,3 +1,5 @@
+export {FwBanner} from "./FwBanner";
+
 export {FwBreadcrumbs} from "./FwBreadcrumbs";
 
 export {FwCopyPage} from "./FwCopyPage";

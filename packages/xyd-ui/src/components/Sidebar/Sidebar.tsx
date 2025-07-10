@@ -63,7 +63,7 @@ export interface UISidebarItemProps {
     active?: boolean;
     activeTheme?: "secondary";
     isParentActive?: boolean;
-    anchor?: boolean;
+    ghost?: boolean;
     icon?: React.ReactNode;
     onClick?: (v: any) => void
 }
@@ -76,7 +76,7 @@ UISidebar.Item = function SidebarItem({
     active,
     activeTheme,
     isParentActive,
-    anchor,
+    ghost,
     icon,
     onClick,
 }: UISidebarItemProps) {
@@ -95,7 +95,7 @@ UISidebar.Item = function SidebarItem({
         part="item"
         className={cn.ItemHost}
         data-theme={activeTheme}
-        data-anchor={anchor ? String(anchor) : undefined}
+        data-ghost={ghost ? String(ghost) : undefined}
     >
         <ButtonOrAnchor
             part={`item-${button ? "button" : "link"}`}
@@ -105,10 +105,10 @@ UISidebar.Item = function SidebarItem({
             target={target}
         >
             <div
-                part="first-item"
+                part="primary-item"
                 data-parent-active={isParentActive}
                 data-active={active}
-                data-anchor={anchor ? String(anchor) : undefined}
+                data-ghost={ghost ? String(ghost) : undefined}
             >
                 <>
                     {icon}

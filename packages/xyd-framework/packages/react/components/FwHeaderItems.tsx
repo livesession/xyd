@@ -8,6 +8,7 @@ import { isExternal, pageLink } from "../utils";
 import { useAppearance } from "../contexts";
 import { FwJsonComponent, FwLink } from "../components";
 import { useHeaderItems } from "../hooks";
+import { WebEditorComponent } from "./WebEditorComponent";
 
 export function FwHeaderItems() {
     const headerItems = useHeaderItems()
@@ -26,13 +27,6 @@ export function FwHeaderItems() {
 
 export function FwHeaderItem(props: WebEditorHeader) {
     const appearance = useAppearance()
-    const Component = FwJsonComponent({
-        component: props.component || "",
-        props: {
-            ...props.props || {},
-            children: props.props?.children || props.title || "",
-        }
-    }) || props.title
 
     let href: string | null = null
 
@@ -46,14 +40,16 @@ export function FwHeaderItem(props: WebEditorHeader) {
 
     const isExternalArrow = !props.component && appearance?.header?.externalArrow && isExternal(href || "") ? true : false;
 
-    return <Nav.Item
-        key={(props.page || "") + props.page}
-        href={href}
-        value={props.href ? undefined : props.page}
-        as={FwLink}
-    >
-        {Component}
+    const WebEditorHeader = WebEditorComponent(Nav.Item, {
+        key: props.page || "",
+        href: href,
+        value: props.href ? undefined : props.page,
+        as: FwLink,
+    }, props.title)
 
+    return <WebEditorHeader
+        {...props}
+    >
         {isExternalArrow ? <Icon.ExternalArrow /> : null}
-    </Nav.Item>
+    </WebEditorHeader>
 }

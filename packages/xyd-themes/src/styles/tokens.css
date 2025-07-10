@@ -142,7 +142,7 @@
     --xyd-sidebar-width--mobile: 250px;
     --xyd-layout-sidebar-bgcolor: var(--color-bg);
 
-    --xyd-header-total-height: calc(var(--xyd-nav-height) + var(--xyd-subnav-height));
+    --xyd-header-total-height: calc(var(--xyd-nav-height) + var(--xyd-subnav-height) + var(--xyd-banner-height-dynamic));
 
     --xyd-layout-width-small: 800px;
     --xyd-layout-width-medium: 1000px;
@@ -199,7 +199,9 @@
 
 /* Sizes */
 :root {
-    --xyd-padding-default: 16px;
+    --xyd-padding-small: 4px;
+    --xyd-padding-medium: 8px;
+    --xyd-padding-large: 16px;
 }
 
 /* Components */
@@ -267,6 +269,7 @@
     --xyd-banner-border-color: unset;
     --xyd-banner-color: var(--black);
     --xyd-banner-boxshadow: 0 2px 5px rgba(0, 0, 0, .1);
+    --xyd-banner-height-dynamic: 0px; /* banner height is calculated dynamically in js, TODO: fix to pure css*/
 
     /* Breadcrumbs */
     --xyd-breadcrumbs-color: var(--dark48);
@@ -374,6 +377,7 @@
     --xyd-nav-item-color: var(--text-primary);
     --xyd-nav-item-color--active: var(--dark80);
     --xyd-nav-item-bgcolor--active: var(--dark16);
+    --xyd-nav-padding: var(--xyd-padding-large);
 
     /* ProgressBar */
     --xyd-progressbar-bgcolor: var(--dark16);
@@ -392,8 +396,9 @@
     --xyd-sidebar-item-bgcolor--active-mark: var(--color-primary);
     --xyd-sidebar-item-color: var(--dark48);
     --xyd-sidebar-item-header-color: var(--text-primary);
-    --xyd-sidebar-item-padding-left: var(--xyd-padding-default);
-    --xyd-sidebar-anchor-item-padding: 6px 12px 12px var(--xyd-sidebar-item-padding-left);
+    --xyd-sidebar-item-padding-left: var(--xyd-padding-large);
+    --xyd-sidebar-item-padding-total: calc(var(--xyd-sidebar-padding) + var(--xyd-sidebar-item-padding-left));
+    --xyd-sidebar-ghost-item-padding: 6px 12px 12px var(--xyd-sidebar-item-padding-left);
 
     /* SubNav */
     --xyd-subnav-height: 44px;

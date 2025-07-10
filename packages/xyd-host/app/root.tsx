@@ -7,6 +7,9 @@ import * as contentClass from "@xyd-js/components/content"; // TODO: move to app
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
 
+import colorSchemeScript from "./scripts/colorSchemeScript.ts?raw";
+import bannerHeightScript from "./scripts/bannerHeight.ts?raw";
+
 const { settings } = virtualSettings as { settings: Settings }
 
 export function HydrateFallback() {
@@ -37,10 +40,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <html
             data-color-scheme={colorScheme}
             data-color-primary={settings?.theme?.appearance?.colors?.primary ? "true" : undefined}
-        >   
+        >
             <head>
-                <ColorSchemeScript />
+                <PreloadScripts />
                 <DefaultMetas />
+                
                 <UserFavicon />
                 <UserHeadScripts />
 
@@ -58,6 +62,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </body>
         </html>
     );
+}
+
+function PreloadScripts() {
+    return <>
+        <ColorSchemeScript />
+        {/* TODO: in the future better solution? */}
+        <BannerHeightScript />
+    </>
 }
 
 function clientColorScheme() {
@@ -107,29 +119,15 @@ function DefaultMetas() {
 function ColorSchemeScript() {
     return <script
         dangerouslySetInnerHTML={{
-            __html: `
-    (function() {
-        try {
-            var theme = localStorage.getItem('xyd-color-scheme') || 'auto';
-            var isDark = false;
+            __html: colorSchemeScript
+        }}
+    />
+}
 
-            if (theme === 'dark') {
-                isDark = true;
-            } else if (theme === 'auto') {
-                isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            }
-
-            if (isDark) {
-                document.documentElement.setAttribute('data-color-scheme', 'dark');
-            }
-        } catch (e) {
-            // Fallback to system preference if localStorage fails
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.setAttribute('data-color-scheme', 'dark');
-            }
-        }
-    })();
-`
+function BannerHeightScript() {
+    return <script
+        dangerouslySetInnerHTML={{
+            __html: bannerHeightScript
         }}
     />
 }

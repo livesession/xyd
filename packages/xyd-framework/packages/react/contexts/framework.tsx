@@ -16,6 +16,7 @@ export interface IFramework {
     metadata: Readonly<Metadata>
     setMetadata: (metadata: Metadata) => void
     components?: Readonly<{ [componentName: string]: React.ComponentType<any> }>
+    BannerContent: React.ComponentType<any> | null
 }
 
 const framework: IFramework = {
@@ -26,7 +27,8 @@ const framework: IFramework = {
     sidebarGroups: [],
     setMetadata: () => {
     },
-    components: {}
+    components: {},
+    BannerContent: null,
 }
 const FrameworkContext = createContext<IFramework>(framework)
 
@@ -48,19 +50,22 @@ export function Framework(props: FrameworkProps) {
 
     const BannerContent = props.BannerContent || null
     const BannerComponent = props?.settings?.webeditor?.banner?.kind === "secondary" ? Banner.Secondary : Banner
+    const appearance = props.settings.theme?.appearance
+
     return <>
         <FrameworkContext value={{
             settings: Object.freeze({ ...props.settings }),
             sidebarGroups: Object.freeze([...props.sidebarGroups]),
             metadata: Object.freeze({ ...metadata, title: metadata?.title || "" }),
             setMetadata: setMetadata,
-            components: Object.freeze(props.components || {})
+            components: Object.freeze(props.components || {}),
+            BannerContent: props.BannerContent || null,
         }}>
             <SurfaceContext value={{
                 surfaces: props.surfaces
             }}>
                 <ProgressBar isActive={navigation.state === 'loading'} />
-                {BannerContent ? <BannerComponent
+                {BannerContent && !appearance?.banner?.fixed ? <BannerComponent
                     label={props.settings?.webeditor?.banner?.label}
                     icon={props.settings?.webeditor?.banner?.icon}
                     href={props.settings?.webeditor?.banner?.href}
@@ -180,4 +185,10 @@ export function useAppearance() {
     const ctx = useContext(FrameworkContext)
 
     return ctx.settings.theme?.appearance
+}
+
+export function useBannerContent() {
+    const ctx = useContext(FrameworkContext)
+
+    return ctx.BannerContent
 }

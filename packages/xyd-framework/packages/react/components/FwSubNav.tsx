@@ -17,7 +17,7 @@ export function FwSubNav() {
     }
 
     // TODO: in the future routing props from settings like {match: "/docs/api/browser"}
-    const active = matchedSubnav?.pages.findLast(item => {
+    const active = matchedSubnav?.pages?.findLast(item => {
         return pathname.startsWith(pageLink(item.page || ""))
     })
 
@@ -28,7 +28,7 @@ export function FwSubNav() {
         onChange={() => {
         }}
     >
-        {matchedSubnav?.pages.map((item, index) => {
+        {matchedSubnav?.pages?.map((item, index) => {
             return <SubNav.Item
                 value={item.page || ""}
                 href={pageLink(item.page || "")}

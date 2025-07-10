@@ -121,11 +121,6 @@ export interface Writer {
      * The maximum number of table of conten§ts levels.
      */
     maxTocDepth?: number
-
-    // /**
-    //  * Copy page button
-    //  */
-    // copyPage?: boolean TODO: in the future
 }
 
 /**
@@ -170,6 +165,28 @@ export interface Appearance {
      * Buttons appearance for the theme.
      */
     buttons?: AppearanceButtons
+
+    /**
+     * Banner appearance for the theme.
+     */
+    banner?: AppearanceBanner
+
+    /**
+     * Writer appearance for the theme.
+     */
+    writer?: AppearanceWriter
+}
+
+export interface AppearanceWriter {
+    /**
+     * Copy page button
+     */
+    copyPage?: boolean
+
+    /**
+     * Content decorator for the theme.
+     */
+    contentDecorator?: "secondary"
 }
 
 export interface AppearanceSearch {
@@ -200,6 +217,13 @@ export interface AppearanceSidebar {
 
 export interface AppearanceButtons {
     rounded?: boolean | "lg" | "md" | "sm"
+}
+
+export interface AppearanceBanner {
+    /**
+     * If `true` then the banner will be fixed.
+     */
+    fixed?: boolean
 }
 
 /**
@@ -271,7 +295,7 @@ export interface Navigation {
     /**
      * Tabs navigation - navigation through tabs.
      */
-    tabs?: NavigationItem[]
+    tabs?: Tabs
 
     /**
      * Sidebar dropdown navigation - navigation through dropdown in the sidebar.
@@ -293,7 +317,17 @@ export interface Navigation {
      * with a dropdown in the navigation bar.
      */
     // versions?: string[]
+}
 
+/**
+ * Tabs configuration
+ */
+export type Tabs = NavigationItem[] | {
+    /** The title of the tabs */
+    title: string
+
+    /** The pages of the tab */
+    pages: NavigationItem[]
 }
 
 /**
@@ -424,75 +458,6 @@ export interface Anchors {
         bottom?: NavigationItem[]
     }
 }
-
-// TODO: move to webeditor?
-/**
- * Banner configuration interface
- */
-export interface Banner {
-    /**
-     * Banner content.
-     */
-    content: ComponentLike
-
-    /**
-     * Banner label.
-     */
-    label?: string
-
-    /**
-     * Banner kind.
-     */
-    kind?: "secondary"
-
-    /**
-     * Banner href.
-     */
-    href?: string
-
-    /**
-     * Banner icon.
-     */
-    icon?: string
-}
-
-// TODO: move to webeditor?
-/**
- * Footer configuration
- */
-export interface Footer {
-    logo?: boolean | ComponentLike
-
-    /** Footer socials */
-    social?: {
-        "x": string
-        "facebook": string
-        "youtube": string
-        "discord": string
-        "slack": string
-        "github": string
-        "linkedin": string
-        "instagram": string
-        "hackernews": string
-        "medium": string
-        "telegram": string
-        "bluesky": string
-        "reddit": string
-    }
-
-    /** Footer links  */
-    links?: {
-        "header": string
-        "items": {
-            "label": string
-            "href": string
-        }[]
-    }[]
-
-    /** Footer footnote */
-    footnote?: ComponentLike
-}
-
 // ------ END settings for navigation END ------
 
 
@@ -500,7 +465,49 @@ export interface Footer {
 /**
  * WebEditor navigation item configuration
  */
-export type WebEditorNavigationItem = NavigationItem & Partial<JSONComponent>
+export type WebEditorNavigationItem = NavigationItem & Partial<JSONComponent> & {
+    /**
+     * If `true` then the item will be displayed on mobile.
+     */
+    mobile?: boolean
+
+    /**
+     * If `true` then the item will be displayed on desktop.
+     */
+    desktop?: boolean
+}
+
+// TODO: webeditor appearance?
+/**
+ * WebEditor configuration
+ */
+export interface WebEditor {
+    /**
+     * WebEditor header configuration
+     */
+    sidebarTop?: WebEditorNavigationItem[]
+
+    /**
+     * WebEditor header configuration
+     */
+    header?: WebEditorHeader[]
+
+    /**
+     * WebEditor header configuration
+     */
+    subheader?: WebEditorSubHeader
+
+    /**
+     * WebEditor footer configuration
+     */
+    footer?: WebEditorFooter
+
+    /**
+     * WebEditor banner configuration
+     */
+    banner?: WebEditorBanner
+}
+
 
 export interface WebEditorFooter {
     logo?: boolean | ComponentLike
@@ -562,33 +569,23 @@ export interface WebEditorBanner {
     icon?: string
 }
 
-// TODO: webeditor appearance?
-/**
- * WebEditor configuration
- */
-export interface WebEditor {
-    /**
-     * WebEditor header configuration
-     */
-    header?: WebEditorHeader[]
-
-    /**
-     * WebEditor footer configuration
-     */
-    footer?: WebEditorFooter
-
-    /**
-     * WebEditor banner configuration
-     */
-    banner?: WebEditorBanner
-}
-
 /**
  * WebEditor header configuration
  */
 export type WebEditorHeader = WebEditorNavigationItem & {
     /** Float the header to the right */
     float?: "right" | "center"
+}
+
+/**
+ * WebEditorSubHeader header configuration
+ */
+export interface WebEditorSubHeader {
+    /** Items of this subheader */
+    items: WebEditorNavigationItem[]
+
+    /** Title of this segment */
+    title?: string
 }
 
 // ------ END settings for webeditor END ------

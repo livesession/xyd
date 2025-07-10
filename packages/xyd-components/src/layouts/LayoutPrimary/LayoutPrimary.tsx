@@ -54,6 +54,7 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
 interface LayoutPrimaryHeaderProps {
     header: React.ReactNode;
 
+    banner?: React.ReactNode;
     subheader?: React.ReactNode;
 }
 LayoutPrimary.Header = function LayoutPrimaryHeader(props: LayoutPrimaryHeaderProps) {
@@ -61,6 +62,8 @@ LayoutPrimary.Header = function LayoutPrimaryHeader(props: LayoutPrimaryHeaderPr
 
     return <>
         <header part="header">
+            {props.banner}
+            
             <div part="header-content">
                 {props.header}
             </div>

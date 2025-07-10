@@ -16,13 +16,13 @@ export function useMatchedSubNav(): Segment | null {
         }))
 
     if (!matchedSegment) {
-        const tabs = settings.navigation?.tabs
+        const tabs = Array.isArray(settings.navigation?.tabs) ? settings.navigation?.tabs : settings.navigation?.tabs?.pages || []
 
         if (tabs?.length) {
             return {
                 route: "",
-                "title": "",
-                "pages": tabs,
+                title: "",
+                pages: tabs,
             }
         }
 

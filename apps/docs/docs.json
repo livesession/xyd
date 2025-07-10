@@ -1,6 +1,6 @@
 {
     "theme": {
-        "name": "poetry",
+        "name": "opener",
         "logo": {
             "light": "/public/assets/logo.svg",
             "dark": "/public/assets/logo-dark.svg"
@@ -28,26 +28,13 @@
             },
             "search": {
                 "fullWidth": true
+            },
+            "banner": {
+                "fixed": true
             }
         }
     },
-    "integrations": {
-        "search": {
-            "orama": true
-        },
-        "apps": {
-            "githubStar": {
-                "title": "Star",
-                "label": "Show your support! Star us on GitHub ⭐️",
-                "href": "https://github.com/livesession/xyd",
-                "dataIcon": "octicon-star",
-                "dataSize": "large",
-                "dataShowCount": true,
-                "ariaLabel": "Star livesession/xyd on GitHub"
-            }
-        }
-    },
-    "navigation": {
+    "webeditor": {
         "banner": {
             "content": "**xyd 0.1.0** - Docs platform for future dev",
             "label": "Coming Soon",
@@ -84,21 +71,118 @@
                 "float": "right",
                 "component": "Button",
                 "props": {
-                    "kind": "primary"
+                    "kind": "primary",
+                    "children": "Feedback"
                 }
             },
             {
+                "title": "GitHub",
                 "href": "https://github.com/livesession/xyd",
                 "float": "right",
                 "component": "Button",
                 "props": {
-                    "kind": "secondary",
                     "icon": "docs:github",
                     "theme": "ghost",
                     "size": "xs"
                 }
             }
         ],
+        "sidebarTop": [
+            {
+                "component": "Search",
+                "float": "center",
+                "mobile": true
+            }
+        ],
+        "footer": {
+            "social": {
+                "github": "https://github.com/livesession/xyd",
+                "slack": "https://xyd-docs.slack.com"
+            },
+            "links": [
+                {
+                    "header": "Resources",
+                    "items": [
+                        {
+                            "label": "Examples",
+                            "href": "https://github.com/xyd-js/examples"
+                        },
+                        {
+                            "label": "API Docs Demo",
+                            "href": "https://apidocs-demo.xyd.dev"
+                        },
+                        {
+                            "label": "Live Preview",
+                            "href": "https://preview.xyd.dev"
+                        },
+                        {
+                            "label": "CodeSandbox",
+                            "href": "https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox"
+                        },
+                        {
+                            "label": "Storybook",
+                            "href": "http://sb.xyd.dev"
+                        }
+                    ]
+                },
+                {
+                    "header": "Company",
+                    "items": [
+                        {
+                            "label": "Careers",
+                            "href": "https://livesession.io/careers"
+                        },
+                        {
+                            "label": "Blog",
+                            "href": "https://xyd.dev/blog"
+                        },
+                        {
+                            "label": "Feature Requests",
+                            "href": "https://github.com/livesession/xyd/discussions/categories/feature-requests"
+                        }
+                    ]
+                },
+                {
+                    "header": "Legal",
+                    "items": [
+                        {
+                            "label": "Privacy Policy",
+                            "href": "https://livesession.io/privacy-policy"
+                        },
+                        {
+                            "label": "Terms of Service",
+                            "href": "https://livesession.io/terms-of-service"
+                        }
+                    ]
+                }
+            ],
+            "footnote": {
+                "component": "a",
+                "props": {
+                    "href": "https://livesession.io",
+                    "target": "_blank",
+                    "children": "Powered by LiveSession"
+                }
+            }
+        }
+    },
+    "integrations": {
+        "search": {
+            "orama": true
+        },
+        "apps": {
+            "githubStar": {
+                "title": "Star",
+                "label": "Show your support! Star us on GitHub ⭐️",
+                "href": "https://github.com/livesession/xyd",
+                "dataIcon": "octicon-star",
+                "dataSize": "large",
+                "dataShowCount": true,
+                "ariaLabel": "Star livesession/xyd on GitHub"
+            }
+        }
+    },
+    "navigation": {
         "segments": [
             {
                 "route": "docs/reference",
@@ -121,6 +205,34 @@
                         "page": "docs/reference/cli"
                     }
                 ]
+            }
+        ],
+        "sidebarDropdown": [
+            {
+                "title": "Guides",
+                "page": "docs",
+                "icon": "book"
+            },
+            {
+                "title": "Components",
+                "page": "docs/components",
+                "icon": "component"
+            },
+            {
+                "title": "Reference",
+                "page": "docs/reference",
+                "icon": "brackets"
+            }
+        ],
+        "tabs": [
+            {
+                "title": "Home",
+                "icon": "book"
+            },
+            {
+                "title": "Reference",
+                "page": "docs/reference",
+                "icon": "brackets"
             }
         ],
         "sidebar": [
@@ -316,77 +428,6 @@
                 ]
             }
         ],
-        "footer": {
-            "social": {
-                "github": "https://github.com/livesession/xyd",
-                "slack": "https://xyd-docs.slack.com"
-            },
-            "links": [
-                {
-                    "header": "Resources",
-                    "items": [
-                        {
-                            "label": "Examples",
-                            "href": "https://github.com/xyd-js/examples"
-                        },
-                        {
-                            "label": "API Docs Demo",
-                            "href": "https://apidocs-demo.xyd.dev"
-                        },
-                        {
-                            "label": "Live Preview",
-                            "href": "https://preview.xyd.dev"
-                        },
-                        {
-                            "label": "CodeSandbox",
-                            "href": "https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox"
-                        },
-                        {
-                            "label": "Storybook",
-                            "href": "http://sb.xyd.dev"
-                        }
-                    ]
-                },
-                {
-                    "header": "Company",
-                    "items": [
-                        {
-                            "label": "Careers",
-                            "href": "https://livesession.io/careers"
-                        },
-                        {
-                            "label": "Blog",
-                            "href": "https://xyd.dev/blog"
-                        },
-                        {
-                            "label": "Feature Requests",
-                            "href": "https://github.com/livesession/xyd/discussions/categories/feature-requests"
-                        }
-                    ]
-                },
-                {
-                    "header": "Legal",
-                    "items": [
-                        {
-                            "label": "Privacy Policy",
-                            "href": "https://livesession.io/privacy-policy"
-                        },
-                        {
-                            "label": "Terms of Service",
-                            "href": "https://livesession.io/terms-of-service"
-                        }
-                    ]
-                }
-            ],
-            "footnote": {
-                "component": "a",
-                "props": {
-                    "href": "https://livesession.io",
-                    "target": "_blank",
-                    "children": "Powered by LiveSession"
-                }
-            }
-        },
         "anchors": {
             "sidebar": {
                 "bottom": [

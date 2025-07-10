@@ -1,0 +1,18 @@
+@layer decorators {
+    xyd-layout-primary {
+        /* layout: Sidebar */
+        [part="sidebar"] {
+            position: sticky;
+            height: calc(100dvh - var(--xyd-nav-height));
+            top: var(--xyd-nav-height);
+            z-index: 1;
+        }
+
+        &[data-subheader="true"][data-hide-subheader="false"] {
+            [part="sidebar"] {
+                height: calc(100dvh - var(--xyd-header-total-height));
+                top: var(--xyd-header-total-height);
+            }
+        }
+    }
+}

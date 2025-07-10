@@ -1,0 +1,121 @@
+@layer defaults {
+    /* Color Scheme Visibility Rules */
+
+    /* When html has data-color-scheme="light", hide dark elements */
+    html[data-color-scheme="light"] [data-color-scheme="dark"]:not(html):not(head):not(body) {
+        display: none;
+    }
+
+    /* When html has data-color-scheme="dark", hide light elements */
+    html[data-color-scheme="dark"] [data-color-scheme="light"]:not(html):not(head):not(body) {
+        display: none;
+    }
+
+    /* When html has data-color-scheme="os", use system preference */
+    @media (prefers-color-scheme: light) {
+        html[data-color-scheme="os"] [data-color-scheme="dark"]:not(html):not(head):not(body) {
+            display: none;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        html[data-color-scheme="os"] [data-color-scheme="light"]:not(html):not(head):not(body) {
+            display: none;
+        }
+    }
+
+    /* Fallback: when no data-color-scheme on html, use system preference */
+    @media (prefers-color-scheme: light) {
+        html:not([data-color-scheme]) [data-color-scheme="dark"]:not(html):not(head):not(body) {
+            display: none;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        html:not([data-color-scheme]) [data-color-scheme="light"]:not(html):not(head):not(body) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        [data-desktop] {
+            display: none;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        [data-mobile] {
+            display: none;
+        }
+    }
+
+    body {
+        font-size: var(--xyd-font-size-small);
+        line-height: var(--xyd-line-height-small);
+        color: var(--text-primary);
+        background: var(--white);
+    }
+}
+
+@layer defaults {
+
+    /* TODO: move to components */
+    /*  github-button to apps? */
+    xyd-page-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+        [part="github-button-container"] {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            padding: 15px;
+        }
+    }
+
+    /* TODO: move to components */
+    xyd-built-with {
+        display: flex;
+        gap: 8px;
+        padding: 15px;
+        justify-content: center;
+
+        [part="text"] {
+            font-size: var(--xyd-font-size-xsmall);
+            color: var(--dark48);
+            letter-spacing: 0.5px;
+        }
+
+        [part="logo"] {
+            a {
+                margin: 0;
+                padding: 0;
+            }
+
+            svg {
+                width: 48px;
+                height: 100%;
+            }
+        }
+    }
+}
+
+@layer defaults {
+    xyd-secondary-content {
+        [part="secondary-content-header"] {
+            padding: 25px 75px;
+            border-bottom: 1px solid var(--dark32);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        [part="secondary-content"] {
+            padding: 25px 75px;
+        }
+    }
+}

@@ -301,5 +301,11 @@ export const LayoutPrimaryHost = css`
             }
         }
     }
+
+    @layer defaultfix {
+        > [part="header"]:has(xyd-banner) {
+            height: auto;
+        }
+    }
 `;
 

@@ -1,6 +1,6 @@
 import React from "react"
 
-import { Hr, Heading } from "@xyd-js/components/writer"
+import { Hr } from "@xyd-js/components/writer"
 import { UISidebar } from "@xyd-js/ui"
 import { FwLogo, FwNav, useComponents } from "@xyd-js/framework/react"
 import { SurfaceTarget } from "@xyd-js/framework"
@@ -28,7 +28,7 @@ export default class ThemePicasso extends BaseTheme {
             }
         }
 
-        this.surfaces.define(SurfaceTarget.SidebarTop, <_Search />);
+        this.surfaces.define(SurfaceTarget.SidebarTop, <_SidebarTop />);
     }
 
     protected Navbar() {
@@ -53,7 +53,7 @@ export default class ThemePicasso extends BaseTheme {
     }
 }
 
-function _Search() {
+function _SidebarTop() {
     const components = useComponents()
 
     const SearchComponent = components?.Search
@@ -66,10 +66,6 @@ function _Search() {
             <div part="logo">
                 <FwLogo />
             </div>
-        </UISidebar.Item>
-
-        <UISidebar.Item button anchor>
-            <SearchComponent />
         </UISidebar.Item>
     </>
 }

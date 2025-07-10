@@ -16,5 +16,5 @@ export {
 
 export {
     useMatchedSubNav
-} from "./useMatchedNav";
+} from "./useMatchedSubNav";
 

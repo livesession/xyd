@@ -23,7 +23,7 @@ export function SidebarTabsDropdown({ options, value }: SidebarTabsDropdownProps
     const selected = options.find(opt => opt.value === value) || options[0];
 
     return <xyd-sidebar-tabs-dropdown className={cn.DropdownHost}>
-        <Popover.Root>
+        <Popover.Root open={undefined}>
             <Popover.Trigger asChild>
                 <button part="dropdown-trigger" type="button"  >
                     <IconWrapper icon={selected?.icon} />

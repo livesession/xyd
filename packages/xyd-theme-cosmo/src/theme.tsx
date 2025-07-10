@@ -1,7 +1,4 @@
-import React from "react"
-
 import { BaseTheme } from "@xyd-js/themes"
-import { useComponents } from "@xyd-js/framework/react"
 
 import { syntaxThemeCosmo } from "./syntaxTheme"
 
@@ -24,21 +21,8 @@ export default class ThemeCosmo extends BaseTheme {
                 syntaxHighlight: syntaxThemeCosmo,
             }
         }
-
-        // this.surfaces.define("nav.right", <_Search />)
     }
 }
 
-
-function _Search() {
-    const components = useComponents()
-
-    const SearchComponent = components?.Search
-    if (!SearchComponent) {
-        return null
-    }
-
-    return <SearchComponent />
-}
 
 

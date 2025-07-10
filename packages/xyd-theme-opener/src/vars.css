@@ -10,6 +10,10 @@
 }
 
 :root {
+    --opener-content-background: linear-gradient(180deg, rgba(var(--opener-gray4-rgb), 0.5) 0%, rgba(var(--opener-gray4-rgb), 0) 48.32%);
+}
+
+:root {
     --color-primary: var(--opener-blue80);
     --color-primary--active: var(--opener-blue100);
 }

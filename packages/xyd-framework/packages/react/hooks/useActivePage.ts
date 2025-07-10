@@ -1,8 +1,8 @@
-import {useMatches} from "react-router";
+import { useMatches } from "react-router";
 
-import {useSettings} from "../contexts";
-import {pageLink} from "../utils";
-import {useMatchedSubNav} from "./useMatchedNav";
+import { useSettings } from "../contexts";
+import { pageLink } from "../utils";
+import { useMatchedSubNav } from "./useMatchedSubNav";
 
 export function useActivePage() {
     const matches = useMatches()
@@ -12,7 +12,7 @@ export function useActivePage() {
     const lastMatch = matches[matches.length - 1]
 
     const navigationItems = [
-        ...(settings?.navigation?.tabs || []),
+        ...(Array.isArray(settings?.navigation?.tabs) ? settings?.navigation?.tabs : settings?.navigation?.tabs?.pages || []),
         ...(settings?.navigation?.sidebarDropdown || []),
         ...(settings?.webeditor?.header || [])
     ]

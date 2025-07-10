@@ -9,6 +9,11 @@ export const NavHost = css`
         background: transparent;
         display: flex;
 
+        [role="tablist"] {
+            display: flex;
+            align-items: center;
+        }
+
         [part="shadow"]::before {
             pointer-events: none;
             position: absolute;
@@ -29,15 +34,13 @@ export const NavHost = css`
             align-items: center;
             justify-content: flex-end;
             gap: 8px;
-            padding: 0 var(--xyd-padding-default);
+            padding: 0 var(--xyd-nav-padding);
         }
 
         [part="nav-center"] {
             flex: 1;
 
             [role="tablist"] {
-                display: flex;
-                align-items: center;
                 justify-content: center;
             }
         }
@@ -99,7 +102,7 @@ export const ItemHost = css`
         position: relative;
         white-space: nowrap;
         color: var(--xyd-nav-item-color);
-        padding: calc(var(--xyd-padding-default) / 2) var(--xyd-padding-default);
+        padding: calc(var(--xyd-nav-padding) / 2) var(--xyd-nav-padding);
         display: flex;
         align-items: center;
         justify-content: center;

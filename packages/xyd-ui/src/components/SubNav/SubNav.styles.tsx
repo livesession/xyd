@@ -11,13 +11,13 @@ export const SubNavHost = css`
         width: 100%;
         height: var(--xyd-subnav-height);
         margin-top: 3px;
-        padding: 0 var(--xyd-padding-default);
+        padding: 0 var(--xyd-padding-large);
 
         [part="prefix"] {
             color: var(--xyd-subnav-prefix-color);
             font-weight: var(--xyd-font-weight-semibold);
-            padding: 0 var(--xyd-padding-default);
             position: relative;
+            padding: 0 var(--xyd-sidebar-item-padding-total);
 
             &:after {
                 background: var(--xyd-subnav-prefix-marker-color);
@@ -25,7 +25,7 @@ export const SubNavHost = css`
                 content: " ";
                 height: 12px;
                 position: absolute;
-                right: 4px;
+                right: 0px;
                 top: 50%;
                 transform: translateY(-50%);
                 width: 2px;
@@ -37,16 +37,20 @@ export const SubNavHost = css`
             flex-direction: row;
             height: 100%;
         }
+        [part="list"]:has(:not([part="prefix"])) {
+            padding: 0 var(--xyd-sidebar-item-padding-total);
+        }
     }
 `;
 
-export const SubNavLi = css`
+export const SubNavItem = css`
     @layer defaults {
         display: flex;
         height: 100%;
 
         align-items: center;
         position: relative;
+        padding-right: var(--xyd-padding-medium);
 
         [data-state="active"] > & {
             font-weight: var(--xyd-font-weight-semibold);
@@ -71,7 +75,7 @@ export const SubNavLi = css`
             color: var(--xyd-subnav-item-color);
             display: flex;
             height: 100%;
-            padding: 0 0.50rem;
+            padding: 0 var(--xyd-padding-small);
             align-items: center;
 
             &:hover {

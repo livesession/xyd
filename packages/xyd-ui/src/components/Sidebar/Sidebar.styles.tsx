@@ -40,7 +40,7 @@ export const SidebarHost = css`
             padding: var(--xyd-sidebar-padding);
             border-top: 1px solid var(--xyd-sidebar-divider-color);
 
-            [part="item"] [part="first-item"] > svg {
+            [part="item"] [part="primary-item"] > svg {
                 width: 16px !important;
                 height: 16px !important;
             }
@@ -69,7 +69,7 @@ export const ItemHost = css`
             font-weight: var(--xyd-font-weight-medium);
         }
 
-        [part="first-item"] {
+        [part="primary-item"] {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -78,11 +78,11 @@ export const ItemHost = css`
             margin-bottom: 4px;
             position: relative;
             
-            &[data-anchor="true"] {
-                padding: var(--xyd-sidebar-anchor-item-padding);
+            &[data-ghost="true"] {
+                padding: var(--xyd-sidebar-ghost-item-padding);
             }
 
-            &:not([data-anchor="true"]):hover {
+            &:not([data-ghost="true"]):hover {
                 background: var(--xyd-sidebar-item-bgcolor--active-hover);
                 color: var( --xyd-sidebar-item-color--active);
                 border-radius: 4px;
@@ -102,7 +102,7 @@ export const ItemHost = css`
                 text-align: left;
             }
         }
-        [part="first-item" ][data-active="true"] {
+        [part="primary-item" ][data-active="true"] {
             background: var(--xyd-sidebar-item-bgcolor--active);
             border-radius: 4px;
             position: relative;
@@ -121,11 +121,11 @@ export const ItemHost = css`
                 border-radius: 10px;
             }
         }
-        [part="first-item"][data-parent-active="true"] {
+        [part="primary-item"][data-parent-active="true"] {
             font-weight: var(--xyd-font-weight-semibold);
             background: transparent;
         } 
-        &[data-theme="secondary"] [part="first-item"][data-active="true"] {
+        &[data-theme="secondary"] [part="primary-item"][data-active="true"] {
             background: unset;
             font-weight: var(--xyd-font-weight-medium);
         }
