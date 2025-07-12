@@ -6,7 +6,7 @@ import { Nav } from "@xyd-js/ui"
 
 import { isExternal, pageLink } from "../utils";
 import { useAppearance } from "../contexts";
-import { FwJsonComponent, FwLink } from "../components";
+import { FwLink } from "../components";
 import { useHeaderItems } from "../hooks";
 import { WebEditorComponent } from "./WebEditorComponent";
 
@@ -14,9 +14,11 @@ export function FwHeaderItems() {
     const headerItems = useHeaderItems()
 
     return Object.entries(headerItems).reduce<Record<"default" | "center" | "right", React.ReactNode[]>>((acc, [key, value]) => {
+        const headerItems = value.map(FwHeaderItem)
+
         return {
             ...acc,
-            [key]: value.map(FwHeaderItem)
+            [key]: headerItems
         }
     }, {
         default: [],

@@ -24,7 +24,10 @@ export const NavHost = css`
         }
 
         [part="nav-left"] {
+            display: flex;
+            align-items: center;
             flex: 1;
+            overflow: auto;
         }
 
         [part="nav"] {
@@ -48,16 +51,16 @@ export const NavHost = css`
         [part="logo"] {
             display: flex;
             align-items: center;
-            margin-right: auto;
+            /* margin-right: auto; */
             height: 28px;
             width: auto;
         }
 
-        @media (min-width: 1024px) {
+        /* @media (min-width: 1024px) {
             [part="logo"] {
                 width: 100%;
             }
-        }
+        } */
 
         [part="nav-list"] {
             display: flex;
@@ -94,8 +97,25 @@ export const NavHost = css`
         [part="nav-right"] [role="tablist"] {
             display: flex;
         }
+
+        [part="nav-float-right"] {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        &[data-appearance-separator="right"] {
+            [part="nav-float-right"]::before {
+                border-inline-end: 1px solid var(--color-header-border, var(--dark32));
+                content: "";
+                display: block;
+                position: absolute;
+                left: 0;
+                height: 100%;
+            }
+        }
     }
-`
+`;
 
 export const ItemHost = css`
     @layer defaults {

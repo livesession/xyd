@@ -1,0 +1,17 @@
+{
+    "header": [
+        {
+            "component": "Search",
+            "float": "center"
+        },
+        {
+            "component": "Button",
+            "props": {
+                "kind": "secondary",
+                "children": "Ask AI",
+                "icon": "sparkles"
+            },
+            "float": "center"
+        }
+    ]
+}

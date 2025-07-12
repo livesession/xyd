@@ -12,9 +12,26 @@ export interface NavProps {
     leftSurface?: React.ReactNode;
     centerSurface?: React.ReactNode;
     rightSurface?: React.ReactNode;
+    floatRightSurface?: React.ReactNode;
+    appearance?: {
+        separator?: "right"
+    }
 }
 
-export function Nav({ children, value, onChange, logo, className, leftSurface, centerSurface, rightSurface }: NavProps) {
+export function Nav(props: NavProps) {
+    const {
+        children,
+        value,
+        onChange,
+        logo,
+        className,
+        leftSurface,
+        centerSurface,
+        rightSurface,
+        floatRightSurface,
+        appearance,
+    } = props
+
     const defaultList = <RadixTabs.List asChild>
         <div part="nav-list">
             {children}
@@ -22,7 +39,10 @@ export function Nav({ children, value, onChange, logo, className, leftSurface, c
     </RadixTabs.List>
 
     return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
-        <xyd-nav className={`${cn.NavHost} ${className || ""}`} >
+        <xyd-nav
+            className={`${cn.NavHost} ${className || ""}`}
+            data-appearance-separator={appearance?.separator || undefined}
+        >
             <div part="shadow" />
 
             <nav part="nav">
@@ -40,6 +60,7 @@ export function Nav({ children, value, onChange, logo, className, leftSurface, c
                 {centerSurface && <div part="nav-center">{centerSurface}</div>}
 
                 {rightSurface && <div part="nav-right">{rightSurface}</div>}
+                {floatRightSurface && <div part="nav-float-right">{floatRightSurface}</div>}
             </nav>
         </xyd-nav>
     </RadixTabs.Root>
@@ -69,10 +90,11 @@ export interface NavItemProps {
 Nav.Item = function NavItem({ children, value, href, as }: NavItemProps) {
     const Link = as || $Link;
 
-    const links = <>
-        <span part="nav-item1">{children}</span>
-        <span part="nav-item2">{children}</span>
-    </>
+    // const links = <>
+    //     <span part="nav-item1">{children}</span>
+    //     <span part="nav-item2">{children}</span>
+    // </>
+    const links = children
 
     return <RadixTabs.Trigger asChild value={value}>
         <xyd-nav-item className={cn.ItemHost}>

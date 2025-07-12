@@ -14,13 +14,26 @@ export function WebEditorComponent(
     componentProps: Partial<React.ComponentProps<typeof UISidebar.Item>>,
     defaultValue?: string
 ) {
+
     return function WebEditorComponentInner(props: WebEditorComponentInner) {
-        return <span
-            data-mobile={props.mobile}
-            data-desktop={props.desktop}
+        let dataTags = {}
+
+        if (props.mobile && !props.desktop) {
+            dataTags["data-mobile"] = true
+        }
+        if (props.desktop && !props.mobile) {
+            dataTags["data-desktop"] = true
+        }
+
+        return <div
+            {...dataTags}
             key={props.title + props.page + props.href + props.component}
         >
-            <Component {...componentProps}>
+            <Component 
+            {...componentProps} 
+            {...dataTags}
+            key={props.title + props.page + props.href + props.component}
+            >
                 {
                     props.component ? <FwJsonComponent
                         component={props.component || ""}
@@ -32,7 +45,7 @@ export function WebEditorComponent(
                 }
                 {props.children}
             </Component>
-        </span>
+        </div>
     }
 }
 

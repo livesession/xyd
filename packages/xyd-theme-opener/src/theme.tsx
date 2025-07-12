@@ -7,14 +7,39 @@ import "./imports.css"
 import "@xyd-js/themes/index.css"
 
 import './index.css';
-import './override.css';
 import './vars.css';
+import './override.css';
 
 export default class ThemeOpener extends BaseTheme {
     constructor() {
         super()
 
-        this.theme.Set("coder.syntaxHighlight", "dark-plus")
-        this.theme.Set("appearance.writer.contentDecorator", "secondary")
+        this.theme.Update({
+            coder: {
+                syntaxHighlight: "dark-plus"
+            },
+            appearance: {
+                "buttons": {
+                    "rounded": true
+                },
+                search: {
+                    fullWidth: true,
+                    sidebar: "mobile",
+                    middle: "desktop"
+                },
+                header: {
+                    externalArrow: true,
+                    separator: "right"
+                },
+                sidebar: {
+                    externalArrow: true,
+                    scrollShadow: true,
+                    scrollbar: "secondary"
+                },
+                writer: {
+                    contentDecorator: "secondary"
+                },
+            }
+        })
     }
 }

@@ -9,6 +9,7 @@ import virtualSettings from "virtual:xyd-settings";
 
 import colorSchemeScript from "./scripts/colorSchemeScript.ts?raw";
 import bannerHeightScript from "./scripts/bannerHeight.ts?raw";
+// import sidebarScrollCss from "@xyd-js/themes/decorators/sidebar-scroll.css?raw";
 
 const { settings } = virtualSettings as { settings: Settings }
 
@@ -164,12 +165,14 @@ function UserStyleTokens() {
 function userAppearance() {
     const theme = {
         searchWidth: settings?.theme?.appearance?.search?.fullWidth ? "100%" : undefined,
-        buttonsRounded: cssVarSize("--xyd-border-radius", settings?.theme?.appearance?.buttons?.rounded, "lg")
+        buttonsRounded: cssVarSize("--xyd-border-radius", settings?.theme?.appearance?.buttons?.rounded, "lg"),
+        scrollbarColor: settings?.theme?.appearance?.sidebar?.scrollbarColor || undefined
     }
 
     const userAppearanceCss = tokensToCss({
         "--xyd-search-width": theme.searchWidth || undefined,
-        "--xyd-button-border-radius": theme.buttonsRounded || undefined
+        "--xyd-button-border-radius": theme.buttonsRounded || undefined,
+        "--decorator-sidebar-scroll-bgcolor": theme.scrollbarColor || undefined
     })
 
     if (!userAppearanceCss) {
@@ -201,11 +204,13 @@ function generateUserCss(appearance?: Appearance): string {
 
     const lightTokens = {
         ...(colors?.primary ? generateColorTokens(colors.primary) : {}),
-        ...(cssTokens ? cssTokens : {})
+        ...(cssTokens ? cssTokens : {}),
+        // ...(sidebar?.scrollbarColor ? { "--xyd-toc-scroll-bgcolor": sidebar.scrollbarColor } : {})
     };
     const darkTokens = {
         ...(colors?.light ? generateColorTokens(colors.light) : {}),
-        ...(cssTokens ? cssTokens : {})
+        ...(cssTokens ? cssTokens : {}),
+        // ...(sidebar?.scrollbarColor ? { "--xyd-toc-scroll-bgcolor": sidebar.scrollbarColor } : {})
     };
 
     const lightCss = tokensToCss(lightTokens);
@@ -223,6 +228,7 @@ function generateColorTokens(primary: string): Record<string, string> {
         "--xyd-toc-item-color--active": 'var(--color-primary)',
         "--theme-color-primary": 'var(--color-primary)',
         "--theme-color-primary-active": 'var(--color-primary)',
+        "--color-primary--active": 'color-mix(in srgb, var(--color-primary) 85%, transparent)',
     };
 }
 

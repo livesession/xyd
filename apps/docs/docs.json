@@ -16,19 +16,6 @@
             ]
         },
         "appearance": {
-            "header": {
-                "externalArrow": true
-            },
-            "sidebar": {
-                "externalArrow": true,
-                "scrollShadow": true
-            },
-            "buttons": {
-                "rounded": true
-            },
-            "search": {
-                "fullWidth": true
-            },
             "banner": {
                 "fixed": true
             }
@@ -42,19 +29,6 @@
             "href": "https://github.com/orgs/livesession/projects/4/views/1"
         },
         "header": [
-            {
-                "component": "Search",
-                "float": "center"
-            },
-            {
-                "component": "Button",
-                "props": {
-                    "kind": "secondary",
-                    "children": "Ask AI",
-                    "icon": "sparkles"
-                },
-                "float": "center"
-            },
             {
                 "title": "Public Roadmap",
                 "href": "https://github.com/orgs/livesession/projects/4",
@@ -88,11 +62,7 @@
             }
         ],
         "sidebarTop": [
-            {
-                "component": "Search",
-                "float": "center",
-                "mobile": true
-            }
+         
         ],
         "footer": {
             "social": {
@@ -270,11 +240,12 @@
                         "group": "Customization",
                         "pages": [
                             "docs/guides/customization-quickstart",
-                            "docs/guides/theme-api",
-                            "docs/guides/custom-theme",
+                            "docs/guides/appearance",
                             "docs/guides/icons",
                             "docs/guides/custom-scripts",
-                            "docs/guides/plugins"
+                            "docs/guides/plugins",
+                            "docs/guides/theme-api",
+                            "docs/guides/custom-theme"
                         ]
                     },
                     {

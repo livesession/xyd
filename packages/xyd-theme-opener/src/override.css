@@ -1,10 +1,11 @@
+@import "@xyd-js/themes/dist/decorators/page-sketch.css";
 @import "@xyd-js/themes/dist/decorators/page-leftpad.css";
-@import "@xyd-js/themes/dist/decorators/page-scretch.css";
-@import "@xyd-js/themes/dist/decorators/pad-sidebar.css";
+@import "@xyd-js/themes/dist/decorators/sidebar-pad.css";
 
 @layer themes {
     xyd-layout-primary {
         /* layout: Page */
+
         &:not([data-layout="wide"]) {
             [part="page-container"] {
                 max-width: 100%;
@@ -20,8 +21,6 @@
                 background-attachment: fixed;
 
                 flex: 2;
-
-                border-right: 1px solid var(--dark32);
             }
 
             [part="page-article-nav"] {

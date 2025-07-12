@@ -1,90 +1,168 @@
 import * as React from "react"
 import { useMetadata } from "@xyd-js/framework/react"
 import { Surfaces } from "@xyd-js/framework"
-import type { Theme as ThemeSettings } from "@xyd-js/core"
+import type { Appearance, JSONComponent, Theme as ThemeSettings, WebEditor, WebEditorNavigationItem } from "@xyd-js/core"
 import { ReactContent } from "@xyd-js/components/content"
-
-// ─── Utility Types ─────────────────────────────────────────────
-
-type Join<K, P> = K extends string
-  ? P extends string
-  ? `${K}.${P}`
-  : never
-  : never
-
-type Prev = [never, 0, 1, 2, 3, 4, 5]
-
-type Paths<T, D extends number = 5> = [D] extends [never]
-  ? never
-  : T extends object
-  ? {
-    [K in keyof T]-?: K extends string
-    ? T[K] extends object
-    ? K | Join<K, Paths<T[K], Prev[D]>>
-    : K
-    : never
-  }[keyof T]
-  : ""
-
-type PathValue<T, P extends string> =
-  P extends `${infer K}.${infer Rest}`
-  ? K extends keyof T
-  ? PathValue<T[K], Rest>
-  : never
-  : P extends keyof T
-  ? T[P]
-  : never
-
-type TypedTheme<T> = {
-  Set: <P extends Paths<T>>(path: P, value: PathValue<T, P>) => void
-} & T
 
 // ─── Theme Class ──────────────────────────────────────────────
 
 export abstract class Theme {
-  constructor() {
-    this.settings = globalThis.__xydThemeSettings
+    constructor() {
+        this.settings = globalThis.__xydThemeSettings
 
-    const typedTheme: TypedTheme<ThemeSettings> = {
-      ...this.settings,
-      Set: this.Set.bind(this),
+        this.useHideToc = this.useHideToc.bind(this)
+        this.appearanceWebEditor = this.appearanceWebEditor.bind(this)
+        this.headerPrepend = this.headerPrepend.bind(this)
+        this.mergeUserAppearance = this.mergeUserAppearance.bind(this)
+
+        if (globalThis.__xydThemeSettings.Update) {
+            console.error("Theme API `Update` is already defined")
+        }
+        globalThis.__xydThemeSettings.Update = this.update.bind(this) // TODO: in the future better solution cuz we modify original object
+
+        this.theme = globalThis.__xydThemeSettings
+        this.surfaces = globalThis.__xydSurfaces
+        this.reactContent = globalThis.__xydReactContent
+        this.webeditor = globalThis.__xydWebeditor as WebEditor
+        this.userAppearance = JSON.parse(JSON.stringify(this.theme.appearance || {}))
+
+        this.appearanceWebEditor()
     }
 
-    this.theme = typedTheme
-    this.surfaces = globalThis.__xydSurfaces
-    this.reactContent = globalThis.__xydReactContent
-  }
+    private webeditor: WebEditor
+    protected settings: ThemeSettings
+    protected theme: CustomTheme<ThemeSettings>
+    protected readonly reactContent: ReactContent
+    protected readonly surfaces: Surfaces
+    protected userAppearance: Appearance
 
-  protected settings: ThemeSettings
-  public theme: TypedTheme<ThemeSettings>
-  protected readonly reactContent: ReactContent
-  protected readonly surfaces: Surfaces
+    public abstract Page({ children }: { children: React.ReactNode }): React.ReactElement
 
-  public abstract Page({ children }: { children: React.ReactNode }): React.ReactElement
-  public abstract Layout({ children }: { children: React.ReactNode }): React.ReactElement
-  public abstract reactContentComponents(): { [component: string]: (props: any) => React.JSX.Element | null }
+    public abstract Layout({ children }: { children: React.ReactNode }): React.ReactElement
 
-  private Set<P extends Paths<ThemeSettings>>(path: P, value: PathValue<ThemeSettings, P>): void {
-    const keys = path.split(".") as string[]
-    let current: any = this.settings
+    public abstract reactContentComponents(): { [component: string]: (props: any) => React.JSX.Element | null }
 
-    for (let i = 0; i < keys.length - 1; i++) {
-      const key = keys[i]
-      if (!current[key]) current[key] = {}
-      current = current[key]
+    protected useHideToc() {
+        const meta = useMetadata()
+        return meta?.layout === "wide" || meta?.layout === "center"
     }
 
-    const finalKey = keys[keys.length - 1]
-    current[finalKey] = value
-  }
+    private headerPrepend(searchItem: any, float: string) {
+        const header = this.webeditor.header || []
+        const insertIndex = header.findIndex(item => item.float === float)
+        return insertIndex === -1
+            ? [...header, searchItem]
+            : [...header.slice(0, insertIndex), searchItem, ...header.slice(insertIndex)]
+    }
 
-  protected useHideToc() {
-    const meta = useMetadata()
-    return meta?.layout === "wide" || meta?.layout === "center"
-  }
+    private update(patch: DeepPartial<ThemeSettings>, updateWebeditor: boolean = true) {
+        deepMerge(this.theme, patch)
+        if (updateWebeditor) {
+            this.appearanceWebEditor()
+        }
+    }
 
-  protected useLayoutSize() {
-    const meta = useMetadata()
-    return meta?.layout === "wide" ? "large" : undefined
-  }
+    private appearanceWebEditor() {
+        if (!this.theme.appearance) {
+            return
+        }
+
+        if (!this.webeditor) {
+            globalThis.__xydThemeSettings = {}
+            this.webeditor = globalThis.__xydThemeSettings
+        }
+
+        const searchAppearance = this.theme.appearance?.search?.sidebar || this.theme.appearance?.search?.middle
+        if (searchAppearance) {
+            const hasSearch = this.webeditor.header?.find(item => item.component === "Search")
+
+            if (hasSearch) {
+                console.warn("Search already exists in webeditor.header")
+                return
+            }
+
+            if (this.theme.appearance?.search?.sidebar) {
+                const search: WebEditorNavigationItem = {
+                    component: "Search",
+                    mobile: this.theme.appearance?.search?.sidebar === "mobile" || undefined,
+                    desktop: this.theme.appearance?.search?.sidebar === "desktop" || undefined
+                }
+                if (!this.webeditor.sidebarTop) {
+                    this.webeditor.sidebarTop = []
+                }
+
+                this.webeditor.sidebarTop?.unshift({
+                    ...search,
+                })
+            }
+
+            if (this.theme.appearance?.search?.middle) {
+                const search: WebEditorNavigationItem = {
+                    component: "Search",
+                    mobile: this.theme.appearance?.search?.middle === "mobile" || undefined,
+                    desktop: this.theme.appearance?.search?.middle === "desktop" || undefined
+                }
+                const searchItem = {
+                    ...search,
+                    float: "center" as const
+                }
+
+                this.webeditor.header = this.headerPrepend(searchItem, "center")
+            }
+        }
+
+        if (
+            this.theme.appearance?.sidebar?.scrollbarColor &&
+            !this.theme.appearance?.sidebar?.scrollbar
+        ) {
+            this.theme.appearance.sidebar.scrollbar = "secondary"
+        }
+    }
+
+    private mergeUserAppearance() {
+        this.update({
+            appearance: this.userAppearance
+        }, false)
+    }
+}
+
+// ─── DeepPartial Type ─────────────────────────────────────────
+
+type DeepPartial<T> = {
+    [P in keyof T]?: T[P] extends object
+    ? T[P] extends Function
+    ? T[P]
+    : T[P] extends Array<infer U>
+    ? Array<DeepPartial<U>>
+    : DeepPartial<T[P]>
+    : T[P]
+}
+
+// ─── CustomTheme Type ─────────────────────────────────────────
+
+type CustomTheme<T> = T & {
+    Update: (value: DeepPartial<T>) => void
+}
+
+// ─── Deep Merge Helper ────────────────────────────────────────
+
+function deepMerge<T>(target: T, source: DeepPartial<T>): T {
+    for (const key in source) {
+        const sourceVal = source[key]
+        const targetVal = target[key]
+
+        if (
+            sourceVal &&
+            typeof sourceVal === "object" &&
+            !Array.isArray(sourceVal) &&
+            typeof targetVal === "object" &&
+            targetVal !== null
+        ) {
+            target[key] = deepMerge(targetVal, sourceVal)
+        } else if (sourceVal !== undefined) {
+            target[key] = sourceVal as any
+        }
+    }
+
+    return target
 }

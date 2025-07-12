@@ -151,18 +151,19 @@ export const LayoutPrimaryHost = css`
         }
 
         [part="mobile-sidebar-close-button"] {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 32px;
-            height: 32px;
-            border: none;
+            align-items: center;
             background: none;
-            padding: 0;
+            border: none;
             cursor: pointer;
             display: flex;
-            align-items: center;
+            height: 32px;
             justify-content: center;
+            padding: 0;
+            position: absolute;
+            right: -3px;
+            top: 0px;
+            width: 32px;
+            z-index: 10;
         }
 
         [part="mobile-sidebar-close-icon"] {

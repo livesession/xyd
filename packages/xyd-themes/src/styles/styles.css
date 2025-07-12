@@ -10,7 +10,7 @@
     html[data-color-scheme="dark"] [data-color-scheme="light"]:not(html):not(head):not(body) {
         display: none;
     }
-
+   
     /* When html has data-color-scheme="os", use system preference */
     @media (prefers-color-scheme: light) {
         html[data-color-scheme="os"] [data-color-scheme="dark"]:not(html):not(head):not(body) {
@@ -38,13 +38,13 @@
     }
 
     @media (max-width: 1024px) {
-        [data-desktop] {
+        [data-desktop]:not([data-desktop="false"]) {
             display: none;
         }
     }
 
     @media (min-width: 1024px) {
-        [data-mobile] {
+        [data-mobile]:not([data-mobile="false"]) {
             display: none;
         }
     }
@@ -116,6 +116,14 @@
 
         [part="secondary-content"] {
             padding: 25px 75px;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        xyd-secondary-content {
+            [part="secondary-content-header"] {
+                display: block;
+            }
         }
     }
 }

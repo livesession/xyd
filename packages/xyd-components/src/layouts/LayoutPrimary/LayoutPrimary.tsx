@@ -106,6 +106,7 @@ LayoutPrimary.MobileAside = function LayoutPrimaryAside(props: LayoutPrimaryMobi
             <div part="mobile-sidebar-aside">
                 {props.aside}
             </div>
+            <div>
             <button
                 part="mobile-sidebar-close-button"
                 aria-label="Close navigation menu"
@@ -113,6 +114,7 @@ LayoutPrimary.MobileAside = function LayoutPrimaryAside(props: LayoutPrimaryMobi
             >
                 <div part="mobile-sidebar-close-icon" />
             </button>
+            </div>
         </aside>
     </>
 }

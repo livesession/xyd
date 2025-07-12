@@ -11,16 +11,22 @@ import { useActivePage, useDefaultHeaderItems } from "../hooks";
 import { Surface } from "./Surfaces";
 import { FwLogo } from "./FwLogo";
 import { FwHeaderItem, FwHeaderItems } from "./FwHeaderItems";
+import { useAppearance } from "../contexts";
 
 // TODO: renamte to FwHeader ?
 export function FwNav() {
     const activeHeaderPage = useActivePage()
+    const appearance = useAppearance()
+    
     const Header = FwHeaderItems()
 
     // TODO: in the future better floating system - just pure css?
     return <Nav
+        appearance={{
+            separator: appearance?.header?.separator || undefined
+        }}
         value={activeHeaderPage}
-        logo={<FwLogo />}
+        // logo={<FwLogo />}
         centerSurface={
             Header?.center?.length ? <>
                 <Nav.Tab
@@ -44,9 +50,11 @@ export function FwNav() {
             }
 
             <Surface target={SurfaceTarget.NavRight} />
-
-            <ColorSchemeButton />
-            <LayoutPrimary.Hamburger />
+        </>
+        }
+        floatRightSurface={<>
+             <ColorSchemeButton />
+             <LayoutPrimary.Hamburger />
         </>}
     >
         <FwNav.DefaultItems />
@@ -56,6 +64,12 @@ export function FwNav() {
 FwNav.DefaultItems = function DefaultItems() {
     const defaultItems = useDefaultHeaderItems()
 
-    return defaultItems.map(FwHeaderItem)
+    const headerItems = defaultItems.map(FwHeaderItem)
+
+    headerItems.unshift(<Nav.Item>
+        <FwLogo />
+    </Nav.Item>)
+
+    return <>{headerItems}</>
 }
 

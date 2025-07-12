@@ -40,6 +40,11 @@ export const SubNavHost = css`
         [part="list"]:has(:not([part="prefix"])) {
             padding: 0 var(--xyd-sidebar-item-padding-total);
         }
+        @media (max-width: 1024px) {
+            [part="list"]:has(:not([part="prefix"])) {
+                padding: 0 var(--xyd-nav-padding);
+            }
+        }
     }
 `;
 

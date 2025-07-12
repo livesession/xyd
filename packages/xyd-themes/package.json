@@ -9,6 +9,7 @@
     "./reset.css": "./dist/reset.css",
     "./index.css": "./dist/index.css",
     "./decorators": "./dist/decorators",
+    "./decorators/sidebar-scroll.css": "./dist/decorators/sidebar-scroll.css",
     ".": {
       "import": "./dist/index.js"
     }

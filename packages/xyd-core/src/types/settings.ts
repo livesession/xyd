@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
+import type {Theme as SyntaxHighlight} from "@code-hike/lighter";
 
 /**
  * Main settings interface for the application
@@ -121,6 +121,11 @@ export interface Writer {
      * The maximum number of table of conten§ts levels.
      */
     maxTocDepth?: number
+
+    /**
+     * Copy page button
+     */
+    copyPage?: boolean
 }
 
 /**
@@ -145,6 +150,11 @@ export interface Appearance {
      * CSS tokens for the theme.
      */
     cssTokens?: { [token: string]: string }
+
+    /**
+     * Logo appearance for the theme.
+     */
+    logo?: AppearanceLogo
 
     /**
      * Search appearance for the theme.
@@ -177,12 +187,22 @@ export interface Appearance {
     writer?: AppearanceWriter
 }
 
-export interface AppearanceWriter {
+/**
+ * AppearanceLogo configuration for the theme.
+ */
+export interface AppearanceLogo {
     /**
-     * Copy page button
+     * If `true` then the logo will be displayed on the sidebar.
      */
-    copyPage?: boolean
+    sidebar: boolean | "mobile" | "desktop"
 
+    /**
+     * If `true` then the logo will be displayed on the header.
+     */
+    header: boolean | "mobile" | "desktop"
+}
+
+export interface AppearanceWriter {
     /**
      * Content decorator for the theme.
      */
@@ -194,6 +214,16 @@ export interface AppearanceSearch {
      * If `true` then the search bar will be displayed as a full width.
      */
     fullWidth?: boolean
+
+    /**
+     * If `true` then the search bar will be displayed on the sidebar.
+     */
+    sidebar?: boolean | "mobile" | "desktop"
+
+    /**
+     * If `true` then the search bar will be displayed in the middle of the header.
+     */
+    middle?: boolean | "mobile" | "desktop"
 }
 
 export interface AppearanceHeader {
@@ -201,6 +231,11 @@ export interface AppearanceHeader {
      * If `true` then the header external links will display an external arrow.
      */
     externalArrow?: boolean
+
+    /**
+     * If `true` then the header will display a separators.
+     */
+    separator?: "right"
 }
 
 export interface AppearanceSidebar {
@@ -213,6 +248,16 @@ export interface AppearanceSidebar {
      * If `true` then the sidebar will display a scroll shadow.
      */
     scrollShadow?: boolean
+
+    /**
+     * The color of the sidebar scrollbar.
+     */
+    scrollbar?: "secondary"
+
+    /**
+     * The color of the sidebar scrollbar.
+     */
+    scrollbarColor?: string
 }
 
 export interface AppearanceButtons {
@@ -421,7 +466,7 @@ export interface NavigationItem {
     /**
      * The navigation item title
      */
-    title: string
+    title?: string
 
     /**
      * The navigation item description
@@ -458,6 +503,7 @@ export interface Anchors {
         bottom?: NavigationItem[]
     }
 }
+
 // ------ END settings for navigation END ------
 
 
@@ -589,7 +635,6 @@ export interface WebEditorSubHeader {
 }
 
 // ------ END settings for webeditor END ------
-
 
 
 // ------ START settings for API START ------
@@ -725,6 +770,7 @@ export interface IntegrationAnalytics {
     /** Livesession analytics configuration */
     livesession?: IntegrationAnalyticsLiveSession
 }
+
 // #endregion IntegrationAnalytics
 
 /**

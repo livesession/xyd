@@ -74,13 +74,27 @@ const reactContent = new ReactContent(settings, {
     useNavigation
 })
 globalThis.__xydThemeSettings = settings?.theme
+globalThis.__xydWebeditor = settings?.webeditor
 globalThis.__xydReactContent = reactContent
 globalThis.__xydSurfaces = surfaces
 
 const theme = new Theme()
+//@ts-ignore TODO: in the future better api like PageLoad interface or something like that
+if (theme.mergeUserAppearance) {
+    // its needed after user declaration
+    //@ts-ignore
+    theme.mergeUserAppearance()
+}
+
+if (
+    settings?.theme?.appearance?.sidebar?.scrollbar === "secondary"
+) {
+    import("@xyd-js/themes/decorators/sidebar-scroll.css").catch(() => {
+        // Ignore CSS import errors during development
+    });
+}
 
 const { Layout: BaseThemeLayout } = theme
-
 
 interface LoaderData {
     sidebarGroups: FwSidebarItemProps[]

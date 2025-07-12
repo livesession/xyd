@@ -1,0 +1,51 @@
+@layer decorators {
+    :root {
+        --decorator-sidebar-scroll-bgcolor: var(--xyd-toc-scroll-bgcolor);
+    }
+
+    xyd-layout-primary {
+        xyd-sidebar {
+            scrollbar-color: transparent transparent;
+            scrollbar-width: thin;
+        }
+
+        xyd-sidebar::-webkit-scrollbar-corner,
+        xyd-sidebar::-webkit-scrollbar-thumb,
+        xyd-sidebar::-webkit-scrollbar-track {
+            background: none;
+        }
+
+        xyd-sidebar::-webkit-scrollbar-thumb {
+            background:  var(--decorator-sidebar-scroll-bgcolor);
+            background-clip: content-box;
+            border: 1px solid transparent;
+            border-radius: 10px;
+        }
+
+        /* Hover effect for scrollbar */
+        xyd-sidebar:hover {
+            scrollbar-color: var(--decorator-sidebar-scroll-bgcolor) transparent;
+        }
+
+        xyd-sidebar:hover::-webkit-scrollbar-thumb {
+            background: var(--decorator-sidebar-scroll-bgcolor);
+            background-clip: content-box;
+            border: 1px solid transparent;
+            border-radius: 10px;
+        }
+
+        /* Mobile responsive scrollbar */
+        @media screen and (max-width: 640px) {
+            xyd-sidebar {
+                scrollbar-color: var(--decorator-sidebar-scroll-bgcolor) transparent;
+            }
+
+            xyd-sidebar::-webkit-scrollbar-thumb {
+                background: var(--decorator-sidebar-scroll-bgcolor);
+                background-clip: content-box;
+                border: 1px solid transparent;
+                border-radius: 10px;
+            }
+        }
+    }
+}

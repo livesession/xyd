@@ -25,7 +25,6 @@
     --green32: #d4f5e7;
     --green60: #14c397;
     --green80: #28a745;
-    /* --green100: #108944; */
     --green100: #00936f;
     --red80: #dc3545;
     --red100: #b91c1c;
@@ -121,6 +120,8 @@
 
         --color-primary: var(--theme-color-primary, var(--purple80));
         --color-primary--active: var(--theme-color-primary-active, var(--purple100));
+
+        --color-header-border: unset;
     }
     
     :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) body {

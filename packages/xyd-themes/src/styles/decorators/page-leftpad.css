@@ -28,7 +28,9 @@
         xyd-nav {
             [part="nav"]>*:first-child {
                 position: relative;
-                left: calc(var(--theme-sidebar-left) + var(--xyd-sidebar-item-padding-total));
+                left: var(--theme-sidebar-left);
+                /* below if first child of nav-left is not nav-item? */
+                /* left: calc(var(--theme-sidebar-left) + var(--xyd-sidebar-item-padding-total)); */
             }
         }
 
