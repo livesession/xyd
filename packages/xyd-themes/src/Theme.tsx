@@ -15,26 +15,37 @@ export abstract class Theme {
         this.headerPrepend = this.headerPrepend.bind(this)
         this.mergeUserAppearance = this.mergeUserAppearance.bind(this)
 
-        if (globalThis.__xydThemeSettings.Update) {
-            console.error("Theme API `Update` is already defined")
+        {
+            if (globalThis.__xydThemeSettings.Update) {
+                console.error("Theme API `Update` is already defined")
+            }
+            globalThis.__xydThemeSettings.Update = this.update.bind(this) // TODO: in the future better solution cuz we modify original object
+
         }
-        globalThis.__xydThemeSettings.Update = this.update.bind(this) // TODO: in the future better solution cuz we modify original object
+        {
+            if (globalThis.__xydThemeSettings.UpdatePreset) {
+                console.error("Theme API `UpdatePreset` is already defined")
+            }
+            globalThis.__xydThemeSettings.UpdatePreset = this.updateThemePreset.bind(this)
+        }
 
         this.theme = globalThis.__xydThemeSettings
         this.surfaces = globalThis.__xydSurfaces
         this.reactContent = globalThis.__xydReactContent
         this.webeditor = globalThis.__xydWebeditor as WebEditor
         this.userAppearance = JSON.parse(JSON.stringify(this.theme.appearance || {}))
+        this.originalWebeditor = Object.freeze(JSON.parse(JSON.stringify(this.webeditor)))
 
         this.appearanceWebEditor()
     }
 
     private webeditor: WebEditor
+    private originalWebeditor: WebEditor
+    private userAppearance: Appearance
     protected settings: ThemeSettings
     protected theme: CustomTheme<ThemeSettings>
     protected readonly reactContent: ReactContent
     protected readonly surfaces: Surfaces
-    protected userAppearance: Appearance
 
     public abstract Page({ children }: { children: React.ReactNode }): React.ReactElement
 
@@ -62,15 +73,23 @@ export abstract class Theme {
         }
     }
 
+    private updateThemePreset(patch: string[]) {
+        this.update({
+            appearance: {
+                presets: [
+                    ...(this.settings.appearance?.presets || []),
+                    ...(patch || [])
+                ]
+            }
+        })
+    }
+
     private appearanceWebEditor() {
         if (!this.theme.appearance) {
             return
         }
 
-        if (!this.webeditor) {
-            globalThis.__xydThemeSettings = {}
-            this.webeditor = globalThis.__xydThemeSettings
-        }
+        deepMergeWithCopy(this.webeditor, this.originalWebeditor)
 
         const searchAppearance = this.theme.appearance?.search?.sidebar || this.theme.appearance?.search?.middle
         if (searchAppearance) {
@@ -142,6 +161,7 @@ type DeepPartial<T> = {
 
 type CustomTheme<T> = T & {
     Update: (value: DeepPartial<T>) => void
+    UpdatePreset: (value: string[]) => void
 }
 
 // ─── Deep Merge Helper ────────────────────────────────────────
@@ -161,6 +181,25 @@ function deepMerge<T>(target: T, source: DeepPartial<T>): T {
             target[key] = deepMerge(targetVal, sourceVal)
         } else if (sourceVal !== undefined) {
             target[key] = sourceVal as any
+        }
+    }
+
+    return target
+}
+
+// ─── Deep Merge With Copy Helper ─────────────────────────────
+
+function deepMergeWithCopy<T>(
+    target: T,
+    source: DeepPartial<T>
+): T {
+    // First perform the deep merge
+    deepMerge(target, source)
+
+    // Then do JSON.parse(JSON.stringify()) on all target properties
+    for (const key in target) {
+        if (target[key] !== undefined) {
+            (target as any)[key] = JSON.parse(JSON.stringify(target[key]))
         }
     }
 

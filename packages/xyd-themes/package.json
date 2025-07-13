@@ -30,6 +30,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "postcss": "^8.4.47",
     "postcss-import": "^16.1.0",
     "tsup": "^8.3.0",

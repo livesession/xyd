@@ -55,7 +55,11 @@ export const SubNavItem = css`
 
         align-items: center;
         position: relative;
-        padding-right: var(--xyd-padding-medium);
+        padding: calc(var(--xyd-nav-padding) / 2) var(--xyd-nav-padding);
+
+        xyd-subnav &:first-of-type {
+            padding-left: 0;
+        }
 
         [data-state="active"] > & {
             font-weight: var(--xyd-font-weight-semibold);
@@ -80,7 +84,6 @@ export const SubNavItem = css`
             color: var(--xyd-subnav-item-color);
             display: flex;
             height: 100%;
-            padding: 0 var(--xyd-padding-small);
             align-items: center;
 
             &:hover {

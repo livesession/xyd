@@ -28,7 +28,6 @@ export async function mapSettingsToProps(
     }
 
     const slugFrontmatter = frontmatters[slug] || null
-    const breadcrumbs: IBreadcrumb[] = []
     let navlinks: INavLinks | undefined = undefined
 
     const hiddenPages = Object.keys(frontmatters).reduce((acc, page) => {
@@ -38,6 +37,9 @@ export async function mapSettingsToProps(
 
         return acc
     }, {})
+
+    // Build breadcrumbs by finding the path to the current page
+    const breadcrumbs = buildBreadcrumbs(filteredNav, slug, frontmatters, hiddenPages)
 
     function mapItems(
         page: PageURL,
@@ -53,13 +55,6 @@ export async function mapSettingsToProps(
             const items = page.pages
                 ?.map((p) => mapItems(p, page, nav))
                 ?.filter(Boolean)
-
-            if (items?.find(item => normalizeHrefCheck(item.href, slug))) {
-                breadcrumbs.unshift({
-                    title: page.group || "",
-                    href: "", // TODO:
-                })
-            }
 
             return {
                 title: page.group,
@@ -105,18 +100,6 @@ export async function mapSettingsToProps(
             if (nlinks) {
                 navlinks = nlinks
             }
-
-            if (currentNav.group) {
-                breadcrumbs.push({
-                    title: currentNav.group,
-                    href: "", // TODO:
-                })
-            }
-            breadcrumbs.push({
-                // @ts-ignore
-                title,
-                href: pageName,
-            })
         }
 
         return {
@@ -407,4 +390,149 @@ function findResolvedPagesBFS(sidebar: Sidebar): string[] {
     }
 
     return resolvedPages
+}
+
+// Helper function to safely get group title
+function getGroupTitle(group: any): string {
+    return (typeof group === 'string' && group.length > 0) ? group : ''
+}
+
+// Build breadcrumbs by finding the path to the current page
+function buildBreadcrumbs(
+    navigation: Sidebar[],
+    currentSlug: string,
+    frontmatters: MetadataMap,
+    hiddenPages: { [key: string]: boolean }
+): IBreadcrumb[] {
+    const breadcrumbs: IBreadcrumb[] = []
+    
+    // Find the path to the current page
+    const path = findPathToPage(navigation, currentSlug, frontmatters, hiddenPages)
+    if (!path?.length) {
+        return []
+    }
+    
+    for (const item of path) {
+        if (item.type === 'group') {
+            breadcrumbs.push({
+                title: item.title,
+                href: item.href
+            })
+        } else if (item.type === 'page' && item.page) {
+            const pageTitle = frontmatters[item.page]?.title || item.page
+            breadcrumbs.push({
+                title: pageTitle,
+                href: safePageLink(item.page)
+            })
+        }
+    }
+
+    return breadcrumbs
+}
+
+// Find the path from root to the current page
+function findPathToPage(
+    navigation: Sidebar[],
+    targetSlug: string,
+    frontmatters: MetadataMap,
+    hiddenPages: { [key: string]: boolean }
+): Array<{ type: 'group' | 'page', title: string, href: string, page?: string }> {
+    const path: Array<{ type: 'group' | 'page', title: string, href: string, page?: string }> = []
+    
+    function searchInNavigation(nav: Sidebar[], currentPath: Array<{ type: 'group' | 'page', title: string, href: string, page?: string }>): boolean {
+        for (const item of nav) {
+            if ("route" in item) {
+                // Handle route-based navigation
+                if (item.pages) {
+                    const newPath = [...currentPath]
+                    if (item.group && typeof item.group === 'string' && item.group.length > 0) {
+                        newPath.push({
+                            type: 'group',
+                            title: getGroupTitle(item.group),
+                            href: (item.route as string) || ""
+                        })
+                    }
+                    
+                    if (searchInPages(item.pages, newPath)) {
+                        path.push(...newPath)
+                        return true
+                    }
+                }
+            } else {
+                // Handle regular sidebar navigation
+                const newPath = [...currentPath]
+                if (item.group && typeof item.group === 'string') {
+                    newPath.push({
+                        type: 'group',
+                        title: item.group,
+                        href: ""
+                    })
+                }
+                
+                if (item.pages && searchInPages(item.pages, newPath)) {
+                    path.push(...newPath)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+    
+    function searchInPages(pages: PageURL[], currentPath: Array<{ type: 'group' | 'page', title: string, href: string, page?: string }>): boolean {
+        for (const page of pages) {
+            if (typeof page === "string") {
+                if (page === targetSlug && !hiddenPages[page]) {
+                    currentPath.push({
+                        type: 'page',
+                        title: frontmatters[page]?.title || page,
+                        href: safePageLink(page),
+                        page: page
+                    })
+                    return true
+                }
+            } else if ("virtual" in page) {
+                if (page.page === targetSlug && !hiddenPages[page.page]) {
+                    currentPath.push({
+                        type: 'page',
+                        title: frontmatters[page.page]?.title || page.page,
+                        href: safePageLink(page.page),
+                        page: page.page
+                    })
+                    return true
+                }
+            } else if ("pages" in page) {
+                // Nested sidebar - only add to path if we find the target in this branch
+                const newPath = [...currentPath]
+                if (page.group && typeof page.group === 'string') {
+                    newPath.push({
+                        type: 'group',
+                        title: page.group,
+                        href: ""
+                    })
+                }
+                
+                if (searchInPages(page.pages || [], newPath)) {
+                    // Replace current path with the new path that includes the group
+                    currentPath.length = 0
+                    currentPath.push(...newPath)
+                    return true
+                }
+            } else if ("page" in page && typeof page === "object") {
+                const pageName = (page as { page: string }).page
+                if (pageName === targetSlug && !hiddenPages[pageName]) {
+                    currentPath.push({
+                        type: 'page',
+                        title: frontmatters[pageName]?.title || pageName,
+                        href: safePageLink(pageName),
+                        page: pageName
+                    })
+                    return true
+                }
+            }
+        }
+        return false
+    }
+    
+    searchInNavigation(navigation, [])
+    return path
 }

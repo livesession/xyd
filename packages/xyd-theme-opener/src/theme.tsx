@@ -37,9 +37,14 @@ export default class ThemeOpener extends BaseTheme {
                     scrollbar: "secondary"
                 },
                 writer: {
-                    contentDecorator: "secondary"
+                    contentDecorator: "secondary",
+                    breadcrumbs: true
                 },
             }
         })
+
+        if (this.settings.appearance?.header?.type === "classic") {
+            this.theme.UpdatePreset(["classic-header"])
+        }
     }
 }

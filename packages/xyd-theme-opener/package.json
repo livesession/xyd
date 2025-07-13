@@ -10,7 +10,8 @@
     "./index.css": "./dist/index.css",
     ".": {
       "import": "./dist/index.js"
-    }
+    },
+    "./presets/*": "./dist/presets/*"
   },
   "scripts": {
     "clean": "rimraf build",

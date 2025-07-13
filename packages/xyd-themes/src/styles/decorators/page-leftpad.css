@@ -6,7 +6,7 @@
         /* media: Large Desktop */
         @media (min-width: 1440px) {
             --theme-layout-max-width: 1600px;
-            --theme-sidebar-width-var: 350px;
+            --theme-sidebar-width-var: 350px; 
 
             --theme-sidebar-left-padding-space: 32px;
             --theme-sidebar-left-vars: (var(--theme-layout-max-width) / 2) + var(--theme-sidebar-left-padding-space);
@@ -28,9 +28,7 @@
         xyd-nav {
             [part="nav"]>*:first-child {
                 position: relative;
-                left: var(--theme-sidebar-left);
-                /* below if first child of nav-left is not nav-item? */
-                /* left: calc(var(--theme-sidebar-left) + var(--xyd-sidebar-item-padding-total)); */
+                left: calc(var(--theme-sidebar-left) + var(--xyd-sidebar-item-padding-total) - var(--xyd-nav-padding));
             }
         }
 

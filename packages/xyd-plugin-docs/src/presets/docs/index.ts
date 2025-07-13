@@ -132,13 +132,6 @@ function vitePluginSettings(options: docsPluginOptions) {
                             }
                         }
                         `
-                        // return `
-                        // export default {
-                        //     get settings() {
-                        //          return globalThis.__xydSettings || ${typeof preinstall.settings === "string" ? preinstall.settings : JSON.stringify(preinstall.settings)}
-                        //         }
-                        //     }
-                        // `
                     }
                     return null;
                 },
@@ -167,94 +160,8 @@ function vitePluginSettings(options: docsPluginOptions) {
                     }
 
                     currentSettings = globalThis.__xydSettings
-                    // globalThis.__xydSettings = newSettings;
 
                     return
-
-                    // const isPageFileChanged = ctx.file.includes('xyd-plugin-docs/src/pages/layout.tsx')
-                    //     || ctx.file.includes('xyd-plugin-docs/src/pages/page.tsx')
-                    //     || ctx.file.includes('react-router.config.ts')
-                    //
-                    // if (!isPageFileChanged) {
-                    //     return
-                    // }
-                    //
-                    // const newSettings = await readSettings();
-                    // if (!newSettings) {
-                    //     return
-                    // }
-                    //
-                    // // TODO: run appinit too?
-                    // globalThis.__xydSettings = newSettings;
-                    //
-                    // return
-
-
-                    // console.log("HOT UPDATE", ctx.file)
-                    // Check if settings file changed
-                    // const isSettingsFileChanged = ctx.file.includes('docs.json') ||
-                    //     ctx.file.includes('docs.ts') ||
-                    //     ctx.file.includes('docs.tsx') ||
-                    //     ctx.file.includes('docs.js') ||
-                    //     ctx.file.includes('docs.jsx');
-
-                    // const isPageFileChanged = ctx.file.includes('xyd-plugin-docs/src/pages/layout.tsx')
-                    //  || ctx.file.includes('xyd-plugin-docs/src/pages/page.tsx') ||
-                    //  ctx.file.includes('react-router.config.ts')
-
-                    // if (!isSettingsFileChanged && !isPageFileChanged) {
-                    //     return
-                    // }
-
-                    // console.log("HOT UPDATE. 1", ctx.file, ctx.file.includes('react-router.config.ts'))
-
-                    // // If settings file changed, update global settings
-                    // if (isSettingsFileChanged || ctx.file.includes('react-router.config.ts')) {
-                    //     // console.log('🔄 Settings file changed, updating...');
-
-                    //     // console.log("HOT UPDATE. 2")
-
-                    //     const newSettings = await readSettings();
-                    //     if (!newSettings) {
-                    //         console.log('⚠️ Failed to read new settings');
-                    //         return
-                    //     }
-                    //     // console.log("HOT UPDATE. 3")
-
-                    //     currentSettings = newSettings
-                    //     // console.log("currentSettings CHANGED")
-                    //     globalThis.__xydSettings = newSettings;
-                    //     // console.log('✅ Global settings updated');
-
-                    //     // Find and invalidate the virtual settings module specifically
-                    //     const virtualId = 'virtual:xyd-settings';
-                    //     const resolvedId = virtualId + '.jsx';
-                    //     const mod = ctx.server.moduleGraph.getModuleById(resolvedId);
-
-                    //     // console.log("HOT UPDATE. 4")
-                    //     if (mod) {
-                    //         ctx.server.moduleGraph.invalidateModule(mod);
-                    //         // console.log('✅ Virtual settings module invalidated');
-                    //     } else {
-                    //         console.log('⚠️ Virtual settings module not found');
-                    //     }
-
-                    //     // Also invalidate modules that depend on the settings
-                    //     const modulesToInvalidate = Array.from(ctx.server.moduleGraph.urlToModuleMap.values())
-                    //         .filter(mod => mod && mod.importers.size > 0);
-
-                    //     modulesToInvalidate.forEach(mod => {
-                    //         if (mod) {
-                    //             ctx.server.moduleGraph.invalidateModule(mod);
-                    //         }
-                    //     });
-
-                    //     // console.log("HOT UPDATE. 5")
-
-                    //     // console.log(`✅ Invalidated ${modulesToInvalidate.length} dependent modules`);
-                    // }
-
-                    // return ctx.modules;
                 },
             };
         }
@@ -390,7 +297,7 @@ function preset(settings: Settings, options: docsPluginOptions) {
             vitePluginSettings(options),
             vitePluginTheme,
             vitePluginThemeCSS,
-            vitePluginThemeOverrideCSS,
+            vitePluginThemeOverrideCSS
         ],
         basePath
     }

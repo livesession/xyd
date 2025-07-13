@@ -200,9 +200,10 @@
 
 /* Sizes */
 :root {
-    --xyd-padding-small: 4px;
-    --xyd-padding-medium: 8px;
-    --xyd-padding-large: 16px;
+    --xyd-padding-small: 6px;
+    --xyd-padding-medium: 10px;
+    --xyd-padding-large: 14px;
+    --xyd-padding-xlarge: 18px; 
 }
 
 /* Components */
@@ -378,7 +379,7 @@
     --xyd-nav-item-color: var(--text-primary);
     --xyd-nav-item-color--active: var(--dark80);
     --xyd-nav-item-bgcolor--active: var(--dark16);
-    --xyd-nav-padding: var(--xyd-padding-large);
+    --xyd-nav-padding: var(--xyd-padding-medium);
 
     /* ProgressBar */
     --xyd-progressbar-bgcolor: var(--dark16);

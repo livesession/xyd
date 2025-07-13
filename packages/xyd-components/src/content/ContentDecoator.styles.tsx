@@ -114,6 +114,11 @@ export default {
                     line-height: var(--xyd-line-height-xsmall);
                 }
             }
+
+            xyd-breadcrumbs {
+                font-size: var(--xyd-font-size-small);
+                line-height: var(--xyd-line-height-small);
+            }
         }
     `
 }

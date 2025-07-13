@@ -49,9 +49,11 @@ export function Nav(props: NavProps) {
                 <div part="nav-left">
                     {
                         leftSurface ? leftSurface : <>
-                            <div part="logo">
-                                {logo}
-                            </div>
+                            {logo && <div part="logo">
+                                <$NavItem>
+                                    {logo}
+                                </$NavItem>
+                            </div>}
                             {defaultList}
                         </>
                     }
@@ -87,26 +89,30 @@ export interface NavItemProps {
     as?: React.ElementType;
 }
 
-Nav.Item = function NavItem({ children, value, href, as }: NavItemProps) {
+Nav.Item = function NavItem(props: NavItemProps) {
+    return <RadixTabs.Trigger asChild value={props.value}>
+        <$NavItem {...props} />
+    </RadixTabs.Trigger>
+};
+
+function $NavItem({ children, href, as }: Omit<NavItemProps, "value">) {
     const Link = as || $Link;
 
     // const links = <>
     //     <span part="nav-item1">{children}</span>
     //     <span part="nav-item2">{children}</span>
     // </>
-    const links = children
+    const links = children;
 
-    return <RadixTabs.Trigger asChild value={value}>
-        <xyd-nav-item className={cn.ItemHost}>
-            {
-                typeof href === "string" ? <Link href={href}>
-                    {links}
-                </Link>
-                    : links
-            }
-        </xyd-nav-item>
-    </RadixTabs.Trigger>
-};
+    return <xyd-nav-item className={cn.ItemHost}>
+        {
+            typeof href === "string" ? <Link href={href}>
+                {links}
+            </Link>
+                : links
+        }
+    </xyd-nav-item>
+}
 
 function $Link({ children, ...props }) {
     return <a {...props}>{children}</a>

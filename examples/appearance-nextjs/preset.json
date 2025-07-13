@@ -1,0 +1,15 @@
+{
+    "colors": {
+        "primary": "hsla(0,0%,9%,1)",
+        "light": "hsla(0,0%,93%,1)"
+    },
+    "cssTokens": {
+        "--xyd-button-primary-color": "var(--dark8)"
+    },
+    "buttons": {
+        "rounded": "sm"
+    },
+    "search": {
+        "fullWidth": false
+    }
+}

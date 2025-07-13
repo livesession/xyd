@@ -65,7 +65,6 @@ export const NavHost = css`
         [part="nav-list"] {
             display: flex;
             align-items: center;
-            gap: 8px;
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: auto;

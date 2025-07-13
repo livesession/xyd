@@ -204,6 +204,78 @@ export function commonVitePlugins(
     ]
 }
 
+export function commonPostInstallVitePlugins(
+    respPluginDocs: PluginOutput,
+    resolvedPlugins: PluginConfig[],
+) {
+
+    return [
+        vitePluginThemePresets(respPluginDocs.settings),
+    ]
+}
+
+
+export async function vitePluginThemePresets(settings: Settings) {
+    const themeName = settings.theme?.name
+    const VIRTUAL_ID = 'virtual:xyd-theme-presets';
+    const RESOLVED_ID = '\0' + VIRTUAL_ID;
+
+    // Resolve theme folder using Node APIs
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    let themeRoot = ""
+    if (process.env.XYD_CLI) {
+        themeRoot = path.join(getHostPath(), `node_modules/@xyd-js/theme-${themeName}/dist`)
+    } else {
+        themeRoot = path.join(path.resolve(__dirname, "../../"), `xyd-theme-${themeName}/dist`)
+    }
+
+    const presetsDir = path.join(themeRoot, 'presets');
+
+    // Read available CSS files
+    let cssFiles: string[] = [];
+    try {
+        const files = fs.readdirSync(presetsDir);
+        cssFiles = files.filter((f) => f.endsWith('.css'));
+    } catch (err) {
+        console.warn(`[vitePluginThemePresets] Failed to read preset dir: ${presetsDir}`, err);
+    }
+
+    // Build import statements and map entries
+    const importStmts: string[] = [];
+    const mapEntries: string[] = [];
+
+    cssFiles.forEach((file, index) => {
+        const name = file.replace(/\.css$/, '');
+        const varName = `preset${index}`;
+        const pkgPath = `@xyd-js/theme-${themeName}/presets/${file}`;
+
+        importStmts.push(`import ${varName} from '${pkgPath}?url';`);
+        mapEntries.push(`  '${name}': ${varName}`);
+    });
+
+    return {
+        name: 'xyd:virtual-theme-presets',
+
+        resolveId(id) {
+            return id === VIRTUAL_ID ? RESOLVED_ID : null;
+        },
+
+        load(id) {
+            if (id !== RESOLVED_ID) return null;
+
+            return `
+${importStmts.join('\n')}
+
+export const presetUrls = {
+${mapEntries.join(',\n')}
+};
+`;
+        },
+    };
+}
+
 export function pluginIconSet(settings: Settings): VitePluginOption {
     const DEFAULT_ICON_SET = "lucide";
 
@@ -765,7 +837,7 @@ function pmInstall() {
     const { pnpm } = runningPm()
 
     console.log("ℹ️ consider install `bun` for better performance \n");
-  
+
     if (pnpm) {
         return pnpmInstall()
     }

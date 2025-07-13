@@ -27,7 +27,8 @@ import {
     Image,
     Update,
     Card,
-    ColorSchemeButton
+    ColorSchemeButton,
+    Breadcrumbs
 } from '../../writer'
 import { CodeSample } from "../../coder";
 import { GridDecorator } from './GridDecorator';
@@ -277,6 +278,7 @@ function $Heading({ id, depth, children, label, subtitle, noanchor, style }: Hea
 export function writerContent() {
     const GuideCardContent = $GuideCardContentComponent.bind(this)
     GuideCardContent.List = GuideCard.List
+    const BreadcrumbsContent = $BreadcrumbsContentComponent.bind(this)
 
     const UnderlineNavContent = $UnderlineNavContentComponent.bind(this)
     UnderlineNavContent.Content = $UnderlineNavContentContentComponent.bind(this)
@@ -287,6 +289,7 @@ export function writerContent() {
         Callout,
         Details,
         GuideCard: GuideCardContent,
+        Breadcrumbs: BreadcrumbsContent,
         Steps,
         Tabs: UnderlineNavContent,
         Table,
@@ -308,6 +311,13 @@ export function writerContent() {
 
 function $GuideCardContentComponent(props) {
     return <GuideCard
+        {...props}
+        as={this?.options?.Link}
+    />
+}
+
+function $BreadcrumbsContentComponent(props) {
+    return <Breadcrumbs
         {...props}
         as={this?.options?.Link}
     />

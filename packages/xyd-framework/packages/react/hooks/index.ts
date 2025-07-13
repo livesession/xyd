@@ -1,6 +1,14 @@
 export {
+    useActiveMatchedSubNav
+} from "./useActiveMatchedSubNav";
+
+export {
     useActivePage
 } from "./useActivePage";
+
+export {
+    useActiveSegment
+} from "./useActiveSegment";
 
 export {
     useDefaultHeaderItems
@@ -15,6 +23,17 @@ export {
 } from "./useLogoLink";
 
 export {
-    useMatchedSubNav
+    useMatchedSegment
+} from "./useMatchedSegment";
+
+export {
+    useMatchedSegmentSidebarDropdown
+} from "./useMatchedSegmentSidebarDropdown";
+
+export {
+    useMatchedSubNav,
 } from "./useMatchedSubNav";
 
+export {
+    useTabSegments
+} from "./useTabSegments";

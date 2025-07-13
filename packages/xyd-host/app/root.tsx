@@ -6,6 +6,8 @@ import * as contentClass from "@xyd-js/components/content"; // TODO: move to app
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
+// @ts-ignore
+import { presetUrls } from "virtual:xyd-theme-presets"
 
 import colorSchemeScript from "./scripts/colorSchemeScript.ts?raw";
 import bannerHeightScript from "./scripts/bannerHeight.ts?raw";
@@ -45,12 +47,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <head>
                 <PreloadScripts />
                 <DefaultMetas />
-                
+
                 <UserFavicon />
                 <UserHeadScripts />
 
                 <Meta />
                 <Links />
+                <PresetStyles />
             </head>
 
             <body className={UserAppearanceClasses}>
@@ -268,6 +271,19 @@ function UserHeadScripts() {
 
     return head.map(([tag, props]: [string, Record<string, string | boolean>], index: number) => {
         return React.createElement(tag as any, { key: index, ...props })
+    })
+}
+
+function PresetStyles() {
+    const appearance = settings?.theme?.appearance
+    const appearancePresets = appearance?.presets || []
+
+    return Object.entries(presetUrls).map(([name, url]) => {
+        if (appearancePresets.includes(name)) {
+            return <link rel="stylesheet" href={url as string} key={name} />
+        }
+
+        return null
     })
 }
 

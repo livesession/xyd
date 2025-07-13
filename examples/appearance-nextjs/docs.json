@@ -16,16 +16,8 @@
             ]
         },
         "appearance": {
-            "colors": {
-                "primary": "hsla(0,0%,9%,1)",
-                "light": "hsla(0,0%,93%,1)"
-            },
-            "buttons": {
-                "rounded": "sm"
-            },
-            "search": {
-                "fullWidth": false,
-                "sidebar": "mobile"
+            "header": {
+                "type": "classic"
             }
         }
     },
@@ -56,10 +48,6 @@
                 "href": "https://github.com/livesession/xyd/discussions"
             },
             {
-                "component": "Search",
-                "float": "right"
-            },
-            {
                 "title": "Feedback",
                 "href": "https://github.com/livesession/xyd/discussions",
                 "float": "right",
@@ -79,9 +67,6 @@
                     "children": "Learn"
                 }
             }
-        ],
-        "sidebarTop": [
-         
         ],
         "footer": {
             "social": {
@@ -176,27 +161,32 @@
             {
                 "route": "docs/reference",
                 "title": "API",
+                "type": "sidebarDropdown",
                 "pages": [
                     {
                         "title": "Core",
-                        "page": "docs/reference/core"
+                        "page": "docs/reference/core",
+                        "icon": "asterisk"
                     },
                     {
                         "title": "Functions",
-                        "page": "docs/reference/functions"
+                        "page": "docs/reference/functions",
+                        "icon": "parentheses"
                     },
                     {
                         "title": "Composer",
-                        "page": "docs/reference/composer"
+                        "page": "docs/reference/composer",
+                        "icon": "docs:atom-2-line"
                     },
                     {
                         "title": "CLI",
-                        "page": "docs/reference/cli"
+                        "page": "docs/reference/cli",
+                        "icon": "square-terminal"
                     }
                 ]
             }
         ],
-        "sidebarDropdown": [
+        "tabs": [
             {
                 "title": "Guides",
                 "page": "docs",
@@ -206,17 +196,6 @@
                 "title": "Components",
                 "page": "docs/components",
                 "icon": "component"
-            },
-            {
-                "title": "Reference",
-                "page": "docs/reference",
-                "icon": "brackets"
-            }
-        ],
-        "tabs": [
-            {
-                "title": "Home",
-                "icon": "book"
             },
             {
                 "title": "Reference",

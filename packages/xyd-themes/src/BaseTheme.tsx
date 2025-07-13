@@ -33,6 +33,7 @@ import {
     useAppearance,
     useContentComponent,
     FwCopyPage,
+    FwBreadcrumbs,
 } from "@xyd-js/framework/react";
 
 import { Theme } from "./Theme";
@@ -162,7 +163,7 @@ export class BaseTheme extends Theme {
 
         const contentDecorator = appearance?.writer?.contentDecorator
 
-        if (contentDecorator === "secondary") {
+        if (contentDecorator === "secondary" && !isDefaultContent(meta)) {
             return <$ContentSecondary>
                 {children}
             </$ContentSecondary>
@@ -170,7 +171,8 @@ export class BaseTheme extends Theme {
 
         return <>
             {/*TODO: optional breadcrumbs*/}
-            {/*{props.breadcrumbs ? <FwBreadcrumbs/> : undefined}*/}
+
+            {appearance?.writer?.breadcrumbs ? <FwBreadcrumbs /> : undefined}
 
             <ContentDecorator metaComponent={meta?.component || undefined}>
                 {children}
@@ -183,19 +185,17 @@ export class BaseTheme extends Theme {
     private ContentSecondary({ children }: { children: React.ReactNode }) {
         const meta = useMetadata()
         const ContentComponent = useContentComponent()
-        const OriginalContent = this.Content
-
-        // if (isDefaultContent(meta)) { // TODO: fix cuz inifite render
-        //     return <OriginalContent children={children} />
-        // }
-
+        const appearance = useAppearance()
+        
         const { h1, Subtitle, code } = this.reactContent.components()
 
         return <ContentDecorator metaComponent={meta?.component || undefined}>
+
             <main>
                 <xyd-secondary-content>
                     <div part="secondary-content-header">
                         <div>
+                            {appearance?.writer?.breadcrumbs ? <FwBreadcrumbs /> : undefined}
                             <ContentComponent components={{ // TODO: !!! BETTER API !!!
                                 ...this.reactContent.noop(),
                                 h1,
@@ -361,7 +361,8 @@ function $BuiltWithXYD() {
     </a>
 }
 
-function isDefaultContent(meta: Metadata) {
+function
+    isDefaultContent(meta: Metadata) {
     return meta?.openapi || meta?.graphql || meta.component === "atlas" || meta.uniform
 }
 

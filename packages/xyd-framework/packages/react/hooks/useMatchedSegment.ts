@@ -1,10 +1,11 @@
 import { useMatches } from "react-router";
 
-import { useSettings } from "../contexts";
 import { Segment } from "@xyd-js/core";
 
+import { useSettings } from "../contexts";
+
 // TODO: better data structures
-export function useMatchedSubNav(): Segment | null {
+export function useMatchedSegment(): Segment | null {
     const settings = useSettings()
     const matches = useMatches()
 
@@ -15,19 +16,6 @@ export function useMatchedSubNav(): Segment | null {
             return sanitizeUrl(page.page || "") === sanitizeUrl(lastMatchId)
         }))
 
-    if (!matchedSegment) {
-        const tabs = settings.navigation?.tabs
-
-        if (tabs?.length) {
-            return {
-                route: "",
-                "title": "",
-                "pages": tabs,
-            }
-        }
-
-        return null
-    }
 
     return matchedSegment || null
 }

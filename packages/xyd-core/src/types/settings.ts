@@ -151,6 +151,12 @@ export interface Appearance {
      */
     cssTokens?: { [token: string]: string }
 
+    // TODO: global and theme presets?
+    /**
+     * Presets for the theme.
+     */
+    presets?: string[]
+
     /**
      * Logo appearance for the theme.
      */
@@ -207,6 +213,11 @@ export interface AppearanceWriter {
      * Content decorator for the theme.
      */
     contentDecorator?: "secondary"
+
+    /**
+     * If `true` then the breadcrumbs will be displayed.
+     */
+    breadcrumbs?: boolean
 }
 
 export interface AppearanceSearch {
@@ -236,6 +247,11 @@ export interface AppearanceHeader {
      * If `true` then the header will display a separators.
      */
     separator?: "right"
+
+    /**
+     * The type of the header.
+     */
+    type?: "classic"
 }
 
 export interface AppearanceSidebar {
@@ -367,13 +383,7 @@ export interface Navigation {
 /**
  * Tabs configuration
  */
-export type Tabs = NavigationItem[] | {
-    /** The title of the tabs */
-    title: string
-
-    /** The pages of the tab */
-    pages: NavigationItem[]
-}
+export type Tabs = NavigationItem[]
 
 /**
  * Sidebar navigation type
@@ -457,6 +467,9 @@ export interface Segment {
 
     /** Title of this segment */
     title: string
+
+    /** Type of this segment */
+    type?: "sidebarDropdown"
 
     /** Items within this segment */
     pages: NavigationItem[]

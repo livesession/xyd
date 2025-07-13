@@ -1,25 +1,20 @@
 import React from "react";
-import {useLocation} from "react-router";
+import { useLocation } from "react-router";
 
-import {SubNav} from "@xyd-js/ui";
+import { SubNav, SidebarTabsDropdown } from "@xyd-js/ui";
+import { Icon } from "@xyd-js/components/writer";
 
-import {pageLink, trailingSlash} from "../utils";
-import {useMatchedSubNav} from "../hooks";
-import {FwLink} from "./FwLink";
+import { pageLink, trailingSlash } from "../utils";
+import { useActiveMatchedSubNav, useMatchedSubNav } from "../hooks";
+import { FwLink } from "./FwLink";
 
 export function FwSubNav() {
     const matchedSubnav = useMatchedSubNav()
-    const location = useLocation()
-    const pathname = trailingSlash(location.pathname)
+    const active = useActiveMatchedSubNav()
 
     if (!matchedSubnav) {
         return null
     }
-
-    // TODO: in the future routing props from settings like {match: "/docs/api/browser"}
-    const active = matchedSubnav?.pages?.findLast(item => {
-        return pathname.startsWith(pageLink(item.page || ""))
-    })
 
     // TODO: value
     return <SubNav

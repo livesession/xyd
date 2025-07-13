@@ -23,11 +23,13 @@ export default defineConfig({
     sourcemap: true,
     clean: true,
     external: [
-        ...deps
+        ...deps,
+        'fs',
+        'path'
     ],
     esbuildOptions: (options) => {
         options.platform = 'node';
-        options.external = ['node:fs/promises', 'react-router'];
+        options.external = ['node:fs/promises', 'react-router', 'fs', 'path'];
         options.loader = { '.js': 'jsx' };
     },
     ignoreWatch: ['node_modules', 'dist', '.git', 'build']

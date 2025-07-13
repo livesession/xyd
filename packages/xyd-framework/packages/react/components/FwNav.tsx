@@ -17,7 +17,7 @@ import { useAppearance } from "../contexts";
 export function FwNav() {
     const activeHeaderPage = useActivePage()
     const appearance = useAppearance()
-    
+
     const Header = FwHeaderItems()
 
     // TODO: in the future better floating system - just pure css?
@@ -26,7 +26,7 @@ export function FwNav() {
             separator: appearance?.header?.separator || undefined
         }}
         value={activeHeaderPage}
-        // logo={<FwLogo />}
+        logo={<FwLogo />}
         centerSurface={
             Header?.center?.length ? <>
                 <Nav.Tab
@@ -53,8 +53,8 @@ export function FwNav() {
         </>
         }
         floatRightSurface={<>
-             <ColorSchemeButton />
-             <LayoutPrimary.Hamburger />
+            <ColorSchemeButton />
+            <LayoutPrimary.Hamburger />
         </>}
     >
         <FwNav.DefaultItems />
@@ -64,12 +64,6 @@ export function FwNav() {
 FwNav.DefaultItems = function DefaultItems() {
     const defaultItems = useDefaultHeaderItems()
 
-    const headerItems = defaultItems.map(FwHeaderItem)
-
-    headerItems.unshift(<Nav.Item>
-        <FwLogo />
-    </Nav.Item>)
-
-    return <>{headerItems}</>
+    return defaultItems.map(FwHeaderItem)
 }
 

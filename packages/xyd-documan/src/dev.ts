@@ -6,7 +6,7 @@ import { createServer, searchForWorkspaceRoot, ViteDevServer, Plugin as VitePlug
 import { readSettings } from "@xyd-js/plugin-docs";
 import { API, APIFile, Navigation, SidebarNavigation, } from "@xyd-js/core";
 
-import { appInit, calculateFolderChecksum, commonVitePlugins, getAppRoot, getDocsPluginBasePath, getHostPath, getPublicPath, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
+import { appInit, calculateFolderChecksum, commonPostInstallVitePlugins, commonVitePlugins, getAppRoot, getDocsPluginBasePath, getHostPath, getPublicPath, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
 import { CACHE_FOLDER_PATH, SUPPORTED_SETTINGS_FILES, SUPPORTED_CONTENT_FILES } from "./const";
 import { CLI } from "./cli";
 
@@ -116,6 +116,7 @@ export async function dev(options?: DevOptions) {
         const newChecksum = calculateFolderChecksum(getHostPath());
         storeChecksum(newChecksum);
     }
+    const postInstallVitePlugins = commonPostInstallVitePlugins(respPluginDocs, resolvedPlugins)
 
     // ⚠️  
     spinner.log('✔ Local xyd instance is ready');
@@ -189,7 +190,7 @@ export async function dev(options?: DevOptions) {
         },
         plugins: [
             ...commonRunVitePlugins,
-
+            ...postInstallVitePlugins,
             {
                 name: 'xyd-configureServer',
                 configureServer(s) {

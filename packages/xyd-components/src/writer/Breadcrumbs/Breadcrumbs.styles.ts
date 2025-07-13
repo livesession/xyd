@@ -1,17 +1,14 @@
-import {css} from "@linaria/core";
+import { css } from "@linaria/core";
 
 export const BreadcrumbsHost = css`
     @layer defaults {
         display: flex;
         overflow: hidden;
-        margin-top: 0.375rem;
-        gap: 0.25rem;
+        gap: 4px;
         align-items: center;
         color: var(--xyd-breadcrumbs-color);
         
         [part="icon"] {
-            shrink: 0;
-            width: 0.875rem;
         }
         
         [part="item"] {
@@ -22,8 +19,6 @@ export const BreadcrumbsHost = css`
         }
         
         [part="item"][data-active="true"] {
-            color: var(--xyd-breadcrumbs-color--active);
-            font-weight: bold;
         }
     }
 `;

@@ -7,10 +7,10 @@
  * @layer templates - Template-specific styles like Atlas
  * @layer decorators - Decorate previous layers before theming
  * @layer themes - Theme-level CSS modifications
- * @layer plugins - Plugin-level CSS modifications
+ * @layer presets - Preset theming after themes layer
  * @layer overrides - Final override layer for styles not applicable in other layers
  */
-@layer reset, defaults, defaultfix, components, fabric, templates, decorators, themes, plugins, overrides;
+@layer reset, defaults, defaultfix, components, fabric, templates, decorators, themes, presets, overrides;
 
 @import "@xyd-js/ui/dist/index.css";
 @import "@xyd-js/components/dist/index.css";

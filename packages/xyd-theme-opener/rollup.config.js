@@ -1,4 +1,4 @@
-import {createRequire} from "module";
+import { createRequire } from "module";
 
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
@@ -8,13 +8,15 @@ import postcss from 'rollup-plugin-postcss';
 import postcssImport from 'postcss-import';
 import wyw from '@wyw-in-js/rollup';
 
+import { copyPresetsPlugin } from '@xyd-js/themes';
+
 const require = createRequire(import.meta.url);
 
 const {
     dependencies,
     peerDependencies,
     devDependencies
-} = require('./package.json', {assert: {type: 'json'}});
+} = require('./package.json', { assert: { type: 'json' } });
 
 const external = [
     ...Object.keys(dependencies),
@@ -63,6 +65,7 @@ export default [
                 extract: true, // Extract CSS into a separate file
                 minimize: true, // Minify the CSS
             }),
+            copyPresetsPlugin(),
         ],
         external
     },

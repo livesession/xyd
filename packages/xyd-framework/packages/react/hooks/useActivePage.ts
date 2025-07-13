@@ -12,7 +12,7 @@ export function useActivePage() {
     const lastMatch = matches[matches.length - 1]
 
     const navigationItems = [
-        ...(Array.isArray(settings?.navigation?.tabs) ? settings?.navigation?.tabs : settings?.navigation?.tabs?.pages || []),
+        ...(settings?.navigation?.tabs || []),
         ...(settings?.navigation?.sidebarDropdown || []),
         ...(settings?.webeditor?.header || [])
     ]
