@@ -12,7 +12,7 @@ import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 
 import type { Metadata, MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core";
 import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
-import { Framework, FwLink, useSettings, type FwSidebarItemProps } from "@xyd-js/framework/react";
+import { Framework, FwLink, FwLogo, useSettings, type FwSidebarItemProps } from "@xyd-js/framework/react";
 import { ReactContent } from "@xyd-js/components/content";
 import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
 import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
@@ -25,8 +25,9 @@ import { iconSet } from 'virtual:xyd-icon-set';
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
-// @ts-ignores
-const { settings: getSettings } = virtualSettings
+// @ts-ignore
+const { settings: getSettings, settingsClone } = virtualSettings
+
 // const settings = globalThis.__xydSettings
 import Theme from "virtual:xyd-theme";
 // @ts-ignore
@@ -49,6 +50,7 @@ import { CoderProvider } from "@xyd-js/components/coder";
 import { SearchButton } from "@xyd-js/components/system"
 
 globalThis.__xydSettings = getSettings
+globalThis.__xydSettingsClone = settingsClone
 globalThis.__xydUserComponents = userComponents // Add user components to global scope TODO: problematic
 
 const settings = globalThis.__xydSettings as Settings
@@ -74,6 +76,7 @@ const reactContent = new ReactContent(settings, {
     useNavigation
 })
 globalThis.__xydThemeSettings = settings?.theme
+globalThis.__xydNavigation = settings?.navigation
 globalThis.__xydWebeditor = settings?.webeditor
 globalThis.__xydReactContent = reactContent
 globalThis.__xydSurfaces = surfaces
@@ -135,6 +138,11 @@ export async function loader({ request }: { request: any }) {
         )
     }
 
+    // TODO: IN THE FUTURE BETTER API
+    if (metadata?.component === "home") {
+        metadata.layout = "page"
+    }
+
     return {
         sidebarGroups,
         breadcrumbs,
@@ -194,6 +202,7 @@ export default function Layout() {
                     BannerContent={bannerContent}
                     components={{
                         Search: SearchButton,
+                        Logo: FwLogo,
                         ...userComponents
                     }}
                 >

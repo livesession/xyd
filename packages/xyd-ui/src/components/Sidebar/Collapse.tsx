@@ -9,6 +9,7 @@ export interface UICollapseProps {
     className?: string;
 }
 
+// TODO: !!! FIX COLLAPSE !!!
 export function UICollapse({
     children,
     isOpen,
@@ -49,8 +50,8 @@ export function UICollapse({
             inner.style.width = `${width}px`;
         } else {
             const height = inner.scrollHeight;
-            container.style.height = `${height}px`;
-            inner.style.height = `${height}px`;
+            container.style.height = `${height + 5}px`;
+            inner.style.height = `${height + 5}px`;
         }
 
         // Restore original styles
@@ -115,7 +116,7 @@ export function UICollapse({
                 container.style.width = "0px";
             } else {
                 const height = container.scrollHeight;
-                container.style.height = `${height}px`;
+                container.style.height = `${height + 5}px`;
                 container.offsetHeight; // Force reflow
                 container.style.height = "0px";
             }

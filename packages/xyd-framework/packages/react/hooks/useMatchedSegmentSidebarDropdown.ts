@@ -9,7 +9,7 @@ export function useMatchedSegmentSidebarDropdown(): Segment | null {
         return null
     }
 
-    if (matchedSegment.type === "sidebarDropdown") {
+    if (matchedSegment.appearance === "sidebarDropdown") {
         return matchedSegment
     }
 

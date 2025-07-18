@@ -148,6 +148,7 @@
     --xyd-layout-width-small: 800px;
     --xyd-layout-width-medium: 1000px;
     --xyd-layout-width-large: 1200px;
+    
     --xyd-layout-nav-width-small: 200px;
     --xyd-layout-nav-width-medium: 256px;
 
@@ -202,8 +203,9 @@
 :root {
     --xyd-padding-small: 6px;
     --xyd-padding-medium: 10px;
-    --xyd-padding-large: 14px;
-    --xyd-padding-xlarge: 18px; 
+    --xyd-padding-large: 18px;
+    --xyd-padding-xlarge: 30px; 
+    --xyd-padding-xxlarge: 44px;
 }
 
 /* Components */
@@ -249,6 +251,7 @@
     --xyd-coder-code-mark-border-color: var(--blue32);
     --xyd-coder-code-mark-bgcolor: var(--dark16);
     --xyd-coder-code-copy-color: var(--dark48);
+    --xyd-coder-code-description-bgcolor: var(--color-bg);
 
     /* Code Tabs */
     --xyd-codetabs-border-color: var(--dark32);
@@ -380,6 +383,9 @@
     --xyd-nav-item-color--active: var(--dark80);
     --xyd-nav-item-bgcolor--active: var(--dark16);
     --xyd-nav-padding: var(--xyd-padding-medium);
+    --xyd-nav-padding-y: calc(var(--xyd-nav-padding) / 2);
+    --xyd-nav-item-padding: var(--xyd-padding-medium);
+    --xyd-nav-item-padding-y: calc(var(--xyd-nav-item-padding) / 2);
 
     /* ProgressBar */
     --xyd-progressbar-bgcolor: var(--dark16);

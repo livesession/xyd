@@ -15,6 +15,7 @@ import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 import virtualSettings from "virtual:xyd-settings";
 // @ts-ignore
 const { settings } = virtualSettings as Settings
+
 import { PageContext } from "./context";
 import { SUPPORTED_META_TAGS } from "./metatags";
 
@@ -128,7 +129,7 @@ export async function loader({ request }: { request: any }) {
     const mdPlugins = markdownPlugins({
         maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
-    
+
     const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
 
     const pagePath = globalThis.__xydPagePathMapping[slug]
@@ -146,6 +147,11 @@ export async function loader({ request }: { request: any }) {
     }
 
     timedebug.totalEnd
+
+    // TODO: IN THE FUTURE BETTER API
+    if (metadata?.component === "home") {
+        metadata.layout = "page"
+    }
 
     return {
         sidebarGroups,
@@ -186,7 +192,7 @@ export function meta(props: any) {
         })
     }
 
-    const metaTagsMap: {[key: string]: MetaTag} = {}
+    const metaTagsMap: { [key: string]: MetaTag } = {}
 
     for (const key in settings?.seo?.metatags) {
         const metaType = SUPPORTED_META_TAGS[key]
@@ -197,7 +203,7 @@ export function meta(props: any) {
         if (description && key === "description") {
             continue
         }
-        
+
         metaTagsMap[key] = {
             [metaType]: key,
             content: settings?.seo?.metatags[key],
@@ -312,6 +318,11 @@ function mdxContent(code: string) {
     const content = mdxExport(code) // TODO: fix any
     if (!mdxExport) {
         return {}
+    }
+
+    // TODO: IN THE FUTURE BETTER API
+    if (content?.frontmatter?.component === "home") {
+        content.frontmatter.layout = "page"
     }
 
     return {

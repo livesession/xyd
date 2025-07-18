@@ -145,7 +145,9 @@ export async function dev(options?: DevOptions) {
                 "@xyd-js/theme-cosmo",
                 "@xyd-js/theme-opener",
                 "@xyd-js/theme-picasso",
-                "@xyd-js/theme-poetry"
+                "@xyd-js/theme-poetry",
+                "@xyd-js/theme-gusto",
+                "@xyd-js/theme-solar"
             ]
         }
     }
@@ -289,7 +291,6 @@ export async function dev(options?: DevOptions) {
             // console.log(4444444)
 
             invalidateSettings(server)
-            // console.log("UPDATE 3333")
             await touchReactRouterConfig()
             await touchLayoutPage()
             //

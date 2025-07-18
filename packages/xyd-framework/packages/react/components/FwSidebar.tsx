@@ -1,18 +1,20 @@
-import React, {} from "react";
+import React, { } from "react";
 
-import {UISidebar} from "@xyd-js/ui"
+import { UISidebar } from "@xyd-js/ui"
 
-import {SurfaceTarget} from "../../../src";
-import {useAppearance, useSettings,} from "../contexts";
+import { SurfaceTarget } from "../../../src";
+import { useAppearance, useSettings, } from "../contexts";
 
-import {Surface} from "./Surfaces";
-import {FooSidebar} from "../lib";
-import {FwSidebarNavigationItem} from "./FwSidebarNavigationItem";
-import {FwSidebarTabsDropdown} from "./FwSidebarTabsDropdown";
-import {FwSidebarTopAnchors} from "./FwSidebarTopAnchors";
-import {FwWebEditorSidebarTop} from "./FwWebEditorSidebarTop";
-import {FwSidebarMobileHeaderItems} from "./FwSidebarMobileHeaderItems";
-import {useSidebarTree} from "./FwSidebarTree";
+import { Surface } from "./Surfaces";
+import { FooSidebar } from "../lib";
+import { FwSidebarNavigationItem } from "./FwSidebarNavigationItem";
+import { FwSidebarTabsDropdown } from "./FwSidebarTabsDropdown";
+import { FwSidebarTopAnchors } from "./FwSidebarTopAnchors";
+import { FwWebEditorSidebarTop } from "./FwWebEditorSidebarTop";
+import { FwSidebarMobileHeaderItems } from "./FwSidebarMobileHeaderItems";
+import { useSidebarTree } from "./FwSidebarTree";
+
+const Sidebar = withSidebar(UISidebar)
 
 export interface FwSidebarProps {
 }
@@ -24,33 +26,30 @@ export function FwSidebar(props: FwSidebarProps) {
     // TODO: active state for footer items?
     const sidebarFooterAnchors = settings.navigation?.anchors?.sidebar?.bottom?.map(FwSidebarNavigationItem)
 
-    const Sidebar = FwSidebar.WithSidebar(UISidebar)
-
     return <Sidebar
         footerItems={sidebarFooterAnchors && sidebarFooterAnchors}
         scrollShadow={appearance?.sidebar?.scrollShadow}
     >
-        <Surface target={SurfaceTarget.SidebarTop}/>
+        <Surface target={SurfaceTarget.SidebarTop} />
 
-        <FwWebEditorSidebarTop/>
+        <FwSidebarTopAnchors />
 
-        <FwSidebarMobileHeaderItems/>
+        <FwWebEditorSidebarTop />
 
-        <FwSidebarTopAnchors/>
+        <FwSidebarMobileHeaderItems />
 
-        <FwSidebarTabsDropdown/>
+        <FwSidebarTabsDropdown />
     </Sidebar>
 }
 
 
-FwSidebar.WithSidebar = function WithSidebar<P extends {
+export function withSidebar<P extends {
     children?: React.ReactNode
 }>(Component: React.ComponentType<P>) {
-    const [sidebarTree, sidebarTreeFlags] = useSidebarTree()
-
     // TODO: better API for elements like logo search
     return function WithSidebarContent(props: P) {
-        const {children, ...rest} = props
+        const [sidebarTree, sidebarTreeFlags] = useSidebarTree()
+        const { children, ...rest } = props
 
         return <FooSidebar
             initialActiveItems={sidebarTreeFlags.initialActiveItems}

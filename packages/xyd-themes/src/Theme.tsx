@@ -1,51 +1,55 @@
 import * as React from "react"
-import { useMetadata } from "@xyd-js/framework/react"
-import { Surfaces } from "@xyd-js/framework"
-import type { Appearance, JSONComponent, Theme as ThemeSettings, WebEditor, WebEditorNavigationItem } from "@xyd-js/core"
+
+import type { Appearance, Navigation, Theme as ThemeSettings, WebEditor, WebEditorNavigationItem } from "@xyd-js/core"
 import { ReactContent } from "@xyd-js/components/content"
+import { IconSocial } from "@xyd-js/components/writer"
+import { Surfaces } from "@xyd-js/framework"
+import { useMetadata } from "@xyd-js/framework/react"
 
 // ─── Theme Class ──────────────────────────────────────────────
 
+// TODO: still issues with double settings on dev changing
+// TODO: refactor
 export abstract class Theme {
     constructor() {
         this.settings = globalThis.__xydThemeSettings
 
         this.useHideToc = this.useHideToc.bind(this)
+        this.useHideSidebar = this.useHideSidebar.bind(this)
         this.appearanceWebEditor = this.appearanceWebEditor.bind(this)
         this.headerPrepend = this.headerPrepend.bind(this)
         this.mergeUserAppearance = this.mergeUserAppearance.bind(this)
+        this.resetWebeditor = this.resetWebeditor.bind(this)
 
-        {
-            if (globalThis.__xydThemeSettings.Update) {
-                console.error("Theme API `Update` is already defined")
-            }
-            globalThis.__xydThemeSettings.Update = this.update.bind(this) // TODO: in the future better solution cuz we modify original object
-
-        }
-        {
-            if (globalThis.__xydThemeSettings.UpdatePreset) {
-                console.error("Theme API `UpdatePreset` is already defined")
-            }
-            globalThis.__xydThemeSettings.UpdatePreset = this.updateThemePreset.bind(this)
-        }
+        globalThis.__xydThemeSettings.Update = this.update.bind(this) // TODO: in the future better solution cuz we modify original object
+        globalThis.__xydThemeSettings.UpdatePreset = this.updateThemePreset.bind(this)
 
         this.theme = globalThis.__xydThemeSettings
         this.surfaces = globalThis.__xydSurfaces
         this.reactContent = globalThis.__xydReactContent
+        this.navigation = globalThis.__xydNavigation as Navigation
         this.webeditor = globalThis.__xydWebeditor as WebEditor
         this.userAppearance = JSON.parse(JSON.stringify(this.theme.appearance || {}))
-        this.originalWebeditor = Object.freeze(JSON.parse(JSON.stringify(this.webeditor)))
 
         this.appearanceWebEditor()
     }
 
     private webeditor: WebEditor
-    private originalWebeditor: WebEditor
+    private navigation: Navigation
+
     private userAppearance: Appearance
     protected settings: ThemeSettings
     protected theme: CustomTheme<ThemeSettings>
     protected readonly reactContent: ReactContent
     protected readonly surfaces: Surfaces
+
+    private get originalWebeditor(): WebEditor {
+        return JSON.parse(JSON.stringify(globalThis.__xydSettingsClone?.webeditor))
+    }
+
+    private get originalNavigation(): Navigation {
+        return JSON.parse(JSON.stringify(globalThis.__xydSettingsClone?.navigation))
+    }
 
     public abstract Page({ children }: { children: React.ReactNode }): React.ReactElement
 
@@ -55,7 +59,12 @@ export abstract class Theme {
 
     protected useHideToc() {
         const meta = useMetadata()
-        return meta?.layout === "wide" || meta?.layout === "center"
+        return meta?.layout === "wide" || meta?.layout === "center" || meta?.layout === "page"
+    }
+
+    protected useHideSidebar() {
+        const meta = useMetadata()
+        return meta?.layout === "page"
     }
 
     private headerPrepend(searchItem: any, float: string) {
@@ -66,11 +75,19 @@ export abstract class Theme {
             : [...header.slice(0, insertIndex), searchItem, ...header.slice(insertIndex)]
     }
 
+    private headerAppend(searchItem: any, float: string = "") {
+        const header = this.webeditor.header || []
+        const insertIndex = header.findIndex(item => item.float === float)
+        return insertIndex === -1
+            ? [...header, searchItem]
+            : [...header.slice(0, insertIndex + 1), searchItem, ...header.slice(insertIndex + 1)]
+    }
+
     private update(patch: DeepPartial<ThemeSettings>, updateWebeditor: boolean = true) {
         deepMerge(this.theme, patch)
-        if (updateWebeditor) {
-            this.appearanceWebEditor()
-        }
+        this.appearanceWebEditor()
+        // if (updateWebeditor) {
+        // }
     }
 
     private updateThemePreset(patch: string[]) {
@@ -89,7 +106,8 @@ export abstract class Theme {
             return
         }
 
-        deepMergeWithCopy(this.webeditor, this.originalWebeditor)
+        this.resetWebeditor()
+        this.resetNavigation()
 
         const searchAppearance = this.theme.appearance?.search?.sidebar || this.theme.appearance?.search?.middle
         if (searchAppearance) {
@@ -136,12 +154,155 @@ export abstract class Theme {
         ) {
             this.theme.appearance.sidebar.scrollbar = "secondary"
         }
+
+        if (this.theme.appearance?.logo?.sidebar) {
+            const logo: WebEditorNavigationItem = {
+                component: "Logo",
+                mobile: this.theme.appearance?.logo?.sidebar === "mobile" || undefined,
+                desktop: this.theme.appearance?.logo?.sidebar === "desktop" || undefined
+            }
+            if (!this.webeditor.sidebarTop) {
+                this.webeditor.sidebarTop = []
+            }
+
+            // this.webeditor.sidebarTop = [
+            //     logo,
+            //     ...(this.originalWebeditor.sidebarTop || []),
+            // ]
+
+            this.webeditor.sidebarTop?.unshift(logo)
+        }
+
+        if (
+            this.theme.appearance?.tabs?.surface === "center" &&
+            this.navigation?.tabs?.length
+        ) {
+            this.insertCenterHeaderTabs()
+        }
+
+        if (
+            this.navigation?.tabs?.length &&
+            this.navigation?.segments?.length && // cuz segments defaults are inside subnav
+            this.theme.appearance?.tabs?.surface !== "center") {
+
+            this.navigation.segments = this.navigation.segments.map(segment => {
+                if (segment.appearance !== "sidebarDropdown") {
+                    segment.appearance = "sidebarDropdown"
+                }
+                return segment
+            })
+        }
+
+        if (this.navigation?.anchors?.header?.length) {
+            this.navigation?.anchors?.header.forEach(item => {
+                const button = {
+                    ...item,
+                    component: "Button",
+                    props: {},
+                    float: "right" as const,
+                    desktop: true,
+                }
+
+                if ("button" in item) {
+                    this.webeditor.header = this.headerAppend({
+                        ...button,
+                        props: {
+                            kind: item.button,
+                            children: item.title
+                        },
+                    })
+
+                    return
+                }
+
+                if ("social" in item) {
+                    this.webeditor.header = this.headerAppend({
+                        ...button,
+                        icon: <IconSocial kind={item.social as any} />,
+                        props: {
+                            theme: "ghost",
+                            icon: <IconSocial kind={item.social as any} />,
+                        },
+                    })
+
+                    return
+                }
+
+                if (item.icon) {
+                    this.webeditor.header = this.headerAppend({
+                        ...button,
+                        props: {
+                            theme: "ghost",
+                            icon: item.icon,
+                        },
+                    })
+
+                    return
+                }
+
+                this.webeditor.header = this.headerAppend({
+                    ...item,
+                    float: "right" as const,
+                    desktop: true,
+                })
+            })
+        }
+
+        // TODO: in the future it should be in theme level
+        if (this.theme.name === "gusto") {
+            if (this.navigation?.tabs?.length) {
+                this.navigation.sidebarDropdown = this.navigation.tabs
+
+                // this.navigation.tabs.map(tab => {
+                //     this.webeditor.sidebarTop = this.headerAppend({
+                //         ...tab,
+                //     })
+                // })
+            }
+        }
     }
 
     private mergeUserAppearance() {
         this.update({
             appearance: this.userAppearance
         }, false)
+    }
+
+    private resetWebeditor() {
+        for (const key in this.webeditor) {
+            this.webeditor[key] = this.originalWebeditor[key] || []
+        }
+    }
+
+    private resetNavigation() {
+        for (const key in this.navigation) {
+            this.navigation[key] = this.originalNavigation[key] || []
+        }
+    }
+
+    private insertCenterHeaderTabs() {
+        const tabsWithFloat = this.navigation?.tabs?.map(item => ({
+            ...item,
+            float: "center" as const
+        })) ?? []
+
+        const searchIndex = this.webeditor.header?.findIndex(item => item.component === "Search") ?? -1
+        const currentHeader = this.webeditor.header ?? []
+
+        if (searchIndex !== -1) {
+            // Insert tabs after Search component
+            this.webeditor.header = [
+                ...currentHeader.slice(0, searchIndex + 1),
+                ...tabsWithFloat,
+                ...currentHeader.slice(searchIndex + 1)
+            ]
+        } else {
+            // If no Search component, insert at the beginning
+            this.webeditor.header = [
+                ...tabsWithFloat,
+                ...currentHeader
+            ]
+        }
     }
 }
 
@@ -181,25 +342,6 @@ function deepMerge<T>(target: T, source: DeepPartial<T>): T {
             target[key] = deepMerge(targetVal, sourceVal)
         } else if (sourceVal !== undefined) {
             target[key] = sourceVal as any
-        }
-    }
-
-    return target
-}
-
-// ─── Deep Merge With Copy Helper ─────────────────────────────
-
-function deepMergeWithCopy<T>(
-    target: T,
-    source: DeepPartial<T>
-): T {
-    // First perform the deep merge
-    deepMerge(target, source)
-
-    // Then do JSON.parse(JSON.stringify()) on all target properties
-    for (const key in target) {
-        if (target[key] !== undefined) {
-            (target as any)[key] = JSON.parse(JSON.stringify(target[key]))
         }
     }
 

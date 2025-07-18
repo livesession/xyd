@@ -1,32 +1,33 @@
 ---
-title: Routing
+title: Navigation
 icon: waypoints
 tocCard: 
-    link: https://github.com/xyd-js/routing-samples
-    title: Routing Samples
+    link: https://github.com/xyd-js/navigation-samples
+    title: Navigation Samples
     description: Learn how to setup Routing
     icon: docs:github
 maxTocDepth: 4
 ---
 
-# Routing
+# Navigation
 :::subtitle
 Learn how to navigate your docs
 :::
 
-Routing is one of the core concepts in xyd to understand as it determines how your documentation pages are organized, navigated, and accessed by users. It provides flexible ways to structure your content.
+Navigation is one of the core concepts in xyd to understand as it determines how your documentation pages are organized, navigated, and accessed by users. It provides flexible ways to structure your content.
 
 
-## Settings-Based Routing
+## Settings-Based Navigation
 
-You can customize the routing by adding a routes in [`docs.json`](/docs/guides/settings) file to your project.
+You can customize the navigation by adding a routes in [`docs.json`](/docs/guides/settings) file to your project.
 
 The `navigation` property controls the hierarchy of your documentation. It's grouped into multiple properties:
 
-* [`sidebar`](/docs/guides/routing#sidebar) - Main navigation, usually displayed on the left side of the page.
-* [`header`](/docs/guides/routing#header) - Top-level navigation bar, typically displayed at the top of the page.
-* [`segments`](/docs/guides/routing#segments) - Smaller navigational structures based on specific `route`.
-* [`anchors`](/docs/guides/routing#anchors) - Fixed navigation, helpful for displaying a static navigation/links.
+* [`sidebar`](/docs/guides/navigation#sidebar) - Main navigation, usually displayed on the left side of the page.
+* [`tabs`](/docs/guides/navigation#tabs) - Navigate through tabs, the most in header area.
+* [`sidebarDropdown`](/docs/guides/navigation#tabs) - Navigate through sidebar dropdown.
+* [`segments`](/docs/guides/navigation#segments) - Smaller navigational structures based on specific `route`.
+* [`anchors`](/docs/guides/navigation#anchors) - Fixed navigation, helpful for displaying a static navigation/links.
 s
 :::callout
 Dividing a `navigation` into multiple properties helps you to organize your documentation better.
@@ -96,9 +97,29 @@ You can also define nested groups:
 }
 ```
 
-:::callout
-Please not that order of your sidebar items depends on place in the config file. 
-:::
+#### Group Page
+If you want to have a clickable group as a page, define `page`:
+```json [descHead="Tip" desc="The sidebar title comes from a [page meta](/docs/guides/pages)"]
+{
+  "sidebar": [
+    {
+      "group": "Integrations",
+      "pages": [
+          {
+              // !diff +
+              "page": "docs/guides/integrations",
+              "icon": "chart-line",
+              "pages": [
+                  "docs/guides/integrations/analytics/analytics-integrations",
+                  "docs/guides/integrations/analytics/livesession"
+              ]
+          }
+      ]
+    }
+    // ... other groups
+  ]
+}
+```
 
 #### Routing
 You can also do more advanced routing in the sidebar, like matching based on the specific route:
@@ -139,27 +160,9 @@ You can also do more advanced routing in the sidebar, like matching based on the
 }
 ```
 
-### Header
+### Tabs
 
-The header navigation allows you to create a top-level navigation bar. 
-
-```json
-{
-  "navigation": {
-    // !diff +
-    "header": [
-      {
-        "title": "Documentation",
-        "page": "docs"
-      },
-      {
-        "title": "API Reference",
-        "page": "docs/api"
-      }
-    ]
-  }
-}
-```
+### Sidebar Dropdown
 
 ### Segments
 
@@ -208,34 +211,54 @@ Thanks to that you can create for example a subheader that will shown only on sp
 
 ### Anchors
 
-Anchors provide a way to add fixed navigation elements, typically at the bottom of the page. They're useful for displaying important external links or resources.
+Anchors provide a way to add fixed navigation elements. They're useful for displaying important external links or resources.
 
+:::tabs
+:::
 ```json
 {
   "navigation": {
     "anchors": {
-      "bottom": [
-        {
-          "icon": "icon-book",
-          "name": "Documentation",
-          "url": "https://docs.example.com"
-        },
-        {
-          "icon": "icon-users",
-          "name": "Community",
-          "url": "https://community.example.com"
-        },
-        {
-          "icon": "icon-code",
-          "name": "GitHub",
-          "url": "https://github.com/example"
-        },
-        {
-          "icon": "icon-chat",
-          "name": "Support",
-          "url": "https://support.example.com"
-        }
-      ]
+      "header": [
+          {
+              "title": "Public Roadmap",
+              "href": "https://github.com/orgs/livesession/projects/4"
+          },
+          {
+              "title": "Feedback",
+              "href": "https://github.com/livesession/xyd/discussions",
+              "button": "primary"
+          },
+          {
+              "title": "Github",
+              "href": "https://github.com/livesession/xyd/discussions",
+              "icon": "docs:github"
+          }
+      ],
+      "sidebar": {
+        "bottom": [
+          {
+            "href": "https://docs.example.com",
+            "icon": "icon-book",
+            "title": "Documentation"
+          },
+          {
+            "href": "https://community.example.com",
+            "icon": "icon-users",
+            "title": "Community"
+          },
+          {
+            "href": "https://github.com/example",
+            "icon": "icon-code",
+            "title": "GitHub"
+          },
+          {
+            "href": "https://support.example.com",
+            "icon": "icon-chat",
+            "title": "Support"
+          }
+        ]
+      }
     }
   }
 }

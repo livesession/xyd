@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router"
 import { Popover } from "radix-ui";
 
@@ -21,10 +21,11 @@ export interface SidebarTabsDropdownProps {
 // TODO: for some reason icon as string does not work
 export function SidebarTabsDropdown({ options, value }: SidebarTabsDropdownProps) {
     const selected = options.find(opt => opt.value === value) || options[0];
+    const [open, setOpen] = useState(false)
 
     return <xyd-sidebar-tabs-dropdown className={cn.DropdownHost}>
-        <Popover.Root open={undefined}>
-            <Popover.Trigger asChild>
+        <Popover.Root open={open} onOpenChange={setOpen}>
+            <Popover.Trigger asChild onClick={() => setOpen(true)}>
                 <button part="dropdown-trigger" type="button"  >
                     <IconWrapper icon={selected?.icon} />
 
@@ -46,6 +47,7 @@ export function SidebarTabsDropdown({ options, value }: SidebarTabsDropdownProps
                         part={"dropdown-listitem"}
                         aria-selected={opt.value === value}
                         to={opt.value}
+                        onClick={() => setOpen(false)}
                     >
                         <IconWrapper icon={opt.icon} />
 

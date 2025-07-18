@@ -3,8 +3,8 @@
         /* layout: Sidebar */
         [part="sidebar"] {
             position: sticky;
-            height: calc(100dvh - var(--xyd-nav-height));
-            top: var(--xyd-nav-height);
+            height: calc(100dvh - var(--xyd-nav-height) - var(--xyd-banner-height-dynamic));
+            top: calc(var(--xyd-nav-height) + var(--xyd-banner-height-dynamic));
             z-index: 1;
         }
 

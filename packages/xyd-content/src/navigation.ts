@@ -38,6 +38,12 @@ export async function pageFrontMatters(navigation: Sidebar[], pagePathMapping: {
 
     await Promise.all(promises)
 
+    // TODO: IN THE FUTURE BETTER API
+    // @ts-ignore
+    if (globalThis.__xydHasIndexPage) {
+        await job("index", frontmatters, pagePathMapping)
+    }
+
     return frontmatters
 }
 

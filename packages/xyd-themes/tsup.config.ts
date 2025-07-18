@@ -9,13 +9,15 @@ const deps = [
 
 export default defineConfig({
     entry: {
-        index: 'src/index.ts'
+        index: 'src/index.ts',
+        rollup: 'src/rollup.ts',
     },
     format: ['esm'],
     target: 'node16',
     dts: {
         entry: {
-            index: 'src/index.ts'
+            index: 'src/index.ts',
+            rollup: 'src/rollup.ts',
         },
         resolve: true,
     },

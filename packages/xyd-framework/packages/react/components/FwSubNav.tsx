@@ -1,10 +1,8 @@
 import React from "react";
-import { useLocation } from "react-router";
 
-import { SubNav, SidebarTabsDropdown } from "@xyd-js/ui";
-import { Icon } from "@xyd-js/components/writer";
+import { SubNav } from "@xyd-js/ui";
 
-import { pageLink, trailingSlash } from "../utils";
+import { pageLink } from "../utils";
 import { useActiveMatchedSubNav, useMatchedSubNav } from "../hooks";
 import { FwLink } from "./FwLink";
 

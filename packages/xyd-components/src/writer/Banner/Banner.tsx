@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { Button, Icon } from "../../../writer";
 
@@ -12,13 +12,23 @@ export interface BannerProps {
     label?: string;
     href?: string;
     icon?: React.ReactNode | string;
-    close?: boolean;
-    onClose?: () => void;
+    store?: number; // seconds until banner can show again
 }
 
 export function Banner(props: BannerProps) {
+    const { isVisible, handleClose } = useBannerStorage(props.store, props.label);
+
+    const onCloseHandler = () => {
+        handleClose();
+        props.onClose?.();
+    };
+
+    if (!isVisible) {
+        return null;
+    }
+
     if (props.kind === "secondary") {
-        return <Banner.Secondary {...props} />;
+        return <Banner.Secondary {...props} onClose={onCloseHandler} />;
     }
 
     let icon: React.ReactNode = null
@@ -54,16 +64,28 @@ export function Banner(props: BannerProps) {
             </a>
         </div>
         {
-            props.close ? (
+            (props.store) ? (
                 <div part="close">
-                    <IconClose onClick={props.onClose} />
+                    <IconClose onClick={onCloseHandler} />
                 </div>
             ) : null
         }
     </xyd-banner>
 }
 
-Banner.Secondary = function BannerSecondary(props: BannerProps) {
+
+Banner.Secondary = function BannerSecondary(props: BannerProps & { onClose?: () => void }) {
+    const { isVisible, handleClose } = useBannerStorage(props.store, props.label);
+
+    const onCloseHandler = () => {
+        handleClose();
+        props.onClose?.();
+    };
+
+    if (!isVisible) {
+        return null;
+    }
+
     let label: React.ReactNode = null
     if (props.label) {
         label = <Button size="sm" kind="secondary">
@@ -75,9 +97,39 @@ Banner.Secondary = function BannerSecondary(props: BannerProps) {
         {props.children}
         {label}
         <div part="close">
-            <IconClose onClick={props.onClose} />
+            <IconClose onClick={onCloseHandler} />
         </div>
     </xyd-banner>
+}
+
+function useBannerStorage(store?: number, label?: string) {
+    const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+        if (store) {
+            const storageKey = `xyd-banner-closed-${label || 'default'}`;
+            const closedUntil = localStorage.getItem(storageKey);
+            
+            if (closedUntil) {
+                const now = Date.now();
+                const canShowAgain = parseInt(closedUntil) <= now;
+                setIsVisible(canShowAgain);
+            }
+        }
+    }, [store, label]);
+
+    const handleClose = () => {
+        if (store) {
+            const storageKey = `xyd-banner-closed-${label || 'default'}`;
+            const now = Date.now();
+            const showAgainAt = now + (store * 1000);
+            localStorage.setItem(storageKey, showAgainAt.toString());
+        }
+        
+        setIsVisible(false);
+    };
+
+    return { isVisible, handleClose };
 }
 
 function IconClose(props: { onClick?: () => void }) {

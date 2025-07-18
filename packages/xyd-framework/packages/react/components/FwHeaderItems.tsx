@@ -51,7 +51,13 @@ export function FwHeaderItem(props: WebEditorHeader) {
 
     return <WebEditorHeader
         {...props}
+        key={keyId(props)}
     >
         {isExternalArrow ? <Icon.ExternalArrow /> : null}
     </WebEditorHeader>
+}
+
+
+function keyId(props: WebEditorHeader) {
+    return `${props?.component || "."}-${props?.title || props?.href || "."}`
 }

@@ -36,7 +36,7 @@ export function Button({
     if (href) {
         hrefProps = {
             href,
-            target: "_blank",
+            target: outsideLink(href) ? "_blank" : undefined,
         }
     }
 
@@ -74,4 +74,8 @@ export function Button({
             )}
         </Component>
     );
+}
+
+function outsideLink(href: string) {
+    return href.startsWith("http") || href.startsWith("//")
 }

@@ -57,3 +57,21 @@ Everything you need to build documentation at scale is built right in. Our platf
 We believe that documentation should be accessible to everyone. That's why `xyd` is open source, allowing the community to contribute, improve, and customize the platform. Join our growing [community](https://github.com/livesession/xyd) of developers who are shaping the future of documentation together.
 
 Ready to transform your documentation experience? [Get started now](/docs/guides/quickstart).
+
+```js
+import OpenAI from "openai";
+const client = new OpenAI();
+
+const response = await client.responses.create({
+    model: "gpt-4.1",
+    input: "Write a one-sentence bedtime story about a unicorn.",
+});
+
+console.log(response.output_text);
+```
+
+```css
+.hello-world {
+    color: red;
+}
+```

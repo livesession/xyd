@@ -11,11 +11,16 @@ export function FwSidebarNavigationItem(item: NavigationItem) {
 
     return <UISidebar.Item
         href={item.page || item.href}
-        icon={<Icon name={item.icon || ""} />}
+        icon={React.isValidElement(item.icon) ? item.icon : <Icon name={item.icon || ""} />}
+        key={keyId(item)}
     >
         <UISidebar.ItemBody
             title={item.title}
             right={appearance?.sidebar?.externalArrow && <Icon.ExternalArrow />}
         />
     </UISidebar.Item>
+}
+
+function keyId(props: NavigationItem) {
+    return `${props?.title || props?.href || "."}-${props.page || ""}`
 }

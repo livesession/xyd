@@ -10,6 +10,7 @@ import {terser} from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';
 import wyw from '@wyw-in-js/rollup';
+import copy from 'rollup-plugin-copy';
 
 import {createRequire} from 'module';
 
@@ -32,7 +33,12 @@ const __dirname = path.dirname(__filename);
 const themesDir = path.resolve(__dirname, 'src/coder/themes');
 const themes = fs.readdirSync(themesDir).reduce((acc, file) => {
     const themeName = path.basename(file, path.extname(file));
-    acc[`coder/themes/${themeName}`] = path.join(themesDir, file);
+    const ext = path.extname(file);
+    
+    // Only process TypeScript files for the main build
+    if (ext === '.ts') {
+        acc[`coder/themes/${themeName}`] = path.join(themesDir, file);
+    }
     return acc;
 }, {});
 
@@ -88,6 +94,15 @@ export default [
                 ],
             }),
             terser(),
+            // Copy CSS files from themes directory
+            copy({
+                targets: [
+                    { 
+                        src: 'src/coder/themes/*.css', 
+                        dest: 'dist/coder/themes' 
+                    }
+                ]
+            })
         ],
         external
     },

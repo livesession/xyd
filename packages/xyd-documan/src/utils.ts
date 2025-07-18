@@ -11,7 +11,7 @@ import { IconSet } from '@iconify/tools';
 import { readSettings, pluginDocs, type PluginDocsOptions, PluginOutput } from "@xyd-js/plugin-docs";
 import { vitePlugins as xydContentVitePlugins } from "@xyd-js/content/vite";
 import { Integrations, Plugins, Settings } from "@xyd-js/core";
-import type { IconLibrary } from "@xyd-js/core";
+import type { IconLibrary, WebEditorNavigationItem } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
 
@@ -58,6 +58,21 @@ export async function appInit(options?: PluginDocsOptions) {
                 userUniformVitePlugins.push(...p.uniform)
             }
             if (p.components) {
+                for (const component of p.components) {
+                    if (!component.component) {
+                        console.error("No component function")
+                        continue
+                    }
+
+                    if (!component.name) {
+                        component.name = component.component.name
+                    }
+
+                    if (!component.name) {
+                        console.error("No component name")
+                        continue
+                    }
+                }
                 componentPlugins.push(...p.components)
             }
         })
@@ -83,6 +98,10 @@ export async function appInit(options?: PluginDocsOptions) {
     globalThis.__xydBasePath = respPluginDocs.basePath
     globalThis.__xydSettings = respPluginDocs.settings
     globalThis.__xydPagePathMapping = respPluginDocs.pagePathMapping
+    globalThis.__xydHasIndexPage = respPluginDocs.hasIndexPage
+    globalThis.__xydSettingsClone = JSON.parse(JSON.stringify(respPluginDocs.settings)) // TODO: finish
+
+    // appearanceWebEditor(respPluginDocs.settings)
 
     return {
         respPluginDocs,
@@ -239,7 +258,6 @@ export async function vitePluginThemePresets(settings: Settings) {
         const files = fs.readdirSync(presetsDir);
         cssFiles = files.filter((f) => f.endsWith('.css'));
     } catch (err) {
-        console.warn(`[vitePluginThemePresets] Failed to read preset dir: ${presetsDir}`, err);
     }
 
     // Build import statements and map entries
@@ -943,3 +961,134 @@ export function storeChecksum(checksum: string): void {
     }
 }
 
+function appearanceWebEditor(settings: Settings) {
+    if (!settings.theme?.appearance) {
+        return
+    }
+    if (!settings.webeditor) {
+        settings.webeditor = {}
+    }
+
+    deepMergeWithCopy(settings.webeditor, settings.webeditor)
+ 
+    settings.webeditor.sidebarTop = JSON.parse(JSON.stringify(settings.webeditor.sidebarTop || []))
+
+    const searchAppearance = settings.theme.appearance?.search?.sidebar || settings.theme.appearance?.search?.middle
+    if (searchAppearance) {
+        const hasSearch = settings.webeditor.header?.find(item => item.component === "Search")
+
+        if (hasSearch) {
+            console.warn("Search already exists in webeditor.header")
+            return
+        }
+
+        if (settings.theme.appearance?.search?.sidebar) {
+            const search: WebEditorNavigationItem = {
+                component: "Search",
+                mobile: settings.theme.appearance?.search?.sidebar === "mobile" || undefined,
+                desktop: settings.theme.appearance?.search?.sidebar === "desktop" || undefined
+            }
+            if (!settings.webeditor.sidebarTop) {
+                settings.webeditor.sidebarTop = []
+            }
+
+            settings.webeditor.sidebarTop?.unshift({
+                ...search,
+            })
+        }
+
+        if (settings.theme.appearance?.search?.middle) {
+            const search: WebEditorNavigationItem = {
+                component: "Search",
+                mobile: this.theme.appearance?.search?.middle === "mobile" || undefined,
+                desktop: this.theme.appearance?.search?.middle === "desktop" || undefined
+            }
+            const searchItem = {
+                ...search,
+                float: "center" as const
+            }
+
+            settings.webeditor.header = this.headerPrepend(searchItem, "center")
+        }
+    }
+
+    if (
+        settings.theme.appearance?.sidebar?.scrollbarColor &&
+        !settings.theme.appearance?.sidebar?.scrollbar
+    ) {
+        settings.theme.appearance.sidebar.scrollbar = "secondary"
+    }
+
+    if (settings.theme.appearance?.logo?.sidebar) {
+        const logo: WebEditorNavigationItem = {
+            component: "Logo",
+            mobile: settings.theme.appearance?.logo?.sidebar === "mobile" || undefined,
+            desktop: settings.theme.appearance?.logo?.sidebar === "desktop" || undefined
+        }
+        if (!settings.webeditor.sidebarTop) {
+            settings.webeditor.sidebarTop = []
+        }
+        // const original = JSON.parse(JSON.stringify(settings.originalWebeditor.sidebarTop || []))
+
+        // settings.webeditor.sidebarTop = [
+        //     logo,
+        //     ...original
+        // ]
+        
+        settings.webeditor.sidebarTop?.unshift({
+            ...logo,
+        })
+    }
+}
+
+
+type DeepPartial<T> = {
+    [P in keyof T]?: T[P] extends object
+    ? T[P] extends Function
+    ? T[P]
+    : T[P] extends Array<infer U>
+    ? Array<DeepPartial<U>>
+    : DeepPartial<T[P]>
+    : T[P]
+}
+
+
+function deepMerge<T>(target: T, source: DeepPartial<T>): T {
+    for (const key in source) {
+        const sourceVal = source[key]
+        const targetVal = target[key]
+
+        if (
+            sourceVal &&
+            typeof sourceVal === "object" &&
+            !Array.isArray(sourceVal) &&
+            typeof targetVal === "object" &&
+            targetVal !== null
+        ) {
+            target[key] = deepMerge(targetVal, sourceVal)
+        } else if (sourceVal !== undefined) {
+            target[key] = sourceVal as any
+        }
+    }
+
+    return target
+}
+
+// ─── Deep Merge With Copy Helper ─────────────────────────────
+
+function deepMergeWithCopy<T>(
+    target: T,
+    source: DeepPartial<T>
+): T {
+    // First perform the deep merge
+    deepMerge(target, source)
+
+    // Then do JSON.parse(JSON.stringify()) on all target properties
+    for (const key in target) {
+        if (target[key] !== undefined) {
+            (target as any)[key] = JSON.parse(JSON.stringify(target[key]))
+        }
+    }
+
+    return target
+}

@@ -1,2 +1,1 @@
-// TODO: rename to @xyd-js/components/themes . `HomePage` -> `BaseTheme`
-export * from "./src/pages/HomePage"
+export * from "./src/pages"

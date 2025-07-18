@@ -13,6 +13,10 @@ export const SubNavHost = css`
         margin-top: 3px;
         padding: 0 var(--xyd-padding-large);
 
+        [part="list"] button:first-of-type xyd-subnav-item {
+            padding-left: 0;
+        }
+
         [part="prefix"] {
             color: var(--xyd-subnav-prefix-color);
             font-weight: var(--xyd-font-weight-semibold);
@@ -55,11 +59,7 @@ export const SubNavItem = css`
 
         align-items: center;
         position: relative;
-        padding: calc(var(--xyd-nav-padding) / 2) var(--xyd-nav-padding);
-
-        xyd-subnav &:first-of-type {
-            padding-left: 0;
-        }
+        padding: var(--xyd-nav-item-padding-y) var(--xyd-nav-item-padding);
 
         [data-state="active"] > & {
             font-weight: var(--xyd-font-weight-semibold);
@@ -77,6 +77,7 @@ export const SubNavItem = css`
                 left: 0;
                 position: absolute;
                 width: 100%;
+                bottom: calc(var(--xyd-nav-item-padding-y) * -1);
             }
         }
 
@@ -85,6 +86,7 @@ export const SubNavItem = css`
             display: flex;
             height: 100%;
             align-items: center;
+            position: relative;
 
             &:hover {
                 color: var(--xyd-subnav-item-color--active);

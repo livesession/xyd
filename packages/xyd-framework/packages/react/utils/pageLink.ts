@@ -1,6 +1,10 @@
 
 // TODO: move to core?
 export function pageLink(page: string) {
+    if (page === "index" || page === "/index") {
+        return "/"
+    }
+
     if (!page) {
         return ""
     }

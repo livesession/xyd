@@ -5,8 +5,6 @@ import * as cn from "./Nav.styles";
 
 export interface NavProps {
     children: React.ReactNode
-    value: string
-    onChange?: (value: string) => void
     logo?: React.ReactNode;
     className?: string;
     leftSurface?: React.ReactNode;
@@ -21,8 +19,6 @@ export interface NavProps {
 export function Nav(props: NavProps) {
     const {
         children,
-        value,
-        onChange,
         logo,
         className,
         leftSurface,
@@ -32,13 +28,11 @@ export function Nav(props: NavProps) {
         appearance,
     } = props
 
-    const defaultList = <RadixTabs.List asChild>
-        <div part="nav-list">
-            {children}
-        </div>
-    </RadixTabs.List>
+    const defaultList = <div part="nav-list">
+        {children}
+    </div>
 
-    return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
+    return <>
         <xyd-nav
             className={`${cn.NavHost} ${className || ""}`}
             data-appearance-separator={appearance?.separator || undefined}
@@ -50,9 +44,7 @@ export function Nav(props: NavProps) {
                     {
                         leftSurface ? leftSurface : <>
                             {logo && <div part="logo">
-                                <$NavItem>
-                                    {logo}
-                                </$NavItem>
+                                {logo}
                             </div>}
                             {defaultList}
                         </>
@@ -65,17 +57,17 @@ export function Nav(props: NavProps) {
                 {floatRightSurface && <div part="nav-float-right">{floatRightSurface}</div>}
             </nav>
         </xyd-nav>
-    </RadixTabs.Root>
+    </>
 }
 
-interface TabProps {
+interface TabsProps {
     children: React.ReactNode
     value: string
     onChange?: (value: string) => void
 }
 
-Nav.Tab = function Tab({ children, value, onChange }: TabProps) {
-    return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
+Nav.Tabs = function TabTabs({ children, value, onChange }: TabsProps) {
+    return <RadixTabs.Root value={value} onValueChange={onChange}>
         <RadixTabs.List >
             {children}
         </RadixTabs.List>
@@ -91,11 +83,11 @@ export interface NavItemProps {
 
 Nav.Item = function NavItem(props: NavItemProps) {
     return <RadixTabs.Trigger asChild value={props.value}>
-        <$NavItem {...props} />
+        <Nav.ItemRaw {...props} />
     </RadixTabs.Trigger>
 };
 
-function $NavItem({ children, href, as }: Omit<NavItemProps, "value">) {
+Nav.ItemRaw = function NavItemRaw({ children, href, as, ...rest }: Omit<NavItemProps, "value">) {
     const Link = as || $Link;
 
     // const links = <>
@@ -104,7 +96,7 @@ function $NavItem({ children, href, as }: Omit<NavItemProps, "value">) {
     // </>
     const links = children;
 
-    return <xyd-nav-item className={cn.ItemHost}>
+    return <xyd-nav-item className={cn.ItemHost} {...rest}>
         {
             typeof href === "string" ? <Link href={href}>
                 {links}

@@ -53,6 +53,9 @@ export class BaseTheme extends Theme {
         this.TocTop = this.TocTop.bind(this)
         this.TocBottom = this.TocBottom.bind(this)
         this.PageFooter = this.PageFooter.bind(this)
+        this.Footer = this.Footer.bind(this)
+        this.Breadcrumbs = this.Breadcrumbs.bind(this)
+        this.NavLinks = this.NavLinks.bind(this)
     }
 
     // public reactContentComponents(): { [component: string]: (props: any) => React.JSX.Element | null } {
@@ -79,6 +82,50 @@ export class BaseTheme extends Theme {
         return this.reactContent.components()
     }
 
+    public Layout({ children }: { children: React.ReactNode }) {
+        const {
+            Navbar: $Navbar,
+            Sidebar: $Sidebar,
+            Footer: $Footer,
+        } = this
+
+        const location = useLocation()
+        const matchedSubNav = useMatchedSubNav()
+        const meta = useMetadata()
+        const appearance = useAppearance()
+
+        const hideSidebar = this.useHideSidebar()
+        const subheader = matchedSubNav ? <FwSubNav /> : null
+        const sidebar = <$Sidebar />
+
+        const banner = appearance?.banner?.fixed ? <FwBanner /> : null
+
+        return <LayoutPrimary
+            subheader={!!subheader}
+            layout={meta?.layout}
+            scrollKey={location.pathname}
+        >
+            <LayoutPrimary.Header
+                banner={banner}
+                header={<$Navbar />}
+                subheader={subheader}
+            />
+            <LayoutPrimary.MobileAside
+                aside={sidebar}
+            />
+
+            <main part="main">
+                {hideSidebar ? null : <aside part="sidebar">
+                    {sidebar}
+                </aside>}
+
+                {children}
+            </main>
+
+            <$Footer />
+        </LayoutPrimary>
+    }
+
     public Page({ children }: { children: React.ReactNode }) {
         const {
             Content: $Content,
@@ -100,49 +147,6 @@ export class BaseTheme extends Theme {
         </LayoutPrimary.Page>
     }
 
-    public Layout({ children }: { children: React.ReactNode }) {
-        const {
-            Navbar: $Navbar,
-            Sidebar: $Sidebar,
-            Footer: $Footer,
-        } = this
-
-        const location = useLocation()
-        const matchedSubNav = useMatchedSubNav()
-        const meta = useMetadata()
-        const appearance = useAppearance()
-
-        const subheader = matchedSubNav ? <FwSubNav /> : null
-        const sidebar = <$Sidebar />
-
-        const banner = appearance?.banner?.fixed ? <FwBanner /> : null
-
-        return <LayoutPrimary
-            subheader={!!subheader}
-            layout={meta?.layout}
-            scrollKey={location.pathname}
-        >
-            <LayoutPrimary.Header
-                banner={banner}
-                header={<$Navbar />}
-                subheader={subheader}
-            />
-            <LayoutPrimary.MobileAside
-                aside={sidebar}
-            />
-
-            <main part="main">
-                <aside part="sidebar">
-                    {sidebar}
-                </aside>
-
-                {children}
-            </main>
-
-            <$Footer />
-        </LayoutPrimary>
-    }
-
     protected Navbar() {
         return <>
             <FwNav />
@@ -159,6 +163,8 @@ export class BaseTheme extends Theme {
 
         const {
             ContentSecondary: $ContentSecondary,
+            Breadcrumbs: $Breadcrumbs,
+            NavLinks: $NavLinks,
         } = this
 
         const contentDecorator = appearance?.writer?.contentDecorator
@@ -170,32 +176,33 @@ export class BaseTheme extends Theme {
         }
 
         return <>
-            {/*TODO: optional breadcrumbs*/}
-
-            {appearance?.writer?.breadcrumbs ? <FwBreadcrumbs /> : undefined}
+            <$Breadcrumbs />
 
             <ContentDecorator metaComponent={meta?.component || undefined}>
                 {children}
             </ContentDecorator>
 
-            <FwNavLinks />
+            <$NavLinks />
         </>
     }
 
     private ContentSecondary({ children }: { children: React.ReactNode }) {
         const meta = useMetadata()
         const ContentComponent = useContentComponent()
-        const appearance = useAppearance()
-        
+
         const { h1, Subtitle, code } = this.reactContent.components()
+        const {
+            Breadcrumbs: $Breadcrumbs,
+            NavLinks: $NavLinks,
+        } = this
 
         return <ContentDecorator metaComponent={meta?.component || undefined}>
-
             <main>
                 <xyd-secondary-content>
                     <div part="secondary-content-header">
                         <div>
-                            {appearance?.writer?.breadcrumbs ? <FwBreadcrumbs /> : undefined}
+                            <$Breadcrumbs />
+
                             <ContentComponent components={{ // TODO: !!! BETTER API !!!
                                 ...this.reactContent.noop(),
                                 h1,
@@ -210,7 +217,7 @@ export class BaseTheme extends Theme {
 
                     <div part="secondary-content">
                         {children}
-                        <FwNavLinks />
+                        <$NavLinks />
                     </div>
                 </xyd-secondary-content>
             </main>
@@ -288,7 +295,6 @@ export class BaseTheme extends Theme {
                     {settings.integrations.apps.githubStar.title}
                 </GitHubButton>
             </div>
-
         }
 
         return <>
@@ -309,6 +315,10 @@ export class BaseTheme extends Theme {
 
         const logo = settings?.webeditor?.footer?.logo
 
+        if (!settings.webeditor?.footer) {
+            return null
+        }
+        
         if (logo) {
             if (typeof logo === "boolean") {
                 logoElement = <FwLogo />
@@ -332,6 +342,30 @@ export class BaseTheme extends Theme {
                 }))
             })) : undefined}
         />
+    }
+
+    protected Breadcrumbs() {
+        const appearance = useAppearance()
+        const hideSidebar = this.useHideSidebar()
+
+        if (!appearance?.writer?.breadcrumbs) {
+            return null
+        }
+
+        if (hideSidebar) {
+            return null
+        }
+
+        return <FwBreadcrumbs />
+    }
+
+    protected NavLinks() {
+        const hideSidebar = this.useHideSidebar()
+
+        if (hideSidebar) {
+            return null
+        }
+        return <FwNavLinks />
     }
 }
 
@@ -361,8 +395,11 @@ function $BuiltWithXYD() {
     </a>
 }
 
-function
-    isDefaultContent(meta: Metadata) {
-    return meta?.openapi || meta?.graphql || meta.component === "atlas" || meta.uniform
+function isDefaultContent(meta: Metadata) {
+    return meta?.openapi ||
+        meta?.graphql ||
+        meta.component === "atlas" ||
+        meta.uniform ||
+        meta.component === "home"
 }
 

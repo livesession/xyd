@@ -157,7 +157,16 @@ function recreateComponent(
         }
 
         if (isCodeLike) {
-            mdCode(node, promises, directivesMap, settings);
+              componentProps(
+                node,
+                attributes,
+                promises,
+                file,
+                settings,
+            );
+
+
+            mdCode(node, promises, directivesMap, settings, attributes);
             return
         }
 
@@ -383,24 +392,33 @@ function mdTable(node: any, directivesMap: MarkdownComponentDirectiveMap) {
     return;
 }
 
-function mdCode(node: any, promises: Promise<any>[], directivesMap: MarkdownComponentDirectiveMap, settings?: Settings) {
+function mdCode(node: any, promises: Promise<any>[], directivesMap: MarkdownComponentDirectiveMap, settings?: Settings, attributes: any[]) {
     const componentName = getComponentName(node.name, directivesMap);
 
     const description = node.attributes?.title || '';
     const codeblocks: any[] = [];
 
     function rewriteNode() {
-        // Add metadata to the node
-        node.data = {
-            ...node.data,
-            hName: componentName,
-            hProperties: {
-                description,
-                codeblocks: JSON.stringify(codeblocks),
-            },
+        const jsxNode = {
+            type: 'mdxJsxFlowElement',
+            name: componentName,
+            attributes: [
+                ...attributes,
+                {
+                    type: 'mdxJsxAttribute',
+                    name: 'description',
+                    value: description
+                },
+                {
+                    type: 'mdxJsxAttribute',
+                    name: 'codeblocks',
+                    value: JSON.stringify(codeblocks)
+                }
+            ],
+            children: []
         };
-
-        node.children = [];
+    
+        Object.assign(node, jsxNode);
     }
 
     for (const child of node.children) {
@@ -424,8 +442,6 @@ function mdCode(node: any, promises: Promise<any>[], directivesMap: MarkdownComp
             promises.push(promise)
         }
     }
-
-    return
 }
 
 

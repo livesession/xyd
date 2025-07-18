@@ -16,6 +16,8 @@
     "@xyd-js/theme-cosmo": "workspace:*",
     "@xyd-js/theme-opener": "workspace:*",
     "@xyd-js/theme-picasso": "workspace:*",
+    "@xyd-js/theme-gusto": "workspace:*",
+    "@xyd-js/theme-solar": "workspace:*",
     "@xyd-js/plugin-orama": "workspace:*",
     "@xyd-js/plugin-algolia": "workspace:*",
     "isbot": "^5",

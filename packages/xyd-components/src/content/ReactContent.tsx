@@ -30,6 +30,7 @@ import {
     ColorSchemeButton,
     Breadcrumbs
 } from '../../writer'
+import { PageHome } from '../../pages'
 import { CodeSample } from "../../coder";
 import { GridDecorator } from './GridDecorator';
 
@@ -55,6 +56,7 @@ export class ReactContent {
         const builtInComponents = [
             stdContent,
             writerContent,
+            pageComponents,
             iconContent,
             coderContent,
             directiveContent,
@@ -309,6 +311,12 @@ export function writerContent() {
     }
 }
 
+function pageComponents() {
+    return {
+        PageHome
+    }
+}
+
 function $GuideCardContentComponent(props) {
     return <GuideCard
         {...props}
@@ -433,7 +441,7 @@ export function directiveContent(
             return <CodeSample
                 {...props}
                 theme={this.settings?.theme?.coder?.syntaxHighlight || undefined}
-                codeblocks={JSON.parse(props.codeblocks)}
+                codeblocks={JSON.parse(props.codeblocks || "[]")}
             />
         }
     }
@@ -513,9 +521,13 @@ function $Link({
 }: LinkProps) {
     const Link = as || Anchor
 
+    if (!as) {
+        // TODO: fix any
+        (props as any).newWindow = newWindow || EXTERNAL_HREF_REGEX.test(href)
+    }
+
     return <Link
         href={href}
-        newWindow={newWindow || EXTERNAL_HREF_REGEX.test(href)}
         {...props}
     >
         {children}

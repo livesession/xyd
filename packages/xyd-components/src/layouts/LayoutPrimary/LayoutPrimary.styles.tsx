@@ -22,6 +22,7 @@ export const LayoutPrimaryHost = css`
             height: var(--xyd-nav-height);
             background: var(--xyd-layout-header-bgcolor);
             z-index: 3;
+            flex-direction: column;
 
             @media (max-width: ${mobileBreakpoint}) {
                 padding: 0;

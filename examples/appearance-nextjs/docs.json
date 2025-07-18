@@ -1,6 +1,7 @@
 {
     "theme": {
-        "name": "opener",
+        "name": "solar",
+        "variant": "secondary",
         "logo": {
             "light": "/public/assets/logo.svg",
             "dark": "/public/assets/logo-dark.svg"
@@ -14,60 +15,9 @@
                 },
                 "./icons/iconify.json"
             ]
-        },
-        "appearance": {
-            "header": {
-                "type": "classic"
-            }
         }
     },
     "webeditor": {
-        "header": [
-            {
-                "title": "Showcase",
-                "page": "showcase"
-            },
-            {
-                "title": "Docs",
-                "page": "docs"
-            },
-            {
-                "title": "Blog",
-                "page": "blog"
-            },
-            {
-                "title": "Showcase",
-                "page": "docs/showcase"
-            },
-            {
-                "title": "Templates",
-                "href": "https://github.com/livesession/xyd/discussions"
-            },
-            {
-                "title": "Enterprise",
-                "href": "https://github.com/livesession/xyd/discussions"
-            },
-            {
-                "title": "Feedback",
-                "href": "https://github.com/livesession/xyd/discussions",
-                "float": "right",
-                "component": "Button",
-                "props": {
-                    "kind": "secondary",
-                    "children": "Feedback"
-                }
-            },
-            {
-                "title": "Learn",
-                "href": "https://github.com/livesession/xyd/discussions",
-                "float": "right",
-                "component": "Button",
-                "props": {
-                    "kind": "primary",
-                    "children": "Learn"
-                }
-            }
-        ],
         "footer": {
             "social": {
                 "github": "https://github.com/livesession/xyd",
@@ -157,11 +107,69 @@
         }
     },
     "navigation": {
+        "anchors": {
+            "header": [
+                {
+                    "title": "Github",
+                    "href": "https://github.com/livesession/xyd"
+                },
+                {
+                    "title": "Feedback",
+                    "href": "https://github.com/livesession/xyd/discussions",
+                    "button": "secondary"
+                },
+                {
+                    "title": "Learn",
+                    "href": "https://github.com/livesession/xyd/discussions",
+                    "button": "primary"
+                },
+                {
+                    "title": "Github",
+                    "href": "https://github.com/livesession/xyd/discussions",
+                    "icon": "docs:github"
+                }
+            ],
+            "sidebar": {
+                "bottom": [
+                    {
+                        "href": "http://xyd-docs.slack.com",
+                        "icon": "docs:slack",
+                        "title": "Slack"
+                    },
+                    {
+                        "href": "https://github.com/xyd-js/examples",
+                        "icon": "code",
+                        "title": "Example Projects"
+                    }
+                ]
+            }
+        },
+        "tabs": [
+            {
+                "title": "Home",
+                "page": "index",
+                "icon": "home"
+            },
+            {
+                "title": "Guides",
+                "page": "docs",
+                "icon": "book"
+            },
+            {
+                "title": "Reference",
+                "page": "docs/reference",
+                "icon": "brackets"
+            },
+            {
+                "title": "Components",
+                "page": "docs/components",
+                "icon": "component"
+            }
+        ],
         "segments": [
             {
                 "route": "docs/reference",
                 "title": "API",
-                "type": "sidebarDropdown",
                 "pages": [
                     {
                         "title": "Core",
@@ -184,23 +192,6 @@
                         "icon": "square-terminal"
                     }
                 ]
-            }
-        ],
-        "tabs": [
-            {
-                "title": "Guides",
-                "page": "docs",
-                "icon": "book"
-            },
-            {
-                "title": "Components",
-                "page": "docs/components",
-                "icon": "component"
-            },
-            {
-                "title": "Reference",
-                "page": "docs/reference",
-                "icon": "brackets"
             }
         ],
         "sidebar": [
@@ -396,23 +387,7 @@
                     }
                 ]
             }
-        ],
-        "anchors": {
-            "sidebar": {
-                "bottom": [
-                    {
-                        "href": "http://xyd-docs.slack.com",
-                        "icon": "docs:slack",
-                        "title": "Slack"
-                    },
-                    {
-                        "href": "https://github.com/xyd-js/examples",
-                        "icon": "code",
-                        "title": "Example Projects"
-                    }
-                ]
-            }
-        }
+        ]
     },
     "engine": {
         "paths": {
@@ -423,11 +398,5 @@
                 "../../packages/xyd-core/src/*"
             ]
         }
-    },
-    "redirects": [
-        {
-            "source": "index",
-            "destination": "docs"
-        }
-    ]
+    }
 }

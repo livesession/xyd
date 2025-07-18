@@ -14,7 +14,8 @@ export const globals = css`
 export const GuideHost = css`
     @layer defaults {
         display: block;
-
+        height: 100%;
+        
         &[data-kind="secondary"] {
             display: flex;
             position: relative;

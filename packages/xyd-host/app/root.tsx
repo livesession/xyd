@@ -1,7 +1,7 @@
-import React, { } from "react";
+import React, { useEffect } from "react";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, redirect } from "react-router";
 
-import type { Settings, Appearance } from "@xyd-js/core";
+import type { Settings, Appearance, ThemeFont, Font } from "@xyd-js/core";
 import * as contentClass from "@xyd-js/components/content"; // TODO: move to appearance
 
 // @ts-ignore
@@ -11,9 +11,8 @@ import { presetUrls } from "virtual:xyd-theme-presets"
 
 import colorSchemeScript from "./scripts/colorSchemeScript.ts?raw";
 import bannerHeightScript from "./scripts/bannerHeight.ts?raw";
-// import sidebarScrollCss from "@xyd-js/themes/decorators/sidebar-scroll.css?raw";
 
-const { settings } = virtualSettings as { settings: Settings }
+const { settings } = virtualSettings as { settings: Settings, settingsClone: Settings }
 
 export function HydrateFallback() {
     return <div></div>
@@ -50,6 +49,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
                 <UserFavicon />
                 <UserHeadScripts />
+                <CssLayerFix />
+                <UserFonts />
 
                 <Meta />
                 <Links />
@@ -128,7 +129,19 @@ function ColorSchemeScript() {
     />
 }
 
+// TODO: check if it match good
 function BannerHeightScript() {
+    useEffect(() => {
+        const bannerHeight = document.querySelector("xyd-banner")?.clientHeight ?? 0;
+        if (!bannerHeight) {
+            return
+        }
+
+        document.documentElement.style.setProperty("--xyd-banner-height-dynamic", `${String(bannerHeight)}px`)
+    }, [])
+
+    return null
+
     return <script
         dangerouslySetInnerHTML={{
             __html: bannerHeightScript
@@ -317,4 +330,149 @@ const cssVarSize = (
     }
 
     return `var(${cssTokenPrefix}-${found})`
+}
+
+function UserFonts() {
+    const fontConfig = settings?.theme?.fonts
+
+    if (!fontConfig) {
+        return null
+    }
+
+    const fontCss = generateFontCss(fontConfig)
+
+    if (!fontCss) {
+        return null
+    }
+
+
+
+
+    return <>
+
+        <style
+            data-fonts
+            dangerouslySetInnerHTML={{
+                __html: fontCss
+            }}
+        />
+    </>
+}
+
+
+// TODO: its a fix for css layers - in the future better solution? is <style> order better?
+function CssLayerFix() {
+    return <style>
+        @layer reset, defaults, defaultfix, components, fabric, templates, decorators, themes, themedecorator, presets, user, overrides;
+    </style>
+}
+
+function generateFontCss(fontConfig: ThemeFont): string {
+    if (!fontConfig) return ''
+
+    // Handle single font configuration
+    if ('family' in fontConfig || 'src' in fontConfig) {
+        return generateSingleFontCss(fontConfig, 'body')
+    }
+
+    // Handle separate body and coder fonts
+    const { body, coder } = fontConfig as { body: ThemeFont; coder: ThemeFont }
+    const bodyCss = body ? generateSingleFontCss(body, 'body') : ''
+    const coderCss = coder ? generateSingleFontCss(coder, 'coder') : ''
+
+    return [bodyCss, coderCss].filter(Boolean).join('\n\n')
+}
+
+function generateSingleFontCss(font: ThemeFont, type: 'body' | 'coder'): string {
+    if (Array.isArray(font)) {
+        // Generate all font-face declarations
+        const fontFaces = font.map(f => generateFontFace(f)).join('\n\n')
+        
+        // Use only the first font for CSS variables
+        const firstFont = font[0]
+        const cssVars = generateCssVars(firstFont, type)
+        
+        return `${fontFaces}
+
+        @layer user {
+        :root {
+                ${cssVars}
+            }
+        }
+    `
+    }
+    
+    if (!("src" in font)) {
+        return ''
+    }
+
+    if (!font.src) return ''
+
+    const fontFace = generateFontFace(font)
+    const cssVars = generateCssVars(font, type)
+
+    return `${fontFace}
+
+        @layer user {
+        :root {
+                ${cssVars}
+            }
+        }
+    `
+}
+
+function fontFormat(font: Font) {
+    switch (font.format) {
+        case "woff2":
+            return "woff2"
+        case "woff":
+            return "woff"
+        case "ttf":
+            return "ttf"
+    }
+
+    if (font.src?.endsWith(".woff2")) {
+        return "woff2"
+    }
+
+    if (font.src?.endsWith(".woff")) {
+        return "woff"
+    }
+
+    if (font.src?.endsWith(".ttf")) {
+        return "ttf"
+    }
+
+    return ""
+}
+
+function generateFontFace(font: Font): string {
+    const fontFamily = font.family || 'font'
+    const fontWeight = font.weight || '400'
+    const format = fontFormat(font)
+
+    if (format) {
+        return `@font-face {
+            font-family: '${fontFamily}';
+            font-weight: ${fontWeight};
+            src: url('${font.src}') format('${format}');
+            font-display: swap;
+        }`
+    } else {
+        return `@import url('${font.src}');`
+    }
+}
+
+function generateCssVars(font: Font, type: 'body' | 'coder'): string {
+    const fontFamily = font.family || `font-${type}`
+    const fontWeight = font.weight || '400'
+
+    const cssVars = {
+        [`--font-${type}-family`]: fontFamily,
+        [`--font-${type}-weight`]: fontWeight,
+    }
+    
+    return Object.entries(cssVars)
+        .map(([key, value]) => `${key}: ${value};`)
+        .join('\n    ')
 }

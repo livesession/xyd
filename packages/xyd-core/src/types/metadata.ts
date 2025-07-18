@@ -34,7 +34,7 @@ export interface Metadata<P = void> {
      * 
      * The type of component to render this content with 
      */
-    component?: "docs" | "atlas" | "page"
+    component?: "docs" | "atlas" | "home"
 
     /** 
      * @internal

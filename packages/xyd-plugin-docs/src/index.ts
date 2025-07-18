@@ -198,13 +198,32 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
 
     sortSidebarGroups(settings?.navigation?.sidebar || [])
     
+    const indexPage = await findIndexPage()
+
+    if (indexPage) {
+        pagePathMapping["index"] = indexPage
+    }
+    
     return {
         vitePlugins,
         settings,
         routes,
         basePath,
-        pagePathMapping
+        pagePathMapping,
+        hasIndexPage: !!indexPage
     }
+}
+
+async function findIndexPage(): Promise<string> {
+    if (fs.existsSync("index.md")) {
+        return "index.md"
+    }
+
+    if (fs.existsSync("index.mdx")) {
+        return "index.mdx"
+    }
+
+    return ""
 }
 
 function sortSidebarGroups(sidebar: (SidebarRoute | Sidebar | string)[]) {

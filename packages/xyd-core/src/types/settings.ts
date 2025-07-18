@@ -56,6 +56,11 @@ export interface Theme {
      * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to.
      */
     logo?: string | Logo | React.JSX.Element
+    
+    /**
+     * Font configuration for the theme.
+     */
+    fonts?: ThemeFont
 
     /**
      * Path to the favicon image. For example: /path/to/favicon.svg
@@ -94,7 +99,33 @@ export interface Theme {
     scripts?: Script[]
 }
 
+export type ThemeFont = Font | Font[] | {
+    body?: Font | Font[]
+    coder?: Font | Font[]
+}
 // #endregion Theme
+
+export interface Font {
+    /**
+     * The font family to use.
+     */
+    family?: string;
+
+    /**
+     * The font weight to use.
+     */
+    weight?: string;
+
+    /**
+     * The font src to use.
+     */
+    src?: string;
+
+    /**
+     * The font format to use.
+     */
+    format?: "woff2" | "woff" | "ttf"
+}
 
 /**
  * Coder configuration for the theme, including options like syntax highlighting.
@@ -173,6 +204,11 @@ export interface Appearance {
     header?: AppearanceHeader
 
     /**
+     * Tabs appearance for the theme.
+     */
+    tabs?: AppearanceTabs
+
+    /**
      * Sidebar appearance for the theme.
      */
     sidebar?: AppearanceSidebar
@@ -193,6 +229,13 @@ export interface Appearance {
     writer?: AppearanceWriter
 }
 
+export interface AppearanceTabs {
+    /**
+     * The tabs to display in the header.
+     */
+    surface?: "center" | "sidebar"
+}
+
 /**
  * AppearanceLogo configuration for the theme.
  */
@@ -200,12 +243,12 @@ export interface AppearanceLogo {
     /**
      * If `true` then the logo will be displayed on the sidebar.
      */
-    sidebar: boolean | "mobile" | "desktop"
+    sidebar?: boolean | "mobile" | "desktop"
 
     /**
      * If `true` then the logo will be displayed on the header.
      */
-    header: boolean | "mobile" | "desktop"
+    header?: boolean | "mobile" | "desktop"
 }
 
 export interface AppearanceWriter {
@@ -235,6 +278,11 @@ export interface AppearanceSearch {
      * If `true` then the search bar will be displayed in the middle of the header.
      */
     middle?: boolean | "mobile" | "desktop"
+
+    /**
+     * If `true` then the search bar will be displayed on the right side of the header.
+     */
+    right?: boolean | "mobile" | "desktop"
 }
 
 export interface AppearanceHeader {
@@ -251,7 +299,7 @@ export interface AppearanceHeader {
     /**
      * The type of the header.
      */
-    type?: "classic"
+    type?: "classic" | "pad"
 }
 
 export interface AppearanceSidebar {
@@ -468,8 +516,8 @@ export interface Segment {
     /** Title of this segment */
     title: string
 
-    /** Type of this segment */
-    type?: "sidebarDropdown"
+    /** Appearance of this segment */
+    appearance?: "sidebarDropdown"
 
     /** Items within this segment */
     pages: NavigationItem[]
@@ -499,15 +547,24 @@ export interface NavigationItem {
     /**
      * The navigation item icon
      */
-    icon?: string
+    icon?: string | React.ReactNode
 }
+
+export type NavigationItemButton = NavigationItem & {
+    button: "primary" | "secondary"
+}
+
+export type NavigationItemSocial = NavigationItem & {
+    social: Social
+}
+
 
 /**
  * Anchor root configuration
  */
 export interface Anchors {
     /** Header anchors */
-    header?: NavigationItem[]
+    header?: AnchorHeader[]
 
     /** Sidebar anchors */
     sidebar?: {
@@ -516,6 +573,13 @@ export interface Anchors {
         bottom?: NavigationItem[]
     }
 }
+
+// TODO: in the future
+type AnchorHeaderGithub = {
+    githubUrl: string
+}
+
+export type AnchorHeader = NavigationItem | NavigationItemButton | NavigationItemSocial
 
 // ------ END settings for navigation END ------
 
@@ -567,25 +631,14 @@ export interface WebEditor {
     banner?: WebEditorBanner
 }
 
+export type Social = "x" | "facebook" | "youtube" | "discord" | "slack" | "github" | "linkedin" | "instagram" | "hackernews" | "medium" | "telegram" | "bluesky" | "reddit"
 
 export interface WebEditorFooter {
     logo?: boolean | ComponentLike
 
     /** Footer socials */
     social?: {
-        "x": string
-        "facebook": string
-        "youtube": string
-        "discord": string
-        "slack": string
-        "github": string
-        "linkedin": string
-        "instagram": string
-        "hackernews": string
-        "medium": string
-        "telegram": string
-        "bluesky": string
-        "reddit": string
+        [K in Social]?: string
     }
 
     /** Footer links  */
@@ -626,6 +679,11 @@ export interface WebEditorBanner {
      * Banner icon.
      */
     icon?: string
+
+    // /**
+    //  * Banner store. TODO: in the future
+    //  */
+    // store?: number
 }
 
 /**

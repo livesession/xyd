@@ -68,6 +68,7 @@ export const BannerHost = css`
         }
     }
 
+    /* TODO: move to decorator? */
     @layer fabric {
         p {
             font-size: var(--xyd-font-size-small);

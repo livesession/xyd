@@ -1,57 +1,14 @@
-:root {
-    --ch-1: #FFFFFF;
-    --ch-2: #ffffff00;
-    --ch-3: #D9D7D5;
-    --ch-4: #ECECEC;
-    --ch-5: #F5F5F5;
-    --ch-6: #282828;
-    --ch-7: #565456;
-    --ch-8: #C7C6C5;
-    --ch-9: #A6A6A6;
-    --ch-10: #242424;
-    --ch-11: #EEF5FE;
-    --ch-12: #82ADF3;
-    --ch-13: #3C93FD;
-    --ch-14: #CECECE;
-    --ch-15: #000000;
-    --ch-16: #C41A16;
-    --ch-17: #007400;
-    --ch-18: #643820;
-    --ch-19: #272AD8;
-    --ch-20: #AA0D91;
-    --ch-21: #3F6E74;
-    --ch-22: #713DA9;
-    --ch-23: #536579;
-    --ch-24: #7051d4;
-    --ch-25: #AD3DA4;
-    --ch-26: #816927;
-    --ch-27: #D12F1B;
-}
+@import "@xyd-js/themes/dist/decorators/atlas-vars.css";
 
-[data-color-scheme="dark"] {
-    --ch-1: #000;
-    --ch-2: #000;
-    --ch-15: #fff;
-    --ch-16: #0e0e10;
-    --ch-19: #2e95d3;
-    --ch-27: #df3079;
-}
-
-/* System Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
-        --ch-1: #000;
-        --ch-2: #000;
-        --ch-15: #fff;
-        --ch-16: #0e0e10;
-        --ch-19: #2e95d3;
-        --ch-27: #df3079;
-    }
-}
+/* Sidebar */
 
 :root {
     --xyd-sidebar-width: 280px;
     --xyd-sidebar-padding: 16px;
+}
+
+/* Subnav */
+:root {
     --xyd-subnav-height: 50px;
 }
 

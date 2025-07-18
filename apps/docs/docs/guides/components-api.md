@@ -38,7 +38,6 @@ Currently, only React components are supported.
 ---
 title: Callouts
 icon: info
-# !diff +
 uniform: "<PATH TO COMPONENT>"
 ---
 ```

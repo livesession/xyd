@@ -1,0 +1,85 @@
+@import "@xyd-js/themes/dist/decorators/sidebar-scroll.css";
+@import "@xyd-js/themes/dist/decorators/sidebar-pad.css";
+
+:root {
+    --theme-container-width: 1500px;
+    --decorator-sketch-border-color: var(--dark16);
+}
+
+@layer themes {
+    :root {
+        --theme-sidebar-padding: calc(var(--xyd-page-gutter) + var(--xyd-sidebar-padding));
+
+        --theme-sidebar-padding-total: calc(var(--theme-sidebar-padding) + var(--xyd-sidebar-item-padding-left));
+    }
+
+    /*body {*/
+    /*    background-color: var(--color-bg);*/
+    /*}*/
+
+    xyd-layout-primary {
+
+        [part="main"],
+        xyd-nav {
+            max-width: var(--theme-container-width);
+            margin: 0 auto;
+        }
+
+        xyd-nav {
+            padding-inline: var(--theme-sidebar-padding);
+            border-bottom: 1px solid var(--decorator-sketch-border-color);
+        }
+
+        xyd-subnav {
+            padding-inline: 0;
+            border-bottom: 1px solid var(--decorator-sketch-border-color);
+
+            [part="list"] {
+                max-width: var(--theme-container-width);
+                margin: 0 auto;
+                flex: 1;
+                padding-inline: var(--theme-sidebar-padding-total);
+            }
+        }
+
+        xyd-search-button {
+            background: unset;
+        }
+
+        xyd-sidebar {
+            [part=item-button]::after {
+                width: 10px;
+            }
+        }
+
+        xyd-sidebar-tabs-dropdown [part="dropdown-trigger"] {
+            background: unset;
+        }
+    }
+}
+
+@layer themes {
+    [data-color-scheme="dark"] {
+        button[data-kind="primary"]:hover {
+            filter: brightness(1.25);
+        }
+
+        xyd-search-button:hover {
+            border-color: var(--dark32);
+            filter: brightness(1.25);
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+            button[data-kind="primary"]:hover {
+                filter: brightness(1.25);
+            }
+
+            xyd-search-button:hover {
+                border-color: var(--dark32);
+                filter: brightness(1.25);
+            }
+        }
+    }
+}

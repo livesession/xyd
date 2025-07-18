@@ -18,11 +18,15 @@ import ThemePoetry from "@xyd-js/theme-poetry";
 import ThemeOpener from "@xyd-js/theme-opener";
 import ThemeCosmo from "@xyd-js/theme-cosmo";
 import ThemePicasso from "@xyd-js/theme-picasso";
+import ThemeGusto from "@xyd-js/theme-gusto";
+import ThemeSolar from "@xyd-js/theme-solar";
 
 import poetryCss from '@xyd-js/theme-poetry/index.css?url';
 import openerCss from '@xyd-js/theme-opener/index.css?url';
 import cosmoCss from '@xyd-js/theme-cosmo/index.css?url';
 import picassoCss from '@xyd-js/theme-picasso/index.css?url';
+import gustoCss from '@xyd-js/theme-gusto/index.css?url';
+import solarCss from '@xyd-js/theme-solar/index.css?url';
 
 import { SETTINGS } from '../settings';
 import { useGlobalState } from '../context';
@@ -83,6 +87,12 @@ switch (SETTINGS?.theme?.name) {
         break
     case "picasso":
         theme = new ThemePicasso()
+        break
+    case "gusto":   
+        theme = new ThemeGusto()
+        break
+    case "solar":
+        theme = new ThemeSolar()
         break
     default:
         theme = null
@@ -166,6 +176,12 @@ export default function Layout({ loaderData }: { loaderData: any }) {
             break;
         case "picasso":
             currentTheme = new ThemePicasso();
+            break;
+        case "gusto":
+            currentTheme = new ThemeGusto();
+            break;
+        case "solar":
+            currentTheme = new ThemeSolar();
             break;
         default:
             currentTheme = null;
@@ -588,7 +604,19 @@ function SelectTheme() {
             // Create new theme style link first (but don't append yet)
             const themeStyles = document.createElement('link');
             themeStyles.rel = 'stylesheet';
-            themeStyles.href = themeName === "picasso" ? picassoCss : themeName === "cosmo" ? cosmoCss : themeName === "opener" ? openerCss : poetryCss
+            let themeCss = poetryCss
+            if (themeName === "picasso") {
+                themeCss = picassoCss
+            } else if (themeName === "cosmo") {
+                themeCss = cosmoCss
+            } else if (themeName === "opener") {
+                themeCss = openerCss
+            } else if (themeName === "gusto") {
+                themeCss = gustoCss
+            } else if (themeName === "solar") {
+                themeCss = solarCss
+            }
+            themeStyles.href = themeCss
             themeStyles.setAttribute('data-theme-style', 'true');
 
 

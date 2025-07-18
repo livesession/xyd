@@ -109,13 +109,15 @@ export const CodeHost = css`
         white-space: pre-wrap;
         word-break: break-all;
 
-        overflow-y: scroll;
+        overflow: auto;
 
         &[data-size="full"] {
             max-height: 100%;   
         }
 
         & > div {
+            // TODO: for some reasons we need that - fix in the future
+            max-width: max-content !important;
         }
     }
 `;
@@ -123,7 +125,7 @@ export const CodeHost = css`
 
 export const CodeDescription = css`
     padding: 17px 20px 10px;
-    background-color: var(--white);
+    background-color: var(--xyd-coder-code-description-bgcolor);
     border-radius: 0 0 8px 7px;
     display: flex;
     gap: 12px;

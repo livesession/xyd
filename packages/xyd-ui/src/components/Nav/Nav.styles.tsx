@@ -29,6 +29,11 @@ export const NavHost = css`
             flex: 1;
             overflow: auto;
         }
+        @media (max-width: 1024px) {
+            &:has([part="nav-center"]) [part="nav-left"] {
+                flex: none;
+            }
+        }
 
         [part="nav"] {
             display: flex;
@@ -110,7 +115,7 @@ export const NavHost = css`
                 display: block;
                 position: absolute;
                 left: 0;
-                height: 100%;
+                height: calc(100% - var(--xyd-nav-item-padding-y) * 2);
             }
         }
     }
@@ -121,7 +126,7 @@ export const ItemHost = css`
         position: relative;
         white-space: nowrap;
         color: var(--xyd-nav-item-color);
-        padding: calc(var(--xyd-nav-padding) / 2) var(--xyd-nav-padding);
+        padding: var(--xyd-nav-item-padding-y) var(--xyd-nav-item-padding);
         display: flex;
         align-items: center;
         justify-content: center;

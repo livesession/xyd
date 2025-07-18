@@ -1,3 +1,27 @@
+@import "./decorators/page-layout.css";
+
+@layer defaults {
+    html {
+        font-family: var(--font-body-family);
+        font-weight: var(--font-body-weight);
+        font-optical-sizing: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    pre {
+        font-family: var(--font-coder-family, monospace);
+        font-weight: var(--font-coder-weight, 400);
+    }
+    
+    body {
+        font-size: var(--xyd-font-size-small);
+        line-height: var(--xyd-line-height-small);
+        color: var(--text-primary);
+        background: var(--color-bg, var(--white));
+    }
+}
+
 @layer defaults {
     /* Color Scheme Visibility Rules */
 
@@ -49,16 +73,10 @@
         }
     }
 
-    body {
-        font-size: var(--xyd-font-size-small);
-        line-height: var(--xyd-line-height-small);
-        color: var(--text-primary);
-        background: var(--white);
-    }
+
 }
 
 @layer defaults {
-
     /* TODO: move to components */
     /*  github-button to apps? */
     xyd-page-footer {

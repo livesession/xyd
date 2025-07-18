@@ -3,8 +3,10 @@
     /* Layout */
     xyd-layout-primary {
         @media (min-width: 1024px) {
-            footer {
-                margin-left: var(--xyd-sidebar-width);
+            &:not([data-layout="page"]) {
+                footer {
+                    margin-left: var(--xyd-sidebar-width);
+                }
             }
         }
 
@@ -44,6 +46,11 @@
             right: 0;
             background: var(--white);
             border-top-left-radius: 8px;
+        }
+
+        &[data-layout="page"] [part="page"] {
+            left: 0;
+            margin-right: 0;
         }
 
         @media (max-width: 1024px) {

@@ -1,3 +1,5 @@
+@import "./header-sketch.css";
+
 :root {
     --decorator-sketch-border-color: var(--dark32);
     --color-header-border: var(--decorator-sketch-border-color);
@@ -23,27 +25,6 @@
             [part="secondary-content-header"] {
                 border-bottom: 1px solid var(--decorator-sketch-border-color);
             }
-        }
-
-        /* tag: Header */
-        header {
-            [part="header-content"] {
-                border-bottom: 1px solid var(--decorator-sketch-border-color);
-                border-top: 1px solid var(--decorator-sketch-border-color);
-            }
-        }
-
-        /* component: Sidebar */
-        xyd-sidebar {
-            border-radius: 0;
-            border-right: 0.5px solid var(--decorator-sketch-border-color);
-        }
-
-        /* component: SubNav */
-        xyd-subnav {
-            background: var(--white);
-            border-bottom: 1px solid var(--decorator-sketch-border-color);
-            border-radius: 0;
         }
     }
 }

@@ -11,7 +11,7 @@
             @media (min-width: 1024px) {
                 [part="nav"]>*:first-child {
                     position: relative;
-                    left: var(--xyd-sidebar-item-padding-total);
+                    left: var(--xyd-sidebar-padding);
                 }
             }
         }

@@ -20,12 +20,15 @@ export default class ThemeOpener extends BaseTheme {
             },
             appearance: {
                 "buttons": {
-                    "rounded": true
+                    "rounded": "md"
                 },
                 search: {
                     fullWidth: true,
                     sidebar: "mobile",
                     middle: "desktop"
+                },
+                logo: {
+                    header: true
                 },
                 header: {
                     externalArrow: true,
@@ -43,8 +46,13 @@ export default class ThemeOpener extends BaseTheme {
             }
         })
 
-        if (this.settings.appearance?.header?.type === "classic") {
-            this.theme.UpdatePreset(["classic-header"])
+        switch (this.settings.appearance?.header?.type) {
+            case "classic":
+                this.theme.UpdatePreset(["header-classic"])
+                break;
+            case "pad":
+                this.theme.UpdatePreset(["header-pad"])
+                break;
         }
     }
 }

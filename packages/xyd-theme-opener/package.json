@@ -18,11 +18,7 @@
     "build": "rollup -c rollup.config.js"
   },
   "dependencies": {
-    "@docsearch/css": "^3.9.0",
-    "@docsearch/react": "^3.9.0",
-    "@linaria/atomic": "^6.2.0",
-    "@linaria/core": "^6.2.0",
-    "@orama/react-components": "^0.7.0"
+    "@linaria/core": "^6.2.0"
   },
   "peerDependencies": {
     "@xyd-js/atlas": "workspace:*",

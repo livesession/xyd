@@ -1,17 +1,25 @@
-import { useLocation } from "react-router";
-
 import { Segment } from "@xyd-js/core";
 
-import { pageLink, trailingSlash } from "../utils";
 import { useMatchedSegment } from "./useMatchedSegment";
 import { useTabSegments } from "./useTabSegments";
+import { useAppearance } from "../contexts";
 
 // TODO: better data structures
 export function useMatchedSubNav(): Segment | null {
     const matchedSegment = useMatchedSegment()
     const tabSegments = useTabSegments()
+    const appearance = useAppearance()
 
-    if (!matchedSegment || matchedSegment.type === "sidebarDropdown") {
+    if (
+        (
+            appearance?.tabs?.surface === "center" ||
+            appearance?.tabs?.surface === "sidebar"
+        ) && !matchedSegment
+    ) {
+        return null
+    }
+
+    if (!matchedSegment || matchedSegment.appearance === "sidebarDropdown") {
         return tabSegments
     }
 

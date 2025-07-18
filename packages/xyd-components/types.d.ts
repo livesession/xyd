@@ -44,6 +44,9 @@ declare global {
 
         // System
         'xyd-search-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+
+        // Pages
+        'page-home': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       }
     }
   }

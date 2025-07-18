@@ -41,7 +41,9 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
         return
       }
 
+      let uniformMeta = false
       if (meta?.uniform || meta?.openapi || meta?.graphql) {
+        uniformMeta = true
         if (meta.graphql) {
           meta.uniform = meta.graphql
         } else if (meta.openapi) {
@@ -96,7 +98,9 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
       const promises: Promise<void>[] = []
 
       let resolvedProps: Record<string, any> = {}
-      if (meta.componentProps && typeof meta.componentProps === "object") {
+
+      if (uniformMeta && meta.componentProps && typeof meta.componentProps === "object") {
+        // TODO: ??? TO DELETE ???
         for (const key in meta.componentProps) { // TODO: support nested props
           const value = meta.componentProps[key]
 
@@ -141,6 +145,8 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
 
           promises.push(promise)
         }
+      } else {
+        resolvedProps = meta.componentProps || {}
       }
 
       await Promise.all(promises)
@@ -151,7 +157,8 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
         (settings?.theme || {}) as Theme,
         resolvedProps,
         file.data.outputVars,
-        Object.freeze(tree.children) as any
+        Object.freeze(tree.children) as any,
+        meta
       )
       console.timeEnd('plugin:mdMeta:transform');
 

@@ -10,7 +10,12 @@ export const SidebarHost = css`
         border-radius: 4px;
         display: flex;
         flex-direction: column;
-
+        
+        [part="item-group"] {
+            & > * {
+                padding-bottom: 4px;
+            }
+        }
         [part="scroll-shadow"]::before {
             background: var(--shadow);
             content: "";

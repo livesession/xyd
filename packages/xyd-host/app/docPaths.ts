@@ -5,6 +5,10 @@ export function docPaths(navigation: Settings['navigation']) {
 
     const paths: string[] = [];
 
+    if (globalThis.__xydHasIndexPage) {
+        paths.push("/")
+    }
+
     // Process each sidebar group
     navigation.sidebar.forEach(sidebarGroup => {
         if (typeof sidebarGroup === "string") {

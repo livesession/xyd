@@ -55,7 +55,7 @@ export function SearchButton({
         shortcutKeys.length > 0 && (
           <span part="keys">
             {shortcutKeys.map((key, index) => (
-              <kbd key={index} part="key">{key}</kbd>
+              <kbd key={`${key}-${index}`} part="key">{key}</kbd>
             ))}
           </span>
         )

@@ -54,7 +54,7 @@ export function mdComposer(settings?: Settings): Plugin {
             const group = [node.attributes.title]
             context.queue.push(group)
 
-            if (node.data?.hName === "DirectiveCodeGroup") {
+            if (node.data?.hName === "DirectiveCodeGroupFINISH") {
                 const codeblocksJSON = node.data.hProperties.codeblocks
 
                 if (codeblocksJSON) {

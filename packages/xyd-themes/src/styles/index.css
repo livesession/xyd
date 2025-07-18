@@ -1,16 +1,18 @@
 /* CSS Layer Hierarchy
  * @layer reset - Base style resets to normalize browser defaults
  * @layer defaults - Basic component styles for UI, writer, and coder components
- * @layer defaultfix - Default fixed styles for components
+ * @layer defaultfix - Default fixed styles within defualts
  * @layer components - Composite styles built on top of base components
- * @layer fabric - Fabric styles after components 
+ * @layer fabric - Fabric styles after components // TODO: deprecate and move to decorator?
  * @layer templates - Template-specific styles like Atlas
  * @layer decorators - Decorate previous layers before theming
  * @layer themes - Theme-level CSS modifications
+ * @layer themedecorator - After theme-level decorator styles
  * @layer presets - Preset theming after themes layer
+ * @layer user - User-level styles after presets layer
  * @layer overrides - Final override layer for styles not applicable in other layers
  */
-@layer reset, defaults, defaultfix, components, fabric, templates, decorators, themes, presets, overrides;
+@layer reset, defaults, defaultfix, components, fabric, templates, decorators, themes, themedecorator, presets, user, overrides;
 
 @import "@xyd-js/ui/dist/index.css";
 @import "@xyd-js/components/dist/index.css";

@@ -36,5 +36,11 @@
         xyd-subnav {
             padding-left: var(--theme-sidebar-left);
         }
+
+        @media (max-width: 1024px) {
+            xyd-subnav {
+                padding-left: var(--xyd-nav-padding);
+            }
+        }
     }
 }

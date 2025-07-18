@@ -13,8 +13,8 @@ export function ColorSchemeButton() {
     />
 }
 
-export function useColorScheme() {
-    const [currentScheme, setCurrentScheme] = useState<string>('light')
+export function useColorScheme(): ["dark" | "light" | null, () => void] {
+    const [currentScheme, setCurrentScheme] = useState<"dark" | "light" | null>(null)
 
     // TODO: context 
     useEffect(() => {
@@ -24,9 +24,13 @@ export function useColorScheme() {
                 const scheme = html.getAttribute("data-color-scheme") || "os";
                 if (scheme === "os") {
                     const preferred = getPreferredColorScheme();
-                    setCurrentScheme(preferred || "light");
+                    const finalScheme = preferred || "light";
+                    setCurrentScheme(finalScheme);
+                    updateColorSchemeInHead(finalScheme);
                 } else {
-                    setCurrentScheme(scheme);
+                    const finalScheme = scheme as "dark" | "light";
+                    setCurrentScheme(finalScheme);
+                    updateColorSchemeInHead(finalScheme);
                 }
             }
         };
@@ -64,9 +68,24 @@ export function useColorScheme() {
 
         html.setAttribute("data-color-scheme", colorScheme);
         localStorage.setItem("xyd-color-scheme", colorScheme);
+        updateColorSchemeInHead(colorScheme as "dark" | "light");
     }
 
     return [currentScheme, changeColorScheme]
+}
+
+
+// Function to update color-scheme in document head
+function updateColorSchemeInHead(scheme: "dark" | "light") {
+    let styleElement = document.querySelector('style[data-color-scheme-style]');
+
+    if (!styleElement) {
+        styleElement = document.createElement('style');
+        styleElement.setAttribute('data-color-scheme-style', 'true');
+        document.head.appendChild(styleElement);
+    }
+
+    styleElement.textContent = `:root { color-scheme: ${scheme}; }`;
 }
 
 function getPreferredColorScheme() {

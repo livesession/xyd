@@ -12,6 +12,7 @@ import { Surface } from "./Surfaces";
 import { FwLogo } from "./FwLogo";
 import { FwHeaderItem, FwHeaderItems } from "./FwHeaderItems";
 import { useAppearance } from "../contexts";
+import { WebEditorComponent } from "./WebEditorComponent";
 
 // TODO: renamte to FwHeader ?
 export function FwNav() {
@@ -19,33 +20,35 @@ export function FwNav() {
     const appearance = useAppearance()
 
     const Header = FwHeaderItems()
+    const logo = appearance?.logo?.header ? <WebEditorComponent.NavItemRaw
+        device={appearance?.logo?.header}
+    >
+        <FwLogo />
+    </WebEditorComponent.NavItemRaw> : null
 
     // TODO: in the future better floating system - just pure css?
     return <Nav
         appearance={{
             separator: appearance?.header?.separator || undefined
         }}
-        value={activeHeaderPage}
-        logo={<FwLogo />}
+        logo={logo}
         centerSurface={
             Header?.center?.length ? <>
-                <Nav.Tab
+                <Nav.Tabs
                     value={activeHeaderPage}
                 >
                     {Header.center}
-                </Nav.Tab>
+                </Nav.Tabs>
             </> : null
         }
         rightSurface={<>
             {
                 Header?.right?.length
-                    ? <div data-desktop>
-                        <Nav.Tab
-                            value={activeHeaderPage}
-                        >
-                            {Header.right}
-                        </Nav.Tab>
-                    </div>
+                    ? <Nav.Tabs
+                        value={activeHeaderPage}
+                    >
+                        {Header.right}
+                    </Nav.Tabs>
                     : null
             }
 
@@ -53,8 +56,12 @@ export function FwNav() {
         </>
         }
         floatRightSurface={<>
-            <ColorSchemeButton />
-            <LayoutPrimary.Hamburger />
+            <Nav.ItemRaw>
+                <ColorSchemeButton />
+            </Nav.ItemRaw>
+            <Nav.ItemRaw>
+                <LayoutPrimary.Hamburger />
+            </Nav.ItemRaw>
         </>}
     >
         <FwNav.DefaultItems />
@@ -62,8 +69,15 @@ export function FwNav() {
 }
 
 FwNav.DefaultItems = function DefaultItems() {
+    const activeHeaderPage = useActivePage()
     const defaultItems = useDefaultHeaderItems()
 
-    return defaultItems.map(FwHeaderItem)
+    const items = defaultItems.map(FwHeaderItem)
+
+    return <Nav.Tabs
+        value={activeHeaderPage}
+    >
+        {items}
+    </Nav.Tabs>
 }
 

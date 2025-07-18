@@ -11,7 +11,7 @@ import { fromMarkdown } from 'mdast-util-from-markdown';
 import { htmlToJsx } from "html-to-jsx-transform";
 
 import { type AtlasProps } from "@xyd-js/atlas";
-import { type Theme as ThemeSettings } from "@xyd-js/core"
+import { Metadata, type Theme as ThemeSettings } from "@xyd-js/core"
 
 import { VarCode } from "@xyd-js/content";
 import { ExampleRoot, Definition, DefinitionProperty } from "@xyd-js/uniform";
@@ -44,6 +44,19 @@ interface ExampleGroup {
 }
 
 export class Composer {
+    @metaComponent("home", "PageHome")
+    private async homeMetaComponent(
+        themeSettings: ThemeSettings,
+        props: any,
+        vars: AtlasVars,
+        treeChilds: readonly RootContent[],
+        meta: Metadata
+    ) {
+        if (meta) {
+            meta.layout = "page"
+        }
+        return props
+    }
     // TODO: !!! COMPOSE API !!!!
     // TODO: this.themeSettings but currently issues with decorators
     @metaComponent("atlas", "Atlas")

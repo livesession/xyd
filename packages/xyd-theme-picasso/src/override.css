@@ -1,19 +1,27 @@
+@import "@xyd-js/themes/dist/decorators/header-sketch.css";
+
 @layer themes {
-    /* Layout */
+    :root {
+        --decorator-sketch-border-color: var(--dark32);
+        --color-header-border: var(--decorator-sketch-border-color);
+        --xyd-sidebar-divider-color: var(--decorator-sketch-border-color);
+    }
+}
+
+@layer themes {
     xyd-layout-primary {
-        header {
-            [part="header-content"] {
-                border-bottom: 1px solid var(--dark32);
-                border-top: 1px solid var(--dark32);
+        @media (min-width: 1024px) {
+            &:not([data-layout="page"]) {
+                [part="page"] {
+                    left: var(--xyd-sidebar-width);
+                    margin-right: var(--xyd-sidebar-width);
+                }
+                footer {
+                    margin-left: var(--xyd-sidebar-width);
+                }
             }
         }
 
-        @media (min-width: 1024px) {
-            footer {
-                margin-left: var(--xyd-sidebar-width);
-            }
-        }
-    
         [part="sidebar"] {
             position: fixed;
             top: var(--xyd-page-gutter);
@@ -22,92 +30,44 @@
 
         [part="page"] {
             position: relative;
-            left: var(--xyd-sidebar-width);
-            margin-right: var(--xyd-sidebar-width);
             right: 0;
         }
-        @media (max-width: 1024px) {
-            > [part="header"] {
-                margin-left: 0
-            }
 
-            [part="page"] {
-                left: 0;
-                margin-right: 0;
+        /* component: SubNav */
+        xyd-subnav {
+            padding: 0;
+
+            [part="list"] {
+                padding: 0 var(--xyd-nav-item-padding);
+                margin-left: var(--xyd-nav-item-padding);
             }
         }
 
-        [part="page-article-container"] {
-            padding: 20px 0;
-        }
-
-        &:not([data-layout="wide"]) {
-            --xyd-layout-width-medium: 700px;
-
-            [part="page-container"] {
-                max-width: 100%;
-            }
-            [part="page-article"] {
-                display: flex;
-                justify-content: center;
-            }
-            [part="page-article-content"] {
-                width: var(--xyd-layout-width-medium);
-            }
-        }
-
-        &[data-hide-subheader="true"] {
-            xyd-subnav {
-                border-top: none;
-            }
-        }
-    }
-  
-    /* Nav */
-    xyd-nav {
         @media (min-width: 1024px) {
-            [part="logo"] {
-                display: none;
+
+            /* component: Nav */
+            xyd-nav {
+                [part="nav"] {
+                    padding-left: 0;
+                }
+
+                [part="nav"]>*:first-child {
+                    position: relative;
+                    left: calc(var(--xyd-sidebar-width));
+                    margin-left: var(--xyd-nav-item-padding);
+                }
             }
 
-            [part="nav"] > *:first-child {
+            /* component: SubNav */
+            xyd-subnav {
+                /* [part="list"] {
+            
+                } */
                 position: relative;
-                left: var(--xyd-sidebar-width);
+                left: calc(var(--xyd-sidebar-width) / 2);
+                width: calc(100% - var(--xyd-sidebar-width));
             }
         }
-
-        [part="nav"] {
-            justify-content: space-between;
-        }
-      
-        
-        [part="list"] {
-            justify-content: flex-start;
-        }
-    }
-    xyd-subnav {
-        border-bottom: 1px solid var(--dark32);
-        border-radius: 0px;
-        margin-top: 0px;
-    }
-
-    /* Code */
-    xyd-codetabs-languages [part=language-trigger][data-state=active] {
-        font-weight: bold;
-        border: none;
-    }
-    xyd-code-pre [part="pre"] {
-        border-top: none;
-    }
-
-    /* Search */
-    xyd-search-button {
-        background: var(--white);
-    }
-
-    /* Sidebar */
-    xyd-sidebar {
-        border-right: 1px solid var(--dark32);
-        border-radius: 0;
     }
 }
+

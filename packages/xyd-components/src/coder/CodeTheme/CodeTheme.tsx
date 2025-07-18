@@ -3,7 +3,7 @@ import { Theme } from "@code-hike/lighter";
 import { highlight } from "codehike/code";
 import type { HighlightedCode } from "codehike/code";
 
-import defaultTheme from "../themes/cosmo-light"
+import defaultTheme from "../themes/cosmo"
 import { Loader } from "../../kit";
 
 export interface CodeThemeProps {

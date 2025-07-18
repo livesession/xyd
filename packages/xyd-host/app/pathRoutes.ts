@@ -1,6 +1,8 @@
 import path from "node:path";
 
-import { Settings } from "@xyd-js/core";
+import { RouteConfigEntry, index } from "@react-router/dev/routes";
+
+import { Settings, SidebarNavigation } from "@xyd-js/core";
 import { layout, route } from "@react-router/dev/routes";
 
 type Route = {
@@ -17,24 +19,48 @@ export function pathRoutes(basePath: string, navigation: Settings['navigation'])
     // Process each sidebar group
     extractNestedRoutes(navigation.sidebar || [], routes)
 
+
     if (!routes.length) {
+        const rrRoutes: RouteConfigEntry[] = []
+        if (globalThis.__xydHasIndexPage) {
+            rrRoutes.push(
+                index(path.join(basePath, "src/pages/page.tsx"))
+            )
+        }
+
+        rrRoutes.push(
+            route("/*", path.join(basePath, "src/pages/page.tsx"))
+        )
+
         return [
             layout(path.join(basePath, "src/pages/layout.tsx"), [
-                route("/*", path.join(basePath, "src/pages/page.tsx"))
+                ...rrRoutes
             ])
         ]
     }
 
-    return routes.map(r => {
-        return layout(path.join(basePath, "src/pages/layout.tsx"), { id: `layout:${r.id}` }, [
-            route(r.path, path.join(basePath, "src/pages/page.tsx"), { id: r.id })
-        ])
-    })
+    const rrRoutes: RouteConfigEntry[] = []
+    if (globalThis.__xydHasIndexPage) {
+        rrRoutes.push(
+            layout(path.join(basePath, "src/pages/layout.tsx"), { id: `layout:index` }, [
+                index(path.join(basePath, "src/pages/page.tsx"))
+            ])
+        )
+    }
+
+    return [
+        ...rrRoutes,
+        ...routes.map(r => {
+            return layout(path.join(basePath, "src/pages/layout.tsx"), { id: `layout:${r.id}` }, [
+                route(r.path, path.join(basePath, "src/pages/page.tsx"), { id: r.id })
+            ])
+        })
+    ]
 }
 
 
 function extractNestedRoutes(
-    sidebarItems: any[],
+    sidebarItems: SidebarNavigation,
     routes: Route[],
     parentRoute?: string,
 ) {
@@ -51,7 +77,7 @@ function extractNestedRoutes(
 
             // Recursively process nested pages within this route
             if (item.pages && Array.isArray(item.pages)) {
-                extractNestedRoutes(item.pages, routes, route || parentRoute)
+                extractNestedRoutes(item.pages as SidebarNavigation, routes, route || parentRoute)
             }
         } else if (!parentRoute) {
             const page = item.startsWith("/") ? item : `/${item}`;

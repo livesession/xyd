@@ -68,6 +68,11 @@ export interface UISidebarItemProps {
     onClick?: (v: any) => void
 }
 
+UISidebar.ItemGroup = function SidebarItemGroup({ children }: { children: React.ReactNode }) {
+    return <div part="item-group">
+        {children}
+    </div>
+}
 
 UISidebar.Item = function SidebarItem({
     children,

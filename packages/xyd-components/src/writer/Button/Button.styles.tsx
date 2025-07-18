@@ -106,6 +106,7 @@ export const ButtonHost = css`
         &[data-theme="ghost"] {
             background-color: unset;
             border: unset;
+            padding: 0;
 
             &:hover {
                 background-color: unset;

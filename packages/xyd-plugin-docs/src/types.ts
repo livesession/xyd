@@ -33,6 +33,8 @@ export interface PluginOutput {
     basePath: string
 
     pagePathMapping: {[page: string]: string}
+
+    hasIndexPage: boolean
 }
 
 export type Plugin = () => Promise<PluginOutput | null>

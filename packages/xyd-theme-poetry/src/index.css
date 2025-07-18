@@ -1,7 +1,7 @@
-html {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    font-weight: 400;
-    font-optical-sizing: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+@layer themes {
+    :root {
+        --font-body-family: "Inter", sans-serif;
+        --font-body-weight: 400;
+    }
 }
+

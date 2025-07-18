@@ -46,7 +46,7 @@ title: My Page Title
 # My Header {label="Coming Soon"}
 ```
 
-### Headers Anchors
+### Header Anchors
 Headers get automatically anchor links applied.
 If you'd like to set a custom anchor,  add an `id` sugar syntax prop to the heading:
 ```mdx
@@ -54,7 +54,7 @@ If you'd like to set a custom anchor,  add an `id` sugar syntax prop to the head
 ```
 This sets the heading anchor to `#custom-anchors` instead of the default `#my-custom-anchors`.
 
-### TOC Anchors
+### ToC Anchors
 The table of contents (TOC) will be generated based on headings, you can also customize that:
 
 ```mdx
@@ -78,7 +78,7 @@ It's visible on the page too.
 Learn more about Page Meta options for TOC [here](/docs/guides/pages#toc). 
 :::
 
-## Content
+## Content [maxTocDepth=3]
 To write a content for your page, you can use the [MDX](https://mdxjs.com/) or [Markdown](https://www.markdownguide.org/) syntax.
 You can also leverage built in [components](/docs/components) or [special symbols](/docs/guides/special-symbols) to enhance your content:
 
@@ -111,9 +111,9 @@ While MDX is powerful, xyd makes writing docs much easier using markdown [specia
 But you can still use pure MDX or both if you want.
 :::
 
-## Markdown GFM
+### Markdown GFM
 You can use GFM (GitHub Flavored Markdown) to write your content like this:
-```mdx
+```mdx [!scroll]
 # Heading
  
 ## Heading
@@ -140,10 +140,10 @@ Hello World, **Bold**, _Italic_, ~~Hidden~~
 | Hello | World       |
 ```
 
-## Component Directives
-Use markdown directives (`:::`) to render components in markdown syntax (instead of MDX), the full list of components you can find [here](/docs/components).
+### Component Directives
+Use markdown directives (`:::`) to render components in markdown syntax. The full list of components you can find [here](/docs/components).
 
-For example you would render some of <code>xyd</code> components like this:
+For example you would render components like this:
 
 ```mdx
 :::callout
@@ -155,7 +155,7 @@ You can also use MDX version of the same [component](/docs/components).
 You can also use MDX version of the same [component](/docs/components).
 :::
 
-### Tables
+#### Tables
 You can also use CSV-like version of declaring tables with some sugar-syntax:
 ~~~
 :::table
@@ -173,7 +173,7 @@ You can also use CSV-like version of declaring tables with some sugar-syntax:
 You can still use [GFM](https://github.github.com/gfm/#tables-extension-) version of tables too.
 :::
 
-### Steps
+#### Steps
 For creating steps you can use such us syntax:
 ~~~
 :::steps
@@ -188,7 +188,7 @@ For creating steps you can use such us syntax:
 :::
 ~~~
 
-### Tabs 
+#### Tabs 
 For creating tabs, you can use the following syntax:
 ```md [descHead="Tip" desc="Check out advanced tabs example [here](https://github.com/xyd-js/examples/tree/master/advanced-tabs)."]
 :::tabs 
@@ -198,6 +198,13 @@ For creating tabs, you can use the following syntax:
 2. [Code](tab=code)
     Content for the Code tab
 :::
+```
+
+## Emojis 🎉
+For declaring just copy and paste the emoji you want to use in your markdown, for example:
+
+```
+🔥
 ```
 
 ## MDX {label="Experimental"}
@@ -253,9 +260,3 @@ MDX combines Markdown with JSX, letting you use React components in your docs.
     ```
 
 This creates a navigation component with two tabs: "CLI" and "Code", each with its own content. The content for each tab follows the tab definition.
-
-## Emojis 🎉
-For declaring just copy and paste the emoji you want to use in your markdown, for example:
-
-```
-🔥

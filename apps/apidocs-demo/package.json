@@ -24,6 +24,8 @@
     "@xyd-js/theme-opener": "workspace:*",
     "@xyd-js/theme-picasso": "workspace:*",
     "@xyd-js/theme-poetry": "workspace:*",
+    "@xyd-js/theme-gusto": "workspace:*",
+    "@xyd-js/theme-solar": "workspace:*",
     "@xyd-js/themes": "workspace:*",
     "@xyd-js/ui": "workspace:*",
     "@xyd-js/uniform": "workspace:*",

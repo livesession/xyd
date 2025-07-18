@@ -1,38 +1,35 @@
 import React from "react";
 
 import { WebEditorNavigationItem } from "@xyd-js/core";
-import { UISidebar } from "@xyd-js/ui";
+import { Nav, UISidebar } from "@xyd-js/ui";
 
 import { FwJsonComponent } from "./FwJsonComponent";
 
 interface WebEditorComponentInner extends WebEditorNavigationItem {
     children?: React.ReactNode
+    device?: "mobile" | "desktop" | boolean
 }
 
 export function WebEditorComponent(
     Component: React.ComponentType<React.ComponentProps<typeof UISidebar.Item>>,
-    componentProps: Partial<React.ComponentProps<typeof UISidebar.Item>>,
+    componentProps?: Partial<React.ComponentProps<typeof UISidebar.Item>>,
     defaultValue?: string
 ) {
 
     return function WebEditorComponentInner(props: WebEditorComponentInner) {
         let dataTags = {}
 
-        if (props.mobile && !props.desktop) {
+        if (props.device === "mobile" || (props.mobile && !props.desktop)) {
             dataTags["data-mobile"] = true
         }
-        if (props.desktop && !props.mobile) {
+        if (props.device === "desktop" || (props.desktop && !props.mobile)) {
             dataTags["data-desktop"] = true
         }
 
-        return <div
-            {...dataTags}
-            key={props.title + props.page + props.href + props.component}
-        >
-            <Component 
-            {...componentProps} 
-            {...dataTags}
-            key={props.title + props.page + props.href + props.component}
+        const content = (
+            <Component
+                {...componentProps}
+                {...dataTags}
             >
                 {
                     props.component ? <FwJsonComponent
@@ -45,9 +42,17 @@ export function WebEditorComponent(
                 }
                 {props.children}
             </Component>
-        </div>
+        )
+
+        // Only wrap in div if dataTags has properties
+        return Object.keys(dataTags).length > 0 ? (
+            <div {...dataTags}>
+                {content}
+            </div>
+        ) : content
     }
 }
 
 WebEditorComponent.SidebarItem = WebEditorComponent(UISidebar.Item, { button: false, ghost: true })
-
+WebEditorComponent.NavItemRaw = WebEditorComponent(Nav.ItemRaw)
+WebEditorComponent.SidebarItemButton = WebEditorComponent(UISidebar.Item, { button: true, ghost: true })

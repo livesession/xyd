@@ -4,7 +4,7 @@ import * as cn from "./Footer.styles";
 
 export interface FooterProps {
     footnote: React.ReactNode;
-    
+
     logo?: React.ReactNode;
 
     socials?: {
@@ -25,17 +25,19 @@ export function Footer(props: FooterProps) {
     return <footer className={cn.Footer}>
         <div part="container">
             <div part="content">
-                {props.logo && <div part="first-column">
-                    {props.logo}
-                </div>}
+                {
+                    props.logo && <div part="first-column">
+                        {props.logo}
+                    </div>
+                }
 
                 {props.links?.length && <div part="columns" data-cols={props.links?.length}>
-                    {props.links?.map((link) => (
-                        <div part="col">
+                    {props.links?.map((link, index) => (
+                        <div part="col" key={`${link.header}-${index}`}>
                             <div part="col-items">
                                 <p>{link.header}</p>
                                 {link.items?.map((item) => (
-                                    <a target="_blank" href={item.href}>{item.label}</a>
+                                    <a key={`${item.label}-${index}`} target="_blank" href={item.href}>{item.label}</a>
                                 ))}
                             </div>
                         </div>
@@ -44,8 +46,8 @@ export function Footer(props: FooterProps) {
 
 
                 <div part="social-links">
-                    {props.socials?.map((social) => (
-                        <a target="_blank" href={social.href}>{social.logo}</a>
+                    {props.socials?.map((social, index) => (
+                        <a target="_blank" href={social.href} key={`${social.href}-${index}`}>{social.logo}</a>
                     ))}
                 </div>
             </div>

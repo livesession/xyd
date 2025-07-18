@@ -17,6 +17,8 @@ import poetryCss from '@xyd-js/theme-poetry/index.css?url';
 import openerCss from '@xyd-js/theme-opener/index.css?url';
 import cosmoCss from '@xyd-js/theme-cosmo/index.css?url';
 import picassoCss from '@xyd-js/theme-picasso/index.css?url';
+import gustoCss from '@xyd-js/theme-gusto/index.css?url';
+import solarCss from '@xyd-js/theme-solar/index.css?url';
 
 import indexCss from './index.css?url';
 
@@ -38,6 +40,11 @@ export const links: Route.LinksFunction = () => {
       break;
     case "picasso":
       links.push({ rel: "stylesheet", href: picassoCss, "data-xyd-theme-default": "true" });
+    case "gusto":
+      links.push({ rel: "stylesheet", href: gustoCss });
+      break;
+    case "solar":
+      links.push({ rel: "stylesheet", href: solarCss });
       break;
   }
 

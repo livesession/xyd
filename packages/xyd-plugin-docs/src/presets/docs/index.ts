@@ -68,34 +68,6 @@ function preinstall() {
     }
 }
 
-// TODO: maybe later as a separate plugin?
-// function vitePluginSettings() {
-//     return async function ({ preinstall }): Promise<VitePlugin> {
-//         return {
-//             name: 'virtual:xyd-settings',
-//             resolveId(id) {
-//                 if (id === 'virtual:xyd-settings') {
-//                     return id + '.jsx'; // Return the module with .jsx extension
-//                 }
-//                 return null;
-//             },
-//             async load(id) { // TODO: better cuz we probably dont neeed `get settings()`
-//                 if (id === 'virtual:xyd-settings.jsx') {
-//                     return `
-//                         export default {
-//                             get settings() {
-//                                 return globalThis.__xydSettings || ${typeof preinstall.settings === "string" ? preinstall.settings : JSON.stringify(preinstall.settings)}
-//                             }
-//                         }
-//                     `
-//                 }
-//                 return null;
-//             },
-//         };
-//     }
-// }
-
-
 function vitePluginSettings(options: docsPluginOptions) {
     return function () {
         return async function ({ preinstall }): Promise<VitePlugin> {
@@ -129,6 +101,9 @@ function vitePluginSettings(options: docsPluginOptions) {
                         export default {
                             get settings() {
                                 return getCurrentSettings();
+                            },
+                            get settingsClone() {
+                                return ${typeof currentSettings === "string" ? currentSettings : JSON.stringify(currentSettings)}
                             }
                         }
                         `
@@ -160,6 +135,7 @@ function vitePluginSettings(options: docsPluginOptions) {
                     }
 
                     currentSettings = globalThis.__xydSettings
+                    // globalThis.__xydSettingsClone = JSON.parse(JSON.stringify(globalThis.__xydSettings))
 
                     return
                 },
@@ -167,7 +143,6 @@ function vitePluginSettings(options: docsPluginOptions) {
         }
     }
 }
-
 
 export function vitePluginThemeCSS() {
     return async function ({

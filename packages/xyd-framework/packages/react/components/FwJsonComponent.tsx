@@ -57,24 +57,64 @@ export function FwJsonComponent(args: ComponentLike) {
 function useJsonComponents() {
     const customComponents = useComponents()
 
-    // Merge components and detect conflicts in one reduce chain
-    return [
-        WriterComponents,
-        CoderComponents,
-        SystemComponents,
-        customComponents || {}
-    ].reduce((components, componentSet) => {
-        Object.entries(componentSet).forEach(([name, component]) => {
-            // Check if component already exists and log error
-            if (name in components) {
-                console.error(`Component name conflict detected: ${name}`)
+    // Track component sources to handle conflicts properly
+    const componentSources = new Map<string, string>()
+    const components: Record<string, any> = {}
+
+    // Process each component set
+    const componentSets = [
+        {
+            group: "Writer",
+            components: WriterComponents
+        },
+        {
+            group: "Coder",
+            components: CoderComponents
+        },
+        {
+            group: "System",
+            components: SystemComponents
+        },
+        {
+            group: "Custom",
+            components: customComponents || {}
+        }
+    ]
+
+    componentSets.forEach(componentSet => {
+        Object.entries(componentSet.components).forEach(([name, component]) => {
+            // Validate component name starts with capital letter
+            if (name.charAt(0) !== name.charAt(0).toUpperCase()) {
+                return
             }
 
-            // Merge components
-            components[name] = component
+            // Validate component is a function
+            if (typeof component !== 'function') {
+                return
+            }
+
+            if (name in components) {
+                // Conflict detected - both components need to be renamed with their group prefixes
+                const existingComponent = components[name]
+                const existingGroup = componentSources.get(name) || "Custom"
+                
+                // Remove the existing component and add it back with group prefix
+                delete components[name]
+                components[`${existingGroup}.${name}`] = existingComponent
+                
+                // Add the new component with its group prefix
+                components[`${componentSet.group}.${name}`] = component
+                
+                console.debug(`Component name conflict resolved: ${name} -> ${existingGroup}.${name} and ${componentSet.group}.${name}`)
+            } else {
+                // No conflict, add the component normally
+                components[name] = component
+                componentSources.set(name, componentSet.group)
+            }
         })
-        return components
-    }, {} as Record<string, any>)
+    })
+
+    return components
 }
 
 // Helper function to recursively render children

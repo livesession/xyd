@@ -1,6 +1,6 @@
 {
     "theme": {
-        "name": "opener",
+        "name": "picasso",
         "logo": {
             "light": "/public/assets/logo.svg",
             "dark": "/public/assets/logo-dark.svg"
@@ -15,9 +15,21 @@
                 "./icons/iconify.json"
             ]
         },
+        "fonts": {
+            "body": {
+                "family": "Roboto",
+                "src": "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+            }
+        },
         "appearance": {
+            "colors": {
+                "primary": "color(display-p3 0.08 0.5 0.43)"
+            },
             "banner": {
                 "fixed": true
+            },
+            "header": {
+                "externalArrow": true
             }
         }
     },
@@ -26,44 +38,9 @@
             "content": "**xyd 0.1.0** - Docs platform for future dev",
             "label": "Coming Soon",
             "icon": "sparkles",
-            "href": "https://github.com/orgs/livesession/projects/4/views/1"
+            "href": "https://github.com/orgs/livesession/projects/4/views/1",
+            "store": 3600
         },
-        "header": [
-            {
-                "title": "Public Roadmap",
-                "href": "https://github.com/orgs/livesession/projects/4",
-                "float": "right"
-            },
-            {
-                "title": "Demo",
-                "href": "https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox",
-                "float": "right"
-            },
-            {
-                "title": "Feedback",
-                "href": "https://github.com/livesession/xyd/discussions",
-                "float": "right",
-                "component": "Button",
-                "props": {
-                    "kind": "primary",
-                    "children": "Feedback"
-                }
-            },
-            {
-                "title": "GitHub",
-                "href": "https://github.com/livesession/xyd",
-                "float": "right",
-                "component": "Button",
-                "props": {
-                    "icon": "docs:github",
-                    "theme": "ghost",
-                    "size": "xs"
-                }
-            }
-        ],
-        "sidebarTop": [
-         
-        ],
         "footer": {
             "social": {
                 "github": "https://github.com/livesession/xyd",
@@ -153,30 +130,57 @@
         }
     },
     "navigation": {
-        "segments": [
-            {
-                "route": "docs/reference",
-                "title": "API",
-                "pages": [
+        "anchors": {
+            "header": [
+                {
+                    "title": "Public Roadmap",
+                    "href": "https://github.com/orgs/livesession/projects/4"
+                },
+                {
+                    "title": "Demo",
+                    "href": "https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox"
+                },
+                {
+                    "title": "Feedback",
+                    "href": "https://github.com/livesession/xyd/discussions",
+                    "button": "primary"
+                },
+                {
+                    "title": "Github",
+                    "href": "https://github.com/livesession/xyd/discussions",
+                    "icon": "docs:github"
+                },
+                {
+                    "title": "Slack",
+                    "href": "http://xyd-docs.slack.com",
+                    "social": "slack"
+                },
+                {
+                    "title": "Discord",
+                    "href": "https://discord.gg/xyd-js",
+                    "social": "discord"
+                },
+                {
+                    "title": "Github",
+                    "href": "https://github.com/livesession/xyd",
+                    "social": "github"
+                }   
+            ],
+            "sidebar": {
+                "bottom": [
                     {
-                        "title": "Core",
-                        "page": "docs/reference/core"
+                        "href": "http://xyd-docs.slack.com",
+                        "icon": "docs:slack",
+                        "title": "Slack"
                     },
                     {
-                        "title": "Functions",
-                        "page": "docs/reference/functions"
-                    },
-                    {
-                        "title": "Composer",
-                        "page": "docs/reference/composer"
-                    },
-                    {
-                        "title": "CLI",
-                        "page": "docs/reference/cli"
+                        "href": "https://github.com/xyd-js/examples",
+                        "icon": "code",
+                        "title": "Example Projects"
                     }
                 ]
             }
-        ],
+        },
         "sidebarDropdown": [
             {
                 "title": "Guides",
@@ -194,15 +198,32 @@
                 "icon": "brackets"
             }
         ],
-        "tabs": [
+        "segments": [
             {
-                "title": "Home",
-                "icon": "book"
-            },
-            {
-                "title": "Reference",
-                "page": "docs/reference",
-                "icon": "brackets"
+                "route": "docs/reference",
+                "appearance": "sidebarDropdown",
+                "pages": [
+                    {
+                        "title": "Core",
+                        "page": "docs/reference/core",
+                        "icon": "asterisk"
+                    },
+                    {
+                        "title": "Functions",
+                        "page": "docs/reference/functions",
+                        "icon": "parentheses"
+                    },
+                    {
+                        "title": "Composer",
+                        "page": "docs/reference/composer",
+                        "icon": "docs:atom-2-line"
+                    },
+                    {
+                        "title": "CLI",
+                        "page": "docs/reference/cli",
+                        "icon": "square-terminal"
+                    }
+                ]
             }
         ],
         "sidebar": [
@@ -223,7 +244,7 @@
                             "docs/guides/settings",
                             "docs/guides/themes",
                             "docs/guides/pages",
-                            "docs/guides/routing",
+                            "docs/guides/navigation",
                             "docs/guides/special-symbols"
                         ]
                     },
@@ -242,6 +263,7 @@
                             "docs/guides/customization-quickstart",
                             "docs/guides/appearance",
                             "docs/guides/icons",
+                            "docs/guides/fonts",
                             "docs/guides/custom-scripts",
                             "docs/guides/plugins",
                             "docs/guides/theme-api",
@@ -279,6 +301,7 @@
                         "pages": [
                             {
                                 "group": "Analytics",
+                                "page": "docs/guides/integrations",
                                 "icon": "chart-line",
                                 "pages": [
                                     "docs/guides/integrations/analytics/analytics-integrations",
@@ -398,23 +421,7 @@
                     }
                 ]
             }
-        ],
-        "anchors": {
-            "sidebar": {
-                "bottom": [
-                    {
-                        "href": "http://xyd-docs.slack.com",
-                        "icon": "docs:slack",
-                        "title": "Slack"
-                    },
-                    {
-                        "href": "https://github.com/xyd-js/examples",
-                        "icon": "code",
-                        "title": "Example Projects"
-                    }
-                ]
-            }
-        }
+        ]
     },
     "engine": {
         "paths": {
@@ -425,11 +432,5 @@
                 "../../packages/xyd-core/src/*"
             ]
         }
-    },
-    "redirects": [
-        {
-            "source": "index",
-            "destination": "docs"
-        }
-    ]
+    }
 }

@@ -49,8 +49,8 @@ export interface PluginConfig {
     },
     components?: {
         component: React.ComponentType<any>,
-        name: string,
-        dist: string
+        name?: string,
+        dist: string // TODO: fix in the future
     }[]
 }
 

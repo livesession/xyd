@@ -1,3 +1,5 @@
+@import "@xyd-js/themes/dist/decorators/atlas-vars.css";
+
 /* Core */
 :root {
     --dark8: color(display-p3 .008 .184 .125 / .067);
@@ -6,9 +8,6 @@
     --color-primary: color(display-p3 0.08 0.5 0.43);
     --color-primary--active: color(display-p3 0.08 0.5 0.43);
 
-    --xyd-banner-bgcolor: color(display-p3 .004 .643 .494 / .24);
-    --xyd-sidebar-bgcolor: var(--white);
-    --xyd-subnav-bgcolor: var(--white);
 
     /* Font Sizes */
     --xyd-font-size-xsmall: 13px;
@@ -29,12 +28,27 @@
     --xyd-line-height-2xl: 45px;
 }
 
+/* Sidebar */
+:root {
+    --xyd-sidebar-bgcolor: var(--white);
+}
+
+/* Subnav */
+:root {
+    --xyd-subnav-bgcolor: var(--white);
+}
+
+/* Banner */
+:root {
+    --xyd-banner-bgcolor: color(display-p3 .004 .643 .494 / .24);
+}
+
 /* Utils */
 :root {
     --xyd-page-gutter: 0;
 }
 
-/* Code */
+/* Coder */
 :root {
     --xyd-codetabs-color: var(--white);
 
@@ -42,31 +56,17 @@
     --xyd-coder-code-mark-border-color: var(--color-primary);
 }
 
-/* Atlas */
-:root {
-    --XydAtlas-Ref-Palette-White: var(--white);
-    --XydAtlas-Ref-Palette-Primary-60: var(--color-primary);
-    --XydAtlas-Ref-Palette-Primary-70: var(--color-primary--active);
-    --XydAtlas-Ref-Palette-Primary-80: var(--color-primary--active);
-
-    --XydAtlas-Ref-Palette-Neutral-10: var(--dark8);
-    --XydAtlas-Ref-Palette-Neutral-20: var(--dark16);
-    --XydAtlas-Ref-Palette-Neutral-30: var(--dark32);
-    --XydAtlas-Ref-Palette-Neutral-40: var(--dark40);
-    --XydAtlas-Ref-Palette-Neutral-70: var(--dark48);
-    --XydAtlas-Ref-Palette-Neutral-80: var(--dark60);
-    --XydAtlas-Ref-Palette-Neutral-100: var(--dark80);
-
-    --XydAtlas-Sys-Color-Text-Primary: var(--color-text);
-}
-
-[data-color-scheme="dark"] {
+@define-mixin dark-theme {
     --xyd-codetabs-color: var(--black);
     --color-text: var(--black);
 }
+
+[data-color-scheme="dark"] {
+    @mixin dark-theme;
+}
+
 @media (prefers-color-scheme: dark) {
     :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
-        --xyd-codetabs-color: var(--black);
-        --color-text: var(--black);
+        @mixin dark-theme;
     }
 }

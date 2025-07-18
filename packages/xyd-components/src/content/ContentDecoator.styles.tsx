@@ -17,7 +17,7 @@ export default {
                 margin-top: var(--space-medium);
             }
 
-            img {
+            & > img {
                 margin-top: var(--space-medium);
             }
 
@@ -82,9 +82,13 @@ export default {
                 margin-top: var(--space-medium);
             }
             
+            xyd-code-pre pre > div {
+                min-width: max-content !important;
+            }
             xyd-codetabs, xyd-callout, xyd-guidecard, xyd-tabs {
                 margin: var(--space-large) 0;
             }
+            
             xyd-guidecard [part="body"]  {
                 color: var(--dark48);
                 font-size: var(--xyd-font-size-small);

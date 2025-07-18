@@ -35,8 +35,11 @@ export default class MyTheme extends BaseTheme {
 
 for example:
 ```ts
-// !diff +
-this.theme.markdown.syntaxHighlight = "github-dark";
+this.theme.Update({
+    markdow: {
+        syntaxHighlight: "github-dark"
+    }
+})
 ```
 
 ## Style Customization

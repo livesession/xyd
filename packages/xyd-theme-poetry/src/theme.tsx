@@ -1,7 +1,5 @@
 import React from "react"
 
-import {UISidebar} from "@xyd-js/ui"
-import {FwLogo} from "@xyd-js/framework/react"
 import {BaseTheme} from "@xyd-js/themes"
 
 import "./imports.css"
@@ -20,18 +18,11 @@ export default class ThemePoetry extends BaseTheme {
             coder: {
                 syntaxHighlight: "dark-plus"
             },
+            appearance: {
+                logo: {
+                    sidebar: true
+                }
+            }
         })
-
-        this.surfaces.define("sidebar.top", <_SidebarTop/>);
     }
-}
-
-function _SidebarTop() {
-    return <>
-        <UISidebar.Item button ghost>
-            <div part="logo">
-                <FwLogo/>
-            </div>
-        </UISidebar.Item>
-    </>
 }
