@@ -20,7 +20,6 @@ import {
     Steps,
     List,
     ListOl,
-    UnderlineNav,
     Text,
     Button,
     Icon,
@@ -30,7 +29,7 @@ import {
     ColorSchemeButton,
     Breadcrumbs
 } from '../../writer'
-import { PageHome } from '../../pages'
+import { PageHome, PageFirstSlide, PageBlogHome } from '../../pages'
 import { CodeSample } from "../../coder";
 import { GridDecorator } from './GridDecorator';
 
@@ -60,7 +59,7 @@ export class ReactContent {
             iconContent,
             coderContent,
             directiveContent,
-            contentDecorators
+            contentDecorators,
         ]
             .map(fn => fn.bind(this))
             .reduce((acc, fn) => ({ ...acc, ...fn() }), {});
@@ -84,7 +83,6 @@ export class ReactContent {
 
         const noopNestedComponents = {
             Steps: NoopComponent,
-            UnderlineNav: NoopComponent,
             Tabs: NoopComponent,
             GuideCard: NoopComponent,
             Table: NoopComponent,
@@ -127,7 +125,13 @@ export function stdContent(
             return <$$Heading depth={1} {...props} noanchor />
         },
         h2: props => {
-            return <$$Heading depth={2} {...props} />
+            const appearance = this.settings?.theme?.appearance
+
+            return <>
+                {appearance?.content?.sectionSeparator ? <Hr /> : null}
+
+                <$$Heading depth={2} {...props} />
+            </>
         },
         h3: props => {
             return <$$Heading depth={3} {...props} />
@@ -206,7 +210,7 @@ export function stdContent(
         source: (props) => {
             const { children, ...rest } = props
 
-            return <source {...rest}/>
+            return <source {...rest} />
         },
 
         React: NoopReactComponent,
@@ -282,10 +286,10 @@ export function writerContent() {
     GuideCardContent.List = GuideCard.List
     const BreadcrumbsContent = $BreadcrumbsContentComponent.bind(this)
 
-    const UnderlineNavContent = $UnderlineNavContentComponent.bind(this)
-    UnderlineNavContent.Content = $UnderlineNavContentContentComponent.bind(this)
-    UnderlineNavContent.Item = $UnderlineNavItemContentComponent.bind(this)
-    UnderlineNavContent.Item.displayName = "UnderlineNav.Item"
+    const TabsContent = $TabsContentComponent.bind(this)
+    TabsContent.Content = $TabsContentContentComponent.bind(this)
+    TabsContent.Item = $TabsItemContentComponent.bind(this)
+    TabsContent.Item.displayName = "Tabs.Item"
 
     return {
         Callout,
@@ -293,11 +297,10 @@ export function writerContent() {
         GuideCard: GuideCardContent,
         Breadcrumbs: BreadcrumbsContent,
         Steps,
-        Tabs: UnderlineNavContent,
+        Tabs: TabsContent,
         Table,
         Badge,
         Button,
-        UnderlineNav: UnderlineNavContent,
         Subtitle(props) {
             const paragraph = props?.children?.props?.children
 
@@ -313,8 +316,17 @@ export function writerContent() {
 
 function pageComponents() {
     return {
-        PageHome
+        PageHome,
+        PageFirstSlide,
+        PageBlogHome: $PageBlogHome.bind(this)
     }
+}
+
+function $PageBlogHome(props) {
+    return <PageBlogHome
+        {...props}
+        as={this?.options?.Link}
+    />
 }
 
 function $GuideCardContentComponent(props) {
@@ -338,28 +350,39 @@ function $Card(props) {
     />
 }
 
-const UnderlineNavContentContext = createContext({
+const TabsContentContext = createContext({
     value: "",
     onChange: (v: string) => {
     }
 })
 
-function $UnderlineNavContentComponent(props) {
+function $TabsContentComponent(props) {
     const [value, setValue] = useState(props.value)
 
-    return <UnderlineNavContentContext value={{ value, onChange: setValue }}>
+    return <TabsContentContext value={{ value, onChange: setValue }}>
         <Tabs
             {...props}
             value={value}
             onChange={val => {
+                const url = new URL(window.location.href)
+                const currentParams = url.searchParams
+
+                // Update parameters from the new params
+                new URLSearchParams(val).forEach((value, key) => {
+                    currentParams.set(key, value)
+                })
+
+                url.search = currentParams.toString()
+                history.replaceState(null, '', url)
+
                 setValue(val)
             }}
         />
-    </UnderlineNavContentContext>
+    </TabsContentContext>
 }
 
-function $UnderlineNavContentContentComponent(this: ReactContent, props) {
-    const { onChange } = useContext(UnderlineNavContentContext)
+function $TabsContentContentComponent(this: ReactContent, props) {
+    const { onChange } = useContext(TabsContentContext)
     const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
 
     const search = location?.search
@@ -391,8 +414,8 @@ function $UnderlineNavContentContentComponent(this: ReactContent, props) {
     return <Tabs.Content {...props} defaultActive={tabsMatch} />
 }
 
-function $UnderlineNavItemContentComponent(props) {
-    const { onChange } = useContext(UnderlineNavContentContext)
+function $TabsItemContentComponent(props) {
+    const { onChange } = useContext(TabsContentContext)
     const location = this?.options?.useLocation?.()
 
     const search = location?.search
@@ -486,7 +509,7 @@ function $Pre(
     return <CodeSample
         theme={this.settings?.theme?.coder?.syntaxHighlight || undefined}
         name={lang}
-        description={props?.children?.props?.meta}
+        description={typeof props?.title === "string" ? props?.title : props?.children?.props?.meta}
         codeblocks={[
             {
                 value: props?.children?.props?.children,
@@ -529,6 +552,7 @@ function $Link({
     return <Link
         href={href}
         {...props}
+        as={as}
     >
         {children}
     </Link>

@@ -1,7 +1,7 @@
 import { css } from "@linaria/core";
 
 export const CodeTabsHost = css`
-    display: block;
+    display: grid;
 `
 
 export const CodeTabsRoot = css`

@@ -52,13 +52,21 @@
     --xyd-coder-code-mark-bgcolor: var(--xyd-codetabs-color--hover);
     --xyd-coder-code-mark-border-color: var(--color-primary);
     --xyd-coder-code-border-color: var(--opener-gray80);
+    --xyd-codetabs-color--active: var(--white);
+}
+
+/* Tabs */
+:root {
+    --xyd-tabs-primary-bgcolor: unset;
 }
 
 @define-mixin dark-theme {
-    --xyd-codetabs-color: var(--black);
-
     --opener-gray4-rgb: var(--dark32-rgb);
     --opener-gray4: var(--dark32);
+
+    --xyd-codetabs-color: var(--black);
+    --xyd-tabs-primary-border-color: unset;
+    --xyd-codetabs-color--active: var(--black);
 }
 
 [data-color-scheme="dark"] {

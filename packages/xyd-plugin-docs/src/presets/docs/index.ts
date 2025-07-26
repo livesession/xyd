@@ -75,9 +75,13 @@ function vitePluginSettings(options: docsPluginOptions) {
             const resolvedId = virtualId + '.jsx';
 
             let currentSettings = globalThis.__xydSettings
+            console.log(currentSettings, "currentSettings 1111111111")
+            console.log(preinstall?.settings?.navigation?.sidebar, "preinstall?.settings 2222222222")
             if (!currentSettings && preinstall?.settings) {
                 currentSettings = typeof preinstall?.settings === "string" ? preinstall?.settings : JSON.stringify(preinstall?.settings || {})
             }
+
+            let firstInit = false
 
             return {
                 name: 'xyd:virtual-settings',
@@ -92,6 +96,11 @@ function vitePluginSettings(options: docsPluginOptions) {
 
                 async load(id) {
                     if (id === 'virtual:xyd-settings.jsx') {
+                        if (!firstInit && globalThis.__xydSettings) {
+                            currentSettings = globalThis.__xydSettings
+                        }
+                        firstInit = true
+
                         return `
                         // Always get the latest settings from globalThis
                         const getCurrentSettings = () => {

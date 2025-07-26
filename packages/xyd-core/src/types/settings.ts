@@ -26,8 +26,18 @@ export interface Settings {
      */
     seo?: SEO
 
-    /** WebEditor configuration - building blocks for UI editing */
+    /** 
+     * @internal
+     * 
+     * WebEditor configuration - building blocks for UI editing
+     */
     webeditor?: WebEditor
+
+    /**
+     * 
+     *  Components configuration
+     */
+    components?: Components
 
     /** Engine configuration - advanced engine-like configuration */
     engine?: Engine
@@ -47,8 +57,6 @@ export interface Settings {
 export interface Theme {
     /**
      * A theme name.
-     *
-     * Example built-in themes: "poetry" | "cosmo" | "opener" | "picasso"
      */
     readonly name: ThemePresetName | (string & {})
 
@@ -166,16 +174,12 @@ export interface Appearance {
     /**
      * The default color scheme to use.
      */
-    defaultColorScheme?: "light" | "dark" | "os"
+    colorScheme?: "light" | "dark" | "os"
 
     /**
      * Colors configuration for the theme.
      */
-    colors?: {
-        primary: string
-        light?: string
-        dark?: string
-    }
+    colors?: Colors
 
     /**
      * CSS tokens for the theme.
@@ -224,10 +228,32 @@ export interface Appearance {
     banner?: AppearanceBanner
 
     /**
-     * Writer appearance for the theme.
+     * Content appearance for the theme.
      */
-    writer?: AppearanceWriter
+    content?: AppearanceContent
+
+    /**
+     * Footer appearance for the theme.
+     */
+    footer?: AppearanceFooter
 }
+
+export interface Colors {
+    /**
+     * The primary color of the theme.
+     */
+    primary: string
+
+    /**
+     * The light color of the theme.
+     */
+    light?: string
+
+    /**
+     * The dark color of the theme.
+     */
+    dark?: string
+} 
 
 export interface AppearanceTabs {
     /**
@@ -251,7 +277,7 @@ export interface AppearanceLogo {
     header?: boolean | "mobile" | "desktop"
 }
 
-export interface AppearanceWriter {
+export interface AppearanceContent {
     /**
      * Content decorator for the theme.
      */
@@ -261,6 +287,18 @@ export interface AppearanceWriter {
      * If `true` then the breadcrumbs will be displayed.
      */
     breadcrumbs?: boolean
+
+    /**
+     * If `true` then the section separator will be displayed.
+     */
+    sectionSeparator?: boolean;
+}
+
+export interface AppearanceFooter {
+    /**
+     * The footer surface.
+     */
+    surface?: "page"
 }
 
 export interface AppearanceSearch {
@@ -292,7 +330,7 @@ export interface AppearanceHeader {
     externalArrow?: boolean
 
     /**
-     * If `true` then the header will display a separators.
+     * If `right` then separator will be displayed on the right side of the header.
      */
     separator?: "right"
 
@@ -300,6 +338,11 @@ export interface AppearanceHeader {
      * The type of the header.
      */
     type?: "classic" | "pad"
+
+    /**
+     * The button size of the header.
+     */
+    buttonSize?: "sm" | "md" | "lg"
 }
 
 export interface AppearanceSidebar {
@@ -330,7 +373,7 @@ export interface AppearanceButtons {
 
 export interface AppearanceBanner {
     /**
-     * If `true` then the banner will be fixed.
+     * If `true` then the banner will have fixed position (always visible).
      */
     fixed?: boolean
 }
@@ -379,7 +422,7 @@ export interface IconLibrary {
 
 export interface Icons {
     /** The iconify library */
-    library?: string | string[] | IconLibrary | IconLibrary[]
+    library?: string | IconLibrary | (string | IconLibrary)[]
 }
 
 /** Available theme preset names */
@@ -409,7 +452,7 @@ export interface Navigation {
     /**
      * Sidebar dropdown navigation - navigation through dropdown in the sidebar.
      */
-    sidebarDropdown?: NavigationItem[]
+    sidebarDropdown?: SidebarDropdown
 
     /**
      * Segments navigation - navigation elements visible only on specific routes.
@@ -428,6 +471,8 @@ export interface Navigation {
     // versions?: string[]
 }
 
+export type SidebarDropdown = NavigationItem[]
+    
 /**
  * Tabs configuration
  */
@@ -439,14 +484,14 @@ export type Tabs = NavigationItem[]
 export type SidebarNavigation = (SidebarRoute | Sidebar | string)[]
 
 /**
- * Sidebar multi-group configuration
+ * Sidebar route configuration
  */
 export interface SidebarRoute {
-    /** Route for this sidebar group */
+    /** Route for this sidebar */
     route: string
 
-    /** Sidebar pages within this group */
-    pages: Sidebar[]
+    /** Sidebar pages within this route or sub routes */
+    pages: Sidebar[] | SidebarRoute[]
 }
 
 /**
@@ -514,7 +559,7 @@ export interface Segment {
     route: string
 
     /** Title of this segment */
-    title: string
+    title?: string
 
     /** Appearance of this segment */
     appearance?: "sidebarDropdown"
@@ -523,6 +568,9 @@ export interface Segment {
     pages: NavigationItem[]
 }
 
+/**
+ * Core interface for navigation items
+ */
 export interface NavigationItem {
     /**
      * The navigation item title
@@ -600,6 +648,18 @@ export type WebEditorNavigationItem = NavigationItem & Partial<JSONComponent> & 
     desktop?: boolean
 }
 
+export interface Components {
+    /**
+     * WebEditor banner configuration
+     */
+    banner?: WebEditorBanner
+
+    /**
+     * WebEditor footer configuration
+     */
+    footer?: WebEditorFooter
+}
+
 // TODO: webeditor appearance?
 /**
  * WebEditor configuration
@@ -619,39 +679,34 @@ export interface WebEditor {
      * WebEditor header configuration
      */
     subheader?: WebEditorSubHeader
-
-    /**
-     * WebEditor footer configuration
-     */
-    footer?: WebEditorFooter
-
-    /**
-     * WebEditor banner configuration
-     */
-    banner?: WebEditorBanner
 }
 
 export type Social = "x" | "facebook" | "youtube" | "discord" | "slack" | "github" | "linkedin" | "instagram" | "hackernews" | "medium" | "telegram" | "bluesky" | "reddit"
 
 export interface WebEditorFooter {
+    kind?: "minimal"
+
     logo?: boolean | ComponentLike
 
     /** Footer socials */
     social?: {
         [K in Social]?: string
     }
-
     /** Footer links  */
-    links?: {
-        "header": string
-        "items": {
-            "label": string
-            "href": string
-        }[]
-    }[]
+    links?: WebEditorFooterLink[] | WebEditorFooterLinkItem[]
 
     /** Footer footnote */
     footnote?: ComponentLike
+}
+
+export interface WebEditorFooterLink {
+    header: string
+    items: WebEditorFooterLinkItem[]
+}
+
+export type WebEditorFooterLinkItem = {
+    label: string
+    href: string
 }
 
 export interface WebEditorBanner {
@@ -828,8 +883,9 @@ export interface Integrations {
      */
     search?: IntegrationSearch
 
-    apps?: IntegrationApps
-
+    /**
+     * Custom apps directory.
+     */
     [".apps"]?: IntegrationApps
 }
 

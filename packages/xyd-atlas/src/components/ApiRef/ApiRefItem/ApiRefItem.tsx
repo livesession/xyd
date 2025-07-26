@@ -488,7 +488,7 @@ function $Navbar({label, subtitle, matchSubtitle}: NavbarProps) {
         return (
             <>
                 {before}
-                <Text as="span" weight="extra-bold">
+                <Text as="span" weight="bold">
                     {match}
                 </Text>
                 {after}

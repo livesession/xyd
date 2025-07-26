@@ -2,7 +2,7 @@ import React from 'react'
 
 import cn from "./GridDecorator.styles";
 
-interface GridDecoratorProps {
+export interface GridDecoratorProps {
     children: React.ReactNode
     cols?: 2 | 3 | 4 | 5 | 6
 }
@@ -13,7 +13,7 @@ interface GridDecoratorProps {
  *
  * @category Component
  */
-export function GridDecorator({children, cols}: GridDecoratorProps) {
+export function GridDecorator({ children, cols }: GridDecoratorProps) {
     return <xyd-grid-decorator
         className={cn.GridDecoratorHost}
         data-cols={cols}

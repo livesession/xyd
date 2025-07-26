@@ -67,10 +67,6 @@
         /* component: Nav */
         xyd-nav {
             @media (min-width: 1024px) {
-                [part="logo"] {
-                    display: none;
-                }
-
                 [part="nav"]>*:first-child {
                     position: relative;
                     left: var(--xyd-sidebar-width);

@@ -9,7 +9,8 @@
     --color-primary--active: #1a7f64;
 
     --theme-color-primary: var(--color-primary);
-    --theme-color-primary-active: var(--color-primary--active);
+    /* --theme-color-primary-active: var(--color-primary--active); */
+    --color-primary--active: color-mix(in srgb, var(--color-primary) 85%, transparent);
 }
 
 /* Utils */
@@ -42,6 +43,10 @@
 }
 
 @define-mixin dark-theme {
+    --color-text: rgb(222, 226, 226);
+    --dark16: rgb(222, 226, 226, 0.05);
+    --dark32: rgb(255,255,255, 0.07);
+    --dark48: rgb(158,163,162);
     --xyd-codetabs-color: var(--black);
     --color-text: var(--black);
 }

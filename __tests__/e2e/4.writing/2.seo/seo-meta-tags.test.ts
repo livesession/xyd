@@ -119,7 +119,7 @@ test.describe('SEO Meta Tags', () => {
       await page.waitForLoadState('networkidle');
 
       // Take a screenshot for debugging
-      await page.screenshot({ path: 'sitemap-debug.png', fullPage: true });
+      // await page.screenshot({ path: 'sitemap-debug.png', fullPage: true });
 
       // Get the sitemap content
       const sitemapContent = await page.content();

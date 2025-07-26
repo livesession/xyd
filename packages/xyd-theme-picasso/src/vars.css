@@ -54,11 +54,14 @@
 
     --xyd-coder-code-mark-bgcolor: var(--dark80);
     --xyd-coder-code-mark-border-color: var(--color-primary);
+
+    --xyd-codetabs-color--active: var(--white);
 }
 
 @define-mixin dark-theme {
     --xyd-codetabs-color: var(--black);
     --color-text: var(--black);
+    --xyd-codetabs-color--active: var(--black);
 }
 
 [data-color-scheme="dark"] {

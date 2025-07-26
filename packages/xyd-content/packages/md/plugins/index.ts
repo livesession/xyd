@@ -18,6 +18,8 @@ import { mdCodeRehype } from "./developer-writing";
 import { mdMeta } from "./meta";
 import { mdComposer } from "./composer/mdComposer";
 import { outputVars } from "./output-variables";
+import { mdImage } from "./mdImage";
+import { mdImageRehype } from "./mdImageRehype";
 
 export function defaultRemarkPlugins(
     toc: RemarkMdxTocOptions,
@@ -45,6 +47,7 @@ function remarkPlugins(
     return [
         mdHeadingId,
         remarkInjectCodeMeta,
+        mdImage,
         remarkMdxToc(toc),
         extractThemeSettings, // TODO: to delet ?
         extractPage, // TODO: to delete ?
@@ -84,6 +87,7 @@ export function defaultRehypePlugins(settings?: Settings) {
             passThrough: ['mdxjsEsm', 'mdxJsxFlowElement', 'mdxJsxTextElement'],
         }] as any,
         rehypeHeading,
+        mdImageRehype,
         mdCodeRehype(settings)
     ]
 }

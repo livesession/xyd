@@ -19,18 +19,17 @@ export function pathRoutes(basePath: string, navigation: Settings['navigation'])
     // Process each sidebar group
     extractNestedRoutes(navigation.sidebar || [], routes)
 
-
     if (!routes.length) {
         const rrRoutes: RouteConfigEntry[] = []
         if (globalThis.__xydHasIndexPage) {
             rrRoutes.push(
                 index(path.join(basePath, "src/pages/page.tsx"))
             )
+        } else {
+            rrRoutes.push(
+                route("/*", path.join(basePath, "src/pages/page.tsx"))
+            )
         }
-
-        rrRoutes.push(
-            route("/*", path.join(basePath, "src/pages/page.tsx"))
-        )
 
         return [
             layout(path.join(basePath, "src/pages/layout.tsx"), [

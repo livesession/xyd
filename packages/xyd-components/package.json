@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/components",
-  "version": "0.1.0-xyd.97",
+  "version": "0.1.0-build.137",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -43,31 +43,35 @@
     "clean": "rimraf build"
   },
   "dependencies": {
-    "radix-ui": "^1.4.2",
     "codehike": "^1.0.3",
-    "lucide-react": "^0.447.0"
+    "lucide-react": "^0.447.0",
+    "radix-ui": "^1.4.2",
+    "rollup-plugin-string": "^3.0.0"
   },
   "peerDependencies": {
-    "@xyd-js/core": "workspace:*",
     "@code-hike/lighter": "^1.0.3",
+    "@xyd-js/core": "workspace:*",
     "react": "^19.1.0"
   },
   "devDependencies": {
     "@linaria/core": "^6.2.0",
+    "@linaria/rollup": "^5.0.4",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-typescript": "^12.1.1",
+    "@rollup/plugin-url": "^8.0.2",
     "@types/react": "^19.1.0",
     "@wyw-in-js/rollup": "^0.5.5",
     "autoprefixer": "^10.4.20",
+    "postcss-url": "^10.1.3",
     "rimraf": "^3.0.2",
     "rollup": "^4.27.4",
+    "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-copy": "^3.5.0",
     "tsup": "^8.3.0"
   }
 }

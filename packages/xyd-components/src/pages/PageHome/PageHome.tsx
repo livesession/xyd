@@ -7,39 +7,11 @@ import {
     Button,
 } from "../../writer";
 
-import {
-    GuideCardProps
-} from "../../writer/GuideCard/GuideCard"
 
+import { PageHomeProps } from "./types";
 import { GridDecorator } from "../../content/GridDecorator";
 
 import * as cn from "./PageHome.styles"
-
-interface PageHomeHeroButton {
-    title: string;
-    href: string;
-}
-
-interface PageHomeHero {
-    title?: string;
-    description?: string;
-    image?: string;
-    button?: PageHomeHeroButton;
-}
-
-interface PageHomeCard extends GuideCardProps {
-
-}
-
-interface PageHomeSection {
-    title?: string
-    cards?: PageHomeCard[]
-}
-
-interface PageHomeProps {
-    hero?: PageHomeHero;
-    sections?: PageHomeSection[]
-}
 
 export function PageHome(props: PageHomeProps) {
     return <page-home className={cn.PageHome}>

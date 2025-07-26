@@ -8,6 +8,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import {
     appInit,
     calculateFolderChecksum,
+    commonPostInstallVitePlugins,
     commonVitePlugins,
     getAppRoot,
     getBuildPath,
@@ -39,7 +40,8 @@ export async function build() {
         const newChecksum = calculateFolderChecksum(getHostPath());
         storeChecksum(newChecksum);
     }
-
+    const postInstallVitePlugins = commonPostInstallVitePlugins(respPluginDocs, resolvedPlugins)
+    
     {
         await setupInstallableEnvironmentV2()
     }
@@ -51,6 +53,7 @@ export async function build() {
             root: appRoot,
             plugins: [
                 ...commonRunVitePlugins,
+                ...postInstallVitePlugins,
 
                 tsconfigPaths(),
             ],
@@ -84,6 +87,7 @@ export async function build() {
             plugins: [
                 fixManifestPlugin(appRoot),
                 ...commonRunVitePlugins,
+                ...postInstallVitePlugins,
 
                 tsconfigPaths(),
             ],

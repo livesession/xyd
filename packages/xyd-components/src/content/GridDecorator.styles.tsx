@@ -51,6 +51,19 @@ export default {
                 }
             }
 
+            /* Tablet breakpoint for 2 columns */
+            @media (min-width: 769px) and (max-width: 1024px) {
+                ul ul {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                
+                /* Override data-cols for tablet */
+                &[data-cols] {
+                    --data-cols: 2;
+                }
+            }
+
+
             ul, ol, li {
                 &::before {
                     content: none;

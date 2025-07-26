@@ -58,12 +58,17 @@ export async function readSettings() {
             },
         });
         const config = await settingsPreview.ssrLoadModule(settingsFilePath);
-        return config.default as Settings;
+        const mod =  config.default as Settings;
+
+        ensureNavigation(mod)
+
+        return mod
     } else {
         const rawJsonSettings = await fs.readFile(settingsFilePath, 'utf-8');
         try {
             let json = JSON.parse(rawJsonSettings) as Settings
 
+            ensureNavigation(json)
 
             return json
         } catch (e) {
@@ -71,5 +76,21 @@ export async function readSettings() {
 
             return null
         }
+    }
+}
+
+function ensureNavigation(json: Settings) {
+    if (!json?.webeditor) {
+        json.webeditor = {}
+    }
+
+    if (!json?.navigation) {
+        json.navigation = {
+            sidebar: []
+        }
+    }
+
+    if (!json?.navigation?.sidebar) {
+        json.navigation.sidebar = []
     }
 }

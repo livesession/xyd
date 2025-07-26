@@ -27,10 +27,10 @@ describe('mdFunctionInclude', () => {
 
         await transformer(tree, file);
 
-        console.log(JSON.stringify(tree, null, 2));
+        // console.log(JSON.stringify(tree, null, 2));
         // The node should be transformed to a root type with children
-        // expect(tree.children[0].type).toBe('root');
-        // expect(tree.children[0].children).toBeDefined();
-        // expect(tree.children[0].children.length).toBeGreaterThan(0);
+        expect(tree.children[0].type).toBe('root');
+        expect(tree.children[0].children).toBeDefined();
+        expect(tree.children[0].children.length).toBeGreaterThan(0);
     });
-}); 
+});

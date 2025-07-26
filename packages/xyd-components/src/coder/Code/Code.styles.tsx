@@ -106,7 +106,7 @@ export const CodeHost = css`
             border-bottom-right-radius: 10px;
         }
 
-        white-space: pre-wrap;
+        /* white-space: pre-wrap; */ // TODO: optional wrap?
         word-break: break-all;
 
         overflow: auto;
@@ -114,11 +114,11 @@ export const CodeHost = css`
         &[data-size="full"] {
             max-height: 100%;   
         }
-
+/* 
         & > div {
             // TODO: for some reasons we need that - fix in the future
             max-width: max-content !important;
-        }
+        } */
     }
 `;
 

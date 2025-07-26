@@ -56,10 +56,10 @@ export const TextHost = css`
             font-weight: var(--xyd-font-weight-normal);
         }
         &[data-weight="bold"] { 
-            font-weight: var(--xyd-font-weight-medium);
+            font-weight: bold;
         }
         &[data-weight="extra-bold"] { 
-            font-weight: var(--xyd-font-weight-semibold);
+            font-weight: var(--xyd-font-weight-extrabold);
         }
     }
 `;

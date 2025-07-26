@@ -33,6 +33,8 @@ export function mdCodeRehype(settings?: Settings) {
                     const descriptionHead = node.children?.[0]?.properties?.descriptionHead
                     const descriptionContent = node.children?.[0]?.properties?.descriptionContent
                     const descriptionIcon = node.children?.[0]?.properties?.descriptionIcon
+                    const meta = node.children?.[0]?.properties?.meta
+                    const title = node.children?.[0]?.properties?.title
 
                     const promise = (async () => {
                         let descriptionContentCode = ""
@@ -44,7 +46,7 @@ export function mdCodeRehype(settings?: Settings) {
                         const highlighted = await highlight({
                             value: code,
                             lang: lang,
-                            meta: lang || "",
+                            meta: meta || lang || "",
                         }, settings?.theme?.coder?.syntaxHighlight || "github-dark")
 
                         if (lineRanges && lineRanges.length) {
@@ -58,6 +60,7 @@ export function mdCodeRehype(settings?: Settings) {
 
                         node.properties = {
                             ...node.properties,
+                            title,
                             highlighted: JSON.stringify(highlighted),
                             lineNumbers,
                             size,

@@ -144,6 +144,7 @@ export async function mapSettingsToProps(
             } as FwSidebarItemProps
         }) || []
 
+    // console.log(JSON.stringify(settings?.navigation?.sidebar, null, 2), "groups")
     return {
         groups,
         breadcrumbs,

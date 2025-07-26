@@ -14,7 +14,7 @@ export const globals = css`
 export const GuideHost = css`
     @layer defaults {
         display: block;
-        height: 100%;
+        height: auto;
         
         &[data-kind="secondary"] {
             display: flex;
@@ -26,6 +26,8 @@ export const GuideHost = css`
             padding: 24px;
             z-index: 0;
             transition: box-shadow .2s ease-in-out, background-image .2s ease;
+            /* height: auto; */
+            height: 100%;
 
             &:hover {
                 background: var(--xyd-guidecard-bgcolor--secondary-hover);
@@ -44,8 +46,8 @@ export const GuideHost = css`
         [part="item"] {
             border-radius: 8px;
             display: flex;
-
             align-items: flex-start;
+
             cursor: pointer;
             transition: opacity .15s;
 

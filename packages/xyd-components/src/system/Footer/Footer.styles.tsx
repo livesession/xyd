@@ -29,12 +29,16 @@ export const Footer = css`
     display: flex;
     align-items: center;
     flex-direction: column;
-    gap: 3rem;
+    gap: 24px;
     justify-content: space-between;
     max-width: 1050px;
     width: 100%;
 
     padding: 100px 25px
+  }
+  &[data-kind="minimal"] [part="container"] {
+    max-width: 100%;
+    padding: 20px;
   }
 
   [part="content"] {
@@ -133,6 +137,9 @@ export const Footer = css`
         }
     }
   }
+  &[data-kind="minimal"] [part="columns"] {
+    display: flex;
+  }
 
   [part="col"] {
     display: flex;
@@ -156,6 +163,10 @@ export const Footer = css`
     @media (max-width: 768px) {
         align-items: flex-start;
     }
+  }
+  &[data-kind="minimal"] [part="col-items"] {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
   [part="social-links"] {

@@ -7,6 +7,7 @@ import { redirect, ScrollRestoration, useLocation } from "react-router";
 import { MetadataMap, Metadata, Settings } from "@xyd-js/core"
 import { ContentFS } from "@xyd-js/content"
 import { markdownPlugins } from "@xyd-js/content/md"
+import { pageMetaLayout } from "@xyd-js/framework";
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 import { FrameworkPage, type FwSidebarItemProps } from "@xyd-js/framework/react";
 import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
@@ -148,9 +149,8 @@ export async function loader({ request }: { request: any }) {
 
     timedebug.totalEnd
 
-    // TODO: IN THE FUTURE BETTER API
-    if (metadata?.component === "home") {
-        metadata.layout = "page"
+    if (metadata) {
+        metadata.layout = pageMetaLayout(metadata)
     }
 
     return {
@@ -321,8 +321,9 @@ function mdxContent(code: string) {
     }
 
     // TODO: IN THE FUTURE BETTER API
-    if (content?.frontmatter?.component === "home") {
-        content.frontmatter.layout = "page"
+    const layout = pageMetaLayout(content?.frontmatter)
+    if (content?.frontmatter && layout) {
+        content.frontmatter.layout = layout
     }
 
     return {

@@ -2,9 +2,9 @@ import React, {useState, lazy, Suspense, useEffect, useCallback} from "react"
 import {createPortal} from 'react-dom'
 import {create, insertMultiple} from '@orama/orama'
 
-import {
-    useColorScheme
-} from "@xyd-js/components/writer";
+// import {
+//     useColorScheme
+// } from "@xyd-js/components/writer";
 import {SearchButton} from "@xyd-js/components/system"
 
 const OramaSearchBox = lazy(() => import('@orama/react-components').then(mod => ({default: mod.OramaSearchBox})));
@@ -36,7 +36,7 @@ export default function OramaSearch() {
 function $OramaSearchBoxWrapper({isSearchOpen, onModalClosed}: { isSearchOpen: boolean, onModalClosed: () => void }) {
     const [oramaLocalClientInstance, setOramaLocalClientInstance] = useState<any>(null);
     const [pluginOptions, setPluginOptions] = useState<any>(null);
-    const [colorScheme] = useColorScheme()
+    // const [colorScheme] = useColorScheme()
 
     async function loadData() {
         // @ts-ignore
@@ -70,7 +70,7 @@ function $OramaSearchBoxWrapper({isSearchOpen, onModalClosed}: { isSearchOpen: b
 
     const searchBox = (oramaLocalClientInstance || pluginOptions?.cloudConfig) ? (
         <OramaSearchBox
-            colorScheme={colorScheme || "system"}
+            // colorScheme={colorScheme || "system"}
             open={isSearchOpen}
             clientInstance={oramaLocalClientInstance}
             onModalClosed={onModalClosed}

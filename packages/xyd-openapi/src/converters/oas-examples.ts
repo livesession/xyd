@@ -91,10 +91,6 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
     const examples: Example[] = []
     const tabs: CodeBlockTab[] = []
 
-    if (operation.path === "/v2/domains/{domain}/records") {
-        console.log(5)
-    }
-
     // Handle x-codeSamples if present
     if (operation.schema['x-codeSamples']) {
         const codeSamples = operation.schema['x-codeSamples'] as Array<{ lang: string; source: string }>

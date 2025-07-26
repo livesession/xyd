@@ -21,15 +21,6 @@ if (!process.env.ENABLE_TIMERS) {
 // TODO: !!! IN THE FUTURE BETTER SOLUTION !!!
 const fullReloadOptions = {
     "theme.name": true,
-    "theme.icons": true,
-    "theme.integrations": true,
-    "theme.banner": true,
-
-
-    "navigation.header": true,
-    "navigation.segments": true,
-
-    "engine": true,
 }
 
 /**
@@ -73,6 +64,11 @@ function hasValueChanged(oldValue: any, newValue: any): boolean {
  * Checks if any of the properties in fullReloadOptions have changed
  */
 function hasFullReloadPropertiesChanged(oldSettings: any, newSettings: any): boolean {
+    // Handle null/undefined settings
+    if (!oldSettings || !newSettings) {
+        return oldSettings !== newSettings;
+    }
+
     for (const [propertyPath, shouldCheck] of Object.entries(fullReloadOptions)) {
         if (shouldCheck) {
             const oldValue = extractNestedProperty(oldSettings, propertyPath);
@@ -104,7 +100,8 @@ export async function dev(options?: DevOptions) {
         return
     }
     const { respPluginDocs, resolvedPlugins } = inited
-    
+
+    // console.log(JSON.stringify(respPluginDocs.settings?.navigation?.sidebar, null, 2), "respPluginDocs.settings?.navigation?.sidebar")
     const allowCwd = searchForWorkspaceRoot(process.cwd())
     const appRoot = getAppRoot()
     const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)
@@ -126,7 +123,7 @@ export async function dev(options?: DevOptions) {
     const port = options?.port ?? parseInt(process.env.XYD_PORT ?? "5175")
 
     // Store initial settings for comparison
-    // let initialSettings = respPluginDocs.settings;
+    let initialSettings = respPluginDocs.settings || {};
 
     let USE_CONTEXT_ISSUE_PACKAGES: string[] = []
     {
@@ -139,14 +136,16 @@ export async function dev(options?: DevOptions) {
                 "lucide-react",
                 "openux-js",
                 "pluganalytics",
+                "@orama/orama",
+                "@orama/react-components"
             ];
         } else {
             USE_CONTEXT_ISSUE_PACKAGES = [
                 "@xyd-js/theme-cosmo",
+                "@xyd-js/theme-gusto",
                 "@xyd-js/theme-opener",
                 "@xyd-js/theme-picasso",
                 "@xyd-js/theme-poetry",
-                "@xyd-js/theme-gusto",
                 "@xyd-js/theme-solar"
             ]
         }
@@ -205,6 +204,7 @@ export async function dev(options?: DevOptions) {
 
     // Set up manual file watcher for markdown files TODO: better way? + HMR only for specific components instead or reload a pag
     const watcher = fs.watch(allowCwd, { recursive: true }, async (eventType, filename) => {
+        // console.log("WATCHER CHANGED", RELOADING)
         if (RELOADING) {
             return
         }
@@ -261,7 +261,9 @@ export async function dev(options?: DevOptions) {
 
         const renameContentFile = isContentFile && eventType === 'rename'
 
+        console.log(11111)
         if (isSettingsFile || renameContentFile) {
+            console.log(2222)
             if (renameContentFile) {
                 console.log('🔄 Content file renamed, refresh...');
             } else {
@@ -279,38 +281,39 @@ export async function dev(options?: DevOptions) {
 
             // Re-read settings to get the updated values
             const newSettings = await readSettings();
-            if (typeof newSettings !== 'object') {
-                console.log("[xyd:dev-watcher] Settings is not an object");
+            if (typeof newSettings !== 'object' || newSettings === null) {
+                console.log("[xyd:dev-watcher] Settings is not an object or is null");
                 return
-            } 
+            }
 
-            // console.log('🔄 [xyd:dev-watcher] Updating global settings...');
-            // // Update global settings immediately
-            // globalThis.__xydSettings = newSettings;
-            // console.log('✅ [xyd:dev-watcher] Global settings updated');
-            // console.log(4444444)
+            // Check if any full reload properties have changed
+            const needsFullReload = hasFullReloadPropertiesChanged(initialSettings, newSettings);
+
+            console.log(3333, needsFullReload)
+            if (needsFullReload) {
+                console.log(4444)
+                console.log('🔄 Full reload properties changed, restarting server...');
+                RELOADING = true;
+
+                // Close the current server
+                watcher.close();
+                await preview.close();
+                RELOADING = false;
+
+                // Restart the dev server
+                await dev(options);
+                return;
+            }
+
+            // Update the initial settings for next comparison
+            initialSettings = newSettings;
 
             invalidateSettings(server)
             await touchReactRouterConfig()
             await touchLayoutPage()
-            //
-            // // Send HMR update for the virtual settings module
-            // const virtualId = 'virtual:xyd-settings';
-            // const resolvedId = virtualId + '.jsx';
-            // server.ws.send({
-            //     type: 'update',
-            //     updates: [
-            //         {
-            //             type: 'js-update',
-            //             path: `/@id/${resolvedId}`,
-            //             acceptedPath: `/@id/${resolvedId}`,
-            //             timestamp: Date.now(),
-            //         },
-            //     ],
-            // });
-            
-            // Also send full reload to ensure all components update
-            server.ws.send({ type: 'full-reload' }); 
+
+            // Send full reload to ensure all components update
+            server.ws.send({ type: 'full-reload' });
         }
     });
 
@@ -320,9 +323,7 @@ export async function dev(options?: DevOptions) {
     });
 
     await preview.listen(port);
-    if (respPluginDocs.settings.navigation) {
-        await optimizeDepsFix(port, respPluginDocs.settings.navigation)
-    }
+    await optimizeDepsFix(port, respPluginDocs.settings.navigation)
 
     preview.printUrls();
     preview.bindCLIShortcuts({ print: true });
@@ -428,7 +429,7 @@ function getFirstPageFromNavigation(navigation: Navigation): string | null {
         return null;
     }
 
-    return extractFirstPage(navigation.sidebar);
+    return extractFirstPage(navigation.sidebar || []);
 }
 
 /**
@@ -562,12 +563,14 @@ async function experimentalInvalidateVite(server: ViteDevServer) {
 }
 
 // TODO: !!! IN THE FUTURE BETTER SOLUTION !!!
-async function optimizeDepsFix(port: number, navigation: Navigation) {
+async function optimizeDepsFix(port: number, navigation?: Navigation) {
     // TODO: ITS A WORKAROUND FOR NOW, IN THE FUTURE WE NEED TO DO IT BETTER 
     // ITS FOR OPTIMZE DEPS FIX
     // find first page from respPluginDocs.settings navigation and do fetch for it 
-    const firstPage = getFirstPageFromNavigation(navigation);
-    if (firstPage) {
-        await fetchFirstPage(firstPage, port);
+    let firstPage: null | string = ""
+    if (navigation) {
+        firstPage = getFirstPageFromNavigation(navigation);
     }
+    console.log("firstPage2", firstPage)
+    await fetchFirstPage(firstPage || "", port);
 }

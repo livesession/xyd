@@ -17,7 +17,7 @@ import { ReactContent } from "@xyd-js/components/content";
 import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
 import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
 
-import { Surfaces } from "@xyd-js/framework";
+import { Surfaces, pageMetaLayout } from "@xyd-js/framework";
 import { Composer } from "@xyd-js/composer";
 import { XYDAnalytics } from "@xyd-js/analytics";
 // @ts-ignore
@@ -54,6 +54,8 @@ globalThis.__xydSettingsClone = settingsClone
 globalThis.__xydUserComponents = userComponents // Add user components to global scope TODO: problematic
 
 const settings = globalThis.__xydSettings as Settings
+
+// console.log(JSON.stringify(settings?.navigation?.sidebar, null, 2), "settings?.navigation?.sidebar")
 
 const surfaces = new Surfaces()
 const atlasXyd = AtlasXydPlugin()(settings) // TODO: in the future via standard plugin API
@@ -132,15 +134,16 @@ export async function loader({ request }: { request: any }) {
     }, settings)
     const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
 
-    if (settings?.webeditor?.banner?.content && typeof settings?.webeditor?.banner?.content === "string") {
+    if (settings?.components?.banner?.content && typeof settings?.components?.banner?.content === "string") {
         bannerContentCode = await contentFs.compileContent(
-            settings?.webeditor?.banner?.content,
+            settings?.components?.banner?.content,
         )
     }
 
     // TODO: IN THE FUTURE BETTER API
-    if (metadata?.component === "home") {
-        metadata.layout = "page"
+    const layout = pageMetaLayout(metadata)
+    if (metadata && layout) {
+        metadata.layout = layout
     }
 
     return {

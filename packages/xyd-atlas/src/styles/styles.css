@@ -28,53 +28,68 @@
 
     /* HTTP Method Colors */
     [data-atlas-oas-method="GET"] {
-        --method-color: var(--oas-method-get-color);
-        --method-bg: var(--oas-method-get-bg);
+        /* --method-color: var(--oas-method-get-color); */
+        /* --method-bg: var(--oas-method-get-bg); */
 
-        &[data-active="true"] {
+        --method-color: var(--oas-method-get-color);
+        --method-bg: unset;
+
+        /* &[data-active="true"] {
             --method-bg: var(--oas-method-get-bg--active);
             --method-color: var(--oas-method-get-color--active);
-        }
+        } */
     }
 
     [data-atlas-oas-method="POST"] {
-        --method-color: var(--oas-method-post-color);
-        --method-bg: var(--oas-method-post-bg);
+        /* --method-color: var(--oas-method-post-color); */
+        /* --method-bg: var(--oas-method-post-bg); */
 
-        &[data-active="true"] {
+        --method-color: var(--oas-method-post-color);
+        --method-bg: unset;
+
+        /* &[data-active="true"] {
             --method-bg: var(--oas-method-post-bg--active);
             --method-color: var(--oas-method-post-color--active);
-        }
+        } */
     }
 
     [data-atlas-oas-method="PUT"] {
-        --method-color: var(--oas-method-put-color);
-        --method-bg: var(--oas-method-put-bg);
+        /* --method-color: var(--oas-method-put-color); */
+        /* --method-bg: var(--oas-method-put-bg); */
 
-        &[data-active="true"] {
+        --method-color: var(--oas-method-put-color);
+        --method-bg: unset;
+
+        /* &[data-active="true"] {
             --method-bg: var(--oas-method-put-bg--active);
             --method-color: var(--oas-method-put-color--active);
-        }
+        } */
     }
 
     [data-atlas-oas-method="DELETE"] {
-        --method-color: var(--oas-method-delete-color);
-        --method-bg: var(--oas-method-delete-bg);
+        /* --method-color: var(--oas-method-delete-color); */
+        /* --method-bg: var(--oas-method-delete-bg); */
 
-        &[data-active="true"] {
+        --method-color: var(--oas-method-delete-color);
+        --method-bg: unset;
+
+        /* &[data-active="true"] {
             --method-bg: var(--oas-method-delete-bg--active);
             --method-color: var(--oas-method-delete-color--active);
-        }
+        } */
     }
 
     [data-atlas-oas-method="PATCH"] {
-        --method-color: var(--oas-method-patch-color);
-        --method-bg: var(--oas-method-patch-bg);
+        /* --method-color: var(--oas-method-patch-color); */
+        /* --method-bg: var(--oas-method-patch-bg); */
 
-        &[data-active="true"] {
+        --method-color: var(--oas-method-patch-color);
+        --method-bg: unset;
+
+        /* &[data-active="true"] {
             --method-bg: var(--oas-method-patch-bg--active);
             --method-color: var(--oas-method-patch-color--active);
-        }
+        } */
     }
 
     [data-atlas-oas-method] {

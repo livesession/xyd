@@ -123,6 +123,9 @@ export const NavHost = css`
 
 export const ItemHost = css`
     @layer defaults {
+        --xyd-anchor-color: currentColor;
+        --xyd-anchor-color--hover: currentColor;
+
         position: relative;
         white-space: nowrap;
         color: var(--xyd-nav-item-color);

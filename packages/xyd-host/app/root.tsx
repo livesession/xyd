@@ -34,7 +34,7 @@ export function loader({ request }: { request: any }) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-    const colorScheme = clientColorScheme() || settings?.theme?.appearance?.defaultColorScheme || "os"
+    const colorScheme = clientColorScheme() || settings?.theme?.appearance?.colorScheme || "os"
 
     const { component: UserAppearance, classes: UserAppearanceClasses } = userAppearance()
 
@@ -131,9 +131,16 @@ function ColorSchemeScript() {
 
 // TODO: check if it match good
 function BannerHeightScript() {
+    const appearance = settings?.theme?.appearance
+
     useEffect(() => {
         const bannerHeight = document.querySelector("xyd-banner")?.clientHeight ?? 0;
         if (!bannerHeight) {
+            return
+        }
+        document.documentElement.style.setProperty("--xyd-banner-height", `${String(bannerHeight)}px`)
+
+        if (!appearance?.banner?.fixed) {
             return
         }
 

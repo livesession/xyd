@@ -47,6 +47,7 @@ export const ApiRefItemHost = css`
 
             @media (max-width: 768px) {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
         }
     }
@@ -54,6 +55,12 @@ export const ApiRefItemHost = css`
 
 export const ApiRefItemGrid = css`
     align-items: normal;
+
+    @media (max-width: 1280px) {
+        xyd-grid-decorator {
+            --cols: 1;
+        }
+    }
 `;
 
 export const ApiRefItemDefinitionsHost = css`

@@ -36,15 +36,19 @@ You can also customize syntax highlighting. Please see [theme settings](/docs/gu
 
 ## Syntax Highlighting 
 Default syntax highlighting depends on used theme but you can override it via [`docs.json`](/docs/guides/settings):
-```json [descHead="Tip" desc="Check out syntax highlighting [example](https://github.com/xyd-js/examples/tree/master/syntax-highlighting)."]
+```json [descHead="Tip" desc="Check out syntax highlighting [example](https://github.com/livesession/xyd/blob/master/packages/xyd-components/src/coder/themes/classic.ts)."]
 {
   "theme": {
     "coder": {
-      "syntaxHighlight": "<name> or <theme>"
+      "syntaxHighlight": "<name> or <theme_object>"
     }
   }
 }
 ```
+
+:::callout
+You can use the [Theme Editor](https://themes.vscode.one/) to customize any of the built-in themes or any theme from the [VS Code marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=Themes).
+:::
 
 &nbsp;
 ## Line Highlighting

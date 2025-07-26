@@ -30,7 +30,7 @@ export default class ThemeSolar extends BaseTheme {
                     middle: "desktop",
                     sidebar: "mobile"
                 },
-                writer: {
+                content: {
                     breadcrumbs: true,
                 }
             }

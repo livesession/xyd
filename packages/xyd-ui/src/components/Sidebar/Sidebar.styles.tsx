@@ -52,10 +52,10 @@ export const SidebarHost = css`
         }
 
         [part="logo"] {
-            img {
-                width: auto;
-                height: 28px;
-            }
+            display: flex;
+            align-items: center;
+            height: 28px;
+            width: auto;
         }
     }
 `;

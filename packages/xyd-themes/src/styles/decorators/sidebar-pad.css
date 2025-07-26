@@ -1,17 +1,23 @@
 @layer decorators {
     xyd-layout-primary {
+        --sidebar-height: calc(100dvh - var(--xyd-nav-height) - var(--xyd-banner-height-dynamic) - var(--xyd-nav-height-space-user, 0px));
+        --sidebar-top: calc(var(--xyd-nav-height) + var(--xyd-banner-height-dynamic) + var(--xyd-nav-height-space-user, 0px));
+        
+        --sidebar-subheader-height: calc(100dvh - var(--xyd-header-total-height) - var(--xyd-nav-height-space-user, 0px));
+        --sidebar-subheader-top: calc(var(--xyd-header-total-height) + var(--xyd-nav-height-space-user, 0px));
+        
         /* layout: Sidebar */
         [part="sidebar"] {
             position: sticky;
-            height: calc(100dvh - var(--xyd-nav-height) - var(--xyd-banner-height-dynamic));
-            top: calc(var(--xyd-nav-height) + var(--xyd-banner-height-dynamic));
+            height: var(--sidebar-height);
+            top: var(--sidebar-top);
             z-index: 1;
         }
 
         &[data-subheader="true"][data-hide-subheader="false"] {
             [part="sidebar"] {
-                height: calc(100dvh - var(--xyd-header-total-height));
-                top: var(--xyd-header-total-height);
+                height: var(--sidebar-subheader-height);
+                top: var(--sidebar-subheader-top);
             }
         }
     }

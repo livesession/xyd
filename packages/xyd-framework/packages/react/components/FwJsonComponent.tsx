@@ -40,7 +40,19 @@ export function FwJsonComponent(args: ComponentLike) {
 
     let Component = resolveComponent(component, components)
 
+    // if (Component && Component.name === "FwLogo" || Component.name === "a") {
+    //     console.log(props, 3333, Component.name);
+    //     return <Component {...props}>
+    //         {renderChildren(children)}
+    //     </Component>
+    // }
+
+    // if (Component) {
+    //     console.log(Component, 33333, Component.name);
+    // }
+
     if (Component) {
+        // console.log(props, 3333, Component.name);
         return <Component {...props}>
             {renderChildren(children)}
         </Component>

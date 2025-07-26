@@ -7,8 +7,12 @@
     --xyd-sidebar-padding: 16px;
 }
 
-/* Subnav */
+/* Nav + Subnav */
 :root {
+    --xyd-nav-height: 44px;
     --xyd-subnav-height: 50px;
 }
 
+:root {
+    --xyd-nav-height-space-user: 8px;
+}

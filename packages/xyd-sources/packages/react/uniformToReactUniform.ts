@@ -38,6 +38,7 @@ export function uniformToReactUniform(
         const ctx = reference.context
 
         if (ctx?.category !== "Component") {
+            console.warn(`skipping non-component: ${ctx?.symbolName}`)
             continue
         }
 

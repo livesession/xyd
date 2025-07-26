@@ -21,6 +21,24 @@ export default {
                 margin-top: var(--space-medium);
             }
 
+            figure {
+                margin: 0;
+                padding: 12px;
+                background: var(--dark16);
+                border-radius: 15px;
+                border: 1px solid var(--dark32);
+                text-align: center;
+                padding-bottom: 0;
+
+                figcaption {
+                    padding: 4px;
+                }
+            }
+
+            blockquote {
+                margin-top: var(--space-medium);
+            }
+
             xyd-steps {
                 margin-top: var(--space-medium);
             }
@@ -78,13 +96,10 @@ export default {
                 }
             }
             
-            ul:not(xyd-underlinenav ul), ol:not(xyd-underlinenav ol) {
+            ul:not(xyd-tabs ul), ol:not(xyd-tabs ol) {
                 margin-top: var(--space-medium);
             }
             
-            xyd-code-pre pre > div {
-                min-width: max-content !important;
-            }
             xyd-codetabs, xyd-callout, xyd-guidecard, xyd-tabs {
                 margin: var(--space-large) 0;
             }
@@ -122,6 +137,19 @@ export default {
             xyd-breadcrumbs {
                 font-size: var(--xyd-font-size-small);
                 line-height: var(--xyd-line-height-small);
+            }
+
+            xyd-grid-decorator {
+                @media (min-width: 1025px) and (max-width: 1400px) {
+                    ul ul {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+                    
+                    /* Override data-cols for tablet */
+                    &[data-cols] {
+                        --data-cols: 2;
+                    }
+                }
             }
         }
     `

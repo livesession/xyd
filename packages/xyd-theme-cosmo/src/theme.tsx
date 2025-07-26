@@ -18,6 +18,17 @@ export default class ThemeCosmo extends BaseTheme {
         this.theme.Update({
             coder: {
                 syntaxHighlight: syntaxThemeCosmo
+            },
+            appearance: {
+                logo: {
+                    header: true
+                },
+                header: {
+                    buttonSize: "sm"
+                },
+                footer: {
+                    surface: "page"
+                }
             }
         })
     }

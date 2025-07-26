@@ -7,10 +7,9 @@ description: Documentation platform built for developers
 
 # Introduction
 
-Welcome to `xyd`, the documentation platform built for people who value simplicity and power. We're redefining the documentation experience by making it intuitive, flexible, and enjoyable gesgesg update content.
+Welcome to `xyd`, the documentation platform built for people who value simplicity and power. We're redefining the documentation experience by making it intuitive, flexible, and enjoyable.
 
-Our mission is to create the Docs Platform for future.
-
+Our mission is to create the Docs Platform for future dev, read our [blog post.](https://blog.livesession.dev/why-another-yet-docs-framework)
 
 ## Five Principles
 - Developer Experience - designed to be easy to use, with a focus on developer experience.

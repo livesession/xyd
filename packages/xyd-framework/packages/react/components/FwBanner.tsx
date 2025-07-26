@@ -8,16 +8,16 @@ export function FwBanner() {
     const BannerContent = useBannerContent()
     const settings = useSettings()
 
-    const BannerComponent = settings?.webeditor?.banner?.kind === "secondary" ? Banner.Secondary : Banner
+    const BannerComponent = settings?.components?.banner?.kind === "secondary" ? Banner.Secondary : Banner
 
     if (!BannerContent) {
         return null
     }
 
     return <BannerComponent
-        label={settings?.webeditor?.banner?.label}
-        icon={settings?.webeditor?.banner?.icon}
-        href={settings?.webeditor?.banner?.href}
+        label={settings?.components?.banner?.label}
+        icon={settings?.components?.banner?.icon}
+        href={settings?.components?.banner?.href}
     >
         <BannerContent />
     </BannerComponent>

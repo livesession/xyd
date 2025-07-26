@@ -2,7 +2,7 @@
 title: Details
 icon: chevron-down
 layout: wide
-uniform: "@components/writer/Details/Details.tsx"
+uniform: "@components/writer/Details/DetailsProps.tsx"
 ---
 
 ### Examples
@@ -21,12 +21,10 @@ uniform: "@components/writer/Details/Details.tsx"
 :::
 
 <<<examples
-```tsx Guide Card Example
-<Details label="Session Replay">
-    LiveSession offers detailed 
-    session replays, allowing you to 
-    visualize user interactions in your product.
-</Details>
+```tsx
+:::details{label="Session Replay"}
+LiveSession offers detailed session replays, allowing you to  visualize user interactions in your product.
+:::
 ```
 
 ```tsx

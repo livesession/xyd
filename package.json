@@ -10,10 +10,14 @@
     "dev:styles": "pnpm --filter \"@xyd-js/components\" --filter \"@xyd-js/ui\" --parallel dev",
     "build": "./build.sh",
     "build:apidocs-demo": "pnpm --filter \"./packages/**/*\" --filter \"@xyd-js/apidocs-demo\" build",
+    "schema:docs.json": "npx ts-json-schema-generator --path ./packages/xyd-core/src/types/settings.ts --type 'Settings' --no-top-ref --out ./apps/docs/public/docs.json",
     "clean": "./clear.sh",
     "prepare": "husky",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:local": "npm_config_registry=http://localhost:4873 playwright test",
+    "test:node-support": "playwright test --config=playwright.config.node-support.ts",
+    "test:node-support:local": "npm_config_registry=http://localhost:4873 playwright test --config=playwright.node-support.config.ts",
     "test:e2e:ui": "playwright test --ui"
   },
   "devDependencies": {

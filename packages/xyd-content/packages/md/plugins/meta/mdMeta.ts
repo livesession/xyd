@@ -158,7 +158,9 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
         resolvedProps,
         file.data.outputVars,
         Object.freeze(tree.children) as any,
-        meta
+        meta,
+        // @ts-ignore
+        settings
       )
       console.timeEnd('plugin:mdMeta:transform');
 

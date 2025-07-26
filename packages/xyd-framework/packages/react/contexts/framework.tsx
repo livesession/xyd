@@ -49,7 +49,7 @@ export function Framework(props: FrameworkProps) {
     const [metadata, setMetadata] = useState<Metadata | undefined>(props.metadata)
 
     const BannerContent = props.BannerContent || null
-    const BannerComponent = props?.settings?.webeditor?.banner?.kind === "secondary" ? Banner.Secondary : Banner
+    const BannerComponent = props?.settings?.components?.banner?.kind === "secondary" ? Banner.Secondary : Banner
     const appearance = props.settings.theme?.appearance
 
     return <>
@@ -66,9 +66,9 @@ export function Framework(props: FrameworkProps) {
             }}>
                 <ProgressBar isActive={navigation.state === 'loading'} />
                 {BannerContent && !appearance?.banner?.fixed ? <BannerComponent
-                    label={props.settings?.webeditor?.banner?.label}
-                    icon={props.settings?.webeditor?.banner?.icon}
-                    href={props.settings?.webeditor?.banner?.href}
+                    label={props.settings?.components?.banner?.label}
+                    icon={props.settings?.components?.banner?.icon}
+                    href={props.settings?.components?.banner?.href}
                 >
                     <BannerContent />
                 </BannerComponent> : null}

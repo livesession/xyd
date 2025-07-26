@@ -9,8 +9,10 @@ import dts from 'rollup-plugin-dts';
 import {terser} from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';
+import postcssInlineUrl from 'postcss-url';
 import wyw from '@wyw-in-js/rollup';
 import copy from 'rollup-plugin-copy';
+import postcssProcessor from 'postcss';
 
 import {createRequire} from 'module';
 
@@ -102,7 +104,64 @@ export default [
                         dest: 'dist/coder/themes' 
                     }
                 ]
-            })
+            }),
+            {
+                name: 'postcss-dist',
+                async writeBundle() {
+                  const cssFile = path.resolve(__dirname, 'dist/index.css');
+
+                  if (!fs.existsSync(cssFile)) return;
+                  const css = fs.readFileSync(cssFile, 'utf8');
+                  
+                  // Custom PostCSS plugin to handle CSS custom properties with local file paths
+                  const customInlinePlugin = {
+                    postcssPlugin: 'custom-inline-svg',
+                    async Declaration(decl) {
+                      if (decl.value && decl.value.includes('url(')) {
+                        // Find all url() patterns in the declaration value
+                        const urlRegex = /url\(([^)]+)\)/g;
+                        let match;
+                        let newValue = decl.value;
+                        
+                        while ((match = urlRegex.exec(decl.value)) !== null) {
+                          const urlPath = match[1].replace(/['"]/g, '');
+                          
+                          // Check if it's a local file path
+                          if (urlPath.startsWith('/') && urlPath.includes('.svg')) {
+                            try {
+                              const fullPath = path.resolve(__dirname, urlPath);
+                              if (fs.existsSync(fullPath)) {
+                                const svgContent = fs.readFileSync(fullPath, 'utf8');
+                                const encodedSvg = encodeURIComponent(svgContent);
+                                const dataUrl = `data:image/svg+xml,${encodedSvg}`;
+                                
+                                // Replace the url() with the data URL
+                                newValue = newValue.replace(match[0], `url("${dataUrl}")`);
+                              }
+                            } catch (error) {
+                              console.warn(`Failed to inline SVG: ${urlPath}`, error.message);
+                            }
+                          }
+                        }
+                        
+                        decl.value = newValue;
+                      }
+                    }
+                  };
+                  
+                  const result = await postcssProcessor([
+                    customInlinePlugin,
+                    postcssInlineUrl({
+                      url: 'inline',
+                      encodeType: 'encodeURIComponent',
+                      maxSize: Infinity,
+                      filter: '**/*.svg',
+                    })
+                  ]).process(css, { from: cssFile, to: cssFile });
+                  
+                  fs.writeFileSync(cssFile, result.css);
+                }
+              },
         ],
         external
     },

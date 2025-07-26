@@ -8,10 +8,11 @@ import {
     CodeCopy,
 } from "../CodeCopy";
 import * as cn from "./CodeTabs.styles"; // TODO: style by highlighted?
+import { SyntaxHighlightedCode } from "../CodeTheme/CodeTheme";
 
 export interface CodeTabsProps {
     description: string;
-    highlighted: HighlightedCode[]
+    highlighted: SyntaxHighlightedCode[]
     className?: string
     controlByMeta?: boolean // TODO: BETTER IN THE FUTURE
 }
@@ -30,7 +31,6 @@ export function withCodeTabs(PreComponent) {
         if (props?.highlighted?.length === 0) { 
             return null
         }
-
 
         return (
             <xyd-codetabs className={`${cn.CodeTabsHost} ${props.className || ""}`}>

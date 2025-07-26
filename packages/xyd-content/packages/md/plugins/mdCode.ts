@@ -16,16 +16,18 @@ export function remarkInjectCodeMeta() {
             node.data.regions = regions
             node.data.lineRanges = lineRanges
 
-            const { attributes, sanitizedText } = mdParameters(node.meta || "", {
+            const { attributes, sanitizedText: defaultMetaTitle } = mdParameters(node.meta || "", {
                 htmlMd: true
             });
+            node.meta = defaultMetaTitle
 
             const props: { [prop: string]: any } = {
                 regions: JSON.stringify(node.data.regions),
                 lineRanges: JSON.stringify(node.data.lineRanges)
             }
+            props.meta = node.lang || ""
+            props.title = defaultMetaTitle
 
-            let meta = ""
             if (attributes && attributes.lines === "true") {
                 props.lineNumbers = true
             }
@@ -45,8 +47,13 @@ export function remarkInjectCodeMeta() {
                 props.descriptionIcon = attributes.descIcon
             }
             if (attributes && attributes.meta && attributes.meta !== "false") {
-                meta = attributes.meta
-                node.meta = meta
+                props.meta = attributes.meta
+            }
+            if (attributes && attributes.title && attributes.title !== "false") {
+                props.title = attributes.title
+            }
+            if (attributes?.title === "false") {
+                props.title = ""
             }
 
             node.data.hProperties = {
@@ -54,13 +61,13 @@ export function remarkInjectCodeMeta() {
                 ...props
             }
 
-            meta = meta || sanitizedText
-            if (meta) {
-                node.data.hProperties = {
-                    ...(node.data.hProperties || {}),
-                    meta: meta
-                };
-            }
+            // meta = meta || sanitizedText
+            // if (meta) {
+            //     node.data.hProperties = {
+            //         ...(node.data.hProperties || {}),
+            //         meta: meta
+            //     };
+            // }
         });
         console.timeEnd('plugin:remarkInjectCodeMeta');
     };

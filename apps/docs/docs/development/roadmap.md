@@ -60,9 +60,9 @@ Integration with AI systems and making documentation AI-friendly.
 * **Structured Data**: Enhanced metadata and structured content for better AI comprehension
 * **AI API Access**: Programmatic access to documentation for AI systems
 
-## Compose
+## Xwrite
 
-Composable architecture for writing docs content.
+Writing engine designed for docs.
 
 * **Compose API**: Mechanism for creating and enhancing docs content using declarative or programmatic approaches
 

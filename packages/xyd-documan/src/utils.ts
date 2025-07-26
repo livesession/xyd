@@ -80,6 +80,8 @@ export async function appInit(options?: PluginDocsOptions) {
         globalThis.__xydUserComponents = componentPlugins
     }
 
+    console.log("respPluginDocs", "BEFORE")
+
     const respPluginDocs = await pluginDocs({
         ...options,
         appInit
@@ -103,6 +105,9 @@ export async function appInit(options?: PluginDocsOptions) {
 
     // appearanceWebEditor(respPluginDocs.settings)
 
+    // console.log("respPluginDocs.settings", JSON.stringify(respPluginDocs.settings?.navigation?.sidebar, null, 2))
+
+    console.log("respPluginDocs", "AFTER")
     return {
         respPluginDocs,
         resolvedPlugins
@@ -151,7 +156,7 @@ function virtualComponentsPlugin() {
 
                 // Fallback to runtime loading
                 return `
-                    export const components = globalThis.__xydUserComponents || {}
+                    export const components = globalThis.__xydUserComponents || []
                 `
             }
             return null;

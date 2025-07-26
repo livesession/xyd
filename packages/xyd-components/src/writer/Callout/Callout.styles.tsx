@@ -20,8 +20,10 @@ export const CalloutHost = css`
         
         /* Common callout styles */
         &[data-kind] {
-            border-color: color-mix(in srgb, var(--callout-color) 30%, transparent);
-            background-color: color-mix(in srgb, var(--callout-color-muted) 10%, transparent);
+            --callout-border-color: color-mix(in srgb, var(--callout-color) 30%, transparent);
+            --callout-bgcolor: color-mix(in srgb, var(--callout-color-muted) 10%, transparent);
+            border-color: var(--callout-border-color);
+            background-color: var(--callout-bgcolor);
 
             p {
                 color: var(--callout-color-active);

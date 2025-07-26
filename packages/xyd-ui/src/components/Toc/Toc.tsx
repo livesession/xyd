@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react'
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  createContext,
+  useContext
+} from 'react'
 import { Link } from 'react-router'
 import * as cn from './Toc.styles'
 
@@ -16,6 +23,7 @@ interface TocContextType {
   onChange: (v: string) => void
   registerActiveItem: (ref: React.RefObject<HTMLLIElement>, value: string) => void
   unregisterActiveItem: (value: string) => void
+  ancestors: string[]
 }
 
 const Context = createContext<TocContextType>({
@@ -23,15 +31,17 @@ const Context = createContext<TocContextType>({
   onChange: () => {},
   registerActiveItem: () => {},
   unregisterActiveItem: () => {},
+  ancestors: []
 })
 
 export function Toc({ children, defaultValue, className, maxDepth = 2 }: TocProps) {
   const [activeTrackHeight, setActiveTrackHeight] = useState(0)
   const [activeTrackTop, setActiveTrackTop] = useState(0)
   const [value, setValue] = useState(defaultValue || '')
+  const [ancestors, setAncestors] = useState<string[]>([])
 
   const activeItemsRef = useRef<Map<string, React.RefObject<HTMLLIElement>>>(new Map())
-  const headingsRef = useRef<string[]>([])
+  const headingsRef = useRef<Array<{ id: string; depth: number }>>([])
   const ignoreScrollRef = useRef(false)
 
   const registerActiveItem = useCallback(
@@ -64,18 +74,25 @@ export function Toc({ children, defaultValue, className, maxDepth = 2 }: TocProp
   }
 
   function updateHeadingsList() {
+    // Build selector for headings h2...h{maxDepth+1}
     const selector = Array.from({ length: maxDepth }, (_, i) => `h${i + 2}`).join(',')
-    headingsRef.current = Array.from(document.querySelectorAll(selector)).map(h => h.id)
+    headingsRef.current = Array.from(
+      document.querySelectorAll(selector)
+    ).map(h => ({
+      id: h.id,
+      depth: Number(h.tagName.charAt(1))
+    }))
   }
 
+  // Initialize headings and default value
   useEffect(() => {
     updateHeadingsList()
     if (!defaultValue && headingsRef.current.length) {
-      setValue(headingsRef.current[0])
+      setValue(headingsRef.current[0].id)
     }
     window.addEventListener('resize', updateHeadingsList)
     return () => window.removeEventListener('resize', updateHeadingsList)
-  }, [defaultValue])
+  }, [defaultValue, maxDepth])
 
   // On scroll, pick active heading unless we're ignoring due to click
   useEffect(() => {
@@ -85,12 +102,14 @@ export function Toc({ children, defaultValue, className, maxDepth = 2 }: TocProp
         ignoreScrollRef.current = false
         return
       }
-      const scrollTop = scrollEl instanceof Window ? window.pageYOffset : scrollEl.scrollTop
-      const viewportHeight = scrollEl instanceof Window ? window.innerHeight : scrollEl.clientHeight
+      const scrollTop =
+        scrollEl instanceof Window ? window.pageYOffset : scrollEl.scrollTop
+      const viewportHeight =
+        scrollEl instanceof Window ? window.innerHeight : scrollEl.clientHeight
       const threshold = viewportHeight * 0.2
 
-      let newActive = headingsRef.current[0] || ''
-      for (const id of headingsRef.current) {
+      let newActive = headingsRef.current[0]?.id || ''
+      for (const { id } of headingsRef.current) {
         const elem = document.getElementById(id)
         if (elem) {
           const top = elem.getBoundingClientRect().top
@@ -102,12 +121,17 @@ export function Toc({ children, defaultValue, className, maxDepth = 2 }: TocProp
         }
       }
 
-      const totalHeight = scrollEl instanceof Window
-        ? document.documentElement.scrollHeight
-        : (scrollEl as HTMLElement).scrollHeight
+      const totalHeight =
+        scrollEl instanceof Window
+          ? document.documentElement.scrollHeight
+          : (scrollEl as HTMLElement).scrollHeight
       // only override for bottom if content is scrollable
-      if (totalHeight > viewportHeight && scrollTop + viewportHeight >= totalHeight - 1) {
-        newActive = headingsRef.current[headingsRef.current.length - 1] || newActive
+      if (
+        totalHeight > viewportHeight &&
+        scrollTop + viewportHeight >= totalHeight - 1
+      ) {
+        newActive =
+          headingsRef.current[headingsRef.current.length - 1]?.id || newActive
       }
 
       if (newActive !== value) {
@@ -120,12 +144,41 @@ export function Toc({ children, defaultValue, className, maxDepth = 2 }: TocProp
     return () => scrollEl.removeEventListener('scroll', handleScroll)
   }, [value])
 
+  // Track the active item's track position/height
   useEffect(() => {
     trackHeight()
   }, [value])
 
+  // Compute ancestor chain whenever `value` changes
+  useEffect(() => {
+    const items = headingsRef.current
+    const idx = items.findIndex(h => h.id === value)
+    if (idx === -1) {
+      setAncestors([])
+      return
+    }
+    const chain: string[] = []
+    let currDepth = items[idx].depth
+    for (let i = idx - 1; i >= 0 && currDepth > 2; i--) {
+      const { id, depth } = items[i]
+      if (depth < currDepth) {
+        chain.unshift(id)
+        currDepth = depth
+      }
+    }
+    setAncestors(chain)
+  }, [value])
+
   return (
-    <Context.Provider value={{ value, onChange: handleUserSelect, registerActiveItem, unregisterActiveItem }}>
+    <Context.Provider
+      value={{
+        value,
+        onChange: handleUserSelect,
+        registerActiveItem,
+        unregisterActiveItem,
+        ancestors
+      }}
+    >
       <xyd-toc className={`${cn.TocHost} ${className || ''}`}>
         <div part="scroller">
           <div
@@ -133,7 +186,7 @@ export function Toc({ children, defaultValue, className, maxDepth = 2 }: TocProp
             style={{
               // @ts-ignore
               '--xyd-toc-active-track-height': `${activeTrackHeight}px`,
-              '--xyd-toc-active-track-top': `${activeTrackTop}px`,
+              '--xyd-toc-active-track-top': `${activeTrackTop}px`
             } as any}
           />
         </div>
@@ -151,9 +204,9 @@ export interface TocItemProps {
 }
 
 Toc.Item = function TocItem({ children, id, className, depth }: TocItemProps) {
-  const { value: activeId, onChange, registerActiveItem, unregisterActiveItem } = useContext(Context)
+  const { value: activeId, ancestors, onChange, registerActiveItem, unregisterActiveItem } = useContext(Context)
   const itemRef = useRef<HTMLLIElement>(null)
-  const active = activeId === id
+  const active = activeId === id || ancestors.includes(id)
 
   useEffect(() => {
     if (active && itemRef.current) {

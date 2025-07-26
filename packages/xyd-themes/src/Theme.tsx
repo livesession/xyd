@@ -29,6 +29,7 @@ export abstract class Theme {
         this.reactContent = globalThis.__xydReactContent
         this.navigation = globalThis.__xydNavigation as Navigation
         this.webeditor = globalThis.__xydWebeditor as WebEditor
+
         this.userAppearance = JSON.parse(JSON.stringify(this.theme.appearance || {}))
 
         this.appearanceWebEditor()
@@ -42,6 +43,10 @@ export abstract class Theme {
     protected theme: CustomTheme<ThemeSettings>
     protected readonly reactContent: ReactContent
     protected readonly surfaces: Surfaces
+
+    private get originalTheme(): ThemeSettings {
+        return JSON.parse(JSON.stringify(globalThis.__xydSettingsClone?.theme))
+    }
 
     private get originalWebeditor(): WebEditor {
         return JSON.parse(JSON.stringify(globalThis.__xydSettingsClone?.webeditor))
@@ -83,11 +88,9 @@ export abstract class Theme {
             : [...header.slice(0, insertIndex + 1), searchItem, ...header.slice(insertIndex + 1)]
     }
 
-    private update(patch: DeepPartial<ThemeSettings>, updateWebeditor: boolean = true) {
+    private update(patch: DeepPartial<ThemeSettings>) {
         deepMerge(this.theme, patch)
         this.appearanceWebEditor()
-        // if (updateWebeditor) {
-        // }
     }
 
     private updateThemePreset(patch: string[]) {
@@ -208,7 +211,8 @@ export abstract class Theme {
                         ...button,
                         props: {
                             kind: item.button,
-                            children: item.title
+                            children: item.title,
+                            size: this.theme.appearance?.header?.buttonSize || "md"
                         },
                     })
 
@@ -216,6 +220,8 @@ export abstract class Theme {
                 }
 
                 if ("social" in item) {
+                    const w = <IconSocial kind={item.social as any} />
+                    console.log(111111111, w)
                     this.webeditor.header = this.headerAppend({
                         ...button,
                         icon: <IconSocial kind={item.social as any} />,
@@ -263,9 +269,15 @@ export abstract class Theme {
     }
 
     private mergeUserAppearance() {
-        this.update({
+        const update: DeepPartial<ThemeSettings> = {
             appearance: this.userAppearance
-        }, false)
+        }
+
+        if (this.originalTheme.coder) {
+            update.coder = this.originalTheme.coder
+        }
+
+        this.update(update)
     }
 
     private resetWebeditor() {

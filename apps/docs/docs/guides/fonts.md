@@ -9,7 +9,7 @@ Learn how to load custom fonts
 :::
 
 :::callout
-By default font is loaded based on specific theme. The system automatically selects appropriate fonts based on your chosen theme to ensure optimal readability and visual consistency.
+By default font is loaded based on specific [theme](/docs/guides/themes). The system automatically selects appropriate fonts based on your chosen theme to ensure optimal readability and visual consistency.
 :::
 
 ## Configuration

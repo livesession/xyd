@@ -13,7 +13,7 @@ To enable the GitHub Star integration, add the following configuration to your `
 ```json
 {
   "integrations": {
-    "apps": {
+    ".apps": {
       "githubStar": {
         "title": "Star",
         "label": "Show your support! Star us on GitHub ⭐️",

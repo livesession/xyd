@@ -16,13 +16,13 @@ uniform: "@components/writer/GuideCard/GuideCard.tsx"
     
   - 
     :::guide-card{title="Routing Guide" icon="<Icon name='code'/>" href="/guides/routing"}
-    Learn about file-convention and settings-based routing in XYD.
+    Learn about file-convention and settings-based routing in xyd.
     :::
 
 - 
   - 
     :::guide-card{kind="secondary" title="Customization" icon="<Icon name='code'/>" href="/guides/customization-introduction"}
-    Explore how to customize and extend XYD to match your needs.
+    Explore how to customize and extend xyd to match your needs.
     :::
     
   - 
@@ -32,25 +32,19 @@ uniform: "@components/writer/GuideCard/GuideCard.tsx"
 :::
 
 <<<examples
-- 
-  :::code-group{title="Guide Cards"}
-  ```jsx Guide Card Example
-  function GuideCardV1() {
-    return <div> Guide Card V1</div>
-  }
-  ```
+```tsx
+:::guide-card{title="Getting Started" icon="code" href="/guides/quickstart"}
+Start your journey with our comprehensive quickstart guide.
+::: 
+```
 
-  ```tsx Card Group V2 Sample
-  function GuideCardV2() {
-    return <div> Guide Card V2 </div>
-  }
-  ``` 
-  :::
-
-- 
-  ```jsx 
-  function GuideCardV3() {
-    return <div> Guide Card V3</div>
-  }
-  ``` 
+```tsx
+<GuideCard
+  title="Routing Guide"
+  icon="code"
+  href="/guides/routing"
+>
+  Learn about file-convention and settings-based routing in xyd.
+</GuideCard>
+```
 <<<

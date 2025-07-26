@@ -13,7 +13,7 @@ Automatically send data about your documentation engagement to your third party 
 :::grid
 - 
   - 
-    :::guide-card{kind="secondary" title="LiveSession" icon="<Icon name='code'/>" href="/docs/guides/integrations/analytics/livesession"}
+    :::guide-card{kind="secondary" title="LiveSession" icon="docs:livesession" href="/docs/guides/integrations/analytics/livesession"}
     Learn how to add send analytics events to LiveSession
     :::
 

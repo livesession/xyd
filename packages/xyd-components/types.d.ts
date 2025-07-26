@@ -32,12 +32,9 @@ declare global {
         'xyd-table-cell': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-tabs': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-toccard': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-        'xyd-underlinenav': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-        'xyd-underlinenav-content': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-videoguide-miniature': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-content-decorator': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'xyd-grid-decorator': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-
 
         // Kit
         'xyd-loader': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
@@ -47,6 +44,8 @@ declare global {
 
         // Pages
         'page-home': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+        'page-first-slide': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+        'page-blog-home': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       }
     }
   }

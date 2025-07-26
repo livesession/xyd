@@ -80,6 +80,7 @@ async function main() {
             '@xyd-js/theme-opener',
             '@xyd-js/theme-picasso',
             '@xyd-js/theme-poetry',
+            '@xyd-js/theme-solar',
             '@xyd-js/themes',
             '@xyd-js/ui',
             '@xyd-js/uniform',
@@ -113,6 +114,13 @@ async function main() {
             ? 'pnpm changeset publish' 
             : 'npm_config_registry=http://localhost:4873 pnpm changeset publish';
         runCommand(publishCommand, 'Publishing packages');
+    }
+
+    
+    if (!isProduction) {
+        // TODO: FIX IN THE FUTURE CUZ IT SHOULD BE AUTOMATICALLY DONE BY NPM
+        // set latest tags
+        runCommand('node set-latest-tags.js', 'Setting latest tags');
     }
 
     console.log('🎉 Release process completed successfully!\n');

@@ -1,4 +1,4 @@
-:root {
+    :root {
     color-scheme: light dark;
 }
 
@@ -40,6 +40,10 @@
 
     --color-primary: var(--theme-color-primary, var(--purple80));
     --color-primary--active: var(--theme-color-primary-active, var(--purple100));
+
+    --xyd-gradient-from-position: ;
+    --xyd-gradient-to-position: ;
+    --xyd-gradient-via-position: ;
 }
 
 /* Dark Mode Global */
@@ -167,6 +171,7 @@
     --xyd-font-size-xlarge: 22px;
     --xyd-font-size-xxlarge: 26px;
     --xyd-font-size-2xl: 32px;
+    --xyd-font-size-3xl: 48px;
 
     /* Line Heights */
     --xyd-line-height-xsmall: 16px;
@@ -176,6 +181,7 @@
     --xyd-line-height-xlarge: 33px;
     --xyd-line-height-xxlarge: 39px;
     --xyd-line-height-2xl: 44px;
+    --xyd-line-height-3xl: 56px;
 
     /* Font Weights */
     --xyd-font-weight-normal: 400;
@@ -257,7 +263,7 @@
     --xyd-codetabs-border-color: var(--dark32);
     --xyd-codetabs-bgcolor: linear-gradient(45deg, var(--dark8) 0%, var(--dark8) 100%);
     --xyd-codetabs-color: var(--dark80);
-    --xyd-codetabs-color--active: var(--color-primary);
+    --xyd-codetabs-color--active: var(--color-text);
     --xyd-codetabs-color--hover: var(--dark32);
 
     /* Badge */
@@ -345,6 +351,10 @@
     --xyd-table-bgcolor: var(--dark16);
 
     /* Tabs */
+    --xyd-tabs-primary-bgcolor: var(--color-bg);
+    --xyd-tabs-primary-border-color: hsl(212, 15%, calc(96% - 12% * 1));
+    --xyd-tabs-primary-list-color: hsl(212, 15%, calc(96% - 12% * 4));
+    --xyd-tabs-primary-color--active: var(--color-primary);
     --xyd-tabs-bgcolor: var(--dark16);
     --xyd-tabs-arrow-bgcolor: var(--color-bg);
     --xyd-tabs-color: var(--dark48);
@@ -358,12 +368,6 @@
     --xyd-toccard-color: var(--dark48);
     --xyd-toccard-title-color: var(--dark80);
     --xyd-toccard-icon-color: var(--dark80);
-
-    /* UnderlineNav */
-    --xyd-underlinenav-bgcolor: var(--color-bg);
-    --xyd-underlinenav-border-color: hsl(212, 15%, calc(96% - 12% * 1));
-    --xyd-underlinenav-list-color: hsl(212, 15%, calc(96% - 12% * 4));
-    --xyd-underlinenav-color--active: var(--color-primary);
 
     /* VideoGuide Miniature*/
     --xyd-videoguide-miniature-mini-width: 202px;
@@ -425,6 +429,10 @@
 
     /* SearchButton */
     --xyd-searchbutton-background: var(--dark16);
+
+    /* Blockquote */
+    --xyd-blockquote-color: var(--dark48);
+    --xyd-blockquote-border-color: var(--dark32);
 }
 
 /* Atlas */

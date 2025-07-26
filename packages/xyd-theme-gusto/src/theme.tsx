@@ -40,6 +40,9 @@ export default class ThemeGusto extends BaseTheme {
                 },
                 tabs: {
                     surface: "sidebar"
+                },
+                buttons: {
+                    rounded: "lg"
                 }
             }
         })

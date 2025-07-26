@@ -1,24 +1,22 @@
+@import "@xyd-js/themes/dist/decorators/sidebar-pad.css";
+
 @layer themes {
     :root {
         --cosmo-scrollbar-bgcolor: var(--xyd-toc-scroll-bgcolor);
     }
 
     xyd-layout-primary {
-        nav {
-            [part="logo"] {
-                margin-left: var(--xyd-sidebar-padding);
-            }
-        }
         [part="sidebar"] {
-            position: sticky;
-            height: calc(100vh - var(--xyd-nav-height) - calc(var(--xyd-page-gutter, 8px) * 2));
-            z-index: 1;
-            top: var(--xyd-nav-height);
+            height: calc(var(--sidebar-height) - var(--xyd-nav-height-space-user, 8px));
         }
 
-        &[data-subheader="true"][data-hide-subheader="false"] [part="sidebar"] {
-            top: calc(var(--xyd-header-total-height) + var(--xyd-page-gutter, 8px));
-            height: calc(100vh - var(--xyd-header-total-height) - calc(var(--xyd-page-gutter, 8px) * 2));
+        xyd-nav {
+            padding: 0 var(--xyd-page-gutter, 8px);
+        }
+
+        nav[part="nav"] {
+            background: var(--dark8);
+            border-radius: var(--xyd-border-radius-small);
         }
 
         xyd-sidebar {
@@ -34,48 +32,6 @@
 
             [part="item-header"]:first-of-type {
                 margin-top: 0;
-            }
-
-            scrollbar-color: transparent transparent;
-            scrollbar-width: thin;
-        }
-
-        xyd-sidebar::-webkit-scrollbar-corner,
-        xyd-sidebar::-webkit-scrollbar-thumb,
-        xyd-sidebar::-webkit-scrollbar-track {
-            background: none;
-        }
-
-        xyd-sidebar::-webkit-scrollbar-thumb {
-            background: var(--xyd-sidebar-border-color, var(--cosmo-scrollbar-bgcolor));
-            background-clip: content-box;
-            border: 1px solid transparent;
-            border-radius: 10px;
-        }
-
-        /* Hover effect for scrollbar */
-        xyd-sidebar:hover {
-            scrollbar-color: var(--xyd-sidebar-border-color, var(--cosmo-scrollbar-bgcolor)) transparent;
-        }
-
-        xyd-sidebar:hover::-webkit-scrollbar-thumb {
-            background: var(--xyd-sidebar-border-color, var(--cosmo-scrollbar-bgcolor));
-            background-clip: content-box;
-            border: 1px solid transparent;
-            border-radius: 10px;
-        }
-
-        /* Mobile responsive scrollbar */
-        @media screen and (max-width: 640px) {
-            xyd-sidebar {
-                scrollbar-color: var(--xyd-sidebar-border-color, var(--cosmo-scrollbar-bgcolor)) transparent;
-            }
-
-            xyd-sidebar::-webkit-scrollbar-thumb {
-                background: var(--xyd-sidebar-border-color, var(--cosmo-scrollbar-bgcolor));
-                background-clip: content-box;
-                border: 1px solid transparent;
-                border-radius: 10px;
             }
         }
     }

@@ -1,12 +1,12 @@
 import React from "react";
-import {Link, To} from "react-router";
+import { Link, To } from "react-router";
 
-import {Anchor} from "@xyd-js/components/writer";
+import { Anchor } from "@xyd-js/components/writer";
 
 import { isExternal } from "../utils";
 
 // TODO: in the future different place?
-export function FwLink({children, ...rest}) {
+export function FwLink({ children, ...rest }) {
     let to: To = ""
     let external = false
 
@@ -25,6 +25,10 @@ export function FwLink({children, ...rest}) {
                     hash: url.hash,
                 }
             } else {
+                return <Anchor as="button">
+                    {children}
+                </Anchor>
+
                 return <Anchor as="button" onClick={() => { // TODO: !!! in the future we should use react-router but it rerenders tha page !!!
                     const url = new URL(window.location.href)
                     const currentParams = url.searchParams
@@ -43,7 +47,22 @@ export function FwLink({children, ...rest}) {
         }
     }
 
-    return <Link {...rest} to={to} target={external ? "_blank" : rest.target}>
+    return <Anchor
+        as={$Link}
+        {...rest}
+        // @ts-ignore TODO: fix type for `to`
+        to={to}
+        target={external ? "_blank" : rest.target}
+    >
         {children}
+    </Anchor>
+}
+
+
+function $Link(props: any) {
+    return <Link
+        {...props}
+    >
+        {props.children}
     </Link>
 }

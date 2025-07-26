@@ -27,6 +27,12 @@ export default class ThemePicasso extends BaseTheme {
                 logo: {
                     header: "mobile",
                     sidebar: true
+                },
+                search: {
+                    sidebar: true
+                },
+                content: {
+                    sectionSeparator: true
                 }
             }
         })

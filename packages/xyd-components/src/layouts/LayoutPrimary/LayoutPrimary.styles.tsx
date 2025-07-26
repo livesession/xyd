@@ -103,6 +103,7 @@ export const LayoutPrimaryHost = css`
             right: 0;
             padding: var(--xyd-page-gutter);
             overflow: visible;
+            min-height: calc(100vh - (var(--xyd-nav-height) + var(--xyd-banner-height)))
         }
 
         [part="sidebar"] {
@@ -291,7 +292,8 @@ export const LayoutPrimaryHost = css`
             max-height: 100vh;
             overflow-y: auto;
             padding-right: 24px;
-            padding-top: var(--xyd-content-space);
+            padding: var(--xyd-content-space) 0;
+            margin-top: calc(var(--xyd-header-total-height) / 2);
 
             @media (max-width: ${tabletBreakpoint}) {
                 width: var(--xyd-layout-nav-width-small);

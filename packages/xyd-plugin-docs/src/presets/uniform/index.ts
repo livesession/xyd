@@ -187,6 +187,7 @@ async function uniformResolver(
 ) {
     let urlPrefix = ""
 
+    console.log(111111)
     if (matchRoute && sidebar) {
         sidebar.forEach((sidebar) => {
             if ("route" in sidebar) {
@@ -208,6 +209,7 @@ async function uniformResolver(
         matchRoute = options.fileRouting[resolvedApiFile]
     }
 
+    console.log(2222)
     if (!urlPrefix && matchRoute) {
         sidebar?.push({
             route: matchRoute,
@@ -415,15 +417,34 @@ async function uniformResolver(
         }
     }
 
+    
     if (matchRoute) {
         // TODO: in the future custom position - before / after
         uniformSidebars[0].pages.unshift(...uniformWithNavigation.out.sidebar)
+        
+        // sidebar[0].pages.unshift({
+        //     route: matchRoute,
+        //     pages: uniformWithNavigation.out.sidebar
+        // })
+
+        // const sidebarItem = sidebar?.find(item => {
+        //     if ("route" in item) {
+        //         return item.route === matchRoute
+        //     }
+        //
+        //     return false
+        // })
+        //
+        // if (sidebarItem) {
+        //     sidebarItem.pages?.push(...uniformWithNavigation.out.sidebar)
+        // }
 
         return {
             data: uniformData.data,
         }
     }
 
+    console.log(5555)
     sidebar.unshift({
         route: matchRoute,
         pages: uniformWithNavigation.out.sidebar

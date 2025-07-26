@@ -75,7 +75,7 @@ export const ButtonHost = css`
             color: var(--xyd-button-primary-color);
             border-color: var(--xyd-button-primary-border);
 
-            &:hover:not(:disabled) {
+            &:hover:not(:disabled):not([aria-disabled="true"]) {
                 background-color: var(--xyd-button-primary-bg-hover);
                 border-color: var(--xyd-button-primary-border-hover);
             }
@@ -86,7 +86,7 @@ export const ButtonHost = css`
             color: var(--xyd-button-secondary-color);
             border-color: var(--xyd-button-secondary-border);
 
-            &:hover:not(:disabled) {
+            &:hover:not(:disabled):not([aria-disabled="true"]) {
                 background-color: var(--xyd-button-secondary-bg-hover);
                 border-color: var(--xyd-button-secondary-border-hover);
             }
@@ -97,7 +97,7 @@ export const ButtonHost = css`
             color: var(--xyd-button-tertiary-color);
             border-color: var(--xyd-button-tertiary-border);
 
-            &:hover:not(:disabled) {
+            &:hover:not(:disabled):not([aria-disabled="true"]) {
                 background-color: var(--xyd-button-tertiary-bg-hover);
                 border-color: var(--xyd-button-tertiary-border-hover);
             }
@@ -122,7 +122,8 @@ export const ButtonHost = css`
             }
         }
 
-        &:disabled {
+        &:disabled,
+        &[aria-disabled="true"] {
             opacity: 0.5;
             cursor: not-allowed;
         }

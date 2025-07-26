@@ -122,6 +122,7 @@ LayoutPrimary.MobileAside = function LayoutPrimaryAside(props: LayoutPrimaryMobi
 interface LayoutPrimaryPageProps {
     children: React.ReactNode;
     contentNav?: React.ReactNode;
+    after?: React.ReactNode;
 }
 LayoutPrimary.Page = function LayoutPrimaryPage(props: LayoutPrimaryPageProps) {
     return <>
@@ -144,6 +145,7 @@ LayoutPrimary.Page = function LayoutPrimaryPage(props: LayoutPrimaryPageProps) {
                     </div>
                 </div>
             </div>
+            {props.after}
         </div>
     </>
 }

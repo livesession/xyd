@@ -33,7 +33,7 @@ export function Button({
 
     let hrefProps = {}
 
-    if (href) {
+    if (href && !disabled) {
         hrefProps = {
             href,
             target: outsideLink(href) ? "_blank" : undefined,
@@ -55,6 +55,7 @@ export function Button({
             data-icon-position={iconPosition}
             onClick={onClick}
             disabled={disabled}
+            aria-disabled={disabled ? "true" : undefined}
             {...hrefProps}
         >
             {icon && iconPosition === "left" && (

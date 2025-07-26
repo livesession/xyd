@@ -30,11 +30,16 @@ export interface Metadata<P = void> {
     url?: string
 
     /**
+     * If false, hide the copy page button
+     */
+    copyPage?: boolean
+
+    /**
      * @internal
      * 
      * The type of component to render this content with 
      */
-    component?: "docs" | "atlas" | "home"
+    component?: "docs" | "atlas" | "home" | "firstslide" | "bloghome" | "blogpost"
 
     /** 
      * @internal
@@ -75,8 +80,6 @@ export interface Metadata<P = void> {
     hidden?: boolean
 
     /**
-     * @todo: !!! IN THE FUTURE COMPOSE API !!!
-     * 
      * Optional 'tocCard' for github references
      * 
      * @example

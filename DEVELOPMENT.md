@@ -9,50 +9,29 @@
 ## Getting Started
 
 1. Clone the repository
+
 2. Install dependencies:
    ```bash
    pnpm i
    ```
-3. Set up Git hooks:
+
+3. Build
    ```bash
-   pnpm prepare
+   pnpm run build
+   ```
+
+4. Run local xyd
+   ```
+   XYD_DEV_MODE=1 pnpm run dev
    ```
 
 ## Development Scripts
 
 ### Main Development
 
-- `pnpm dev`: Runs the main development build using Lerna watch mode
-- `pnpm dev:styles`: Runs the watch mode for UI components and styles
-- `pnpm build`: Builds all packages
-- `pnpm clean`: Cleans build artifacts
-
-## Code Quality
-
-The project uses several tools to maintain code quality:
-
-- **Biome**: For code formatting and linting
-- **Husky**: For Git hooks
-- **lint-staged**: For running linters on staged files
-- **TypeScript**: For type checking
-
-### Pre-commit Hooks
-
-Before each commit, the following checks are automatically run on staged files:
-- Biome linting and formatting
-
-## Style Development
-
-For developing UI components and styles:
-
-1. Start the style development server:
-   ```bash
-   pnpm dev:styles
-   ```
-   This will run watch mode for both `@xyd-js/components` and `@xyd-js/ui` packages.
-
-2. Make changes to your components or styles
-3. The changes will be automatically rebuilt
+- `pnpm run dev`: Runs the main development build using Lerna watch mode
+- `pnpm run build`: Builds all packages
+- `pnpm run clean`: Cleans build artifacts
 
 ## Package Management
 
@@ -62,6 +41,7 @@ The project uses pnpm workspaces for package management. When adding new depende
   ```bash
   pnpm add <package> --filter <package-name>
   ```
+
 - For workspace dependencies:
   ```bash
   pnpm add <package> --filter <package-name> --workspace
@@ -75,8 +55,11 @@ The project uses Changesets for version management. To create a new version:
    ```bash
    pnpm changeset
    ```
+
 2. Follow the prompts to select packages and version changes
+
 3. Commit the changeset file
+
 4. Create a new version:
    ```bash
    pnpm changeset version
@@ -142,6 +125,11 @@ Run dev mode for style packages
 pnpm run dev:styles
 ```
 
+Login to local verdaccio
+```
+npm login --registry http://localhost:4873 (test, test)
+```
+
 Install xyd-js cli from verdaccio
 ```
 npm_config_registry=http://localhost:4873 bun add -g @xyd-js/cli 
@@ -162,6 +150,14 @@ run local xyd cli server
 ```
 npm_config_registry=http://localhost:4873 xyd
 ```
+
+### Tests
+### e2e
+With local npm registry
+```
+npm_config_registry=http://localhost:4873 pnpm run test:e2e ./__tests__/e2e/<PATH>
+```
+
 
 ### Release process
 
@@ -189,27 +185,25 @@ pnpm changeset publish --otp=<OTP_CODE>
 npm uninstall -g @xyd-js/cli
 ```
 
-# changeset verdaccio publish
-```
+### changeset verdaccio publish
+```bash
 npm_config_registry=http://localhost:4873 pnpm changeset publish
 ``
 
 deprecate package
-```
+```bash
 pnpm deprecate <PACKAGE> "<MESSAGE>"
 ```
 
 mark package version as latest
-```
+```bash
 npm dist-tag add <PACKAGE>@<VERSION> latest
 ```
 
-## Dev flags
+### Dev flags
 
-```
+```bash
 XYD_DEV_MODE=1 - Enable dev mode
-
-XYD_DEV_CLI_NOINSTALL=1 - Skip CLI packages installation after a build
 ```
 
 ## Documentation Development

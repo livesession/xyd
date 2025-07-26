@@ -65,7 +65,7 @@ export class BaseTheme extends Theme {
     public reactContentComponents(): { [component: string]: (props: any) => React.JSX.Element | null } {
         const meta = useMetadata()
         const appearance = useAppearance()
-        const contentDecorator = appearance?.writer?.contentDecorator
+        const contentDecorator = appearance?.content?.contentDecorator
 
         if (contentDecorator === "secondary") {
             if (isDefaultContent(meta)) {
@@ -122,7 +122,7 @@ export class BaseTheme extends Theme {
                 {children}
             </main>
 
-            <$Footer />
+            {appearance?.footer?.surface !== "page" ? <$Footer /> : null}
         </LayoutPrimary>
     }
 
@@ -131,19 +131,30 @@ export class BaseTheme extends Theme {
             Content: $Content,
             ContentNav: $ContentNav,
             PageFooter: $PageFooter,
+            Footer: $Footer,
         } = this
 
         const hideToc = this.useHideToc()
-        let contentNav = hideToc ? undefined : <$ContentNav />
+        const appearance = useAppearance()
+        const meta = useMetadata()
 
-        return <LayoutPrimary.Page contentNav={contentNav}>
+        let contentNav = hideToc ? undefined : <$ContentNav />
+        let footer = appearance?.footer?.surface === "page" ? <$Footer /> : null
+        const isPage = meta?.layout === "page"
+
+        return <LayoutPrimary.Page
+            after={footer}
+            contentNav={contentNav}
+        >
             <$Content>
                 {children}
             </$Content>
 
-            <$PageFooter>
+            {isPage ? (
+                null
+            ) : <$PageFooter>
                 <$BuiltWithXYD />
-            </$PageFooter>
+            </$PageFooter>}
         </LayoutPrimary.Page>
     }
 
@@ -167,7 +178,7 @@ export class BaseTheme extends Theme {
             NavLinks: $NavLinks,
         } = this
 
-        const contentDecorator = appearance?.writer?.contentDecorator
+        const contentDecorator = appearance?.content?.contentDecorator
 
         if (contentDecorator === "secondary" && !isDefaultContent(meta)) {
             return <$ContentSecondary>
@@ -188,6 +199,8 @@ export class BaseTheme extends Theme {
 
     private ContentSecondary({ children }: { children: React.ReactNode }) {
         const meta = useMetadata()
+        const settings = useSettings()
+
         const ContentComponent = useContentComponent()
 
         const { h1, Subtitle, code } = this.reactContent.components()
@@ -195,6 +208,19 @@ export class BaseTheme extends Theme {
             Breadcrumbs: $Breadcrumbs,
             NavLinks: $NavLinks,
         } = this
+
+        let copyPageElement: React.JSX.Element | null = <FwCopyPage />
+
+        console.log('meta', meta)
+        if (
+            meta?.copyPage !== true &&
+            (
+                meta?.copyPage === false ||
+                settings.theme?.writer?.copyPage === false
+            )
+        ) {
+            copyPageElement = null
+        }
 
         return <ContentDecorator metaComponent={meta?.component || undefined}>
             <main>
@@ -212,7 +238,8 @@ export class BaseTheme extends Theme {
                                 {children}
                             </ContentComponent>
                         </div>
-                        <FwCopyPage />
+
+                        {copyPageElement}
                     </div>
 
                     <div part="secondary-content">
@@ -279,20 +306,22 @@ export class BaseTheme extends Theme {
 
         let pageFooterBottom: React.ReactNode | null = null
 
-        if (settings.integrations?.apps?.githubStar) {
+        const apps = settings.integrations?.[".apps"]
+
+        if (apps?.githubStar) {
             pageFooterBottom = <div part="github-button-container">
                 <Text size="small">
-                    {settings.integrations.apps.githubStar.label}
+                    {apps.githubStar.label}
                 </Text>
 
                 <GitHubButton
-                    href={settings.integrations.apps.githubStar.href}
-                    data-icon={settings.integrations.apps.githubStar.dataIcon || "octicon-star"}
-                    data-size={settings.integrations.apps.githubStar.dataSize || "large"}
-                    data-show-count={settings.integrations.apps.githubStar.dataShowCount || true}
-                    aria-label={settings.integrations.apps.githubStar.ariaLabel}
+                    href={apps.githubStar.href}
+                    data-icon={apps.githubStar.dataIcon || "octicon-star"}
+                    data-size={apps.githubStar.dataSize || "large"}
+                    data-show-count={apps.githubStar.dataShowCount || true}
+                    aria-label={apps.githubStar.ariaLabel}
                 >
-                    {settings.integrations.apps.githubStar.title}
+                    {apps.githubStar.title}
                 </GitHubButton>
             </div>
         }
@@ -313,12 +342,12 @@ export class BaseTheme extends Theme {
 
         let logoElement: React.ReactNode = null;
 
-        const logo = settings?.webeditor?.footer?.logo
+        const logo = settings?.components?.footer?.logo
 
-        if (!settings.webeditor?.footer) {
+        if (!settings.components?.footer) {
             return null
         }
-        
+
         if (logo) {
             if (typeof logo === "boolean") {
                 logoElement = <FwLogo />
@@ -328,19 +357,14 @@ export class BaseTheme extends Theme {
         }
 
         return <Footer
+            kind={settings.components?.footer?.kind}
             logo={logoElement}
-            footnote={FwJsonComponent(settings.webeditor?.footer?.footnote || "")}
-            socials={settings.webeditor?.footer?.social ? Object.entries(settings.webeditor?.footer?.social).map(([key, value]) => ({
+            footnote={FwJsonComponent(settings.components?.footer?.footnote || "")}
+            socials={settings.components?.footer?.social ? Object.entries(settings.components?.footer?.social).map(([key, value]) => ({
                 logo: <IconSocial kind={key as IconSocialProps["kind"]} />,
                 href: value
             })) : undefined}
-            links={settings.webeditor?.footer?.links ? settings.webeditor?.footer?.links.map((link) => ({
-                header: link.header,
-                items: (link.items || []).map((item) => ({
-                    label: item.label,
-                    href: item.href
-                }))
-            })) : undefined}
+            links={settings.components?.footer?.links}
         />
     }
 
@@ -348,7 +372,7 @@ export class BaseTheme extends Theme {
         const appearance = useAppearance()
         const hideSidebar = this.useHideSidebar()
 
-        if (!appearance?.writer?.breadcrumbs) {
+        if (!appearance?.content?.breadcrumbs) {
             return null
         }
 
@@ -400,6 +424,6 @@ function isDefaultContent(meta: Metadata) {
         meta?.graphql ||
         meta.component === "atlas" ||
         meta.uniform ||
-        meta.component === "home"
+        meta.layout === "page"
 }
 

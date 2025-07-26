@@ -1,7 +1,7 @@
 import React, { createContext, useState, use, useEffect, Suspense } from "react";
 import { Theme } from "@code-hike/lighter";
 import { highlight } from "codehike/code";
-import type { HighlightedCode } from "codehike/code";
+import type { HighlightedCode as CodeHikeHighlightedCode } from "codehike/code";
 
 import defaultTheme from "../themes/cosmo"
 import { Loader } from "../../kit";
@@ -12,6 +12,10 @@ export interface CodeThemeProps {
     children: React.ReactNode;
 }
 
+export interface SyntaxHighlightedCode extends CodeHikeHighlightedCode {
+    title?: string
+}
+
 export interface CodeThemeBlockProps {
     /** This is the raw code. May include annotation comments. */
     value: string;
@@ -20,12 +24,14 @@ export interface CodeThemeBlockProps {
     /** Metadata string (the content after the language name in a markdown codeblock). */
     meta: string;
 
+    title?: string
+
     /** The highlighted code. */
-    highlighted?: HighlightedCode
+    highlighted?: SyntaxHighlightedCode
 }
 
 const CodeThemeProvider = createContext<{
-    highlighted: HighlightedCode[];
+    highlighted: SyntaxHighlightedCode[];
 }>({
     highlighted: [],
 });
@@ -68,11 +74,12 @@ export function CodeTheme(props: CodeThemeProps) {
                 return {
                     ...codeblock.highlighted,
                     meta: codeblock.highlighted?.meta || codeblock.meta,
+                    title: codeblock.title
                 };
             }
 
             return null
-        }).filter(Boolean) as HighlightedCode[]
+        }).filter(Boolean) as SyntaxHighlightedCode[]
     }
 
     async function clientSideHighlight() {

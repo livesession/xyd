@@ -203,6 +203,8 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
     if (indexPage) {
         pagePathMapping["index"] = indexPage
     }
+
+    // console.log(JSON.stringify(settings?.navigation?.sidebar, null, 2), "settings?.navigation?.sidebar")
     
     return {
         vitePlugins,
@@ -295,7 +297,7 @@ function mapNavigationToPagePathMapping(navigation: Navigation) {
 
     let sidebarFlatOnly = false
     // Process each sidebar route
-    for (const sidebar of navigation.sidebar) {
+    for (const sidebar of navigation?.sidebar || []) {
         if (typeof sidebar === 'string') {
             sidebarFlatOnly = true
             break
@@ -313,7 +315,7 @@ function mapNavigationToPagePathMapping(navigation: Navigation) {
     }
 
     if (sidebarFlatOnly) {
-        const sidebar = navigation.sidebar as string[]
+        const sidebar = navigation?.sidebar as string[] || []
         processPages(sidebar)
     }
 

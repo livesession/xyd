@@ -25,17 +25,14 @@ This section contains the full reference for the docs.json file:
 ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Settings'})"}
 
 
-## JSON Schema Validation {label="Coming Soon"}
+## JSON Schema Validation
 The `docs.json` file is validated against a JSON schema to ensure proper configuration. You can reference the schema by including:
 
 ```json
 {
-    "$schema": "https://json.xyd.dev"
+    "$schema": "https://docs.xyd.dev/public/docs.json"
 }
 ```
-
-
-&nbsp;
 
 ## Code-Based Settings {label="Coming Soon"}
 If you feel that the JSON configuration is not enough, you can use the TypeScript/React based configuration
@@ -50,8 +47,4 @@ export default {
     // ... your settings configuration here
 } satisfies Settings
 ```
-
-:::callout
-For code-based settings you need to use `.ts` or `.tsx` extension.
-:::
 

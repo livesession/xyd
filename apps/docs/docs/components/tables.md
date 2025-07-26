@@ -5,9 +5,19 @@ layout: wide
 uniform: "@components/writer/Table/Table.tsx"
 ---
 
-### Examples
-
 <<<examples
+~~~~csv
+:::table
+```
+[
+    ["Syntax", "Description", "Markdown"],
+    ["Header", "Title", "`#`"],
+    ["Paragraph", "Text", "`*`"]
+]
+```
+:::
+~~~~
+
 ```tsx
 <Table>
     <Table.Head>
@@ -32,17 +42,4 @@ uniform: "@components/writer/Table/Table.tsx"
     </Table.Body>
 </Table>
 ```
-
-~~~~csv
-:::table
-```
-[
-    ["Syntax", "Description", "Markdown"],
-    ["Header", "Title", "`#`"],
-    ["Paragraph", "Text", "`*`"]
-]
-```
-:::
-~~~~
-
 <<<

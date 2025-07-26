@@ -70,3 +70,6 @@ cli/
 
 # nx
 .nx
+
+# tests output
+__tests__/output

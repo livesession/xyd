@@ -37,7 +37,10 @@ You can configure the theme in the [`settings`](/docs/guides/settings) file:
         ::card{title="cosmo" description="Distraction-free content focus." href="https://cosmo.xyd.dev" imgSrc="/public/assets/cosmo.png"}
 - 
     - 
-        ::card{title="gusto (coming soon)" description="Time-based layout with simple but powerful navigation." imgSrc="/public/assets/gusto.png"}
+        ::card{title="gusto" description="Time-based layout with simple but powerful navigation." imgSrc="/public/assets/gusto.png"}
+    - 
+        ::card{title="solar" description="Time-based layout with simple but powerful navigation." imgSrc="/public/assets/gusto.png"}
+        
 :::
 
 ## Customizing the theme

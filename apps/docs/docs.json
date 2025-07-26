@@ -1,6 +1,7 @@
 {
+    "$schema": "./public/docs.json",
     "theme": {
-        "name": "picasso",
+        "name": "opener",
         "logo": {
             "light": "/public/assets/logo.svg",
             "dark": "/public/assets/logo-dark.svg"
@@ -15,38 +16,35 @@
                 "./icons/iconify.json"
             ]
         },
-        "fonts": {
-            "body": {
-                "family": "Roboto",
-                "src": "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-            }
-        },
         "appearance": {
             "colors": {
-                "primary": "color(display-p3 0.08 0.5 0.43)"
+                "primary": "#7051d4"
             },
             "banner": {
-                "fixed": true
+                "fixed": false
             },
             "header": {
                 "externalArrow": true
             }
         }
     },
-    "webeditor": {
+    "seo": {
+        "domain": "docs.xyd.dev"
+    },
+    "components": {
         "banner": {
-            "content": "**xyd 0.1.0** - Docs platform for future dev",
+            "content": "**xyd 0.1.x** - Docs platform for future dev",
             "label": "Coming Soon",
             "icon": "sparkles",
-            "href": "https://github.com/orgs/livesession/projects/4/views/1",
-            "store": 3600
+            "href": "https://github.com/orgs/livesession/projects/4/views/1"
         },
         "footer": {
+            "kind": "minimal",
             "social": {
                 "github": "https://github.com/livesession/xyd",
                 "slack": "https://xyd-docs.slack.com"
             },
-            "links": [
+            "links2": [
                 {
                     "header": "Resources",
                     "items": [
@@ -103,6 +101,28 @@
                     ]
                 }
             ],
+            "links": [
+                {
+                    "label": "Examples",
+                    "href": "https://github.com/xyd-js/examples"
+                },
+                {
+                    "label": "API Docs Demo",
+                    "href": "https://apidocs-demo.xyd.dev"
+                },
+                {
+                    "label": "Live Preview",
+                    "href": "https://preview.xyd.dev"
+                },
+                {
+                    "label": "CodeSandbox",
+                    "href": "https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox"
+                },
+                {
+                    "label": "Storybook",
+                    "href": "http://sb.xyd.dev"
+                }
+            ],
             "footnote": {
                 "component": "a",
                 "props": {
@@ -117,7 +137,7 @@
         "search": {
             "orama": true
         },
-        "apps": {
+        ".apps": {
             "githubStar": {
                 "title": "Star",
                 "label": "Show your support! Star us on GitHub ⭐️",
@@ -147,24 +167,14 @@
                 },
                 {
                     "title": "Github",
-                    "href": "https://github.com/livesession/xyd/discussions",
+                    "href": "https://github.com/livesession/xyd",
                     "icon": "docs:github"
                 },
                 {
                     "title": "Slack",
                     "href": "http://xyd-docs.slack.com",
                     "social": "slack"
-                },
-                {
-                    "title": "Discord",
-                    "href": "https://discord.gg/xyd-js",
-                    "social": "discord"
-                },
-                {
-                    "title": "Github",
-                    "href": "https://github.com/livesession/xyd",
-                    "social": "github"
-                }   
+                }  
             ],
             "sidebar": {
                 "bottom": [
@@ -262,6 +272,7 @@
                         "pages": [
                             "docs/guides/customization-quickstart",
                             "docs/guides/appearance",
+                            "docs/guides/components",
                             "docs/guides/icons",
                             "docs/guides/fonts",
                             "docs/guides/custom-scripts",
@@ -350,8 +361,6 @@
                     {
                         "group": "Components",
                         "pages": [
-                            "docs/components/text",
-                            "docs/components/heading",
                             "docs/components/callouts",
                             "docs/components/details",
                             "docs/components/guide-card",
@@ -376,7 +385,8 @@
                                     "docs/reference/core/settings",
                                     "docs/reference/core/sidebar",
                                     "docs/reference/core/theme",
-                                    "docs/reference/core/pagemeta"
+                                    "docs/reference/core/pagemeta",
+                                    "docs/reference/core/navigationitem"
                                 ]
                             }
                         ]

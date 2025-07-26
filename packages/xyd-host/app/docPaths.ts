@@ -10,7 +10,7 @@ export function docPaths(navigation: Settings['navigation']) {
     }
 
     // Process each sidebar group
-    navigation.sidebar.forEach(sidebarGroup => {
+    navigation?.sidebar.forEach(sidebarGroup => {
         if (typeof sidebarGroup === "string") {
             paths.push(sidebarGroup.startsWith("/") ? sidebarGroup : `/${sidebarGroup}`)
             return

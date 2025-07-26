@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-solar",
-  "version": "0.1.0-xyd.0",
+  "version": "0.1.0-build.40",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -30,7 +30,5 @@
     "react-dom": "^19.1.0",
     "react-router": "^7.6.2"
   },
-  "devDependencies": {
-
-  }
+  "devDependencies": {}
 }

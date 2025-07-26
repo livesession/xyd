@@ -39,7 +39,7 @@ export default class ThemeOpener extends BaseTheme {
                     scrollShadow: true,
                     scrollbar: "secondary"
                 },
-                writer: {
+                content: {
                     contentDecorator: "secondary",
                     breadcrumbs: true
                 },

@@ -38,19 +38,19 @@ const tests: Test[] = [
     //     multiOutput: true
     // },
 
-    // {
-    //     id: "1.flat-interface",
-    //     file: "-2.react.basic",
-    //     description: "React basic: flat interface",
-    //     react: true,
-    //     entryPoints: [
-    //         "src/1.flat-interface.tsx"
-    //     ],
-    //     forceSave: FORCE_SAVE,
-    //     saveUniform: SAVE_UNIFORM,
-    //     saveTypedoc: SAVE_TYPEDOC,
-    //     multiOutput: true
-    // },
+    {
+        id: "1.flat-interface",
+        file: "-2.react.basic",
+        description: "React basic: flat interface",
+        react: true,
+        entryPoints: [
+            "src/1.flat-interface.tsx"
+        ],
+        // forceSave: FORCE_SAVE,
+        // saveUniform: SAVE_UNIFORM,
+        // saveTypedoc: SAVE_TYPEDOC,
+        multiOutput: true
+    },
     //
     // {
     //     id: "2.file-connect-interface",
@@ -158,6 +158,10 @@ const tests: Test[] = [
 
 describe("sourcesToUniform TODO", () => {
     it("TODO", async () => {
-        expect(true).toBe(true)
+        // for (const test of tests) {
+        //     await testSourcesToUniform(test);
+        // }
+
+        // expect(true).toBe(true)
     })
 })
