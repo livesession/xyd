@@ -77,7 +77,7 @@ export function remarkFunctionPlugins(settings?: Settings) {
         mdFunctionImportCode(settings),
         mdFunctionUniform(settings),
         mdFunctionInclude(settings),
-        mdFunctionChangelog(),
+        mdFunctionChangelog(settings),
     ]
 }
 

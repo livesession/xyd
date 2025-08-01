@@ -7,7 +7,7 @@ title: "@out"
 Learn how to use `@out` function
 :::
 
-The `@out` function allows you set output variables
+The `@out` function allows you set output variables.
 
 ## Basic Usage
 
@@ -25,13 +25,15 @@ The `@out` function allows you set output variables
 
 for example:
 ~~~mdx
-@out(examples=(
-  ```md
-  :::callout
-  Note that you must have an Admin or Owner role to manage webhook settings.
-  :::
-  ```
-))
+@out(
+    .examples = (
+      ```md
+      :::callout
+      Note that you must have an Admin or Owner role to manage webhook settings.
+      :::
+      ```
+  )
+)
 ~~~
 
 or if output variable is a callback:

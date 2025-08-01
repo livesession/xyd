@@ -36,7 +36,7 @@ export interface SubNavItemProps {
 SubNav.Item = function SubNavItem({ children, value, href, as }: SubNavItemProps) {
     const Link = as || $Link;
 
-    return <RadixTabs.Trigger value={value}>
+    return <RadixTabs.Trigger asChild value={value}>
         <xyd-subnav-item className={cn.SubNavItem}>
             <Link part="link" href={href}>
                 {children}

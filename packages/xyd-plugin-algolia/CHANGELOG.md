@@ -1,5 +1,126 @@
 # @xyd-js/plugin-algolia
 
+## 0.1.0-build.137
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.148
+  - @xyd-js/content@0.1.0-build.151
+  - @xyd-js/core@0.1.0-build.150
+  - @xyd-js/plugins@0.1.0-build.137
+
+## 0.1.0-build.136
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.147
+  - @xyd-js/content@0.1.0-build.150
+  - @xyd-js/core@0.1.0-build.149
+  - @xyd-js/plugins@0.1.0-build.136
+
+## 0.1.0-build.135
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.146
+  - @xyd-js/content@0.1.0-build.149
+  - @xyd-js/core@0.1.0-build.148
+  - @xyd-js/plugins@0.1.0-build.135
+
+## 0.1.0-build.134
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.145
+  - @xyd-js/content@0.1.0-build.148
+  - @xyd-js/core@0.1.0-build.147
+  - @xyd-js/plugins@0.1.0-build.134
+
+## 0.1.0-build.133
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.144
+  - @xyd-js/content@0.1.0-build.147
+  - @xyd-js/core@0.1.0-build.146
+  - @xyd-js/plugins@0.1.0-build.133
+
+## 0.1.0-build.132
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.143
+  - @xyd-js/content@0.1.0-build.146
+  - @xyd-js/core@0.1.0-build.145
+  - @xyd-js/plugins@0.1.0-build.132
+
+## 0.1.0-build.131
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.142
+  - @xyd-js/content@0.1.0-build.145
+  - @xyd-js/core@0.1.0-build.144
+  - @xyd-js/plugins@0.1.0-build.131
+
+## 0.1.0-build.130
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.141
+  - @xyd-js/content@0.1.0-build.144
+  - @xyd-js/core@0.1.0-build.143
+  - @xyd-js/plugins@0.1.0-build.130
+
+## 0.1.0-build.129
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.140
+  - @xyd-js/content@0.1.0-build.143
+  - @xyd-js/core@0.1.0-build.142
+  - @xyd-js/plugins@0.1.0-build.129
+
+## 0.1.0-build.128
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.139
+  - @xyd-js/content@0.1.0-build.142
+  - @xyd-js/core@0.1.0-build.141
+  - @xyd-js/plugins@0.1.0-build.128
+
+## 0.1.0-build.127
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.138
+  - @xyd-js/content@0.1.0-build.141
+  - @xyd-js/core@0.1.0-build.140
+  - @xyd-js/plugins@0.1.0-build.127
+
 ## 0.1.0-build.126
 
 ### Patch Changes

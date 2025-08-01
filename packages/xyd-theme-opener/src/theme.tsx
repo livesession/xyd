@@ -28,7 +28,8 @@ export default class ThemeOpener extends BaseTheme {
                     middle: "desktop"
                 },
                 logo: {
-                    header: true
+                    header: true,
+                    sidebar: "mobile"
                 },
                 header: {
                     externalArrow: true,

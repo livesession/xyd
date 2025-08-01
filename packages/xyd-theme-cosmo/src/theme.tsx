@@ -1,4 +1,4 @@
-import {BaseTheme} from "@xyd-js/themes"
+import { BaseTheme } from "@xyd-js/themes"
 
 import syntaxThemeCosmo from "@xyd-js/components/coder/themes/cosmo.js"
 
@@ -28,9 +28,30 @@ export default class ThemeCosmo extends BaseTheme {
                 },
                 footer: {
                     surface: "page"
+                },
+                search: {
+                    fullWidth: true,
+                    sidebar: "mobile",
+                    middle: "desktop"
+                },
+                sidebar: {
+                    scrollShadow: true,
                 }
             }
         })
+
+
+        if (this.theme?.appearance?.colors?.primary) {
+            this.theme.Update({
+                appearance: {
+                    cssTokens: {
+                        "--syntax-primary": "var(--color-primary)",
+                        "--syntax-secondary": "var(--color-text)",
+                        "--syntax-tertiary": "var(--color-text)",
+                    }
+                }
+            })
+        }
     }
 }
 

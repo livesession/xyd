@@ -1,4 +1,7 @@
-import fs from "fs/promises"
+import { tmpdir } from "os";
+import { join } from "path";
+import { pathToFileURL } from "url";
+import fs, { rm, writeFile } from "fs/promises"
 
 import { VFile } from "vfile"
 import { PluggableList } from "unified";
@@ -34,12 +37,37 @@ export class ContentFS {
             remarkPlugins: this.remarkPlugins,
             rehypePlugins: this.rehypePlugins,
             recmaPlugins: [],
-            outputFormat: 'function-body',
             development: false,
-            jsx: false
+            outputFormat: 'function-body',
+            jsx: false,
+            // jsx: false,
+            // outputFormat: "program", // needed for import/export
         });
 
         return String(compiled)
+    }
+
+
+    public async compileContentV2(content: string, filePath?: string): Promise<string> {
+        const vfile = new VFile({
+            path: filePath,
+            value: content,
+            contents: content
+        });
+
+        const compiled = await mdxCompile(vfile, {
+            remarkPlugins: this.remarkPlugins,
+            rehypePlugins: this.rehypePlugins,
+            recmaPlugins: [],
+            development: false,
+            jsx: true,
+            outputFormat: "program", // needed for import/export
+        });
+
+        const tempPath = join(tmpdir(), `mdx-${Date.now()}.mjs`);
+        await writeFile(tempPath, String(compiled), "utf8");
+
+        return tempPath
     }
 
     public async readRaw(filePath: string) {

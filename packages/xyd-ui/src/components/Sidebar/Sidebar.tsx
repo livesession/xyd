@@ -65,6 +65,7 @@ export interface UISidebarItemProps {
     isParentActive?: boolean;
     ghost?: boolean;
     icon?: React.ReactNode;
+    group?: false;
     onClick?: (v: any) => void
 }
 
@@ -83,11 +84,12 @@ UISidebar.Item = function SidebarItem({
     isParentActive,
     ghost,
     icon,
+    group,
     onClick,
 }: UISidebarItemProps) {
     const [firstChild, ...restChilds] = React.Children.toArray(children)
 
-    const ButtonOrAnchor = button ? 'button' : Link
+    const ButtonOrAnchor = ghost ? "div" : button ? 'button' : Link
 
     let h = href?.endsWith("/") ? href.slice(0, -1) : href
 
@@ -102,26 +104,29 @@ UISidebar.Item = function SidebarItem({
         data-theme={activeTheme}
         data-ghost={ghost ? String(ghost) : undefined}
     >
-        <ButtonOrAnchor
-            part={`item-${button ? "button" : "link"}`}
-            href={button ? undefined : h}
-            to={h}
-            onClick={onClick}
-            target={target}
-        >
-            <div
-                part="primary-item"
-                data-parent-active={isParentActive}
-                data-active={active}
-                data-ghost={ghost ? String(ghost) : undefined}
+        {
+            group !== false && <ButtonOrAnchor
+                part={`item-${button ? "button" : "link"}`}
+                href={button ? undefined : h}
+                to={h}
+                onClick={onClick}
+                target={target}
             >
-                <>
-                    {icon}
+                <div
+                    part="primary-item"
+                    data-parent-active={isParentActive}
+                    data-active={active}
+                    data-ghost={ghost ? String(ghost) : undefined}
+                >
+                    <>
+                        {icon}
 
-                    {firstChild}
-                </>
-            </div>
-        </ButtonOrAnchor>
+                        {firstChild}
+                    </>
+                </div>
+            </ButtonOrAnchor>
+        }
+
         {restChilds}
     </li>
 }

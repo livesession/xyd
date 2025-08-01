@@ -2,62 +2,120 @@ import { visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
+import { fromMarkdown } from 'mdast-util-from-markdown';
+import { mdxjs } from 'micromark-extension-mdxjs';
+import { mdxFromMarkdown } from 'mdast-util-mdx';
 
 import { Settings } from '@xyd-js/core';
 
 import { FunctionName } from './types';
-import { FunctionOptions, parseFunctionCall, downloadContent, resolvePathAlias } from './utils';
-import { includeRemarkPlugins } from '..';
+import {
+    FunctionOptions,
+    parseFunctionCall,
+    downloadContent,
+    resolvePathAlias,
+} from './utils';
+import { defaultRemarkPlugins } from '..';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
+import { remarkMdxToc } from '../mdToc';
+import path from 'path';
 
 export function mdFunctionInclude(settings?: Settings) {
     return function (options: FunctionOptions = {}) {
         return async function transformer(tree: any, file: VFile) {
-            // Collect promises for async operations
-            const promises: Promise<void>[] = [];
-
             console.time('plugin:mdFunctionInclude');
 
-            visit(tree, 'paragraph', (node: any) => {
-                // Try to parse the function call
+            // Collect all replacements to avoid index shifting issues
+            const replacements: Array<{
+                parent: any;
+                index: number;
+                children: any[];
+            }> = [];
+
+            // First pass: collect all @include nodes and their replacements
+            const promises: Promise<void>[] = [];
+
+            visit(tree, 'paragraph', (node: any, index: number | undefined, parent: any) => {
                 const result = parseFunctionCall(node, FunctionName.Include);
-                if (!result) return;
+                if (!result || index === undefined) return;
 
                 const importPath = result[0];
+                // let fullDirPath =path.join(process.cwd(), file.dirname || "")
+                // fullDirPath = process.cwd()
+                const resolvedPath =
+                    resolvePathAlias(importPath, settings, file) || importPath;
 
-                // Resolve path aliases if settings are provided
-                const resolvedPath = resolvePathAlias(importPath, settings, process.cwd()) || importPath;
+                const resolvedIncludeBasePath =
+                    resolvePathAlias(resolvedPath, settings, file) || importPath;
 
-                // Create a promise for this node
+                // console.log("options", options, [file])
                 const promise = (async () => {
                     try {
-                        // Get the file content
-                        const content = await downloadContent(resolvedPath, file, options.resolveFrom);
+                        const ext = resolvedPath.split('.').pop();
+                        const content = await downloadContent(
+                            resolvedPath,
+                            file,
+                            options.resolveFrom,
+                        );
 
-                        // Use a minimal set of plugins to avoid circular dependencies
-                        const processor = unified()
-                            .use(remarkParse)
-                            .use(includeRemarkPlugins(settings));
+                        const includeFilePath = path.join(file.dirname || "", resolvedIncludeBasePath)
+                        const includedFile = new VFile({
+                            path: includeFilePath,
+                            dirname: path.dirname(includeFilePath),
+                            value: content
+                        });
 
-                        const processedContent = await processor.run(processor.parse(content));
-                        const parsedContent = processedContent as any;
+                        let parsedTree;
 
-                        // Replace the paragraph with the parsed content
-                        node.type = 'root';
-                        node.children = parsedContent.children;
-                        node.value = undefined;
+                        const remarkPlugins = defaultRemarkPlugins({} as any, settings)
+                            .filter(plugin => plugin !== remarkFrontmatter)
+                            .filter(plugin => plugin !== remarkMdxFrontmatter)
+                            .filter(plugin => !(typeof plugin === 'function' && (plugin.name === 'remarkMdxToc' || plugin.name === 'remarkMdxToc2')))
+                            
+                        if (ext === 'mdx') {
+                            // Parse MDX into MDAST using micromark + mdast-util-mdx
+                            parsedTree = fromMarkdown(content, {
+                                extensions: [mdxjs()],
+                                mdastExtensions: [mdxFromMarkdown()],
+                            });
 
+                            // Apply remark plugins to the parsed MDX tree with the correct file context
+                            const mdxProcessor = unified().use(remarkPlugins);
+                            parsedTree = await mdxProcessor.run(parsedTree, includedFile);
+                        } else {
+                            // Regular Markdown file using remarkParse
+                            const processor = unified()
+                                .use(remarkParse)
+                                .use(remarkPlugins);
+
+                            parsedTree = await processor.run(processor.parse(content), includedFile);
+                        }
+
+                        // Store the replacement instead of applying it immediately
+                        replacements.push({
+                            parent,
+                            index,
+                            children: parsedTree.children,
+                        });
                     } catch (error) {
                         console.error(`Error including file: ${resolvedPath}`, error);
-                        // Keep the node as is if there's an error
                     }
                 })();
 
-                // Add the promise to our collection
                 promises.push(promise);
             });
 
-            // Wait for all promises to resolve
+            // Wait for all content to be downloaded and parsed
             await Promise.all(promises);
+
+            // Second pass: apply replacements in reverse order to avoid index shifting
+            replacements
+                .sort((a, b) => b.index - a.index) // Sort by index in descending order
+                .forEach(({ parent, index, children }) => {
+                    parent.children.splice(index, 1, ...children);
+                });
+
             console.timeEnd('plugin:mdFunctionInclude');
         };
     };

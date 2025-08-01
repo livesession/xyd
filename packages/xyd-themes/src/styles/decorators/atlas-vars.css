@@ -15,3 +15,18 @@
 
     --XydAtlas-Sys-Color-Text-Primary: var(--color-text);
 }
+
+@define-mixin dark-theme {
+    --XydAtlas-Ref-Palette-Primary-60: var(--color-text);
+}
+
+[data-color-scheme="dark"] {
+    @mixin dark-theme;
+}
+
+/* System dark mode support for sidebar - only when OS preference is enabled */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        @mixin dark-theme;
+    }
+}

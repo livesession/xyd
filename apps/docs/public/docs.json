@@ -1,0 +1,2061 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "API": {
+      "additionalProperties": false,
+      "description": "API configuration interface",
+      "properties": {
+        "graphql": {
+          "$ref": "#/definitions/APIFile",
+          "description": "GraphQL configuration"
+        },
+        "openapi": {
+          "$ref": "#/definitions/APIFile",
+          "description": "OpenAPI configuration"
+        },
+        "sources": {
+          "$ref": "#/definitions/APIFile",
+          "description": "Sources configuration"
+        }
+      },
+      "type": "object"
+    },
+    "APIAuth": {
+      "additionalProperties": false,
+      "description": "API authentication configuration",
+      "properties": {
+        "method": {
+          "description": "The authentication strategy used for all API endpoints",
+          "enum": [
+            "bearer",
+            "basic",
+            "key"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "method"
+      ],
+      "type": "object"
+    },
+    "APIFile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "$ref": "#/definitions/APIFileMap"
+        },
+        {
+          "$ref": "#/definitions/APIFileAdvanced"
+        }
+      ],
+      "description": "API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration"
+    },
+    "APIFileAdvanced": {
+      "additionalProperties": false,
+      "description": "API file advanced type",
+      "properties": {
+        "info": {
+          "$ref": "#/definitions/APIInfo",
+          "description": "API information configuration"
+        },
+        "route": {
+          "description": "Route configuration",
+          "type": "string"
+        }
+      },
+      "required": [
+        "route"
+      ],
+      "type": "object"
+    },
+    "APIFileMap": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "$ref": "#/definitions/APIFileAdvanced"
+          }
+        ]
+      },
+      "description": "API file map type",
+      "type": "object"
+    },
+    "APIInfo": {
+      "additionalProperties": false,
+      "description": "API information configuration",
+      "properties": {
+        "auth": {
+          "$ref": "#/definitions/APIAuth",
+          "description": "Authentication information"
+        },
+        "baseUrl": {
+          "description": "The base url for all API endpoints. If baseUrl is an array, it will enable for multiple base url options that the user can toggle.",
+          "type": "string"
+        },
+        "inputPrefix": {
+          "description": "The default value that's designed to be a prefisx for the authentication input field. E.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.",
+          "type": "string"
+        },
+        "name": {
+          "description": "The name of the authentication parameter used in the API playground. If method is basic, the format should be [usernameName]:[passwordName]",
+          "type": "string"
+        },
+        "request": {
+          "$ref": "#/definitions/APIInfoRequest",
+          "description": "Request configuration"
+        }
+      },
+      "type": "object"
+    },
+    "APIInfoRequest": {
+      "additionalProperties": false,
+      "description": "API request configuration",
+      "properties": {
+        "example": {
+          "additionalProperties": false,
+          "description": "Configurations for the auto-generated API request examples",
+          "properties": {
+            "languages": {
+              "description": "An array of strings that determine the order of the languages of the auto-generated request examples. You can either define custom languages utilizing x-codeSamples or use our default languages which include bash, python, javascript, php, go, java",
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "AnchorHeader": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/NavigationItem"
+        },
+        {
+          "$ref": "#/definitions/NavigationItemButton"
+        },
+        {
+          "$ref": "#/definitions/NavigationItemSocial"
+        }
+      ]
+    },
+    "Anchors": {
+      "additionalProperties": false,
+      "description": "Anchor root configuration",
+      "properties": {
+        "header": {
+          "description": "Header anchors",
+          "items": {
+            "$ref": "#/definitions/AnchorHeader"
+          },
+          "type": "array"
+        },
+        "sidebar": {
+          "additionalProperties": false,
+          "description": "Sidebar anchors",
+          "properties": {
+            "bottom": {
+              "items": {
+                "$ref": "#/definitions/NavigationItem"
+              },
+              "type": "array"
+            },
+            "top": {
+              "items": {
+                "$ref": "#/definitions/NavigationItem"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "Appearance": {
+      "additionalProperties": false,
+      "description": "Appearance configuration for the theme.",
+      "properties": {
+        "banner": {
+          "$ref": "#/definitions/AppearanceBanner",
+          "description": "Banner appearance for the theme."
+        },
+        "buttons": {
+          "$ref": "#/definitions/AppearanceButtons",
+          "description": "Buttons appearance for the theme."
+        },
+        "colorScheme": {
+          "description": "The default color scheme to use.",
+          "enum": [
+            "light",
+            "dark",
+            "os"
+          ],
+          "type": "string"
+        },
+        "colors": {
+          "$ref": "#/definitions/Colors",
+          "description": "Colors configuration for the theme."
+        },
+        "content": {
+          "$ref": "#/definitions/AppearanceContent",
+          "description": "Content appearance for the theme."
+        },
+        "cssTokens": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "CSS tokens for the theme.",
+          "type": "object"
+        },
+        "footer": {
+          "$ref": "#/definitions/AppearanceFooter",
+          "description": "Footer appearance for the theme."
+        },
+        "header": {
+          "$ref": "#/definitions/AppearanceHeader",
+          "description": "Header appearance for the theme."
+        },
+        "logo": {
+          "$ref": "#/definitions/AppearanceLogo",
+          "description": "Logo appearance for the theme."
+        },
+        "presets": {
+          "description": "Presets for the theme.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "search": {
+          "$ref": "#/definitions/AppearanceSearch",
+          "description": "Search appearance for the theme."
+        },
+        "sidebar": {
+          "$ref": "#/definitions/AppearanceSidebar",
+          "description": "Sidebar appearance for the theme."
+        },
+        "tabs": {
+          "$ref": "#/definitions/AppearanceTabs",
+          "description": "Tabs appearance for the theme."
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceBanner": {
+      "additionalProperties": false,
+      "properties": {
+        "fixed": {
+          "description": "If `true` then the banner will have fixed position (always visible).",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceButtons": {
+      "additionalProperties": false,
+      "properties": {
+        "rounded": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "const": "lg",
+              "type": "string"
+            },
+            {
+              "const": "md",
+              "type": "string"
+            },
+            {
+              "const": "sm",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceContent": {
+      "additionalProperties": false,
+      "properties": {
+        "breadcrumbs": {
+          "description": "If `true` then the breadcrumbs will be displayed.",
+          "type": "boolean"
+        },
+        "contentDecorator": {
+          "const": "secondary",
+          "description": "Content decorator for the theme.",
+          "type": "string"
+        },
+        "sectionSeparator": {
+          "description": "If `true` then the section separator will be displayed.",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceFooter": {
+      "additionalProperties": false,
+      "properties": {
+        "surface": {
+          "const": "page",
+          "description": "The footer surface.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceHeader": {
+      "additionalProperties": false,
+      "properties": {
+        "buttonSize": {
+          "description": "The button size of the header.",
+          "enum": [
+            "sm",
+            "md",
+            "lg"
+          ],
+          "type": "string"
+        },
+        "externalArrow": {
+          "description": "If `true` then the header external links will display an external arrow.",
+          "type": "boolean"
+        },
+        "separator": {
+          "const": "right",
+          "description": "If `right` then separator will be displayed on the right side of the header.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the header.",
+          "enum": [
+            "classic",
+            "pad"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceLogo": {
+      "additionalProperties": false,
+      "description": "AppearanceLogo configuration for the theme.",
+      "properties": {
+        "header": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "const": "mobile",
+              "type": "string"
+            },
+            {
+              "const": "desktop",
+              "type": "string"
+            }
+          ],
+          "description": "If `true` then the logo will be displayed on the header."
+        },
+        "sidebar": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "const": "mobile",
+              "type": "string"
+            },
+            {
+              "const": "desktop",
+              "type": "string"
+            }
+          ],
+          "description": "If `true` then the logo will be displayed on the sidebar."
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceSearch": {
+      "additionalProperties": false,
+      "properties": {
+        "fullWidth": {
+          "description": "If `true` then the search bar will be displayed as a full width.",
+          "type": "boolean"
+        },
+        "middle": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "const": "mobile",
+              "type": "string"
+            },
+            {
+              "const": "desktop",
+              "type": "string"
+            }
+          ],
+          "description": "If `true` then the search bar will be displayed in the middle of the header."
+        },
+        "right": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "const": "mobile",
+              "type": "string"
+            },
+            {
+              "const": "desktop",
+              "type": "string"
+            }
+          ],
+          "description": "If `true` then the search bar will be displayed on the right side of the header."
+        },
+        "sidebar": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "const": "mobile",
+              "type": "string"
+            },
+            {
+              "const": "desktop",
+              "type": "string"
+            }
+          ],
+          "description": "If `true` then the search bar will be displayed on the sidebar."
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceSidebar": {
+      "additionalProperties": false,
+      "properties": {
+        "externalArrow": {
+          "description": "If `true` then the sidebar will display a scroll shadow.",
+          "type": "boolean"
+        },
+        "scrollShadow": {
+          "description": "If `true` then the sidebar will display a scroll shadow.",
+          "type": "boolean"
+        },
+        "scrollbar": {
+          "const": "secondary",
+          "description": "The color of the sidebar scrollbar.",
+          "type": "string"
+        },
+        "scrollbarColor": {
+          "description": "The color of the sidebar scrollbar.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceTabs": {
+      "additionalProperties": false,
+      "properties": {
+        "surface": {
+          "description": "The tabs to display in the header.",
+          "enum": [
+            "center",
+            "sidebar"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Coder": {
+      "additionalProperties": false,
+      "description": "Coder configuration for the theme, including options like syntax highlighting.",
+      "properties": {
+        "lines": {
+          "description": "If `true` then code blocks will have line numbers by default.",
+          "type": "boolean"
+        },
+        "scroll": {
+          "description": "If `true` then code blocks will have a scrollbar by default.",
+          "type": "boolean"
+        },
+        "syntaxHighlight": {
+          "anyOf": [
+            {
+              "enum": [
+                "dark-plus",
+                "dracula-soft",
+                "dracula",
+                "github-dark",
+                "github-dark-dimmed",
+                "github-from-css",
+                "github-light",
+                "light-plus",
+                "material-darker",
+                "material-default",
+                "material-from-css",
+                "material-lighter",
+                "material-ocean",
+                "material-palenight",
+                "min-dark",
+                "min-light",
+                "monokai",
+                "nord",
+                "one-dark-pro",
+                "poimandres",
+                "slack-dark",
+                "slack-ochin",
+                "solarized-dark",
+                "solarized-light"
+              ],
+              "type": "string"
+            },
+            {
+              "properties": {
+                "colors": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "tokenColors": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "scope": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          }
+                        ]
+                      },
+                      "settings": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "background": {
+                            "type": "string"
+                          },
+                          "fontStyle": {
+                            "type": "string"
+                          },
+                          "foreground": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "settings"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          ],
+          "description": "Syntax highlighting configuration."
+        }
+      },
+      "type": "object"
+    },
+    "Colors": {
+      "additionalProperties": false,
+      "properties": {
+        "dark": {
+          "description": "The dark color of the theme.",
+          "type": "string"
+        },
+        "light": {
+          "description": "The light color of the theme.",
+          "type": "string"
+        },
+        "primary": {
+          "description": "The primary color of the theme.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "primary"
+      ],
+      "type": "object"
+    },
+    "ComponentLike": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/React.JSX.Element"
+        },
+        {
+          "$ref": "#/definitions/JSONComponent"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "description": "A type that can be used to represent a component-like structure."
+    },
+    "Components": {
+      "additionalProperties": false,
+      "properties": {
+        "banner": {
+          "$ref": "#/definitions/WebEditorBanner",
+          "description": "WebEditor banner configuration"
+        },
+        "footer": {
+          "$ref": "#/definitions/WebEditorFooter",
+          "description": "WebEditor footer configuration"
+        }
+      },
+      "type": "object"
+    },
+    "Engine": {
+      "additionalProperties": false,
+      "description": "Engine configuration",
+      "properties": {
+        "paths": {
+          "$ref": "#/definitions/EnginePaths",
+          "description": "Path aliases for imports. Avoid long relative paths by creating shortcuts."
+        },
+        "uniform": {
+          "$ref": "#/definitions/EngineUniform",
+          "description": "Uniform configuration"
+        }
+      },
+      "type": "object"
+    },
+    "EnginePaths": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "type": "object"
+    },
+    "EngineUniform": {
+      "additionalProperties": false,
+      "properties": {
+        "store": {
+          "description": "If `true` then virtual pages will not created and generated content will be stored on disk",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "Font": {
+      "additionalProperties": false,
+      "properties": {
+        "family": {
+          "description": "The font family to use.",
+          "type": "string"
+        },
+        "format": {
+          "description": "The font format to use.",
+          "enum": [
+            "woff2",
+            "woff",
+            "ttf"
+          ],
+          "type": "string"
+        },
+        "src": {
+          "description": "The font src to use.",
+          "type": "string"
+        },
+        "weight": {
+          "description": "The font weight to use.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "HeadConfig": {
+      "description": "Configuration type for head elements that can be added to the HTML head. Format: [tagName, attributes]",
+      "items": [
+        {
+          "type": "string"
+        },
+        {
+          "additionalProperties": {
+            "type": [
+              "string",
+              "boolean"
+            ]
+          },
+          "type": "object"
+        }
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "type": "array"
+    },
+    "IconLibrary": {
+      "additionalProperties": false,
+      "properties": {
+        "default": {
+          "description": "The default iconify icon name",
+          "type": "boolean"
+        },
+        "name": {
+          "description": "The iconify library name",
+          "type": "string"
+        },
+        "noprefix": {
+          "description": "Merge icons from the library into the default iconify library",
+          "type": "boolean"
+        },
+        "version": {
+          "description": "The iconify library version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "Icons": {
+      "additionalProperties": false,
+      "properties": {
+        "library": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/IconLibrary"
+            },
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/IconLibrary"
+                  }
+                ]
+              },
+              "type": "array"
+            }
+          ],
+          "description": "The iconify library"
+        }
+      },
+      "type": "object"
+    },
+    "IntegrationAnalytics": {
+      "additionalProperties": false,
+      "description": "Analytics configuration",
+      "properties": {
+        "livesession": {
+          "$ref": "#/definitions/IntegrationAnalyticsLiveSession",
+          "description": "Livesession analytics configuration"
+        }
+      },
+      "type": "object"
+    },
+    "IntegrationAnalyticsLiveSession": {
+      "additionalProperties": false,
+      "description": "Livesession analytics configuration",
+      "properties": {
+        "trackId": {
+          "description": "Livesession's TrackID",
+          "type": "string"
+        }
+      },
+      "required": [
+        "trackId"
+      ],
+      "type": "object"
+    },
+    "IntegrationAppGithubStar": {
+      "additionalProperties": false,
+      "properties": {
+        "ariaLabel": {
+          "description": "The aria-label of the Github button",
+          "type": "string"
+        },
+        "dataIcon": {
+          "description": "The data-icon of the Github button",
+          "type": "string"
+        },
+        "dataShowCount": {
+          "description": "The data-show-count of the Github project",
+          "type": "boolean"
+        },
+        "dataSize": {
+          "description": "The data-size of the Github button",
+          "type": "string"
+        },
+        "href": {
+          "description": "The href of the Github project",
+          "type": "string"
+        },
+        "label": {
+          "description": "The label of the Github Button",
+          "type": "string"
+        },
+        "title": {
+          "description": "The title of the Github button",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "href"
+      ],
+      "type": "object"
+    },
+    "IntegrationApps": {
+      "additionalProperties": false,
+      "properties": {
+        "githubStar": {
+          "$ref": "#/definitions/IntegrationAppGithubStar",
+          "description": "Github star app configuration. List of all [options](https://github.com/buttons/react-github-btn)."
+        }
+      },
+      "type": "object"
+    },
+    "IntegrationSearch": {
+      "additionalProperties": false,
+      "description": "Search configuration",
+      "properties": {
+        "algolia": {
+          "additionalProperties": false,
+          "description": "Algolia search configuration",
+          "properties": {
+            "apiKey": {
+              "description": "Algolia API key",
+              "type": "string"
+            },
+            "appId": {
+              "description": "Algolia application ID",
+              "type": "string"
+            }
+          },
+          "required": [
+            "appId",
+            "apiKey"
+          ],
+          "type": "object"
+        },
+        "orama": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "apiKey": {
+                  "description": "Orama API key",
+                  "type": "string"
+                },
+                "endpoint": {
+                  "description": "Orama endpoint",
+                  "type": "string"
+                },
+                "suggestions": {
+                  "description": "Orama suggestions",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "endpoint",
+                "apiKey"
+              ],
+              "type": "object"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "Integrations": {
+      "additionalProperties": false,
+      "description": "Integrations configuration",
+      "properties": {
+        ".apps": {
+          "$ref": "#/definitions/IntegrationApps",
+          "description": "Custom apps directory."
+        },
+        "analytics": {
+          "$ref": "#/definitions/IntegrationAnalytics",
+          "description": "Configurations to add third-party analytics integrations. See full list of supported analytics here."
+        },
+        "search": {
+          "$ref": "#/definitions/IntegrationSearch",
+          "description": "Configurations to add third-party search integrations. See full list of supported search here."
+        }
+      },
+      "type": "object"
+    },
+    "JSONComponent": {
+      "additionalProperties": false,
+      "description": "JSON representation of a component.",
+      "properties": {
+        "component": {
+          "description": "The component type, e.g. \"Button\", \"Card\", etc.",
+          "type": "string"
+        },
+        "props": {
+          "description": "The component's children, which can be a string, an array of strings, or an array of JSONComponent objects.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "component"
+      ],
+      "type": "object"
+    },
+    "Logo": {
+      "additionalProperties": false,
+      "description": "Logo configuration interface",
+      "properties": {
+        "dark": {
+          "description": "Path to the logo in dark mode. For example: `/path/to/logo.svg`",
+          "type": "string"
+        },
+        "href": {
+          "description": "External href to when clicking on the logo",
+          "type": "string"
+        },
+        "light": {
+          "description": "Path to the logo in light mode. For example: `/path/to/logo.svg`",
+          "type": "string"
+        },
+        "page": {
+          "description": "The page to link to when clicking on the logo",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Navigation": {
+      "additionalProperties": false,
+      "description": "Navigation configuration interface",
+      "properties": {
+        "anchors": {
+          "$ref": "#/definitions/Anchors",
+          "description": "Anchors navigation - fixed navigation, for anchor-like elements."
+        },
+        "segments": {
+          "description": "Segments navigation - navigation elements visible only on specific routes.",
+          "items": {
+            "$ref": "#/definitions/Segment"
+          },
+          "type": "array"
+        },
+        "sidebar": {
+          "$ref": "#/definitions/SidebarNavigation",
+          "description": "Sidebar navigation - main navigation on the left side of the page."
+        },
+        "sidebarDropdown": {
+          "$ref": "#/definitions/SidebarDropdown",
+          "description": "Sidebar dropdown navigation - navigation through dropdown in the sidebar."
+        },
+        "tabs": {
+          "$ref": "#/definitions/Tabs",
+          "description": "Tabs navigation - navigation through tabs."
+        }
+      },
+      "required": [
+        "sidebar"
+      ],
+      "type": "object"
+    },
+    "NavigationItem": {
+      "additionalProperties": false,
+      "description": "Core interface for navigation items",
+      "properties": {
+        "description": {
+          "description": "The navigation item description",
+          "type": "string"
+        },
+        "href": {
+          "description": "The navigation href, if set it redirects but does not match based on routing",
+          "type": "string"
+        },
+        "icon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/React.ReactNode"
+            }
+          ],
+          "description": "The navigation item icon"
+        },
+        "page": {
+          "description": "The navigation page, if set it redirects to the page + matches based on routing",
+          "type": "string"
+        },
+        "title": {
+          "description": "The navigation item title",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "NavigationItemButton": {
+      "additionalProperties": false,
+      "properties": {
+        "button": {
+          "enum": [
+            "primary",
+            "secondary"
+          ],
+          "type": "string"
+        },
+        "description": {
+          "description": "The navigation item description",
+          "type": "string"
+        },
+        "href": {
+          "description": "The navigation href, if set it redirects but does not match based on routing",
+          "type": "string"
+        },
+        "icon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/React.ReactNode"
+            }
+          ],
+          "description": "The navigation item icon"
+        },
+        "page": {
+          "description": "The navigation page, if set it redirects to the page + matches based on routing",
+          "type": "string"
+        },
+        "title": {
+          "description": "The navigation item title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "button"
+      ],
+      "type": "object"
+    },
+    "NavigationItemSocial": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "description": "The navigation item description",
+          "type": "string"
+        },
+        "href": {
+          "description": "The navigation href, if set it redirects but does not match based on routing",
+          "type": "string"
+        },
+        "icon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/React.ReactNode"
+            }
+          ],
+          "description": "The navigation item icon"
+        },
+        "page": {
+          "description": "The navigation page, if set it redirects to the page + matches based on routing",
+          "type": "string"
+        },
+        "social": {
+          "$ref": "#/definitions/Social"
+        },
+        "title": {
+          "description": "The navigation item title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "social"
+      ],
+      "type": "object"
+    },
+    "PageURL": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "page": {
+              "description": "The page to use for the page",
+              "type": "string"
+            },
+            "templates": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ],
+              "description": "The template to use for the page"
+            },
+            "virtual": {
+              "description": "The virtual page to use for the page",
+              "type": "string"
+            }
+          },
+          "required": [
+            "virtual",
+            "page"
+          ],
+          "type": "object"
+        },
+        {
+          "$ref": "#/definitions/Sidebar"
+        }
+      ],
+      "description": "Page URL type"
+    },
+    "PluginConfig": {
+      "additionalItems": {},
+      "items": [
+        {
+          "type": "string"
+        }
+      ],
+      "minItems": 1,
+      "type": "array"
+    },
+    "Plugins": {
+      "description": "Plugin configuration",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "$ref": "#/definitions/PluginConfig"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "React.JSX.Element": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "props": {},
+        "type": {}
+      },
+      "required": [
+        "key",
+        "props",
+        "type"
+      ],
+      "type": "object"
+    },
+    "React.JSXElementConstructor<any>": {
+      "anyOf": [
+        {
+          "$comment": "(\n            props: P) => ReactNode | Promise<ReactNode>",
+          "properties": {
+            "namedArgs": {
+              "additionalProperties": false,
+              "properties": {
+                "props": {}
+              },
+              "required": [
+                "props"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        {
+          "$comment": "new (props: P, context: any) => Component<any, any>",
+          "properties": {
+            "namedArgs": {
+              "additionalProperties": false,
+              "properties": {
+                "context": {},
+                "props": {}
+              },
+              "required": [
+                "props",
+                "context"
+              ],
+              "type": "object"
+            }
+          },
+          "type": "object"
+        }
+      ],
+      "description": "Represents any user-defined component, either as a function or a class.\n\nSimilar to  {@link  ComponentType } , but without extra properties like  {@link  FunctionComponent.defaultProps defaultProps  } ."
+    },
+    "React.ReactElement": {
+      "additionalProperties": false,
+      "description": "Represents a JSX element.\n\nWhere  {@link  ReactNode }  represents everything that can be rendered, `ReactElement` only represents JSX.",
+      "properties": {
+        "key": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "props": {},
+        "type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/React.JSXElementConstructor%3Cany%3E"
+            }
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "props",
+        "key"
+      ],
+      "type": "object"
+    },
+    "React.ReactNode": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/React.ReactElement"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "additionalProperties": false,
+          "type": "object"
+        },
+        {
+          "$ref": "#/definitions/React.ReactPortal"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "not": {}
+        },
+        {
+          "$ref": "#/definitions/React.ReactElement"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "additionalProperties": false,
+          "type": "object"
+        },
+        {
+          "$ref": "#/definitions/React.ReactPortal"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "not": {}
+        }
+      ],
+      "description": "Represents all of the things React can render.\n\nWhere  {@link  ReactElement }  only represents JSX, `ReactNode` represents everything that can be rendered."
+    },
+    "React.ReactPortal": {
+      "additionalProperties": false,
+      "properties": {
+        "children": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/React.ReactElement"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "additionalProperties": false,
+              "type": "object"
+            },
+            {
+              "$ref": "#/definitions/React.ReactPortal"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "key": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "props": {},
+        "type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/React.JSXElementConstructor%3Cany%3E"
+            }
+          ]
+        }
+      },
+      "required": [
+        "key",
+        "props",
+        "type"
+      ],
+      "type": "object"
+    },
+    "Redirects": {
+      "additionalProperties": false,
+      "description": "Redirects configuration",
+      "properties": {
+        "destination": {
+          "description": "Destination path to redirect to",
+          "type": "string"
+        },
+        "source": {
+          "description": "Source path to redirect from",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "destination"
+      ],
+      "type": "object"
+    },
+    "SEO": {
+      "additionalProperties": false,
+      "description": "SEO configuration",
+      "properties": {
+        "domain": {
+          "description": "Domain name",
+          "type": "string"
+        },
+        "metatags": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Meta tags",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "Script": {
+      "type": "string"
+    },
+    "Segment": {
+      "additionalProperties": false,
+      "description": "Segment configuration",
+      "properties": {
+        "appearance": {
+          "const": "sidebarDropdown",
+          "description": "Appearance of this segment",
+          "type": "string"
+        },
+        "pages": {
+          "description": "Items within this segment",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
+        },
+        "route": {
+          "description": "Route for this segment",
+          "type": "string"
+        },
+        "title": {
+          "description": "Title of this segment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "route",
+        "pages"
+      ],
+      "type": "object"
+    },
+    "Sidebar": {
+      "additionalProperties": false,
+      "description": "Sidebar configuration",
+      "properties": {
+        "group": {
+          "description": "The name of the group",
+          "type": "string"
+        },
+        "icon": {
+          "description": "The icon of the group.",
+          "type": "string"
+        },
+        "pages": {
+          "description": "The relative paths to the markdown files that will serve as pages. Note: groups are recursive, so to add a sub-folder add another group object in the page array.",
+          "items": {
+            "$ref": "#/definitions/PageURL"
+          },
+          "type": "array"
+        },
+        "sort": {
+          "description": "The sort order of the group.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
+    "SidebarDropdown": {
+      "items": {
+        "$ref": "#/definitions/NavigationItem"
+      },
+      "type": "array"
+    },
+    "SidebarNavigation": {
+      "description": "Sidebar navigation type",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/SidebarRoute"
+          },
+          {
+            "$ref": "#/definitions/Sidebar"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "SidebarRoute": {
+      "additionalProperties": false,
+      "description": "Sidebar route configuration",
+      "properties": {
+        "pages": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/Sidebar"
+              },
+              "type": "array"
+            },
+            {
+              "items": {
+                "$ref": "#/definitions/SidebarRoute"
+              },
+              "type": "array"
+            }
+          ],
+          "description": "Sidebar pages within this route or sub routes"
+        },
+        "route": {
+          "description": "Route for this sidebar",
+          "type": "string"
+        }
+      },
+      "required": [
+        "route",
+        "pages"
+      ],
+      "type": "object"
+    },
+    "Social": {
+      "enum": [
+        "x",
+        "facebook",
+        "youtube",
+        "discord",
+        "slack",
+        "github",
+        "linkedin",
+        "instagram",
+        "hackernews",
+        "medium",
+        "telegram",
+        "bluesky",
+        "reddit"
+      ],
+      "type": "string"
+    },
+    "Tabs": {
+      "description": "Tabs configuration",
+      "items": {
+        "$ref": "#/definitions/NavigationItem"
+      },
+      "type": "array"
+    },
+    "Theme": {
+      "additionalProperties": false,
+      "description": "Theme configuration that changes the look and feel of the project",
+      "properties": {
+        "appearance": {
+          "$ref": "#/definitions/Appearance",
+          "description": "Appearance configuration for the theme."
+        },
+        "coder": {
+          "$ref": "#/definitions/Coder",
+          "description": "Coder configuration for the theme, including options like syntax highlighting."
+        },
+        "favicon": {
+          "description": "Path to the favicon image. For example: /path/to/favicon.svg",
+          "type": "string"
+        },
+        "fonts": {
+          "$ref": "#/definitions/ThemeFont",
+          "description": "Font configuration for the theme."
+        },
+        "head": {
+          "description": "Head configuration",
+          "items": {
+            "$ref": "#/definitions/HeadConfig"
+          },
+          "type": "array"
+        },
+        "icons": {
+          "$ref": "#/definitions/Icons",
+          "description": "The iconify library setup."
+        },
+        "logo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/Logo"
+            },
+            {
+              "$ref": "#/definitions/React.JSX.Element"
+            }
+          ],
+          "description": "Path to logo image or object with path to \"light\" and \"dark\" mode logo images, and where the logo links to."
+        },
+        "name": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ThemePresetName"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "A theme name."
+        },
+        "scripts": {
+          "description": "Custom scripts to be added to the head of the every page. Paths are relative to the root of the project or absolute.",
+          "items": {
+            "$ref": "#/definitions/Script"
+          },
+          "type": "array"
+        },
+        "writer": {
+          "$ref": "#/definitions/Writer",
+          "description": "Writer configuration for the theme."
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "ThemeFont": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Font"
+        },
+        {
+          "items": {
+            "$ref": "#/definitions/Font"
+          },
+          "type": "array"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "body": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Font"
+                },
+                {
+                  "items": {
+                    "$ref": "#/definitions/Font"
+                  },
+                  "type": "array"
+                }
+              ]
+            },
+            "coder": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Font"
+                },
+                {
+                  "items": {
+                    "$ref": "#/definitions/Font"
+                  },
+                  "type": "array"
+                }
+              ]
+            }
+          },
+          "type": "object"
+        }
+      ]
+    },
+    "ThemePresetName": {
+      "description": "Available theme preset names",
+      "enum": [
+        "poetry",
+        "cosmo",
+        "opener",
+        "picasso"
+      ],
+      "type": "string"
+    },
+    "WebEditor": {
+      "additionalProperties": false,
+      "description": "WebEditor configuration",
+      "properties": {
+        "header": {
+          "description": "WebEditor header configuration",
+          "items": {
+            "$ref": "#/definitions/WebEditorHeader"
+          },
+          "type": "array"
+        },
+        "sidebarTop": {
+          "description": "WebEditor header configuration",
+          "items": {
+            "$ref": "#/definitions/WebEditorNavigationItem"
+          },
+          "type": "array"
+        },
+        "subheader": {
+          "$ref": "#/definitions/WebEditorSubHeader",
+          "description": "WebEditor header configuration"
+        }
+      },
+      "type": "object"
+    },
+    "WebEditorBanner": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "$ref": "#/definitions/ComponentLike",
+          "description": "Banner content."
+        },
+        "href": {
+          "description": "Banner href.",
+          "type": "string"
+        },
+        "icon": {
+          "description": "Banner icon.",
+          "type": "string"
+        },
+        "kind": {
+          "const": "secondary",
+          "description": "Banner kind.",
+          "type": "string"
+        },
+        "label": {
+          "description": "Banner label.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "content"
+      ],
+      "type": "object"
+    },
+    "WebEditorFooter": {
+      "additionalProperties": false,
+      "properties": {
+        "footnote": {
+          "$ref": "#/definitions/ComponentLike",
+          "description": "Footer footnote"
+        },
+        "kind": {
+          "const": "minimal",
+          "type": "string"
+        },
+        "links": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/WebEditorFooterLink"
+              },
+              "type": "array"
+            },
+            {
+              "items": {
+                "$ref": "#/definitions/WebEditorFooterLinkItem"
+              },
+              "type": "array"
+            }
+          ],
+          "description": "Footer links"
+        },
+        "logo": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/ComponentLike"
+            }
+          ]
+        },
+        "social": {
+          "additionalProperties": false,
+          "description": "Footer socials",
+          "properties": {
+            "bluesky": {
+              "type": "string"
+            },
+            "discord": {
+              "type": "string"
+            },
+            "facebook": {
+              "type": "string"
+            },
+            "github": {
+              "type": "string"
+            },
+            "hackernews": {
+              "type": "string"
+            },
+            "instagram": {
+              "type": "string"
+            },
+            "linkedin": {
+              "type": "string"
+            },
+            "medium": {
+              "type": "string"
+            },
+            "reddit": {
+              "type": "string"
+            },
+            "slack": {
+              "type": "string"
+            },
+            "telegram": {
+              "type": "string"
+            },
+            "x": {
+              "type": "string"
+            },
+            "youtube": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "WebEditorFooterLink": {
+      "additionalProperties": false,
+      "properties": {
+        "header": {
+          "type": "string"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/definitions/WebEditorFooterLinkItem"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "header",
+        "items"
+      ],
+      "type": "object"
+    },
+    "WebEditorFooterLinkItem": {
+      "additionalProperties": false,
+      "properties": {
+        "href": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "href"
+      ],
+      "type": "object"
+    },
+    "WebEditorHeader": {
+      "additionalProperties": false,
+      "description": "WebEditor header configuration",
+      "properties": {
+        "component": {
+          "description": "The component type, e.g. \"Button\", \"Card\", etc.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The navigation item description",
+          "type": "string"
+        },
+        "desktop": {
+          "description": "If `true` then the item will be displayed on desktop.",
+          "type": "boolean"
+        },
+        "float": {
+          "description": "Float the header to the right",
+          "enum": [
+            "right",
+            "center"
+          ],
+          "type": "string"
+        },
+        "href": {
+          "description": "The navigation href, if set it redirects but does not match based on routing",
+          "type": "string"
+        },
+        "icon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/React.ReactNode"
+            }
+          ],
+          "description": "The navigation item icon"
+        },
+        "mobile": {
+          "description": "If `true` then the item will be displayed on mobile.",
+          "type": "boolean"
+        },
+        "page": {
+          "description": "The navigation page, if set it redirects to the page + matches based on routing",
+          "type": "string"
+        },
+        "props": {
+          "description": "The component's children, which can be a string, an array of strings, or an array of JSONComponent objects.",
+          "type": "object"
+        },
+        "title": {
+          "description": "The navigation item title",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "WebEditorNavigationItem": {
+      "additionalProperties": false,
+      "description": "WebEditor navigation item configuration",
+      "properties": {
+        "component": {
+          "description": "The component type, e.g. \"Button\", \"Card\", etc.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The navigation item description",
+          "type": "string"
+        },
+        "desktop": {
+          "description": "If `true` then the item will be displayed on desktop.",
+          "type": "boolean"
+        },
+        "href": {
+          "description": "The navigation href, if set it redirects but does not match based on routing",
+          "type": "string"
+        },
+        "icon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/React.ReactNode"
+            }
+          ],
+          "description": "The navigation item icon"
+        },
+        "mobile": {
+          "description": "If `true` then the item will be displayed on mobile.",
+          "type": "boolean"
+        },
+        "page": {
+          "description": "The navigation page, if set it redirects to the page + matches based on routing",
+          "type": "string"
+        },
+        "props": {
+          "description": "The component's children, which can be a string, an array of strings, or an array of JSONComponent objects.",
+          "type": "object"
+        },
+        "title": {
+          "description": "The navigation item title",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "WebEditorSubHeader": {
+      "additionalProperties": false,
+      "description": "WebEditorSubHeader header configuration",
+      "properties": {
+        "items": {
+          "description": "Items of this subheader",
+          "items": {
+            "$ref": "#/definitions/WebEditorNavigationItem"
+          },
+          "type": "array"
+        },
+        "title": {
+          "description": "Title of this segment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "type": "object"
+    },
+    "Writer": {
+      "additionalProperties": false,
+      "properties": {
+        "copyPage": {
+          "description": "Copy page button",
+          "type": "boolean"
+        },
+        "maxTocDepth": {
+          "description": "The maximum number of table of conten§ts levels.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "description": "Main settings interface for the application",
+  "properties": {
+    "api": {
+      "$ref": "#/definitions/API",
+      "description": "API configuration"
+    },
+    "components": {
+      "$ref": "#/definitions/Components",
+      "description": "Components configuration"
+    },
+    "engine": {
+      "$ref": "#/definitions/Engine",
+      "description": "Engine configuration - advanced engine-like configuration"
+    },
+    "integrations": {
+      "$ref": "#/definitions/Integrations",
+      "description": "Integrations configuration"
+    },
+    "navigation": {
+      "$ref": "#/definitions/Navigation",
+      "description": "Navigation configuration"
+    },
+    "plugins": {
+      "$ref": "#/definitions/Plugins",
+      "description": "Plugins configuration"
+    },
+    "redirects": {
+      "items": {
+        "$ref": "#/definitions/Redirects"
+      },
+      "type": "array"
+    },
+    "seo": {
+      "$ref": "#/definitions/SEO",
+      "description": "SEO configuration"
+    },
+    "theme": {
+      "$ref": "#/definitions/Theme",
+      "description": "Theme configuration for the application"
+    },
+    "webeditor": {
+      "$ref": "#/definitions/WebEditor"
+    }
+  },
+  "type": "object"
+}

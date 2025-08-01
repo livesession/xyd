@@ -4,6 +4,8 @@ const bulletPx = 24;
 const lineWidth = 0.5;
 
 export const StepsHost = css`
+    display: block;
+
     @layer defaults {
         ol {
             padding-left: 0;

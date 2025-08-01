@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import type {Theme as SyntaxHighlight} from "@code-hike/lighter";
+import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
 
 /**
  * Main settings interface for the application
@@ -64,7 +64,7 @@ export interface Theme {
      * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to.
      */
     logo?: string | Logo | React.JSX.Element
-    
+
     /**
      * Font configuration for the theme.
      */
@@ -253,7 +253,7 @@ export interface Colors {
      * The dark color of the theme.
      */
     dark?: string
-} 
+}
 
 export interface AppearanceTabs {
     /**
@@ -385,7 +385,7 @@ export interface AppearanceBanner {
  * @example: ['script', { src: 'https://example.com/script.js', defer: true }]
  */
 export type HeadConfig =
-    | [string, Record<string, string | boolean>]
+    | [string, Record<string, string | boolean>, string?]
 
 export type Script = string
 
@@ -472,7 +472,7 @@ export interface Navigation {
 }
 
 export type SidebarDropdown = NavigationItem[]
-    
+
 /**
  * Tabs configuration
  */
@@ -490,16 +490,24 @@ export interface SidebarRoute {
     /** Route for this sidebar */
     route: string
 
+    /** The group of the route */
+    group?: string | false
+
+    /** The id of the route */
+    id?: string
+
     /** Sidebar pages within this route or sub routes */
     pages: Sidebar[] | SidebarRoute[]
 }
+
+// TODO: rename to NavigationGroup ?
 
 /**
  * Sidebar configuration
  */
 export interface Sidebar {
     /** The name of the group */
-    group?: string
+    group?: string | false
 
     /**
      * The relative paths to the markdown files that will serve as pages.
@@ -513,10 +521,16 @@ export interface Sidebar {
     icon?: string
 
     /**
-     * The sort order of the group.
+     * The order of the group.
      */
-    sort?: number
+    order?: Order
 }
+
+type Order =
+  | 0
+  | -1
+  | { after: string }
+  | { before: string };
 
 /**
  * Page URL type
@@ -561,7 +575,7 @@ export interface Segment {
     /** Title of this segment */
     title?: string
 
-    /** Appearance of this segment */
+    /** Appearance of this segment. If 'sidebarDropdown' then show this segment as a dropdown in the sidebar if match. */
     appearance?: "sidebarDropdown"
 
     /** Items within this segment */
@@ -693,11 +707,13 @@ export interface WebEditorFooter {
         [K in Social]?: string
     }
     /** Footer links  */
-    links?: WebEditorFooterLink[] | WebEditorFooterLinkItem[]
+    links?: WebEditorFooterLinks
 
     /** Footer footnote */
     footnote?: ComponentLike
 }
+
+export type WebEditorFooterLinks = WebEditorFooterLink[] | WebEditorFooterLinkItem[]
 
 export interface WebEditorFooterLink {
     header: string
@@ -886,7 +902,7 @@ export interface Integrations {
     /**
      * Custom apps directory.
      */
-    [".apps"]?: IntegrationApps
+    [".apps"]?: AppsDirectory
 }
 
 // #region IntegrationAnalytics
@@ -933,7 +949,7 @@ export interface IntegrationSearch {
     } | boolean
 }
 
-export interface IntegrationApps {
+export interface AppsDirectory {
     /**
      * Github star app configuration.
      * List of all [options](https://github.com/buttons/react-github-btn).
@@ -1123,3 +1139,62 @@ export interface JSONComponent {
  * A type that can be used to represent a component-like structure.
  */
 export type ComponentLike = React.JSX.Element | JSONComponent | string
+
+export interface ThemeColors {
+    colorScheme: string;
+    foreground: string;
+    background: string;
+    lighter: {
+        inlineBackground: string;
+    };
+    editor: {
+        background: string;
+        foreground: string;
+        lineHighlightBackground: string;
+        rangeHighlightBackground: string;
+        infoForeground: string;
+        selectionBackground: string;
+    };
+    focusBorder: string;
+    tab: {
+        activeBackground: string;
+        activeForeground: string;
+        inactiveBackground: string;
+        inactiveForeground: string;
+        border: string;
+        activeBorder: string;
+        activeBorderTop: string;
+    };
+    editorGroup: {
+        border: string;
+    };
+    editorGroupHeader: {
+        tabsBackground: string;
+    };
+    editorLineNumber: {
+        foreground: string;
+    };
+    input: {
+        background: string;
+        foreground: string;
+        border: string;
+    };
+    icon: {
+        foreground: string;
+    };
+    sideBar: {
+        background: string;
+        foreground: string;
+        border: string;
+    };
+    list: {
+        activeSelectionBackground: string;
+        activeSelectionForeground: string;
+        hoverBackground: string;
+        hoverForeground: string;
+    };
+}
+
+export interface UserPreferences {
+    themeColors?: ThemeColors
+}

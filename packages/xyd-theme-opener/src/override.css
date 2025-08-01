@@ -24,6 +24,7 @@
             }
 
             [part="page-article-nav"] {
+                /* top: calc(var(--xyd-header-total-height) + var(--page-article-nav-top)); */
                 flex: 1;
             }
         }

@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-cosmo",
-  "version": "0.1.0-build.126",
+  "version": "0.1.0-build.137",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -27,7 +27,7 @@
     "@xyd-js/themes": "workspace:*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router": "^7.6.2"
+    "react-router": "^7.7.1"
   },
   "devDependencies": {}
 }

@@ -45,7 +45,7 @@
             margin-right: var(--xyd-sidebar-width);
             right: 0;
             background: var(--white);
-            border-top-left-radius: 8px;
+            /* border-top-left-radius: 8px; */
         }
 
         &[data-layout="page"] [part="page"] {
@@ -87,12 +87,12 @@
             border-radius: 0px;
             margin-top: 0px;
             background-color: var(--xyd-sidebar-bgcolor);
-
         }
 
         @media (min-width: 1024px) {
             xyd-subnav {
-                left: var(--xyd-sidebar-width);
+                left: calc(var(--xyd-sidebar-width) / 1);
+                width: calc(100% - var(--xyd-sidebar-width));
                 position: relative;
             }
         }
@@ -100,7 +100,6 @@
         /* component: CodeTabs */
         xyd-codetabs-languages [part=language-trigger][data-state=active] {
             font-weight: bold;
-            border: none;
         }
 
         /* component: Code */

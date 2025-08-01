@@ -137,7 +137,7 @@ Note that you must have an Admin or Owner role to manage webhook settings.
 :::
 
 @let(
-  examples=(
+  .examples = (
     ```tsx
     <Callout>
     Note that you must have an Admin or Owner role to manage webhook settings.

@@ -15,12 +15,12 @@ uniform: "@components/writer/Tabs/TabsProps.tsx"
     $ bunx xyd-js build
     ```
 
-1. [npx](type=npx)
+2. [npx](type=npx)
     ```bash
     $ npx xyd-js build
     ```
 
-2. [CLI](type=xyd)
+3. [CLI](type=xyd)
     ```bash
     $ xyd build
     ```

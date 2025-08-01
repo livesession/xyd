@@ -1,6 +1,6 @@
 ---
 title: APIToolchain
-icon: docs:plug-connected-settings-20-filled
+icon: docs:apitoolchain
 ---
 
 # APIToolchain{label="Coming Soon" subtitle="Learn how to use API generation tools"}
@@ -12,7 +12,7 @@ List of all availalbe converters:
 
 2. [@apitoolchain/uni-openapi](https://github.com/livesession/xyd) - converts OpenAPI into uniform
 
-3. [@apitoolchain/uni-ts](https://github.com/livesession/xyd) - covnerts TypeScript into uniform
+3. [@apitoolchain/uni-ts](https://github.com/livesession/xyd) - converts TypeScript into uniform
 
 :::callout
 xyd uses `APIToolchain` under the hood.
@@ -23,7 +23,7 @@ xyd uses `APIToolchain` under the hood.
 Uniform format allows to easily embeed API docs. The structure of this format was designed to easily use that on web and make them extendable with plugins. Additionaly `uniform` can be used by other libraries.
 
 ## Web Usage 
-After convering into `uniform` format you can easy embed that on the web using `apiatlas` package.
+After convering into `uniform` format you can easy embed that on the web using [APIAtlas](https://apiatlas.dev) library.
 It's a set of components to render API docs elements.
 
 Example using React:

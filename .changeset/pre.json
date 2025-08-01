@@ -32,10 +32,32 @@
     "@xyd-js/theme-solar": "0.1.0-build.39",
     "@xyd-js/themes": "0.1.1-build.128",
     "@xyd-js/ui": "0.1.0-build.141",
-    "@xyd-js/uniform": "0.1.0-build.140"
+    "@xyd-js/uniform": "0.1.0-build.140",
+    "xyd-host-dev": "0.1.0-build.127"
   },
   "changesets": [
     "release-1753563935291",
-    "release-1753563951158"
+    "release-1753563951158",
+    "release-1753566986997",
+    "release-1753567414237",
+    "release-1753567431716",
+    "release-1753578144880",
+    "release-1753578168803",
+    "release-1753618305556",
+    "release-1753618330716",
+    "release-1753628898134",
+    "release-1753628923657",
+    "release-1753629342204",
+    "release-1753629364748",
+    "release-1753630741960",
+    "release-1753630765446",
+    "release-1753897597262",
+    "release-1753897623308",
+    "release-1753897717973",
+    "release-1753897734057",
+    "release-1753897822988",
+    "release-1753897838372",
+    "release-1753914522345",
+    "release-1753914542855"
   ]
 }

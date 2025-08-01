@@ -9,7 +9,6 @@ export interface UICollapseProps {
     className?: string;
 }
 
-// TODO: !!! FIX COLLAPSE !!!
 export function UICollapse({
     children,
     isOpen,
@@ -22,13 +21,14 @@ export function UICollapse({
     const initialOpen = useRef(isOpen);
     const initialRender = useRef(true);
     const observerRef = useRef<MutationObserver | null>(null);
+    const lastSizeRef = useRef<number | null>(null);
+    const isMutatingRef = useRef(false); // Prevent infinite MutationObserver loop
 
     const measureAndUpdateDimensions = () => {
         const container = containerRef.current;
         const inner = innerRef.current;
         if (!container || !inner) return;
 
-        // Temporarily make all nested content visible for measurement
         const nestedCollapses = inner.querySelectorAll('[class*="collapse"]');
         const originalStyles: Array<{ element: HTMLElement; height: string; overflow: string }> = [];
 
@@ -44,20 +44,41 @@ export function UICollapse({
             }
         });
 
+        isMutatingRef.current = true;
+
         if (horizontal) {
             const width = inner.scrollWidth;
-            container.style.width = `${width}px`;
-            inner.style.width = `${width}px`;
+            if (lastSizeRef.current !== width) {
+                container.style.width = `${width}px`;
+                inner.style.width = `${width}px`;
+                lastSizeRef.current = width;
+            }
         } else {
-            const height = inner.scrollHeight;
-            container.style.height = `${height + 5}px`;
-            inner.style.height = `${height + 5}px`;
+            const height = inner.scrollHeight + 5;
+            if (lastSizeRef.current !== height) {
+                container.style.height = `${height}px`;
+                inner.style.height = `${height}px`;
+                lastSizeRef.current = height;
+            }
         }
 
-        // Restore original styles
         originalStyles.forEach(({ element, height, overflow }) => {
             element.style.height = height;
             element.style.overflow = overflow;
+        });
+
+        requestAnimationFrame(() => {
+            isMutatingRef.current = false;
+        });
+    };
+
+    const forceCollapseChildren = (el: HTMLElement) => {
+        const allChildren = el.querySelectorAll('[class*="collapse"]');
+        allChildren.forEach((child) => {
+            const childEl = child as HTMLElement;
+            childEl.style.height = `${childEl.scrollHeight}px`; // Set current height
+            childEl.offsetHeight; // Force reflow
+            childEl.style.height = "0px"; // Collapse
         });
     };
 
@@ -70,22 +91,23 @@ export function UICollapse({
         }
         if (initialRender.current || !container || !inner) return;
 
-        // Clean up previous observer
         if (observerRef.current) {
             observerRef.current.disconnect();
         }
 
         if (isOpen) {
-            // Opening animation
             measureAndUpdateDimensions();
 
-            // Set up mutation observer to watch for content changes
             observerRef.current = new MutationObserver((mutations) => {
-                // Check if the mutation affects height
+                if (isMutatingRef.current) return;
+
                 const shouldUpdate = mutations.some(mutation => {
-                    return mutation.type === 'childList' ||
+                    return (
+                        mutation.type === 'childList' ||
                         mutation.type === 'attributes' ||
-                        (mutation.type === 'characterData' && mutation.target.parentElement?.closest('[class*="collapse"]'));
+                        (mutation.type === 'characterData' &&
+                            mutation.target.parentElement?.closest('[class*="collapse"]'))
+                    );
                 });
 
                 if (shouldUpdate) {
@@ -97,7 +119,7 @@ export function UICollapse({
                 childList: true,
                 subtree: true,
                 characterData: true,
-                attributes: true
+                attributes: true,
             });
 
             animationRef.current = window.setTimeout(() => {
@@ -108,27 +130,25 @@ export function UICollapse({
                 }
             }, 300);
         } else {
-            // Closing animation
             if (horizontal) {
                 const width = container.scrollWidth;
                 container.style.width = `${width}px`;
-                container.offsetWidth; // Force reflow
+                container.offsetWidth;
                 container.style.width = "0px";
+                lastSizeRef.current = 0;
             } else {
-                const height = container.scrollHeight;
-                container.style.height = `${height + 5}px`;
-                container.offsetHeight; // Force reflow
+                const height = container.scrollHeight + 5;
+                forceCollapseChildren(container); // 👈 Ensure nested children collapse smoothly
+                container.style.height = `${height}px`;
+                container.offsetHeight;
                 container.style.height = "0px";
+                lastSizeRef.current = 0;
             }
         }
 
         return () => {
-            if (observerRef.current) {
-                observerRef.current.disconnect();
-            }
-            if (animationRef.current) {
-                clearTimeout(animationRef.current);
-            }
+            if (observerRef.current) observerRef.current.disconnect();
+            if (animationRef.current) clearTimeout(animationRef.current);
         };
     }, [horizontal, isOpen]);
 
@@ -143,10 +163,7 @@ export function UICollapse({
             ref={containerRef}
             style={initialOpen.current || horizontal ? undefined : { height: 0 }}
         >
-            <div
-                part="child"
-                ref={innerRef}
-            >
+            <div part="child" ref={innerRef}>
                 {children}
             </div>
         </xyd-collapse>

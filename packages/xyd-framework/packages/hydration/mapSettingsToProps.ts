@@ -1,10 +1,10 @@
 // server-only
 
-import {Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL} from "@xyd-js/core";
-import {pageFrontMatters} from "@xyd-js/content";
-import {IBreadcrumb, INavLinks} from "@xyd-js/ui";
+import { Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL } from "@xyd-js/core";
+import { pageFrontMatters } from "@xyd-js/content";
+import { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
-import {FwSidebarItemProps} from "../react";
+import { FwSidebarItemProps } from "../react";
 
 // TODO: framework vs content responsibility
 
@@ -22,7 +22,7 @@ export async function mapSettingsToProps(
     metadata?: Metadata | null
 }> {
     let uniqIndex = 0
-    const filteredNav = filterNavigation(settings, slug)
+    let filteredNav = filterNavigation(settings, slug)
     if (!frontmatters) {
         frontmatters = await pageFrontMatters(filteredNav, pagePathMapping) as MetadataMap
     }
@@ -58,6 +58,7 @@ export async function mapSettingsToProps(
 
             return {
                 title: page.group,
+                group: page.group === false ? false : undefined,
                 href: "",
                 active: false,
                 uniqIndex: uniqIndex++,
@@ -114,10 +115,32 @@ export async function mapSettingsToProps(
         }
     }
 
+    function sidebarItems(
+        nav: Sidebar,
+        pages: PageURL[],
+    ) {
+        const items = (pages?.map((p) => mapItems(p, nav, filteredNav)) || [])
+            .filter(Boolean)
+
+        return {
+            group: nav.group,
+            icon: nav?.icon,
+            items
+        } as FwSidebarItemProps
+    }
+
+    const flatItems: string[] = []
+
     const groups = filteredNav
         .map((nav) => {
+            if (typeof nav === "string") {
+                flatItems.push(nav)
+
+                return
+            }
+
             // TODO: finish
-            if ("route" in nav) {
+            if (typeof nav !== "string" && "route" in nav) {
                 if (nav.pages?.length) {
                     const items = (nav.pages?.map((p) => mapItems(p, nav, filteredNav)) || [])
                         .filter(Boolean)
@@ -134,17 +157,16 @@ export async function mapSettingsToProps(
                 } as FwSidebarItemProps
             }
 
-            const items = (nav.pages?.map((p) => mapItems(p, nav, filteredNav)) || [])
-                .filter(Boolean)
+            return sidebarItems(nav, nav.pages || [])
+        }).filter(Boolean) as FwSidebarItemProps[] || []
 
-            return {
-                group: nav.group,
-                icon: nav?.icon,
-                items
-            } as FwSidebarItemProps
-        }) || []
+    if (flatItems.length) {
+        const items = sidebarItems({}, flatItems)
+        if (items) {
+            groups.unshift(items)
+        }
+    }
 
-    // console.log(JSON.stringify(settings?.navigation?.sidebar, null, 2), "groups")
     return {
         groups,
         breadcrumbs,
@@ -163,7 +185,11 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
 
     let foundRoute = false
 
-    function findRoute(sidebar: Sidebar | SidebarRoute) {
+    function findRoute(sidebar: Sidebar | SidebarRoute | string) {
+        if (typeof sidebar === "string") {
+            return
+        }
+
         if ("route" in sidebar) {
             const sideMatch = normalizeHref(sidebar.route)
             const normalizeSlug = normalizeHref(slug)
@@ -274,15 +300,19 @@ function mapNavToLinks(
     frontmatters: MetadataMap,
     hiddenPages: { [key: string]: boolean }
 ): INavLinks | undefined {
-    if (!currentNav.group) {
-        console.debug("current nav need group to calculate navlinks")
-        return
-    }
-
     // Flatten all pages from all groups to find the sequence
     const allPages: Array<{ page: string, group: string, groupIndex: number, pageIndex: number }> = []
 
     nav.forEach((group, groupIndex) => {
+        if (typeof group === "string") {
+            allPages.push({
+                page: group,
+                group: "",
+                groupIndex,
+                pageIndex: groupIndex,
+            })
+            return
+        }
         if (group.pages) {
             group.pages.forEach((pageItem, pageIndex) => {
                 let pageName = ""
@@ -406,13 +436,13 @@ function buildBreadcrumbs(
     hiddenPages: { [key: string]: boolean }
 ): IBreadcrumb[] {
     const breadcrumbs: IBreadcrumb[] = []
-    
+
     // Find the path to the current page
     const path = findPathToPage(navigation, currentSlug, frontmatters, hiddenPages)
     if (!path?.length) {
         return []
     }
-    
+
     for (const item of path) {
         if (item.type === 'group') {
             breadcrumbs.push({
@@ -439,9 +469,14 @@ function findPathToPage(
     hiddenPages: { [key: string]: boolean }
 ): Array<{ type: 'group' | 'page', title: string, href: string, page?: string }> {
     const path: Array<{ type: 'group' | 'page', title: string, href: string, page?: string }> = []
-    
+
     function searchInNavigation(nav: Sidebar[], currentPath: Array<{ type: 'group' | 'page', title: string, href: string, page?: string }>): boolean {
         for (const item of nav) {
+            if (typeof item === "string") {
+                path.push(item)
+                return false
+            }
+
             if ("route" in item) {
                 // Handle route-based navigation
                 if (item.pages) {
@@ -453,7 +488,7 @@ function findPathToPage(
                             href: (item.route as string) || ""
                         })
                     }
-                    
+
                     if (searchInPages(item.pages, newPath)) {
                         path.push(...newPath)
                         return true
@@ -469,7 +504,7 @@ function findPathToPage(
                         href: ""
                     })
                 }
-                
+
                 if (item.pages && searchInPages(item.pages, newPath)) {
                     path.push(...newPath)
                     return true
@@ -478,7 +513,7 @@ function findPathToPage(
         }
         return false
     }
-    
+
     function searchInPages(pages: PageURL[], currentPath: Array<{ type: 'group' | 'page', title: string, href: string, page?: string }>): boolean {
         for (const page of pages) {
             if (typeof page === "string") {
@@ -511,7 +546,7 @@ function findPathToPage(
                         href: ""
                     })
                 }
-                
+
                 if (searchInPages(page.pages || [], newPath)) {
                     // Replace current path with the new path that includes the group
                     currentPath.length = 0
@@ -533,7 +568,7 @@ function findPathToPage(
         }
         return false
     }
-    
+
     searchInNavigation(navigation, [])
     return path
 }

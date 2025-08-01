@@ -1,9 +1,11 @@
 import fs from 'fs/promises';
 import path from 'node:path';
+import { URL } from 'node:url';
 
 import { createServer } from 'vite';
 
 import { Settings } from "@xyd-js/core";
+import { getThemeColors } from '@code-hike/lighter';
 
 const extensions = ['tsx', 'ts', 'json'];
 
@@ -58,9 +60,9 @@ export async function readSettings() {
             },
         });
         const config = await settingsPreview.ssrLoadModule(settingsFilePath);
-        const mod =  config.default as Settings;
+        const mod = config.default as Settings;
 
-        ensureNavigation(mod)
+        presets(mod)
 
         return mod
     } else {
@@ -68,7 +70,7 @@ export async function readSettings() {
         try {
             let json = JSON.parse(rawJsonSettings) as Settings
 
-            ensureNavigation(json)
+            presets(json)
 
             return json
         } catch (e) {
@@ -76,6 +78,78 @@ export async function readSettings() {
 
             return null
         }
+    }
+}
+
+// if (settings?.theme?.coder?.syntaxHighlight) {
+
+// }
+
+function presets(settings: Settings) {
+    if (settings?.theme?.coder?.syntaxHighlight && typeof settings.theme.coder.syntaxHighlight === 'string') {
+        handleSyntaxHighlight(settings.theme.coder.syntaxHighlight, settings);
+    }
+    ensureNavigation(settings)
+}
+
+async function handleSyntaxHighlight(syntaxHighlight: string, settings: Settings) {
+    try {
+        // Ensure theme.coder exists
+        if (!settings.theme) {
+            settings.theme = { name: 'default' } as any;
+        }
+        if (!settings.theme!.coder) {
+            settings.theme!.coder = {};
+        }
+
+        // Check if it's a URL
+        if (isUrl(syntaxHighlight)) {
+            // Fetch from remote URL
+            const response = await fetch(syntaxHighlight);
+            if (!response.ok) {
+                console.error(`⚠️ Failed to fetch syntax highlight from URL: ${syntaxHighlight}`);
+                return;
+            }
+            const json = await response.json();
+            settings.theme!.coder!.syntaxHighlight = json;
+        } else {
+            // Handle local path - but first check if ita's actually a path
+            const localPath = path.resolve(process.cwd(), syntaxHighlight);
+            try {
+                // Check if the file exists before trying to read it
+                await fs.access(localPath);
+                const fileContent = await fs.readFile(localPath, 'utf-8');
+                const json = JSON.parse(fileContent);
+                settings.theme!.coder!.syntaxHighlight = json;
+            } catch (error) {
+            }
+        }
+
+        const syntaxHighlightTheme = settings.theme?.coder?.syntaxHighlight 
+        if (syntaxHighlightTheme) {
+            try {
+                const themeColors = await getThemeColors(syntaxHighlightTheme);
+
+                if (themeColors) {
+                    globalThis.__xydUserPreferences = {
+                        themeColors
+                    }
+                }
+            } catch (error) {
+                console.error(`⚠️ Error processing syntax highlight theme colors.`, error);
+            }
+        }
+    } catch (error) {
+        console.error(`⚠️ Error processing syntax highlight: ${syntaxHighlight}`, error);
+    }
+}
+
+function isUrl(str: string): boolean {
+    try {
+        new URL(str);
+        return true;
+    } catch {
+        return false;
     }
 }
 

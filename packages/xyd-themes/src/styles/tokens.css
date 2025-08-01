@@ -448,7 +448,10 @@
     --XydAtlas-Ref-Palette-Neutral-70: var(--dark60);
     --XydAtlas-Ref-Palette-Neutral-80: var(--dark80);
     --XydAtlas-Ref-Palette-Neutral-100: var(--dark100);
+}
 
+:root {
+    --sidebar-top: calc(var(--xyd-nav-height) + var(--xyd-banner-height-dynamic) + var(--theme-nav-height-space, 0px));
 }
 
 [data-color-scheme="dark"] {

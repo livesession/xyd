@@ -48,6 +48,7 @@ function $ThemedCodeSample(props: CodeSampleProps) {
     const { highlighted } = useCodeTheme()
     const coder = useCoder()
 
+    // console.log("props", props)
     if (props.kind === "secondary") {
         return <CodeContext value={{
             size: props.size,

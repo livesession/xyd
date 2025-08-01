@@ -137,13 +137,13 @@ function $IconDeep() {
         height="1em"
         viewBox="0 0 24 24"
         stroke="none"
-        fill="none"
+        fill="currentColor"
         xmlns="http://www.w3.org/2000/svg"
     >
         <g clipPath="url(#clip0_1689_2180)">
             <path
                 d="M4.3 4.3L7.1 7.1M10.6 5.7V1.5M14.8 7.8L17.6 5M5.7 11.3H1.5M7.1 14.8L4.3 17.6M15.5 22.5L9.9 9.9L22.5 14.8L16.9 16.2L15.5 22.5Z"
-                stroke="black"
+                stroke="currentColor"
                 strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"

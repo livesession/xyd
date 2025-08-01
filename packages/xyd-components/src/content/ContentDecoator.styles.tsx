@@ -44,7 +44,9 @@ export default {
             }
             
             details {
-                --xyd-callout-bgcolor: var(--white);
+                &:not([data-kind="tertiary"]) {
+                    --xyd-callout-bgcolor: var(--white);
+                }
                 margin-top: var(--space-medium);
 
                 summary {
@@ -115,9 +117,11 @@ export default {
                     line-height: var(--xyd-line-height-medium);
                 }
             }
+            
             xyd-guidecard-list xyd-guidecard {
                 margin-bottom: 0;
             }
+
             xyd-tabs [part="buttons"] {
                 font-size: var(--xyd-font-size-small);
                 line-height: var(--xyd-line-height-small);
@@ -150,6 +154,10 @@ export default {
                         --data-cols: 2;
                     }
                 }
+            }
+
+            [data-content-element]:not([data-content-element="false"]) {
+                margin-top: var(--space-medium);
             }
         }
     `

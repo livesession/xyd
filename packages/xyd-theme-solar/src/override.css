@@ -55,6 +55,16 @@
         xyd-sidebar-tabs-dropdown [part="dropdown-trigger"] {
             background: unset;
         }
+
+        xyd-content-decorator {
+            a {
+                text-decoration: underline;
+
+                &:hover {
+                    text-decoration-thickness: 2px;
+                }
+            }
+        }
     }
 }
 

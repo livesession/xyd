@@ -93,20 +93,38 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
 
     // Handle x-codeSamples if present
     if (operation.schema['x-codeSamples']) {
-        const codeSamples = operation.schema['x-codeSamples'] as Array<{ lang: string; source: string }>
-        const codeSampleTabs: CodeBlockTab[] = codeSamples.map(sample => ({
-            title: sample.lang,
-            language: langFallback(sample.lang),
-            code: sample.source
-        }))
+        const codeSamples = operation.schema['x-codeSamples'] as Array<{ lang: string; source: string; label?: string }>
+        
+        // Group code samples by label
+        const groupedByLabel = new Map<string, Array<{ lang: string; source: string; label?: string }>>()
+        
+        codeSamples.forEach(sample => {
+            const label = sample.label || 'default'
+            if (!groupedByLabel.has(label)) {
+                groupedByLabel.set(label, [])
+            }
+            groupedByLabel.get(label)!.push(sample)
+        })
 
-        if (codeSampleTabs.length > 0) {
-            examples.push({
-                codeblock: {
-                    tabs: codeSampleTabs
-                }
-            })
+        // Create examples for each label group
+        groupedByLabel.forEach((samples, label) => {
+            const codeSampleTabs: CodeBlockTab[] = samples.map(sample => ({
+                title: sample.lang,
+                language: langFallback(sample.lang),
+                code: sample.source
+            }))
 
+            if (codeSampleTabs.length > 0) {
+                examples.push({
+                    codeblock: {
+                        title: label === 'default' ? "Example request" : label,
+                        tabs: codeSampleTabs
+                    }
+                })
+            }
+        })
+
+        if (examples.length > 0) {
             exampleGroups.push({
                 description: "Example request",
                 examples

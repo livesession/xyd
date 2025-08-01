@@ -64,7 +64,7 @@
             
                 } */
                 position: relative;
-                left: calc(var(--xyd-sidebar-width) / 2);
+                left: calc(var(--xyd-sidebar-width) / 1);
                 width: calc(100% - var(--xyd-sidebar-width));
             }
         }

@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/ui",
-  "version": "0.1.0-build.142",
+  "version": "0.1.0-build.153",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -29,7 +29,7 @@
   },
   "peerDependencies": {
     "react": "^19.1.0",
-    "react-router": "^7.6.2",
+    "react-router": "^7.7.1",
     "@xyd-js/components": "workspace:*"
   },
   "devDependencies": {

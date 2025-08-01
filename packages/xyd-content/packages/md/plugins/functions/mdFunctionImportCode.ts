@@ -14,6 +14,8 @@ import {
     fetchFileContent,
     resolvePathAlias
 } from './utils';
+import { injectCodeMeta } from '../utils/injectCodeMeta';
+import path from 'node:path';
 
 export function mdFunctionImportCode(settings?: Settings) {
     return function (options: FunctionOptions = {}) {
@@ -29,10 +31,14 @@ export function mdFunctionImportCode(settings?: Settings) {
                 if (!result) return;
 
                 const importPath = result[0];
+                const args = result[1];
+                const mdAttrs = args?.__mdAttrs || {};
 
+                // let fullDirPath = path.join(process.cwd(), file.dirname || "")
+                // fullDirPath = process.cwd()
                 // Parse the import path to extract file path, regions, and line ranges
                 const { filePath, regions, lineRanges } = parseImportPath(
-                    resolvePathAlias(importPath, settings, process.cwd()) || importPath
+                    resolvePathAlias(importPath, settings, file) || importPath
                 );
 
                 // Determine if this is a local or external file
@@ -64,6 +70,10 @@ export function mdFunctionImportCode(settings?: Settings) {
                         node.value = processedContent;
                         node.children = undefined;
 
+                        // Inject code meta and props
+                        const attrsString = args?.__mdAttrs ? Object.entries(args.__mdAttrs).map(([k,v]) => `${k}="${v}"`).join(' ') : undefined;
+                        const metaString = attrsString ? `[${attrsString}]` : undefined;
+                        injectCodeMeta(node, metaString);
                     } catch (error) {
                         console.error(`Error importing file: ${filePath}`, error);
                         // Keep the node as is if there's an error
@@ -80,4 +90,3 @@ export function mdFunctionImportCode(settings?: Settings) {
         };
     }
 }
-

@@ -1,24 +1,25 @@
-import {Navigation, Settings} from "@xyd-js/core";
-import type {Plugin as VitePlugin} from "vite";
-import {RouteConfigEntry} from "@react-router/dev/routes";
-import type {PageURL, Sidebar, SidebarRoute} from "@xyd-js/core";
+import { Navigation, Settings } from "@xyd-js/core";
+import type { Plugin as VitePlugin } from "vite";
+import { RouteConfigEntry } from "@react-router/dev/routes";
+import type { PageURL, Sidebar, SidebarRoute } from "@xyd-js/core";
 import fs from "fs";
 import path from "path";
 
-import {docsPreset} from "./presets/docs";
-import {graphqlPreset} from "./presets/graphql";
-import {openapiPreset} from "./presets/openapi";
-import {sourcesPreset} from "./presets/sources";
+import { docsPreset } from "./presets/docs";
+import { graphqlPreset } from "./presets/graphql";
+import { openapiPreset } from "./presets/openapi";
+import { sourcesPreset } from "./presets/sources";
 
-import type {PluginOutput, Plugin} from "./types";
-import {ensureAndCleanupVirtualFolder} from "./presets/uniform";
+import type { PluginOutput, Plugin } from "./types";
+import { ensureAndCleanupVirtualFolder } from "./presets/uniform";
 
-export {readSettings} from "./presets/docs/settings"
+export { readSettings } from "./presets/docs/settings"
 
 export interface PluginDocsOptions {
     disableAPIGeneration?: boolean
     disableFSWrite?: boolean
     appInit?: any
+    onUpdate?: (callback: (settings: Settings) => void) => void
 }
 
 // TODO: better plugin runner
@@ -33,7 +34,8 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
     {
         const presetOptions = {
             urlPrefix: "", // TODO: configurable,
-            appInit: options?.appInit
+            appInit: options?.appInit,
+            onUpdate: options?.onUpdate
         }
 
         const docs = docsPreset(undefined, presetOptions)
@@ -197,15 +199,13 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
     }
 
     sortSidebarGroups(settings?.navigation?.sidebar || [])
-    
+
     const indexPage = await findIndexPage()
 
     if (indexPage) {
         pagePathMapping["index"] = indexPage
     }
 
-    // console.log(JSON.stringify(settings?.navigation?.sidebar, null, 2), "settings?.navigation?.sidebar")
-    
     return {
         vitePlugins,
         settings,
@@ -228,30 +228,67 @@ async function findIndexPage(): Promise<string> {
     return ""
 }
 
-function sortSidebarGroups(sidebar: (SidebarRoute | Sidebar | string)[]) {
-    // Sort items within each SidebarRoute
-    for (const group of sidebar) {
-        if (typeof group === 'string') {
-            continue // Skip string entries
+export function sortSidebarGroups(sidebar: (SidebarRoute | Sidebar | string)[]) {
+    // Apply recursive sorting to all routes
+    for (const entry of sidebar) {
+        if (typeof entry === 'string') continue;
+        if (!entry.pages) continue;
+
+        // First: Merge user-defined config into generated pages
+        const pages = entry.pages;
+        const groupMap = new Map<string, Sidebar>();
+
+        for (const page of pages) {
+            if (typeof page === 'object' && 'group' in page && page.group) {
+                groupMap.set(page.group, page);
+            }
         }
-        if ('pages' in group && Array.isArray(group.pages)) {
-            group.pages.sort((a, b) => {
-                // If both have numeric sort values, compare them
-                if (typeof a.sort === 'number' && typeof b.sort === 'number') {
-                    return a.sort - b.sort
-                }
-                // If only a has numeric sort, it comes first
-                if (typeof a.sort === 'number') {
-                    return -1
-                }
-                // If only b has numeric sort, it comes first
-                if (typeof b.sort === 'number') {
-                    return 1
-                }
-                // If neither has numeric sort, maintain original order
-                return 0
-            })
+
+        // Rebuild sorted list
+        const sortedGroups: Sidebar[] = [];
+
+        // First pass: order: 0 (always on top)
+        for (const [_, group] of groupMap) {
+            if (group.order === 0) sortedGroups.push(group);
         }
+
+        // Second pass: groups without "before/after"
+        for (const [name, group] of groupMap) {
+            if (!group.order || typeof group.order === 'number') {
+                if (group.order !== 0 && group.order !== -1) {
+                    sortedGroups.push(group);
+                }
+            }
+        }
+
+        // Third pass: before/after
+        for (const [name, group] of groupMap) {
+            if (group.order && typeof group.order === 'object' && ('before' in group.order || 'after' in group.order)) {
+                const target = 'before' in group.order ? group.order.before : group.order.after;
+                const idx = sortedGroups.findIndex(g => g.group === target);
+                if (idx !== -1) {
+                    if ('before' in group.order) {
+                        sortedGroups.splice(idx, 0, group);
+                    } else {
+                        sortedGroups.splice(idx + 1, 0, group);
+                    }
+                } else {
+                    sortedGroups.push(group); // fallback
+                }
+            }
+        }
+
+        // Last: order: -1 (always at end)
+        for (const [_, group] of groupMap) {
+            if (group.order === -1) sortedGroups.push(group);
+        }
+
+        // Replace groups in pages
+        const final: (Sidebar | string)[] = [];
+        for (const group of sortedGroups) {
+            final.push(group);
+        }
+        entry.pages = final;
     }
 }
 
@@ -306,6 +343,12 @@ function mapNavigationToPagePathMapping(navigation: Navigation) {
             for (const item of sidebar.pages) {
                 if (item?.pages) {
                     processPages(item.pages)
+                } else if (typeof item === 'string') {
+                    // Handle direct string pages in SidebarRoute
+                    const existingPath = getExistingFilePath(item)
+                    if (existingPath) {
+                        mapping[item] = existingPath
+                    }
                 }
             }
         } else if ('pages' in sidebar) {

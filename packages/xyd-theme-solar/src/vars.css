@@ -15,6 +15,8 @@
     --color-primary--active: color-mix(in srgb, var(--color-primary) 85%, transparent);
 
     --xyd-heading-color: var(--dark80);
+    --xyd-anchor-color: var(--color-text);
+    --xyd-anchor-color--hover: var(--color-text);
 }
 /* Page Home */
 :root {
@@ -54,18 +56,24 @@
     --dark48: #F6F6F5;
     --dark60: var(--color-text);
     --dark80: var(--color-text);
+
     --xyd-text-color--default: var(--color-text);
-    --xyd-sidebar-item-color--default: var(--color-text);
-    --xyd-tabs-bgcolor--active: var(--color-text);
-    --xyd-steps-marker-color: var(--color-text);
-    --xyd-badge-color--default: var(--color-bg);
-    --xyd-sidebar-bgcolor: var(--color-bg);
     --theme-color-primary: var(--color-bg);
+    --xyd-heading-icon-color: var(--color-text);
     --color-primary: var(--theme-color-primary);
+
+    --xyd-sidebar-item-color--default: var(--color-text);
+    --xyd-sidebar-bgcolor: var(--color-bg);
+    
+    --xyd-tabs-bgcolor--active: var(--color-text);
+
+    --xyd-steps-marker-color: var(--color-text);
+
+    --xyd-badge-color--default: var(--color-text);
+
     --xyd-button-primary-border: var(--dark32);
     --xyd-button-primary-bg-hover: none;
     --xyd-button-primary-border-hover: var(--xyd-button-primary-border);
-    --xyd-heading-icon-color: var(--color-text);
 }
 
 [data-color-scheme="dark"] {

@@ -97,11 +97,5 @@ You can also use parentheses for the import path:
 
 ## Language Detection
 
-The function automatically detects the programming language based on the file extension. Supported languages include:
-- JavaScript/TypeScript (`.js`, `.ts`, `.jsx`, `.tsx`)
-- Python (`.py`)
-- And many more common programming languages
+The function automatically detects the programming language based on the file extension.
 
-## Error Handling
-
-If a file cannot be found or accessed, the function will gracefully handle the error and keep the original node unchanged in the documentation.

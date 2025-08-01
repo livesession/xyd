@@ -2,6 +2,8 @@ import { css } from "@linaria/core"
 
 export const TabsPrimaryHost = css`
     @layer defaults {
+        display: block;
+        
         [part="nav"] {
             align-items: center;
             display: flex;

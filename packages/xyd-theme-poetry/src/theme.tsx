@@ -21,6 +21,9 @@ export default class ThemePoetry extends BaseTheme {
             appearance: {
                 logo: {
                     sidebar: true
+                },
+                search: {
+                    sidebar: true
                 }
             }
         })

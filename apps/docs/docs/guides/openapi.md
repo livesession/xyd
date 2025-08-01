@@ -227,7 +227,7 @@ above example will create sidebar:
     * [{title}]({route}/users/object)
 ```
 
-::::details{kind="secondary" label="Navigation Customization Details" title="Learn More"}
+::::details{kind="tertiary" label="Navigation Customization Details" title="Learn More"}
   #### Route
   The `route` property defines the base URL path for your API documentation. This is where all your API documentation pages will be served from.
 

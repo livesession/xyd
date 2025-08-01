@@ -1,4 +1,8 @@
 :root {
+    --syntax-primary: #7051d4;
+    --syntax-secondary: #D12F1B;
+    --syntax-tertiary: #713DA9;
+    
     --syntax1: #FFFFFF;
     --syntax2: #ffffff00;
     --syntax3: #D9D7D5;
@@ -20,12 +24,21 @@
     --syntax19: #272AD8;
     --syntax20: #AA0D91;
     --syntax21: #3F6E74;
-    --syntax22: #713DA9;
+    --syntax22: var(--syntax-tertiary);
     --syntax23: #536579;
-    --syntax24: #7051d4;
+    --syntax24: var(--syntax-primary);
     --syntax25: #AD3DA4;
     --syntax26: #816927;
-    --syntax27: #D12F1B;
+    --syntax27: var(--syntax-secondary);
+}
+
+[data-color-scheme="dark"] {
+    --syntax-secondary: #df3079;
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        --syntax-secondary: #df3079;
+    }
 }
 
 [data-color-scheme="dark"] {
@@ -34,7 +47,7 @@
     --syntax15: #fff;
     --syntax16: #0e0e10;
     --syntax19: #2e95d3;
-    --syntax27: #df3079;
+    --syntax27: var(--syntax-secondary);
 }
 
 /* System Dark Mode Support */
@@ -45,7 +58,7 @@
         --syntax15: #fff;
         --syntax16: #0e0e10;
         --syntax19: #2e95d3;
-        --syntax27: #df3079;
+        --syntax27: var(--syntax-secondary);
     }
 }
 

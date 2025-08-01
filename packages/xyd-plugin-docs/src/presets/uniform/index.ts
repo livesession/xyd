@@ -187,7 +187,6 @@ async function uniformResolver(
 ) {
     let urlPrefix = ""
 
-    console.log(111111)
     if (matchRoute && sidebar) {
         sidebar.forEach((sidebar) => {
             if ("route" in sidebar) {
@@ -209,7 +208,6 @@ async function uniformResolver(
         matchRoute = options.fileRouting[resolvedApiFile]
     }
 
-    console.log(2222)
     if (!urlPrefix && matchRoute) {
         sidebar?.push({
             route: matchRoute,
@@ -234,7 +232,13 @@ async function uniformResolver(
                 urlPrefix,
             }),
         ]
-    })
+    }) as {
+        references: Reference[];
+        out: {
+            sidebar: Sidebar[];
+            pageFrontMatter: Record<string, any>;
+        };
+    };
 
     let pageLevels = {}
 
@@ -257,7 +261,9 @@ async function uniformResolver(
         }
     }
 
-    const uniformSidebars: SidebarRoute[] = []
+    let uniformSidebars: SidebarRoute[] = []
+
+    mergeSidebarsInPlace(sidebar as (SidebarRoute | Sidebar)[])
 
     if (sidebar && matchRoute) {
         // TODO: DRY
@@ -269,6 +275,8 @@ async function uniformResolver(
             }
         })
 
+        mergeSidebarsInPlace(uniformSidebars);
+    
         if (uniformSidebars.length > 1) {
             throw new Error('multiple sidebars found for uniform match')
         }
@@ -420,34 +428,35 @@ async function uniformResolver(
     
     if (matchRoute) {
         // TODO: in the future custom position - before / after
-        uniformSidebars[0].pages.unshift(...uniformWithNavigation.out.sidebar)
+        // if (uniformSidebars.length > 0) {
+        //     uniformSidebars[0].pages.unshift(...uniformWithNavigation.out.sidebar as any)
+        // }
         
         // sidebar[0].pages.unshift({
         //     route: matchRoute,
         //     pages: uniformWithNavigation.out.sidebar
         // })
 
-        // const sidebarItem = sidebar?.find(item => {
-        //     if ("route" in item) {
-        //         return item.route === matchRoute
-        //     }
-        //
-        //     return false
-        // })
-        //
-        // if (sidebarItem) {
-        //     sidebarItem.pages?.push(...uniformWithNavigation.out.sidebar)
-        // }
+        const sidebarItem = sidebar?.find(item => {
+            if ("route" in item) {
+                return item.route === matchRoute
+            }
+        
+            return false
+        })
+
+        if (sidebarItem) {
+            sidebarItem.pages?.push(...uniformWithNavigation.out.sidebar as any)
+        }
 
         return {
             data: uniformData.data,
         }
     }
 
-    console.log(5555)
     sidebar.unshift({
         route: matchRoute,
-        pages: uniformWithNavigation.out.sidebar
+        pages: uniformWithNavigation.out.sidebar as any
     })
 
     return {
@@ -502,6 +511,56 @@ async function composeFileMap(basePath: string, matchRoute: string) {
     return routeMap;
 }
 
+// Helper function to merge sidebars with the same route
+function mergeSidebars(sidebars: SidebarRoute[]): SidebarRoute[] {
+    const mergedMap = new Map<string, SidebarRoute>();
+    
+    for (const sidebar of sidebars) {
+        const existing = mergedMap.get(sidebar.route);
+        
+        if (existing) {
+            // Merge pages from both sidebars
+            const mergedPages = [...(existing.pages || []), ...(sidebar.pages || [])];
+            mergedMap.set(sidebar.route, {
+                ...existing,
+                pages: mergedPages
+            });
+        } else {
+            mergedMap.set(sidebar.route, sidebar);
+        }
+    }
+    
+    return Array.from(mergedMap.values());
+}
+
+// Helper function to merge sidebars in place, modifying the original array
+function mergeSidebarsInPlace(sidebars: (SidebarRoute | Sidebar)[]): void {
+    const mergedMap = new Map<string, SidebarRoute>();
+    
+    // First pass: collect all sidebars by route
+    for (const sidebar of sidebars) {
+        if ("route" in sidebar) {
+            const existing = mergedMap.get(sidebar.route);
+            
+            if (existing) {
+                // Merge pages from both sidebars
+                const mergedPages = [...(existing.pages || []), ...(sidebar.pages || [])];
+                mergedMap.set(sidebar.route, {
+                    ...existing,
+                    pages: mergedPages
+                });
+            } else {
+                mergedMap.set(sidebar.route, sidebar);
+            }
+        }
+    }
+    
+    // Second pass: replace the original array with merged results
+    const mergedArray = Array.from(mergedMap.values());
+    sidebars.length = 0; // Clear the original array
+    sidebars.push(...mergedArray); // Add the merged items
+}
+
 // preinstall adds uniform navigation to settings
 function preinstall(
     id: string,
@@ -532,7 +591,7 @@ function preinstall(
                     routeMatch,
                     apiFile,
                     uniformApiResolver,
-                    settings?.navigation?.sidebar,
+                    settings?.navigation?.sidebar as (SidebarRoute | Sidebar)[],
                     {
                         ...options,
                         ...innerOptions,
@@ -568,7 +627,7 @@ function preinstall(
                         routeMatch,
                         uniform,
                         uniformApiResolver,
-                        settings?.navigation?.sidebar,
+                        settings?.navigation?.sidebar as (SidebarRoute | Sidebar)[],
                         {
                             ...options,
                             ...innerOptions,
@@ -713,7 +772,8 @@ function uniformPreset(
             ),
             vitePlugins: [
                 vitePluginUniformContent(id),
-            ]
+            ],
+            basePath
         }
     } satisfies Preset<unknown>
 }

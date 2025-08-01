@@ -32,7 +32,7 @@ inside you docs project like follow:
 ```
 
 :::callout
-Writing page meta is required for [routing](/docs/guides/routing) and optionaly for other page meta features like [SEO](/docs/guides/seo).
+Writing page meta is required for [navigation](/docs/guides/navigation) and optionaly for other page meta features like [SEO](/docs/guides/seo).
 :::
 
 ## Title
@@ -76,7 +76,7 @@ icon: book
 ## Page layout [maxTocDepth=3]
 
 The Page Layout setting allows you to customize the appearance of your page through different layout modes. 
-This setting is optional - if not specified, the page will use the `default` layout settings.
+This setting is optional - if not specified, the page will use the default layout settings.
 
 ### Default
 If no specific mode is given, the `page` will default to standard settings. 
@@ -136,7 +136,7 @@ tocCard:
 If you want to learn more about toc anchors, check out [here](/docs/guides/writing-quickstart#toc-anchors).
 :::
 
-## Uniform
+## Uniform {label="Experimental"}
 
 `uniform` meta allows to load [`uniform function`](/docs/reference/functions/uniform) for entire page, learn more [here](/docs/guides/compose-content).
 

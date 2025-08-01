@@ -12,7 +12,7 @@ List of all availalbe converters:
 
 2. [@apitoolchain/uni-openapi](https://github.com/livesession/xyd) - converts OpenAPI into uniform
 
-3. [@apitoolchain/uni-ts](https://github.com/livesession/xyd) - covnerts TypeScript into uniform
+3. [@apitoolchain/uni-ts](https://github.com/livesession/xyd) - converts TypeScript into uniform
 
 :::callout
 xyd uses `APIToolchain` under the hood.

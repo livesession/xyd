@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useLocation } from 'react-router'
+import { useLocation, useMatches } from 'react-router'
 import GitHubButton from 'react-github-btn'
 
 import {
@@ -27,6 +27,8 @@ import {
     FwLogo,
 
     useMatchedSubNav,
+    useActiveRoute,
+    useActivePageRoute,
     useMetadata,
     useSettings,
     FwBanner,
@@ -87,23 +89,30 @@ export class BaseTheme extends Theme {
             Navbar: $Navbar,
             Sidebar: $Sidebar,
             Footer: $Footer,
+            SubNav: $SubNav,
         } = this
 
         const location = useLocation()
         const matchedSubNav = useMatchedSubNav()
+        const matchActivePageRout = useActivePageRoute(true)
+        const activeRoute = useActiveRoute()
         const meta = useMetadata()
         const appearance = useAppearance()
+        const isPage = meta?.layout === "page"
 
         const hideSidebar = this.useHideSidebar()
-        const subheader = matchedSubNav ? <FwSubNav /> : null
+        const subheader = matchedSubNav && !isPage ? <$SubNav /> : null
         const sidebar = <$Sidebar />
 
         const banner = appearance?.banner?.fixed ? <FwBanner /> : null
+        
+        const id = activeRoute?.id || matchActivePageRout?.id || undefined
 
         return <LayoutPrimary
             subheader={!!subheader}
             layout={meta?.layout}
             scrollKey={location.pathname}
+            id={id}
         >
             <LayoutPrimary.Header
                 banner={banner}
@@ -211,7 +220,6 @@ export class BaseTheme extends Theme {
 
         let copyPageElement: React.JSX.Element | null = <FwCopyPage />
 
-        console.log('meta', meta)
         if (
             meta?.copyPage !== true &&
             (
@@ -390,6 +398,10 @@ export class BaseTheme extends Theme {
             return null
         }
         return <FwNavLinks />
+    }
+
+    protected SubNav() {
+        return <FwSubNav />
     }
 }
 

@@ -4,7 +4,7 @@ import { useSettings } from "../contexts";
 import { pageLink } from "../utils";
 import { useMatchedSubNav } from "./useMatchedSubNav";
 
-export function useActivePage(subnavMatch: boolean = false) {
+export function useActivePage(match: boolean = false) {
     const matches = useMatches()
     const matchedSubnav = useMatchedSubNav()
     const settings = useSettings()
@@ -31,7 +31,7 @@ export function useActivePage(subnavMatch: boolean = false) {
                 return routeMatch
             }
 
-            if (subnavMatch) {
+            if (match) {
                 const pageMatch = matchedSubnav?.pages.findLast(page => {
                     if (!page.page) {
                         return false
@@ -49,7 +49,7 @@ export function useActivePage(subnavMatch: boolean = false) {
         return pageLink(item.page || "") === lastMatch?.id
     })
 
-    if (!active && !matchedSubnav && subnavMatch) {
+    if (!active && !matchedSubnav && match) {
         active = navigationItems.findLast(item => {
             if (!item.page) {
                 return false

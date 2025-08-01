@@ -1,6 +1,8 @@
 import { css } from "@linaria/core";
 
 export const Footer = css`
+  /* transform: translateY(-100%); */
+
   border-top: 1px solid var(--dark32);
   display: flex;
   align-items: center;

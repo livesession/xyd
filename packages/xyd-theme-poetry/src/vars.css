@@ -31,10 +31,12 @@
 
     --xyd-coder-code-mark-bgcolor: var(--xyd-codetabs-color--hover);
     --xyd-coder-code-mark-border-color: var(--color-primary);
+    --xyd-codetabs-color--active: var(--white);
 }
 
 @define-mixin dark-theme {
     --xyd-codetabs-color: var(--black);
+    --xyd-codetabs-color--active: var(--black);
 }
 
 /* Override dark mode colors to maintain Poetry theme */

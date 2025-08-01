@@ -287,31 +287,31 @@ Customize the order in the documentation using the `sort` parameter in the `@doc
 extend schema @docs(
     sort: [
         {
-            "node": "scalar",
+            node: "scalar",
         },
         {
-            "node": "enum",
+            node: "enum",
         },
         {
-            "node": "interface",
+            node: "interface",
         },
         {
-            "node": "input",
+            node: "input",
         },
         {
-            "node": "object",
+            node: "object",
         },
         {
-            "node": "union",
+            node: "union",
         },
         {
-            "node": "query",
+            node: "query",
         },
         {
-            "node": "mutation",
+            node: "mutation",
         },
         {
-            "node": "subscription"
+            node: "subscription"
         }
     ]
 )
@@ -322,10 +322,10 @@ or if you want to sort by groups:
 extend schema @docs(
     sort: [
         {
-            "group": ["Users", "Mutations", "Objects", "Inputs", "Scalars"],
+            group: ["Users", "Mutations", "Objects", "Inputs", "Scalars"],
         },
         {
-            "group": ["Todos", "Mutations", "Objects", "Inputs", "Scalars"],
+            group: ["Todos", "Mutations", "Objects", "Inputs", "Scalars"],
         }
     ]
 )
@@ -340,11 +340,11 @@ extend schema @docs(
     ],
     sort: [
         {
-            "group": ["Users"], # + ["Queries", "Mutations" ...] 
-            "stack": 0 
+            group: ["Users"], # + ["Queries", "Mutations" ...] 
+            stack: 0 
         },
         {
-            "group": ["Todos"], # + ...
+            group: ["Todos"], # + ...
             # if not specified it will get sort #0 automatically
         }
     ]
@@ -362,9 +362,9 @@ extend schema @docs(
     sort: [
         #...
          {
-            "group": ["GraphQL Types"] # + ["Scalars", "Objects", "Inputs"],
+            group: ["GraphQL Types"] # + ["Scalars", "Objects", "Inputs"],
             # !diff +
-            "stack": 1
+            stack: 1
         }
     ]
 )

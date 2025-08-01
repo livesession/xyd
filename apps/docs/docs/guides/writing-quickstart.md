@@ -182,15 +182,15 @@ For creating steps you can use such us syntax:
 2. My Second Step
 
 3. My Third Step
-    ```ts
-    console.log("You can also add code blocks in steps")
-    ```
+  ```ts
+  console.log("You can also add code blocks in steps")
+  ```
 :::
 ~~~
 
 #### Tabs 
 For creating tabs, you can use the following syntax:
-```md [descHead="Tip" desc="Check out advanced tabs example [here](https://github.com/xyd-js/examples/tree/master/advanced-tabs)."]
+```md [descHead="Info" desc="<code>(tab=cli)</code> means that <code>&tab=cli</code> is added to the URL."]
 :::tabs 
 1. [CLI](tab=cli)
     Content for the CLI tab
@@ -198,6 +198,12 @@ For creating tabs, you can use the following syntax:
 2. [Code](tab=code)
     Content for the Code tab
 :::
+```
+
+## Including content
+You can use [@include](/docs/reference/functions/include) function to include another content files in current content:
+```md [descHead="Tip" desc="You can include <code>.mdx</code> files too, check out [React Components](/docs/guides/react-components) guide."]
+@include "./relative-to-current-file.md"
 ```
 
 ## Emojis 🎉

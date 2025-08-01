@@ -2,7 +2,7 @@ import { css } from "@linaria/core";
 
 export const ProgressBarHost = css`
     @layer defaults {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         right: 0;

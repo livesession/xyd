@@ -48,6 +48,10 @@ export const LayoutPrimaryHost = css`
             width: 100%;
         }
 
+        [part="header-subheader"] {
+            width: 100%;
+        }
+
         [part="hamburger-button"] {
             display: none;
 
@@ -224,7 +228,7 @@ export const LayoutPrimaryHost = css`
             flex: 1;
             background: var(--xyd-page-body-bgcolor);
             min-width: 0;
-            height: 100%;
+            height: 100%; 
         }
 
         [part="page-scroll"] {
@@ -281,19 +285,22 @@ export const LayoutPrimaryHost = css`
         }
 
         [part="page-article-nav"] {
+            --page-article-nav-top: calc(var(--xyd-header-total-height) / 2);
             display: flex;
             flex: none;
             flex-direction: column;
             gap: 16px;
             width: var(--xyd-layout-nav-width-medium);
             position: sticky;
-            top: var(--xyd-header-total-height);
             height: fit-content;
             max-height: 100vh;
             overflow-y: auto;
             padding-right: 24px;
             padding: var(--xyd-content-space) 0;
-            margin-top: calc(var(--xyd-header-total-height) / 2);
+            margin-top: var(--page-article-nav-top);
+            top: calc(var(--xyd-header-total-height) + var(--page-article-nav-top));
+            /* top: var(--xyd-header-total-height); */
+
 
             @media (max-width: ${tabletBreakpoint}) {
                 width: var(--xyd-layout-nav-width-small);

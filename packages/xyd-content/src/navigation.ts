@@ -33,6 +33,11 @@ export async function pageFrontMatters(navigation: Sidebar[], pagePathMapping: {
     }
 
     navigation.map(async (nav: Sidebar) => {
+        if (typeof nav === "string") {
+            mapPages(nav)
+            return
+        }
+
         nav.pages?.forEach(mapPages)
     })
 
@@ -76,6 +81,9 @@ async function getFrontmatter(filePath: string): Promise<Metadata> {
         recmaPlugins: [],
         outputFormat: 'function-body',
         development: false,
+        
+        // outputFormat: "program",
+        // jsx: true,
     });
 
     const code = String(compiled)
@@ -111,8 +119,23 @@ async function job(page: string | VirtualPage, frontmatters: MetadataMap, pagePa
         pageName = page.page
     }
 
+    // @ts-ignore TODO: IN THE FUTURE BETTER API
+    if (globalThis.__xydFrontmatterNotExists && globalThis.__xydFrontmatterNotExists[pageName]) {
+        return
+    }
+
     if (!pageName || !pagePathMapping[pageName]) {
         console.log(`⚠️ "${pageName}" is defined in the docs.json navigation but the file does not exist.`)
+
+        // @ts-ignore
+        if (!globalThis.__xydFrontmatterNotExists) {
+            // @ts-ignore
+            globalThis.__xydFrontmatterNotExists = {}
+        }
+
+        // @ts-ignore 
+        globalThis.__xydFrontmatterNotExists[pageName] = true
+
         return
     }
 

@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import type { Appearance, Navigation, Theme as ThemeSettings, WebEditor, WebEditorNavigationItem } from "@xyd-js/core"
+import type { Appearance, Navigation, Theme as ThemeSettings, UserPreferences, WebEditor, WebEditorNavigationItem } from "@xyd-js/core"
 import { ReactContent } from "@xyd-js/components/content"
 import { IconSocial } from "@xyd-js/components/writer"
 import { Surfaces } from "@xyd-js/framework"
@@ -29,6 +29,7 @@ export abstract class Theme {
         this.reactContent = globalThis.__xydReactContent
         this.navigation = globalThis.__xydNavigation as Navigation
         this.webeditor = globalThis.__xydWebeditor as WebEditor
+        this.userPreferences = globalThis.__xydUserPreferences as UserPreferences
 
         this.userAppearance = JSON.parse(JSON.stringify(this.theme.appearance || {}))
 
@@ -43,6 +44,7 @@ export abstract class Theme {
     protected theme: CustomTheme<ThemeSettings>
     protected readonly reactContent: ReactContent
     protected readonly surfaces: Surfaces
+    private readonly userPreferences: UserPreferences
 
     private get originalTheme(): ThemeSettings {
         return JSON.parse(JSON.stringify(globalThis.__xydSettingsClone?.theme))
@@ -64,12 +66,12 @@ export abstract class Theme {
 
     protected useHideToc() {
         const meta = useMetadata()
-        return meta?.layout === "wide" || meta?.layout === "center" || meta?.layout === "page"
+        return meta?.layout === "wide" || meta?.layout === "reader" || meta?.layout === "page"
     }
 
     protected useHideSidebar() {
         const meta = useMetadata()
-        return meta?.layout === "page"
+        return meta?.layout === "page" || meta?.layout === "reader"
     }
 
     private headerPrepend(searchItem: any, float: string) {
@@ -220,8 +222,6 @@ export abstract class Theme {
                 }
 
                 if ("social" in item) {
-                    const w = <IconSocial kind={item.social as any} />
-                    console.log(111111111, w)
                     this.webeditor.header = this.headerAppend({
                         ...button,
                         icon: <IconSocial kind={item.social as any} />,

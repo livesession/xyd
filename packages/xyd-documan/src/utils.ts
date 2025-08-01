@@ -80,11 +80,9 @@ export async function appInit(options?: PluginDocsOptions) {
         globalThis.__xydUserComponents = componentPlugins
     }
 
-    console.log("respPluginDocs", "BEFORE")
-
     const respPluginDocs = await pluginDocs({
         ...options,
-        appInit
+        appInit,
     })
     if (!respPluginDocs) {
         throw new Error("PluginDocs not found")
@@ -105,9 +103,6 @@ export async function appInit(options?: PluginDocsOptions) {
 
     // appearanceWebEditor(respPluginDocs.settings)
 
-    // console.log("respPluginDocs.settings", JSON.stringify(respPluginDocs.settings?.navigation?.sidebar, null, 2))
-
-    console.log("respPluginDocs", "AFTER")
     return {
         respPluginDocs,
         resolvedPlugins

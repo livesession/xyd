@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/documan",
-  "version": "0.1.0-build.158",
+  "version": "0.1.0-build.169",
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
@@ -24,9 +24,9 @@
     "@xyd-js/plugins": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
     "@iconify/tools": "^4.1.2",
-    "@react-router/dev": "^7.6.2",
-    "@react-router/node": "^7.6.2",
-    "@react-router/serve": "^7.6.2",
+    "@react-router/dev": "^7.7.1",
+    "@react-router/node": "^7.7.1",
+    "@react-router/serve": "^7.7.1",
     "cli-spinners": "^3.0.0",
     "vite-tsconfig-paths": "^5.1.4"
   },

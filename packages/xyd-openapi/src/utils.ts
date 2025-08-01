@@ -109,7 +109,7 @@ async function readOpenApiSpec(filePath: string) {
         try {
             await fs.access(filePath);
         } catch (error) {
-            console.log(`⚠️ "${filePath}" is defined in the docs.json navigation but the file does not exist.`)
+            console.log(`⚠️ "(openapi): ${filePath}" is defined in the docs.json navigation but the file does not exist.`)
             return
         }
         content = await fs.readFile(filePath, 'utf-8');

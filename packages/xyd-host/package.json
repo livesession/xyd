@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/host",
-  "version": "0.1.0-build.127",
+  "version": "0.1.0-build.138",
   "type": "module",
   "scripts": {},
   "dependencies": {
@@ -21,12 +21,12 @@
     "@xyd-js/plugin-orama": "workspace:*",
     "@xyd-js/plugin-algolia": "workspace:*",
     "isbot": "^5",
-    "react-router": "^7.6.2",
+    "react-router": "^7.7.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "@react-router/dev": "^7.6.2",
-    "@react-router/node": "^7.6.2",
-    "@react-router/serve": "^7.6.2",
+    "@react-router/dev": "^7.7.1",
+    "@react-router/node": "^7.7.1",
+    "@react-router/serve": "^7.7.1",
     "openux-js": "0.0.0-pre.0",
     "pluganalytics": "0.0.0-pre.3"
   },

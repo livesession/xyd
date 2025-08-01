@@ -7,9 +7,9 @@ title: Overview
 Reference for dynamic content capabilities through functions
 :::
 
-Guide to using functions in XYD for enhancing your documentation with dynamic content and code integration.
+Guide to using functions in `xyd` for enhancing your documentation with dynamic content and code integration.
 
-In XYD markdown files, you can use special functions to reference code, generate documentation, and reuse content. These functions help you create more maintainable and interactive documentation.
+In `xyd` markdown files, you can use special functions to reference code, generate documentation, and reuse content. These functions help you create more maintainable and interactive documentation.
 
 ## Features
 

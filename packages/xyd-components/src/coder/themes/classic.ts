@@ -174,7 +174,7 @@ export default {
                 "string.regexp keyword.other",
             ],
             settings: {
-                foreground: "var(--syntax25)",
+                foreground: "var(--syntax24)",
                 fontStyle: "bold",
             },
         },

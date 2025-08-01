@@ -128,4 +128,6 @@ export type PageMetaUniformDetails = {
 
 export type MetadataMap<P = void> = { [page: string]: Metadata<P> }
 
-export type PageLayout = "wide" | "page" | "center"
+// TODO: "custom" in the future?  
+
+export type PageLayout = "wide" | "page" | "reader" 

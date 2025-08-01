@@ -17,11 +17,11 @@
         --xyd-layout-width-large: 1100px;
 
         @media (min-width: 1024px) {
-            header[part="header"] {
+            &:not([data-layout="page"]) header[part="header"] {
                 display: none;
             }
 
-            &:not([data-layout="page"]) {
+            &:not([data-layout="page"]):not([data-layout="reader"]) {
                 [part="page"] {
                     left: var(--xyd-sidebar-width);
                     margin-right: var(--xyd-sidebar-width);
@@ -85,7 +85,7 @@
             /* component: SubNav */
             xyd-subnav {
                 position: relative;
-                left: calc(var(--xyd-sidebar-width) / 2);
+                left: calc(var(--xyd-sidebar-width) / 1);
                 width: calc(100% - var(--xyd-sidebar-width));
             }
         }
@@ -93,7 +93,7 @@
         xyd-sidebar-tabs-dropdown {
             [part="dropdown-trigger"] {
                 border-radius: var(--xyd-border-radius-medium);
-                padding: 8px 8px;
+                /* padding: 8px 8px; */
 
                 [part="dropdown-icon"] {
                     color: var(--color-primary);

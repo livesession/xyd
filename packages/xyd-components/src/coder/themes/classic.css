@@ -1,4 +1,7 @@
 :root {
+    --syntax-primary: #1971a8;
+    --syntax-secondary: #008c6a;
+
     --syntax1: #FFFFFF;
     --syntax2: #ffffff00;
     --syntax3: #D9D7D5;
@@ -21,17 +24,24 @@
     --syntax20: #AA0D91;
     --syntax21: #3F6E74;
     --syntax23: #536579;
-    --syntax25: #1971a8;
+    --syntax24: var(--syntax-primary);
     --syntax26: #816927;
-    --syntax27: #008c6a;
+    --syntax27: var(--syntax-secondary);
+}
+
+[data-color-scheme="dark"] {
+}
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+    }
 }
 
 [data-color-scheme="dark"] {
     --syntax1: #353740;
     --syntax2: #353740;
     --syntax15: #fff;
-    --syntax19: #2e95d3;
-    --syntax27: #008c6a;
+    --syntax19: var(--syntax-primary);
+    --syntax27: var(--syntax-secondary);
 }
 
 /* System Dark Mode Support */
@@ -40,8 +50,8 @@
         --syntax1: #353740;
         --syntax2: #353740;
         --syntax15: #fff;
-        --syntax19: #2e95d3;
-        --syntax27: #008c6a;
+        --syntax19: var(--syntax-primary);
+        --syntax27: var(--syntax-secondary);
     }
 }
 

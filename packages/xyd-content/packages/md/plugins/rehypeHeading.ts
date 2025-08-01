@@ -6,7 +6,7 @@ import { mdParameters } from './utils/mdParameters';
 
 export const rehypeHeading: Plugin<[], Root> = () => {
   return (tree) => {
-    visit(tree, 'element', (node) => {
+    visit(tree, 'element', (node, index, parent) => {
       if (!node.tagName?.match(/^h[1-6]$/)) {
         return;
       }
@@ -18,6 +18,14 @@ export const rehypeHeading: Plugin<[], Root> = () => {
 
       // Parse props using curly braces
       const { props } = mdParameters(text);
+
+      if (node.properties?.removeHeading) {
+        // Remove the node from the parent's children array
+        if (parent && typeof index === 'number') {
+          parent.children.splice(index, 1);
+        }
+        return;
+      }
 
       if (node.properties?.hideHeading) {
         const existingStyle = node.properties?.style || '';

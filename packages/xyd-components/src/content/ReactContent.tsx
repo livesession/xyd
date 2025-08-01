@@ -188,17 +188,17 @@ export function stdContent(
         blockquote: (props) => {
             return <Blockquote {...props} />
         },
-        hr: (props) => {
+        hr: ({ children, ...props }) => {
             return <Hr {...props} />
         },
         a: (props) => {
             return <$Link {...props} as={this?.options?.Link} />
         },
-        br: (props) => {
-            return <br />
+        br: ({ children, ...props }) => {
+            return <br {...props} />
         },
-        img: (props) => {
-            return <Image {...props} />
+        img: ({ children, src, alt, ...props }) => {
+            return <Image src={src} alt={alt} {...props} />
         },
         picture: (props) => {
             const { children, ...rest } = props
@@ -212,7 +212,12 @@ export function stdContent(
 
             return <source {...rest} />
         },
-
+        input: ({ children, ...props }) => {
+            return <input {...props} />
+        },
+        textarea: ({ children, ...props }) => {
+            return <textarea {...props} />
+        },
         React: NoopReactComponent,
     }
 }
@@ -505,6 +510,8 @@ function $Pre(
             descriptionContent = <Component components={this.components()} />
         }
     }
+
+    // console.log("props2", props)
 
     return <CodeSample
         theme={this.settings?.theme?.coder?.syntaxHighlight || undefined}

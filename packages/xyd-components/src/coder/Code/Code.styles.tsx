@@ -99,7 +99,7 @@ export const CodeHost = css`
         margin: 0;
         padding: 8px 16px;
 
-        border-top: 1px solid var(--xyd-coder-code-border-color);
+        border-top: 1px solid var(--user-coder-code-border-color, --xyd-coder-code-border-color);
         
         &:not(:has(+ [part="code-description"])) {
             border-bottom-left-radius: 10px;

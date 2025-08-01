@@ -26,7 +26,7 @@ export function SidebarTabsDropdown({ options, value }: SidebarTabsDropdownProps
     return <xyd-sidebar-tabs-dropdown className={cn.DropdownHost}>
         <Popover.Root open={open} onOpenChange={setOpen}>
             <Popover.Trigger asChild onClick={() => setOpen(true)}>
-                <button part="dropdown-trigger" type="button"  >
+                <button part="dropdown-trigger" type="button">
                     <IconWrapper icon={selected?.icon} />
 
                     <span part="dropdown-label-group">

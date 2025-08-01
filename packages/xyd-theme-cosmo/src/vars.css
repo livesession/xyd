@@ -10,9 +10,9 @@
 /* Nav + Subnav */
 :root {
     --xyd-nav-height: 44px;
-    --xyd-subnav-height: 50px;
+    --xyd-subnav-height: 44px;
 }
 
 :root {
-    --xyd-nav-height-space-user: 8px;
+    --theme-nav-height-space: 8px;
 }

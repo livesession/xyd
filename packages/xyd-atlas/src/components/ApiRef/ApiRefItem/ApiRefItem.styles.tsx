@@ -46,7 +46,8 @@ export const ApiRefItemHost = css`
             grid-template-columns: repeat(2, minmax(0, 1fr));
 
             @media (max-width: 768px) {
-                grid-template-columns: 1fr;
+                display: flex;
+                flex-direction: column;
                 gap: 16px;
             }
         }

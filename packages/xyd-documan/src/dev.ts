@@ -4,7 +4,7 @@ import fs from "node:fs";
 import { createServer, searchForWorkspaceRoot, ViteDevServer, Plugin as VitePlugin } from "vite";
 
 import { readSettings } from "@xyd-js/plugin-docs";
-import { API, APIFile, Navigation, SidebarNavigation, } from "@xyd-js/core";
+import { API, APIFile, Navigation, Settings, SidebarNavigation, } from "@xyd-js/core";
 
 import { appInit, calculateFolderChecksum, commonPostInstallVitePlugins, commonVitePlugins, getAppRoot, getDocsPluginBasePath, getHostPath, getPublicPath, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
 import { CACHE_FOLDER_PATH, SUPPORTED_SETTINGS_FILES, SUPPORTED_CONTENT_FILES } from "./const";
@@ -95,14 +95,23 @@ export async function dev(options?: DevOptions) {
 
     const skip = await preWorkspaceSetup()
 
-    const inited = await appInit()
+    let onUpdateCallback: (settings: Settings) => void = () => { }
+
+    const inited = await appInit({
+        onUpdate: (callback) => {
+            // Store the callback to be called later with settings
+            onUpdateCallback = callback
+        }
+    })
     if (!inited) {
         return
     }
     const { respPluginDocs, resolvedPlugins } = inited
 
-    // console.log(JSON.stringify(respPluginDocs.settings?.navigation?.sidebar, null, 2), "respPluginDocs.settings?.navigation?.sidebar")
+    // TODO: allow only for cwd + .xyd folder
     const allowCwd = searchForWorkspaceRoot(process.cwd())
+    const watchAllow = process.cwd()
+
     const appRoot = getAppRoot()
     const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)
     spinner.stopSpinner();
@@ -117,6 +126,7 @@ export async function dev(options?: DevOptions) {
 
     // ⚠️  
     spinner.log('✔ Local xyd instance is ready');
+    spinner.log('🔄 Starting server...');
 
     let server: ViteDevServer | null = null
 
@@ -203,7 +213,7 @@ export async function dev(options?: DevOptions) {
 
 
     // Set up manual file watcher for markdown files TODO: better way? + HMR only for specific components instead or reload a pag
-    const watcher = fs.watch(allowCwd, { recursive: true }, async (eventType, filename) => {
+    const watcher = fs.watch(watchAllow, { recursive: true }, async (eventType, filename) => {
         // console.log("WATCHER CHANGED", RELOADING)
         if (RELOADING) {
             return
@@ -219,21 +229,8 @@ export async function dev(options?: DevOptions) {
             return
         }
 
-        const filePath = path.join(allowCwd, filename);
+        const filePath = path.join(watchAllow, filename);
         if (filePath.includes(CACHE_FOLDER_PATH)) {
-            return
-        }
-
-        const publicPathReload = filePath.includes(getPublicPath())
-        if (publicPathReload) {
-            const relativePath = path.relative(allowCwd, filePath);
-            const urlPath = '/' + relativePath.replace(/\\/g, '/');
-
-            // TODO: touch layout + settings
-            preview.ws.send({
-                type: 'full-reload',
-                path: urlPath,
-            });
             return
         }
 
@@ -241,79 +238,159 @@ export async function dev(options?: DevOptions) {
         if (respPluginDocs?.settings?.api) {
             apiPaths = resolveApiFilePaths(process.cwd(), respPluginDocs.settings.api)
         }
+
+        let iconPaths: { [path: string]: boolean } = {}
+        if (respPluginDocs?.settings) {
+            iconPaths = resolveIconFilePaths(process.cwd(), respPluginDocs.settings)
+        }
+
+        let syntaxHighlightPaths: { [path: string]: boolean } = {}
+        if (respPluginDocs?.settings) {
+            syntaxHighlightPaths = resolveSyntaxHighlightFilePaths(process.cwd(), respPluginDocs.settings)
+        }
+
         const apiChanged = !!apiPaths[filePath]
+        const iconChanged = !!iconPaths[filePath]
+        const syntaxHighlightChanged = !!syntaxHighlightPaths[filePath]
+
         const isSettingsFile = SUPPORTED_SETTINGS_FILES.some(ext => filePath.endsWith(ext))
         const isContentFile = SUPPORTED_CONTENT_FILES.some(ext => filePath.endsWith(ext))
-        const isWatchFile = isSettingsFile || isContentFile || apiChanged
+        const isPublicPathReload = filePath.includes(getPublicPath())
+        const isWatchFile = isSettingsFile || isContentFile || apiChanged || iconChanged || syntaxHighlightChanged || isPublicPathReload
+
         if (!isWatchFile) {
             return
         }
 
         if (isContentFile && eventType !== 'rename') {
-            console.log('🔄 Content file changed, refresh...', eventType);
+            console.log('🔄 Content file changed, refresh...');
+
+            // invalidateSettingsOnly(server) // if invalidate settings will be needed then + with composer? cuz issues with this
 
             invalidateSettings(server)
             await touchLayoutPage()
-            // console.log('✔ xyd instance reloaded\n');
+            // await touchRootPage()
+
+            // server.ws.send({ type: 'full-reload' });
+            // invalidateSettings(server)  // TODO: check if needed but some issues with this
+
+            // setTimeout(() => {
+            //     server && invalidateSettings(server)
+            // }, 1000)
+            // await touchPage()
+
+            console.log('✔ xyd content file changed\n');
 
             return
         }
 
         const renameContentFile = isContentFile && eventType === 'rename'
 
-        console.log(11111)
-        if (isSettingsFile || renameContentFile) {
-            console.log(2222)
+        if (isSettingsFile || renameContentFile || isPublicPathReload || iconChanged || apiChanged || syntaxHighlightChanged) {
             if (renameContentFile) {
                 console.log('🔄 Content file renamed, refresh...');
+            } else if (isPublicPathReload) {
+                console.log('🔄 Public path changed, refresh...');
+            } else if (iconChanged) {
+                console.log('🔄 Icon file changed, refresh...');
+                invalidateIconSet(server)
+            } else if (syntaxHighlightChanged) {
+                console.log('🔄 Syntax highlight theme file changed, refresh...');
+            } else if (apiChanged) {
+                console.log('🔄 API file changed, refresh...');
+            } else if (syntaxHighlightChanged) {
+                console.log('🔄 Syntax highlight theme file changed, refresh...');
             } else {
                 console.log('🔄 Settings file changed, refresh...');
             }
 
+            let newSettings: Settings | null = null
             // TODO: better way to handle that - we need this cuz otherwise its inifiite reloads
             if (respPluginDocs?.settings.engine?.uniform?.store) {
-                await appInit({
+                const resp = await appInit({
                     disableFSWrite: true,
                 })
-            } else {
-                await appInit() // TODO: !!! IN THE FUTURE MORE EFFICIENT WAY !!!
-            }
 
-            // Re-read settings to get the updated values
-            const newSettings = await readSettings();
-            if (typeof newSettings !== 'object' || newSettings === null) {
+                const respSettings = resp?.respPluginDocs?.settings
+                if (respSettings) {
+                    newSettings = respSettings
+                }
+            } else {
+                const resp = await appInit() // TODO: !!! IN THE FUTURE MORE EFFICIENT WAY !!!
+
+                const respSettings = resp?.respPluginDocs?.settings
+                if (respSettings) {
+                    newSettings = respSettings
+                }
+            }
+            if (!newSettings) {
                 console.log("[xyd:dev-watcher] Settings is not an object or is null");
                 return
             }
 
-            // Check if any full reload properties have changed
-            const needsFullReload = hasFullReloadPropertiesChanged(initialSettings, newSettings);
+            {
+                const needsFullReload = hasFullReloadPropertiesChanged(initialSettings, newSettings);
 
-            console.log(3333, needsFullReload)
-            if (needsFullReload) {
-                console.log(4444)
-                console.log('🔄 Full reload properties changed, restarting server...');
-                RELOADING = true;
+                if (needsFullReload) {
+                    console.log('🔄 Full reload properties changed, restarting server...');
+                    RELOADING = true;
 
-                // Close the current server
-                watcher.close();
-                await preview.close();
-                RELOADING = false;
+                    // Close the current server
+                    watcher.close();
+                    await preview.close();
+                    RELOADING = false;
 
-                // Restart the dev server
-                await dev(options);
-                return;
+                    // Restart the dev server
+                    await dev(options);
+                    return;
+                }
             }
 
+            {
+                invalidateSettings(server)
+                onUpdateCallback(newSettings)
+                await touchReactRouterConfig()
+                await touchRootPage()
+                await touchLayoutPage()
+                // await touchPage()
+                server.ws.send({ type: 'full-reload' });
+                // TODO: in the future better solution
+            }
+
+            // Re-read settings to get the updated values
+            // const newSettings = await readSettings();
+            // if (typeof newSettings !== 'object' || newSettings === null) {
+            //     console.log("[xyd:dev-watcher] Settings is not an object or is null");
+            //     return
+            // }
+
+            // Check if any full reload properties have changed
+            // const needsFullReload = hasFullReloadPropertiesChanged(initialSettings, newSettings);
+
+            // if (needsFullReload) {
+            //     console.log('🔄 Full reload properties changed, restarting server...');
+            //     RELOADING = true;
+
+            //     // Close the current server
+            //     watcher.close();
+            //     await preview.close();
+            //     RELOADING = false;
+
+            //     // Restart the dev server
+            //     await dev(options);
+            //     return;
+            // }
+
             // Update the initial settings for next comparison
-            initialSettings = newSettings;
+            // initialSettings = newSettings;
 
-            invalidateSettings(server)
-            await touchReactRouterConfig()
-            await touchLayoutPage()
+            // invalidateSettings(server)
+            // await touchReactRouterConfig()
+            // await touchLayoutPage()
+            // await touchRootPage()
 
-            // Send full reload to ensure all components update
-            server.ws.send({ type: 'full-reload' });
+            // // Send full reload to ensure all components update
+            // server.ws.send({ type: 'full-reload' });
         }
     });
 
@@ -355,6 +432,124 @@ export function resolveApiFilePaths(
             result[apiAbsPath] = true
         })
     })
+
+    return result
+}
+
+/**
+ * @todo: !!! in the future it should be created at different level !!!
+ * 
+ * Walks theme.icons.library, 
+ * resolves all referenced local files under `basePath`,
+ * and returns a set of absolute paths.
+ */
+export function resolveIconFilePaths(
+    basePath: string,
+    settings: any
+): Record<string, true> {
+    const result: Record<string, true> = {}
+
+    const icons = settings?.theme?.icons?.library
+    if (!icons) {
+        return result
+    }
+
+    // Helper function to check if a path is a local file path
+    const isLocalPath = (path: string): boolean => {
+        // Must start with ./ or / to be a local file path
+        return path.startsWith('./') || path.startsWith('/')
+    }
+
+    // Handle single icon library
+    if (typeof icons === 'string') {
+        if (isLocalPath(icons)) {
+            const iconAbsPath = path.resolve(basePath, icons)
+            result[iconAbsPath] = true
+        }
+        return result
+    }
+
+    // Handle array of icon libraries
+    if (Array.isArray(icons)) {
+        icons.forEach(library => {
+            if (typeof library === 'string') {
+                if (isLocalPath(library)) {
+                    const iconAbsPath = path.resolve(basePath, library)
+                    result[iconAbsPath] = true
+                }
+            } else if (typeof library === 'object' && library.name) {
+                if (isLocalPath(library.name)) {
+                    const iconAbsPath = path.resolve(basePath, library.name)
+                    result[iconAbsPath] = true
+                }
+            }
+        })
+    } else if (typeof icons === 'object' && icons.name) {
+        // Handle single icon library object
+        if (isLocalPath(icons.name)) {
+            const iconAbsPath = path.resolve(basePath, icons.name)
+            result[iconAbsPath] = true
+        }
+    }
+
+    return result
+}
+
+/**
+ * @todo: !!! in the future it should be created at different level !!!
+ * 
+ * Walks theme.coder.syntaxHighlight, 
+ * resolves all referenced local files under `basePath`,
+ * and returns a set of absolute paths.
+ */
+export function resolveSyntaxHighlightFilePaths(
+    basePath: string,
+    settings: any
+): Record<string, true> {
+    const result: Record<string, true> = {}
+
+    const syntaxHighlight = settings?.theme?.coder?.syntaxHighlight
+    if (!syntaxHighlight) {
+        return result
+    }
+
+    // Helper function to check if a path is a local file path
+    const isLocalPath = (path: string): boolean => {
+        // Must start with ./ or / to be a local file path
+        return path.startsWith('./') || path.startsWith('/')
+    }
+
+    // Handle single syntax highlight theme
+    if (typeof syntaxHighlight === 'string') {
+        if (isLocalPath(syntaxHighlight)) {
+            const syntaxHighlightAbsPath = path.resolve(basePath, syntaxHighlight)
+            result[syntaxHighlightAbsPath] = true
+        }
+        return result
+    }
+
+    // Handle array of syntax highlight themes
+    if (Array.isArray(syntaxHighlight)) {
+        syntaxHighlight.forEach(theme => {
+            if (typeof theme === 'string') {
+                if (isLocalPath(theme)) {
+                    const syntaxHighlightAbsPath = path.resolve(basePath, theme)
+                    result[syntaxHighlightAbsPath] = true
+                }
+            } else if (typeof theme === 'object' && theme.name) {
+                if (isLocalPath(theme.name)) {
+                    const syntaxHighlightAbsPath = path.resolve(basePath, theme.name)
+                    result[syntaxHighlightAbsPath] = true
+                }
+            }
+        })
+    } else if (typeof syntaxHighlight === 'object' && syntaxHighlight.name) {
+        // Handle single syntax highlight theme object
+        if (isLocalPath(syntaxHighlight.name)) {
+            const syntaxHighlightAbsPath = path.resolve(basePath, syntaxHighlight.name)
+            result[syntaxHighlightAbsPath] = true
+        }
+    }
 
     return result
 }
@@ -477,16 +672,8 @@ async function fetchFirstPage(firstPage: string, port: number) {
 }
 
 function invalidateSettings(server: ViteDevServer) {
-    const virtualId = 'virtual:xyd-settings';
-    const resolvedId = virtualId + '.jsx';
-    const mod = server.moduleGraph.getModuleById(resolvedId);
-    if (!mod) {
-        console.log("[xyd:dev-watcher] Settings module not found");
-        return
-    }
+    const resolvedId = invalidateSettingsOnly(server)
 
-    console.log('🔄 [xyd:dev-watcher] Invalidating settings module...');
-    server.moduleGraph.invalidateModule(mod);
     server.ws.send({
         type: 'update',
         updates: [
@@ -498,7 +685,50 @@ function invalidateSettings(server: ViteDevServer) {
             },
         ],
     });
-    console.log('✅ [xyd:dev-watcher] Settings module invalidated and HMR update sent');
+    console.debug('✅ [xyd:dev-watcher] Settings module invalidated and HMR update sent');
+}
+
+function invalidateSettingsOnly(server: ViteDevServer) {
+    const virtualId = 'virtual:xyd-settings';
+    const resolvedId = virtualId + '.jsx';
+    const mod = server.moduleGraph.getModuleById(resolvedId);
+    if (!mod) {
+        console.log("[xyd:dev-watcher] Settings module not found");
+        return
+    }
+
+    // console.debug('🔄 [xyd:dev-watcher] Invalidating settings module...');
+    server.moduleGraph.invalidateModule(mod);
+
+    return resolvedId
+}
+
+function invalidateIconSet(server: ViteDevServer) {
+    const virtualId = 'virtual:xyd-icon-set';
+    const mod = server.moduleGraph.getModuleById(virtualId);
+
+    // console.log("[xyd:dev-watcher] Looking for icon set module:", virtualId);
+    // console.log("[xyd:dev-watcher] Module found:", !!mod);
+
+    if (!mod) {
+        console.log("[xyd:dev-watcher] Icon set module not found");
+        return
+    }
+
+    console.log('🔄 [xyd:dev-watcher] Invalidating icon set module...');
+    server.moduleGraph.invalidateModule(mod);
+    server.ws.send({
+        type: 'update',
+        updates: [
+            {
+                type: 'js-update',
+                path: `/@id/${virtualId}`,
+                acceptedPath: `/@id/${virtualId}`,
+                timestamp: Date.now(),
+            },
+        ],
+    });
+    console.log('✅ [xyd:dev-watcher] Icon set module invalidated and HMR update sent');
 }
 
 async function touchReactRouterConfig() {
@@ -511,6 +741,18 @@ async function touchLayoutPage() {
     const docsPluginBasePath = getDocsPluginBasePath()
     const layoutPath = path.join(docsPluginBasePath, "./src/pages/layout.tsx")
     await fs.promises.utimes(layoutPath, new Date(), new Date());
+}
+
+async function touchPage() {
+    const docsPluginBasePath = getDocsPluginBasePath()
+    const pagePath = path.join(docsPluginBasePath, "./src/pages/page.tsx")
+    await fs.promises.utimes(pagePath, new Date(), new Date());
+}
+
+async function touchRootPage() {
+    const hostPath = getHostPath()
+    const hostReactRouterConfig = path.join(hostPath, "./app/root.tsx")
+    await fs.promises.utimes(hostReactRouterConfig, new Date(), new Date());
 }
 
 async function experimentalInvalidateAndTouchPages(server: ViteDevServer) {
@@ -534,7 +776,6 @@ async function experimentalInvalidateAndTouchPages(server: ViteDevServer) {
     await fs.promises.utimes(layoutPath, new Date(), new Date());
     await fs.promises.utimes(pagePath, new Date(), new Date());
 }
-
 
 // TODO: finish
 async function experimentalInvalidateVite(server: ViteDevServer) {
@@ -571,6 +812,5 @@ async function optimizeDepsFix(port: number, navigation?: Navigation) {
     if (navigation) {
         firstPage = getFirstPageFromNavigation(navigation);
     }
-    console.log("firstPage2", firstPage)
     await fetchFirstPage(firstPage || "", port);
 }

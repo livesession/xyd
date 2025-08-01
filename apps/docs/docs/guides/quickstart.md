@@ -60,6 +60,13 @@ npm i -g xyd-js
 ```
 :::
 
+## Troubleshooting
+If you have troubles with CLI the common task is deleting `xyd` cache:
+```bash
+rm -rf .xyd
+```
+
+
 ## Publishing
 Publishing changes depends on your preferences, the simplest way is to
 use the one of infrastructure providers like Netlify or Vercel.

@@ -26,7 +26,7 @@ import { iconSet } from 'virtual:xyd-icon-set';
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
 // @ts-ignore
-const { settings: getSettings, settingsClone } = virtualSettings
+const { settings: getSettings, settingsClone, userPreferences } = virtualSettings
 
 // const settings = globalThis.__xydSettings
 import Theme from "virtual:xyd-theme";
@@ -52,6 +52,7 @@ import { SearchButton } from "@xyd-js/components/system"
 globalThis.__xydSettings = getSettings
 globalThis.__xydSettingsClone = settingsClone
 globalThis.__xydUserComponents = userComponents // Add user components to global scope TODO: problematic
+globalThis.__xydUserPreferences = userPreferences
 
 const settings = globalThis.__xydSettings as Settings
 
@@ -112,6 +113,8 @@ interface LoaderData {
 }
 
 export async function loader({ request }: { request: any }) {
+    globalThis.__xydFrontmatterNotExists = {}
+
     new Composer() // TODO: better API
 
     const slug = getPathname(request.url || "index") || "index"
@@ -211,6 +214,7 @@ export default function Layout() {
                 >
                     <AtlasContext
                         value={{
+                            Link: FwLink,
                             syntaxHighlight: settings?.theme?.coder?.syntaxHighlight || null,
                             baseMatch: lastMatchId || "",
                             variantToggles: atlasVariantToggles

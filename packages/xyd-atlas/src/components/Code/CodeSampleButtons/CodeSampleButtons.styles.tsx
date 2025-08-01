@@ -15,7 +15,7 @@ export const CodeSampleButtonsContainer = css`
 
 export const CodeSampleButtonsArrowHost = css`
     padding: 8px;
-    background-color: #ffffff;
+    background-color: var(--white, #ffffff);
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 `;
 

@@ -55,6 +55,7 @@ export const DropdownHost = css`
             cursor: pointer;
             transition: border-color 0.2s, box-shadow 0.2s;
             font: inherit;
+            min-height: 52px;
         }
         button[part="dropdown-trigger"]:hover,
         button[part="dropdown-trigger"][data-state="open"] {

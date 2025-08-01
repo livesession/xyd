@@ -1,6 +1,7 @@
 import path from "node:path";
 
 import * as React from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
 import { useMemo, useContext, ReactElement, SVGProps } from "react";
 import { redirect, ScrollRestoration, useLocation } from "react-router";
 
@@ -106,14 +107,9 @@ export async function loader({ request }: { request: any }) {
     timedebug.mapSettingsToPropsEnd
 
     function redirectFallback() {
-        if (!sidebarGroups) {
-            return
-        }
-        const firstItem = findFirstUrl(sidebarGroups?.[0]?.items);
+        const fallbackUrl = findFallbackUrl(sidebarGroups, slug)
 
-        if (firstItem) {
-            return redirect(firstItem)
-        }
+        return redirect(fallbackUrl)
     }
 
     if (hiddenPages?.[slug]) {
@@ -259,6 +255,36 @@ function findFirstUrl(items: any = []): string {
     return "";
 }
 
+function findFallbackUrl(sidebarGroups: FwSidebarItemProps[], currentSlug: string): string {
+    if (!sidebarGroups || sidebarGroups.length === 0) {
+        throw new Error("No sidebar groups available for fallback redirect")
+    }
+
+    // Iterate through all sidebar groups to find the first valid URL
+    for (const group of sidebarGroups) {
+        if (!group.items || group.items.length === 0) {
+            continue
+        }
+
+        const firstItem = findFirstUrl(group.items)
+        
+        if (!firstItem) {
+            continue
+        }
+
+        // Avoid infinite redirects by checking if the found URL is the same as current slug
+        if (sanitizeUrl(firstItem) === sanitizeUrl(currentSlug)) {
+            console.log("Avoiding infinite redirect: found URL matches current slug", firstItem, currentSlug)
+            continue
+        }
+
+        return firstItem
+    }
+
+    // If we get here, no valid URL was found in any sidebar group
+    throw new Error(`No valid fallback URL found for slug: ${currentSlug}.`)
+}
+
 const createElementWithKeys = (type: any, props: any) => {
     // Process children to add keys to all elements
     const processChildren = (childrenArray: any[]): any[] => {
@@ -300,7 +326,7 @@ const createElementWithKeys = (type: any, props: any) => {
 };
 
 // TODO: move to content?
-function mdxExport(code: string) {
+function mdxExport(code: string, themeContentComponents: any) {
     // Create a wrapper around React.createElement that adds keys to elements in lists
     const scope = {
         Fragment: React.Fragment,
@@ -308,14 +334,20 @@ function mdxExport(code: string) {
         jsx: createElementWithKeys,
         jsxDEV: createElementWithKeys,
     }
-    const fn = new Function(...Object.keys(scope), code)
 
-    return fn(scope)
+    const global = {
+        ...themeContentComponents,
+        React
+    }
+
+    const fn = new Function("_$scope", ...Object.keys(global), code);
+
+    return fn(scope, ...Object.values(global)); 
 }
 
 // // TODO: move to content?
-function mdxContent(code: string) {
-    const content = mdxExport(code) // TODO: fix any
+function mdxContent(code: string, themeContentComponents: any) {
+    const content = mdxExport(code, themeContentComponents) // TODO: fix any
     if (!mdxExport) {
         return {}
     }
@@ -350,10 +382,11 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
         throw new Error("BaseTheme not found")
     }
 
-    const content = mdxContent(loaderData.code)
+    const themeContentComponents = theme.reactContentComponents()
+
+    const content = mdxContent(loaderData.code, themeContentComponents)
     const Content = MemoMDXComponent(content.component)
 
-    const themeContentComponents = theme.reactContentComponents()
     const { Page } = theme
 
     return <FrameworkPage
@@ -372,3 +405,11 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     </FrameworkPage>
 }
 
+
+function sanitizeUrl(url: string) {
+    if (url.startsWith("/")) {
+        return url
+    }
+
+    return `/${url}`
+}

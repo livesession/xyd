@@ -32,8 +32,13 @@ export async function processUniformFunctionCall(
     const { filePath, regions, lineRanges } = parseImportPath(value);
 
     // Resolve path aliases and get the base directory
-    let resolvedFilePath = resolvePathAlias(filePath, settings, process.cwd());
+    // let fullDirPath1 = path.join(process.cwd(), file.dirname || "")
+    // let fullDirPath = fullDirPath1
+    // fullDirPath = process.cwd()
+    let resolvedFilePath = resolvePathAlias(filePath, settings, file);
+    // let resolvedFilePath2 = resolvePathAlias(filePath, settings, process.cwd());
 
+    // console.log(["resolvedFilePath", resolvedFilePath, fullDirPath1, process.cwd(), file.dirname, resolvedFilePath2])
     if (resolvedFilePath.startsWith("~/")) {
         resolvedFilePath = path.join(process.cwd(), resolvedFilePath.slice(2));
     }

@@ -13,6 +13,7 @@ import { FwSidebarTopAnchors } from "./FwSidebarTopAnchors";
 import { FwWebEditorSidebarTop } from "./FwWebEditorSidebarTop";
 import { FwSidebarMobileHeaderItems } from "./FwSidebarMobileHeaderItems";
 import { useSidebarTree } from "./FwSidebarTree";
+import { FwLogo } from "./FwLogo";
 
 const Sidebar = withSidebar(UISidebar)
 

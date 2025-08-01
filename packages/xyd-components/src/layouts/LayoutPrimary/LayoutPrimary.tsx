@@ -12,6 +12,7 @@ export interface LayoutPrimaryProps {
     className?: string;
     layout?: PageLayout
     scrollKey?: string
+    id?: string
 }
 
 const LayoutPrimaryContext = React.createContext<{
@@ -45,6 +46,7 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
             data-subheader={String(!!props.subheader)}
             data-hide-subheader={String(hideMainHeader)}
             data-layout={props.layout}
+            id={props.id}
         >
             {props.children}
         </xyd-layout-primary>
@@ -63,12 +65,14 @@ LayoutPrimary.Header = function LayoutPrimaryHeader(props: LayoutPrimaryHeaderPr
     return <>
         <header part="header">
             {props.banner}
-            
+
             <div part="header-content">
                 {props.header}
             </div>
 
-            {props.subheader}
+            {props.subheader && <div part="header-subheader">
+                {props.subheader}
+            </div>}
         </header>
     </>
 }
@@ -107,13 +111,13 @@ LayoutPrimary.MobileAside = function LayoutPrimaryAside(props: LayoutPrimaryMobi
                 {props.aside}
             </div>
             <div>
-            <button
-                part="mobile-sidebar-close-button"
-                aria-label="Close navigation menu"
-                onClick={() => setIsMobileNavOpen(false)}
-            >
-                <div part="mobile-sidebar-close-icon" />
-            </button>
+                <button
+                    part="mobile-sidebar-close-button"
+                    aria-label="Close navigation menu"
+                    onClick={() => setIsMobileNavOpen(false)}
+                >
+                    <div part="mobile-sidebar-close-icon" />
+                </button>
             </div>
         </aside>
     </>

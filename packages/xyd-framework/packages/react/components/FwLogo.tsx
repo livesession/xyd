@@ -10,32 +10,34 @@ import { useLogoLink } from "../hooks";
 
 export function FwLogo() {
     const settings = useSettings()
-    const [colorScheme] = useColorScheme()
-    const logoLink = useLogoLink()
+    const [clientColorScheme] = useColorScheme()
+    
+    const colorScheme = clientColorScheme || settings?.theme?.appearance?.colorScheme || "light"
+    const logo = settings?.theme?.logo
 
-    if (typeof settings?.theme?.logo === "string") {
-        return <span part="logo">
-            <Link to={logoLink}>
-                <img src={settings?.theme?.logo} />
-            </Link>
-        </span>
+    if (typeof logo === "string") {
+        return <$Logo src={logo} />
     }
 
-    if (isValidElement(settings?.theme?.logo)) {
-        return <span part="logo">
-            <Link to={logoLink}>
-                {settings?.theme?.logo}
-            </Link>
-        </span>
+    if (isValidElement(logo)) {
+        return <$Logo>
+            {logo}
+        </$Logo>
     }
 
-    if (typeof settings?.theme?.logo === "object" && colorScheme) {
-        return <span part="logo">
-            <Link to={logoLink}>
-                <img src={settings?.theme?.logo[colorScheme as "light" | "dark"]} />
-            </Link>
-        </span>
+    if (typeof logo === "object") {
+        return <$Logo src={logo[colorScheme]} />
     }
 
     return null
+}
+
+function $Logo({ src, children }: { src?: string, children?: React.ReactNode }) {
+    const logoLink = useLogoLink()
+
+    return <span part="logo">
+        <Link to={logoLink}>
+            { src ? <img src={src} /> : children }
+        </Link>
+    </span>
 }

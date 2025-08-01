@@ -14,6 +14,7 @@ import { getDocsPluginBasePath, getHostPath } from "../../utils";
 
 interface docsPluginOptions {
     urlPrefix?: string
+    onUpdate?: (callback: (settings: Settings) => void) => void
     appInit: any
 }
 
@@ -75,13 +76,25 @@ function vitePluginSettings(options: docsPluginOptions) {
             const resolvedId = virtualId + '.jsx';
 
             let currentSettings = globalThis.__xydSettings
-            console.log(currentSettings, "currentSettings 1111111111")
-            console.log(preinstall?.settings?.navigation?.sidebar, "preinstall?.settings 2222222222")
+            let settingsClone = {}
             if (!currentSettings && preinstall?.settings) {
                 currentSettings = typeof preinstall?.settings === "string" ? preinstall?.settings : JSON.stringify(preinstall?.settings || {})
             }
 
+            let currentUserPreferences = globalThis.__xydUserPreferences
+            if (!currentUserPreferences) {
+                currentUserPreferences = {}
+            }
+
             let firstInit = false
+
+            if (options.onUpdate) {
+                options.onUpdate((settings: Settings) => {
+                    currentSettings = settings
+                    settingsClone = JSON.parse(JSON.stringify(currentSettings))
+                    currentUserPreferences = globalThis.__xydUserPreferences
+                })
+            }
 
             return {
                 name: 'xyd:virtual-settings',
@@ -93,11 +106,14 @@ function vitePluginSettings(options: docsPluginOptions) {
                     return null;
                 },
 
-
                 async load(id) {
                     if (id === 'virtual:xyd-settings.jsx') {
+                        // console.log("load xyd-settings.jsx")
+
                         if (!firstInit && globalThis.__xydSettings) {
                             currentSettings = globalThis.__xydSettings
+                            settingsClone = JSON.parse(JSON.stringify(currentSettings))
+                            currentUserPreferences = globalThis.__xydUserPreferences
                         }
                         firstInit = true
 
@@ -106,13 +122,20 @@ function vitePluginSettings(options: docsPluginOptions) {
                         const getCurrentSettings = () => {
                             return globalThis.__xydSettings || ${typeof currentSettings === "string" ? currentSettings : JSON.stringify(currentSettings)}
                         };
+
+                        const getCurrentUserPreferences = () => {
+                            return globalThis.__xydUserPreferences || ${typeof currentUserPreferences === "string" ? currentUserPreferences : JSON.stringify(currentUserPreferences)}
+                        }
                         
                         export default {
                             get settings() {
                                 return getCurrentSettings();
                             },
                             get settingsClone() {
-                                return ${typeof currentSettings === "string" ? currentSettings : JSON.stringify(currentSettings)}
+                                return ${typeof settingsClone === "string" ? settingsClone : JSON.stringify(settingsClone)}
+                            },
+                            get userPreferences() {
+                                return getCurrentUserPreferences()
                             }
                         }
                         `
@@ -120,34 +143,38 @@ function vitePluginSettings(options: docsPluginOptions) {
                     return null;
                 },
 
-                async hotUpdate(ctx) {
-                    const isConfigfileUpdated = ctx.file.includes('react-router.config.ts')
-                    if (isConfigfileUpdated) {
-                        return
-                    }
+                // async hotUpdate(ctx) {
+                //     console.log("hot update")
+                    
+                //     const isConfigfileUpdated = ctx.file.includes('react-router.config.ts')
+                //     if (isConfigfileUpdated) {
+                //         return
+                //     }
 
-                    const newSettings = await readSettings();
-                    if (!newSettings) {
-                        console.log('⚠️ Failed to read new settings');
-                        return
-                    }
+                //     const newSettings = await readSettings();
+                //     if (!newSettings) {
+                //         console.log('⚠️ Failed to read new settings');
+                //         return
+                //     }
 
-                    if (options.appInit) {
-                        // TODO: better way to handle that - we need this cuz otherwise its inifiite reloads
-                        if (newSettings.engine?.uniform?.store) {
-                            await options.appInit({
-                                disableFSWrite: true,
-                            })
-                        } else {
-                            await options.appInit() // TODO: !!! IN THE FUTURE MORE EFFICIENT WAY !!!
-                        }
-                    }
+                //     if (options.appInit) {
+                //         // TODO: better way to handle that - we need this cuz otherwise its inifiite reloads
+                //         if (newSettings.engine?.uniform?.store) {
+                //             await options.appInit({
+                //                 disableFSWrite: true,
+                //             })
+                //         } else {
+                //             await options.appInit() // TODO: !!! IN THE FUTURE MORE EFFICIENT WAY !!!
+                //         }
+                //     }
 
-                    currentSettings = globalThis.__xydSettings
-                    // globalThis.__xydSettingsClone = JSON.parse(JSON.stringify(globalThis.__xydSettings))
+                //     currentSettings = globalThis.__xydSettings
+                //     settingsClone = JSON.parse(JSON.stringify(currentSettings))
+                //     currentUserPreferences = globalThis.__xydUserPreferences
+                //     // globalThis.__xydSettingsClone = JSON.parse(JSON.stringify(globalThis.__xydSettings))
 
-                    return
-                },
+                //     return
+                // },
             };
         }
     }

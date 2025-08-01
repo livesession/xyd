@@ -7,21 +7,46 @@
 
     xyd-layout-primary {
         [part="sidebar"] {
-            height: calc(var(--sidebar-height) - var(--xyd-nav-height-space-user, 8px));
+            height: calc(var(--sidebar-height) - var(--theme-nav-height-space, 8px));
+        }
+
+        &[data-subheader="true"] {
+            [part="sidebar"] {
+                height: calc(var(--sidebar-subheader-height) - var(--theme-nav-height-space, 8px));
+            }
         }
 
         xyd-nav {
             padding: 0 var(--xyd-page-gutter, 8px);
+
+            nav[part="nav"] {
+                background: var(--dark8);
+                border-radius: var(--xyd-border-radius-small);
+                padding: 0;
+
+                @media (min-width: 1024px) {
+                    padding: 0 calc(var(--xyd-sidebar-item-padding-total) - var(--xyd-page-gutter));
+                }
+            }
         }
 
-        nav[part="nav"] {
-            background: var(--dark8);
-            border-radius: var(--xyd-border-radius-small);
+        [part="header-subheader"] {
+            padding: 0 var(--xyd-page-gutter, 8px);
+        }
+
+        header[part="header"]:has(xyd-subnav) {
+            nav[part="nav"] {
+                background: unset;
+            }
+        }
+
+        xyd-subnav {
+            padding: 0;
         }
 
         xyd-sidebar {
             [part="item-header"] {
-                position: sticky;
+                /* position: sticky; TODO: in the future */
                 top: calc(var(--xyd-sidebar-padding) * -1);
                 background: var(--xyd-sidebar-bgcolor);
                 z-index: 1;

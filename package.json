@@ -10,7 +10,7 @@
     "dev:styles": "pnpm --filter \"@xyd-js/components\" --filter \"@xyd-js/ui\" --parallel dev",
     "build": "./build.sh",
     "build:apidocs-demo": "pnpm --filter \"./packages/**/*\" --filter \"@xyd-js/apidocs-demo\" build",
-    "schema:docs.json": "npx ts-json-schema-generator --path ./packages/xyd-core/src/types/settings.ts --type 'Settings' --no-top-ref --out ./apps/docs/public/docs.json",
+    "schema:docs.json": "cd ./packages/xyd-core && npx ts-json-schema-generator --path ./src/types/settings.ts --type 'Settings' --no-top-ref --out ../../apps/docs/public/docs.json",
     "clean": "./clear.sh",
     "prepare": "husky",
     "test:unit": "vitest run",

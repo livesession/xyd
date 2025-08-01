@@ -47,7 +47,7 @@ Default syntax highlighting depends on used theme but you can override it via [`
 ```
 
 :::callout
-You can use the [Theme Editor](https://themes.vscode.one/) to customize any of the built-in themes or any theme from the [VS Code marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=Themes).
+You can use the [Theme Editor](https://themes.codehike.org/editor) to customize any of the built-in themes or any theme from the [VS Code marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=Themes).
 :::
 
 &nbsp;
@@ -244,7 +244,6 @@ npm i -g xyd-js
 npm i -g xyd-js
 ```
 
-&nbsp;
 ## Import Code
 
 You can import code from a file using the [`@importCode`](/docs/reference/functions/importCode) function:
@@ -252,10 +251,35 @@ You can import code from a file using the [`@importCode`](/docs/reference/functi
 @importCode "./relative-to-current-file.tsx"
 ```
 
-&nbsp;
+## Include
+
+You can use [@include](/docs/reference/functions/include) function to include another content files in current content:
+```md [descHead="Tip" desc="You can include <code>.mdx</code> files too, check out [React Components](/docs/guides/react-components) guide."]
+@include "./relative-to-current-file.md"
+```
+
 ## Changelog
 
 You can also render changelog page using the [`@changelog`](/docs/reference/functions/changelog) function:
 ```md
 @changelog "~/CHANGELOG.md"
+```
+
+currently supported changelog format:
+```md [descHead="Tip" desc="Check out more advanced [example](https://github.com/xyd-js/examples/tree/master/graphql/docs/api/todos-api/changelog/.data/CHANGELOG.md)."]
+## [VERSION] - <LABEL>
+### <HEADING>
+<CONTENT>
+
+### <HEADING>
+<CONTENT>
+
+---
+
+## [VERSION] - <LABEL>
+### <HEADING>
+<CONTENT>
+
+### <HEADING>
+<CONTENT>
 ```

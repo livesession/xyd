@@ -36,7 +36,7 @@ export default class MyTheme extends BaseTheme {
 for example:
 ```ts
 this.theme.Update({
-    markdow: {
+    markdown: {
         syntaxHighlight: "github-dark"
     }
 })
@@ -81,7 +81,7 @@ You can add as many style file as you want. Also names of your imported styles a
 
     export default class MyTheme extends BaseTheme {
         constructor() {
-            super());
+            super();
             
             // register custom components
             this.components({
@@ -122,7 +122,7 @@ Here's an example of how to add a custom component to your theme:
 
     export default class MyTheme extends BaseTheme {
         constructor() {
-            super());
+            super();
             
             // register custom component
             this.customComponents({ 

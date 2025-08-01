@@ -11,32 +11,32 @@ uniform: "@components/writer/Callout/Callout.tsx"
 -   
     - 
         :::callout
-        Note that you must have an Admin or Owner role to manage webhook settings.
+        You must have an Admin or Owner role to manage webhook settings.
         :::
 
     - 
         :::callout{kind="warning"}
-        Note that you must have an Admin or Owner role to manage webhook settings.
+        Warning: you must have an Admin or Owner role to manage webhook settings.
         :::
 
     - 
         :::callout{kind="note"}
-        Note that you must have an Admin or Owner role to manage webhook settings.
+        Note: you must have an Admin or Owner role to manage webhook settings.
         :::
 
     - 
         :::callout{kind="tip"}
-        Note that you must have an Admin or Owner role to manage webhook settings.
+        Tip: you must have an Admin or Owner role to manage webhook settings.
         :::
 
     - 
         :::callout{kind="check"}
-        Note that you must have an Admin or Owner role to manage webhook settings.
+        Check: you must have an Admin or Owner role to manage webhook settings.
         :::
         
     - 
         :::callout{kind="danger"}
-        Note that you must have an Admin or Owner role to manage webhook settings.
+        Danger: you must have an Admin or Owner role to manage webhook settings.
         :::
 :::
 

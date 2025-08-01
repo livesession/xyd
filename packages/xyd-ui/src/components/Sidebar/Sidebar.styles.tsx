@@ -15,6 +15,10 @@ export const SidebarHost = css`
             & > * {
                 padding-bottom: 4px;
             }
+            
+            & + [part="item"] {
+                margin-top: 24px;
+            }
         }
         [part="scroll-shadow"]::before {
             background: var(--shadow);
@@ -168,9 +172,16 @@ export const ItemHost = css`
                 }
             }
 
-            &:has(+ [part="subtree"] xyd-collapse[data-open="true"]) {
-                font-weight: bold;
+            /* &:has(+ [part="subtree"] xyd-collapse[data-open="true"]) {
                 
+                &::after {
+                    transform: rotate(0deg);
+                }
+            } */
+
+            &:has(+ [part="subtree"] > xyd-collapse[data-open="true"]) {
+                font-weight: bold;
+
                 &::after {
                     transform: rotate(0deg);
                 }

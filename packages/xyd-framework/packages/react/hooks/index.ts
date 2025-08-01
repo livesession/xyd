@@ -7,6 +7,14 @@ export {
 } from "./useActivePage";
 
 export {
+    useActivePageRoute
+} from "./useActivePageRoute";
+
+export {
+    useActiveRoute
+} from "./useActiveRoute";
+
+export {
     useActiveSegment
 } from "./useActiveSegment";
 

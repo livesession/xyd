@@ -13,7 +13,7 @@ export const SubNavHost = css`
         margin-top: 3px;
         padding: 0 var(--xyd-padding-large);
 
-        [part="list"] button:first-of-type xyd-subnav-item {
+        [part="list"] xyd-subnav-item:first-of-type {
             padding-left: 0;
         }
 
@@ -61,7 +61,7 @@ export const SubNavItem = css`
         position: relative;
         padding: var(--xyd-nav-item-padding-y) var(--xyd-nav-item-padding);
 
-        [data-state="active"] > & {
+        &[data-state="active"] {
             font-weight: var(--xyd-font-weight-semibold);
 
             a {

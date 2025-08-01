@@ -12,7 +12,7 @@ The settings file is the central configuration hub for your documentation.
 It's available at root of your project inside the `docs.json` file.
 
 
-This configuration file controls the look and feel of your documentation, including [routing](/docs/guides/routing), 
+This configuration file controls the look and feel of your documentation, including [navigation](/docs/guides/navigation), 
 [themes](/docs/guides/themes), [integrations](/docs/guides/integrations/analytics/analytics-integrations) and other.
 
 :::callout

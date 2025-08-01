@@ -77,7 +77,7 @@ If you need more advanced structures, define sidebar as object:
 ### Nested Groups
 You can also define nested groups:
 
-```json [!scroll descHead="Reference" desc="Check the reference of [Sidebar](/docs/reference/core/sidebar)".]
+```json [!scroll descHead="Reference" desc="Check the reference of [Sidebar](/docs/reference/core/sidebar)."]
 {
   "sidebar": [
     {
@@ -102,7 +102,7 @@ You can also define nested groups:
 
 ### Group Page {label="Coming Soon"}
 If you want to have a clickable group as a page, define `page` instead of `group`:
-```json [!scroll descHead="Tip" desc="The sidebar title comes from a [Page Meta](/docs/guides/pages)"]
+```json [!scroll descHead="Tip" desc="The sidebar title comes from a [Page Meta](/docs/guides/pages)."]
 {
   "sidebar": [
     {
@@ -165,6 +165,108 @@ You can also do more advanced routing in the sidebar, like matching based on the
 }
 ```
 
+### Order
+Thanks to `order` you are able to set a custom order of docs groups. It's the most useful with auto-generatated docs - for OpenAPI/GraphQL integration for example. There are a few options how to change an order:
+
+:::tabs{kind="secondary"}
+1. [Top](order=top)
+    ```json
+    {
+      "navigation": {
+          "sidebar": [
+                {
+                    "route": "api/rest",
+                    "pages": [
+                        {
+                            "group": "API & Reference",
+                            "order": 0,
+                            "pages": [
+                                "api/rest/introduction"
+                            ]
+                        },
+                        ...
+                    ]
+                }
+          ]
+      }
+    }
+    ```
+
+2. [Bottom](order=bottom)
+    ```json
+    {
+      "navigation": {
+          "sidebar": [
+                {
+                    "route": "api/rest",
+                    "pages": [
+                        {
+                            "group": "Changelog",
+                            "order": -1,
+                            "pages": [
+                                "api/rest/changelog/updates"
+                            ]
+                        },
+                        ...
+                    ]
+                }
+          ]
+      }
+    }
+    ```
+
+3. [After](order=after)
+    ```json
+    {
+      "navigation": {
+          "sidebar": [
+                {
+                    "route": "docs/api",
+                    "pages": [
+                        {
+                            "group": "React Components",
+                            "order": {
+                              "after": "Responses"
+                            },
+                            "pages": [
+                                "docs/api/react/introduction"
+                            ]
+                        },
+                        ...
+                    ]
+                }
+          ]
+      }
+    }
+    ```
+
+4. [Before](order=before)
+    ```json
+    {
+      "navigation": {
+          "sidebar": [
+                {
+                    "route": "docs/api",
+                    "pages": [
+                        {
+                            "group": "Security",
+                            "order": {
+                              "before": "Responses"
+                            },
+                            "pages": [
+                                "docs/api/security/introduction"
+                            ]
+                        },
+                        ...
+                    ]
+                }
+          ]
+      }
+    }
+    ```
+:::
+
+
 ## Tabs
 
 ![Tabs](/public/assets/Tabs.png)
@@ -195,7 +297,7 @@ You can also do more advanced routing in the sidebar, like matching based on the
 }
 ```
 
-::::details{kind="secondary" title="Tabs API Reference" label="Check the full Tabs API Reference"}
+::::details{kind="tertiary" title="Tabs API Reference" label="Check the full Tabs API Reference"}
   ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Tabs'})"}
 ::::
 
@@ -229,7 +331,7 @@ You can also do more advanced routing in the sidebar, like matching based on the
 }
 ```
 
-::::details{kind="secondary" title="Sidebar Dropdown API Reference" label="Check the full Sidebar Dropdown API Reference"}
+::::details{kind="tertiary" title="Sidebar Dropdown API Reference" label="Check the full Sidebar Dropdown API Reference"}
   ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'SidebarDropdown'})"}
 ::::
 
@@ -311,7 +413,7 @@ Anchors provide a way to add fixed navigation elements. They're useful for displ
 :::
 
 
-::::details{kind="secondary" title="Anchors API Reference" label="Check the full Anchors API Reference"}
+::::details{kind="tertiary" title="Anchors API Reference" label="Check the full Anchors API Reference"}
   ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Anchors'})"}
 ::::
 
@@ -319,8 +421,8 @@ Anchors provide a way to add fixed navigation elements. They're useful for displ
 
 ![asset](/public/assets/Segments.png)
 
-Segments allows you to create smaller navigational structures based on specific [`route`](/docs/guides/routing#routing-1).
-Thanks to that you can create for example a subheader that will shown only on specific [`route`](/docs/guides/routing#routing-1): 
+Segments allows you to create smaller navigational structures based on specific [`route`](/docs/guides/navigation#routing).
+Thanks to that you can create for example a subheader that will shown only on specific [`route`](/docs/guides/navigation#routing): 
 
 ```json [!scroll descHead="Tip" desc="Check out how to create a subheader using segments [here](https://github.com/xyd-js/navigation-samples/tree/master/subheader)."]
 {
@@ -331,6 +433,7 @@ Thanks to that you can create for example a subheader that will shown only on sp
         // !diff +
         "route": "docs/api",
         "title": "API",
+        "appearance": "sidebarDropdown",
         "pages": [
           {
             "title": "Getting Started",
@@ -361,7 +464,7 @@ Thanks to that you can create for example a subheader that will shown only on sp
   }
 }
 ```
-::::details{kind="secondary" title="Segments API Reference" label="Check the full Segment API Reference"}
+::::details{kind="tertiary" title="Segments API Reference" label="Check the full Segment API Reference"}
   ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Segment'})"}
 ::::
 
@@ -396,3 +499,7 @@ faq.md                    --> /faq.html
 docs/index.md             --> /docs/index.html (accessible as /docs/)
 docs/quickstart.md        --> /docs/quickstart.html 
 ```
+
+## index.md
+
+If you crate an `index.md` file at root of your documentation project, `xyd` will serve that content as index page.

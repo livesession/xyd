@@ -13,5 +13,8 @@ export type { FrameworkProps } from "./contexts"
 export { Framework, FrameworkPage, useMetadata, useContentComponent, useSettings, useComponents, useAppearance } from "./contexts"
 
 export {
-    useMatchedSubNav
+    useMatchedSubNav,
+    useActiveRoute,
+    useActivePageRoute,
+    useActivePage,
 } from "./hooks"

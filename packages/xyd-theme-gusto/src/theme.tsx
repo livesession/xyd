@@ -53,7 +53,7 @@ export default class ThemeGusto extends BaseTheme {
 
 function _SidebarTop() {
     return <>
-        <UISidebar.Item button ghost>
+        <UISidebar.Item ghost>
             <div className={styles.SidebarTop}>
                 <FwLogo/>
                 <div>

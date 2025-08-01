@@ -55,6 +55,6 @@
   /* Code Sample Buttons */
   --XydAtlas-Component-Code-SampleButtons__color-containerBackground: var(--XydAtlas-Sys-Color-Surface);
   --XydAtlas-Component-Code-SampleButtons__color-background--active: var(--XydAtlas-Ref-Palette-White);
-  --XydAtlas-Component-Code-SampleButtons__color: var(--XydAtlas-Ref-Palette-Neutral-40);
+  --XydAtlas-Component-Code-SampleButtons__color: var(--XydAtlas-Sys-Color-Text-Primary);
   --XydAtlas-Component-Code-SampleButtons__color--active: var(--XydAtlas-Sys-Color-Text-Primary);
 } 

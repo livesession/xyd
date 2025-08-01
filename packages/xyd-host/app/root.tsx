@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, redirect } from "react-router";
 
-import type { Settings, Appearance, ThemeFont, Font } from "@xyd-js/core";
+import type { Settings, Appearance, ThemeFont, Font, UserPreferences } from "@xyd-js/core";
 import * as contentClass from "@xyd-js/components/content"; // TODO: move to appearance
 
 // @ts-ignore
@@ -12,7 +12,7 @@ import { presetUrls } from "virtual:xyd-theme-presets"
 import colorSchemeScript from "./scripts/colorSchemeScript.ts?raw";
 import bannerHeightScript from "./scripts/bannerHeight.ts?raw";
 
-const { settings } = virtualSettings as { settings: Settings, settingsClone: Settings }
+const { settings, userPreferences } = virtualSettings as { settings: Settings, settingsClone: Settings, userPreferences: UserPreferences }
 
 export function HydrateFallback() {
     return <div></div>
@@ -43,13 +43,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
             data-color-scheme={colorScheme}
             data-color-primary={settings?.theme?.appearance?.colors?.primary ? "true" : undefined}
         >
+        
             <head>
                 <PreloadScripts />
                 <DefaultMetas />
+                <CssLayerFix />
 
                 <UserFavicon />
                 <UserHeadScripts />
-                <CssLayerFix />
                 <UserFonts />
 
                 <Meta />
@@ -62,6 +63,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <ScrollRestoration />
                 <Scripts />
                 <UserStyleTokens />
+                <UserPreferenceStyles />
                 {UserAppearance}
                 {/* TODO: in the future better solution? */}
             </body>
@@ -106,7 +108,6 @@ function clientColorScheme() {
 export default function App() {
     return <Outlet />;
 }
-
 
 function getPathname(url: string) {
     const parsedUrl = new URL(url);
@@ -156,10 +157,8 @@ function BannerHeightScript() {
     />
 }
 
-const DEFAULT_FAVICON_PATH = "/public/favicon.png";
-
 function UserFavicon() {
-    const faviconPath = settings?.theme?.favicon || DEFAULT_FAVICON_PATH
+    const faviconPath = settings?.theme?.favicon
 
     if (!faviconPath) {
         return null
@@ -176,12 +175,37 @@ function UserStyleTokens() {
         return null
     }
 
-    return <style
-        data-appearance
-        dangerouslySetInnerHTML={{
-            __html: userCss
-        }}
-    />
+    return <>
+        <style
+            data-appearance
+            dangerouslySetInnerHTML={{
+                __html: userCss
+            }}
+        />
+    </>
+}
+
+function UserPreferenceStyles() {
+    const themeColors = userPreferences?.themeColors
+    if (!themeColors) {
+        return null
+    }
+
+    const coderPreferences = tokensToCss({
+        "--user-codetabs-bgcolor": "none",
+        "--user-codetabs-color": "none",
+        "--user-codetabs-color--active": "currentColor",
+        "--user-codetabs-color--hover": "none",
+        "--user-coder-code-border-color": "none",
+        "--xyd-coder-code-mark-bgcolor": `color-mix(in srgb, ${themeColors.foreground} 10%, transparent)`
+    });
+    const css = [
+        coderPreferences
+    ].filter(Boolean).join('\n\n');
+
+    return <>
+        <style dangerouslySetInnerHTML={{ __html: css }} />
+    </>
 }
 
 // TODO: better than <style>?
@@ -289,7 +313,11 @@ function UserHeadScripts() {
         return null
     }
 
-    return head.map(([tag, props]: [string, Record<string, string | boolean>], index: number) => {
+    return head.map(([tag, props, content]: [string, Record<string, string | boolean>, string?], index: number) => {
+        if (content) {
+            return React.createElement(tag as any, { key: index, ...props, dangerouslySetInnerHTML: { __html: content } })
+        }
+
         return React.createElement(tag as any, { key: index, ...props })
     })
 }
@@ -353,10 +381,7 @@ function UserFonts() {
     }
 
 
-
-
     return <>
-
         <style
             data-fonts
             dangerouslySetInnerHTML={{
@@ -394,11 +419,11 @@ function generateSingleFontCss(font: ThemeFont, type: 'body' | 'coder'): string 
     if (Array.isArray(font)) {
         // Generate all font-face declarations
         const fontFaces = font.map(f => generateFontFace(f)).join('\n\n')
-        
+
         // Use only the first font for CSS variables
         const firstFont = font[0]
         const cssVars = generateCssVars(firstFont, type)
-        
+
         return `${fontFaces}
 
         @layer user {
@@ -408,7 +433,7 @@ function generateSingleFontCss(font: ThemeFont, type: 'body' | 'coder'): string 
         }
     `
     }
-    
+
     if (!("src" in font)) {
         return ''
     }
@@ -478,7 +503,7 @@ function generateCssVars(font: Font, type: 'body' | 'coder'): string {
         [`--font-${type}-family`]: fontFamily,
         [`--font-${type}-weight`]: fontWeight,
     }
-    
+
     return Object.entries(cssVars)
         .map(([key, value]) => `${key}: ${value};`)
         .join('\n    ')

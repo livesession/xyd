@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import {VFile} from 'vfile';
 
 import {Settings} from '@xyd-js/core';
+import {mdParameters} from "../utils/mdParameters";
 
 /**
  * Common options for all function plugins
@@ -42,19 +43,35 @@ export function parseFunctionCall<args = any>(node: any, functionName: string): 
     if (node.children && node.children.length === 1 && node.children[0].type === 'text') {
         const textNode = node.children[0];
 
+        // Check for Markdown attribute syntax for the given function name
+        const mdAttrMatch = textNode.value.match(new RegExp(`^@?${functionName}\\[(.*)\\]\\s+(.*)$`));
+        if (mdAttrMatch) {
+            const attrsString = mdAttrMatch[1];
+            let pathString = mdAttrMatch[2].trim();
+            if ((pathString.startsWith('"') && pathString.endsWith('"')) || (pathString.startsWith("'") && pathString.endsWith("'"))) {
+                pathString = pathString.slice(1, -1);
+            }
+
+            const {attributes} = mdParameters(`[${attrsString}]`)
+            return [pathString, { __mdAttrs: attributes } as any];
+        }
+
+        // Accept @ prefix for function name
+        const fnRegex = new RegExp(`^@?${functionName}`);
+        if (!fnRegex.test(textNode.value)) {
+            return null;
+        }
+
         // Check for parentheses syntax with multiple arguments
-        const parenthesesMatch = textNode.value.match(new RegExp(`^${functionName}\\((.*)\\)$`));
+        const parenthesesMatch = textNode.value.match(new RegExp(`^@?${functionName}\\((.*)\\)$`));
         if (parenthesesMatch) {
             const argsText = parenthesesMatch[1];
-            // Split by comma and trim each argument
-            const args = argsText.split(',').map((arg: string) => arg.trim().replace(/^["']|["']$/g, ''));
-            // Return the first argument as the path
-
+            const args = argsText.split(',').map((arg: string) => arg.trim().replace(/^['\"]|['\"]$/g, ''));
             return resp(args)
         }
 
         // Check for the original syntax
-        const originalMatch = textNode.value.match(new RegExp(`^${functionName}\\s+['"](.*)['"]$`));
+        const originalMatch = textNode.value.match(new RegExp(`^@?${functionName}\\s+['\"](.*)['\"]$`));
         if (originalMatch) {
             return resp([originalMatch[1], originalMatch[2]]);
         }
@@ -390,9 +407,11 @@ export function functionMatch(value: string, functionName: string): boolean {
  * @param baseDir Optional base directory to resolve the final path from
  * @returns The resolved path or the original path if no alias is found
  */
-export function resolvePathAlias(inputPath: string, settings?: Settings, baseDir?: string): string {
+export function resolvePathAlias(inputPath: string, settings?: Settings, currentFile?: VFile, cwd: string = process.cwd()): string {
+    const baseDir = path.join(cwd, currentFile?.dirname || "");
+
     if (!settings?.engine?.paths) {
-        return inputPath;
+        return path.resolve(baseDir || "", inputPath);
     }
 
     // Find the longest matching alias
@@ -406,17 +425,25 @@ export function resolvePathAlias(inputPath: string, settings?: Settings, baseDir
 
         if (aliasRegex.test(inputPath) && alias.length > longestMatch.length) {
             longestMatch = alias;
-            // Replace the alias with the first path from the array
-            const aliasPath = aliasPaths[0];
-            // Replace * in the alias path with the matched part from the input path
-            const matchedPart = inputPath.slice(alias.indexOf('*'));
-            resolvedPath = aliasPath.replace(/\*/g, matchedPart);
+            // Replace the alias with the path (handle both string and array)
+            const aliasPath = Array.isArray(aliasPaths) ? aliasPaths[0] : aliasPaths;
+            // Extract the part after the alias pattern
+            const aliasPrefix = alias.replace('*', '');
+            const matchedPart = inputPath.substring(aliasPrefix.length);
+            // Remove leading slash if present
+            const cleanMatchedPart = matchedPart.startsWith('/') ? matchedPart.slice(1) : matchedPart;
+            // If aliasPath contains *, replace it with the matched part, otherwise append the matched part
+            if (aliasPath.includes('*')) {
+                resolvedPath = aliasPath.replace(/\*/g, cleanMatchedPart);
+            } else {
+                resolvedPath = path.join(aliasPath, cleanMatchedPart);
+            }
         }
     }
 
     // If we found a match and have a base directory, resolve the path relative to it
-    if (longestMatch && baseDir) {
-        resolvedPath = path.resolve(baseDir, resolvedPath);
+    if (longestMatch) {
+        resolvedPath = path.resolve(cwd, resolvedPath);
     }
 
     return resolvedPath;
