@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import * as cn from "./TabsSecondary.styles";
 import { useValueChange } from './useValueChange';
+import { useTabsAnalytics } from './TabsAnalytics';
 
 export interface TabsSecondaryProps {
     /** The currently selected tab value */
@@ -14,6 +15,7 @@ export interface TabsSecondaryProps {
 }
 
 export function TabsSecondary({ children, value: controlledValue, onChange, className }: TabsSecondaryProps) {
+    const tabsAnalytics = useTabsAnalytics()
     const [showLeftArrow, setShowLeftArrow] = useState(false)
     const [showRightArrow, setShowRightArrow] = useState(false)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -35,8 +37,12 @@ export function TabsSecondary({ children, value: controlledValue, onChange, clas
     const [_, value, handleValueChange] = useValueChange(
         controlledValue,
         onChange,
-        navItems
+        navItems,
     );
+
+    useEffect(() => {
+        tabsAnalytics.setValue(value)
+    }, [value])
 
     const handleScroll = () => {
         if (scrollContainerRef.current) {
@@ -62,6 +68,7 @@ export function TabsSecondary({ children, value: controlledValue, onChange, clas
     return (
         <RadixTabs.Root asChild value={value} onValueChange={handleValueChange}>
             <xyd-tabs
+                ref={tabsAnalytics.tabsRef}
                 data-kind="secondary"
                 className={`${cn.TabsSecondaryHost} ${className || ""}`}
             >
@@ -98,13 +105,12 @@ export function TabsSecondary({ children, value: controlledValue, onChange, clas
                         </button>
                     )}
                 </div>
-
                 <div part="content">
                     {otherChildren}
                 </div>
             </xyd-tabs>
         </RadixTabs.Root>
-    )
+    );
 }
 
 /**

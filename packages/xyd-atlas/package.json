@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/atlas",
-  "version": "0.1.0-build.153",
+  "version": "0.1.0-build.155",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -32,6 +32,7 @@
   },
   "peerDependencies": {
     "react": "^19.1.0",
+    "openux-js": "0.0.0-pre.0",
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/plugins": "workspace:*",
     "@xyd-js/core": "workspace:*",

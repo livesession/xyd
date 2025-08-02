@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-docs",
-  "version": "0.1.0-build.140",
+  "version": "0.1.0-build.142",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -38,6 +38,7 @@
     "@react-router/dev": "^7.7.1",
     "@react-router/node": "^7.7.1",
     "@react-router/serve": "^7.7.1",
+    "openux-js": "0.0.0-pre.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.7.1"

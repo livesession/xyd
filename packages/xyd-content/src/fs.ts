@@ -16,6 +16,7 @@ export class ContentFS {
         private readonly settings: Settings,
         private readonly remarkPlugins: PluggableList,
         private readonly rehypePlugins: PluggableList,
+        private readonly recmaPlugins: PluggableList,
     ) { }
 
     public async compile(filePath: string): Promise<string> {
@@ -36,7 +37,7 @@ export class ContentFS {
         const compiled = await mdxCompile(vfile, {
             remarkPlugins: this.remarkPlugins,
             rehypePlugins: this.rehypePlugins,
-            recmaPlugins: [],
+            recmaPlugins: this.recmaPlugins || [],
             development: false,
             outputFormat: 'function-body',
             jsx: false,

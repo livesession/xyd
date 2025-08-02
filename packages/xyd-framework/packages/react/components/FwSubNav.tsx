@@ -14,7 +14,6 @@ export function FwSubNav() {
         return null
     }
 
-    // TODO: value
     return <SubNav
         title={matchedSubnav?.title || ""}
         value={active?.page || ""}
@@ -22,11 +21,20 @@ export function FwSubNav() {
         }}
     >
         {matchedSubnav?.pages?.map((item, index) => {
+            let href: string | null = null
+
+            if (typeof item.href === "string") {
+                href = pageLink(item.href)
+            }
+
+            if (!href && typeof item.page === "string") {
+                href = pageLink(item.page)
+            }
+
             return <SubNav.Item
                 value={item.page || ""}
-                href={pageLink(item.page || "")}
+                href={href || item.page || ""}
                 as={FwLink}
-
             >
                 {item.title}
             </SubNav.Item>

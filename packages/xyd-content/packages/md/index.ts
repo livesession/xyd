@@ -1,6 +1,6 @@
 import { Settings } from "@xyd-js/core";
 
-import { defaultRehypePlugins, defaultRemarkPlugins } from "./plugins"
+import { defaultRecmaPlugins, defaultRehypePlugins, defaultRemarkPlugins } from "./plugins"
 import { RemarkMdxTocOptions } from "./plugins/mdToc";
 
 export { RemarkMdxTocOptions, } from "./plugins/mdToc";
@@ -15,8 +15,11 @@ export function markdownPlugins(
 
     const rehypePlugins = [...defaultRehypePlugins(settings)]
 
+    const recmaPlugins = [...defaultRecmaPlugins(settings)]
+
     return {
         remarkPlugins,
         rehypePlugins,
+        recmaPlugins,
     }
 }

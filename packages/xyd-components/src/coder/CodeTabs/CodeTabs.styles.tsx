@@ -32,6 +32,7 @@ export const CodeTabsLanguagesHost = css`
 
         position: relative;
         display: flex;
+        justify-content: space-between;
         flex: 1 1 0%;
 
         background: var(--user-codetabs-bgcolor, var(--xyd-codetabs-bgcolor));

@@ -110,6 +110,11 @@ Clear
 ./clear.sh
 ```
 
+Clear verdaccio
+```
+./clear-verdaccio.sh
+```
+
 Start packages development mode
 ```
 pnpm run dev
@@ -133,7 +138,12 @@ npm login --registry http://localhost:4873 (test, test)
 Install xyd-js cli from verdaccio
 ```
 npm_config_registry=http://localhost:4873 bun add -g @xyd-js/cli 
-npm_config_registry=http://localhost:4873 npm install -g @xyd-js/cli 
+npm_config_registry=http://localhost:4873 npm i -g @xyd-js/cli 
+```
+
+Build xyd from using verdaccio packages
+```
+npm_config_registry=http://localhost:4873 xyd build 
 ```
 
 Run xyd-js cli in dev mode

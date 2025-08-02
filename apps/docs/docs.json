@@ -1,7 +1,7 @@
 {
     "$schema": "./public/docs.json",
     "theme": {
-        "name": "gusto",
+        "name": "opener",
         "logo": {
             "light": "/public/assets/logo.svg",
             "dark": "/public/assets/logo-dark.svg"
@@ -17,7 +17,7 @@
             ]
         },
         "appearance": {
-        
+           
         }
     },
     "seo": {
@@ -129,6 +129,11 @@
         "search": {
             "orama": true
         },
+        "analytics": {
+            "livesession": {
+                "trackId": "123.d123fb97"
+            }
+        },
         ".apps": {
             "githubStar": {
                 "title": "Star",
@@ -193,6 +198,7 @@
             {
                 "title": "Reference",
                 "page": "docs/reference",
+                "href": "docs/reference/core",
                 "icon": "brackets"
             }
         ],

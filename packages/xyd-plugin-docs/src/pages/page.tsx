@@ -12,6 +12,7 @@ import { pageMetaLayout } from "@xyd-js/framework";
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 import { FrameworkPage, type FwSidebarItemProps } from "@xyd-js/framework/react";
 import type { IBreadcrumb, INavLinks } from "@xyd-js/ui";
+import { UXNode } from "openux-js";
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
@@ -127,7 +128,7 @@ export async function loader({ request }: { request: any }) {
         maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
 
-    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
+    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)
 
     const pagePath = globalThis.__xydPagePathMapping[slug]
     if (pagePath) {
@@ -267,7 +268,7 @@ function findFallbackUrl(sidebarGroups: FwSidebarItemProps[], currentSlug: strin
         }
 
         const firstItem = findFirstUrl(group.items)
-        
+
         if (!firstItem) {
             continue
         }
@@ -326,7 +327,7 @@ const createElementWithKeys = (type: any, props: any) => {
 };
 
 // TODO: move to content?
-function mdxExport(code: string, themeContentComponents: any) {
+function mdxExport(code: string, themeContentComponents: any, themeFileComponents: any) {
     // Create a wrapper around React.createElement that adds keys to elements in lists
     const scope = {
         Fragment: React.Fragment,
@@ -337,17 +338,17 @@ function mdxExport(code: string, themeContentComponents: any) {
 
     const global = {
         ...themeContentComponents,
-        React
+        React,
     }
 
-    const fn = new Function("_$scope", ...Object.keys(global), code);
+    const fn = new Function("_$scope", ...Object.keys(global), "fileComponents", code);
 
-    return fn(scope, ...Object.values(global)); 
+    return fn(scope, ...Object.values(global), themeFileComponents);
 }
 
 // // TODO: move to content?
-function mdxContent(code: string, themeContentComponents: any) {
-    const content = mdxExport(code, themeContentComponents) // TODO: fix any
+function mdxContent(code: string, themeContentComponents: any, themeFileComponents: any) {
+    const content = mdxExport(code, themeContentComponents, themeFileComponents) // TODO: fix any
     if (!mdxExport) {
         return {}
     }
@@ -383,26 +384,42 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     }
 
     const themeContentComponents = theme.reactContentComponents()
+    const themeFileComponents = theme.reactFileComponents()
 
-    const content = mdxContent(loaderData.code, themeContentComponents)
+    const createContent = (fileComponents) => mdxContent(loaderData.code, themeContentComponents, fileComponents ? themeFileComponents : undefined)
+
+    const content = createContent(true)
     const Content = MemoMDXComponent(content.component)
+
+    const contentOriginal = createContent(false)
+    const ContentOriginal = MemoMDXComponent(contentOriginal.component)
 
     const { Page } = theme
 
-    return <FrameworkPage
-        key={location.pathname}
-        metadata={content.metadata}
-        breadcrumbs={loaderData.breadcrumbs}
-        rawPage={loaderData.rawPage}
-        toc={content.toc || []}
-        navlinks={loaderData.navlinks}
-        ContentComponent={Content}
-    >
-        <Page>
-            <Content components={themeContentComponents} />
-            <ScrollRestoration />
-        </Page>
-    </FrameworkPage>
+    return <>
+        <UXNode
+            name="Framework"
+            props={{
+                location: location.pathname + location.search + location.hash,
+            }}
+        >
+            <FrameworkPage
+                key={location.pathname}
+                metadata={content.metadata}
+                breadcrumbs={loaderData.breadcrumbs}
+                rawPage={loaderData.rawPage}
+                toc={content.toc || []}
+                navlinks={loaderData.navlinks}
+                ContentComponent={Content}
+                ContentOriginal={ContentOriginal}
+            >
+                <Page>
+                    <ContentOriginal components={themeContentComponents} />
+                    <ScrollRestoration />
+                </Page>
+            </FrameworkPage>
+        </UXNode>
+    </>
 }
 
 

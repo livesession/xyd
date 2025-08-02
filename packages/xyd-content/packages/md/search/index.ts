@@ -6,6 +6,7 @@ import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import { visit } from "unist-util-visit";
+import type { Node } from 'mdast'
 
 import GitHubSlugger from 'github-slugger';
 
@@ -13,6 +14,7 @@ import type { Settings, Sidebar, SidebarRoute } from '@xyd-js/core'
 
 import { DocSectionSchema } from './types';
 import { markdownPlugins } from "../"
+import { mdParameters } from '../plugins/utils/mdParameters'
 
 export async function mapSettingsToDocSections(xydSettings: Settings) {
     const pages = flatPages(xydSettings.navigation?.sidebar || [], {})
@@ -51,7 +53,6 @@ export async function mapContentToDocSections(
         .use(() => {
             return (tree: any) => {
                 let currentContent = ''
-
                 visit(tree, (node) => {
                     // Skip yaml frontmatter
                     if (node.type === 'yaml') {
@@ -60,7 +61,7 @@ export async function mapContentToDocSections(
 
                     // Handle headings
                     if (node.type === 'heading') {
-                        const heading = flattenNode(node)
+                        const heading = processNode(node)
 
                         // Save previous section's content
                         if (currentSection && currentContent) {
@@ -105,20 +106,20 @@ export async function mapContentToDocSections(
 
                     // For list items, add proper formatting
                     if (node.type === 'listItem') {
-                        const itemContent = flattenNode(node)
+                        const itemContent = processNode(node)
                         currentContent += `- ${itemContent}\n`
                         return
                     }
 
                     // For links, preserve the markdown format
                     if (node.type === 'link') {
-                        const text = flattenNode(node)
+                        const text = processNode(node)
                         currentContent += `[${text}](${node.url})\n`
                         return
                     }
 
                     // For other nodes, just add their content
-                    const nodeContent = flattenNode(node)
+                    const nodeContent = processNode(node)
                     if (nodeContent) {
                         currentContent += nodeContent + '\n'
                     }
@@ -139,13 +140,18 @@ export async function mapContentToDocSections(
     return sections
 }
 
-function flattenNode(node: any): string {
-    if (node.value) {
-        return node.value
+function processNode(node: Node): string {
+    if ('value' in node) {
+        const value = node.value as string
+
+        // TODO: check if sanitized does not remove something important
+        const { sanitizedText } = mdParameters(value)
+
+        return sanitizedText
     }
 
-    if (node.children) {
-        return node.children.map((child: any) => flattenNode(child)).join('')
+    if ('children' in node && Array.isArray(node.children)) {
+        return node.children.map((child: Node) => processNode(child)).join('')
     }
 
     return ''
@@ -202,8 +208,8 @@ function flatPages(
 ) {
     sidebar.map(async side => {
         if (typeof side === "string") {
-          resp.push(side)
-          return
+            resp.push(side)
+            return
         }
 
         if ("route" in side) {
@@ -228,10 +234,10 @@ function flatPages(
                     resp.push(page);
                     return;
                 }
-                
+
                 if ("virtual" in page && page.virtual) {
                     resp.push(page.virtual);
-                    return; 
+                    return;
                 }
 
                 if ("pages" in page) {

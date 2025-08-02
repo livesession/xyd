@@ -1,7 +1,9 @@
-import React from "react";
-import { Theme } from "@code-hike/lighter";
+import React, {useEffect, useState} from "react";
+import {Theme} from "@code-hike/lighter";
 
-import type { CodeThemeBlockProps } from "../CodeTheme";
+import {UXNode} from "openux-js";
+
+import type {CodeThemeBlockProps} from "../CodeTheme";
 
 import {
     Code,
@@ -10,8 +12,9 @@ import {
 import {
     withCodeTabs
 } from "../CodeTabs";
-import { useCodeTheme } from "../CodeTheme";
-import { useCoder } from "../CoderProvider";
+import {useCodeTheme} from "../CodeTheme";
+import {useCoder} from "../CoderProvider";
+import {CodeSampleAnalytics} from "./CodeSampleAnalytics";
 
 export interface CodeSampleProps {
     name: string;
@@ -36,19 +39,20 @@ const CodeContext = React.createContext<{
 }>({})
 
 export function CodeSample(props: CodeSampleProps) {
-    return <Code
-        codeblocks={props.codeblocks}
-        theme={props.theme}
-    >
-        <$ThemedCodeSample {...props} />
-    </Code>
+    return <CodeSampleAnalytics>
+        <Code
+            codeblocks={props.codeblocks}
+            theme={props.theme}
+        >
+            <$ThemedCodeSample {...props} />
+        </Code>
+    </CodeSampleAnalytics>
 }
 
 function $ThemedCodeSample(props: CodeSampleProps) {
-    const { highlighted } = useCodeTheme()
+    const {highlighted} = useCodeTheme()
     const coder = useCoder()
 
-    // console.log("props", props)
     if (props.kind === "secondary") {
         return <CodeContext value={{
             size: props.size,
@@ -93,7 +97,7 @@ function $ThemedCodeSample(props: CodeSampleProps) {
 }
 
 const $CodeSampleTabs = withCodeTabs((props) => {
-    const { lineNumbers, size, descriptionHead, descriptionContent, descriptionIcon } = React.useContext(CodeContext)
+    const {lineNumbers, size, descriptionHead, descriptionContent, descriptionIcon} = React.useContext(CodeContext)
     const handlers = [
         annotations.mark,
         annotations.bg,

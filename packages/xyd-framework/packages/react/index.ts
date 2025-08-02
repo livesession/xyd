@@ -10,7 +10,7 @@ export {
 } from "./components/Surfaces"
 
 export type { FrameworkProps } from "./contexts"
-export { Framework, FrameworkPage, useMetadata, useContentComponent, useSettings, useComponents, useAppearance } from "./contexts"
+export { Framework, FrameworkPage, useMetadata, useContentComponent, useSettings, useComponents, useAppearance, useContentOriginal } from "./contexts"
 
 export {
     useMatchedSubNav,

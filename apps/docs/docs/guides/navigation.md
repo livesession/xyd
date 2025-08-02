@@ -166,11 +166,11 @@ You can also do more advanced routing in the sidebar, like matching based on the
 ```
 
 ### Order
-Thanks to `order` you are able to set a custom order of docs groups. It's the most useful with auto-generatated docs - for OpenAPI/GraphQL integration for example. There are a few options how to change an order:
+Thanks to `order` you are able to set a custom order of docs groups. It's the most useful with auto-generatated docs - for [OpenAPI](/docs/guides/openapi)/[GraphQL](/docs/guides/graphql) integration for example. There are a few options how to change an order:
 
 :::tabs{kind="secondary"}
 1. [Top](order=top)
-    ```json
+    ```json [!scroll descHead="Info" desc="Check out how it can be used for API Docs [here](https://github.com/xyd-js/examples/blob/master/graphql/docs.json#L58)."]
     {
       "navigation": {
           "sidebar": [
@@ -179,6 +179,7 @@ Thanks to `order` you are able to set a custom order of docs groups. It's the mo
                     "pages": [
                         {
                             "group": "API & Reference",
+                            // !diff
                             "order": 0,
                             "pages": [
                                 "api/rest/introduction"
@@ -193,7 +194,7 @@ Thanks to `order` you are able to set a custom order of docs groups. It's the mo
     ```
 
 2. [Bottom](order=bottom)
-    ```json
+    ```json [!scroll descHead="Info" desc="Check out how it can be used for API Docs [here](https://github.com/xyd-js/examples/blob/master/graphql/docs.json#L58)."]
     {
       "navigation": {
           "sidebar": [
@@ -202,6 +203,7 @@ Thanks to `order` you are able to set a custom order of docs groups. It's the mo
                     "pages": [
                         {
                             "group": "Changelog",
+                            // !diff
                             "order": -1,
                             "pages": [
                                 "api/rest/changelog/updates"
@@ -216,7 +218,7 @@ Thanks to `order` you are able to set a custom order of docs groups. It's the mo
     ```
 
 3. [After](order=after)
-    ```json
+    ```json [!scroll descHead="Info" desc="Check out how it can be used for API Docs [here](https://github.com/xyd-js/examples/blob/master/graphql/docs.json#L58)."]
     {
       "navigation": {
           "sidebar": [
@@ -225,7 +227,9 @@ Thanks to `order` you are able to set a custom order of docs groups. It's the mo
                     "pages": [
                         {
                             "group": "React Components",
+                            // !diff
                             "order": {
+                              // !diff
                               "after": "Responses"
                             },
                             "pages": [
@@ -241,7 +245,7 @@ Thanks to `order` you are able to set a custom order of docs groups. It's the mo
     ```
 
 4. [Before](order=before)
-    ```json
+    ```json [!scroll descHead="Info" desc="Check out how it can be used for API Docs [here](https://github.com/xyd-js/examples/blob/master/graphql/docs.json#L58)."]
     {
       "navigation": {
           "sidebar": [
@@ -250,7 +254,9 @@ Thanks to `order` you are able to set a custom order of docs groups. It's the mo
                     "pages": [
                         {
                             "group": "Security",
+                            // !diff
                             "order": {
+                              // !diff
                               "before": "Responses"
                             },
                             "pages": [

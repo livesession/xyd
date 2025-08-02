@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/analytics",
-  "version": "0.1.0-build.137",
+  "version": "0.1.0-build.139",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -24,10 +24,10 @@
   },
   "author": "",
   "dependencies": {
-    "@xyd-js/core": "workspace:*",
-    "@xyd-js/uniform": "workspace:*"
+    "@xyd-js/core": "workspace:*"
   },
   "peerDependencies": {
+    "@xyd-js/uniform": "workspace:*",
     "openux-js": "0.0.0-pre.0",
     "pluganalytics": "0.0.0-pre.3",
     "react": "^19.1.0",

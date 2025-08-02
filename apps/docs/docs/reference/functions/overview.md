@@ -2,7 +2,7 @@
 title: Overview
 ---
 
-# Functions API {label="Experimental"}
+# Functions API
 :::subtitle
 Reference for dynamic content capabilities through functions
 :::

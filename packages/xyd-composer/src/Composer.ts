@@ -95,7 +95,7 @@ export class Composer {
                 maxDepth: 2,
             }, settings)
 
-            const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
+            const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)
 
             try {
                 const compiledContent = await contentFs.compileContent(props.rightContent)

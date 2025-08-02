@@ -19,7 +19,7 @@ import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
 
 import { Surfaces, pageMetaLayout } from "@xyd-js/framework";
 import { Composer } from "@xyd-js/composer";
-import { XYDAnalytics } from "@xyd-js/analytics";
+import { Analytics } from "@xyd-js/analytics";
 // @ts-ignore
 import { iconSet } from 'virtual:xyd-icon-set';
 
@@ -135,7 +135,7 @@ export async function loader({ request }: { request: any }) {
     const mdPlugins = markdownPlugins({
         maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
-    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins)
+    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)
 
     if (settings?.components?.banner?.content && typeof settings?.components?.banner?.content === "string") {
         bannerContentCode = await contentFs.compileContent(
@@ -196,7 +196,7 @@ export default function Layout() {
     }, {});
 
     return <>
-        <XYDAnalytics settings={settings} loader={loadProvider}>
+        <Analytics settings={settings} loader={loadProvider}>
             <IconProvider value={{
                 iconSet: iconSet
             }}>
@@ -230,7 +230,7 @@ export default function Layout() {
                     </AtlasContext>
                 </Framework>
             </IconProvider>
-        </XYDAnalytics>
+        </Analytics>
     </>
 }
 

@@ -81,7 +81,8 @@ export function Framework(props: FrameworkProps) {
 interface FrameworkPageProps {
     children: React.ReactNode
 
-    ContentComponent?: (props: { components: any, children: React.ReactNode }) => React.JSX.Element
+    ContentComponent?: (props: { components: any, children: React.ReactNode }) => React.JSX.Element 
+    ContentOriginal?: (props: { components: any, children: React.ReactNode }) => React.JSX.Element
 
     metadata: Metadata
     breadcrumbs?: IBreadcrumb[],
@@ -91,7 +92,8 @@ interface FrameworkPageProps {
 }
 
 interface IFrameworkPageContext {
-    ContentComponent: (props: { components: any, children: React.ReactNode }) => React.JSX.Element
+    ContentComponent: (props: { components: any, children?: React.ReactNode }) => React.JSX.Element
+    ContentOriginal: (props: { components: any, children?: React.ReactNode }) => React.JSX.Element
     metadata: Readonly<Metadata>
     breadcrumbs?: Readonly<IBreadcrumb[]>
     rawPage?: Readonly<string>
@@ -101,6 +103,7 @@ interface IFrameworkPageContext {
 
 const FrameworkPageContext = createContext<IFrameworkPageContext>({
     ContentComponent: () => <></>,
+    ContentOriginal: () => <></>,
     metadata: {
         title: "",
     }
@@ -115,6 +118,7 @@ export function FrameworkPage(props: FrameworkPageProps) {
 
     return <FrameworkPageContext value={{
         ContentComponent: props.ContentComponent || (() => <></>),
+        ContentOriginal: props.ContentOriginal || (() => <></>),
         metadata: Object.freeze(props.metadata),
         breadcrumbs: Object.freeze(props.breadcrumbs),
         rawPage: Object.freeze(props.rawPage),
@@ -179,6 +183,13 @@ export function useContentComponent() {
     const ctx = useContext(FrameworkPageContext)
 
     return ctx.ContentComponent
+}
+
+// TODO: !!! IN THE FUTURE BETTER API !!!
+export function useContentOriginal() {
+    const ctx = useContext(FrameworkPageContext)
+
+    return ctx.ContentOriginal
 }
 
 export function useAppearance() {

@@ -14,7 +14,7 @@ Reference UI Components in your docs pages
 :::
 
 :::callout
-Currently, only React components are supported.
+Currently, only [React](https://react.dev) components are supported.
 :::
 
 ## API Docs Generation Explanation
@@ -32,7 +32,7 @@ Currently, only React components are supported.
 ## Setup Component Configuration
 
 :::steps
-1. To create an API documentation page for a component, specify its path in the meta using [`uniform`](/docs/reference/meta/uniform):
+1. To create an API documentation page for a component, specify its path in the meta using [`uniform`](/docs/reference/core/pagemeta):
 
 ```yaml
 ---
@@ -136,19 +136,18 @@ uniform: "@components/writer/Callout/Callout.tsx"
 Note that you must have an Admin or Owner role to manage webhook settings.
 :::
 
-@let(
-  .examples = (
-    ```tsx
-    <Callout>
-    Note that you must have an Admin or Owner role to manage webhook settings.
-    </Callout>
-    ```
 
-    ```md
-    :::callout
-    Note that you must have an Admin or Owner role to manage webhook settings.
-    :::
-    ```
-  )
-)
+@.examples
+```tsx
+<Callout>
+Note that you must have an Admin or Owner role to manage webhook settings.
+</Callout>
+```
+
+```md
+:::callout
+Note that you must have an Admin or Owner role to manage webhook settings.
+:::
+```
+@end
 ~~~

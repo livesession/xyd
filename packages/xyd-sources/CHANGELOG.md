@@ -1,5 +1,21 @@
 # @xyd-js/sources
 
+## 0.1.1-build.142
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/uniform@0.1.0-build.154
+
+## 0.1.1-build.141
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/uniform@0.1.0-build.153
+
 ## 0.1.1-build.140
 
 ### Patch Changes

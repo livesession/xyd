@@ -3,7 +3,7 @@ title: APIToolchain
 icon: docs:apitoolchain
 ---
 
-# APIToolchain{label="Coming Soon" subtitle="Learn how to use API generation tools"}
+# APIToolchain{label="Coming Soon" subtitle="Learn how to use API Docs generation tools in library mode"}
 
 APIToolchain is a set of tools that allows you to generate API documentation from multiple sources like [GraphQL](https://graphql.org/), [OpenAPI](https://www.openapis.org) or [TypeScript](https://www.typescriptlang.org/) into one unified format called `uniform`.
 
@@ -15,7 +15,7 @@ List of all availalbe converters:
 3. [@apitoolchain/uni-ts](https://github.com/livesession/xyd) - converts TypeScript into uniform
 
 :::callout
-xyd uses `APIToolchain` under the hood.
+More converts like Python or Go coming soon.
 :::
 
 ## Uniform Overview
@@ -61,8 +61,8 @@ and exmaple usage in React:
 import {convert} from "@apitoolchain/uni-ts"
 import {Atlas} from "@apiatlas/react"
 
-export function MyDocsPage() {
-    const uniform = convert("./myLibrarySettings.ts#Settings")
+export async function MyDocsPage() {
+    const uniform = await convert("./myLibrarySettings.ts#Settings")
 
     return <Atlas uniform={uniform}/>
 }
@@ -73,10 +73,10 @@ or even in AI agents:
 import {markdown} from "apitoolchain"
 import {convert} from "@apitoolchain/uni-ts"
 
-export function myAiAgentFunctionCall(libraryPath: string) {
-    const uniform = convert(libraryPath)
+export async function myAiAgentFunctionCall(libraryPath: string) {
+    const uniform = await convert(libraryPath)
 
-    return markdown(uniform)
+    return await markdown(uniform)
 } 
 ```
 

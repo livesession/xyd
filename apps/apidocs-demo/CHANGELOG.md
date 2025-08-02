@@ -1,5 +1,47 @@
 # @xyd-js/apidocs-demo
 
+## 0.0.1-build.55
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.155
+  - @xyd-js/components@0.1.0-build.150
+  - @xyd-js/core@0.1.0-build.152
+  - @xyd-js/framework@0.1.0-build.171
+  - @xyd-js/gql@0.1.0-build.152
+  - @xyd-js/openapi@0.1.0-build.150
+  - @xyd-js/theme-cosmo@0.1.0-build.139
+  - @xyd-js/theme-gusto@0.1.0-build.138
+  - @xyd-js/theme-opener@0.1.0-build.139
+  - @xyd-js/theme-picasso@0.1.0-build.139
+  - @xyd-js/theme-poetry@0.1.0-build.166
+  - @xyd-js/theme-solar@0.1.0-build.53
+  - @xyd-js/themes@0.1.1-build.142
+  - @xyd-js/ui@0.1.0-build.155
+  - @xyd-js/uniform@0.1.0-build.154
+
+## 0.0.1-build.54
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.154
+  - @xyd-js/components@0.1.0-build.149
+  - @xyd-js/core@0.1.0-build.151
+  - @xyd-js/framework@0.1.0-build.170
+  - @xyd-js/gql@0.1.0-build.151
+  - @xyd-js/openapi@0.1.0-build.149
+  - @xyd-js/theme-cosmo@0.1.0-build.138
+  - @xyd-js/theme-gusto@0.1.0-build.137
+  - @xyd-js/theme-opener@0.1.0-build.138
+  - @xyd-js/theme-picasso@0.1.0-build.138
+  - @xyd-js/theme-poetry@0.1.0-build.165
+  - @xyd-js/theme-solar@0.1.0-build.52
+  - @xyd-js/themes@0.1.1-build.141
+  - @xyd-js/ui@0.1.0-build.154
+  - @xyd-js/uniform@0.1.0-build.153
+
 ## 0.0.1-build.53
 
 ### Patch Changes

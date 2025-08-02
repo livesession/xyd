@@ -41,15 +41,12 @@ export function mdFunctionInclude(settings?: Settings) {
                 if (!result || index === undefined) return;
 
                 const importPath = result[0];
-                // let fullDirPath =path.join(process.cwd(), file.dirname || "")
-                // fullDirPath = process.cwd()
                 const resolvedPath =
                     resolvePathAlias(importPath, settings, file) || importPath;
 
                 const resolvedIncludeBasePath =
                     resolvePathAlias(resolvedPath, settings, file) || importPath;
 
-                // console.log("options", options, [file])
                 const promise = (async () => {
                     try {
                         const ext = resolvedPath.split('.').pop();

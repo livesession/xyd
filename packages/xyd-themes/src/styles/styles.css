@@ -130,10 +130,19 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+
+            @media (max-width: 1024px) {
+                padding-inline: var(--xyd-sidebar-item-padding-total)
+               
+            }
         }
 
         [part="secondary-content"] {
             padding: 25px 75px;
+
+            @media (max-width: 1024px) {
+                padding-inline: var(--xyd-sidebar-item-padding-total)
+            }
         }
     }
 

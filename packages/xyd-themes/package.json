@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/themes",
-  "version": "0.1.1-build.140",
+  "version": "0.1.1-build.142",
   "description": "xyd themes API",
   "main": "dist/index.js",
   "type": "module",

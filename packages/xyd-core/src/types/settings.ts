@@ -12,7 +12,7 @@ export interface Settings {
     /** Navigation configuration */
     navigation?: Navigation
 
-    /** API configuration */
+    /** API Docs configuration */
     api?: API
 
     /** Integrations configuration */
@@ -781,7 +781,7 @@ export interface WebEditorSubHeader {
 
 // ------ START settings for API START ------
 /**
- * API configuration interface
+ * API Docs configuration interface
  */
 export interface API {
     /**

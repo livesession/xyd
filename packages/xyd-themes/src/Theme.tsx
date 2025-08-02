@@ -64,6 +64,8 @@ export abstract class Theme {
 
     public abstract reactContentComponents(): { [component: string]: (props: any) => React.JSX.Element | null }
 
+    public abstract reactFileComponents(): { [component: string]: (props: any) => React.JSX.Element | null } | false
+
     protected useHideToc() {
         const meta = useMetadata()
         return meta?.layout === "wide" || meta?.layout === "reader" || meta?.layout === "page"

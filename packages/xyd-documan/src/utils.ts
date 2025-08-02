@@ -21,6 +21,12 @@ import { CLI } from './cli';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const ANALYTICS_INTEGRATION_DEPENDENCIES = {
+    livesession: {
+        "@pluganalytics/provider-livesession": "0.0.0-pre.7"
+    }
+}
+
 export async function appInit(options?: PluginDocsOptions) {
     const readPreloadSettings = await readSettings() // TODO: in the future better solution - currently we load settings twice (pluginDocs and here)
     if (!readPreloadSettings) {
@@ -745,6 +751,16 @@ export async function postWorkspaceSetup(settings: Settings) {
         if (!packageJson.dependencies) {
             packageJson.dependencies = {}
         }
+
+        for (const [key, value] of Object.entries(ANALYTICS_INTEGRATION_DEPENDENCIES)) {
+            const analytics = settings.integrations?.analytics?.[key]
+            if (analytics) {
+                for (const [depName, depVersion] of Object.entries(value)) {
+                    packageJson.dependencies[depName] = depVersion
+                }
+            }
+        }
+
         for (const plugin of settings.plugins || []) {
             let pluginName: string
 

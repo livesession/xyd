@@ -34,6 +34,7 @@ import {
     FwBanner,
     useAppearance,
     useContentComponent,
+    useContentOriginal,
     FwCopyPage,
     FwBreadcrumbs,
 } from "@xyd-js/framework/react";
@@ -84,6 +85,18 @@ export class BaseTheme extends Theme {
         return this.reactContent.components()
     }
 
+    // TODO: rename and better cuz its only for fixing react-components in secondary content cuz it apply to non original content
+    public reactFileComponents(): { [component: string]: (props: any) => React.JSX.Element | null } | false {
+        const appearance = useAppearance()
+        const contentDecorator = appearance?.content?.contentDecorator
+
+        if (contentDecorator === "secondary") {
+            return false
+        }
+
+        return {}
+    }
+
     public Layout({ children }: { children: React.ReactNode }) {
         const {
             Navbar: $Navbar,
@@ -105,7 +118,7 @@ export class BaseTheme extends Theme {
         const sidebar = <$Sidebar />
 
         const banner = appearance?.banner?.fixed ? <FwBanner /> : null
-        
+
         const id = activeRoute?.id || matchActivePageRout?.id || undefined
 
         return <LayoutPrimary
@@ -242,11 +255,8 @@ export class BaseTheme extends Theme {
                                 h1,
                                 Subtitle,
                                 code
-                            }}>
-                                {children}
-                            </ContentComponent>
+                            }} />
                         </div>
-
                         {copyPageElement}
                     </div>
 

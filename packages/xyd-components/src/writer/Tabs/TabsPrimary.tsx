@@ -3,6 +3,7 @@ import { Tabs as RadixTabs } from "radix-ui"; // TODO: remove and use separation
 
 import * as cn from "./TabsPrimary.styles"
 import { useValueChange } from "./useValueChange";
+import { useTabsAnalytics } from "./TabsAnalytics";
 
 /**
  * Context for managing the navigation direction in the TabsPrimary component
@@ -45,6 +46,7 @@ export function TabsPrimary({
     slide = true,
     className,
 }: TabsPrimaryProps) {
+    const tabsAnalytics = useTabsAnalytics()
     const childrenArray = React.Children.toArray(children);
     const navItems = childrenArray.filter(
         child => {
@@ -65,10 +67,15 @@ export function TabsPrimary({
         navItems
     );
 
+    useEffect(() => {
+        tabsAnalytics.setValue(value)
+    }, [value])
+
     return (
         <TabsPrimaryContext.Provider value={{ direction }}>
             <RadixTabs.Root value={value} onValueChange={handleValueChange}>
                 <xyd-tabs
+                    ref={tabsAnalytics.tabsRef}
                     className={`${cn.TabsPrimaryHost} ${className || ""}`}
                 >
                     <nav part="nav">

@@ -1,5 +1,29 @@
 # @xyd-js/theme-picasso
 
+## 0.1.0-build.139
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.155
+  - @xyd-js/components@0.1.0-build.150
+  - @xyd-js/framework@0.1.0-build.171
+  - @xyd-js/themes@0.1.1-build.142
+  - @xyd-js/ui@0.1.0-build.155
+
+## 0.1.0-build.138
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.154
+  - @xyd-js/components@0.1.0-build.149
+  - @xyd-js/framework@0.1.0-build.170
+  - @xyd-js/themes@0.1.1-build.141
+  - @xyd-js/ui@0.1.0-build.154
+
 ## 0.1.0-build.137
 
 ### Patch Changes

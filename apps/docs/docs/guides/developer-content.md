@@ -36,7 +36,7 @@ You can also customize syntax highlighting. Please see [theme settings](/docs/gu
 
 ## Syntax Highlighting 
 Default syntax highlighting depends on used theme but you can override it via [`docs.json`](/docs/guides/settings):
-```json [descHead="Tip" desc="Check out syntax highlighting [example](https://github.com/livesession/xyd/blob/master/packages/xyd-components/src/coder/themes/classic.ts)."]
+```json [descHead="Tip" desc="Check out syntax highlighting [example](https://github.com/xyd-js/examples/tree/master/syntaxhighlight)."]
 {
   "theme": {
     "coder": {

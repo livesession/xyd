@@ -715,7 +715,7 @@ function invalidateIconSet(server: ViteDevServer) {
         return
     }
 
-    console.log('🔄 [xyd:dev-watcher] Invalidating icon set module...');
+    console.debug('🔄 [xyd:dev-watcher] Invalidating icon set module...');
     server.moduleGraph.invalidateModule(mod);
     server.ws.send({
         type: 'update',
@@ -728,7 +728,7 @@ function invalidateIconSet(server: ViteDevServer) {
             },
         ],
     });
-    console.log('✅ [xyd:dev-watcher] Icon set module invalidated and HMR update sent');
+    console.debug('✅ [xyd:dev-watcher] Icon set module invalidated and HMR update sent');
 }
 
 async function touchReactRouterConfig() {

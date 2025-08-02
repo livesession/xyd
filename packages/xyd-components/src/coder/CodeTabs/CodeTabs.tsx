@@ -9,6 +9,8 @@ import {
 } from "../CodeCopy";
 import * as cn from "./CodeTabs.styles"; // TODO: style by highlighted?
 import { SyntaxHighlightedCode } from "../CodeTheme/CodeTheme";
+import { useCodeSampleAnalytics } from "../CodeSample/CodeSampleAnalytics";
+import { useUXEvents } from "src/uxEvents";
 
 export interface CodeTabsProps {
     description: string;
@@ -23,10 +25,23 @@ export function withCodeTabs(PreComponent) {
         const defaultValue = props.highlighted[0]?.meta || props.highlighted[0]?.lang
         const [activeTab, setActiveTab] = useState(defaultValue)
 
+        const codeSampleAnalytics = useCodeSampleAnalytics()
+        const ux = useUXEvents()
+
         // Reset active tab when highlighted prop changes
         useEffect(() => {
             setActiveTab(defaultValue)
         }, [defaultValue])
+
+        useEffect(() => {
+            codeSampleAnalytics.setActiveTab(activeTab)
+        }, [])
+
+        function changeTab(value: string) {
+            setActiveTab(value)
+            codeSampleAnalytics.setActiveTab(value)
+            ux.CodeTabChange({ tab: value })
+        }
 
         if (props?.highlighted?.length === 0) { 
             return null
@@ -41,7 +56,7 @@ export function withCodeTabs(PreComponent) {
                     className={`${cn.CodeTabsRoot}`}
                     style={props.highlighted[0]?.style}
                     value={activeTab}
-                    onValueChange={setActiveTab}
+                    onValueChange={changeTab}
                 >
                     <$LanguageTabSwitcher
                         description={props.description}

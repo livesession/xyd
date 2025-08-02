@@ -1,5 +1,27 @@
 # @xyd-js/plugin-orama
 
+## 0.1.0-build.139
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.150
+  - @xyd-js/content@0.1.0-build.153
+  - @xyd-js/core@0.1.0-build.152
+  - @xyd-js/plugins@0.1.0-build.139
+
+## 0.1.0-build.138
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.149
+  - @xyd-js/content@0.1.0-build.152
+  - @xyd-js/core@0.1.0-build.151
+  - @xyd-js/plugins@0.1.0-build.138
+
 ## 0.1.0-build.137
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @xyd-js/components
 
+## 0.1.0-build.150
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.152
+
+## 0.1.0-build.149
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.151
+
 ## 0.1.0-build.148
 
 ### Patch Changes

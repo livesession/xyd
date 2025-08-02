@@ -1,4 +1,5 @@
 import React, {useRef, useState} from "react";
+import { useTabsAnalytics } from "./TabsAnalytics";
 
 /**
  * Custom hook to handle value changes and determine navigation direction
@@ -10,8 +11,11 @@ import React, {useRef, useState} from "react";
 export function useValueChange(
     controlledValue: string | undefined,
     onChange: ((value: string) => void) | undefined,
-    navItems: React.ReactNode[]
+    navItems: React.ReactNode[],
 ) {
+    const tabsAnalytics = useTabsAnalytics()
+    const tabsRef = tabsAnalytics.tabsRef
+    
     // Determine if we're in controlled or uncontrolled mode
     const isControlled = controlledValue !== undefined && onChange !== undefined;
 
@@ -39,7 +43,8 @@ export function useValueChange(
         );
 
         // Set direction based on indices
-        setDirection(newIndex > currentIndex ? 'forward' : 'backward');
+        const newDirection = newIndex > currentIndex ? 'forward' : 'backward';
+        setDirection(newDirection);
 
         // Update previous value
         prevValueRef.current = newValue;
@@ -52,6 +57,21 @@ export function useValueChange(
         // Call the original onChange if provided
         if (onChange) {
             onChange(newValue);
+        }
+
+        // Dispatch custom event if tabsRef is provided
+        if (tabsRef?.current) {
+            const eventData = {
+                value: newValue,
+                previousValue: prevValueRef.current,
+                direction: newDirection as 'forward' | 'backward'
+            };
+            
+            const tabChangeEvent = new CustomEvent('components.tabs.change', {
+                detail: eventData,
+                bubbles: true
+            });
+            tabsRef.current.dispatchEvent(tabChangeEvent);
         }
     };
 

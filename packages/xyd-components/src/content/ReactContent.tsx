@@ -511,8 +511,6 @@ function $Pre(
         }
     }
 
-    // console.log("props2", props)
-
     return <CodeSample
         theme={this.settings?.theme?.coder?.syntaxHighlight || undefined}
         name={lang}
