@@ -21,7 +21,7 @@ You can configure the theme in the [`settings`](/docs/guides/settings) file:
 }
 ```
 
-## Available themes
+## Available Themes
 
 :::grid{cols=2}
 - 
@@ -44,7 +44,7 @@ You can configure the theme in the [`settings`](/docs/guides/settings) file:
         ::card{title="cosmo" description="Platform-like design with robust navigation feeling." href="https://cosmo.xyd.dev" imgSrc="/public/assets/cosmo-frame.png" logoSrc="/public/assets/cosmo-logo.png"}
 :::
 
-## Customizing the theme
+## Customizing The Theme
 
 You can also [customize the theme](/docs/guides/customization-quickstart) or
 use [Theme API](/docs/guides/theme-api).

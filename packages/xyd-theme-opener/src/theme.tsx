@@ -19,8 +19,8 @@ export default class ThemeOpener extends BaseTheme {
                 syntaxHighlight: "dark-plus"
             },
             appearance: {
-                "buttons": {
-                    "rounded": "md"
+                buttons: {
+                    rounded: "md"
                 },
                 search: {
                     fullWidth: true,
@@ -44,6 +44,9 @@ export default class ThemeOpener extends BaseTheme {
                     contentDecorator: "secondary",
                     breadcrumbs: true
                 },
+                tables: {
+                    kind: "secondary",
+                }
             }
         })
 

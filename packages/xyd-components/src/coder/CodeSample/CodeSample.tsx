@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Theme} from "@code-hike/lighter";
 
-import {UXNode} from "openux-js";
-
 import type {CodeThemeBlockProps} from "../CodeTheme";
 
 import {

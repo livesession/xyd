@@ -23,7 +23,7 @@ and tweak using available [theme settings](/docs/reference/core/theme)
 
 3. [Creating a new theme](/docs/guides/custom-theme) - develop a completely new theme from scratch via code
 
-## Customization via Settings file
+## Customization via Settings File
 This is the simplest way to customize your documentation.
  You can do this by editing the `docs.json` file in the root of your project.
 

@@ -26,7 +26,7 @@ export function mdFunctionChangelog(settings?: Settings) {
                     return;
                 }
                 const result = parseFunctionCall(node, FunctionName.Changelog);
-                if (!result) return;
+                if (!result || !result.length) return;
 
                 const importPath = result[0];
                 // let fullDirPath = path.join(process.cwd(), file.dirname || "")

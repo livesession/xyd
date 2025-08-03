@@ -6,5 +6,5 @@ export {
 
 export {
     useUXEvents,
-} from './uxEvents'
+} from './useUXEvents'
 

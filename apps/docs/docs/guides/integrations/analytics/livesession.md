@@ -2,7 +2,7 @@
 title: LiveSession
 ---
 
-# LiveSession {label="Coming Soon"}
+# LiveSession
 :::subtitle
 Learn how to send analytics events to LiveSession
 :::

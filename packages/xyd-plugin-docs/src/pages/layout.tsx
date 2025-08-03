@@ -8,6 +8,8 @@ import {
     useMatches
 } from "react-router";
 
+import { UXNode } from "openux-js";
+
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 
 import type { Metadata, MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core";
@@ -200,35 +202,44 @@ export default function Layout() {
             <IconProvider value={{
                 iconSet: iconSet
             }}>
-                <Framework
-                    settings={settings || globalThis.__xydSettings}
-                    sidebarGroups={loaderData.sidebarGroups || []}
-                    metadata={loaderData.metadata || {}}
-                    surfaces={surfaces}
-                    BannerContent={bannerContent}
-                    components={{
-                        Search: SearchButton,
-                        Logo: FwLogo,
-                        ...userComponents
+                {/* TOOD: better solution for roto ux node cuz for example in user components then its not defined but neede to use analyitcs hooks (but should be optional?) */}
+                <UXNode
+                    name="Framework"
+                    props={{
+                        location: "",
                     }}
                 >
-                    <AtlasContext
-                        value={{
-                            Link: FwLink,
-                            syntaxHighlight: settings?.theme?.coder?.syntaxHighlight || null,
-                            baseMatch: lastMatchId || "",
-                            variantToggles: atlasVariantToggles
+                    <Framework
+                        settings={settings || globalThis.__xydSettings}
+                        sidebarGroups={loaderData.sidebarGroups || []}
+                        metadata={loaderData.metadata || {}}
+                        surfaces={surfaces}
+                        BannerContent={bannerContent}
+                        components={{
+                            Search: SearchButton,
+                            Logo: FwLogo,
+                            ...userComponents
                         }}
                     >
-                        <CoderProvider lines={settings?.theme?.coder?.lines} scroll={settings?.theme?.coder?.scroll}>
-                            <BaseThemeLayout>
-                                <PageContext value={{ theme }}>
-                                    <Outlet />
-                                </PageContext>
-                            </BaseThemeLayout>
-                        </CoderProvider>
-                    </AtlasContext>
-                </Framework>
+                        <AtlasContext
+                            value={{
+                                Link: FwLink,
+                                syntaxHighlight: settings?.theme?.coder?.syntaxHighlight || null,
+                                baseMatch: lastMatchId || "",
+                                variantToggles: atlasVariantToggles
+                            }}
+                        >
+                            <CoderProvider lines={settings?.theme?.coder?.lines} scroll={settings?.theme?.coder?.scroll}>
+                                <BaseThemeLayout>
+                                    <PageContext value={{ theme }}>
+                                        <Outlet />
+                                    </PageContext>
+                                </BaseThemeLayout>
+                            </CoderProvider>
+                        </AtlasContext>
+                    </Framework>
+                </UXNode>
+
             </IconProvider>
         </Analytics>
     </>

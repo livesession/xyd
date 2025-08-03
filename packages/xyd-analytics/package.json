@@ -28,7 +28,7 @@
   },
   "peerDependencies": {
     "@xyd-js/uniform": "workspace:*",
-    "openux-js": "0.0.0-pre.0",
+    "openux-js": "0.0.0-pre.1",
     "pluganalytics": "0.0.0-pre.3",
     "react": "^19.1.0",
     "react-router": "^7.7.1"

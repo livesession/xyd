@@ -72,7 +72,7 @@ sidebarTitle: My sidebar title
 ---
 ```
 
-## Sidebar icons
+## Sidebar Icons
 You can customize the sidebar [icons](/docs/guides/icons) for each page by specifying an icon name. The icon will be displayed next to the page title in the navigation.
 
 ```md
@@ -82,7 +82,7 @@ icon: book
 ---
 ```
 
-## Page layout [maxTocDepth=3]
+## Page Layout [maxTocDepth=3]
 
 The Page Layout setting allows you to customize the appearance of your page through different layout modes. 
 This setting is optional - if not specified, the page will use the default layout settings.

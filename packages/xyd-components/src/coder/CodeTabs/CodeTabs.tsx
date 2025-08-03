@@ -10,7 +10,7 @@ import {
 import * as cn from "./CodeTabs.styles"; // TODO: style by highlighted?
 import { SyntaxHighlightedCode } from "../CodeTheme/CodeTheme";
 import { useCodeSampleAnalytics } from "../CodeSample/CodeSampleAnalytics";
-import { useUXEvents } from "src/uxEvents";
+import { useUXEvents } from "../../uxsdk";
 
 export interface CodeTabsProps {
     description: string;
@@ -40,7 +40,7 @@ export function withCodeTabs(PreComponent) {
         function changeTab(value: string) {
             setActiveTab(value)
             codeSampleAnalytics.setActiveTab(value)
-            ux.CodeTabChange({ tab: value })
+            ux.docs.code.tab_change({tab: value})
         }
 
         if (props?.highlighted?.length === 0) { 

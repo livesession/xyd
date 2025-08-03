@@ -38,6 +38,7 @@
     "rehype-stringify": "^10.0.0"
   },
   "peerDependencies": {
+    "@xyd-js/analytics": "workspace:*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

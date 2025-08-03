@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Copy, CheckCheck } from "lucide-react"
 
-import { useUXEvents } from "../../uxEvents"
+import { useUXEvents } from "../../uxsdk"
 
 import * as cn from "./CodeCopy.styles"
 
@@ -16,7 +16,7 @@ export function CodeCopy({ text }: CodeCopyProps) {
     function onClick() {
         navigator.clipboard.writeText(text)
         setCopied(true)
-        ux.CodeCopy({ code: text })
+        ux.docs.code.copy({ code: text })
         setTimeout(() => {
             setCopied(false)
         }, 1200)

@@ -32,7 +32,7 @@
   },
   "peerDependencies": {
     "react": "^19.1.0",
-    "openux-js": "0.0.0-pre.0",
+    "openux-js": "0.0.0-pre.1",
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/plugins": "workspace:*",
     "@xyd-js/core": "workspace:*",

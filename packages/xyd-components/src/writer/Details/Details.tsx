@@ -1,6 +1,7 @@
-import React from "react"
+import React, {} from "react"
 
 import * as cn from "./Details.styles";
+import {useUXClick, useUXEvents} from "../../uxsdk";
 
 /**
  * Base interface for all Details component variants
@@ -55,14 +56,21 @@ export type DetailsProps = PrimaryDetailsProps | SecondaryDetailsProps | Tertiar
 /**
  * A collapsible details component that supports three variants: primary, secondary, and tertiary.
  * Each variant has a different visual style and structure.
- * 
+ *
  * @param props - The component props
  * @returns A details element with collapsible content
- * 
+ *
  * @category Component
  */
 export function Details(props: DetailsProps): React.ReactElement {
-    const { children, label } = props;
+    const {children, label} = props;
+
+    const ux = useUXEvents();
+    const uxClick = useUXClick(
+        ux.docs.details.open,
+        ux.docs.details.close,
+        () => ({label})
+    )
 
     let title
 
@@ -78,11 +86,12 @@ export function Details(props: DetailsProps): React.ReactElement {
         part="details"
         className={`${cn.DetailsHost} ${props.className || ""}`}
         data-kind={props.kind}
+        onClick={uxClick}
     >
         <summary part="summary">
             {kind === "primary" && (
                 <>
-                    {props.icon || <$Icon />}
+                    {props.icon || <$Icon/>}
                     <div part="summary-deep-label">
                         {label}
                     </div>
@@ -92,7 +101,7 @@ export function Details(props: DetailsProps): React.ReactElement {
             {isDeepKind && (
                 <div>
                     <div part="summary-deep">
-                        {props.icon || <$IconDeep />}
+                        {props.icon || <$IconDeep/>}
                         <div part="summary-deep-text">
                             {title}
                         </div>
@@ -100,9 +109,9 @@ export function Details(props: DetailsProps): React.ReactElement {
                     <div part="summary-deep-label">
                         {label}
                     </div>
-                </div> 
+                </div>
             )}
-            {isDeepKind && <$Icon />}
+            {isDeepKind && <$Icon/>}
         </summary>
 
         <div part="content">
@@ -151,7 +160,7 @@ function $IconDeep() {
         </g>
         <defs>
             <clipPath id="clip0_1689_2180">
-                <rect width={24} height={24} fill="white" />
+                <rect width={24} height={24} fill="white"/>
             </clipPath>
         </defs>
     </svg>

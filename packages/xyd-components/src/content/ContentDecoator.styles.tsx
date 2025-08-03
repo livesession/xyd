@@ -43,6 +43,12 @@ export default {
                 margin-top: var(--space-medium);
             }
             
+            table {
+                margin-top: var(--space-xlarge);
+                font-size: var(--xyd-font-size-small);
+                line-height: var(--xyd-line-height-small);
+            }
+            
             details {
                 &:not([data-kind="tertiary"]) {
                     --xyd-callout-bgcolor: var(--white);

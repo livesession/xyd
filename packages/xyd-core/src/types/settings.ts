@@ -223,6 +223,11 @@ export interface Appearance {
     buttons?: AppearanceButtons
 
     /**
+     * Table appearance for the theme.
+     */
+    tables?: AppearanceTables
+
+    /**
      * Banner appearance for the theme.
      */
     banner?: AppearanceBanner
@@ -369,6 +374,13 @@ export interface AppearanceSidebar {
 
 export interface AppearanceButtons {
     rounded?: boolean | "lg" | "md" | "sm"
+}
+
+export interface AppearanceTables {
+    /**
+     * The kind of the table.
+     */
+    kind?: "secondary"
 }
 
 export interface AppearanceBanner {

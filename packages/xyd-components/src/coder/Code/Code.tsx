@@ -8,6 +8,7 @@ import { CodeTheme, type CodeThemeBlockProps } from "../CodeTheme";
 import * as cn from "./Code.styles";
 import { CodeLoader } from "./CodeLoader";
 import { Icon } from "src/writer/Icon";
+import {useCodeSampleAnalytics} from "../CodeSample/CodeSampleAnalytics";
 
 export interface CodeProps {
     codeblocks?: CodeThemeBlockProps[];
@@ -91,6 +92,8 @@ Code.Pre = function CodePre(props: {
     descriptionIcon?: string
 }
 ) {
+    const codeSampleAnalytics = useCodeSampleAnalytics()
+
     const {
         size,
         className,
@@ -117,8 +120,8 @@ Code.Pre = function CodePre(props: {
                 </span>
             </div>
         </div>
-
     }
+
     return <xyd-code-pre>
         <Pre
             part="pre"
@@ -127,6 +130,7 @@ Code.Pre = function CodePre(props: {
             className={`${cn.CodeHost} ${className || ""}`}
             code={codeblock}
             handlers={handlers}
+            ref={codeSampleAnalytics.ref}
         />
 
         {description}

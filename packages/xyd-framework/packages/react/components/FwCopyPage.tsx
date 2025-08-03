@@ -14,7 +14,7 @@ export function FwCopyPage() {
     const handleCopy = () => {
         navigator.clipboard.writeText(rawPage || "")
         setIsCopied(true)
-        ux.CopyPage({})
+        ux.docs.copy_page({})
         setTimeout(() => setIsCopied(false), 2000)
     }
 

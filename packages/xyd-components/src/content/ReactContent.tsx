@@ -162,7 +162,9 @@ export function stdContent(
         },
 
         table: (props) => {
-            return <Table {...props} />
+            const kind = this.settings?.theme?.appearance?.tables?.kind
+
+            return  <Table kind={kind} {...props}  />
         },
         tr: (props) => {
             return <Table.Tr {...props} />

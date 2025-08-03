@@ -1,5 +1,8 @@
 import React, {useRef, useState} from "react";
+
 import { useTabsAnalytics } from "./TabsAnalytics";
+
+import {EVENT_COMPONENT_TAB_CHANGE} from "../../uxsdk";
 
 /**
  * Custom hook to handle value changes and determine navigation direction
@@ -60,6 +63,7 @@ export function useValueChange(
         }
 
         // Dispatch custom event if tabsRef is provided
+        console.log(tabsRef)
         if (tabsRef?.current) {
             const eventData = {
                 value: newValue,
@@ -67,7 +71,7 @@ export function useValueChange(
                 direction: newDirection as 'forward' | 'backward'
             };
             
-            const tabChangeEvent = new CustomEvent('components.tabs.change', {
+            const tabChangeEvent = new CustomEvent(EVENT_COMPONENT_TAB_CHANGE, {
                 detail: eventData,
                 bubbles: true
             });

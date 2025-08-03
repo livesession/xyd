@@ -140,7 +140,7 @@ Hello World, **Bold**, _Italic_, ~~Hidden~~
 | Hello | World       |
 ```
 
-### Component Directives
+### Component Directives [maxTocDepth=4]
 Use markdown directives (`:::`) to render components in markdown syntax. The full list of components you can find [here](/docs/components).
 
 For example you would render components like this:
@@ -153,24 +153,6 @@ You can also use MDX version of the same [component](/docs/components).
 
 :::callout
 You can also use MDX version of the same [component](/docs/components).
-:::
-
-#### Tables
-You can also use CSV-like version of declaring tables with some sugar-syntax:
-~~~
-:::table
-```
-[
-    ["Syntax", "Description", "Markdown"],
-    ["Header", "Title", "`#`"],
-    ["Paragraph", "Text", "`*`"]
-]
-```
-:::
-~~~
-
-:::callout
-You can still use [GFM](https://github.github.com/gfm/#tables-extension-) version of tables too.
 :::
 
 #### Steps
@@ -200,7 +182,25 @@ For creating tabs, you can use the following syntax:
 :::
 ```
 
-## Including content
+#### Tables {label="Experimental"}
+You can also use CSV-like version of declaring tables with some sugar-syntax:
+~~~
+:::table
+```
+[
+    ["Syntax", "Description", "Markdown"],
+    ["Header", "Title", "`#`"],
+    ["Paragraph", "Text", "`*`"]
+]
+```
+:::
+~~~
+
+:::callout
+You can still use [GFM](https://github.github.com/gfm/#tables-extension-) version of tables too.
+:::
+
+## Including Content
 You can use [@include](/docs/reference/functions/include) function to include another content files in current content:
 ```md [descHead="Tip" desc="You can include <code>.mdx</code> files too, check out [React Components](/docs/guides/react-components) guide."]
 @include "./relative-to-current-file.md"

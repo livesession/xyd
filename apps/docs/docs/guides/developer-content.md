@@ -100,7 +100,7 @@ const MyComponent = () => {
 ```
 
 &nbsp;
-## Code diff
+## Code Diff
 **Input:**
 ~~~
 ```tsx

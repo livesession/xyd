@@ -81,7 +81,7 @@ and your custom CSS:
 ...
 ```
 
-## Next steps
+## Next Steps
 
 :::guide-card{title="Code Samples" icon="code" href="https://github.com/xyd-js/examples/tree/master/react-components"}
 Learn how to setup React Component

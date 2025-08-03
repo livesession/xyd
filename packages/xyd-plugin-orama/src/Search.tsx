@@ -1,22 +1,25 @@
-import React, {useState, lazy, Suspense, useEffect, useCallback} from "react"
-import {createPortal} from 'react-dom'
-import {create, insertMultiple} from '@orama/orama'
+import React, { useState, lazy, Suspense, useEffect, useCallback, useRef } from "react"
+import { createPortal } from 'react-dom'
+import { create, insertMultiple } from '@orama/orama'
 
 import {
     useColorScheme
 } from "@xyd-js/components/writer";
-import {SearchButton} from "@xyd-js/components/system"
+import { SearchButton } from "@xyd-js/components/system"
+import { useUXEvents } from "@xyd-js/analytics"
 
-const OramaSearchBox = lazy(() => import('@orama/react-components').then(mod => ({default: mod.OramaSearchBox})));
+const OramaSearchBox = lazy(() => import('@orama/react-components').then(mod => ({ default: mod.OramaSearchBox })));
 
 export default function OramaSearch() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const ux = useUXEvents()
 
     const handleClick = useCallback(() => {
         if (isSearchOpen) {
             return
         }
 
+        ux.docs.search.open({})
         setIsSearchOpen(true)
     }, [])
 
@@ -25,18 +28,24 @@ export default function OramaSearch() {
     }, [])
 
     return <>
-        <SearchButton onClick={handleClick}/>
+        <SearchButton onClick={handleClick} />
 
         <Suspense>
-            <$OramaSearchBoxWrapper isSearchOpen={isSearchOpen} onModalClosed={onModalClosed}/>
+            <$OramaSearchBoxWrapper isSearchOpen={isSearchOpen} onModalClosed={onModalClosed} />
         </Suspense>
     </>
 }
 
-function $OramaSearchBoxWrapper({isSearchOpen, onModalClosed}: { isSearchOpen: boolean, onModalClosed: () => void }) {
+function $OramaSearchBoxWrapper({ isSearchOpen, onModalClosed }: { isSearchOpen: boolean, onModalClosed: () => void }) {
     const [oramaLocalClientInstance, setOramaLocalClientInstance] = useState<any>(null);
     const [pluginOptions, setPluginOptions] = useState<any>(null);
     const [colorScheme] = useColorScheme()
+    const ux = useUXEvents()
+    const uxTyping = useUXTyping((term: string) => {
+        ux.docs.search.query_change({
+            term: term
+        })
+    })
 
     async function loadData() {
         // @ts-ignore
@@ -88,6 +97,18 @@ function $OramaSearchBoxWrapper({isSearchOpen, onModalClosed}: { isSearchOpen: b
                 api_key: pluginOptions.cloudConfig.apiKey
             }}
             disableChat={!pluginOptions?.cloudConfig}
+            onSearchResultClick={(resp) => {
+                const result = resp.detail.result
+
+                ux.docs.search.result_click({
+                    title: result.title,
+                    description: result.description,
+                })
+            }}
+            onSearchCompleted={(resp) => {
+                const term = resp.detail.clientSearchParams?.term
+                uxTyping(term)
+            }}
         />
     ) : null;
 
@@ -112,4 +133,38 @@ async function createOramaInstance(oramaDocs: any[]): Promise<any> {
     await insertMultiple(db, oramaDocs as any)
 
     return db
+}
+
+// TODO: move to uxsdk
+function useUXTyping(callback: (term: string) => void, delay: number = 500) {
+    const timeoutRef = useRef<number | null>(null)
+    const lastTermRef = useRef<string>('')
+
+    const trackTyping = useCallback((term?: any) => {
+        // Only track if term has actually changed and is a valid string
+        if (term && typeof term === 'string' && term !== lastTermRef.current) {
+            // Clear existing timeout only when term changes
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+            }
+            lastTermRef.current = term
+            
+            timeoutRef.current = window.setTimeout(() => {
+                if (term.trim()) {
+                    callback(term.trim())
+                }
+            }, delay)
+        }
+    }, [callback, delay])
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+            }
+        }
+    }, [])
+
+    return trackTyping
 }

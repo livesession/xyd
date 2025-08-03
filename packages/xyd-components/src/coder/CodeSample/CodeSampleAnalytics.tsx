@@ -1,15 +1,21 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import {UXNode} from "openux-js";
+import { UXNode } from "openux-js";
 
-import {useTabsAnalytics} from "../../writer/Tabs/TabsAnalytics";
-import {EVENT_COMPONENT_TAB_CHANGE, useUXEvents} from "../../uxEvents";
+import { useTabsAnalytics } from "../../writer/Tabs/TabsAnalytics";
+import { EVENT_COMPONENT_TAB_CHANGE, useUXEvents, useUXScrollDepth } from "../../uxsdk";
 
 const CodeSampleAnalyticsContext = React.createContext<{
+    ref: React.RefObject<HTMLPreElement | null>
+
     setActiveTab: (tab: string) => void
 
     setActiveExample: (example: string) => void
 }>({
+    ref: {
+        current: null
+    },
+
     setActiveTab: () => {
     },
 
@@ -21,11 +27,12 @@ export function useCodeSampleAnalytics() {
     return React.useContext(CodeSampleAnalyticsContext)
 }
 
-export function CodeSampleAnalytics({children}: { children: React.ReactNode }) {
+export function CodeSampleAnalytics({ children }: { children: React.ReactNode }) {
+    const ref = useRef<HTMLPreElement>(null);
     const [activeTab, setActiveTab] = useState("")
     const [activeExample, setActiveExample] = useState("")
+
     const tabs = useTabsAnalytics()
-    useExampleTabChange()
 
     useEffect(() => {
         setActiveExample(tabs.value)
@@ -33,6 +40,7 @@ export function CodeSampleAnalytics({children}: { children: React.ReactNode }) {
 
     return (
         <CodeSampleAnalyticsContext value={{
+            ref,
             setActiveTab,
             setActiveExample
         }}>
@@ -44,10 +52,19 @@ export function CodeSampleAnalytics({children}: { children: React.ReactNode }) {
                     code: ""
                 }}
             >
-                {children}
+                <CodeSampleAnalyticsHooks>
+                    {children}
+                </CodeSampleAnalyticsHooks>
             </UXNode>
         </CodeSampleAnalyticsContext>
     );
+}
+
+function CodeSampleAnalyticsHooks({ children }: { children: React.ReactNode }) {
+    useExampleTabChange()
+    useCodeSampleScroll()
+
+    return children
 }
 
 // TODO: better API
@@ -62,8 +79,8 @@ function useExampleTabChange() {
         }
 
         function handleTabChange(event: CustomEvent) {
-            const {value} = event.detail;
-            ux.CodeExampleChange({
+            const { value } = event.detail;
+            ux.docs.code.example_change({
                 example: value,
             })
         };
@@ -75,3 +92,21 @@ function useExampleTabChange() {
         };
     }, [tabs.tabsRef.current]);
 }
+
+function useCodeSampleScroll() {
+    const codeSampleAnalytics = useCodeSampleAnalytics();
+    const ux = useUXEvents();
+    
+    useUXScrollDepth(codeSampleAnalytics.ref, {
+        onDepthReached: (depth) => {
+            if (depth === 100) {
+                ux.docs.code.scroll_100({});
+            }
+
+            ux.docs.code.scroll_depth({
+                depth: depth,
+            });
+        },
+    });
+}
+
