@@ -2,13 +2,21 @@ import type {Plugin as Vite} from "vite"
 import React from "react"
 
 import {type UniformPlugin as Uniform} from "@xyd-js/uniform"
-import {Settings} from "@xyd-js/core"
+import {HeadConfig, Settings} from "@xyd-js/core"
 import type {SurfaceTarget} from "@xyd-js/framework"
 
-// TODO: share with theme-api ?
-export interface PluginCustomComponents {
-    component: React.ComponentType<any>
-    surface: SurfaceTarget
+// // TODO: share with theme-api ?
+// export interface PluginCustomComponents {
+//     component: React.ComponentType<any>
+//     surface: SurfaceTarget
+// }
+
+export type PluginComponents = {
+    component: React.ComponentType<any>,
+    name?: string,
+    dist?: string // TODO: fix in the future
+}[] | {
+    [component: string]: React.ComponentType<any>
 }
 
 /**
@@ -37,21 +45,18 @@ export interface PluginCustomComponents {
  */
 export interface PluginConfig {
     name: string
+
     vite?: Vite[]
-
     uniform?: Uniform<any>[] // TODO: fix any
-
-    // atlas?: { // TODO: in the future
-    //     components?: any
-    // }
-    customComponents?: {
-        [name: string]: PluginCustomComponents
-    },
-    components?: {
-        component: React.ComponentType<any>,
-        name?: string,
-        dist: string // TODO: fix in the future
-    }[]
+    components?: PluginComponents
+    head?: HeadConfig[]
 }
 
-export type Plugin = (settings: Settings) => PluginConfig
+export type Plugin = (settings: Readonly<Settings>) => PluginConfig
+
+// atlas?: { // TODO: in the future
+//     components?: any
+// }
+// customComponents?: {
+//     [name: string]: PluginCustomComponents
+// },

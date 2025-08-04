@@ -32,6 +32,7 @@ import {
 import { PageHome, PageFirstSlide, PageBlogHome } from '../../pages'
 import { CodeSample } from "../../coder";
 import { GridDecorator } from './GridDecorator';
+import { useUXEvents } from '../uxsdk';
 
 interface ReactContentOptions {
     Link?: React.ElementType
@@ -120,7 +121,7 @@ export function stdContent(
     const $$Pre = $Pre.bind(this)
     const $$Heading = $Heading.bind(this)
 
-    return {
+    const stdComponents = {
         h1: (props) => {
             return <$$Heading depth={1} {...props} noanchor />
         },
@@ -199,9 +200,10 @@ export function stdContent(
         br: ({ children, ...props }) => {
             return <br {...props} />
         },
-        img: ({ children, src, alt, ...props }) => {
-            return <Image src={src} alt={alt} {...props} />
-        },
+        // img: ({ children, src, alt, ...props }) => {
+        //     return <Image src={src} alt={alt} {...props} />
+        // },
+        img: () => null,
         picture: (props) => {
             const { children, ...rest } = props
 
@@ -220,7 +222,27 @@ export function stdContent(
         textarea: ({ children, ...props }) => {
             return <textarea {...props} />
         },
+        div: (props) => <div {...props} />,
+        span: (props) => <span {...props} />,
+        iframe: (props) => <iframe {...props} />,
+        svg: (props) => <svg {...props} />,
         React: NoopReactComponent,
+    }
+
+    return {
+        ...stdComponents,
+        H1: stdComponents.h1,
+        H2: stdComponents.h2,
+        H3: stdComponents.h3,
+        H4: stdComponents.h4,
+        H5: stdComponents.h5,
+        P: stdComponents.p,
+        Ul: stdComponents.ul,
+        Ol: stdComponents.ol,
+        Li: stdComponents.li,
+        Table: stdComponents.table,
+        Tr: stdComponents.tr,
+        Th: stdComponents.th,
     }
 }
 
@@ -238,6 +260,7 @@ function $Heading({ id, depth, children, label, subtitle, noanchor, style }: Hea
     // const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
     // const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
     const navigation = this?.options?.useNavigation() // TODO: !!!! BETTER API !!!!!
+    const ux = useUXEvents()
 
     const ref = useRef<HTMLHeadingElement>(null!)
     const [active, setActive] = useState(false)
@@ -268,6 +291,11 @@ function $Heading({ id, depth, children, label, subtitle, noanchor, style }: Hea
         size={depth}
         active={active}
         onClick={() => {
+            if (id) {
+                ux.docs.anchor.click({
+                    id: id
+                })
+            }
             // navigate({
             //     hash: id
             // })

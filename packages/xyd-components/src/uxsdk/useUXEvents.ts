@@ -67,6 +67,15 @@ export const useUXEvents = defineEvents(({CodeSample, Framework}: AnalyticsNodes
                     label: label,
                 }
             }
+        },
+
+        anchor: {
+            click({id}: { id: string }) {
+                return {
+                    ...commonFrameworkProps({Framework}),
+                    id: id,
+                }
+            }
         }
     }
 }))

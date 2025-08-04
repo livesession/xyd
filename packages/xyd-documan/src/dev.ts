@@ -21,6 +21,7 @@ if (!process.env.ENABLE_TIMERS) {
 // TODO: !!! IN THE FUTURE BETTER SOLUTION !!!
 const fullReloadOptions = {
     "theme.name": true,
+    "plugins": true, // TODO: in the future better
 }
 
 /**
@@ -147,7 +148,9 @@ export async function dev(options?: DevOptions) {
                 "openux-js",
                 "pluganalytics",
                 "@orama/orama",
-                "@orama/react-components"
+                "@orama/react-components",
+                // TODO: optimize plugin deps only if loaded 
+                // "@pluganalytics/provider-livesession"
             ];
         } else {
             USE_CONTEXT_ISSUE_PACKAGES = [
@@ -156,7 +159,9 @@ export async function dev(options?: DevOptions) {
                 "@xyd-js/theme-opener",
                 "@xyd-js/theme-picasso",
                 "@xyd-js/theme-poetry",
-                "@xyd-js/theme-solar"
+                "@xyd-js/theme-solar",
+                // TODO: optimize plugin deps only if loaded 
+                // "@pluganalytics/provider-livesession"
             ]
         }
     }

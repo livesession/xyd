@@ -258,6 +258,47 @@ You can use [@include](/docs/reference/functions/include) function to include an
 @include "./relative-to-current-file.md"
 ```
 
+## Diagrams [maxTocDepth=3]
+
+### Mermaid
+Visualize complex concepts and workflows using [Mermaid](https://mermaid.js.org) diagrams directly in your Markdown. Mermaid supports multiple diagram types including flowcharts, sequence diagrams, class diagrams, state diagrams, and Gantt charts. 
+
+Simply wrap your diagram syntax in a `mermaid` code block:
+~~~
+```mermaid
+graph TD;
+    A[Start] --> B{Decision?};
+    B -->|Yes| C[Process A];
+    B -->|No| D[Process B];
+    C --> E[End];
+    D --> E;
+```
+~~~
+
+```mermaid
+graph TD;
+    A[Start] --> B{Decision?};
+    B -->|Yes| C[Process A];
+    B -->|No| D[Process B];
+    C --> E[End];
+    D --> E;
+```
+
+### Latex
+Supports [LaTeX](https://www.latex-project.org/) for math equations. To use LaTeX, wrap your inline math equations in `$`. For example, `$(a^2 + b^2 = c^2)$` will render $a^2 + b^2 = c^2$.
+
+For display math equations, wrap the equation in `$$`:
+
+```latex
+$$
+\frac{d}{dx}\left(\int_0^x f(t) \, dt\right) = f(x)
+$$
+```
+
+$$
+\frac{d}{dx}\left(\int_0^x f(t) \, dt\right) = f(x)
+$$
+
 ## Changelog
 
 You can also render changelog page using the [`@changelog`](/docs/reference/functions/changelog) function:

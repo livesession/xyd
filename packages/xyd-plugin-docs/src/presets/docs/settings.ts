@@ -90,6 +90,10 @@ function presets(settings: Settings) {
         handleSyntaxHighlight(settings.theme.coder.syntaxHighlight, settings);
     }
     ensureNavigation(settings)
+
+    if (settings?.theme && !settings?.theme?.head?.length) {
+        settings.theme.head = []
+    }
 }
 
 async function handleSyntaxHighlight(syntaxHighlight: string, settings: Settings) {

@@ -75,6 +75,9 @@ Learn more about [deploy](/docs/guides/deploy).
 ## Starter
 Use our [starter kit](https://github.com/xyd-js/starter) to get up and running quickly.
 
+## Examples
+Please checkout [examples](https://github.com/xyd-js/examples) to learn how to setup docs as you want.
+
 ## CodeSandbox Demo
 Please checkout [CodeSanbox demo](https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox).
 

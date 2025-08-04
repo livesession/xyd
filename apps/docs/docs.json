@@ -16,8 +16,26 @@
                 "./icons/iconify.json"
             ]
         },
-        "appearance": {
-           
+        "appearance": {},
+        "head": []
+    },
+    "integrations": {
+        "search": {
+            "orama": true
+        },
+        ".apps": {
+            "githubStar": {
+                "title": "Star",
+                "label": "Show your support! Star us on GitHub ⭐️",
+                "href": "https://github.com/livesession/xyd",
+                "dataIcon": "octicon-star",
+                "dataSize": "large",
+                "dataShowCount": true,
+                "ariaLabel": "Star livesession/xyd on GitHub"
+            },
+            "supademo": {
+                "apiKey": "85ce730dc4f24201ca1a65bb87bbf58585f00290295dcc1e3e5fd4cdf86f3d3c"
+            }
         }
     },
     "seo": {
@@ -122,23 +140,6 @@
                     "target": "_blank",
                     "children": "Powered by LiveSession"
                 }
-            }
-        }
-    },
-    "integrations": {
-        "search": {
-            "orama": true
-        },
-     
-        ".apps": {
-            "githubStar": {
-                "title": "Star",
-                "label": "Show your support! Star us on GitHub ⭐️",
-                "href": "https://github.com/livesession/xyd",
-                "dataIcon": "octicon-star",
-                "dataSize": "large",
-                "dataShowCount": true,
-                "ariaLabel": "Star livesession/xyd on GitHub"
             }
         }
     },
@@ -348,7 +349,8 @@
                                 "group": "Other apps",
                                 "icon": "layout-grid",
                                 "pages": [
-                                    "docs/guides/integrations/apps/github-star"
+                                    "docs/guides/integrations/apps/github-star",
+                                    "docs/guides/integrations/apps/supademo"
                                 ]
                             }
                         ]

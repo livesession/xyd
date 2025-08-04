@@ -38,6 +38,7 @@ import { loadProvider } from 'virtual:xyd-analytics-providers'
 // @ts-ignore
 import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
+import 'katex/dist/katex.min.css'
 
 // @ts-ignore
 import { components as userComponents } from 'virtual:xyd-user-components';

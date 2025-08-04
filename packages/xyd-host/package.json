@@ -20,6 +20,7 @@
     "@xyd-js/theme-solar": "workspace:*",
     "@xyd-js/plugin-orama": "workspace:*",
     "@xyd-js/plugin-algolia": "workspace:*",
+    "katex": "^0.16.22",
     "isbot": "^5",
     "react-router": "^7.7.1",
     "react": "^19.1.0",

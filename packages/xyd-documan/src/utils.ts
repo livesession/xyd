@@ -10,7 +10,7 @@ import { IconSet } from '@iconify/tools';
 
 import { readSettings, pluginDocs, type PluginDocsOptions, PluginOutput } from "@xyd-js/plugin-docs";
 import { vitePlugins as xydContentVitePlugins } from "@xyd-js/content/vite";
-import { Integrations, Plugins, Settings } from "@xyd-js/core";
+import { HeadConfig, Integrations, Plugins, Settings } from "@xyd-js/core";
 import type { IconLibrary, WebEditorNavigationItem } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
@@ -27,13 +27,17 @@ const ANALYTICS_INTEGRATION_DEPENDENCIES = {
     }
 }
 
+const EXTERNAL_XYD_PLUGINS = {
+    "@xyd-js/plugin-supademo": "0.0.0"
+}
+
 export async function appInit(options?: PluginDocsOptions) {
     const readPreloadSettings = await readSettings() // TODO: in the future better solution - currently we load settings twice (pluginDocs and here)
     if (!readPreloadSettings) {
         return null
     }
 
-    const preloadSettings = typeof readPreloadSettings === "string" ? JSON.parse(readPreloadSettings) : readPreloadSettings
+    const preloadSettings: Settings = typeof readPreloadSettings === "string" ? JSON.parse(readPreloadSettings) : readPreloadSettings
 
     {
         if (!preloadSettings.integrations?.search) {
@@ -53,35 +57,74 @@ export async function appInit(options?: PluginDocsOptions) {
         }
     }
 
-    let resolvedPlugins: PluginConfig[] = []
+    let resolvedPlugins: LoadedPlugin[] = []
     {
         resolvedPlugins = await loadPlugins(preloadSettings) || []
         const userUniformVitePlugins: UniformPlugin<any>[] = []
         const componentPlugins: any[] = [] // TODO: fix any
 
-        resolvedPlugins?.forEach(p => {
+        resolvedPlugins?.forEach((p: LoadedPlugin) => {
             if (p.uniform) {
                 userUniformVitePlugins.push(...p.uniform)
             }
             if (p.components) {
-                for (const component of p.components) {
-                    if (!component.component) {
-                        console.error("No component function")
-                        continue
-                    }
+                const components: any[] = []
 
-                    if (!component.name) {
-                        component.name = component.component.name
-                    }
+                if (!Array.isArray(p.components) && typeof p.components === "object") {
+                    const mapComponents: any[] = []
 
-                    if (!component.name) {
-                        console.error("No component name")
-                        continue
-                    }
+                    Object.keys(p.components).forEach((key) => {
+                        if (!p?.components?.[key]) {
+                            return
+                        }
+
+                        const component = p.components[key]
+
+                        mapComponents.push({
+                            component,
+                            name: key,
+                        })
+                    })
+
+                    p.components = mapComponents
                 }
-                componentPlugins.push(...p.components)
+
+                if (Array.isArray(p.components)) {
+                    for (const component of p.components) {
+                        if (!component.component) {
+                            console.error("No component function")
+                            continue
+                        }
+
+                        if (!component.name) {
+                            component.name = component.component.name
+                        }
+
+                        if (!component.dist) {
+                            component.dist = p._pluginPkg + "/" + component.name
+                            continue
+                        }
+
+                        if (!component.name) {
+                            console.error("No component name")
+                            continue
+                        }
+                    }
+
+                    components.push(...p.components)
+                }
+
+                componentPlugins.push(...components)
+            }
+
+            const head = p.head
+            if (head?.length && preloadSettings?.theme?.head) {
+                preloadSettings.theme.head.push(
+                    ...head
+                )
             }
         })
+
         globalThis.__xydUserUniformVitePlugins = userUniformVitePlugins
         globalThis.__xydUserComponents = componentPlugins
     }
@@ -100,6 +143,13 @@ export async function appInit(options?: PluginDocsOptions) {
         ...(respPluginDocs.settings?.plugins || []),
         ...(preloadSettings.plugins || [])
     ]
+
+    if (respPluginDocs.settings?.theme) {
+        respPluginDocs.settings.theme.head = [
+            ...(respPluginDocs.settings?.theme?.head || []),
+            ...(preloadSettings.theme?.head || []),
+        ]
+    }
 
     globalThis.__xydBasePath = respPluginDocs.basePath
     globalThis.__xydSettings = respPluginDocs.settings
@@ -129,7 +179,7 @@ function virtualComponentsPlugin() {
                 const userComponents = globalThis.__xydUserComponents || []
 
                 // If we have components with dist paths, pre-bundle them at build time
-                if (userComponents.length > 0 && userComponents[0]?.dist) {
+                if (userComponents.length > 0 && userComponents[0]?.component) {
                     // Generate imports for all components
                     const imports = userComponents.map((component, index) =>
                         `import Component${index} from '${component.dist}';`
@@ -365,7 +415,9 @@ export function pluginIconSet(settings: Settings): VitePluginOption {
         }
     }
 
-    async function processIconSet(iconSet: IconSet, icons: any, noPrefix?: boolean): Promise<Map<string, { svg: string }>> {
+    async function processIconSet(iconSet: IconSet, icons: any, noPrefix?: boolean): Promise<Map<string, {
+        svg: string
+    }>> {
         const resp = new Map<string, { svg: string }>();
 
         for (const icon of Object.keys(icons.icons)) {
@@ -381,13 +433,17 @@ export function pluginIconSet(settings: Settings): VitePluginOption {
         return resp;
     }
 
-    async function addIconsToMap(resp: Map<string, { svg: string }>, name: string, version?: string, noPrefix?: boolean): Promise<void> {
+    async function addIconsToMap(resp: Map<string, {
+        svg: string
+    }>, name: string, version?: string, noPrefix?: boolean): Promise<void> {
         const { icons, iconSet } = await fetchIconSet(name, version);
         const newIcons = await processIconSet(iconSet, icons, noPrefix);
         newIcons.forEach((value, key) => resp.set(key, value));
     }
 
-    async function processIconLibrary(library: string | IconLibrary | (string | IconLibrary)[]): Promise<Map<string, { svg: string }>> {
+    async function processIconLibrary(library: string | IconLibrary | (string | IconLibrary)[]): Promise<Map<string, {
+        svg: string
+    }>> {
         const resp = new Map<string, { svg: string }>();
 
         if (typeof library === 'string') {
@@ -488,10 +544,20 @@ export function getDocsPluginBasePath() {
     return path.join(getHostPath(), "./plugins/xyd-plugin-docs")
 }
 
+interface LoadedPlugin extends PluginConfig {
+    _pluginPkg: string
+}
+
 async function loadPlugins(
     settings: Settings,
 ) {
-    const resolvedPlugins: PluginConfig[] = []
+    const resolvedPlugins: LoadedPlugin[] = []
+
+    if (settings.plugins?.length) {
+        await setupPluginDependencies(settings, true)
+    }
+
+    const pluginSettingsFreeze = deepCloneAndFreeze(settings)
 
     for (const plugin of settings.plugins || []) {
         let pluginName: string
@@ -530,19 +596,39 @@ async function loadPlugins(
 
         let pluginInstance = mod.default(...pluginArgs) as (PluginConfig | Plugin)
         if (typeof pluginInstance === "function") {
-            const plug = pluginInstance(settings)
+            const plug = pluginInstance(pluginSettingsFreeze)
 
-            resolvedPlugins.push(plug)
+            resolvedPlugins.push({
+                ...plug,
+                _pluginPkg: pluginName,
+            })
 
             continue
         }
 
-        resolvedPlugins.push(pluginInstance);
-
+        resolvedPlugins.push({
+            ...pluginInstance,
+            _pluginPkg: pluginName,
+        });
     }
 
     return resolvedPlugins
 }
+
+function deepCloneAndFreeze(obj) {
+    if (obj === null || typeof obj !== 'object') return obj;
+
+    const clone = Array.isArray(obj) ? [] : {};
+
+    for (const key in obj) {
+        if (Object.hasOwn(obj, key)) {
+            clone[key] = deepCloneAndFreeze(obj[key]);
+        }
+    }
+
+    return Object.freeze(clone);
+}
+
 
 function integrationsToPlugins(integrations: Integrations) {
     const plugins: Plugins = []
@@ -564,6 +650,10 @@ function integrationsToPlugins(integrations: Integrations) {
 
     if (foundSearchIntegation > 1) {
         throw new Error("Only one search integration is allowed")
+    }
+
+    if (integrations?.[".apps"]?.supademo) {
+        plugins.push(["@xyd-js/plugin-supademo", integrations[".apps"].supademo])
     }
 
     return plugins
@@ -739,72 +829,15 @@ export async function postWorkspaceSetup(settings: Settings) {
 
         const hostPath = getHostPath()
         const packageJsonPath = path.join(hostPath, 'package.json')
+        const packageJson = await hostPackageJson()
 
-        if (!fs.existsSync(packageJsonPath)) {
-            console.warn('No package.json found in host path')
-            return
-        }
+        const integrationDeps = await setupIntegationDependencies(settings)
+        const pluginDeps = await setupPluginDependencies(settings)
 
-        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
-
-        // Initialize dependencies if they don't exist
-        if (!packageJson.dependencies) {
-            packageJson.dependencies = {}
-        }
-
-        for (const [key, value] of Object.entries(ANALYTICS_INTEGRATION_DEPENDENCIES)) {
-            const analytics = settings.integrations?.analytics?.[key]
-            if (analytics) {
-                for (const [depName, depVersion] of Object.entries(value)) {
-                    packageJson.dependencies[depName] = depVersion
-                }
-            }
-        }
-
-        for (const plugin of settings.plugins || []) {
-            let pluginName: string
-
-            if (typeof plugin === "string") {
-                pluginName = plugin
-            } else if (Array.isArray(plugin)) {
-                pluginName = plugin[0]
-            } else {
-                continue
-            }
-
-            if (pluginName.startsWith("@xyd-js/")) {
-                continue // TODO: currently we don't install built-in xyd plugins - they are defined in host
-            }
-
-            // Check if it's a valid npm package name
-            // Valid formats: name or @scope/name
-            // Invalid: ./path/to/file.js or /absolute/path
-            const isValidNpmPackage = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(pluginName)
-
-            if (isValidNpmPackage) {
-                // Search for matching dependencies in host's package.json
-                const hostPackageJsonPath = path.join(hostPath, 'package.json')
-                if (fs.existsSync(hostPackageJsonPath)) {
-                    const hostPackageJson = JSON.parse(fs.readFileSync(hostPackageJsonPath, 'utf-8'))
-                    const deps = hostPackageJson.dependencies || {}
-
-                    // Find matching dependency
-                    const matchingDep = Object.entries(deps).find(([depName]) => {
-                        return depName === pluginName
-                    })
-
-                    if (matchingDep) {
-                        packageJson.dependencies[pluginName] = matchingDep[1]
-                    } else {
-                        console.warn(`no matching dependency found for: ${pluginName} in: ${hostPackageJsonPath}`)
-                    }
-                } else {
-                    console.warn(`no host package.json found in: ${hostPath}`)
-                }
-            } else if (!pluginName.startsWith('.') && !pluginName.startsWith('/')) {
-                // Only warn if it's not a local file path (doesn't start with . or /)
-                console.warn(`invalid plugin name: ${pluginName}`)
-            }
+        packageJson.dependencies = {
+            ...integrationDeps,
+            ...packageJson.dependencies,
+            ...pluginDeps,
         }
 
         fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
@@ -817,6 +850,143 @@ export async function postWorkspaceSetup(settings: Settings) {
         spinner.stopSpinner();
         spinner.error('❌ Failed to install xyd framework');
         throw error;
+    }
+}
+
+
+async function hostPackageJson() {
+    const hostPath = getHostPath()
+    const packageJsonPath = path.join(hostPath, 'package.json')
+
+    if (!fs.existsSync(packageJsonPath)) {
+        console.warn('No package.json found in host path')
+        return
+    }
+
+    let packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'))
+
+    // Initialize dependencies if they don't exist
+    if (!packageJson.dependencies) {
+        packageJson.dependencies = {}
+    }
+
+    return packageJson
+}
+
+async function setupIntegationDependencies(
+    settings: Settings,
+) {
+    const dependencies = {}
+
+    for (const [key, value] of Object.entries(ANALYTICS_INTEGRATION_DEPENDENCIES)) {
+        const analytics = settings.integrations?.analytics?.[key]
+        if (analytics) {
+            for (const [depName, depVersion] of Object.entries(value)) {
+                dependencies[depName] = depVersion
+            }
+        }
+    }
+
+    return dependencies
+}
+
+async function setupPluginDependencies(
+    settings: Settings,
+    install: boolean = false,
+) {
+    const spinner = new CLI('dots');
+    if (install) {
+        spinner.startSpinner('Installing plugin dependencies...');
+
+        const hostPath = getHostPath()
+
+        const dependencies = {}
+
+        for (const plugin of settings.plugins || []) {
+            let pluginName: string
+
+            if (typeof plugin === "string") {
+                pluginName = plugin
+            } else if (Array.isArray(plugin)) {
+                pluginName = plugin[0]
+            } else {
+                continue
+            }
+
+            if (pluginName.startsWith("@xyd-js/") && !EXTERNAL_XYD_PLUGINS[pluginName]) {
+                continue // TODO: currently we don't install built-in xyd plugins - they are defined in host
+            }
+
+            // Check if it's a valid npm package name
+            // Valid formats: name or @scope/name
+            // Invalid: ./path/to/file.js or /absolute/path
+            const isValidNpmPackage = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(pluginName)
+
+            if (isValidNpmPackage) {
+                const xydPluginVersion = EXTERNAL_XYD_PLUGINS[pluginName]
+
+                // Search for matching dependencies in host's package.json
+                const hostPackageJsonPath = path.join(hostPath, 'package.json')
+
+                const cwdPackageJsonPath = path.join(process.cwd(), 'package.json')
+                let userDeps = {}
+                if (fs.existsSync(cwdPackageJsonPath)) {
+                    const cwdPackageJson = JSON.parse(fs.readFileSync(cwdPackageJsonPath, 'utf-8'))
+                    userDeps = cwdPackageJson.dependencies || {}
+                }
+
+                if (fs.existsSync(hostPackageJsonPath)) {
+                    const hostPackageJson = JSON.parse(fs.readFileSync(hostPackageJsonPath, 'utf-8'))
+                    const deps = hostPackageJson.dependencies || {}
+
+                    const matchingUserDep = Object.entries(userDeps).find(([depName]) => {
+                        return depName === pluginName
+                    })
+
+                    // 1. first find in user deps
+                    if (matchingUserDep) {
+                        dependencies[pluginName] = matchingUserDep[1]
+                    } else {
+                        const matchingHostDep = Object.entries(deps).find(([depName]) => {
+                            return depName === pluginName
+                        })
+
+                        // 2. if not found in user deps, find in host deps
+                        if (matchingHostDep) {
+                            dependencies[pluginName] = matchingHostDep[1]
+                        }
+                        // 3. if not found in host deps, use xyd plugin version
+                        else if (xydPluginVersion) {
+                            dependencies[pluginName] = xydPluginVersion
+                        } 
+                        // 4. otherwise use latest version
+                        else {
+                            dependencies[pluginName] = "latest"
+                        }
+                    }
+                } else {
+                    console.warn(`no host package.json found in: ${hostPath}`)
+                }
+            } else if (!pluginName.startsWith('.') && !pluginName.startsWith('/')) {
+                // Only warn if it's not a local file path (doesn't start with . or /)
+                console.warn(`invalid plugin name: ${pluginName}`)
+            }
+        }
+
+
+        if (install) {
+            const packageJson = await hostPackageJson()
+            const packageJsonPath = path.join(hostPath, 'package.json')
+
+            fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
+
+            await nodeInstallPackages(hostPath)
+
+            spinner.stopSpinner();
+            spinner.log('✔ Plugin dependencies installed successfully');
+        }
+
+        return dependencies
     }
 }
 
@@ -936,7 +1106,7 @@ function npmInstall() {
     return 'npm install'
 }
 
-async function shouldSkipHostSetup(): Promise<boolean> {
+export async function shouldSkipHostSetup(): Promise<boolean> {
     const hostPath = getHostPath();
 
     // If host folder doesn't exist, we need to set it up
@@ -977,134 +1147,5 @@ export function storeChecksum(checksum: string): void {
     }
 }
 
-function appearanceWebEditor(settings: Settings) {
-    if (!settings.theme?.appearance) {
-        return
-    }
-    if (!settings.webeditor) {
-        settings.webeditor = {}
-    }
-
-    deepMergeWithCopy(settings.webeditor, settings.webeditor)
- 
-    settings.webeditor.sidebarTop = JSON.parse(JSON.stringify(settings.webeditor.sidebarTop || []))
-
-    const searchAppearance = settings.theme.appearance?.search?.sidebar || settings.theme.appearance?.search?.middle
-    if (searchAppearance) {
-        const hasSearch = settings.webeditor.header?.find(item => item.component === "Search")
-
-        if (hasSearch) {
-            console.warn("Search already exists in webeditor.header")
-            return
-        }
-
-        if (settings.theme.appearance?.search?.sidebar) {
-            const search: WebEditorNavigationItem = {
-                component: "Search",
-                mobile: settings.theme.appearance?.search?.sidebar === "mobile" || undefined,
-                desktop: settings.theme.appearance?.search?.sidebar === "desktop" || undefined
-            }
-            if (!settings.webeditor.sidebarTop) {
-                settings.webeditor.sidebarTop = []
-            }
-
-            settings.webeditor.sidebarTop?.unshift({
-                ...search,
-            })
-        }
-
-        if (settings.theme.appearance?.search?.middle) {
-            const search: WebEditorNavigationItem = {
-                component: "Search",
-                mobile: this.theme.appearance?.search?.middle === "mobile" || undefined,
-                desktop: this.theme.appearance?.search?.middle === "desktop" || undefined
-            }
-            const searchItem = {
-                ...search,
-                float: "center" as const
-            }
-
-            settings.webeditor.header = this.headerPrepend(searchItem, "center")
-        }
-    }
-
-    if (
-        settings.theme.appearance?.sidebar?.scrollbarColor &&
-        !settings.theme.appearance?.sidebar?.scrollbar
-    ) {
-        settings.theme.appearance.sidebar.scrollbar = "secondary"
-    }
-
-    if (settings.theme.appearance?.logo?.sidebar) {
-        const logo: WebEditorNavigationItem = {
-            component: "Logo",
-            mobile: settings.theme.appearance?.logo?.sidebar === "mobile" || undefined,
-            desktop: settings.theme.appearance?.logo?.sidebar === "desktop" || undefined
-        }
-        if (!settings.webeditor.sidebarTop) {
-            settings.webeditor.sidebarTop = []
-        }
-        // const original = JSON.parse(JSON.stringify(settings.originalWebeditor.sidebarTop || []))
-
-        // settings.webeditor.sidebarTop = [
-        //     logo,
-        //     ...original
-        // ]
-        
-        settings.webeditor.sidebarTop?.unshift({
-            ...logo,
-        })
-    }
-}
 
 
-type DeepPartial<T> = {
-    [P in keyof T]?: T[P] extends object
-    ? T[P] extends Function
-    ? T[P]
-    : T[P] extends Array<infer U>
-    ? Array<DeepPartial<U>>
-    : DeepPartial<T[P]>
-    : T[P]
-}
-
-
-function deepMerge<T>(target: T, source: DeepPartial<T>): T {
-    for (const key in source) {
-        const sourceVal = source[key]
-        const targetVal = target[key]
-
-        if (
-            sourceVal &&
-            typeof sourceVal === "object" &&
-            !Array.isArray(sourceVal) &&
-            typeof targetVal === "object" &&
-            targetVal !== null
-        ) {
-            target[key] = deepMerge(targetVal, sourceVal)
-        } else if (sourceVal !== undefined) {
-            target[key] = sourceVal as any
-        }
-    }
-
-    return target
-}
-
-// ─── Deep Merge With Copy Helper ─────────────────────────────
-
-function deepMergeWithCopy<T>(
-    target: T,
-    source: DeepPartial<T>
-): T {
-    // First perform the deep merge
-    deepMerge(target, source)
-
-    // Then do JSON.parse(JSON.stringify()) on all target properties
-    for (const key in target) {
-        if (target[key] !== undefined) {
-            (target as any)[key] = JSON.parse(JSON.stringify(target[key]))
-        }
-    }
-
-    return target
-}

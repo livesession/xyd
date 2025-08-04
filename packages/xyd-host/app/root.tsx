@@ -313,12 +313,31 @@ function UserHeadScripts() {
         return null
     }
 
-    return head.map(([tag, props, content]: [string, Record<string, string | boolean>, string?], index: number) => {
-        if (content) {
-            return React.createElement(tag as any, { key: index, ...props, dangerouslySetInnerHTML: { __html: content } })
+    return head.map(([tag, rawProps, content]: [string, Record<string, string | boolean>, string?], index: number) => {
+        const props: Record<string, any> = { ...rawProps }
+
+        const onload = props.onLoad || props.onload
+
+        // Convert onLoad from string to function
+        if (typeof onload === 'string') {
+            const fnBody = onload
+            props.onLoad = () => {
+                // eslint-disable-next-line no-new-func
+                new Function(fnBody)()
+            }
         }
 
-        return React.createElement(tag as any, { key: index, ...props })
+        delete props.onload
+
+        if (content) {
+            return React.createElement(tag, {
+                key: index,
+                ...props,
+                dangerouslySetInnerHTML: { __html: content },
+            })
+        }
+
+        return React.createElement(tag, { key: index, ...props })
     })
 }
 

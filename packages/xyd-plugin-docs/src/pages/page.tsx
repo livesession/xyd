@@ -21,6 +21,7 @@ const { settings } = virtualSettings as Settings
 
 import { PageContext } from "./context";
 import { SUPPORTED_META_TAGS } from "./metatags";
+import { useAnalytics } from "@xyd-js/analytics";
 
 function getPathname(url: string) {
     const parsedUrl = new URL(url);
@@ -327,7 +328,7 @@ const createElementWithKeys = (type: any, props: any) => {
 };
 
 // TODO: move to content?
-function mdxExport(code: string, themeContentComponents: any, themeFileComponents: any) {
+function mdxExport(code: string, themeContentComponents: any, themeFileComponents: any, globalAPI: any) {
     // Create a wrapper around React.createElement that adds keys to elements in lists
     const scope = {
         Fragment: React.Fragment,
@@ -341,14 +342,14 @@ function mdxExport(code: string, themeContentComponents: any, themeFileComponent
         React,
     }
 
-    const fn = new Function("_$scope", ...Object.keys(global), "fileComponents", code);
+    const fn = new Function("_$scope", ...Object.keys(global), "fileComponents", ...Object.keys(globalAPI || {}), code);
 
-    return fn(scope, ...Object.values(global), themeFileComponents);
+    return fn(scope, ...Object.values(global), themeFileComponents, ...Object.values(globalAPI));
 }
 
 // // TODO: move to content?
-function mdxContent(code: string, themeContentComponents: any, themeFileComponents: any) {
-    const content = mdxExport(code, themeContentComponents, themeFileComponents) // TODO: fix any
+function mdxContent(code: string, themeContentComponents: any, themeFileComponents: any, globalAPI: any) {
+    const content = mdxExport(code, themeContentComponents, themeFileComponents, globalAPI) // TODO: fix any
     if (!mdxExport) {
         return {}
     }
@@ -377,6 +378,7 @@ export function MemoMDXComponent(codeComponent: any) {
 
 export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     const location = useLocation()
+    const analytics = useAnalytics()
 
     const { theme } = useContext(PageContext)
     if (!theme) {
@@ -385,8 +387,13 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
 
     const themeContentComponents = theme.reactContentComponents()
     const themeFileComponents = theme.reactFileComponents()
+    const globalAPI = {
+        analytics,
+    }
 
-    const createContent = (fileComponents) => mdxContent(loaderData.code, themeContentComponents, fileComponents ? themeFileComponents : undefined)
+    const createContent = (fileComponents) => {
+        return mdxContent(loaderData.code, themeContentComponents, fileComponents ? themeFileComponents : undefined, globalAPI)
+    }
 
     const content = createContent(true)
     const Content = MemoMDXComponent(content.component)
@@ -414,7 +421,17 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
                 ContentOriginal={ContentOriginal}
             >
                 <Page>
-                    <ContentOriginal components={themeContentComponents} />
+                    <ContentOriginal components={{
+                        ...themeContentComponents,
+                        wrapper: (props) => {
+                            // TODO: in the future delete uxnod
+                            return <UXNode
+                                name=".ContentPage"
+                            >
+                                {props.children}
+                            </UXNode>
+                        }
+                    }} />
                     <ScrollRestoration />
                 </Page>
             </FrameworkPage>

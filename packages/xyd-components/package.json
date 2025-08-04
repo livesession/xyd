@@ -50,8 +50,8 @@
   },
   "peerDependencies": {
     "@xyd-js/core": "workspace:*",
-    "openux-js": "0.0.0-pre.1",
     "@code-hike/lighter": "^1.0.3",
+    "openux-js": "0.0.0-pre.1",
     "react": "^19.1.0"
   },
   "devDependencies": {

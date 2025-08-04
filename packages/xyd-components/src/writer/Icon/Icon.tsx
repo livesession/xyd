@@ -1,4 +1,4 @@
-import React, { createContext, ReactElement, SVGProps, use } from "react";
+import React, {createContext, ReactElement, SVGProps, use} from "react";
 import parse from 'html-react-parser';
 
 import * as cn from "./Icon.styles"
@@ -15,7 +15,7 @@ interface IconProps {
 }
 
 export function Icon(props: IconProps): ReactElement | null {
-    const { name, size = 24, color } = props
+    const {name, size = 24, color} = props
 
     const iconProvider = use(IconProvider)
     const iconSet = iconProvider?.iconSet
@@ -35,10 +35,12 @@ export function Icon(props: IconProps): ReactElement | null {
             width: size,
             height: size,
             color: color || icon.props.color || 'currentColor',
+            fill: color || icon.props.fill || 'currentColor',
             style: {
                 width: size,
                 height: size,
                 color: color || icon.props.color || 'currentColor',
+                fill: color || icon.props.color || 'currentColor',
             }
         })
     }

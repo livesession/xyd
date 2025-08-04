@@ -967,6 +967,11 @@ export interface AppsDirectory {
      * List of all [options](https://github.com/buttons/react-github-btn).
      */
     githubStar?: IntegrationAppGithubStar
+
+    /**
+     * Supademo app configuration.
+     */
+    supademo?: IntegrationAppSupademo
 }
 
 export interface IntegrationAppGithubStar {
@@ -1004,6 +1009,13 @@ export interface IntegrationAppGithubStar {
      * The aria-label of the Github button
      */
     ariaLabel?: string
+}
+
+export interface IntegrationAppSupademo {
+    /**
+     * The Supademo API key
+     */
+    apiKey: string
 }
 
 // ------ END  settings for integrations END ------
