@@ -1,6 +1,8 @@
 import * as React from 'react'
+import { useEffect } from 'react'
 import { useLocation, useMatches } from 'react-router'
 import GitHubButton from 'react-github-btn'
+import { UXNode } from "openux-js";
 
 import {
     TocCard,
@@ -41,6 +43,9 @@ import {
 
 import { Theme } from "./Theme";
 import { Metadata } from '@xyd-js/core';
+import { useRef } from 'react';
+import { useUXEvents } from '@xyd-js/analytics';
+import { useUXUnreachableElementTracker } from "@xyd-js/components/uxsdk";
 
 export class BaseTheme extends Theme {
     constructor() {
@@ -121,31 +126,33 @@ export class BaseTheme extends Theme {
 
         const id = activeRoute?.id || matchActivePageRout?.id || undefined
 
-        return <LayoutPrimary
-            subheader={!!subheader}
-            layout={meta?.layout}
-            scrollKey={location.pathname}
-            id={id}
-        >
-            <LayoutPrimary.Header
-                banner={banner}
-                header={<$Navbar />}
-                subheader={subheader}
-            />
-            <LayoutPrimary.MobileAside
-                aside={sidebar}
-            />
+        return <UXNode name="BaseTheme.Layout" props={{}}>
+            <LayoutPrimary
+                subheader={!!subheader}
+                layout={meta?.layout}
+                scrollKey={location.pathname}
+                id={id}
+            >
+                <LayoutPrimary.Header
+                    banner={banner}
+                    header={<$Navbar />}
+                    subheader={subheader}
+                />
+                <LayoutPrimary.MobileAside
+                    aside={sidebar}
+                />
 
-            <main part="main">
-                {hideSidebar ? null : <aside part="sidebar">
-                    {sidebar}
-                </aside>}
+                <main part="main">
+                    {hideSidebar ? null : <aside part="sidebar">
+                        {sidebar}
+                    </aside>}
 
-                {children}
-            </main>
+                    {children}
+                </main>
 
-            {appearance?.footer?.surface !== "page" ? <$Footer /> : null}
-        </LayoutPrimary>
+                {appearance?.footer?.surface !== "page" ? <$Footer /> : null}
+            </LayoutPrimary>
+        </UXNode>
     }
 
     public Page({ children }: { children: React.ReactNode }) {
@@ -164,20 +171,22 @@ export class BaseTheme extends Theme {
         let footer = appearance?.footer?.surface === "page" ? <$Footer /> : null
         const isPage = meta?.layout === "page"
 
-        return <LayoutPrimary.Page
-            after={footer}
-            contentNav={contentNav}
-        >
-            <$Content>
-                {children}
-            </$Content>
+        return <UXNode name="BaseTheme.Page" props={{}}>
+            <LayoutPrimary.Page
+                after={footer}
+                contentNav={contentNav}
+            >
+                <$Content>
+                    {children}
+                </$Content>
 
-            {isPage ? (
-                null
-            ) : <$PageFooter>
-                <$BuiltWithXYD />
-            </$PageFooter>}
-        </LayoutPrimary.Page>
+                {isPage ? (
+                    null
+                ) : <$PageFooter>
+                    <$BuiltWithXYD />
+                </$PageFooter>}
+            </LayoutPrimary.Page>
+        </UXNode>
     }
 
     protected Navbar() {
@@ -320,11 +329,20 @@ export class BaseTheme extends Theme {
     }
 
     protected PageFooter({ children }: { children: React.ReactNode }) {
+        const githubButtonContainer = useRef<HTMLDivElement>(null)
         const settings = useSettings()
+        const ux = useUXEvents()
+
+        const apps = settings.integrations?.[".apps"]
 
         let pageFooterBottom: React.ReactNode | null = null
 
-        const apps = settings.integrations?.[".apps"]
+        // TOOD: its's a hack - in the future fork github buttons?
+        useUXUnreachableElementTracker(githubButtonContainer, () => {
+            ux.docs.github_star.hover({})
+        }, () => {
+            ux.docs.github_star.click({})
+        })
 
         if (apps?.githubStar) {
             pageFooterBottom = <div part="github-button-container">
@@ -332,15 +350,17 @@ export class BaseTheme extends Theme {
                     {apps.githubStar.label}
                 </Text>
 
-                <GitHubButton
-                    href={apps.githubStar.href}
-                    data-icon={apps.githubStar.dataIcon || "octicon-star"}
-                    data-size={apps.githubStar.dataSize || "large"}
-                    data-show-count={apps.githubStar.dataShowCount || true}
-                    aria-label={apps.githubStar.ariaLabel}
-                >
-                    {apps.githubStar.title}
-                </GitHubButton>
+                <div ref={githubButtonContainer}>
+                    <GitHubButton
+                        href={apps.githubStar.href}
+                        data-icon={apps.githubStar.dataIcon || "octicon-star"}
+                        data-size={apps.githubStar.dataSize || "large"}
+                        data-show-count={apps.githubStar.dataShowCount || true}
+                        aria-label={apps.githubStar.ariaLabel}
+                    >
+                        {apps.githubStar.title}
+                    </GitHubButton>
+                </div>
             </div>
         }
 

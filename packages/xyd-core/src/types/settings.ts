@@ -370,6 +370,11 @@ export interface AppearanceSidebar {
      * The color of the sidebar scrollbar.
      */
     scrollbarColor?: string
+
+    /**
+     * The transition behaviour of the sidebar scroll when navigating to a new page.
+     */
+    scrollTransition?: "smooth" | "instant"
 }
 
 export interface AppearanceButtons {
@@ -906,6 +911,11 @@ export interface Integrations {
     analytics?: IntegrationAnalytics
 
     /**
+     * Configurations to add third-party support integrations.
+     */
+    support?: IntegrationSupport
+
+    /**
      * Configurations to add third-party search integrations.
      * See full list of supported search here.
      */
@@ -926,14 +936,57 @@ export interface IntegrationAnalytics {
     livesession?: IntegrationAnalyticsLiveSession
 }
 
-// #endregion IntegrationAnalytics
-
 /**
  * Livesession analytics configuration
- */
+*/
 export interface IntegrationAnalyticsLiveSession {
     /** Livesession's TrackID */
     trackId: string
+}
+// #endregion IntegrationAnalytics
+
+/**
+ * Support configuration
+ */
+export interface IntegrationSupport {
+    /** Chatwoot support configuration */
+    chatwoot?: IntegrationSupportChatwoot
+
+    /** Intercom support configuration */
+    intercom?: IntegrationSupportIntercom
+
+    /** Livechat support configuration */
+    livechat?: IntegrationSupportLivechat
+}
+
+/**
+ * Chatwoot support configuration
+ */
+export interface IntegrationSupportChatwoot {
+    /** Chatwoot website token */
+    websiteToken: string
+
+    /** Chatwoot base URL */
+    baseURL?: string
+
+    /** Chatwoot settings */
+    chatwootSettings?: JSON
+}
+
+/**
+ * Intercom support configuration
+ */
+export interface IntegrationSupportIntercom {
+    /** Intercom app ID */
+    appId: string
+
+    /** Intercom API base */
+    apiBase?: string
+}
+
+export interface IntegrationSupportLivechat {
+    /** Livechat license ID */
+    licenseId: string
 }
 
 /**

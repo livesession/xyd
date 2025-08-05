@@ -4,7 +4,7 @@
   "definitions": {
     "API": {
       "additionalProperties": false,
-      "description": "API configuration interface",
+      "description": "API Docs configuration interface",
       "properties": {
         "graphql": {
           "$ref": "#/definitions/APIFile",
@@ -249,6 +249,10 @@
           "$ref": "#/definitions/AppearanceSidebar",
           "description": "Sidebar appearance for the theme."
         },
+        "tables": {
+          "$ref": "#/definitions/AppearanceTables",
+          "description": "Table appearance for the theme."
+        },
         "tabs": {
           "$ref": "#/definitions/AppearanceTabs",
           "description": "Tabs appearance for the theme."
@@ -461,6 +465,14 @@
           "description": "If `true` then the sidebar will display a scroll shadow.",
           "type": "boolean"
         },
+        "scrollTransition": {
+          "description": "The transition behaviour of the sidebar scroll when navigating to a new page.",
+          "enum": [
+            "smooth",
+            "instant"
+          ],
+          "type": "string"
+        },
         "scrollbar": {
           "const": "secondary",
           "description": "The color of the sidebar scrollbar.",
@@ -468,6 +480,17 @@
         },
         "scrollbarColor": {
           "description": "The color of the sidebar scrollbar.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceTables": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "secondary",
+          "description": "The kind of the table.",
           "type": "string"
         }
       },
@@ -483,6 +506,20 @@
             "sidebar"
           ],
           "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "AppsDirectory": {
+      "additionalProperties": false,
+      "properties": {
+        "githubStar": {
+          "$ref": "#/definitions/IntegrationAppGithubStar",
+          "description": "Github star app configuration. List of all [options](https://github.com/buttons/react-github-btn)."
+        },
+        "supademo": {
+          "$ref": "#/definitions/IntegrationAppSupademo",
+          "description": "Supademo app configuration."
         }
       },
       "type": "object"
@@ -720,9 +757,12 @@
             ]
           },
           "type": "object"
+        },
+        {
+          "type": "string"
         }
       ],
-      "maxItems": 2,
+      "maxItems": 3,
       "minItems": 2,
       "type": "array"
     },
@@ -844,14 +884,17 @@
       ],
       "type": "object"
     },
-    "IntegrationApps": {
+    "IntegrationAppSupademo": {
       "additionalProperties": false,
       "properties": {
-        "githubStar": {
-          "$ref": "#/definitions/IntegrationAppGithubStar",
-          "description": "Github star app configuration. List of all [options](https://github.com/buttons/react-github-btn)."
+        "apiKey": {
+          "description": "The Supademo API key",
+          "type": "string"
         }
       },
+      "required": [
+        "apiKey"
+      ],
       "type": "object"
     },
     "IntegrationSearch": {
@@ -912,12 +955,85 @@
       },
       "type": "object"
     },
+    "IntegrationSupport": {
+      "additionalProperties": false,
+      "description": "Support configuration",
+      "properties": {
+        "chatwoot": {
+          "$ref": "#/definitions/IntegrationSupportChatwoot",
+          "description": "Chatwoot support configuration"
+        },
+        "intercom": {
+          "$ref": "#/definitions/IntegrationSupportIntercom",
+          "description": "Intercom support configuration"
+        },
+        "livechat": {
+          "$ref": "#/definitions/IntegrationSupportLivechat",
+          "description": "Livechat support configuration"
+        }
+      },
+      "type": "object"
+    },
+    "IntegrationSupportChatwoot": {
+      "additionalProperties": false,
+      "description": "Chatwoot support configuration",
+      "properties": {
+        "baseURL": {
+          "description": "Chatwoot base URL",
+          "type": "string"
+        },
+        "chatwootSettings": {
+          "additionalProperties": false,
+          "description": "Chatwoot settings",
+          "type": "object"
+        },
+        "websiteToken": {
+          "description": "Chatwoot website token",
+          "type": "string"
+        }
+      },
+      "required": [
+        "websiteToken"
+      ],
+      "type": "object"
+    },
+    "IntegrationSupportIntercom": {
+      "additionalProperties": false,
+      "description": "Intercom support configuration",
+      "properties": {
+        "apiBase": {
+          "description": "Intercom API base",
+          "type": "string"
+        },
+        "appId": {
+          "description": "Intercom app ID",
+          "type": "string"
+        }
+      },
+      "required": [
+        "appId"
+      ],
+      "type": "object"
+    },
+    "IntegrationSupportLivechat": {
+      "additionalProperties": false,
+      "properties": {
+        "licenseId": {
+          "description": "Livechat license ID",
+          "type": "string"
+        }
+      },
+      "required": [
+        "licenseId"
+      ],
+      "type": "object"
+    },
     "Integrations": {
       "additionalProperties": false,
       "description": "Integrations configuration",
       "properties": {
         ".apps": {
-          "$ref": "#/definitions/IntegrationApps",
+          "$ref": "#/definitions/AppsDirectory",
           "description": "Custom apps directory."
         },
         "analytics": {
@@ -927,6 +1043,10 @@
         "search": {
           "$ref": "#/definitions/IntegrationSearch",
           "description": "Configurations to add third-party search integrations. See full list of supported search here."
+        },
+        "support": {
+          "$ref": "#/definitions/IntegrationSupport",
+          "description": "Configurations to add third-party support integrations."
         }
       },
       "type": "object"
@@ -1433,7 +1553,7 @@
       "properties": {
         "appearance": {
           "const": "sidebarDropdown",
-          "description": "Appearance of this segment",
+          "description": "Appearance of this segment. If 'sidebarDropdown' then show this segment as a dropdown in the sidebar if match.",
           "type": "string"
         },
         "pages": {
@@ -1464,11 +1584,51 @@
       "properties": {
         "group": {
           "description": "The name of the group",
-          "type": "string"
+          "enum": [
+            false
+          ],
+          "type": "boolean"
         },
         "icon": {
           "description": "The icon of the group.",
           "type": "string"
+        },
+        "order": {
+          "anyOf": [
+            {
+              "const": 0,
+              "type": "number"
+            },
+            {
+              "const": -1,
+              "type": "number"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "after": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "after"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "before": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "before"
+              ],
+              "type": "object"
+            }
+          ],
+          "description": "The order of the group."
         },
         "pages": {
           "description": "The relative paths to the markdown files that will serve as pages. Note: groups are recursive, so to add a sub-folder add another group object in the page array.",
@@ -1476,10 +1636,6 @@
             "$ref": "#/definitions/PageURL"
           },
           "type": "array"
-        },
-        "sort": {
-          "description": "The sort order of the group.",
-          "type": "number"
         }
       },
       "type": "object"
@@ -1511,6 +1667,17 @@
       "additionalProperties": false,
       "description": "Sidebar route configuration",
       "properties": {
+        "group": {
+          "description": "The group of the route",
+          "enum": [
+            false
+          ],
+          "type": "boolean"
+        },
+        "id": {
+          "description": "The id of the route",
+          "type": "string"
+        },
         "pages": {
           "anyOf": [
             {
@@ -1759,20 +1926,7 @@
           "type": "string"
         },
         "links": {
-          "anyOf": [
-            {
-              "items": {
-                "$ref": "#/definitions/WebEditorFooterLink"
-              },
-              "type": "array"
-            },
-            {
-              "items": {
-                "$ref": "#/definitions/WebEditorFooterLinkItem"
-              },
-              "type": "array"
-            }
-          ],
+          "$ref": "#/definitions/WebEditorFooterLinks",
           "description": "Footer links"
         },
         "logo": {
@@ -1868,6 +2022,22 @@
         "href"
       ],
       "type": "object"
+    },
+    "WebEditorFooterLinks": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/definitions/WebEditorFooterLink"
+          },
+          "type": "array"
+        },
+        {
+          "items": {
+            "$ref": "#/definitions/WebEditorFooterLinkItem"
+          },
+          "type": "array"
+        }
+      ]
     },
     "WebEditorHeader": {
       "additionalProperties": false,
@@ -2017,7 +2187,7 @@
   "properties": {
     "api": {
       "$ref": "#/definitions/API",
-      "description": "API configuration"
+      "description": "API Docs configuration"
     },
     "components": {
       "$ref": "#/definitions/Components",

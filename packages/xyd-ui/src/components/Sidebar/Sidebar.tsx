@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react"
-import { Link } from "react-router"
+import { Link, useLocation } from "react-router"
 
 import { UICollapse } from "./Collapse";
 
@@ -10,31 +10,13 @@ export interface UISidebarProps {
     footerItems?: React.ReactNode;
     className?: string;
     scrollShadow?: boolean;
+    scrollTransition?: "smooth" | "instant";
 }
 
-export function UISidebar({ children, footerItems, className, scrollShadow }: UISidebarProps) {
+export function UISidebar({ children, footerItems, className, scrollShadow, scrollTransition = 'instant' }: UISidebarProps) {
     const listRef = useRef<HTMLUListElement>(null);
 
-    useEffect(() => {
-        // TODO: in the future better solution to match with hydration
-        if (listRef.current) {
-            const activeElement = listRef.current.querySelector('[data-active="true"]');
-            if (activeElement) {
-                const containerHeight = listRef.current.clientHeight;
-                const elementTop = activeElement.getBoundingClientRect().top;
-                const elementHeight = activeElement.clientHeight;
-                const scrollTop = listRef.current.scrollTop;
-
-                // Calculate the position to center the element
-                const targetScroll = scrollTop + elementTop - (containerHeight / 2) + (elementHeight / 2);
-
-                listRef.current.scrollTo({
-                    top: targetScroll,
-                    behavior: 'auto'
-                });
-            }
-        }
-    }, []);
+    useSidebarScrollTransition(listRef, scrollTransition);
 
     // TODO: in the future theming api?
     return <xyd-sidebar
@@ -107,10 +89,12 @@ UISidebar.Item = function SidebarItem({
         {
             group !== false && <ButtonOrAnchor
                 part={`item-${button ? "button" : "link"}`}
-                href={button ? undefined : h}
-                to={h}
+                {...(ghost ? {} : {
+                    ...(button ? {} : { href: h }),
+                    ...(h ? { to: h } : {}),
+                    ...(target ? { target } : {})
+                })}
                 onClick={onClick}
-                target={target}
             >
                 <div
                     part="primary-item"
@@ -174,3 +158,69 @@ UISidebar.SubTree = function SidebarSubItem({ children, isOpen }: UISidebarSubTr
     </ul>
 }
 
+// TODO: move to shared code
+function useSidebarScrollTransition(
+    listRef: React.RefObject<HTMLUListElement | null>,
+    scrollTransition: "smooth" | "instant" | "auto" = 'auto'
+) {
+    const location = useLocation();
+    const isFirstLoad = useRef(true);
+
+    const scrollToActiveElement = (delay: number, logPrefix: string, behavior: ScrollBehavior = 'instant', forceScroll: boolean = false) => {
+        const timeoutId = setTimeout(() => {
+            if (listRef.current) {
+                const activeElement = listRef.current.querySelector('[data-active="true"]');
+                if (activeElement) {
+                    const container = listRef.current;
+                    const containerRect = container.getBoundingClientRect();
+                    const elementRect = activeElement.getBoundingClientRect();
+                    
+                    // Check if the active element is visible in the container
+                    const isElementVisible = (
+                        elementRect.top >= containerRect.top &&
+                        elementRect.bottom <= containerRect.bottom
+                    );
+                    
+                    // Scroll if element is not visible OR if forceScroll is true (for first load)
+                    if (!isElementVisible || forceScroll) {
+                        const containerHeight = container.clientHeight;
+                        const elementTop = elementRect.top - containerRect.top;
+                        const elementHeight = activeElement.clientHeight;
+                        const scrollTop = container.scrollTop;
+
+                        // Calculate the position to center the element
+                        const targetScroll = scrollTop + elementTop - (containerHeight / 2) + (elementHeight / 2);
+
+                        // const reason = forceScroll ? 'first load' : 'element not visible';
+                        // console.log(`🔄 Sidebar ${logPrefix} scrollTo (${reason})`, targetScroll, activeElement);
+                        container.scrollTo({
+                            top: targetScroll,
+                            behavior
+                        });
+                    } else {
+                        // console.log(`🔄 Sidebar ${logPrefix} - element already visible, skipping scroll`, activeElement);
+                    }
+                }
+            }
+        }, delay);
+
+        return timeoutId;
+    };
+
+    useEffect(() => {
+        if (isFirstLoad.current) {
+            // Skip navigation changes on first load
+            isFirstLoad.current = false;
+            return;
+        }
+
+        const timeoutId = scrollToActiveElement(50, 'useEffect', scrollTransition as ScrollBehavior, false);
+        return () => clearTimeout(timeoutId);
+    }, [location.pathname, scrollTransition]);
+
+    // Only scroll to active element on initial load
+    useEffect(() => {
+        const timeoutId = scrollToActiveElement(100, 'initial load', 'instant', true); // Always scroll on first load
+        return () => clearTimeout(timeoutId);
+    }, []); // Empty dependency array for initial load only
+}

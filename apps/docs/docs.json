@@ -34,7 +34,7 @@
                 "ariaLabel": "Star livesession/xyd on GitHub"
             },
             "supademo": {
-                "apiKey": "85ce730dc4f24201ca1a65bb87bbf58585f00290295dcc1e3e5fd4cdf86f3d3c"
+                "apiKey": "$SUPADEMO_API_KEY"
             }
         }
     },
@@ -343,6 +343,15 @@
                                     "docs/guides/integrations/search/search-integrations",
                                     "docs/guides/integrations/search/algolia",
                                     "docs/guides/integrations/search/orama"
+                                ]
+                            },
+                            {
+                                "group": "Support",
+                                "icon": "message-square",
+                                "pages": [
+                                    "docs/guides/integrations/support/chatwoot",
+                                    "docs/guides/integrations/support/intercom",
+                                    "docs/guides/integrations/support/livechat"
                                 ]
                             },
                             {

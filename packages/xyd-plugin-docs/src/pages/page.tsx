@@ -2,7 +2,7 @@ import path from "node:path";
 
 import * as React from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
-import { useMemo, useContext, ReactElement, SVGProps } from "react";
+import { useMemo, useContext, ReactElement, SVGProps, useEffect } from "react";
 import { redirect, ScrollRestoration, useLocation } from "react-router";
 
 import { MetadataMap, Metadata, Settings } from "@xyd-js/core"

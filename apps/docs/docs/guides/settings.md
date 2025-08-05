@@ -25,6 +25,32 @@ This section contains the full reference for the docs.json file:
 ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Settings'})"}
 
 
+## Environment Variables
+Load environment variables from `.env` files to keep sensitive values out of your code.
+
+**Supported files:** `.env`, `.env.local`, `.env.development`, `.env.production`
+
+**Usage:**
+```bash
+# .env
+LS_TRACK_ID=YOUR_TRACK_ID
+```
+
+```json [descHead="Tip" desc="Install analytics integrations to measure important [insights](/docs/guides/integrations/analytics/analytics-integrations)."]
+// docs.json
+{
+    ...
+    "integrations": {
+        "analytics": {
+            "livesession": {
+                "trackId": "$LS_TRACK_ID"
+            }
+        }
+    }
+}
+```
+
+
 ## JSON Schema Validation
 The `docs.json` file is validated against a JSON schema to ensure proper configuration. You can reference the schema by including:
 

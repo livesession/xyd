@@ -33,4 +33,11 @@ To enable the GitHub Star integration, add the following configuration to your `
 
 ## Customization
 
-You can customize the appearance and behavior of the GitHub Star button by modifying the configuration options. The button is rendered using the [`react-github-btn`](https://github.com/buttons/react-github-btn) package, which provides a consistent look and feel with GitHub's official star button.
+You can customize the appearance and behavior of the GitHub Star button by modifying the configuration options. The button is rendered using the [`github-buttons`](https://github.com/buttons/github-buttons) package, which provides a consistent look and feel with GitHub's official star button.
+
+## Analyics
+
+| Event name           | Custom properties                                                                 | Description               |
+|----------------------|------------------------------------------------------------------------------------|---------------------------|
+| `docs.github_star.hover`       | <code>-</code>                                            | When user hover a Github Star.     |
+| `docs.github_star.click`       | <code>-</code>                                            | When user clicks a Github Star.    |

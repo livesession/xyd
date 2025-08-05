@@ -44,7 +44,7 @@ const themes = fs.readdirSync(themesDir).reduce((acc, file) => {
     return acc;
 }, {});
 
-const packages = ["coder", "content", "layouts", "pages", "system", "views", "writer"];
+const packages = ["coder", "content", "layouts", "pages", "system", "views", "writer", "uxsdk"];
 
 export default [
     {

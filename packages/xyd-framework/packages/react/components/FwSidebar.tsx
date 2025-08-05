@@ -30,6 +30,7 @@ export function FwSidebar(props: FwSidebarProps) {
     return <Sidebar
         footerItems={sidebarFooterAnchors && sidebarFooterAnchors}
         scrollShadow={appearance?.sidebar?.scrollShadow}
+        scrollTransition={appearance?.sidebar?.scrollTransition}
     >
         <Surface target={SurfaceTarget.SidebarTop} />
 

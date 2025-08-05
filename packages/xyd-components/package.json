@@ -32,6 +32,9 @@
     "./writer": {
       "import": "./dist/writer.js"
     },
+    "./uxsdk": {
+      "import": "./dist/uxsdk.js"
+    },
     "./coder/themes/*": {
       "import": "./dist/coder/themes/*"
     }

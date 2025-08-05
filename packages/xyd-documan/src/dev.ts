@@ -261,13 +261,22 @@ export async function dev(options?: DevOptions) {
         const isSettingsFile = SUPPORTED_SETTINGS_FILES.some(ext => filePath.endsWith(ext))
         const isContentFile = SUPPORTED_CONTENT_FILES.some(ext => filePath.endsWith(ext))
         const isPublicPathReload = filePath.includes(getPublicPath())
-        const isWatchFile = isSettingsFile || isContentFile || apiChanged || iconChanged || syntaxHighlightChanged || isPublicPathReload
+        const isEnvFile = isEnvFilePath(filePath)
+        const isWatchFile = isSettingsFile ||
+            isContentFile ||
+            apiChanged ||
+            iconChanged ||
+            syntaxHighlightChanged ||
+            isPublicPathReload ||
+            isEnvFile
 
         if (!isWatchFile) {
             return
         }
 
-        if (isContentFile && eventType !== 'rename') {
+        const renameContentFile = isContentFile && eventType === 'rename'
+
+        if (isContentFile && !renameContentFile) {
             console.log('🔄 Content file changed, refresh...');
 
             // invalidateSettingsOnly(server) // if invalidate settings will be needed then + with composer? cuz issues with this
@@ -289,9 +298,15 @@ export async function dev(options?: DevOptions) {
             return
         }
 
-        const renameContentFile = isContentFile && eventType === 'rename'
+        const isReloadFile = isSettingsFile ||
+            renameContentFile ||
+            isPublicPathReload ||
+            iconChanged ||
+            apiChanged ||
+            syntaxHighlightChanged ||
+            isEnvFile
 
-        if (isSettingsFile || renameContentFile || isPublicPathReload || iconChanged || apiChanged || syntaxHighlightChanged) {
+        if (isReloadFile) {
             if (renameContentFile) {
                 console.log('🔄 Content file renamed, refresh...');
             } else if (isPublicPathReload) {
@@ -305,6 +320,11 @@ export async function dev(options?: DevOptions) {
                 console.log('🔄 API file changed, refresh...');
             } else if (syntaxHighlightChanged) {
                 console.log('🔄 Syntax highlight theme file changed, refresh...');
+            } else if (isEnvFile) {
+                console.log('🔄 Environment file changed, refresh...');
+                // Environment variables affect settings processing, so we need a full reload
+                await reloadServer(watcher, preview, options);
+                return;
             } else {
                 console.log('🔄 Settings file changed, refresh...');
             }
@@ -338,15 +358,7 @@ export async function dev(options?: DevOptions) {
 
                 if (needsFullReload) {
                     console.log('🔄 Full reload properties changed, restarting server...');
-                    RELOADING = true;
-
-                    // Close the current server
-                    watcher.close();
-                    await preview.close();
-                    RELOADING = false;
-
-                    // Restart the dev server
-                    await dev(options);
+                    await reloadServer(watcher, preview, options);
                     return;
                 }
             }
@@ -414,6 +426,18 @@ export async function dev(options?: DevOptions) {
     preview.httpServer?.once('close', () => {
         watcher.close();
     });
+}
+
+async function reloadServer(
+    watcher: fs.FSWatcher,
+    preview: ViteDevServer,
+    options?: DevOptions
+) {
+    RELOADING = true;
+    watcher.close();
+    await preview.close();
+    RELOADING = false;
+    await dev(options);
 }
 
 /**
@@ -591,6 +615,16 @@ function flattenApiFile(file?: APIFile): string[] {
 
     // everything else (e.g. numbers, booleans) gets dropped
     return []
+}
+
+/**
+ * Checks if a file path is an environment file
+ */
+function isEnvFilePath(filePath: string): boolean {
+    return filePath.endsWith('.env') ||
+        filePath.endsWith('.env.local') ||
+        filePath.endsWith('.env.development') ||
+        filePath.endsWith('.env.production');
 }
 
 /**

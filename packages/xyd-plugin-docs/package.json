@@ -26,7 +26,8 @@
     "@xyd-js/openapi": "workspace:*",
     "@xyd-js/gql": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
-    "@xyd-js/sources": "workspace:*"
+    "@xyd-js/sources": "workspace:*",
+    "dotenv": "^16.4.7"
   },
   "peerDependencies": {
     "@xyd-js/framework": "workspace:*",

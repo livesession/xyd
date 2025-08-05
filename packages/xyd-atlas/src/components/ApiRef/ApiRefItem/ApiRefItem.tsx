@@ -201,7 +201,7 @@ function $Definitions({
 
         {definitions?.map((definition, i) => {
             if (kind === "secondary") {
-                return <$DefinitionBody definition={definition}/>
+                return <$DefinitionBody key={i} definition={definition}/>
             }
 
             return <$VariantsProvider key={i} definition={definition}>

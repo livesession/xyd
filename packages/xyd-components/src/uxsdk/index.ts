@@ -15,3 +15,7 @@ export {
 export {
     useUXEvents,
 } from "./useUXEvents";
+
+export {
+    useUXUnreachableElementTracker,
+} from "./useUXUnreachableElementTracker";

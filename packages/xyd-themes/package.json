@@ -26,6 +26,8 @@
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/atlas": "workspace:*",
     "@xyd-js/ui": "workspace:*",
+    "@xyd-js/analytics": "workspace:*",
+    "openux-js": "0.0.0-pre.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

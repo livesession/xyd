@@ -42,6 +42,18 @@ export const useUXEvents = defineEvents(({ Framework }: AnalyticsNodes) => ({
                     term: sanitizeTerm,
                 }
             }
+        },
+        github_star: {
+            hover() {
+                return {
+                    ...commonUniformProps({ Framework }),
+                }
+            },
+            click() {
+                return {
+                    ...commonUniformProps({ Framework }),
+                }
+            }
         }
     }
 }))

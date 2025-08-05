@@ -17,6 +17,12 @@ export default {
                 margin-top: var(--space-medium);
             }
 
+            button {
+                p {
+                    color: var(--xyd-button-primary-color);
+                }
+            }
+
             & > img {
                 margin-top: var(--space-medium);
             }

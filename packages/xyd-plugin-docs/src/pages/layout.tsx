@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
     Outlet,
     useLoaderData,
@@ -21,7 +21,7 @@ import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
 
 import { Surfaces, pageMetaLayout } from "@xyd-js/framework";
 import { Composer } from "@xyd-js/composer";
-import { Analytics } from "@xyd-js/analytics";
+import { Analytics, useAnalytics } from "@xyd-js/analytics";
 // @ts-ignore
 import { iconSet } from 'virtual:xyd-icon-set';
 
@@ -233,7 +233,9 @@ export default function Layout() {
                             <CoderProvider lines={settings?.theme?.coder?.lines} scroll={settings?.theme?.coder?.scroll}>
                                 <BaseThemeLayout>
                                     <PageContext value={{ theme }}>
-                                        <Outlet />
+                                        <PostLayout>
+                                            <Outlet />
+                                        </PostLayout>
                                     </PageContext>
                                 </BaseThemeLayout>
                             </CoderProvider>
@@ -244,6 +246,17 @@ export default function Layout() {
             </IconProvider>
         </Analytics>
     </>
+}
+
+function PostLayout({ children }: { children: React.ReactNode }) {
+    const analytics = useAnalytics()
+    
+    useEffect(() => {
+        // @ts-ignore
+        window.analytics = analytics
+    }, [])
+
+    return children
 }
 
 function getPathname(url: string) {

@@ -114,6 +114,7 @@ Learn how to use built-in components
 ### Home
 ```yaml
 ---
+title: You Page Title
 component: home
 componentProps:
     hero:
@@ -149,6 +150,7 @@ componentProps:
 ### First Slide
 ```yaml
 ---
+title: You Page Title
 component: firstslide
 componentProps:
     content:

@@ -28,7 +28,10 @@ const ANALYTICS_INTEGRATION_DEPENDENCIES = {
 }
 
 const EXTERNAL_XYD_PLUGINS = {
-    "@xyd-js/plugin-supademo": "0.0.0"
+    "@xyd-js/plugin-supademo": "0.0.0",
+    "@xyd-js/plugin-chatwoot": "0.0.0",
+    "@xyd-js/plugin-intercom": "0.0.0",
+    "@xyd-js/plugin-livechat": "0.0.0"
 }
 
 export async function appInit(options?: PluginDocsOptions) {
@@ -654,6 +657,27 @@ function integrationsToPlugins(integrations: Integrations) {
 
     if (integrations?.[".apps"]?.supademo) {
         plugins.push(["@xyd-js/plugin-supademo", integrations[".apps"].supademo])
+    }
+
+    if (integrations?.support?.chatwoot) {
+        plugins.push([
+            "@xyd-js/plugin-chatwoot", 
+            integrations.support.chatwoot
+        ])
+    }
+
+    if (integrations?.support?.intercom) {
+        plugins.push([
+            "@xyd-js/plugin-intercom", 
+            integrations.support.intercom
+        ])
+    }
+
+    if (integrations?.support?.livechat) {
+        plugins.push([
+            "@xyd-js/plugin-livechat", 
+            integrations.support.livechat
+        ])
     }
 
     return plugins

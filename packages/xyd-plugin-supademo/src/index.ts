@@ -1,4 +1,6 @@
-export default function OramaPlugin(
+import { initSupademo } from './script'
+
+export default function SupademoPlugin(
     pluginOptions: any = {} // TODO: fix any
 ): any {
     return function (settings: any) {
@@ -13,10 +15,7 @@ export default function OramaPlugin(
                 [
                     "script",
                     {},
-                    `window.addEventListener('load', function(){
-                        if(typeof Supademo === 'function') 
-                            Supademo('${supademoId}',{variables:{email:'',name:''}});
-                    });`
+                    `(${initSupademo.toString()})('${supademoId}')`
                 ]
             )
         } else {
@@ -24,7 +23,7 @@ export default function OramaPlugin(
         }
 
         return {
-            name: "plugin-example",
+            name: "plugin-supademo",
             vite: [],
             head: headScripts
         }

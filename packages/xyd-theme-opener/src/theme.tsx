@@ -38,7 +38,8 @@ export default class ThemeOpener extends BaseTheme {
                 sidebar: {
                     externalArrow: true,
                     scrollShadow: true,
-                    scrollbar: "secondary"
+                    scrollbar: "secondary",
+                    scrollTransition: "smooth"
                 },
                 content: {
                     contentDecorator: "secondary",
