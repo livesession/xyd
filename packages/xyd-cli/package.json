@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/cli",
-  "version": "0.1.0-build.295",
+  "version": "0.1.0-build.299",
   "keywords": [],
   "author": "",
   "description": "",
@@ -14,7 +14,8 @@
     "package.json"
   ],
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "test": "vitest"
   },
   "dependencies": {
     "@xyd-js/documan": "workspace:*",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@types/update-notifier": "^6.0.8",
-    "tsup": "^8.3.0"
+    "tsup": "^8.3.0",
+    "vitest": "^2.1.8"
   }
 }

@@ -1,5 +1,33 @@
 # @xyd-js/uniform
 
+## 0.1.0-build.157
+
+### Patch Changes
+
+- 98583f0: update all packages
+- 98583f0: update all packages
+- update all packages
+- Updated dependencies [98583f0]
+- Updated dependencies [98583f0]
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.155
+
+## 0.1.0-build.156
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.154
+
+## 0.1.0-build.155
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.153
+
 ## 0.1.0-build.154
 
 ### Patch Changes

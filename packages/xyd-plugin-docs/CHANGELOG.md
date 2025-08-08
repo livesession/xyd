@@ -1,5 +1,60 @@
 # @xyd-js/plugin-docs
 
+## 0.1.0-build.145
+
+### Patch Changes
+
+- 98583f0: update all packages
+- 98583f0: update all packages
+- update all packages
+- Updated dependencies [98583f0]
+- Updated dependencies [98583f0]
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.153
+  - @xyd-js/composer@0.1.0-build.142
+  - @xyd-js/content@0.1.0-build.156
+  - @xyd-js/core@0.1.0-build.155
+  - @xyd-js/framework@0.1.0-build.174
+  - @xyd-js/gql@0.1.0-build.155
+  - @xyd-js/openapi@0.1.0-build.153
+  - @xyd-js/sources@0.1.1-build.145
+  - @xyd-js/themes@0.1.1-build.145
+  - @xyd-js/uniform@0.1.0-build.157
+
+## 0.1.0-build.144
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.152
+  - @xyd-js/composer@0.1.0-build.141
+  - @xyd-js/content@0.1.0-build.155
+  - @xyd-js/core@0.1.0-build.154
+  - @xyd-js/framework@0.1.0-build.173
+  - @xyd-js/gql@0.1.0-build.154
+  - @xyd-js/openapi@0.1.0-build.152
+  - @xyd-js/sources@0.1.1-build.144
+  - @xyd-js/themes@0.1.1-build.144
+  - @xyd-js/uniform@0.1.0-build.156
+
+## 0.1.0-build.143
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.151
+  - @xyd-js/composer@0.1.0-build.140
+  - @xyd-js/content@0.1.0-build.154
+  - @xyd-js/core@0.1.0-build.153
+  - @xyd-js/framework@0.1.0-build.172
+  - @xyd-js/gql@0.1.0-build.153
+  - @xyd-js/openapi@0.1.0-build.151
+  - @xyd-js/sources@0.1.1-build.143
+  - @xyd-js/themes@0.1.1-build.143
+  - @xyd-js/uniform@0.1.0-build.155
+
 ## 0.1.0-build.142
 
 ### Patch Changes

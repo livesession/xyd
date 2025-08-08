@@ -1,6 +1,7 @@
 import {join} from "node:path";
 import {exec} from "node:child_process";
 import {promisify} from "node:util";
+import {existsSync} from "node:fs";
 import {readdir, readFile, rm, writeFile} from "node:fs/promises";
 
 import {createProcessor} from "@mdx-js/mdx";
@@ -41,7 +42,16 @@ export async function isMintlify(docsPath: string, fileName: string) {
     return false
 }
 
-export async function mintlifyMigrator(docsPath: string) {
+export async function mintlifyMigrator(docsPath: string, copy = false) {
+    console.log("⏳ Starting Mintlify migration...")
+
+    // 1. if copy is true, clone the docsPath directory
+    if (copy) {
+        docsPath = await cloneDirectory(docsPath, "_copy");
+        console.log(`Cloned docsPath to: ${docsPath}`);
+    }
+
+    // 2. read docs.json
     const docsJsonPath = join(docsPath, 'docs.json')
     const docsJson = JSON.parse(await readFile(docsJsonPath, 'utf-8')) as MintlifyJSON
 
@@ -50,9 +60,44 @@ export async function mintlifyMigrator(docsPath: string) {
         return
     }
 
-    const xydSettings: XydSettings = {
+    // 3. xyd pre settings
+    const xydSettings: XydSettings = preSettings(docsJson)
+
+    // 4. xyd presetup
+    const {publicDir} = await preSetup(docsPath)
+
+    // 5. migrate mintlify docs.json to xyd settings
+    await mintlifyDocsJsonToXydSettings(
+        docsPath,
+        publicDir,
+        docsJson,
+        xydSettings
+    )
+
+    // 5. write xyd settings to docs.json
+    await writeFile(join(docsPath, 'docs.json'), JSON.stringify(xydSettings, null, 2))
+
+    // 6. migrate content files
+    await migrateContent(docsPath)
+
+    console.log('✅ Mintlify migration completed!')
+}
+
+async function cloneDirectory(src: string, suffix = "_copy"): Promise<string> {
+    const dest = `${src}${suffix}`;
+    if (existsSync(dest)) {
+        throw new Error(`Destination directory already exists: ${dest}`);
+    }
+    await execAsync(`cp -R "${src}" "${dest}"`);
+    return dest;
+}
+
+function preSettings(
+    docsJson: MintlifyJSON,
+): XydSettings {
+    return {
         theme: {
-            name: "poetry",
+            name: "gusto", // TODO: based on theme
             icons: {
                 library: [
                     {
@@ -65,177 +110,69 @@ export async function mintlifyMigrator(docsPath: string) {
                 maxTocDepth: 4,
             }
         },
-        navigation: {
+        webeditor: {
             header: [],
+        },
+        navigation: {
+            // header: [],
             sidebar: []
-        }
+        },
+        components: {},
     }
+}
 
+async function mintlifyDocsJsonToXydSettings(
+    docsPath: string,
+    publicDir: string,
+    docsJson: MintlifyJSON,
+    xydSettings: XydSettings
+) {
+    // 1. migrate navigation structure
     migrateNavigation(docsJson, xydSettings)
 
-    // Convert theme colors if available
-    if (docsJson.colors) {
-        console.log("Migrating theme colors...")
+    // 2. migrate colors
+    migrateColors(docsJson, xydSettings)
 
-        // Initialize styles object if it doesn't exist
-        if (!xydSettings.theme!.appearance) {
-            xydSettings.theme!.appearance = {}
-        }
+    // 3. migrate logo
+    await migrateLogo(docsPath, publicDir, docsJson, xydSettings)
 
-        xydSettings.theme!.appearance!.colors = {
-            primary: docsJson.colors.primary,
-            dark: docsJson.colors.dark,
-            light: docsJson.colors.light,
-        }
-    }
+    // 4. migrate favicon
+    await migrateFavicon(docsPath, publicDir, docsJson, xydSettings)
 
-    // Ensure public directory exists
-    const publicDir = join(docsPath, 'public')
-    try {
-        await readdir(publicDir)
-    } catch {
-        console.log("Creating public directory...")
-        await execAsync(`mkdir -p "${publicDir}"`)
-    }
+    // 5. migrate public resources
+    await migratePublicResources(docsPath, publicDir)
 
-    // Helper function to move resource to public folder
-    async function moveResourceToPublic(resourcePath: string | undefined): Promise<string> {
-        if (!resourcePath) return ''
+    // 6. migrate navigation links
+    migrateNavbarLinks(docsJson, xydSettings)
 
-        // Remove leading slash if present
-        const cleanPath = resourcePath.startsWith('/') ? resourcePath.slice(1) : resourcePath
+    // 7. migrate footer
+    migrateFooter(docsJson, xydSettings)
 
-        // If already in public folder, return as is
-        if (cleanPath.startsWith('public/')) {
-            return `/${cleanPath}`
-        }
+    // 8. migrate redirects
+    migrateRedirects(docsJson, xydSettings)
 
-        const sourcePath = join(docsPath, cleanPath)
+    // 9. migrate SEO settings
+    migrateSeo(docsJson, xydSettings)
+}
 
+async function preSetup(docsPath: string) {
+    let publicDir = ""
+    {
+        // TODO: move to public setup
+
+        // Ensure public directory exists
+        publicDir = join(docsPath, 'public')
         try {
-            // Check if source file exists
-            await readFile(sourcePath)
-
-            // Create the same directory structure in public
-            const relativePath = cleanPath
-            const destPath = join(publicDir, relativePath)
-
-            // Ensure the destination directory exists
-            const destDir = destPath.substring(0, destPath.lastIndexOf('/'))
-            try {
-                await readdir(destDir)
-            } catch {
-                await execAsync(`mkdir -p "${destDir}"`)
-            }
-
-            // Move file to public directory preserving structure
-            await execAsync(`mv "${sourcePath}" "${destPath}"`)
-            console.log(`Moved resource: ${cleanPath} -> public/${relativePath}`)
-
-            return `/public/${relativePath}`
-        } catch (error) {
-            console.log(`Resource not found or already in public: ${cleanPath}`)
-            return resourcePath
+            await readdir(publicDir)
+        } catch {
+            console.log("Creating public directory...")
+            await execAsync(`mkdir -p "${publicDir}"`)
         }
     }
 
-    // Convert logo if available
-    if (docsJson.logo) {
-        console.log("Migrating logo...")
-
-        if (typeof docsJson.logo === 'string') {
-            xydSettings.theme!.logo = await moveResourceToPublic(docsJson.logo)
-        } else if (typeof docsJson.logo === 'object') {
-            xydSettings.theme!.logo = {
-                light: await moveResourceToPublic(docsJson.logo.light),
-                dark: await moveResourceToPublic(docsJson.logo.dark),
-                href: docsJson.logo.href
-            }
-        }
+    return {
+        publicDir
     }
-
-    // Convert favicon if available
-    if (docsJson.favicon) {
-        console.log("Migrating favicon...")
-
-        if (typeof docsJson.favicon === 'string') {
-            xydSettings.theme!.favicon = await moveResourceToPublic(docsJson.favicon)
-        } else if (typeof docsJson.favicon === 'object') {
-            // Use light favicon as default, fallback to dark
-            const lightFavicon = await moveResourceToPublic(docsJson.favicon.light)
-            const darkFavicon = await moveResourceToPublic(docsJson.favicon.dark)
-            xydSettings.theme!.favicon = lightFavicon || darkFavicon
-        }
-    }
-
-    // Scan and move all image resources to public folder
-    console.log("Scanning for image resources...")
-    await scanAndMoveImageResources(docsPath, publicDir)
-
-    // Convert navbar links to header if available
-    if (docsJson.navbar?.links) {
-        console.log("Migrating navbar links...")
-
-        xydSettings.webeditor!.header = docsJson.navbar.links.map(link => ({
-            title: link.label,
-            href: link.href,
-            icon: typeof link.icon === 'string' ? link.icon : link.icon?.name,
-            float: 'right'
-        }))
-    }
-
-    // Convert footer if available
-    if (docsJson.footer) {
-        console.log("Migrating footer...")
-
-        // Convert Mintlify socials to XYD format (only include supported platforms)
-        const xydSocials: any = {}
-        if (docsJson.footer.socials) {
-            const supportedPlatforms = ['x', 'facebook', 'youtube', 'discord', 'slack', 'github', 'linkedin', 'instagram', 'hackernews', 'medium', 'telegram', 'bluesky', 'reddit']
-            for (const [platform, url] of Object.entries(docsJson.footer.socials)) {
-                if (supportedPlatforms.includes(platform)) {
-                    xydSocials[platform] = url
-                }
-            }
-        }
-
-        xydSettings.webeditor!.footer = {
-            social: Object.keys(xydSocials).length > 0 ? xydSocials : undefined,
-            links: docsJson.footer.links?.map(linkGroup => ({
-                header: linkGroup.header || '',
-                items: linkGroup.items.map(item => ({
-                    label: item.label,
-                    href: item.href
-                }))
-            }))
-        }
-    }
-
-    // Convert redirects if available
-    if (docsJson.redirects) {
-        console.log("Migrating redirects...")
-
-        xydSettings.redirects = docsJson.redirects.map(redirect => ({
-            source: redirect.source,
-            destination: redirect.destination
-        }))
-    }
-
-    // Convert SEO settings if available
-    if (docsJson.seo) {
-        console.log("Migrating SEO...")
-
-        xydSettings.seo = {
-            metatags: docsJson.seo.metatags || undefined
-        }
-    }
-
-    await writeFile(join(docsPath, 'docs.json'), JSON.stringify(xydSettings, null, 2))
-
-    // Migrate content files
-    await migrateContent(docsPath)
-
-    console.log('✅ Mintlify migration completed!')
 }
 
 // TODO: in the future more advanced structuring - currently a basic header pushing migration + sidebar
@@ -351,6 +288,141 @@ function migrateNavigation(
     }
 }
 
+function migrateColors(
+    docsJson: MintlifyJSON,
+    xydSettings: XydSettings
+) {
+    if (docsJson.colors) {
+        console.log("Migrating theme colors...")
+
+        // Initialize styles object if it doesn't exist
+        if (!xydSettings.theme!.appearance) {
+            xydSettings.theme!.appearance = {}
+        }
+
+        xydSettings.theme!.appearance!.colors = {
+            primary: docsJson.colors.primary,
+            dark: docsJson.colors.dark,
+            light: docsJson.colors.light,
+        }
+    }
+}
+
+async function migrateLogo(
+    docsPath: string,
+    publicDir: string,
+    docsJson: MintlifyJSON,
+    xydSettings: XydSettings
+) {
+    if (docsJson.logo) {
+        console.log("Migrating logo...")
+
+        if (typeof docsJson.logo === 'string') {
+            xydSettings.theme!.logo = await moveResourceToPublic(docsPath, publicDir, docsJson.logo)
+        } else if (typeof docsJson.logo === 'object') {
+            xydSettings.theme!.logo = {
+                light: await moveResourceToPublic(docsPath, publicDir, docsJson.logo.light),
+                dark: await moveResourceToPublic(docsPath, publicDir, docsJson.logo.dark),
+                href: docsJson.logo.href
+            }
+        }
+    }
+}
+
+async function migrateFavicon(
+    docsPath: string,
+    publicDir: string,
+    docsJson: MintlifyJSON,
+    xydSettings: XydSettings
+) {
+    if (docsJson.favicon) {
+        console.log("Migrating favicon...")
+
+        if (typeof docsJson.favicon === 'string') {
+            xydSettings.theme!.favicon = await moveResourceToPublic(docsPath, publicDir, docsJson.favicon)
+        } else if (typeof docsJson.favicon === 'object') {
+            // Use light favicon as default, fallback to dark
+            const lightFavicon = await moveResourceToPublic(docsPath, publicDir, docsJson.favicon.light)
+            const darkFavicon = await moveResourceToPublic(docsPath, publicDir, docsJson.favicon.dark)
+            xydSettings.theme!.favicon = lightFavicon || darkFavicon
+        }
+    }
+}
+
+function migrateNavbarLinks(
+    docsJson: MintlifyJSON,
+    xydSettings: XydSettings
+) {
+    if (docsJson.navbar?.links) {
+        console.log("Migrating navbar links...")
+
+        xydSettings.webeditor!.header = docsJson.navbar.links.map(link => ({
+            title: link.label,
+            href: link.href,
+            icon: typeof link.icon === 'string' ? link.icon : link.icon?.name,
+            float: 'right'
+        }))
+    }
+}
+
+function migrateFooter(
+    docsJson: MintlifyJSON,
+    xydSettings: XydSettings
+) {
+    if (docsJson.footer) {
+        console.log("Migrating footer...")
+
+        // Convert Mintlify socials to XYD format (only include supported platforms)
+        const xydSocials: any = {}
+        if (docsJson.footer.socials) {
+            const supportedPlatforms = ['x', 'facebook', 'youtube', 'discord', 'slack', 'github', 'linkedin', 'instagram', 'hackernews', 'medium', 'telegram', 'bluesky', 'reddit']
+            for (const [platform, url] of Object.entries(docsJson.footer.socials)) {
+                if (supportedPlatforms.includes(platform)) {
+                    xydSocials[platform] = url
+                }
+            }
+        }
+
+        xydSettings.components!.footer = {
+            social: Object.keys(xydSocials).length > 0 ? xydSocials : undefined,
+            links: docsJson.footer.links?.map(linkGroup => ({
+                header: linkGroup.header || '',
+                items: linkGroup.items.map(item => ({
+                    label: item.label,
+                    href: item.href
+                }))
+            }))
+        }
+    }
+}
+
+function migrateRedirects(
+    docsJson: MintlifyJSON,
+    xydSettings: XydSettings
+) {
+    if (docsJson.redirects) {
+        console.log("Migrating redirects...")
+
+        xydSettings.redirects = docsJson.redirects.map(redirect => ({
+            source: redirect.source,
+            destination: redirect.destination
+        }))
+    }
+}
+
+function migrateSeo(
+    docsJson: MintlifyJSON,
+    xydSettings: XydSettings
+) {
+    if (docsJson.seo) {
+        console.log("Migrating SEO...")
+
+        xydSettings.seo = {
+            metatags: docsJson.seo.metatags || undefined
+        }
+    }
+}
+
 /**
  * Convert Mintlify pages array to XYD pages format
  */
@@ -374,7 +446,50 @@ function convertPagesToXYD(pages: any[]): any[] {
     return convertedPages
 }
 
-async function scanAndMoveImageResources(docsPath: string, publicDir: string) {
+// Helper function to move resource to public folder
+async function moveResourceToPublic(docsPath: string, publicDir: string, resourcePath: string | undefined): Promise<string> {
+    if (!resourcePath) return ''
+
+    // Remove leading slash if present
+    const cleanPath = resourcePath.startsWith('/') ? resourcePath.slice(1) : resourcePath
+
+    // If already in public folder, return as is
+    if (cleanPath.startsWith('public/')) {
+        return `/${cleanPath}`
+    }
+
+    const sourcePath = join(docsPath, cleanPath)
+
+    try {
+        // Check if source file exists
+        await readFile(sourcePath)
+
+        // Create the same directory structure in public
+        const relativePath = cleanPath
+        const destPath = join(publicDir, relativePath)
+
+        // Ensure the destination directory exists
+        const destDir = destPath.substring(0, destPath.lastIndexOf('/'))
+        try {
+            await readdir(destDir)
+        } catch {
+            await execAsync(`mkdir -p "${destDir}"`)
+        }
+
+        // Move file to public directory preserving structure
+        await execAsync(`mv "${sourcePath}" "${destPath}"`)
+        console.log(`Moved resource: ${cleanPath} -> public/${relativePath}`)
+
+        return `/public/${relativePath}`
+    } catch (error) {
+        console.log(`Resource not found or already in public: ${cleanPath}`)
+        return resourcePath
+    }
+}
+
+async function migratePublicResources(docsPath: string, publicDir: string) {
+    console.log("Scanning for image resources...")
+
     const imageExtensions = ['.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico']
 
     async function scanDirectory(currentDir: string) {
@@ -468,7 +583,7 @@ async function migrateMdxFile(docsPath: string, filePath: string) {
         const content = await readFile(filePath, 'utf-8')
 
         // Convert Mintlify components to XYD format
-        const convertedContent = await convertMintlifyComponents(docsPath, content, filePath)
+        const convertedContent = await convertMDXComponents(docsPath, content, filePath)
 
         // Create new file path with .md extension
         const newFilePath = filePath.replace(/\.mdx$/, '.md')
@@ -485,7 +600,7 @@ async function migrateMdxFile(docsPath: string, filePath: string) {
     }
 }
 
-async function convertMintlifyComponents(docsPath: string, content: string, filePath: string): Promise<string> {
+async function convertMDXComponents(docsPath: string, content: string, filePath: string): Promise<string> {
     try {
         console.log('Processing MDX content...', filePath)
 
@@ -998,6 +1113,7 @@ async function transformMintlifyComponents(ast: any, originalMdxString: string):
     return transformedAst || {type: 'root', children: []}
 }
 
+// TODO: some mintlify docs may not have defined $schema
 function isMintlifyJson(data: any): boolean {
     // Check if data is an object and has the required $schema property
     if (!data || typeof data !== 'object' || !data.$schema) {

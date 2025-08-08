@@ -1,5 +1,70 @@
 # @xyd-js/apidocs-demo
 
+## 0.0.1-build.58
+
+### Patch Changes
+
+- Updated dependencies [98583f0]
+- Updated dependencies [98583f0]
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.158
+  - @xyd-js/components@0.1.0-build.153
+  - @xyd-js/core@0.1.0-build.155
+  - @xyd-js/framework@0.1.0-build.174
+  - @xyd-js/gql@0.1.0-build.155
+  - @xyd-js/openapi@0.1.0-build.153
+  - @xyd-js/theme-cosmo@0.1.0-build.142
+  - @xyd-js/theme-gusto@0.1.0-build.141
+  - @xyd-js/theme-opener@0.1.0-build.142
+  - @xyd-js/theme-picasso@0.1.0-build.142
+  - @xyd-js/theme-poetry@0.1.0-build.169
+  - @xyd-js/theme-solar@0.1.0-build.56
+  - @xyd-js/themes@0.1.1-build.145
+  - @xyd-js/ui@0.1.0-build.158
+  - @xyd-js/uniform@0.1.0-build.157
+
+## 0.0.1-build.57
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.157
+  - @xyd-js/components@0.1.0-build.152
+  - @xyd-js/core@0.1.0-build.154
+  - @xyd-js/framework@0.1.0-build.173
+  - @xyd-js/gql@0.1.0-build.154
+  - @xyd-js/openapi@0.1.0-build.152
+  - @xyd-js/theme-cosmo@0.1.0-build.141
+  - @xyd-js/theme-gusto@0.1.0-build.140
+  - @xyd-js/theme-opener@0.1.0-build.141
+  - @xyd-js/theme-picasso@0.1.0-build.141
+  - @xyd-js/theme-poetry@0.1.0-build.168
+  - @xyd-js/theme-solar@0.1.0-build.55
+  - @xyd-js/themes@0.1.1-build.144
+  - @xyd-js/ui@0.1.0-build.157
+  - @xyd-js/uniform@0.1.0-build.156
+
+## 0.0.1-build.56
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.156
+  - @xyd-js/components@0.1.0-build.151
+  - @xyd-js/core@0.1.0-build.153
+  - @xyd-js/framework@0.1.0-build.172
+  - @xyd-js/gql@0.1.0-build.153
+  - @xyd-js/openapi@0.1.0-build.151
+  - @xyd-js/theme-cosmo@0.1.0-build.140
+  - @xyd-js/theme-gusto@0.1.0-build.139
+  - @xyd-js/theme-opener@0.1.0-build.140
+  - @xyd-js/theme-picasso@0.1.0-build.140
+  - @xyd-js/theme-poetry@0.1.0-build.167
+  - @xyd-js/theme-solar@0.1.0-build.54
+  - @xyd-js/themes@0.1.1-build.143
+  - @xyd-js/ui@0.1.0-build.156
+  - @xyd-js/uniform@0.1.0-build.155
+
 ## 0.0.1-build.55
 
 ### Patch Changes

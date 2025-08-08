@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-chatwoot",
-  "version": "0.0.0",
+  "version": "0.1.0-build.2",
   "author": "",
   "description": "",
   "license": "MIT",
@@ -19,8 +19,7 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "peerDependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

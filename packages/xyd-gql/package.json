@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/gql",
-  "version": "0.1.0-build.152",
+  "version": "0.1.0-build.155",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",

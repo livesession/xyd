@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/plugin-intercom",
-  "version": "0.0.0",
+  "version": "0.1.0-build.2",
   "author": "",
   "description": "",
   "license": "MIT",
@@ -19,10 +19,8 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "dependencies": {
-  },
-  "peerDependencies": {
-  },
+  "dependencies": {},
+  "peerDependencies": {},
   "devDependencies": {
     "vite": "^7.0.0",
     "@vitest/coverage-v8": "^1.6.1",

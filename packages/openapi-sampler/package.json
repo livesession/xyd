@@ -1,6 +1,6 @@
 {
     "name": "@xyd-js/openapi-sampler",
-    "version": "0.1.0-build.120",
+    "version": "0.1.0-build.123",
     "description": "",
     "main": "./dist/index.js",
     "types": "./src/index.d.ts",
