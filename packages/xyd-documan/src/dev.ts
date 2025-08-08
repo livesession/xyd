@@ -334,6 +334,7 @@ export async function dev(options?: DevOptions) {
             if (respPluginDocs?.settings.engine?.uniform?.store) {
                 const resp = await appInit({
                     disableFSWrite: true,
+                    doNotInstallPluginDependencies: true
                 })
 
                 const respSettings = resp?.respPluginDocs?.settings
@@ -341,7 +342,9 @@ export async function dev(options?: DevOptions) {
                     newSettings = respSettings
                 }
             } else {
-                const resp = await appInit() // TODO: !!! IN THE FUTURE MORE EFFICIENT WAY !!!
+                const resp = await appInit({
+                    doNotInstallPluginDependencies: true
+                }) // TODO: !!! IN THE FUTURE MORE EFFICIENT WAY !!!
 
                 const respSettings = resp?.respPluginDocs?.settings
                 if (respSettings) {

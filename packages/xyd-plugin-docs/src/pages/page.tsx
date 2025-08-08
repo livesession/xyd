@@ -3,7 +3,7 @@ import path from "node:path";
 import * as React from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
 import { useMemo, useContext, ReactElement, SVGProps, useEffect } from "react";
-import { redirect, ScrollRestoration, useLocation } from "react-router";
+import { redirect, ScrollRestoration, useLocation, useNavigation } from "react-router";
 
 import { MetadataMap, Metadata, Settings } from "@xyd-js/core"
 import { ContentFS } from "@xyd-js/content"
@@ -378,12 +378,25 @@ export function MemoMDXComponent(codeComponent: any) {
 
 export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     const location = useLocation()
+    const navigation = useNavigation()
+
     const analytics = useAnalytics()
 
     const { theme } = useContext(PageContext)
     if (!theme) {
         throw new Error("BaseTheme not found")
     }
+
+    // Dispatch custom event when location changes
+    useEffect(() => {
+        const event = new CustomEvent('xyd::pathnameChange', {
+            detail: {
+                pathname: location.pathname,
+            }
+        });
+
+        window.dispatchEvent(event);
+    }, [location.pathname]);
 
     const themeContentComponents = theme.reactContentComponents()
     const themeFileComponents = theme.reactFileComponents()
@@ -427,6 +440,7 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
                             // TODO: in the future delete uxnod
                             return <UXNode
                                 name=".ContentPage"
+                                props={{}}
                             >
                                 {props.children}
                             </UXNode>

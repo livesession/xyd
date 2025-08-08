@@ -3,6 +3,9 @@ title: Intercom
 ---
 
 # Intercom
+:::subtitle
+Learn how to add Intercom support integration
+:::
 
 The [Intercom](https://intercom.com) integration allows you to embed a live chat widget in your documentation. This enables visitors to get real-time support and assistance directly within your docs, providing instant help and improving user experience.
 

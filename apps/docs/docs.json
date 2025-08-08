@@ -23,6 +23,13 @@
         "search": {
             "orama": true
         },
+        "abtesting": {
+           "providers": {
+                "launchdarkly": {
+                    "env": "$LAUNCH_DARKLY_ENV"
+                }
+           }
+        },
         ".apps": {
             "githubStar": {
                 "title": "Star",
@@ -341,17 +348,27 @@
                                 "icon": "text-search",
                                 "pages": [
                                     "docs/guides/integrations/search/search-integrations",
-                                    "docs/guides/integrations/search/algolia",
-                                    "docs/guides/integrations/search/orama"
+                                    "docs/guides/integrations/search/orama",
+                                    "docs/guides/integrations/search/algolia"
                                 ]
                             },
                             {
                                 "group": "Support",
                                 "icon": "message-square",
                                 "pages": [
+                                    "docs/guides/integrations/support/support-integrations",
                                     "docs/guides/integrations/support/chatwoot",
                                     "docs/guides/integrations/support/intercom",
                                     "docs/guides/integrations/support/livechat"
+                                ]
+                            },
+                            {
+                                "group": "AB Testing",
+                                "icon": "flask-conical",
+                                "pages": [
+                                    "docs/guides/integrations/abtesting/abtesting-integrations",
+                                    "docs/guides/integrations/abtesting/growthbook",
+                                    "docs/guides/integrations/abtesting/launchdarkly"
                                 ]
                             },
                             {

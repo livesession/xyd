@@ -4,10 +4,10 @@ title: Analytics Integrations
 
 # Analytics Integrations
 :::subtitle
-Integrate with an analytics platform to track events
+Integrate an analytics platform to track events
 :::
 
-Automatically send data about your documentation engagement to your third party analytics providers.
+Automatically send [analytics data](https://livesession.io) about your documentation engagement to your third party analytics providers.
 
 ## All integrations
 :::grid
@@ -18,7 +18,6 @@ Automatically send data about your documentation engagement to your third party 
     :::
 
 :::
-
 
 ## Enable Analytics
 Set your analytics keys in `docs.json` under the `integrations.analytics` section:

@@ -62,7 +62,7 @@ export async function appInit(options?: PluginDocsOptions) {
 
     let resolvedPlugins: LoadedPlugin[] = []
     {
-        resolvedPlugins = await loadPlugins(preloadSettings) || []
+        resolvedPlugins = await loadPlugins(preloadSettings, options) || []
         const userUniformVitePlugins: UniformPlugin<any>[] = []
         const componentPlugins: any[] = [] // TODO: fix any
 
@@ -553,10 +553,11 @@ interface LoadedPlugin extends PluginConfig {
 
 async function loadPlugins(
     settings: Settings,
+    options?: PluginDocsOptions
 ) {
     const resolvedPlugins: LoadedPlugin[] = []
 
-    if (settings.plugins?.length) {
+    if (settings.plugins?.length && !options?.doNotInstallPluginDependencies) {
         await setupPluginDependencies(settings, true)
     }
 
@@ -919,99 +920,98 @@ async function setupPluginDependencies(
     install: boolean = false,
 ) {
     const spinner = new CLI('dots');
-    if (install) {
-        spinner.startSpinner('Installing plugin dependencies...');
 
-        const hostPath = getHostPath()
+    const hostPath = getHostPath()
 
-        const dependencies = {}
+    const dependencies = {}
 
-        for (const plugin of settings.plugins || []) {
-            let pluginName: string
+    for (const plugin of settings.plugins || []) {
+        let pluginName: string
 
-            if (typeof plugin === "string") {
-                pluginName = plugin
-            } else if (Array.isArray(plugin)) {
-                pluginName = plugin[0]
-            } else {
-                continue
+        if (typeof plugin === "string") {
+            pluginName = plugin
+        } else if (Array.isArray(plugin)) {
+            pluginName = plugin[0]
+        } else {
+            continue
+        }
+
+        if (pluginName.startsWith("@xyd-js/") && (!EXTERNAL_XYD_PLUGINS[pluginName] || process.env.XYD_DEV_MODE === "2")) {
+            continue // TODO: currently we don't install built-in xyd plugins - they are defined in host
+        }
+
+        // Check if it's a valid npm package name
+        // Valid formats: name or @scope/name
+        // Invalid: ./path/to/file.js or /absolute/path
+        const isValidNpmPackage = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(pluginName)
+
+        if (isValidNpmPackage) {
+            const xydPluginVersion = EXTERNAL_XYD_PLUGINS[pluginName]
+
+            // Search for matching dependencies in host's package.json
+            const hostPackageJsonPath = path.join(hostPath, 'package.json')
+
+            const cwdPackageJsonPath = path.join(process.cwd(), 'package.json')
+            let userDeps = {}
+            if (fs.existsSync(cwdPackageJsonPath)) {
+                const cwdPackageJson = JSON.parse(fs.readFileSync(cwdPackageJsonPath, 'utf-8'))
+                userDeps = cwdPackageJson.dependencies || {}
             }
 
-            if (pluginName.startsWith("@xyd-js/") && !EXTERNAL_XYD_PLUGINS[pluginName]) {
-                continue // TODO: currently we don't install built-in xyd plugins - they are defined in host
-            }
+            if (fs.existsSync(hostPackageJsonPath)) {
+                const hostPackageJson = JSON.parse(fs.readFileSync(hostPackageJsonPath, 'utf-8'))
+                const deps = hostPackageJson.dependencies || {}
 
-            // Check if it's a valid npm package name
-            // Valid formats: name or @scope/name
-            // Invalid: ./path/to/file.js or /absolute/path
-            const isValidNpmPackage = /^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(pluginName)
+                const matchingUserDep = Object.entries(userDeps).find(([depName]) => {
+                    return depName === pluginName
+                })
 
-            if (isValidNpmPackage) {
-                const xydPluginVersion = EXTERNAL_XYD_PLUGINS[pluginName]
-
-                // Search for matching dependencies in host's package.json
-                const hostPackageJsonPath = path.join(hostPath, 'package.json')
-
-                const cwdPackageJsonPath = path.join(process.cwd(), 'package.json')
-                let userDeps = {}
-                if (fs.existsSync(cwdPackageJsonPath)) {
-                    const cwdPackageJson = JSON.parse(fs.readFileSync(cwdPackageJsonPath, 'utf-8'))
-                    userDeps = cwdPackageJson.dependencies || {}
-                }
-
-                if (fs.existsSync(hostPackageJsonPath)) {
-                    const hostPackageJson = JSON.parse(fs.readFileSync(hostPackageJsonPath, 'utf-8'))
-                    const deps = hostPackageJson.dependencies || {}
-
-                    const matchingUserDep = Object.entries(userDeps).find(([depName]) => {
+                // 1. first find in user deps
+                if (matchingUserDep) {
+                    dependencies[pluginName] = matchingUserDep[1]
+                } else {
+                    const matchingHostDep = Object.entries(deps).find(([depName]) => {
                         return depName === pluginName
                     })
 
-                    // 1. first find in user deps
-                    if (matchingUserDep) {
-                        dependencies[pluginName] = matchingUserDep[1]
-                    } else {
-                        const matchingHostDep = Object.entries(deps).find(([depName]) => {
-                            return depName === pluginName
-                        })
-
-                        // 2. if not found in user deps, find in host deps
-                        if (matchingHostDep) {
-                            dependencies[pluginName] = matchingHostDep[1]
-                        }
-                        // 3. if not found in host deps, use xyd plugin version
-                        else if (xydPluginVersion) {
-                            dependencies[pluginName] = xydPluginVersion
-                        } 
-                        // 4. otherwise use latest version
-                        else {
-                            dependencies[pluginName] = "latest"
-                        }
+                    // 2. if not found in user deps, find in host deps
+                    if (matchingHostDep) {
+                        dependencies[pluginName] = matchingHostDep[1]
                     }
-                } else {
-                    console.warn(`no host package.json found in: ${hostPath}`)
+                    // 3. if not found in host deps, use xyd plugin version
+                    else if (xydPluginVersion) {
+                        dependencies[pluginName] = xydPluginVersion
+                    } 
+                    // 4. otherwise use latest version
+                    else {
+                        dependencies[pluginName] = "latest"
+                    }
                 }
-            } else if (!pluginName.startsWith('.') && !pluginName.startsWith('/')) {
-                // Only warn if it's not a local file path (doesn't start with . or /)
-                console.warn(`invalid plugin name: ${pluginName}`)
+            } else {
+                console.warn(`no host package.json found in: ${hostPath}`)
             }
+        } else if (!pluginName.startsWith('.') && !pluginName.startsWith('/')) {
+            // Only warn if it's not a local file path (doesn't start with . or /)
+            console.warn(`invalid plugin name: ${pluginName}`)
         }
-
-
-        if (install) {
-            const packageJson = await hostPackageJson()
-            const packageJsonPath = path.join(hostPath, 'package.json')
-
-            fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
-
-            await nodeInstallPackages(hostPath)
-
-            spinner.stopSpinner();
-            spinner.log('✔ Plugin dependencies installed successfully');
-        }
-
-        return dependencies
     }
+
+
+    if (install) {
+        spinner.startSpinner('Installing plugin dependencies...');
+
+        const packageJson = await hostPackageJson()
+        const packageJsonPath = path.join(hostPath, 'package.json')
+
+        fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
+
+        await nodeInstallPackages(hostPath)
+
+        spinner.stopSpinner();
+        spinner.log('✔ Plugin dependencies installed successfully');
+    }
+
+    return dependencies
 }
 
 function nodeInstallPackages(hostPath: string) {

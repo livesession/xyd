@@ -544,10 +544,10 @@ export interface Sidebar {
 }
 
 type Order =
-  | 0
-  | -1
-  | { after: string }
-  | { before: string };
+    | 0
+    | -1
+    | { after: string }
+    | { before: string };
 
 /**
  * Page URL type
@@ -922,6 +922,11 @@ export interface Integrations {
     search?: IntegrationSearch
 
     /**
+     * A/B testing configuration
+     */
+    abtesting?: IntegrationABTesting
+
+    /**
      * Custom apps directory.
      */
     [".apps"]?: AppsDirectory
@@ -1014,10 +1019,60 @@ export interface IntegrationSearch {
     } | boolean
 }
 
+/**
+ * A/B testing configuration
+ */
+export interface IntegrationABTesting {
+    /**
+     * Context max age in milliseconds
+     */
+    contextMaxAge?: number
+
+    /**
+     * Context storage key used to store the context in the browser storage
+     */
+    contextStorageKey?: string
+
+    /**
+     * Providers configuration
+     */
+    providers?: IntegrationABTestingProviders
+}
+
+export interface IntegrationABTestingProviders {
+    /**
+     * GrowthBook configuration
+     */
+    growthbook?: IntegrationABTestingGrowthBook
+
+    /**
+     * LaunchDarkly configuration
+     */
+    launchdarkly?: IntegrationABTestingLaunchDarkly
+}
+
+export interface IntegrationABTestingGrowthBook {
+    /**
+     * GrowthBook API host
+     */
+    apiHost: string
+
+    /**
+     * GrowthBook client key
+     */
+    clientKey: string
+}
+
+export interface IntegrationABTestingLaunchDarkly {
+    /**
+     * LaunchDarkly environment key
+     */
+    env: string
+}
+
 export interface AppsDirectory {
     /**
      * Github star app configuration.
-     * List of all [options](https://github.com/buttons/react-github-btn).
      */
     githubStar?: IntegrationAppGithubStar
 

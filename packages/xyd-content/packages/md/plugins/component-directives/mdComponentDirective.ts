@@ -47,6 +47,8 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
     update: true,
 
     card: true,
+
+    feature: true,
 }
 
 const supportedTextDirectives: MarkdownComponentDirectiveMap = {

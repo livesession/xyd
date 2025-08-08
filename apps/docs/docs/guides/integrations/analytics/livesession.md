@@ -33,5 +33,8 @@ Add the following to your docs.json file to send analytics to LiveSession.
     }
 }
 ```
+:::
 
+:::callout
+Sign up to [LiveSession](https://signup.livesession.io/signup/?source_id=xyd) to get your `trackId`.
 :::

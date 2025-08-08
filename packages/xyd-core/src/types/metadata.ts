@@ -80,7 +80,7 @@ export interface Metadata<P = void> {
     hidden?: boolean
 
     /**
-     * Optional 'tocCard' for github references
+     * Optional 'tocCard' for custom cards in the table of contents
      * 
      * @example
      * ```

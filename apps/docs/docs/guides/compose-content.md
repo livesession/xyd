@@ -50,7 +50,8 @@ Note that you must have an Admin or Owner role to manage webhook settings.
 <!--  -->
 
 <!-- YOU CAN USE OUTPUT VARIABLES TOO -->
-@let(.examples = (
+@let(
+.examples = (
 ```tsx
 <Callout>
 Note that you must have an Admin or Owner role to manage webhook settings.

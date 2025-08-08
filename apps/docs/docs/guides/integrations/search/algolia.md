@@ -7,9 +7,10 @@ title: Algolia
 Learn how to use Algolia
 :::
 
-Add the following to your docs.json:
+To enable [Algolia](http://algolia.com) set it in docs.json:
 
-:::code-group
+:::code-group{title="Search options in docs.json"}
+
 ```json Schema
 {
     "integrations": {

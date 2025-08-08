@@ -9,6 +9,22 @@ export function initSupademo(supademoId: string) {
         }
     }
 
+    // Listen for URL changes via custom event from React
+    function setupUrlChangeTracking() {
+        if (typeof window === 'undefined') return;
+
+        window.addEventListener('xyd::pathnameChange', (event: CustomEvent) => {
+            setTimeout(() => {
+                Supademo(supademoId, {
+                    variables: {
+                        email: '',
+                        name: ''
+                    }
+                });
+            }, 300); // wait for element to render - TODO: better solution
+        });
+    }
+
     // Patch addEventListener on elements with data-supademo-demo attribute
     function patchSupademoClickElements() {
         if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -65,13 +81,16 @@ export function initSupademo(supademoId: string) {
             // Patch click elements
             patchSupademoClickElements();
             
+            // Set up URL change tracking
+            setupUrlChangeTracking();
+            
             Supademo(supademoId, {
                 variables: {
                     email: '',
                     name: ''
                 }
             });
-        }, 500);
+        }, 300);
     }
 
     // Start initialization either immediately or on window load

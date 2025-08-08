@@ -2,13 +2,13 @@
 title: Orama 
 ---
 
-# Orama {label="Experimental"}
+# Orama 
 :::subtitle
 Learn how to add Orama search integration
 :::
 
-To enable Orama Search enable it in docs.json:
-```json
+To enable [Orama Search](http://orama.com) set it in docs.json:
+```json Search options in docs.json
 {
     "integrations": {
         "search": {

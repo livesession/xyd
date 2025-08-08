@@ -28,5 +28,10 @@
                 flex: 1;
             }
         }
+
+
+        [part="page-article-container"] {
+            padding: 12px 0;
+        }
     }
 }

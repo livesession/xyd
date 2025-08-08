@@ -13,12 +13,11 @@ tocCard:
 Learn how to create custom React Components
 :::
 
-## Usage
-You can build React components directly in your MDX files.
+Build interactive React components directly in your MDX files. Create dynamic content with state management, event handlers, and custom styling. Define components inline or import them from external files for rich documentation experiences.
 
-### Example
+## Example
 
-```mdx .docs/components/Counter.tsx [descHead="Important" desc="to use React API you need to explicite call <code>React</code> e.g <code>React.useState</code>"]
+```mdx .docs/components/Counter.mdx [descHead="Important" desc="to use React API you need to explicite call <code>React</code> e.g <code>React.useState</code>"]
 export function Counter() {
   const [count, setCount] = React.useState(0);
 

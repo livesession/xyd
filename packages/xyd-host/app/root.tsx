@@ -12,6 +12,15 @@ import { presetUrls } from "virtual:xyd-theme-presets"
 import colorSchemeScript from "./scripts/colorSchemeScript.ts?raw";
 import bannerHeightScript from "./scripts/bannerHeight.ts?raw";
 
+import openfeatureScript from "./scripts/openfeature.js?raw";
+import abTestingScript from "./scripts/abtesting.ts?raw";
+
+import growthbookScript from "./scripts/growthbook.js?raw";
+import openfeatureGrowthbookScript from "./scripts/openfeature.growthbook.js?raw";
+
+import launchdarklyScript from "./scripts/launchdarkly.js?raw";
+import openfeatureLaunchdarklyScript from "./scripts/openfeature.launchdarkly.js?raw";
+
 const { settings, userPreferences } = virtualSettings as { settings: Settings, settingsClone: Settings, userPreferences: UserPreferences }
 
 export function HydrateFallback() {
@@ -43,7 +52,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             data-color-scheme={colorScheme}
             data-color-primary={settings?.theme?.appearance?.colors?.primary ? "true" : undefined}
         >
-        
+
             <head>
                 <PreloadScripts />
                 <DefaultMetas />
@@ -73,6 +82,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 function PreloadScripts() {
     return <>
+        <ABTestingScript />
         <ColorSchemeScript />
         {/* TODO: in the future better solution? */}
         <BannerHeightScript />
@@ -165,6 +175,46 @@ function UserFavicon() {
     }
 
     return <link rel="icon" type="image/png" sizes="32x32" href={faviconPath}></link>
+}
+
+// TODO: !!! in the future more developer-friendly code + bundle optimization !!!
+function ABTestingScript() {
+    const abtesting = settings?.integrations?.abtesting
+    const providers = settings?.integrations?.abtesting?.providers || {}
+
+    if (!providers || !Object.keys(providers).length) {
+        return null
+    }
+
+    const scripts = [
+        openfeatureScript,
+    ]
+
+    if (providers?.growthbook) {
+        scripts.push(growthbookScript)
+        scripts.push(openfeatureGrowthbookScript)
+    }
+
+    if (providers?.launchdarkly) {
+        scripts.push(launchdarklyScript)
+        scripts.push(openfeatureLaunchdarklyScript)
+    }
+
+    scripts.push(abTestingScript)
+
+    const allScripts = scripts.join('\n');
+
+    // Inject settings into the script
+    const scriptWithSettings = `
+        window.__xydAbTestingSettings = ${JSON.stringify(abtesting)};
+        ${allScripts}
+    `;
+
+    return <script
+        dangerouslySetInnerHTML={{
+            __html: scriptWithSettings
+        }}
+    />
 }
 
 // TODO: better than <style>?

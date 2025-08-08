@@ -226,6 +226,7 @@ export function stdContent(
         span: (props) => <span {...props} />,
         iframe: (props) => <iframe {...props} />,
         svg: (props) => <svg {...props} />,
+        feature: (props) => <div data-feature-flag={props.flag} data-feature-match={props.match}>{props.children}</div>,
         React: NoopReactComponent,
     }
 
@@ -345,7 +346,10 @@ export function writerContent() {
         },
         Update,
         Card: $Card.bind(this),
-        ColorSchemeButton: ColorSchemeButton
+        ColorSchemeButton: ColorSchemeButton,
+        Feature: (props) => <div data-feature-flag={props.flag} data-feature-match={props.match}>
+            {props.children}
+        </div>
     }
 }
 

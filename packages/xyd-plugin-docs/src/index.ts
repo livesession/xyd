@@ -20,6 +20,7 @@ export interface PluginDocsOptions {
     disableFSWrite?: boolean
     appInit?: any
     onUpdate?: (callback: (settings: Settings) => void) => void
+    doNotInstallPluginDependencies?: boolean
 }
 
 // TODO: better plugin runner
