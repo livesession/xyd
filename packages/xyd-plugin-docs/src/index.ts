@@ -235,61 +235,75 @@ export function sortSidebarGroups(sidebar: (SidebarRoute | Sidebar | string)[]) 
         if (typeof entry === 'string') continue;
         if (!entry.pages) continue;
 
-        // First: Merge user-defined config into generated pages
-        const pages = entry.pages;
-        const groupMap = new Map<string, Sidebar>();
-
-        for (const page of pages) {
-            if (typeof page === 'object' && 'group' in page && page.group) {
-                groupMap.set(page.group, page);
+        // Recursively sort nested groups first
+        for (const page of entry.pages) {
+            if (typeof page === 'object' && 'pages' in page && page.pages) {
+                sortSidebarGroups([page as Sidebar]);
             }
         }
 
-        // Rebuild sorted list
-        const sortedGroups: Sidebar[] = [];
+        // Separate groups with order from other items
+        const groupsWithOrder: Sidebar[] = [];
+        const otherItems: (Sidebar | string)[] = [];
 
-        // First pass: order: 0 (always on top)
-        for (const [_, group] of groupMap) {
-            if (group.order === 0) sortedGroups.push(group);
+        for (const page of entry.pages) {
+            if (typeof page === 'object' && 'group' in page && page.group && 'order' in page && page.order !== undefined) {
+                groupsWithOrder.push(page as Sidebar);
+            } else {
+                otherItems.push(page as Sidebar | string);
+            }
         }
 
-        // Second pass: groups without "before/after"
-        for (const [name, group] of groupMap) {
-            if (!group.order || typeof group.order === 'number') {
-                if (group.order !== 0 && group.order !== -1) {
-                    sortedGroups.push(group);
+        // Sort groups with order
+        if (groupsWithOrder.length > 0) {
+            const groupMap = new Map<string, Sidebar>();
+            for (const group of groupsWithOrder) {
+                if (group.group) {
+                    groupMap.set(group.group, group);
                 }
             }
-        }
 
-        // Third pass: before/after
-        for (const [name, group] of groupMap) {
-            if (group.order && typeof group.order === 'object' && ('before' in group.order || 'after' in group.order)) {
-                const target = 'before' in group.order ? group.order.before : group.order.after;
-                const idx = sortedGroups.findIndex(g => g.group === target);
-                if (idx !== -1) {
-                    if ('before' in group.order) {
-                        sortedGroups.splice(idx, 0, group);
-                    } else {
-                        sortedGroups.splice(idx + 1, 0, group);
+            const sortedGroups: Sidebar[] = [];
+
+            // First pass: order: 0 (always on top)
+            for (const [_, group] of groupMap) {
+                if (group.order === 0) sortedGroups.push(group);
+            }
+
+            // Second pass: groups without "before/after"
+            for (const [name, group] of groupMap) {
+                if (!group.order || typeof group.order === 'number') {
+                    if (group.order !== 0 && group.order !== -1) {
+                        sortedGroups.push(group);
                     }
-                } else {
-                    sortedGroups.push(group); // fallback
                 }
             }
-        }
 
-        // Last: order: -1 (always at end)
-        for (const [_, group] of groupMap) {
-            if (group.order === -1) sortedGroups.push(group);
-        }
+            // Third pass: before/after
+            for (const [name, group] of groupMap) {
+                if (group.order && typeof group.order === 'object' && ('before' in group.order || 'after' in group.order)) {
+                    const target = 'before' in group.order ? group.order.before : group.order.after;
+                    const idx = sortedGroups.findIndex(g => g.group === target);
+                    if (idx !== -1) {
+                        if ('before' in group.order) {
+                            sortedGroups.splice(idx, 0, group);
+                        } else {
+                            sortedGroups.splice(idx + 1, 0, group);
+                        }
+                    } else {
+                        sortedGroups.push(group); // fallback
+                    }
+                }
+            }
 
-        // Replace groups in pages
-        const final: (Sidebar | string)[] = [];
-        for (const group of sortedGroups) {
-            final.push(group);
+            // Last: order: -1 (always at end)
+            for (const [_, group] of groupMap) {
+                if (group.order === -1) sortedGroups.push(group);
+            }
+
+            // Replace the original pages with sorted groups + other items
+            entry.pages = [...sortedGroups, ...otherItems];
         }
-        entry.pages = final;
     }
 }
 

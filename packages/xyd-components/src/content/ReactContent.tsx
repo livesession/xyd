@@ -200,10 +200,9 @@ export function stdContent(
         br: ({ children, ...props }) => {
             return <br {...props} />
         },
-        // img: ({ children, src, alt, ...props }) => {
-        //     return <Image src={src} alt={alt} {...props} />
-        // },
-        img: () => null,
+        img: ({ children, src, alt, ...props }) => {
+            return <Image src={src} alt={alt} {...props} />
+        },
         picture: (props) => {
             const { children, ...rest } = props
 

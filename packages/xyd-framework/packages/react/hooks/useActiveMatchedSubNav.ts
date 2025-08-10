@@ -14,7 +14,7 @@ export function useActiveMatchedSubNav() {
     const isIndex = lastMatch?.pathname === "/"
 
     // TODO: in the future routing props from settings like {match: "/docs/api/browser"}
-    return matchedSubnav?.pages?.findLast(item => {
+    return matchedSubnav?.pages?.filter(p => typeof p.page === "string").findLast(item => {
         if (isIndex) {
             return item.page === "index"
         }

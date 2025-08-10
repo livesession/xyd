@@ -59,6 +59,11 @@ export const NavHost = css`
             /* margin-right: auto; */
             height: 28px;
             width: auto;
+
+            img {
+                height: 28px;
+                width: auto;
+            }
         }
 
         /* @media (min-width: 1024px) {

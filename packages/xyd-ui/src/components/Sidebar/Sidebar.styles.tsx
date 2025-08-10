@@ -60,6 +60,11 @@ export const SidebarHost = css`
             align-items: center;
             height: 28px;
             width: auto;
+
+            img {
+                height: 28px;
+                width: auto;
+            }
         }
     }
 `;

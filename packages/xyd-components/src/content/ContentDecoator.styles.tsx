@@ -44,6 +44,10 @@ export default {
             blockquote {
                 margin-top: var(--space-medium);
             }
+            
+            img {
+                margin-top: var(--space-medium);
+            }
 
             xyd-steps {
                 margin-top: var(--space-medium);

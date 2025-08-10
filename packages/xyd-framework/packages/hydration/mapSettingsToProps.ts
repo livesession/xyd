@@ -180,9 +180,6 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
     const sidebarItems: Sidebar[] = []
 
     let multiSidebarMatch: SidebarRoute | null = null
-
-    let flatPagesOnly = false
-
     let foundRoute = false
 
     function findRoute(sidebar: Sidebar | SidebarRoute | string) {
@@ -228,36 +225,36 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
         return
     }
 
-    settings?.navigation?.sidebar.filter(sidebar => {
-        if (flatPagesOnly) {
-            return
-        }
-        if (typeof sidebar === "string") {
-            flatPagesOnly = true
-            return
-        }
-
-        if ("route" in sidebar) {
+    // First pass: find if current route matches any route-based navigation
+    settings?.navigation?.sidebar.forEach(sidebar => {
+        if (typeof sidebar !== "string" && "route" in sidebar) {
             findRoute(sidebar)
-
-            return
         }
-
-        if (foundRoute) {
-            return
-        }
-
-        sidebarItems.push(sidebar)
     })
 
-    if (multiSidebarMatch != null) {
+    // If current route matches a route-based navigation, only process that
+    if (foundRoute && multiSidebarMatch != null) {
         const side = multiSidebarMatch as SidebarRoute
         sidebarItems.push(...(side?.pages || []))
+        return sidebarItems
     }
 
-    if (flatPagesOnly) {
+    // Otherwise, process flat pages and regular sidebar items
+    const flatPages: string[] = []
+    
+    settings?.navigation?.sidebar.forEach(sidebar => {
+        if (typeof sidebar === "string") {
+            flatPages.push(sidebar)
+        } else if (!("route" in sidebar)) {
+            sidebarItems.push(sidebar)
+        }
+        // Skip route-based items if they don't match current route
+    })
+
+    // Handle flat pages if we have any
+    if (flatPages.length > 0) {
         sidebarItems.push({
-            pages: settings?.navigation?.sidebar as string[]
+            pages: flatPages
         })
     }
 

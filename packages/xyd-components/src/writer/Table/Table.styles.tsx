@@ -67,6 +67,8 @@ export default {
             vertical-align: middle;
             border-top: 1px solid var(--xyd-table-border-color);
             border-right: 1px solid var(--xyd-table-border-color);
+            max-width: 300px;
+            overflow: auto;
 
             @media (max-width: 768px) {
                 padding: 0.5rem;

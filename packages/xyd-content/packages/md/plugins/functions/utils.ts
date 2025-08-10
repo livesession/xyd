@@ -339,13 +339,20 @@ export function detectLanguage(filePath: string): string {
  * Read a local file
  */
 export function readLocalFile(filePath: string, baseDir: string): string {
+    filePath = parseIfLocalHomePath(filePath);
+
+    const fullPath = path.resolve(baseDir, filePath);
+    return fs.readFileSync(fullPath, 'utf8');
+}
+
+function parseIfLocalHomePath(filePath: string): string {
     // Handle "~/" prefix by replacing it with the current working directory
+
     if (filePath.startsWith('~/')) {
         filePath = filePath.replace('~/', process.cwd() + '/');
     }
 
-    const fullPath = path.resolve(baseDir, filePath);
-    return fs.readFileSync(fullPath, 'utf8');
+    return filePath;
 }
 
 /**
@@ -411,7 +418,7 @@ export function resolvePathAlias(inputPath: string, settings?: Settings, current
     const baseDir = path.join(cwd, currentFile?.dirname || "");
 
     if (!settings?.engine?.paths) {
-        return path.resolve(baseDir || "", inputPath);
+        return parseIfLocalHomePath(inputPath)
     }
 
     // Find the longest matching alias

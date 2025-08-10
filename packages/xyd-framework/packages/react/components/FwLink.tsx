@@ -1,12 +1,12 @@
 import React from "react";
-import { Link, To } from "react-router";
+import {Link, To} from "react-router";
 
-import { Anchor } from "@xyd-js/components/writer";
+import {Anchor} from "@xyd-js/components/writer";
 
-import { isExternal } from "../utils";
+import {isExternal} from "../utils";
 
 // TODO: in the future different place?
-export function FwLink({ children, ...rest }) {
+export function FwLink({children, ...rest}) {
     let to: To = ""
     let external = false
 
@@ -47,6 +47,18 @@ export function FwLink({ children, ...rest }) {
         }
     }
 
+    let pathname = typeof to === "string" ? to : to.pathname || "";
+
+    if (pathname.startsWith("/mailto:")) {
+        pathname = fixMailTo(pathname)
+
+        to = pathname
+    }
+
+    if ((rest.href || "").startsWith("/mailto:")) {
+        rest.href = fixMailTo(rest.href);
+    }
+
     return <Anchor
         as={$Link}
         {...rest}
@@ -58,6 +70,13 @@ export function FwLink({ children, ...rest }) {
     </Anchor>
 }
 
+function fixMailTo(href: string): string {
+    if (href.startsWith("/mailto:")) {
+        return href.replace("/mailto:", "mailto:")
+    }
+
+    return href
+}
 
 function $Link(props: any) {
     return <Link

@@ -2,6 +2,7 @@ import { css } from "@linaria/core";
 
 export const SubNavHost = css`
     @layer defaults {
+        overflow: auto;
         align-items: center;
         background-color: var(--xyd-subnav-bgcolor);
         border-radius: 0.50rem;

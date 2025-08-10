@@ -1,11 +1,15 @@
 import {readdir} from 'node:fs/promises'
-
+import {existsSync} from 'node:fs'
+import {promisify} from "node:util";
+import {exec} from "node:child_process";
 
 import {mintlifyMigrator, isMintlify} from "./mintlify";
-import {nextraMigrator, isNextra} from "./nextra/nextra";
-import {docusaurusMigrator, isDocusaurus} from "./docusaururs/docusaururs";
-import {vitepressMigrator, isVitepress} from "./vitepress/vitepress";
+import {nextraMigrator, isNextra} from "./nextra";
+import {docusaurusMigrator, isDocusaurus} from "./docusaururs";
+import {vitepressMigrator, isVitepress} from "./vitepress";
 import {DocsFramework} from "./types";
+
+const execAsync = promisify(exec)
 
 export async function migration(docsPath: string) {
     console.log('Detecting framework in repository...')
@@ -58,7 +62,14 @@ async function detectFrameworkByFile(
     return null
 }
 
-async function frameworkMigration(framework: DocsFramework, docsPath: string) {
+async function frameworkMigration(
+    framework: DocsFramework,
+    docsPath: string,
+    outDir: string | boolean = false
+) {
+    // 1. if copy is true, clone the docsPath directory
+    docsPath = await cloneDocsPath(docsPath, outDir)
+
     switch (framework) {
         case DocsFramework.MINTLIFY:
             return await mintlifyMigrator(docsPath)
@@ -69,4 +80,26 @@ async function frameworkMigration(framework: DocsFramework, docsPath: string) {
         case DocsFramework.VITEPRESS:
             return await vitepressMigrator(docsPath)
     }
+}
+
+export async function cloneDocsPath(
+    docsPath: string,
+    outDir: string | boolean = true
+) {
+    if (typeof outDir === "boolean") {
+        outDir = `${docsPath}_${Math.random().toString(36).substring(2, 8)}`;
+    }
+
+    docsPath = await cloneDirectory(docsPath, outDir);
+    console.log(`Cloned docsPath to: ${docsPath}`);
+
+    return docsPath
+}
+
+async function cloneDirectory(src: string, dest = ""): Promise<string> {
+    if (existsSync(dest)) {
+        await execAsync(`rm -rf "${dest}"`);
+    }
+    await execAsync(`cp -R "${src}" "${dest}"`);
+    return dest;
 }
