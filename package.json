@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "pnpm lerna watch -- lerna run build",
     "dev:styles": "pnpm --filter \"@xyd-js/components\" --filter \"@xyd-js/ui\" --parallel dev",
-    "build": "./build.sh",
+    "build": "pnpm run --filter=\"./packages/**/*\" build",
+    "build:storybook": "pnpm run --filter=\"./packages/**/*\" build:storybook",
     "build:apidocs-demo": "pnpm --filter \"./packages/**/*\" --filter \"@xyd-js/apidocs-demo\" build",
     "schema:docs.json": "cd ./packages/xyd-core && npx ts-json-schema-generator --path ./src/types/settings.ts --type 'Settings' --no-top-ref --out ../../apps/docs/public/docs.json",
     "clean": "./clear.sh",
