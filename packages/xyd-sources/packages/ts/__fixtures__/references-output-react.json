@@ -1,0 +1,68 @@
+[
+  {
+    "title": "TestBasicComponent",
+    "canonical": "@xyd-sources-examples/react/components/TestBasicComponent",
+    "description": "TestBasicComponent is a React component that uses a basic props type.\n",
+    "context": {
+      "symbolId": "1",
+      "symbolName": "TestBasicComponent",
+      "symbolKind": 64,
+      "packageName": "@xyd-sources-examples/react",
+      "fileName": "TestBasic.tsx",
+      "fileFullPath": "src/TestBasic.tsx",
+      "line": 25,
+      "col": 16,
+      "signatureText": {
+        "code": "export function TestBasicComponent(props: Props): ReactElement;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function TestBasicComponent(props: Props): ReactElement {\n    return <div>{props.children}</div>;\n}",
+        "lang": "ts"
+      },
+      "category": "Component",
+      "group": [
+        "@xyd-sources-examples",
+        "react",
+        "Component"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Props",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "The name of the person.\n"
+          },
+          {
+            "name": "age",
+            "type": "number",
+            "description": "The age of the person.\n"
+          },
+          {
+            "name": "isActive",
+            "type": "boolean",
+            "description": "Whether the person is active.\n"
+          },
+          {
+            "name": "createdAt",
+            "type": "Date",
+            "description": "The date the person was created.\n"
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "parameters"
+          }
+        ],
+        "variants": []
+      }
+    ]
+  }
+]

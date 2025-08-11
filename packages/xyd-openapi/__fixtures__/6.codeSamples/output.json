@@ -1,0 +1,293 @@
+[
+  {
+    "title": "Returns a list of users",
+    "canonical": "returns-a-list-of-users",
+    "description": "Optional extended description in CommonMark or HTML.",
+    "type": "rest_get",
+    "category": "rest",
+    "context": {
+      "method": "get",
+      "path": "/users",
+      "fullPath": "http:/api.example.com/v1/users",
+      "group": [
+        ""
+      ],
+      "scopes": []
+    },
+    "examples": {
+      "groups": [
+        {
+          "description": "Example request",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "bash",
+                    "language": "bash",
+                    "code": "curl -X GET https://api.example.com/v1/users\n"
+                  },
+                  {
+                    "title": "javascript",
+                    "language": "javascript",
+                    "code": "const api = require('api-client');\napi.users.list();\n"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "application/json",
+                    "language": "json",
+                    "code": "[\n  {\n    \"id\": 0,\n    \"username\": \"string\",\n    \"email\": \"user@example.com\",\n    \"status\": \"active\",\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"updatedAt\": \"2019-08-24T14:15:22Z\"\n  }\n]"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Query parameters",
+        "properties": [
+          {
+            "name": "limit",
+            "type": "integer",
+            "description": "Maximum number of items to return",
+            "meta": [
+              {
+                "name": "defaults",
+                "value": 20
+              },
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "offset",
+            "type": "integer",
+            "description": "Number of items to skip",
+            "meta": [
+              {
+                "name": "defaults",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Response",
+        "variants": [
+          {
+            "title": "200",
+            "description": "A JSON array of users",
+            "properties": [],
+            "rootProperty": {
+              "type": "$$array",
+              "properties": [
+                {
+                  "name": "id",
+                  "type": "integer",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "username",
+                  "type": "string",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "email",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "status",
+                  "type": "$$enum",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "enum-type",
+                      "value": "string"
+                    }
+                  ],
+                  "properties": [
+                    {
+                      "name": "active",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    },
+                    {
+                      "name": "inactive",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    }
+                  ]
+                },
+                {
+                  "name": "createdAt",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "updatedAt",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ]
+            },
+            "meta": [
+              {
+                "name": "status",
+                "value": "200"
+              },
+              {
+                "name": "contentType",
+                "value": "application/json"
+              },
+              {
+                "name": "definitionDescription",
+                "value": ""
+              }
+            ]
+          }
+        ],
+        "properties": []
+      }
+    ]
+  },
+  {
+    "title": "User",
+    "description": "",
+    "canonical": "objects/User",
+    "definitions": [
+      {
+        "title": "User",
+        "properties": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "username",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "description": "",
+            "meta": []
+          },
+          {
+            "name": "status",
+            "type": "$$enum",
+            "description": "",
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "string"
+              }
+            ],
+            "properties": [
+              {
+                "name": "active",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "inactive",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ]
+          },
+          {
+            "name": "createdAt",
+            "type": "string",
+            "description": "",
+            "meta": []
+          },
+          {
+            "name": "updatedAt",
+            "type": "string",
+            "description": "",
+            "meta": []
+          }
+        ],
+        "meta": []
+      }
+    ],
+    "examples": {
+      "groups": [
+        {
+          "description": "Example",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"id\": 0,\n  \"username\": \"\",\n  \"email\": \"\",\n  \"status\": \"\",\n  \"createdAt\": \"\",\n  \"updatedAt\": \"\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "type": "rest_component_schema",
+    "context": {
+      "componentSchema": "User",
+      "group": [
+        "Objects"
+      ]
+    }
+  }
+]

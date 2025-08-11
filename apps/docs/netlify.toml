@@ -1,0 +1,3 @@
+[build]
+  command = "bunx @xyd-js/cli build"
+  publish = ".xyd/build/client"

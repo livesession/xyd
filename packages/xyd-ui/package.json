@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/ui",
-  "version": "0.1.0-xyd.16",
+  "version": "0.1.0-build.172",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -25,16 +25,16 @@
   "dependencies": {
     "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0",
-    "@radix-ui/react-tabs": "^1.1.1"
+    "radix-ui": "^1.4.2"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-router": "^7.5.0",
+    "react": "^19.1.0",
+    "react-router": "^7.7.1",
     "@xyd-js/components": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-flow": "^7.25.9",
     "@babel/preset-react": "^7.26.0",

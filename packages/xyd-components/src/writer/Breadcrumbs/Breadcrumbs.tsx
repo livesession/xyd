@@ -1,14 +1,7 @@
-import React, {Fragment} from 'react'
-import type {ReactElement} from 'react'
-import {ArrowRightIcon} from '@radix-ui/react-icons'
+import React, { Fragment } from 'react'
+import type { ReactElement } from 'react'
 
 import * as cn from './Breadcrumbs.styles'
-
-function Anchor({children, ...rest}) {
-    return <a {...rest}>
-        {children}
-    </a>
-}
 
 export interface BreadcrumbsProps {
     className?: string;
@@ -16,9 +9,13 @@ export interface BreadcrumbsProps {
         title: string
         href?: string
     }[]
+
+    as?: React.ElementType
 }
 
-export function Breadcrumbs({className, items}: BreadcrumbsProps): ReactElement {
+export function Breadcrumbs({ className, items, as }: BreadcrumbsProps): ReactElement {
+    const Link = as || $Link
+
     return (
         <xyd-breadcrumbs
             className={`${cn.BreadcrumbsHost} ${className || ''}`}
@@ -28,13 +25,13 @@ export function Breadcrumbs({className, items}: BreadcrumbsProps): ReactElement 
 
                 return (
                     <Fragment key={item.href + item.title}>
-                        {index > 0 && <ArrowRightIcon part="icon"/>}
-                        <div 
+                        {index > 0 && <$BreadcrumbIcon />}
+                        <div
                             part="item"
                             data-active={lastActive ? "true" : "false"}
                         >
                             {item.href && !lastActive ? (
-                                <Anchor href={item.href}>{item.title}</Anchor>
+                                <Link href={item.href}>{item.title}</Link>
                             ) : (
                                 item.title
                             )}
@@ -44,4 +41,17 @@ export function Breadcrumbs({className, items}: BreadcrumbsProps): ReactElement 
             })}
         </xyd-breadcrumbs>
     )
+}
+
+function $BreadcrumbIcon() {
+    return <span part="icon">/</span>
+}
+
+function $Link({ href, children, ...rest }) {
+    return <a
+        href={href}
+        {...rest}
+    >
+        {children}
+    </a>
 }

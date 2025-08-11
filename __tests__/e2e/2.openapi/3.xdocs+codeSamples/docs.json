@@ -1,0 +1,5 @@
+{
+  "api": {
+    "openapi": "../../../__fixtures__/openapi/basic.xdocs+codeSamples.yaml"
+  }
+}

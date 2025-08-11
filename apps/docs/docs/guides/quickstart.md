@@ -1,6 +1,11 @@
 ---
-title: Getting started
+title: Quicktart
 icon: rocket
+tocCard: 
+    link: https://github.com/xyd-js/starter
+    title: Starter Kit
+    description: Learn how to start building docs
+    icon: docs:github
 ---
 
 # Quickstart
@@ -8,60 +13,73 @@ icon: rocket
 Start building modern documentation in record time
 :::
 
-Follow the instructions below to learn how to deploy,
-update and supercharge your documentation with <code>xyd</code>.
+Follow the instructions below to learn how to run, deploy, update and supercharge your documentation with `xyd`.
 
 :::callout
-**Prerequisite:** Please install Node.js (version 19 or higher) before proceeding.
+**Prerequisite:**  Node 22.12+
 :::
 
-<!-- <UnderlineNav value={activeTab}>
-    <UnderlineNav.Item value="cli" href="#cli">
-        CLI
-    </UnderlineNav.Item>
-    <UnderlineNav.Item value="code" href="#code">
-        Code
-    </UnderlineNav.Item>
-</UnderlineNav>  -->
+## Installation
 
-**Step 1:** Install the <code>xyd</code> CLI:
+::::steps
+1. Install the <code>xyd</code> CLI:
 :::code-group{title="xyd installation"}
-```bash npm
-npm i -g xyd-js
-```
-
-```bash yarn
-yarn global add xyd-js
+```bash bun
+bun add -g xyd-js
 ```
 
 ```bash pnpm
 pnpm add -g xyd-js
 ```
+
+```bash npm
+npm i -g xyd-js
+```
 :::
 
-**Step 2:** Navigate to the docs directory (where the settings file is located) and execute the following command:
-```bash
+2. Navigate to the docs directory (where the [settings file](/docs/guides/settings) is located) and execute the following command:
+```bash [descHead="Info" desc="Above command runs a dev server"]
 xyd
 ```
+::::
 
 ## CLI versioning
 Please note that each CLI release is associated with a specific version of <code>xyd</code>.
-If your local website doesn’t align with the production version, please update the CLI:
+If you have troubles, please update the CLI:
 :::code-group{title="xyd update"}
-```bash npm
-npm i -g xyd-js
-```
-
-```bash yarn
-yarn global add xyd-js
+```bash bun
+bun add -g xyd-js
 ```
 
 ```bash pnpm
 pnpm add -g xyd-js
 ```
+
+```bash npm
+npm i -g xyd-js
+```
 :::
+
+## Troubleshooting
+If you have troubles with CLI the common task is deleting `xyd` cache:
+```bash
+rm -rf .xyd
+```
+
 
 ## Publishing
 Publishing changes depends on your preferences, the simplest way is to
-use the one of infrastructure provider slike Netlify or Vercel.
-Learn more about [publishing](/docs/deploy)
+use the one of infrastructure providers like Netlify or Vercel.
+Learn more about [deploy](/docs/guides/deploy).
+
+## Starter
+Use our [starter kit](https://github.com/xyd-js/starter) to get up and running quickly.
+
+## Examples
+Please checkout [examples](https://github.com/xyd-js/examples) to learn how to setup docs as you want.
+
+## CodeSandbox Demo
+Please checkout [CodeSanbox demo](https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox).
+
+## API Docs Playground
+Please checkout [API docs demo](http://apidocs-demo.xyd.dev).

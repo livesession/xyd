@@ -1,1 +1,1 @@
-export * from "./src/coder"
+export * from "./src/coder";

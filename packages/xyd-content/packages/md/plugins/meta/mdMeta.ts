@@ -4,9 +4,11 @@ import { matter } from 'vfile-matter';
 
 import { Metadata, Settings, Theme } from '@xyd-js/core';
 import { getMetaComponent } from '@xyd-js/context';
+import { Reference, TypeDocReferenceContext } from '@xyd-js/uniform';
+import { uniformToMiniUniform } from '@xyd-js/sources/ts';
 
 import { FunctionName } from '../functions/types';
-import { parseFunctionCall } from '../functions/utils';
+import { parseFunctionCall, parseImportPath } from '../functions/utils';
 import { processUniformFunctionCall } from '../functions/uniformProcessor';
 import { componentLike } from '../utils';
 import { SymbolxVfile } from '../types';
@@ -39,15 +41,41 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
         return
       }
 
+      let uniformMeta = false
       if (meta?.uniform || meta?.openapi || meta?.graphql) {
+        uniformMeta = true
         if (meta.graphql) {
           meta.uniform = meta.graphql
         } else if (meta.openapi) {
           meta.uniform = meta.openapi
         }
         meta.component = "atlas"
-        meta.componentProps = {
-          references: `@uniform('${meta.uniform}')`
+
+        if (typeof meta.uniform === "string") {
+          meta.componentProps = {
+            references: `@uniform('${meta.uniform}')`
+          }
+        } else if (typeof meta.uniform === "object") {
+          const uniformArgs = {}
+          
+          if (meta.uniform.eager) {
+            // TODO: support eager line ranges?
+            const { filePath, regions } = parseImportPath(meta.uniform.path)
+
+            if (regions.length > 1) {
+              console.warn("Eager uniform with multiple regions is not supported")
+            }
+            
+            if (regions.length) {
+              uniformArgs["eager"] = regions[0].name
+            }
+            
+            meta.uniform.path = filePath
+          }
+
+          meta.componentProps = {
+            references: `@uniform('${meta.uniform.path}', ${JSON.stringify(uniformArgs)})`
+          }
         }
       }
 
@@ -70,7 +98,9 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
       const promises: Promise<void>[] = []
 
       let resolvedProps: Record<string, any> = {}
-      if (meta.componentProps && typeof meta.componentProps === "object") {
+
+      if (uniformMeta && meta.componentProps && typeof meta.componentProps === "object") {
+        // TODO: ??? TO DELETE ???
         for (const key in meta.componentProps) { // TODO: support nested props
           const value = meta.componentProps[key]
 
@@ -88,25 +118,35 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
             continue
           }
 
-          const importPath = result[1]
+          const importPath = result[0]
+          const importArgs = result[1];
 
           if (!importPath) {
             continue
           }
 
           const promise = (async () => {
-            const references = await processUniformFunctionCall(
+            let references = await processUniformFunctionCall(
               importPath,
               file,
               options?.resolveFrom,
               settings,
             );
 
+
+            if (importArgs?.eager && references) { // TODO: move to `processUniformFunctionCall`
+              // TODO: rename uniformToMiniUniform eager
+              // TODO: support multile regions
+              references = uniformToMiniUniform(importArgs.eager, references as Reference<TypeDocReferenceContext>[]);
+            }
+
             resolvedProps[key] = references
           })()
 
           promises.push(promise)
         }
+      } else {
+        resolvedProps = meta.componentProps || {}
       }
 
       await Promise.all(promises)
@@ -117,7 +157,10 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
         (settings?.theme || {}) as Theme,
         resolvedProps,
         file.data.outputVars,
-        Object.freeze(tree.children) as any
+        Object.freeze(tree.children) as any,
+        meta,
+        // @ts-ignore
+        settings
       )
       console.timeEnd('plugin:mdMeta:transform');
 

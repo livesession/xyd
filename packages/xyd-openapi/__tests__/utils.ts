@@ -35,14 +35,13 @@ function removeFunctions(obj: any): any {
 export async function testOasSchemaToReferences(
     fixtureName: string,
     options?: uniformOasOptions,
-    plugins?: any[] // TODO: fix any
+    plugins?: any[], // TODO: fix any,
+    url?: string // URL to the OpenAPI schema
 ) {
-    const schemaLocation = fullFixturePath(`${fixtureName}/input.yaml`)
+    const schemaLocation = url ? url : fullFixturePath(`${fixtureName}/input.yaml`)
 
     const schemalocation = await deferencedOpenAPI(schemaLocation);
     let result = oapSchemaToReferences(schemalocation, options);
-    saveResultAsOutput(fixtureName, result)
-    const expectedOutput = readFixtureOutput(`${fixtureName}/output.json`);
     if (plugins?.length) {
         const uni = uniform(result, {
             plugins
@@ -50,6 +49,10 @@ export async function testOasSchemaToReferences(
 
         result = uni.references;
     }
+
+    // saveResultAsOutput(fixtureName, result) // TODO: comment for prod
+
+    const expectedOutput = readFixtureOutput(`${fixtureName}/output.json`);
     try {
         // Remove functions before comparison
         const cleanResult = removeFunctions(result);

@@ -14,27 +14,21 @@ export interface Reference<
     definitions: Definition<M, VM>[] // TODO: in the future from generic?
     examples: ExampleRoot
 
-    /**
-     * @unsafe
-     */
+
     category?: ReferenceCategory; // TODO: do we need that?
-    /**
-     * @unsafe
-     */
+
     type?: ReferenceType; // TODO: do we need that?
-    /**
-     * @unsafe
-     */
+
     context?: C;
 
     /**
      * TODO: !!!! BETTER !!!!
-     * @unsafe
+     * @internal
      */
     __UNSAFE_selector?: (selector: string) => any;
 }
 
-export type DefinitionOpenAPIMeta = Meta<"contentType" | "required">;
+export type DefinitionOpenAPIMeta = Meta<"contentType" | "required" | "definitionDescription">;
 export type DefinitionTypeDocMeta = Meta<"type">;
 export type DefinitionGraphqlMeta = Meta<"type" | "graphqlName">;
 
@@ -63,22 +57,22 @@ export interface Definition<
     meta?: M[];
 
     /**
-     * @unsafe
+     * @internal
      */
     symbolDef?: SymbolDef;
 
     /**
-     * @unsafe
+     * @internal
      */
     id?: string;
 
     /**
-     * @unsafe
+     * @internal
      */
     type?: string;
 }
 
-export type DefinitionVariantOpenAPIMeta = Meta<"status" | "contentType">;
+export type DefinitionVariantOpenAPIMeta = Meta<"status" | "contentType" | "definitionDescription" | "required">;
 export type CommonDefinitionVariantMeta = Meta<"symbolName">;
 
 export type DefinitionVariantMeta = CommonDefinitionVariantMeta | DefinitionVariantOpenAPIMeta
@@ -105,7 +99,7 @@ export interface Meta<T = string> {
     value?: unknown; // TODO: better type?
 }
 
-export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "defaults" | "nullable" | "enum-type"> // TODO: better solution than enum-type?
+export type DefinitionPropertyMeta = Meta<"required" | "deprecated" | "internal" | "defaults" | "nullable" | "example" | "examples" | "minimum" | "maximum" | "enum-type"> // TODO: better solution than enum-type?
 
 export enum DEFINED_DEFINITION_PROPERTY_TYPE {
     UNION = "$$union",
@@ -115,6 +109,8 @@ export enum DEFINED_DEFINITION_PROPERTY_TYPE {
     ARRAY = "$$array",
 
     ENUM = "$$enum",
+
+    // TYPE = "$$type", TODO: good idea?
 }
 
 export interface DefinitionProperty {
@@ -134,6 +130,8 @@ export interface DefinitionProperty {
     context?: any // TODO: better type
 
     properties?: DefinitionProperty[];
+
+    ofProperty?: DefinitionProperty;
 }
 
 export interface ExampleRoot {
@@ -239,7 +237,7 @@ export interface BaseReferenceContext {
 
 export interface GraphQLReferenceContext extends BaseReferenceContext {
     /**
-     * @unsafe
+     * @internal
      */
     graphqlTypeShort: string;
 
@@ -256,6 +254,8 @@ export interface OpenAPIReferenceContext extends BaseReferenceContext {
 
     componentSchema?: string
 }
+
+export type TypeDocReferenceContextMeta = Meta<"internal">
 
 // Add TypeDocReferenceContext to the union type
 export interface TypeDocReferenceContext extends BaseReferenceContext {
@@ -276,6 +276,7 @@ export interface TypeDocReferenceContext extends BaseReferenceContext {
         lang: string;
     };
     category?: string;
+    meta?: TypeDocReferenceContextMeta[]
 }
 
 export type ReferenceContext = GraphQLReferenceContext | OpenAPIReferenceContext | TypeDocReferenceContext

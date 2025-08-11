@@ -27,6 +27,7 @@ export function graphqlMutationsToUniformReferences(
         references.push(...gqlOperationToUniformRef(
             ReferenceType.GRAPHQL_MUTATION,
             filteredMutationFields,
+            schema,
             options,
         ))
     }

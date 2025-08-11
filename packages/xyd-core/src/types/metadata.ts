@@ -1,74 +1,133 @@
 // TODO: og
 
 /**
+ * @todo rename to PageMeta
+ * 
  * Represents metadata for a content page.
  * Usually used as md/mdx frontmatter.
  *
  */
 export interface Metadata<P = void> {
     /** The main title of the content - by default visible in navigation and page title */
-    title?: string
+    title: string
 
-    /** Optional title to display in the sidebar navigation */
+    /** Title to display in the sidebar navigation */
     sidebarTitle?: string
 
-    /** Optional disply description for SEO purposes */
+    /** Disply description for SEO purposes */
     description?: string
 
-    /** Optional icon identifier for the navigation item */
+    /**  Icon identifier for the navigation item */
     icon?: string
 
-    /** Optional layout type for the content display */
+    /** Layout type for the content display */
     layout?: PageLayout
 
-    /** The type of component to render this content with */
-    component?: "docs" | "atlas" | "page"
+    /** Max depth for table of contents */
+    maxTocDepth?: number
 
-    /** Optional properties specific to the component type */
+    /** External URL for the content */
+    url?: string
+
+    /**
+     * If false, hide the copy page button
+     */
+    copyPage?: boolean
+
+    /**
+     * @internal
+     * 
+     * The type of component to render this content with 
+     */
+    component?: "docs" | "atlas" | "home" | "firstslide" | "bloghome" | "blogpost"
+
+    /** 
+     * @internal
+     * 
+     * Properties specific to the component type
+     */
     componentProps?: P
 
-    /** Optional 'group' for sidebar navigation */
+    /** 
+     * @internal
+     * 
+     * Group for sidebar navigation 
+    */
     group?: string[]
 
-    /** Optional 'uniform' for component references */
-    uniform?: string
+    /**
+     * Uniform for API Docs references
+     */
+    uniform?: PageMetaUniform
 
-    /** Optional 'graphql' for graphql references */
+    /**
+     * @internal
+     * 
+     * used for graphql references
+     */
     graphql?: string
 
-    /** Optional 'openapi' for openapi references */
+    /**
+     * @internal
+     * 
+     * used for openapi references
+     */
     openapi?: string
 
-    /** Optional 'hidden' for content visibility */
+    /**
+     * If true, hide from navigation
+     */
     hidden?: boolean
 
     /**
-     * Optional 'tocGithub' for github references
+     * Optional 'tocCard' for custom cards in the table of contents
      * 
-     * @optional
-     * @unsafe
-     * @todo: !!! IN THE FUTURE COMPOSE API !!!
      * @example
      * ```
-     * tocGithub: {
+     * tocCard: {
      *     link: "https://github.com/livesession/livesession-browser",
      *     title: "Checkout the code",
      *     description: "Check how to use the LiveSession Browser SDK",
+     *     icon: "github"
      * }
      * ```
      */
-    tocGithub?: {
-        /** 'link' for github references */
-        link: string
+    tocCard?: TocCard | TocCard[]
+}
 
-        /** 'title' for github references */
-        title: string
+export interface TocCard {
+    /** 'link' to the card */
+    link: string
 
-        /** 'description' for github references */
-        description: string
-    }
+    /** 'title' of the card */
+    title: string
+
+    /** 'description' of the card */
+    description: string
+
+    /** 'icon' of the card */
+    icon?: string
+}
+
+export type PageMetaUniform = string | PageMetaUniformDetails;
+
+/**
+ * Uniform details allows to specify more options than just the path, for example eager loading
+ */
+export type PageMetaUniformDetails = {
+    /**
+     * Path to the uniform file / url
+     */
+    path: string
+
+    /**
+     * If true, the uniform will be eagerly loaded
+     */
+    eager?: boolean
 }
 
 export type MetadataMap<P = void> = { [page: string]: Metadata<P> }
 
-export type PageLayout = "wide" | "page" | "center"
+// TODO: "custom" in the future?  
+
+export type PageLayout = "wide" | "page" | "reader" 

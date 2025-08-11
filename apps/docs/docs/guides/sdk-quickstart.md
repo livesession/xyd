@@ -1,8 +1,9 @@
 ---
-title: SDK quickstart
+title: SDK Quickstart
 icon: baseline
 ---
 
-# SDK quickstart {label="Coming soon"}
-
-
+# SDK Quickstart {label="Coming Soon"}
+:::subtitle
+Learn basic concepts of generating SDK docs
+:::

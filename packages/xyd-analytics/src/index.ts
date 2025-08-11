@@ -1,10 +1,10 @@
 export {
-    XYDAnalytics,
+    Analytics,
     
     useAnalytics,
 } from './Analytics'
 
 export {
-    useEvents,
-} from './events'
+    useUXEvents,
+} from './useUXEvents'
 

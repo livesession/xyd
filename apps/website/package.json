@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build2": "next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -22,15 +22,15 @@
     "jotai": "^2.12.2",
     "jotai-scope": "^0.7.3",
     "next": "15.1.7",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "^19.1.0",
+    "react": "^19.1.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/js": "^8.56.0",
     "@types/gsap": "^3.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",

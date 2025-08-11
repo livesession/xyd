@@ -2,6 +2,7 @@ import { css } from "@linaria/core";
 
 export const SubNavHost = css`
     @layer defaults {
+        overflow: auto;
         align-items: center;
         background-color: var(--xyd-subnav-bgcolor);
         border-radius: 0.50rem;
@@ -11,22 +12,25 @@ export const SubNavHost = css`
         width: 100%;
         height: var(--xyd-subnav-height);
         margin-top: 3px;
-        padding: 0 0.25rem;
+        padding: 0 var(--xyd-padding-large);
+
+        [part="list"] xyd-subnav-item:first-of-type {
+            padding-left: 0;
+        }
 
         [part="prefix"] {
             color: var(--xyd-subnav-prefix-color);
             font-weight: var(--xyd-font-weight-semibold);
-            padding-left: 0.50rem;
-            padding-right: 1.50rem;
             position: relative;
+            padding: 0 var(--xyd-sidebar-item-padding-total);
 
             &:after {
                 background: var(--xyd-subnav-prefix-marker-color);
                 border-radius: 1px;
                 content: " ";
-                height: 0.75rem;
+                height: 12px;
                 position: absolute;
-                right: 0.50rem;
+                right: 0px;
                 top: 50%;
                 transform: translateY(-50%);
                 width: 2px;
@@ -38,18 +42,27 @@ export const SubNavHost = css`
             flex-direction: row;
             height: 100%;
         }
+        [part="list"]:has(:not([part="prefix"])) {
+            padding: 0 var(--xyd-sidebar-item-padding-total);
+        }
+        @media (max-width: 1024px) {
+            [part="list"]:has(:not([part="prefix"])) {
+                padding: 0 var(--xyd-nav-padding);
+            }
+        }
     }
 `;
 
-export const SubNavLi = css`
+export const SubNavItem = css`
     @layer defaults {
         display: flex;
         height: 100%;
 
         align-items: center;
         position: relative;
+        padding: var(--xyd-nav-item-padding-y) var(--xyd-nav-item-padding);
 
-        [data-state="active"] > & {
+        &[data-state="active"] {
             font-weight: var(--xyd-font-weight-semibold);
 
             a {
@@ -65,6 +78,7 @@ export const SubNavLi = css`
                 left: 0;
                 position: absolute;
                 width: 100%;
+                bottom: calc(var(--xyd-nav-item-padding-y) * -1);
             }
         }
 
@@ -72,8 +86,8 @@ export const SubNavLi = css`
             color: var(--xyd-subnav-item-color);
             display: flex;
             height: 100%;
-            padding: 0 0.50rem;
             align-items: center;
+            position: relative;
 
             &:hover {
                 color: var(--xyd-subnav-item-color--active);

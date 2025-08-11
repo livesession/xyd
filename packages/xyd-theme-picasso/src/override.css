@@ -1,0 +1,73 @@
+@import "@xyd-js/themes/dist/decorators/header-sketch.css";
+
+@layer themes {
+    :root {
+        --decorator-sketch-border-color: var(--dark32);
+        --color-header-border: var(--decorator-sketch-border-color);
+        --xyd-sidebar-divider-color: var(--decorator-sketch-border-color);
+    }
+}
+
+@layer themes {
+    xyd-layout-primary {
+        @media (min-width: 1024px) {
+            &:not([data-layout="page"]) {
+                [part="page"] {
+                    left: var(--xyd-sidebar-width);
+                    margin-right: var(--xyd-sidebar-width);
+                }
+                footer {
+                    margin-left: var(--xyd-sidebar-width);
+                }
+            }
+        }
+
+        [part="sidebar"] {
+            position: fixed;
+            top: var(--xyd-page-gutter);
+            z-index: 10;
+        }
+
+        [part="page"] {
+            position: relative;
+            right: 0;
+        }
+
+        /* component: SubNav */
+        xyd-subnav {
+            padding: 0;
+
+            [part="list"] {
+                padding: 0 var(--xyd-nav-item-padding);
+                margin-left: var(--xyd-nav-item-padding);
+            }
+        }
+
+        @media (min-width: 1024px) {
+
+            /* component: Nav */
+            xyd-nav {
+                [part="nav"] {
+                    padding-left: 0;
+                }
+
+                [part="nav"]>*:first-child {
+                    position: relative;
+                    left: calc(var(--xyd-sidebar-width));
+                    margin-left: var(--xyd-nav-item-padding);
+                }
+            }
+
+            /* component: SubNav */
+            xyd-subnav {
+                /* [part="list"] {
+            
+                } */
+                position: relative;
+                left: calc(var(--xyd-sidebar-width) / 1);
+                width: calc(100% - var(--xyd-sidebar-width));
+            }
+        }
+    }
+}
+

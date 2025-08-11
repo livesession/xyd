@@ -3,7 +3,7 @@ import { css } from "@linaria/core";
 export const SearchButton = css`
     @layer defaults {
         background-color: transparent;
-        border-radius: 8px;
+        border-radius: var(--xyd-border-radius-large);
         border: 1px solid var(--dark32);
         color: var(--text-primary);
         background: var(--dark16);
@@ -21,11 +21,14 @@ export const SearchButton = css`
         width: 100%;
         transition: border-color .15s ease;
 
-        
-        max-width: 300px;
+        max-width: var(--xyd-search-width, 300px);
         margin: 0;
 
         cursor: pointer;
+
+        &[data-fullWidth] {
+            max-width: 100%;
+        }
 
         &:hover {
             background: var(--dark16);
@@ -66,7 +69,7 @@ export const SearchButton = css`
         [part="key"] {
             align-items: center;
             background: var(--dark16);
-            border-radius: 3px;
+            border-radius: var(--xyd-border-radius-small);
             box-shadow: none;
             color: var(--dark48);
             display: flex;

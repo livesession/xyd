@@ -1,7 +1,7 @@
 import React, { } from "react"
 
 import * as cn from "./Heading.styles";
-import { Badge } from "writer";
+import { Badge } from "../../../writer";
 
 /**
  * Props for the Heading component
@@ -35,11 +35,16 @@ export interface HeadingProps {
     /** Optional label for the heading */
     label?: string
 
+    /** Optional subtitle for the heading */
+    subtitle?: string
+
     /** Optional to hide the anchor icon */
     noanchor?: boolean
 
     /** Optional ref for the heading element */
     ref?: React.RefObject<HTMLHeadingElement>
+
+    style?: React.CSSProperties
 }
 
 /**
@@ -47,38 +52,56 @@ export interface HeadingProps {
  * 
  * @category Component
  */
-export function Heading({
-    children,
-    size = 1,
-    as,
-    id,
-    onClick,
-    className,
-    kind,
-    active,
-    label,
-    noanchor,
-    ref,
-}: HeadingProps) {
+export function Heading(props: HeadingProps) {
+    const {
+        children,
+        size = 1,
+        as,
+        id,
+        onClick,
+        className,
+        kind,
+        active,
+        label,
+        subtitle,
+        noanchor,
+        ref,
+        style,
+    } = props
     let HeadingComponent = as ? as : `h${size}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
 
-    return <HeadingComponent
-        className={` ${cn.HeadingHost}  ${className || ''}`}
-        data-size={size}
-        data-kind={kind}
-        data-has-label={String(label ? "true" : "false")}
-        data-noanchor={String(noanchor || "false")}
-        data-active={String(active || "false")}
-        onClick={noanchor ? undefined : onClick}
-        id={id}
-        ref={ref}
-    >
-        {children}
-        
-        {label && <Badge size="sm">{label}</Badge>}
+    return <>
+        <HeadingComponent
+            style={style || undefined}
+            className={` ${cn.HeadingHost}  ${className || ''}`}
+            data-size={size}
+            data-kind={kind}
+            data-has-label={String(label ? "true" : "false")}
+            data-noanchor={String(noanchor || "false")}
+            data-active={String(active || "false")}
+            onClick={noanchor ? undefined : onClick}
+            id={id}
+            ref={ref}
+        >
+            {children}
 
-        {id && !noanchor && <$Anchor />}
-    </HeadingComponent>
+            {label && <Badge size="sm">{label}</Badge>}
+
+            {id && !noanchor && <$Anchor />}
+        </HeadingComponent>
+
+        {
+            subtitle ? <Heading
+                {...props}
+                size={4}
+                kind="muted"
+                subtitle={undefined} 
+                label={undefined}
+            >
+                {subtitle}
+            </Heading> : null
+        }
+    </>
 }
 
 function $Anchor() {

@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  title: Todo API
+  version: 1.0.0
+  description: A simple API for managing todos
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /todos:
+    get:
+      summary: Get all todos
+      description: Retrieve a list of all todos
+      responses:
+        '200':
+          description: A list of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+    
+    post:
+      summary: Create a new todo
+      description: Create a new todo item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+
+  /todos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Todo ID
+    
+    get:
+      summary: Get a todo by ID
+      description: Retrieve a specific todo by its ID
+      responses:
+        '200':
+          description: Todo found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+    
+    put:
+      summary: Update a todo
+      description: Update an existing todo by its ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+    
+    delete:
+      summary: Delete a todo
+      description: Delete a todo by its ID
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '404':
+          description: Todo not found
+
+components:
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the todo
+        title:
+          type: string
+          description: The title of the todo
+        completed:
+          type: boolean
+          description: Whether the todo is completed
+        createdAt:
+          type: string
+          format: date-time
+          description: When the todo was created
+      required:
+        - id
+        - title
+        - completed
+        - createdAt
+    
+    TodoInput:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the todo
+        completed:
+          type: boolean
+          description: Whether the todo is completed
+      required:
+        - title
+
+x-docs:
+  route: docs/api-reference
+  sidebar:
+    - group: API & Reference
+      pages:
+        - group: Todos
+          path: todos
+          pages: 
+            - type: endpoint
+              key:  GET /todos
+              path: list
+
+        - group: Objects
+          path: objects
+          pages:
+            - type: object
+              key: Todo
+              path: todo
+ 

@@ -2,9 +2,19 @@ import {css} from "@linaria/core";
 
 export const BlockquoteHost = css`
     @layer defaults {
-        color: rgb(55 65 81 / 1);
+        border-color: var(--xyd-blockquote-border-color);
+        color: var(--xyd-blockquote-color);
         font-style: italic;
-        border-color: rgb(209 213 219 / 1);
         margin: 0;
+        display: grid;
+        grid: auto / 24px auto;
+
+        [part="quote"] {
+            fill: var(--color-primary);
+        }
+        
+        p::after {
+            content: "”";
+        }
     }
 `;

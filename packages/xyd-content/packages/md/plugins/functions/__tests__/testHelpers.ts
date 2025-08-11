@@ -1,8 +1,7 @@
 import path from 'node:path';
-import { VFile } from 'vfile';
+import {VFile} from 'vfile';
 
-
-export function createMockTree(importPath: string) {
+export function importCodeMockTree(importPath: string) {
     return {
         type: 'root',
         children: [
@@ -19,7 +18,32 @@ export function createMockTree(importPath: string) {
     };
 }
 
-export function createMockTreeAlternativeSyntax(importPath: string) {
+export function importCodeMdAttributesMockTree(
+    importPath: string,
+    attributes: Record<string, string>
+) {
+    // Convert attributes object to md attribute string
+    const attrsString = Object.entries(attributes)
+        .map(([key, value]) => `${key}="${value}"`)
+        .join(' ');
+
+    return {
+        type: 'root',
+        children: [
+            {
+                type: 'paragraph',
+                children: [
+                    {
+                        type: 'text',
+                        value: `@importCode[${attrsString}] "${importPath}"`
+                    }
+                ]
+            }
+        ]
+    };
+}
+
+export function importCodeMockTreeAlternative(importPath: string) {
     return {
         type: 'root',
         children: [
@@ -68,4 +92,4 @@ export function createMockFetch(mockResponses: Record<string, string>) {
 
 export function restoreFetch(originalFetch: typeof global.fetch) {
     global.fetch = originalFetch;
-} 
+}

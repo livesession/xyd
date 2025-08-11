@@ -1,0 +1,58 @@
+:root {
+    --xyd-nav-height: 0px !important;
+}
+[data-color-scheme="dark"] {
+    --color-text-default: var(--black);
+}
+/* System Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        --color-text-default: var(--black);
+    }
+}
+
+/* FIX IMPORANT */
+xyd-layout-primary {
+    [part=sidebar], atlas-apiref-samples {
+        top: 50px !important;
+    }
+}
+
+
+xyd-banner {
+    background: none;
+    border-bottom: 1px solid var(--dark32);
+    justify-content: normal;
+}
+
+xyd-layout-primary > header {
+    display: none
+}
+xyd-layout-primary > main {
+    top: 100px
+}
+
+.banner-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 5;
+    background: var(--white);
+    border-bottom: 1px solid var(--dark32);
+    padding: 15px;
+
+    .banner-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 20px;
+    }
+
+    .banner-right {
+        padding-right: 20px;
+    }
+}

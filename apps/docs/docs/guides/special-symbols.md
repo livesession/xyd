@@ -1,5 +1,5 @@
 ---
-title: Special symbols
+title: Special Symbols
 icon: omega
 ---
 
@@ -12,7 +12,7 @@ Learn how to use special symbols to make your content more powerful
 Learn how to use them below.
 
 ## `Component Directive`
-Component Directive (`:::<component>`) is used to render UI [components](#) directly in your markdown:
+Component Directive (`:::<component>`) is used to render UI [components](/docs/components) directly in your markdown:
 
 ```mdx
 :::callout
@@ -20,7 +20,7 @@ This is a callout component
 :::
 ```
 
-To pass props into component use `{<key>=<value>}`:
+to pass props into component use `{<key>=<value>}`:
 ```mdx
 :::callout{kind="warning"}
 Take care!
@@ -43,99 +43,126 @@ Bool false sugar syntax
 :::
 ```
 
-Some components/built-in tags has special symbols as props, for example:
+if component does not have a children prop you can use shorter directive syntax(`::`):
+```mdx
+::my-component{label="Cool"}
 ```
-:::my-component{#some-id}
+
+if nested components, parent must use extra `:`:
+```mdx
+::::my-parent-component
+  :::my-component
+  You can pass nested too!
+  :::
 :::
 ```
 
-above will pass `id` as prop for `my-component`. More details about this API you can find [here](#).  
-
-&nbsp;
-
 ## `Function Calling`
-Function Calling (`@<function>`) is used to execute [functions](#) within your markdown content:
+Function Calling (`@<function>`) is used to execute [functions](/docs/reference/functions) within your markdown content:
 
 ```mdx
 @import "~/snippets/Hello.ts"
 ```
-
-&nbsp;
-
-## `Output Variable`
-Output Variable (`<<<<out_variable>{<attributes>}`) is used to pass [output variables](#) from content files, useful for customizing documentation behavior:
-
-```md
-<<<toc{anchor="bottom"}
-:::toc-card{title="Starter" href="https://github.com/xyd-js/starter"}
-  Check out our starter repo
+:::callout
+`~/` points to root of your docs project.
 :::
-<<<
+
+## `Output Variable` {label="Coming Soon"}
+[Output Variable](/docs/reference/functions/out) (`@out(<name>=<expression>)`) is used to pass output variables from content files, useful for [composing](/docs/guides/compose-content) documentation content:
+
+~~~md
+@out(examples=(
+  ```md
+  :::callout
+  Note that you must have an Admin or Owner role to manage webhook settings.
+  :::
+  ```
+))
+~~~
+
+or if output variable is a callback:
+~~~md
+@.examples(title="Samples")
+```md
+:::callout
+Note that you must have an Admin or Owner role to manage webhook settings.
+:::
 ```
+@end
+~~~
 
-```mdx
-!$page.githubDemo{
-  title="Starter",
-  description="Check out our starter repo" 
-  href="xyd-js/starter"
-}
-```
+###  Output Variable API
+Define your own custom output variable using follow API:
 
-```ts
-
-class MyTheme extends BaseTheme {
-  
-  @outputVar("toc")
-  @defineOutputVar("page", "githubDemo")
-  outputVarGithubDemo({title, description, href}) {
-    return <TocCard 
-      title={title} 
-      href={`httpss://github.com/${href}`} 
-     icon={<IconGithub/>}
-    >
-      {description}
-    </TocCard>
+:::code-group
+```tsx Settings API
+export default {
+  outputVariables: {
+    examples: Examples
   }
 }
 
+function Examples({title, children}) {
+  // your custom logic here
+}
 ```
 
-&nbsp;
+```tsx Theme API
+import {BaseTheme} from "xyd-js/themes"
 
-## `Read Variable`
-Read Variable (`{<read_variable>}`) is used to access [read variables](#) from frontmatter and other [pages](#):
+export class MyTheme extends BaseTheme {
+  contructor() {
+    super()
+
+    this.outputVariables({
+      examples: Examples,
+    })
+  }
+}
+
+function Examples({title, children}) {
+  // your custom logic here
+}
+
+```
+:::
+
+## `Read Variable` {label="Coming Soon"}
+Read Variable (`{<read_variable>}`) is used to access read variables from page meta and other pages:
 
 ```mdx
-{frontmatter.title}
+{page.title}
 ```
-
-&nbsp;
 
 ## `Attributes`
-Some built-in tags has abilities to pass [attributes](#) (`<tag|expression>{<attributes>}`):
+Some built-in tags has abilities to pass attributes (`<tag|expression>[<attributes>]`):
 ```mdx
-## Hide me from TOC {!toc}
+## Hide me from TOC [!toc]
 
-## Add me to TOC while not render on page {toc}
+## Add me to TOC while not render on page [toc]
 
-## Component Directive (`:::`) {toc="Component Directive"}
+## Component Directive (`:::`) [toc="Component Directive"]
 ```
 
+:::callout
+Learn more about toc attributes [here](/docs/guides/writing-quickstart#toc-anchors).
+:::
 
-### Example
+## Full Example
 Here's how you can combine all these symbols in a single markdown file:
 
-```mdx
+```md
 ---
 title: Special symbols usage
 ---
 
-!toc{anchor="bottom"}
+@.toc(anchor="bottom")
 :::toc-card{title="Starter" href="https://github.com/xyd-js/starter"}
   Check out our starter repo
 :::
+@end
 
-# {frontmatter.title}
+# {page.title}
 
 ## Import Example {toc="Import example"}
 You can import code snippets using the `@import` function:
@@ -153,13 +180,6 @@ These special symbols provide powerful ways to enhance your markdown documentati
 - **Components**: Add rich UI elements directly in markdown
 - **Functions**: Import and execute code dynamically
 - **Variables**: Pass data between content files
-- **Frontmatter Access**: Use metadata from your content files
+- **Page Meta Access**: Use metadata from your content files
 
 By combining these features, you can create interactive and dynamic documentation with minimal effort.
-
-:::callout
-Some possibitlies from special symbols are availalbe in MDX due to it's nature, e.g importing files.
-
-The main difference between symbols and MDX is a simple, more markdown like
-grammar and text-based hierarchy instead of component-like.
-:::

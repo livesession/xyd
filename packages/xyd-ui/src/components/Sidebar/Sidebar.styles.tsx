@@ -1,5 +1,5 @@
-import { renderToStaticMarkup } from 'react-dom/server';
 import { css } from "@linaria/core";
+
 import ChevronIcon from './chevronIcon.svg';
 
 export const SidebarHost = css`
@@ -10,18 +10,61 @@ export const SidebarHost = css`
         border-radius: 4px;
         display: flex;
         flex-direction: column;
+        
+        [part="item-group"] {
+            & > * {
+                padding-bottom: 4px;
+            }
+            
+            & + [part="item"] {
+                margin-top: 24px;
+            }
+        }
+        [part="scroll-shadow"]::before {
+            background: var(--shadow);
+            content: "";
+            height: 20px;
+            left: 0;
+            -webkit-mask-image: linear-gradient(0deg, transparent, #000);
+            mask-image: linear-gradient(0deg, transparent, #000);
+            opacity: 1;
+            pointer-events: none;
+            position: absolute;
+            right: 10px;
+            top: 0;
+            transition: opacity .1s ease;
+            z-index: 2;
+            left: 0;
+            right: 0;
+        }
 
         [part="list"] {
             overflow-y: auto;
             overflow-x: hidden;
             height: 100%;
-            padding: 8px;
+            padding: var(--xyd-sidebar-padding);
         }
 
         [part="footer"] {
-            padding: 1rem;
-            box-shadow: 0 -2px 10px var(--xyd-sidebar-divider-shadow-color);
+            padding: var(--xyd-sidebar-padding);
             border-top: 1px solid var(--xyd-sidebar-divider-color);
+
+            [part="item"] [part="primary-item"] > svg {
+                width: 16px !important;
+                height: 16px !important;
+            }
+        }
+
+        [part="logo"] {
+            display: flex;
+            align-items: center;
+            height: 28px;
+            width: auto;
+
+            img {
+                height: 28px;
+                width: auto;
+            }
         }
     }
 `;
@@ -40,7 +83,7 @@ export const ItemHost = css`
             font-weight: var(--xyd-font-weight-medium);
         }
 
-        [part="first-item"] {
+        [part="primary-item"] {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -49,17 +92,31 @@ export const ItemHost = css`
             margin-bottom: 4px;
             position: relative;
             
-            &[data-anchor="true"] {
-                padding: 6px 12px 12px var(--xyd-sidebar-item-padding-left);
+            &[data-ghost="true"] {
+                padding: var(--xyd-sidebar-ghost-item-padding);
             }
 
-            &:not([data-anchor="true"]):hover {
+            &:not([data-ghost="true"]):hover {
                 background: var(--xyd-sidebar-item-bgcolor--active-hover);
                 color: var( --xyd-sidebar-item-color--active);
                 border-radius: 4px;
             }
+
+            [part="item-title-container"] {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            [part="item-title"] {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: break-spaces;
+                text-align: left;
+            }
         }
-        [part="first-item" ][data-active="true"] {
+        [part="primary-item" ][data-active="true"] {
             background: var(--xyd-sidebar-item-bgcolor--active);
             border-radius: 4px;
             position: relative;
@@ -78,11 +135,11 @@ export const ItemHost = css`
                 border-radius: 10px;
             }
         }
-        [part="first-item"][data-parent-active="true"] {
+        [part="primary-item"][data-parent-active="true"] {
             font-weight: var(--xyd-font-weight-semibold);
             background: transparent;
         } 
-        &[data-theme="secondary"] [part="first-item"][data-active="true"] {
+        &[data-theme="secondary"] [part="primary-item"][data-active="true"] {
             background: unset;
             font-weight: var(--xyd-font-weight-medium);
         }
@@ -120,9 +177,16 @@ export const ItemHost = css`
                 }
             }
 
-            &:has(+ [part="subtree"] xyd-collapse[data-open="true"]) {
-                font-weight: bold;
+            /* &:has(+ [part="subtree"] xyd-collapse[data-open="true"]) {
                 
+                &::after {
+                    transform: rotate(0deg);
+                }
+            } */
+
+            &:has(+ [part="subtree"] > xyd-collapse[data-open="true"]) {
+                font-weight: bold;
+
                 &::after {
                     transform: rotate(0deg);
                 }
@@ -147,40 +211,10 @@ export const ItemHeaderHost = css`
         padding-left: var(--xyd-sidebar-item-padding-left);
         margin-bottom: 8px;
         margin-top: 24px;
-    }
-`;
 
-export const FooterItemHost = css`
-    @layer defaults {
         display: flex;
-        width: 100%;
-        padding: 2px;
-        color: var(--xyd-sidebar-item-color);
-
-        [part="item"] {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            gap: 7px;
-            padding: 4px 8px;
-
-            &:hover {
-                background: var(--xyd-sidebar-item-bgcolor--active-hover);
-                color: var(--xyd-sidebar-item-color--active);
-                border-radius: 4px;
-
-                svg {
-                    fill: var(--xyd-sidebar-item-color--active);
-                }
-            }
-
-            svg {
-                fill: var(--xyd-sidebar-item-color);
-                font-size: var(--xyd-font-size-large);
-                width: 18px;
-                height: 18px;
-            }
-        }
+        align-items: center;
+        gap: 8px;
     }
 `;
 

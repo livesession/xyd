@@ -1,5 +1,16 @@
 ---
 title: GraphQL
+icon: docs:graphql
+tocCard: 
+    - link: http://apidocs-demo.xyd.dev/
+      title: API Docs Demo
+      description: Interactive demo of GraphQL features
+      icon: globe
+      
+    - link: https://github.com/xyd-js/graphql-samples
+      title: GraphQL Samples
+      description: Learn how to setup GraphQL pages
+      icon: docs:github
 ---
 
 # GraphQL
@@ -7,176 +18,362 @@ title: GraphQL
 Reference GraphQL schema in your docs pages
 :::
 
-## Add a GraphQL schema file
-
 To describe your GraphQL API, make sure you have a valid GraphQL schema file that follows the GraphQL specification. 
 
 :::callout
-Your document must follow GraphQL specification.
+Your document must follow [GraphQL specification](https://spec.graphql.org/October2021).
 :::
 
-## Setup GraphQL configuration
-The fastest way to get started with GraphQL is to add a `graphql` field to a `api.spec` in the [`settings`](#) file. 
+## Configuration Quickstart
+The fastest way to get started with GraphQL is to add a `graphql` field to `api` in the [`settings`](/docs/guides/settings) file. 
 This field can contain either the path to a GraphQL schema file in your docs repo, or the URL of a hosted GraphQL schema:
-```json
-{
-    // ... rest of config
-    "api": {
-        "spec": {
-            "graphql": "./api/graphql/schema.graphql" // you can also use URL-based path
-        }
-    },
-}
-```
 
-### Routing setup
-Once configured, you'll need setup routing to match your GraphQL generated pages with navigation:
-```json
-{
-    // ... rest of the config
-    "api": {
-        "spec": {
-            // ... rest of the api config
+:::tabs{kind="secondary"}
+1. [docs.json](routing=docs.json)
+    ```json
+    {
+        // ... rest of settings
+        "api": {
+            "graphql": {
+                "source": "./api/graphql/schema.graphql",
+                "route": "docs/api/graphql"
+            }
         },
-        "route": { 
-            "graphql": "docs/api/graphql"
-        }
     }
-}
-```
-This will create a new route for your GraphQL schema at `docs/api/graphql`.
+    ```
+2. [GraphQL Schema](routing=graphql)
 
-### Advanced configuration
-Creating APIs for more advanced use cases is possible by configuring the nested `graphql` object:
-```json
-{
-    // ... rest of config
-    "api": {
-        "spec": {
-            "graphql": {
-                "main": "./api/graphql/main.graphql",
-                "admin": "./api/graphql/admin.graphql"
-            }
+    You can also manage routing directly from GraphQL schema:
+
+    :::steps
+    1. define `graphql` in `docs.json`:
+
+    ```json
+    {
+        // ... rest of settings
+        "api": {
+            "graphql": "./api/graphql/schema.graphql"
         },
-        "route": { 
-            "graphql": {
-                "main": "docs/api/graphql",
-                "admin": "docs/api/graphql/admin"
-            }
-        }
-    },
-}
-```
-Thanks to this configuration, you'll have two routes:
-- `docs/api/graphql` for your main GraphQL API
-- `docs/api/graphql/admin` for your admin GraphQL API
+    }
+    ```
 
-## Describing API in GraphQL schema file
-The first way to document your API is to use a GraphQL schema file itself. 
-This method would describe your API in a single file, closest to the GraphQL specification. 
+    2. then define `route` in `@docs` directive:
 
-It's simple to setup and it's nice if you like to have a single source of truth for your API.
-All you need is to add descriptions to your types, queries, and mutations using GraphQL's built-in description syntax:
-
-```graphql
-type Query {
-   """
-   ---
-   title: List todos
-   group: [Todos]
-   ---
-  
-   List of all todos, learn more about [todos](/docs/todos).
-  
-  :::callout
-  Tip: You can also add callouts to your GraphQL descriptions.
-  :::
-  """
-  todos: [Todo!]!
-}
-
-"""
----
-title: Todo
-group: [Todos]
----
-A todo item
-"""
-type Todo {
-  id: ID!
-  title: String!
-  completed: Boolean!
-}
-```
-
-Writing content inside descriptions follows the same rules as writing in any other Markdown file.
-The frontmatter in descriptions will be used to group the types and operations in the [navigation](/docs/guides/navigation) by adding it to settings behind the scenes.
-
-## Describing API in Markdown files
-The second way to document your API is to use Markdown files.
-This method would describe your API in a separate Markdown file for each type or operation.
-
-:::callout
-By default auto-generated elements from GraphQL will be passed to this Markdown file at build time.
+    ```graphql
+    extend schema @docs(
+      route: "docs/api-reference"
+    )
+    ```
+    :::
 :::
 
-This method also allows to set `directory` field in `api.spec` to the path of the directory containing the Markdown files.
-While it's optional, it's recommended to avoid name collisions with auto-generated ones.
-```json
-{
-    // ... rest of the config
-    "api": {
-        "spec": {
-            // ... rest of the spec config
-        },
-        "match": { 
-            // ... rest of the match config
-        },
-        "directory": {
-            "graphql": {
-                "main": "graphql-folder"
-            }
+This will create a new route based on your GraphQL specification at `docs/api/graphql/*`.
+
+
+## Multi Spec Configuration
+Creating multi API specs for more advanced use cases is also possible:
+
+:::tabs{kind="secondary"}
+1. [docs.json](multi=docs.json)
+
+    ```json
+    {
+        // ... rest of settings
+        "api": {
+            "graphql": [
+              {
+                "source": "./api/graphql/schema.graphql",
+                "route": "docs/api/graphql"
+              },
+              {
+                "source": "./api/graphql/admin.graphql",
+                "route": "docs/api/graphql/admin"
+              }
+            ]
         }
     }
-}
-```
+    ```
 
-After setting up the configuration, you can create a Markdown file for the type or operation in the `graphql-folder` directory:
-```md todos.md
----
-title: Todos
-group: [Todos]
-graphql: type Query.todos
----
+2. [GraphQL Schema](multi=graphql)
 
-List of all todos, learn more about [todos](/docs/todos).
+    ::::steps
+    1. define multiple `graphql` in `docs.json`:
+    
+      ```json
+      {
+          // ... rest of settings
+          "api": {
+              "graphql": [
+                "./api/graphql/schema.graphql",
+                "./api/graphql/admin.graphql"
+              ]
+          },
+      }
+      ```
+
+    2. then define `route` in `@docs` directive:
+      :::code-group
+        ```graphql api/graphql/schema.graphql
+        extend schema @docs(
+            route: "docs/api/graphql"
+        )
+        ```
+
+        ```graphql api/graphql/admin.graphql
+        extend schema @docs(
+            route: "docs/api/graphq/admin"
+        )
+        ```
+      :::
+
+    ::::
+::::
+
+Thanks to this configuration, you'll have two routes: `docs/api/graphql/*` and `docs/api/graphql/admin/*`.
+
+
+## API Docs Generation Guides
+
+- The generator automatically creates documentation based on your GraphQL schema
+- By default, groups types by their categories:
+  - Queries, Mutations, Subscriptions
+  - Objects, Inputs, Interfaces, Enums, Scalars
+- Links related types and operations together
 
 :::callout
-Tip: You can also add callouts to your GraphQL descriptions.
+All defaults can be overridden using the optional [docs directives](/docs/guides/graphql#docs-directives)
 :::
+
+## Docs Directives [maxTocDepth=3]
+The documentation system provides two directives:
+
+- `@docs` - Schema-level directive for global settings like routing and sorting
+- `@doc` - Type-level directive for customizing queries, mutations, objects, enums, and scalars
+
+You can define global settings like:
+```graphql
+# Global schema configuration
+extend schema @docs(
+    # schema-level settings
+)
 ```
 
-## Describing API both in GraphQL and Markdown
-You can also describe your API in both GraphQL schema and Markdown files.
-This is useful if you like to describe your API close to the GraphQL specification, but also add more context in Markdown, 
-or replace some of the auto-generated elements.
-
-Let's say we have the following GraphQL schema:
+or type-level:
 ```graphql
 type Query {
-  """
-  Get a list of all todos
-  """
-  todos: [Todo!]!
+    user(id: ID!): User 
+    @doc(
+        # type-level settings for operation types
+    )
+}
+
+type User @doc(
+    # type-level settings for other types
+) {
+    id: ID!
+    name: String!
 }
 ```
 
-and we want to add `group` and additional description to the type.
-We can do that by adding the following to the Markdown file:
-```md todos.md
----
-title: Todos
-group: [Todos]
-graphql: type Query.todos
----
-``` 
+:::callout
+The `@doc` directive is optional. If not specified, the generator will automatically group types by their categories (Queries, Mutations, Objects, etc.).
+:::
+
+### Navigation Customization
+While the generator automatically organizes your schema, you can customize the navigation structure using the optional `@doc` directive. This directive allows you to override the default grouping and organize your types and operations into custom groups or manage URLs.
+
+Here's an example of how to use the `@doc` directive:
+
+```graphql [lines descHead="Tip" desc="Check out our GraphQL docs directives [sample](https://github.com/xyd-js/graphql-samples/tree/master/navigation-docs-directive)."]
+type Query
+type Mutation
+
+extend schema @docs(
+    group: ["API & Reference"]
+    # above `group` is the root that every node will inherit
+)
+
+extend type Query @doc(
+    group: ["Users", "Queries"],
+    path: "users/queries"
+    # `group` and `path` will be inherited by all operations in this type
+) {
+    getUser(id: ID!): User
+    @doc(
+        path: "get"
+    )
+    # inherits `group` and `path` from Query + adds "get" to `path` 
+}
+
+extend type Query @doc(
+    group: ["Todos", "Queries"],
+    path: "todos/queries"
+    # `group` and `path` will be inherited by all operations in this type
+    # NOTE: it's a different type from the previous one, so it can have its own `group` and `path`
+) {
+    deleteTodo(id: ID!): Boolean!
+    # if we do not specify `@doc` for operation it will automatically get operation name as `path`
+}
+
+extend type Mutation @doc(
+    group: ["Users", "Mutations"],
+    path: "users/mutations"
+) {
+    createUser(createUserInput!): User
+    # if we do not specify `@doc` for operation it will automatically get operation name as `path`
+}
+
+type User @doc(
+    group: ["Users", "Objects"],
+    # we can declare `group` for the type itself
+) {
+    id: ID!
+    name: String!
+    email: String!
+}
+
+input createUserInput @doc(
+    group: ["Users", "Inputs"],
+    # we can declare `group` for the input type itself
+) {
+    name: String!
+    email: String!
+}
+
+scalar Email @doc(
+    group: ["Scalars"]
+    # we can declare `group` for the scalar type itself too
+)
+```
+
+### Scopes
+Scopes indicate required permissions in the documentation. Use the `scopes` parameter in the `@doc` directive to add this information to the docs pages.
+
+You can define scopes in two ways:
+
+1. Directly as string values:
+
+    ```graphql
+    type Query {
+        user(id: ID!): User
+        @doc(
+            scopes: ["user:read"]
+        )
+    }
+    ```
+
+2. Define scopes as enum via `OpenDocsScope`:
+
+    ```graphql [descHead="CAUTION" desc="This **DO NOT** protect your API, its only for docs purposes."]
+    extend enum OpenDocsScope {
+        USER_READ @scope(value: "user:read")
+
+        USER_WRITE @scope(value: "user:write")
+    }
+
+
+    type Mutation {
+        userAdd(input: UserWrite!): User
+        @doc(
+            scopes: [USER_READ, USER_WRITE]
+        )
+    }
+    ```
+
+### Sort
+Customize the order in the documentation using the `sort` parameter in the `@docs` directive:
+
+```graphql [!scroll descHead="Info" desc="Default sort order is: <code>query</code>, <code>mutation</code>, <code>subscription</code>, <code>object</code>, <code>interface</code>, <code>union</code>, <code>input</code> and <code>scalar<code/>"]
+extend schema @docs(
+    sort: [
+        {
+            node: "scalar",
+        },
+        {
+            node: "enum",
+        },
+        {
+            node: "interface",
+        },
+        {
+            node: "input",
+        },
+        {
+            node: "object",
+        },
+        {
+            node: "union",
+        },
+        {
+            node: "query",
+        },
+        {
+            node: "mutation",
+        },
+        {
+            node: "subscription"
+        }
+    ]
+)
+```
+
+or if you want to sort by groups:
+```graphql [descHead="Important" desc="Please make sure your Queries/Mutations/Subscriptions use <code>extend type</code> syntax, otherwise they will not be grouped correctly."]
+extend schema @docs(
+    sort: [
+        {
+            group: ["Users", "Mutations", "Objects", "Inputs", "Scalars"],
+        },
+        {
+            group: ["Todos", "Mutations", "Objects", "Inputs", "Scalars"],
+        }
+    ]
+)
+```
+
+if you dont want to repeat a sort patterns you can use `sortStack`:
+
+```graphql [descHead="sortStack" desc="Helps reduce boilerplate of declaring a group order."]
+extend schema @docs(
+    sortStack: [
+      ["Queries", "Mutations", "Objects", "Inputs", "Scalars"], #0
+    ],
+    sort: [
+        {
+            group: ["Users"], # + ["Queries", "Mutations" ...] 
+            stack: 0 
+        },
+        {
+            group: ["Todos"], # + ...
+            # if not specified it will get sort #0 automatically
+        }
+    ]
+)
+```
+
+you can use different sort stacks too:
+
+```graphql 
+extend schema @docs(
+    sortStack: [
+      # ... #0
+      ["Scalars", "Objects", "Inputs"], #1
+    ],
+    sort: [
+        #...
+         {
+            group: ["GraphQL Types"] # + ["Scalars", "Objects", "Inputs"],
+            # !diff +
+            stack: 1
+        }
+    ]
+)
+```
+
+## API Docs Demo
+You can also check out our [interactive API Docs Demo](http://apidocs-demo.xyd.dev/) to see these features in action and experiment with different GraphQL configurations in real-time.
+
+## GraphQL Samples
+Learn [how to setup GraphQL pages](https://github.com/xyd-js/graphql-samples).
+
+

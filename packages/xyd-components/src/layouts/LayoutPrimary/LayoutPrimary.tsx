@@ -12,10 +12,11 @@ export interface LayoutPrimaryProps {
     className?: string;
     layout?: PageLayout
     scrollKey?: string
+    id?: string
 }
 
 const LayoutPrimaryContext = React.createContext<{
-    scrollRef: React.RefObject<HTMLDivElement | null>;
+    scrollRef: React.RefObject<HTMLDivElement | Window | null>;
     isMobileNavOpen: boolean;
     setIsMobileNavOpen: (isOpen: boolean) => void;
 }>({
@@ -26,9 +27,13 @@ const LayoutPrimaryContext = React.createContext<{
 
 // TODO: move scroller to xyd-foo
 export function LayoutPrimary(props: LayoutPrimaryProps) {
-    const scrollRef = useRef<HTMLDivElement>(null)
+    const scrollRef = useRef<HTMLDivElement | Window>(null)
     const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
     const { hideMainHeader } = useSubHeader(props.subheader ? scrollRef : null, props.scrollKey)
+
+    useEffect(() => {
+        scrollRef.current = window
+    }, [])
 
     return <LayoutPrimaryContext value={{
         scrollRef,
@@ -41,6 +46,7 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
             data-subheader={String(!!props.subheader)}
             data-hide-subheader={String(hideMainHeader)}
             data-layout={props.layout}
+            id={props.id}
         >
             {props.children}
         </xyd-layout-primary>
@@ -50,6 +56,7 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
 interface LayoutPrimaryHeaderProps {
     header: React.ReactNode;
 
+    banner?: React.ReactNode;
     subheader?: React.ReactNode;
 }
 LayoutPrimary.Header = function LayoutPrimaryHeader(props: LayoutPrimaryHeaderProps) {
@@ -57,24 +64,32 @@ LayoutPrimary.Header = function LayoutPrimaryHeader(props: LayoutPrimaryHeaderPr
 
     return <>
         <header part="header">
+            {props.banner}
+
             <div part="header-content">
                 {props.header}
-                <button
-                    part="hamburger-button"
-                    aria-label="Toggle navigation menu"
-                    onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
-                >
-                    <div part="hamburger-icon">
-                        <$HamburgerLine active={isMobileNavOpen} />
-                        <$HamburgerLine active={isMobileNavOpen} />
-                        <$HamburgerLine active={isMobileNavOpen} />
-                    </div>
-                </button>
             </div>
 
-            {props.subheader}
+            {props.subheader && <div part="header-subheader">
+                {props.subheader}
+            </div>}
         </header>
     </>
+}
+
+LayoutPrimary.Hamburger = function LayoutPrimaryHamburger() {
+    const { isMobileNavOpen, setIsMobileNavOpen } = useContext(LayoutPrimaryContext)
+    return <button
+        part="hamburger-button"
+        aria-label="Toggle navigation menu"
+        onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+    >
+        <div part="hamburger-icon">
+            <$HamburgerLine active={isMobileNavOpen} />
+            <$HamburgerLine active={isMobileNavOpen} />
+            <$HamburgerLine active={isMobileNavOpen} />
+        </div>
+    </button>
 }
 
 interface LayoutPrimaryMobileAsideProps {
@@ -95,13 +110,15 @@ LayoutPrimary.MobileAside = function LayoutPrimaryAside(props: LayoutPrimaryMobi
             <div part="mobile-sidebar-aside">
                 {props.aside}
             </div>
-            <button
-                part="mobile-sidebar-close-button"
-                aria-label="Close navigation menu"
-                onClick={() => setIsMobileNavOpen(false)}
-            >
-                <div part="mobile-sidebar-close-icon" />
-            </button>
+            <div>
+                <button
+                    part="mobile-sidebar-close-button"
+                    aria-label="Close navigation menu"
+                    onClick={() => setIsMobileNavOpen(false)}
+                >
+                    <div part="mobile-sidebar-close-icon" />
+                </button>
+            </div>
         </aside>
     </>
 }
@@ -109,13 +126,12 @@ LayoutPrimary.MobileAside = function LayoutPrimaryAside(props: LayoutPrimaryMobi
 interface LayoutPrimaryPageProps {
     children: React.ReactNode;
     contentNav?: React.ReactNode;
+    after?: React.ReactNode;
 }
 LayoutPrimary.Page = function LayoutPrimaryPage(props: LayoutPrimaryPageProps) {
-    const { scrollRef } = useContext(LayoutPrimaryContext)
-
     return <>
         <div part="page">
-            <div part="page-scroll" ref={scrollRef}>
+            <div part="page-scroll">
                 <div part="page-container">
                     <div part="page-article-container">
 
@@ -133,6 +149,7 @@ LayoutPrimary.Page = function LayoutPrimaryPage(props: LayoutPrimaryPageProps) {
                     </div>
                 </div>
             </div>
+            {props.after}
         </div>
     </>
 }
@@ -144,75 +161,77 @@ function $HamburgerLine({ active }: { active: boolean }) {
     />
 }
 
+const SCROLL_DOWN_TRIGGER_THRESHOLD = 200;
+const SCROLL_UP_TRIGGER_THRESHOLD = 100;
+
 // TODO: move to `xyd-foo` or somewhere else
 // TODO  better solution than `key`
-function useSubHeader(ref: React.RefObject<HTMLDivElement | null> | null, key?: any) {
+function useSubHeader(ref: React.RefObject<HTMLDivElement | Window | null> | null, key?: any) {
     const [hideMainHeader, setHideMainHeader] = useState(false)
-    const [scrollTop, setScrollTop] = useState(0)
-    const [controlScrollPos, setControlScrollPos] = useState(0)
-    const [lastScrollDirection, setLastScrollDirection] = useState<'up' | 'down' | null>(null)
+    const [lastScrollTop, setLastScrollTop] = useState(0)
+    const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null)
+    const [scrollThreshold, setScrollThreshold] = useState(0)
+    const [scrollStartPosition, setScrollStartPosition] = useState(0)
+    const [isScrolling, setIsScrolling] = useState(false)
 
     function reset() {
         setHideMainHeader(false)
-        setScrollTop(0)
-        setControlScrollPos(0)
+        setLastScrollTop(0)
+        setScrollDirection(null)
+        setScrollThreshold(0)
+        setScrollStartPosition(0)
+        setIsScrolling(false)
     }
 
     useEffect(() => {
         reset()
     }, [key])
 
-    useEffect(() => {
-        if (scrollTop === controlScrollPos) {
-            return
-        }
-
-        // Get the header height from CSS variable
-        const headerHeight = parseInt(
-            getComputedStyle(document.documentElement)
-                .getPropertyValue('--xyd-nav-height')
-                .trim() || '0',
-            10
-        );
-        const checkpoint = headerHeight / 2;
-        const diff = scrollTop - controlScrollPos
-        const reversePosDiff = Math.abs(scrollTop - controlScrollPos)
-
-        // Determine scroll direction
-        const direction = diff > 0 ? 'down' : 'up'
-        setLastScrollDirection(direction)
-
-        // Always show header when near the top of the page
-        if (scrollTop < headerHeight) {
-            setHideMainHeader(false)
-            return
-        }
-
-        if (diff > checkpoint) {
-            setHideMainHeader(true)
-        } else if (reversePosDiff > checkpoint) {
-            setHideMainHeader(false)
-        }
-    }, [
-        scrollTop,
-        controlScrollPos,
-    ]);
-
     function onScroll(e: Event) {
         if (!(e.target instanceof HTMLElement)) {
             return
         }
 
-        const scroll = e.target?.scrollTop
-        setScrollTop(scroll)
-    }
+        const currentScrollTop = e.target.scrollTop
 
-    function onScrollFinish(e: Event) {
-        if (!(e.target instanceof HTMLElement)) {
+        // Always show header when near the top of the page
+        if (currentScrollTop < SCROLL_UP_TRIGGER_THRESHOLD) {
+            setHideMainHeader(false)
+            setScrollThreshold(0)
+            setLastScrollTop(currentScrollTop)
+            setIsScrolling(false)
             return
         }
 
-        setControlScrollPos(e.target?.scrollTop)
+        // Determine scroll direction
+        const direction = currentScrollTop > lastScrollTop ? 'down' : 'up'
+
+        // If direction changed, reset scroll tracking
+        if (direction !== scrollDirection) {
+            setScrollDirection(direction)
+            setScrollStartPosition(currentScrollTop)
+            setIsScrolling(true)
+        }
+
+        // Calculate total scroll distance from start position
+        const totalScrollDistance = Math.abs(currentScrollTop - scrollStartPosition)
+
+        // Only trigger header changes if we've scrolled enough distance in the current direction
+        if (direction === 'down' && totalScrollDistance > SCROLL_DOWN_TRIGGER_THRESHOLD) {
+            // When scrolling down, hide header
+            setHideMainHeader(true)
+            setScrollThreshold(currentScrollTop)
+            // Reset scroll tracking after triggering
+            setScrollStartPosition(currentScrollTop)
+        } else if (direction === 'up' && totalScrollDistance > SCROLL_UP_TRIGGER_THRESHOLD) {
+            // When scrolling up, show header
+            setHideMainHeader(false)
+            setScrollThreshold(currentScrollTop)
+            // Reset scroll tracking after triggering
+            setScrollStartPosition(currentScrollTop)
+        }
+
+        setLastScrollTop(currentScrollTop)
     }
 
     useEffect(() => {
@@ -221,13 +240,11 @@ function useSubHeader(ref: React.RefObject<HTMLDivElement | null> | null, key?: 
         }
 
         ref.current.addEventListener("scroll", onScroll)
-        ref.current.addEventListener("scrollend", onScrollFinish)
 
         return () => {
             ref.current?.removeEventListener("scroll", onScroll)
-            ref.current?.removeEventListener("scrollend", onScrollFinish)
         }
-    }, [ref, key]);
+    }, [ref, key, lastScrollTop, scrollDirection, scrollThreshold, scrollStartPosition]);
 
     return {
         hideMainHeader,

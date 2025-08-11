@@ -1,0 +1,19 @@
+/* TODO: its helmet */
+@layer presets {
+    xyd-layout-primary {
+        /* component: Nav */
+        xyd-nav {
+            [part="nav"] {
+                padding-left: var(--theme-sidebar-left);
+                padding-right: var(--theme-sidebar-left);
+            } 
+
+            @media (min-width: 1024px) {
+                [part="nav"]>*:first-child {
+                    position: relative;
+                    left: var(--xyd-sidebar-padding);
+                }
+            }
+        }
+    }
+}

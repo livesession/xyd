@@ -1,6 +1,17 @@
 import { css } from "@linaria/core";
 
 export const LoaderHost = css`
+    @keyframes pulse {
+        0%, 80%, 100% { 
+            transform: scale(0.6);
+            opacity: 0.4;
+        }
+        40% { 
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
     @layer defaults {
         display: inline-flex;
         align-items: center;
@@ -34,17 +45,6 @@ export const LoaderHost = css`
 
             &:nth-of-type(3) {
                 animation-delay: 0.4s;
-            }
-
-            @keyframes pulse {
-                0%, 80%, 100% { 
-                    transform: scale(0.6);
-                    opacity: 0.4;
-                }
-                40% { 
-                    transform: scale(1);
-                    opacity: 1;
-                }
             }
         }
     }

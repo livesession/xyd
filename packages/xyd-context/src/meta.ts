@@ -1,12 +1,13 @@
 import type { RootContent } from 'mdast'
 
-import type { Theme } from '@xyd-js/core'
+import type { Metadata, Theme } from '@xyd-js/core'
 
 type TransformFn = (
     themeSettings: Theme,
     metaProps: any, 
-    meta: any,
-    treeChilds: readonly RootContent[]
+    outputVars: any,
+    treeChilds: readonly RootContent[],
+    meta: Metadata<any>
 ) => any // TODO: fix any
 
 interface MetaComponent {

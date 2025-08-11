@@ -1,11 +1,13 @@
 {
   "name": "@xyd-js/host",
-  "version": "0.0.0",
+  "version": "0.1.0-build.157",
   "type": "module",
   "scripts": {},
   "dependencies": {
+    "@xyd-js/analytics": "workspace:*",
     "@xyd-js/core": "workspace:*",
     "@xyd-js/components": "workspace:*",
+    "@xyd-js/content": "workspace:*",
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/composer": "workspace:*",
     "@xyd-js/themes": "workspace:*",
@@ -13,19 +15,27 @@
     "@xyd-js/theme-poetry": "workspace:*",
     "@xyd-js/theme-cosmo": "workspace:*",
     "@xyd-js/theme-opener": "workspace:*",
+    "@xyd-js/theme-picasso": "workspace:*",
+    "@xyd-js/theme-gusto": "workspace:*",
+    "@xyd-js/theme-solar": "workspace:*",
     "@xyd-js/plugin-orama": "workspace:*",
     "@xyd-js/plugin-algolia": "workspace:*",
-    "@react-router/dev": "^7.5.0",
-    "@react-router/node": "^7.5.0",
-    "@react-router/serve": "^7.5.0",
+    "katex": "^0.16.22",
     "isbot": "^5",
-    "react-router": "^7.5.0"
+    "react-router": "^7.7.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "@react-router/dev": "^7.7.1",
+    "@react-router/node": "^7.7.1",
+    "@react-router/serve": "^7.7.1",
+    "openux-js": "0.0.0-pre.1",
+    "pluganalytics": "0.0.0-pre.3"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
     "semver": "^7.6.3",
-    "vite": "^6.1.0",
+    "vite": "^7.0.0",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

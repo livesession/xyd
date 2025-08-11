@@ -1,1 +1,0 @@
-move to `@xyd-js/pages` ?

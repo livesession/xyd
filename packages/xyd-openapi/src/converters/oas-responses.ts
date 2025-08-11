@@ -7,7 +7,10 @@ export function oasResponseToDefinitionProperties(
     responses: OpenAPIV3.ResponsesObject,
     code: string,
     contentType: string,
-): DefinitionProperty[] | DefinitionProperty | null {
+): {
+    properties: DefinitionProperty | DefinitionProperty[],
+    description?: string,
+} | null {
     let schemaObject: OpenAPIV3.SchemaObject | undefined
     let responseObject: OpenAPIV3.ResponseObject | undefined
 
@@ -21,13 +24,15 @@ export function oasResponseToDefinitionProperties(
     }
 
     if (!schemaObject) {
-        return [
-            {
-                description: responseObject?.description || "",
-                name: "",
-                type: ""
-            }
-        ]
+        return {
+            properties: [
+                {
+                    description: responseObject?.description || "",
+                    name: "",
+                    type: ""
+                }
+            ],
+        }
     }
 
     let array = false
@@ -45,12 +50,27 @@ export function oasResponseToDefinitionProperties(
 
     const properties = schemaObjectToUniformDefinitionProperties(schemaObject, true)
 
-    if (array) {
-        return {
-            type: DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY,
-            properties,
-        } as DefinitionProperty
+    let description = ""
+
+    if (schemaObject.allOf) {
+        for (const item of schemaObject.allOf) {
+           if ("description" in item) {
+               description += item.description + "\n";
+           }
+        }
     }
 
-    return properties
+    if (array) {
+        return {
+            properties: {
+                type: DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY,
+                properties,
+            } as DefinitionProperty
+        }
+    }
+
+    return {
+        properties: properties || [],
+        description: description || "",
+    }
 }

@@ -1,28 +1,49 @@
+@import "@xyd-js/themes/dist/decorators/atlas-vars.css";
+
+/* Theme specific */
 :root {
-    --opener-blue80: #0b64dd;
-    --opener-blue100: #1750ba;
+    --opener-blue: #0b64dd;
+    --opener-blue--active: #1750ba;
 
     --opener-gray4-rgb: 246, 247, 249;
     --opener-gray4: #f6f7f9;
 
-    --opener-gray64: #f5f5f5;
-    --opener-gray80: #e0e0e0;
-
     --opener-gray64: #363434;
     --opener-gray80: #1e1e1e;
+
+    --opener-content-background: linear-gradient(180deg, rgba(var(--opener-gray4-rgb), 0.5) 0%, rgba(var(--opener-gray4-rgb), 0) 48.32%);
 }
 
+/* Core */
 :root {
-    --color-primary: var(--opener-blue80);
-    --color-primary--active: var(--opener-blue100);
+    --color-primary: var(--opener-blue);
+    --color-primary--active: var(--opener-blue--active);
 }
 
+/* Utils */
 :root {
     --xyd-page-gutter: 0;
-    --xyd-subnav-height: 50px;
-
 }
 
+/* Subnav */
+:root {
+    --xyd-subnav-height: 50px;
+    --xyd-subnav-bgcolor: var(--white);
+}
+
+/* Sidebar */
+:root {
+    /* --xyd-sidebar-width: 450px; */
+    --xyd-sidebar-bgcolor: var(--white)
+}
+
+/* Sidebar Item */
+:root {
+    --xyd-sidebar-item-bgcolor--active: var(--opener-gray4);
+    --xyd-sidebar-item-bgcolor--active-hover: var(--opener-gray4);
+}
+
+/* Coder */
 :root {
     --xyd-codetabs-bgcolor: var(--opener-gray80);
     --xyd-codetabs-color: var(--white);
@@ -31,30 +52,29 @@
     --xyd-coder-code-mark-bgcolor: var(--xyd-codetabs-color--hover);
     --xyd-coder-code-mark-border-color: var(--color-primary);
     --xyd-coder-code-border-color: var(--opener-gray80);
+    --xyd-codetabs-color--active: var(--white);
 }
 
+/* Tabs */
 :root {
-    --xyd-sidebar-width: 450px;
-    --xyd-sidebar-bgcolor: var(--white)
+    --xyd-tabs-primary-bgcolor: unset;
 }
 
-:root {
-    --xyd-sidebar-item-bgcolor--active: var(--opener-gray4);
-    --xyd-sidebar-item-bgcolor--active-hover: var(--opener-gray4);
+@define-mixin dark-theme {
+    --opener-gray4-rgb: var(--dark32-rgb);
+    --opener-gray4: var(--dark32);
+
+    --xyd-codetabs-color: var(--black);
+    --xyd-tabs-primary-border-color: unset;
+    --xyd-codetabs-color--active: var(--black);
 }
 
+[data-color-scheme="dark"] {
+    @mixin dark-theme;
+}
 
-
-:root {
-    --XydAtlas-Ref-Palette-Primary-60: var(--color-primary);
-    --XydAtlas-Ref-Palette-Primary-70: var(--color-primary--active);
-    --XydAtlas-Ref-Palette-Primary-80: var(--color-primary--active);
-
-    --XydAtlas-Ref-Palette-Neutral-10: var(--dark8);
-    --XydAtlas-Ref-Palette-Neutral-20: var(--dark16);
-    --XydAtlas-Ref-Palette-Neutral-30: var(--dark32);
-    --XydAtlas-Ref-Palette-Neutral-40: var(--dark40);
-    --XydAtlas-Ref-Palette-Neutral-70: var(--dark48);
-    --XydAtlas-Ref-Palette-Neutral-80: var(--dark60);
-    --XydAtlas-Ref-Palette-Neutral-100: var(--dark80);
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        @mixin dark-theme;
+    }
 }

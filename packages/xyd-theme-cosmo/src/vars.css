@@ -1,0 +1,18 @@
+@import "@xyd-js/themes/dist/decorators/atlas-vars.css";
+
+/* Sidebar */
+
+:root {
+    --xyd-sidebar-width: 280px;
+    --xyd-sidebar-padding: 16px;
+}
+
+/* Nav + Subnav */
+:root {
+    --xyd-nav-height: 44px;
+    --xyd-subnav-height: 44px;
+}
+
+:root {
+    --theme-nav-height-space: 8px;
+}

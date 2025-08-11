@@ -1,12 +1,16 @@
 import {css} from "@linaria/core";
 
 export const ApiRefSamplesContainerHost = css`
-    height: 100%;
-    position: sticky;
-    top: 12px;
+    height: fit-content;
     display: flex;
     gap: 32px;
     flex-direction: column;
+    position: relative;
+    top: var(--sidebar-top, 12px);
+
+    @media (min-width: 1280px) {
+        position: sticky;
+    }
 
     &:first-child {
         margin-top: 0;

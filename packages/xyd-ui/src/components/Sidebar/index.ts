@@ -6,6 +6,4 @@ export type {
     UISidebarProps,
     UISidebarItemProps,
     UISidebarItemHeaderProps,
-
-    SidebarFooterItemProps
 } from "./Sidebar";

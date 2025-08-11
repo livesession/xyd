@@ -1,0 +1,11 @@
+@layer themedecorator {
+    xyd-layout-primary[data-layout="page"] {
+        --xyd-sidebar-width: 0px;
+        
+        [part="main"], [part="page-scroll"], [part="page-container"], [part="page-article-container"] {
+            margin: 0;
+            padding: 0;
+            max-width: 100%;
+        }
+    }
+}

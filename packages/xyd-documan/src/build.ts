@@ -1,17 +1,37 @@
 import path from "node:path";
 import fs from "node:fs";
+import {fileURLToPath} from "node:url";
 
-import { build as viteBuild, Plugin as VitePlugin } from 'vite';
+import {build as viteBuild, Plugin as VitePlugin} from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
 
-import { appInit, calculateFolderChecksum, commonVitePlugins, getAppRoot, getBuildPath, getHostPath, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
+import {
+    appInit,
+    calculateFolderChecksum,
+    commonPostInstallVitePlugins,
+    commonVitePlugins,
+    getAppRoot,
+    getBuildPath,
+    getHostPath,
+    getXydFolderPath,
+    postWorkspaceSetup,
+    preWorkspaceSetup,
+    storeChecksum
+} from "./utils";
 
 // Define the main function to run the builds
 export async function build() {
-    const skip = await preWorkspaceSetup()
+    const skip = await preWorkspaceSetup({
+        force: true
+    })
 
-    const { respPluginDocs, resolvedPlugins } = await appInit()
-    const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)
+    const inited = await appInit()
+    if (!inited) {
+        return
+    }
+    const {respPluginDocs, resolvedPlugins} = inited
+
+    const commonRunVitePlugins = await commonVitePlugins(respPluginDocs, resolvedPlugins)
     const appRoot = getAppRoot();
 
     if (!skip) {
@@ -20,10 +40,15 @@ export async function build() {
         const newChecksum = calculateFolderChecksum(getHostPath());
         storeChecksum(newChecksum);
     }
-
+    const postInstallVitePlugins = commonPostInstallVitePlugins(respPluginDocs, resolvedPlugins)
+    
     {
-        setupInstallableEnvironmentV2() // TODO: fix in the future
+        await setupInstallableEnvironmentV2()
     }
+
+    // Determine conditional externals based on settings
+    const enableMermaid = !!respPluginDocs?.settings?.integrations?.diagrams
+    const externalPackages = enableMermaid ? [] : ["rehype-mermaid"]
 
     try {
         // Build the client-side bundle
@@ -32,6 +57,7 @@ export async function build() {
             root: appRoot,
             plugins: [
                 ...commonRunVitePlugins,
+                ...postInstallVitePlugins,
 
                 tsconfigPaths(),
             ],
@@ -44,9 +70,22 @@ export async function build() {
             },
             resolve: {
                 alias: {
-                    process: 'process/browser'
+                    process: 'process/browser',
+                    // When rehype-mermaid is externalized, resolve it from CLI's node_modules
+                    ...(enableMermaid ? {} : { 'rehype-mermaid': path.resolve(getHostPath(), './node_modules/rehype-mermaid') })
                 }
             },
+            build: {
+                rollupOptions: {
+                    external: externalPackages,
+                },
+            },
+            ssr: {
+                external: externalPackages,
+            },
+            // ssr: {
+            //     noExternal: ["react", "react-dom", "react-router"]
+            // }
         });
 
         // Build the SSR bundle
@@ -54,14 +93,25 @@ export async function build() {
             mode: "production",
             root: appRoot,
             build: {
-                ssr: true
+                ssr: true,
+                rollupOptions: {
+                    external: externalPackages,
+                },
+                // rollupOptions: {
+                //     external: ["@xyd-js/framework/hydration", "fs"]
+                // }
             },
             plugins: [
                 fixManifestPlugin(appRoot),
                 ...commonRunVitePlugins,
+                ...postInstallVitePlugins,
+
+                tsconfigPaths(),
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
+                // include: ["react", "react-dom", "react/jsx-runtime", "react-router"],
+                // force: true
             },
             define: {
                 'process.env.NODE_ENV': JSON.stringify('production'),
@@ -69,9 +119,19 @@ export async function build() {
             },
             resolve: {
                 alias: {
-                    process: 'process/browser'
+                    process: 'process/browser',
+                    // When rehype-mermaid is externalized, resolve it from CLI's node_modules
+                    ...(enableMermaid ? {} : { 'rehype-mermaid': path.resolve(getHostPath(), './node_modules/rehype-mermaid') })
+                    // react: path.resolve(workspaceNodeModulesPath, "react"),
+                    // "react-dom": path.resolve(workspaceNodeModulesPath, "react-dom")
                 }
             },
+            ssr: {
+                external: externalPackages,
+            },
+            // ssr: {
+            //     noExternal: ["react", "react-dom", "react-router"]
+            // }
         });
     } catch (error) {
         console.error('Build failed:', error);  // TODO: better message
@@ -79,30 +139,59 @@ export async function build() {
 }
 
 function setupInstallableEnvironmentV2() {
-    // TODO: probably we should have better mechanism - maybe bundle?
+    const symbolicXydNodeModules = path.join(getXydFolderPath(), "node_modules")
+    const hostNodeModules = path.join(getHostPath(), "node_modules")
 
-    const buildDir = getBuildPath()
-
-    const packageJsonPath = path.join(buildDir, 'package.json');
-
-    const packageJsonContent = {
-        type: "module",
-        scripts: {},
-        dependencies: {
-            // "@react-router/node": "^7.5.0",
-            // "isbot": "^5"
-        },
-        devDependencies: {}
-    };
-
-    // Ensure the build directory exists
-    if (!fs.existsSync(buildDir)) {
-        fs.mkdirSync(buildDir, { recursive: true });
+    if (fs.existsSync(symbolicXydNodeModules)) {
+        if (fs.lstatSync(symbolicXydNodeModules).isSymbolicLink()) {
+            fs.unlinkSync(symbolicXydNodeModules);
+        } else {
+            fs.rmSync(symbolicXydNodeModules, { recursive: true, force: true });
+        }
     }
+    fs.symlinkSync(hostNodeModules, symbolicXydNodeModules, 'dir');
 
-    // Write the package.json file
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
+    // const buildDir = getBuildPath();
+    // const packageJsonPath = path.join(buildDir, 'package.json');
+
+    // const packageJsonContent = {
+    //     type: "module",
+    //     scripts: {},
+    //     dependencies: {},
+    //     devDependencies: {}
+    // };
+
+    // if (!fs.existsSync(buildDir)) {
+    //     fs.mkdirSync(buildDir, {recursive: true});
+    // }
+
+    // fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), 'utf8');
+
+    // const buildNodeModulesPath = path.join(buildDir, 'node_modules');
+    // const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+    // let workspaceNodeModulesPath = '';
+    // if (process.env.XYD_DEV_MODE) {
+    //     workspaceNodeModulesPath = path.resolve(dirname, '../../../node_modules');
+    // } else {
+    //     // TODO: check if works for npm
+    //     workspaceNodeModulesPath = getXydFolderPath()
+    // }
+
+    // console.log("workspaceNodeModulesPath", workspaceNodeModulesPath);
+
+    // if (fs.existsSync(buildNodeModulesPath)) {
+    //     if (fs.lstatSync(buildNodeModulesPath).isSymbolicLink()) {
+    //         fs.unlinkSync(buildNodeModulesPath);
+    //     } else {
+    //         fs.rmSync(buildNodeModulesPath, { recursive: true, force: true });
+    //     }
+    // }
+    // fs.symlinkSync(workspaceNodeModulesPath, buildNodeModulesPath, 'dir');
+
+    // return workspaceNodeModulesPath;
 }
+
 
 // TODO: not so good solution
 // fixManifestPlugin is needed for fixing server manifest for react-router cuz we use different `root` and output
@@ -111,6 +200,7 @@ function fixManifestPlugin(
 ): VitePlugin {
     const manifestPath = path.join(
         getBuildPath(),
+        // getAppRoot(),
         "./server/.vite/manifest.json"
     );
 

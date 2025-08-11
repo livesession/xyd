@@ -1,3 +1,3 @@
 export {
-    mdServerHighlight
-} from "./mdServerHighlight"
+    mdCodeRehype
+} from "./mdCodeRehype"

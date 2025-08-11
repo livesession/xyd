@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { HighlightedCode } from 'codehike/code';
 
 import {
@@ -20,30 +20,19 @@ import {
     Steps,
     List,
     ListOl,
-    UnderlineNav,
     Text,
-
-    // Icon,
-    IconCode,
-    IconCustomEvent,
-    IconFunnels,
-    IconMetrics,
-    IconSessionReplay,
-    IconAlert,
-    IconBrowser,
-    IconREST,
-    IconGraphQL,
-    IconWebhooks,
-    IconJSBrowser,
-    IconJSNode,
-    IconStorybook,
-    IconReactRouter,
-    IconNextJS,
-    IconAppTemplate,
-    IconQuote,
-} from '../writer'
-import { CodeSample } from "../coder";
+    Button,
+    Icon,
+    Image,
+    Update,
+    Card,
+    ColorSchemeButton,
+    Breadcrumbs
+} from '../../writer'
+import { PageHome, PageFirstSlide, PageBlogHome } from '../../pages'
+import { CodeSample } from "../../coder";
 import { GridDecorator } from './GridDecorator';
+import { useUXEvents } from '../uxsdk';
 
 interface ReactContentOptions {
     Link?: React.ElementType
@@ -67,10 +56,11 @@ export class ReactContent {
         const builtInComponents = [
             stdContent,
             writerContent,
+            pageComponents,
             iconContent,
             coderContent,
             directiveContent,
-            contentDecorators
+            contentDecorators,
         ]
             .map(fn => fn.bind(this))
             .reduce((acc, fn) => ({ ...acc, ...fn() }), {});
@@ -94,7 +84,6 @@ export class ReactContent {
 
         const noopNestedComponents = {
             Steps: NoopComponent,
-            UnderlineNav: NoopComponent,
             Tabs: NoopComponent,
             GuideCard: NoopComponent,
             Table: NoopComponent,
@@ -132,12 +121,18 @@ export function stdContent(
     const $$Pre = $Pre.bind(this)
     const $$Heading = $Heading.bind(this)
 
-    return {
+    const stdComponents = {
         h1: (props) => {
             return <$$Heading depth={1} {...props} noanchor />
         },
         h2: props => {
-            return <$$Heading depth={2} {...props} />
+            const appearance = this.settings?.theme?.appearance
+
+            return <>
+                {appearance?.content?.sectionSeparator ? <Hr /> : null}
+
+                <$$Heading depth={2} {...props} />
+            </>
         },
         h3: props => {
             return <$$Heading depth={3} {...props} />
@@ -168,7 +163,9 @@ export function stdContent(
         },
 
         table: (props) => {
-            return <Table {...props} />
+            const kind = this.settings?.theme?.appearance?.tables?.kind
+
+            return  <Table kind={kind} {...props}  />
         },
         tr: (props) => {
             return <Table.Tr {...props} />
@@ -194,17 +191,58 @@ export function stdContent(
         blockquote: (props) => {
             return <Blockquote {...props} />
         },
-        hr: (props) => {
+        hr: ({ children, ...props }) => {
             return <Hr {...props} />
         },
         a: (props) => {
             return <$Link {...props} as={this?.options?.Link} />
         },
-        br: (props) => {
-            return <br />
+        br: ({ children, ...props }) => {
+            return <br {...props} />
         },
+        img: ({ children, src, alt, ...props }) => {
+            return <Image src={src} alt={alt} {...props} />
+        },
+        picture: (props) => {
+            const { children, ...rest } = props
 
+            return <picture {...rest}>
+                {children}
+            </picture>
+        },
+        source: (props) => {
+            const { children, ...rest } = props
+
+            return <source {...rest} />
+        },
+        input: ({ children, ...props }) => {
+            return <input {...props} />
+        },
+        textarea: ({ children, ...props }) => {
+            return <textarea {...props} />
+        },
+        div: (props) => <div {...props} />,
+        span: (props) => <span {...props} />,
+        iframe: (props) => <iframe {...props} />,
+        svg: (props) => <svg {...props} />,
+        feature: (props) => <div data-feature-flag={props.flag} data-feature-match={props.match}>{props.children}</div>,
         React: NoopReactComponent,
+    }
+
+    return {
+        ...stdComponents,
+        H1: stdComponents.h1,
+        H2: stdComponents.h2,
+        H3: stdComponents.h3,
+        H4: stdComponents.h4,
+        H5: stdComponents.h5,
+        P: stdComponents.p,
+        Ul: stdComponents.ul,
+        Ol: stdComponents.ol,
+        Li: stdComponents.li,
+        Table: stdComponents.table,
+        Tr: stdComponents.tr,
+        Th: stdComponents.th,
     }
 }
 
@@ -213,13 +251,16 @@ interface HeadingContentProps {
     depth: 1 | 2 | 3 | 4 | 5 | 6
     children: React.ReactNode
     label?: string
+    subtitle?: string
     noanchor?: boolean
+    style?: any
 }
 
-function $Heading({ id, depth, children, label, noanchor }: HeadingContentProps) {
+function $Heading({ id, depth, children, label, subtitle, noanchor, style }: HeadingContentProps) {
     // const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
     // const navigate = this?.options?.useNavigate() // TODO: !!!! BETTER API !!!!!
     const navigation = this?.options?.useNavigation() // TODO: !!!! BETTER API !!!!!
+    const ux = useUXEvents()
 
     const ref = useRef<HTMLHeadingElement>(null!)
     const [active, setActive] = useState(false)
@@ -250,6 +291,11 @@ function $Heading({ id, depth, children, label, noanchor }: HeadingContentProps)
         size={depth}
         active={active}
         onClick={() => {
+            if (id) {
+                ux.docs.anchor.click({
+                    id: id
+                })
+            }
             // navigate({
             //     hash: id
             // })
@@ -262,7 +308,9 @@ function $Heading({ id, depth, children, label, noanchor }: HeadingContentProps)
             document.querySelector(`#${id}`)?.scrollIntoView()
         }}
         label={label}
+        subtitle={subtitle}
         noanchor={noanchor}
+        style={style}
     >
         {children}
     </Heading>
@@ -271,30 +319,52 @@ function $Heading({ id, depth, children, label, noanchor }: HeadingContentProps)
 export function writerContent() {
     const GuideCardContent = $GuideCardContentComponent.bind(this)
     GuideCardContent.List = GuideCard.List
+    const BreadcrumbsContent = $BreadcrumbsContentComponent.bind(this)
 
-    const UnderlineNavContent = $UnderlineNavContentComponent.bind(this)
-    UnderlineNavContent.Content = $UnderlineNavContentContentComponent.bind(this)
-    UnderlineNavContent.Item = $UnderlineNavItemContentComponent.bind(this)
-    UnderlineNavContent.Item.displayName = "UnderlineNav.Item"
+    const TabsContent = $TabsContentComponent.bind(this)
+    TabsContent.Content = $TabsContentContentComponent.bind(this)
+    TabsContent.Item = $TabsItemContentComponent.bind(this)
+    TabsContent.Item.displayName = "Tabs.Item"
 
     return {
         Callout,
         Details,
         GuideCard: GuideCardContent,
+        Breadcrumbs: BreadcrumbsContent,
         Steps,
-        Tabs,
+        Tabs: TabsContent,
         Table,
         Badge,
-        UnderlineNav: UnderlineNavContent,
-
+        Button,
         Subtitle(props) {
             const paragraph = props?.children?.props?.children
 
             return <Heading size={4} kind="muted" {...props}>
                 {paragraph}
             </Heading>
-        }
+        },
+        Update,
+        Card: $Card.bind(this),
+        ColorSchemeButton: ColorSchemeButton,
+        Feature: (props) => <div data-feature-flag={props.flag} data-feature-match={props.match}>
+            {props.children}
+        </div>
     }
+}
+
+function pageComponents() {
+    return {
+        PageHome,
+        PageFirstSlide,
+        PageBlogHome: $PageBlogHome.bind(this)
+    }
+}
+
+function $PageBlogHome(props) {
+    return <PageBlogHome
+        {...props}
+        as={this?.options?.Link}
+    />
 }
 
 function $GuideCardContentComponent(props) {
@@ -304,28 +374,53 @@ function $GuideCardContentComponent(props) {
     />
 }
 
-const UnderlineNavContentContext = createContext({
+function $BreadcrumbsContentComponent(props) {
+    return <Breadcrumbs
+        {...props}
+        as={this?.options?.Link}
+    />
+}
+
+function $Card(props) {
+    return <Card
+        {...props}
+        link={this?.options?.Link}
+    />
+}
+
+const TabsContentContext = createContext({
     value: "",
     onChange: (v: string) => {
     }
 })
 
-function $UnderlineNavContentComponent(props) {
+function $TabsContentComponent(props) {
     const [value, setValue] = useState(props.value)
 
-    return <UnderlineNavContentContext value={{ value, onChange: setValue }}>
-        <UnderlineNav
+    return <TabsContentContext value={{ value, onChange: setValue }}>
+        <Tabs
             {...props}
             value={value}
             onChange={val => {
+                const url = new URL(window.location.href)
+                const currentParams = url.searchParams
+
+                // Update parameters from the new params
+                new URLSearchParams(val).forEach((value, key) => {
+                    currentParams.set(key, value)
+                })
+
+                url.search = currentParams.toString()
+                history.replaceState(null, '', url)
+
                 setValue(val)
             }}
         />
-    </UnderlineNavContentContext>
+    </TabsContentContext>
 }
 
-function $UnderlineNavContentContentComponent(this: ReactContent, props) {
-    const { onChange } = useContext(UnderlineNavContentContext)
+function $TabsContentContentComponent(this: ReactContent, props) {
+    const { onChange } = useContext(TabsContentContext)
     const location = this?.options?.useLocation?.() // TODO: !!!! BETTER API !!!!!
 
     const search = location?.search
@@ -354,11 +449,11 @@ function $UnderlineNavContentContentComponent(this: ReactContent, props) {
         tabsMatch = undefined
     }
 
-    return <UnderlineNav.Content {...props} defaultActive={tabsMatch} />
+    return <Tabs.Content {...props} defaultActive={tabsMatch} />
 }
 
-function $UnderlineNavItemContentComponent(props) {
-    const { onChange } = useContext(UnderlineNavContentContext)
+function $TabsItemContentComponent(props) {
+    const { onChange } = useContext(TabsContentContext)
     const location = this?.options?.useLocation?.()
 
     const search = location?.search
@@ -378,7 +473,7 @@ function $UnderlineNavItemContentComponent(props) {
         }
     }, [tabsMatch])
 
-    return <UnderlineNav.Item
+    return <Tabs.Item
         {...props}
         as={this?.options?.Link}
         defaultActive={tabsMatch}
@@ -388,26 +483,7 @@ function $UnderlineNavItemContentComponent(props) {
 // TODO: better system for icons + should work with .md like icon="session-replay" etc.
 export function iconContent() {
     return {
-        // Icon,
-
-        // TODO: remove below and use iconset system
-        IconSessionReplay,
-        IconMetrics,
-        IconFunnels,
-        IconCode,
-        IconCustomEvent,
-        IconAlert,
-        IconBrowser,
-        IconREST,
-        IconGraphQL,
-        IconWebhooks,
-        IconJSBrowser,
-        IconJSNode,
-        IconStorybook,
-        IconReactRouter,
-        IconNextJS,
-        IconAppTemplate,
-        IconQuote,
+        Icon,
     }
 }
 
@@ -425,8 +501,8 @@ export function directiveContent(
         DirectiveCodeGroup: (props) => {
             return <CodeSample
                 {...props}
-                theme={this.settings?.theme?.markdown?.syntaxHighlight || undefined}
-                codeblocks={JSON.parse(props.codeblocks)}
+                theme={this.settings?.theme?.coder?.syntaxHighlight || undefined}
+                codeblocks={JSON.parse(props.codeblocks || "[]")}
             />
         }
     }
@@ -458,10 +534,20 @@ function $Pre(
     }
     const lang = (props?.children?.props?.className || "").replace("language-", "")
 
+    let descriptionContent: React.ReactNode | undefined = undefined
+    if (props?.descriptionContent) {
+        const code = mdxContent(props?.descriptionContent)
+        if (code?.component) {
+            const Component = MemoMDXComponent(code?.component)
+
+            descriptionContent = <Component components={this.components()} />
+        }
+    }
+
     return <CodeSample
-        theme={this.settings?.theme?.markdown?.syntaxHighlight || undefined}
+        theme={this.settings?.theme?.coder?.syntaxHighlight || undefined}
         name={lang}
-        description={props?.children?.props?.meta}
+        description={typeof props?.title === "string" ? props?.title : props?.children?.props?.meta}
         codeblocks={[
             {
                 value: props?.children?.props?.children,
@@ -470,7 +556,11 @@ function $Pre(
                 highlighted,
             }
         ]}
-        size="full" // TODO: in the future configurable
+        lineNumbers={props?.lineNumbers}
+        size={props?.size}
+        descriptionHead={props?.descriptionHead}
+        descriptionContent={descriptionContent}
+        descriptionIcon={props?.descriptionIcon}
     />
 }
 
@@ -492,11 +582,90 @@ function $Link({
 }: LinkProps) {
     const Link = as || Anchor
 
+    if (!as) {
+        // TODO: fix any
+        (props as any).newWindow = newWindow || EXTERNAL_HREF_REGEX.test(href)
+    }
+
     return <Link
         href={href}
-        newWindow={newWindow || EXTERNAL_HREF_REGEX.test(href)}
         {...props}
+        as={as}
     >
         {children}
     </Link>
 }
+
+// TODO: move to content?
+function mdxExport(code: string) {
+    // Create a wrapper around React.createElement that adds keys to elements in lists
+    const scope = {
+        Fragment: React.Fragment,
+        jsxs: createElementWithKeys,
+        jsx: createElementWithKeys,
+        jsxDEV: createElementWithKeys,
+    }
+    const fn = new Function(...Object.keys(scope), code)
+
+    return fn(scope)
+}
+
+function MemoMDXComponent(codeComponent: any) {
+    return useMemo(
+        () => codeComponent ? codeComponent : null,
+        [codeComponent]
+    )
+}
+
+
+// // TODO: move to content?
+function mdxContent(code: string) {
+    const content = mdxExport(code) // TODO: fix any
+    if (!mdxExport) {
+        return {}
+    }
+
+    return {
+        component: content?.default,
+    }
+}
+
+const createElementWithKeys = (type: any, props: any) => {
+    // Process children to add keys to all elements
+    const processChildren = (childrenArray: any[]): any[] => {
+        return childrenArray.map((child, index) => {
+            // If the child is a React element and doesn't have a key, add one
+            if (React.isValidElement(child) && !child.key) {
+                return React.cloneElement(child, { key: `mdx-${index}` });
+            }
+            // If the child is an array, process it recursively
+            if (Array.isArray(child)) {
+                return processChildren(child);
+            }
+            return child;
+        });
+    };
+
+    // Handle both cases: children as separate args or as props.children
+    let processedChildren;
+
+    if (props && props.children) {
+        if (Array.isArray(props.children)) {
+            processedChildren = processChildren(props.children);
+        } else if (React.isValidElement(props.children) && !props.children.key) {
+            // Single child without key
+            processedChildren = React.cloneElement(props.children, { key: 'mdx-child' });
+        } else {
+            // Single child with key or non-React element
+            processedChildren = props.children;
+        }
+    } else {
+        processedChildren = [];
+    }
+
+    // Create the element with processed children
+    return React.createElement(type, {
+        ...props,
+        children: processedChildren
+    });
+};

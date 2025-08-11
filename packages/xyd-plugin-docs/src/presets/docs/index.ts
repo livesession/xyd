@@ -14,6 +14,8 @@ import { getDocsPluginBasePath, getHostPath } from "../../utils";
 
 interface docsPluginOptions {
     urlPrefix?: string
+    onUpdate?: (callback: (settings: Settings) => void) => void
+    appInit: any
 }
 
 // TODO: find better solution - maybe something what rr7 use?
@@ -38,6 +40,11 @@ function preinstall() {
         const root = process.cwd()
 
         const settings = await readSettings()
+        if (settings && !settings.theme) {
+            settings.theme = {
+                name: DEFAULT_THEME
+            }
+        }
 
         let themeRoutesExists = false
         try {
@@ -62,33 +69,116 @@ function preinstall() {
     }
 }
 
-// TODO: maybe later as a separate plugin?
-function vitePluginSettings() {
-    return async function ({ preinstall }): Promise<VitePlugin> {
-        return {
-            name: 'virtual:xyd-settings',
-            resolveId(id) {
-                if (id === 'virtual:xyd-settings') {
-                    return id + '.jsx'; // Return the module with .jsx extension
-                }
-                return null;
-            },
-            async load(id) { // TODO: better cuz we probably dont neeed `get settings()`
-                if (id === 'virtual:xyd-settings.jsx') {
-                    return `
+function vitePluginSettings(options: docsPluginOptions) {
+    return function () {
+        return async function ({ preinstall }): Promise<VitePlugin> {
+            const virtualId = 'virtual:xyd-settings';
+            const resolvedId = virtualId + '.jsx';
+
+            let currentSettings = globalThis.__xydSettings
+            let settingsClone = {}
+            if (!currentSettings && preinstall?.settings) {
+                currentSettings = typeof preinstall?.settings === "string" ? preinstall?.settings : JSON.stringify(preinstall?.settings || {})
+            }
+
+            let currentUserPreferences = globalThis.__xydUserPreferences
+            if (!currentUserPreferences) {
+                currentUserPreferences = {}
+            }
+
+            let firstInit = false
+
+            if (options.onUpdate) {
+                options.onUpdate((settings: Settings) => {
+                    currentSettings = settings
+                    settingsClone = JSON.parse(JSON.stringify(currentSettings))
+                    currentUserPreferences = globalThis.__xydUserPreferences
+                })
+            }
+
+            return {
+                name: 'xyd:virtual-settings',
+
+                resolveId(id) {
+                    if (id === virtualId) {
+                        return resolvedId;
+                    }
+                    return null;
+                },
+
+                async load(id) {
+                    if (id === 'virtual:xyd-settings.jsx') {
+                        // console.log("load xyd-settings.jsx")
+
+                        if (!firstInit && globalThis.__xydSettings) {
+                            currentSettings = globalThis.__xydSettings
+                            settingsClone = JSON.parse(JSON.stringify(currentSettings))
+                            currentUserPreferences = globalThis.__xydUserPreferences
+                        }
+                        firstInit = true
+
+                        return `
+                        // Always get the latest settings from globalThis
+                        const getCurrentSettings = () => {
+                            return globalThis.__xydSettings || ${typeof currentSettings === "string" ? currentSettings : JSON.stringify(currentSettings)}
+                        };
+
+                        const getCurrentUserPreferences = () => {
+                            return globalThis.__xydUserPreferences || ${typeof currentUserPreferences === "string" ? currentUserPreferences : JSON.stringify(currentUserPreferences)}
+                        }
+                        
                         export default {
                             get settings() {
-                                return globalThis.__xydSettings || ${typeof preinstall.settings === "string" ? preinstall.settings : JSON.stringify(preinstall.settings)}
+                                return getCurrentSettings();
+                            },
+                            get settingsClone() {
+                                return ${typeof settingsClone === "string" ? settingsClone : JSON.stringify(settingsClone)}
+                            },
+                            get userPreferences() {
+                                return getCurrentUserPreferences()
                             }
                         }
-                    `
-                }
-                return null;
-            },
-        };
+                        `
+                    }
+                    return null;
+                },
+
+                // async hotUpdate(ctx) {
+                //     console.log("hot update")
+                    
+                //     const isConfigfileUpdated = ctx.file.includes('react-router.config.ts')
+                //     if (isConfigfileUpdated) {
+                //         return
+                //     }
+
+                //     const newSettings = await readSettings();
+                //     if (!newSettings) {
+                //         console.log('⚠️ Failed to read new settings');
+                //         return
+                //     }
+
+                //     if (options.appInit) {
+                //         // TODO: better way to handle that - we need this cuz otherwise its inifiite reloads
+                //         if (newSettings.engine?.uniform?.store) {
+                //             await options.appInit({
+                //                 disableFSWrite: true,
+                //             })
+                //         } else {
+                //             await options.appInit() // TODO: !!! IN THE FUTURE MORE EFFICIENT WAY !!!
+                //         }
+                //     }
+
+                //     currentSettings = globalThis.__xydSettings
+                //     settingsClone = JSON.parse(JSON.stringify(currentSettings))
+                //     currentUserPreferences = globalThis.__xydUserPreferences
+                //     // globalThis.__xydSettingsClone = JSON.parse(JSON.stringify(globalThis.__xydSettings))
+
+                //     return
+                // },
+            };
+        }
     }
 }
-
 
 export function vitePluginThemeCSS() {
     return async function ({
@@ -215,10 +305,10 @@ function preset(settings: Settings, options: docsPluginOptions) {
             }),
         ],
         vitePlugins: [
-            vitePluginSettings,
+            vitePluginSettings(options),
             vitePluginTheme,
             vitePluginThemeCSS,
-            vitePluginThemeOverrideCSS,
+            vitePluginThemeOverrideCSS
         ],
         basePath
     }

@@ -2,73 +2,36 @@
 
 ## Prerequisites
 
-- Node.js >= 20.17.0
-- pnpm >= 9.0.0
+- Node.js >= 22.12.0
+- pnpm >= 9.9.0
 - Git
-
-## Project Structure
-
-This is a monorepo using pnpm workspaces. The main packages are:
-
-- `@xyd-js/components`: Core UI components library
-- `@xyd-js/ui`: UI package
-- `@xyd-js/gql`: GraphQL related functionality
-- `@xyd-js/uniform`: Uniform integration
-- `@xyd-js/atlas`: Atlas package with Storybook
 
 ## Getting Started
 
 1. Clone the repository
+
 2. Install dependencies:
    ```bash
-   pnpm install
+   pnpm i
    ```
-3. Set up Git hooks:
+
+3. Build
    ```bash
-   pnpm prepare
+   pnpm run build
+   ```
+
+4. Run local xyd
+   ```
+   XYD_DEV_MODE=1 pnpm run dev
    ```
 
 ## Development Scripts
 
 ### Main Development
 
-- `pnpm dev`: Runs the main development build using Lerna watch mode
-- `pnpm dev:styles`: Runs the watch mode for UI components and styles
-- `pnpm build`: Builds all packages
-- `pnpm clean`: Cleans build artifacts
-
-### Package-Specific Builds
-
-- `pnpm build:gql`: Builds the GraphQL package
-- `pnpm build:uniform`: Builds the Uniform package
-- `pnpm build:atlas-storybook`: Builds the Atlas Storybook
-
-## Code Quality
-
-The project uses several tools to maintain code quality:
-
-- **Biome**: For code formatting and linting
-- **Husky**: For Git hooks
-- **lint-staged**: For running linters on staged files
-- **TypeScript**: For type checking
-
-### Pre-commit Hooks
-
-Before each commit, the following checks are automatically run on staged files:
-- Biome linting and formatting
-
-## Style Development
-
-For developing UI components and styles:
-
-1. Start the style development server:
-   ```bash
-   pnpm dev:styles
-   ```
-   This will run watch mode for both `@xyd-js/components` and `@xyd-js/ui` packages.
-
-2. Make changes to your components or styles
-3. The changes will be automatically rebuilt
+- `pnpm run dev`: Runs the main development build using Lerna watch mode
+- `pnpm run build`: Builds all packages
+- `pnpm run clean`: Cleans build artifacts
 
 ## Package Management
 
@@ -78,6 +41,7 @@ The project uses pnpm workspaces for package management. When adding new depende
   ```bash
   pnpm add <package> --filter <package-name>
   ```
+
 - For workspace dependencies:
   ```bash
   pnpm add <package> --filter <package-name> --workspace
@@ -91,8 +55,11 @@ The project uses Changesets for version management. To create a new version:
    ```bash
    pnpm changeset
    ```
+
 2. Follow the prompts to select packages and version changes
+
 3. Commit the changeset file
+
 4. Create a new version:
    ```bash
    pnpm changeset version
@@ -143,19 +110,66 @@ Clear
 ./clear.sh
 ```
 
+Clear verdaccio
+```
+./clear-verdaccio.sh
+```
+
 Start packages development mode
 ```
-XYD_DEV_MODE=1 XYD_DEV_CLI_NOINSTALL=1 pnpm run dev
+pnpm run dev
 ```
 
 Build CLI in dev mode
 ```
-XYD_DEV_MODE=1 pnpm run build
+pnpm run build
 ```
+
 Run dev mode for style packages
 ```
 pnpm run dev:styles
 ```
+
+Login to local verdaccio
+```
+npm login --registry http://localhost:4873 (test, test)
+```
+
+Install xyd-js cli from verdaccio
+```
+npm_config_registry=http://localhost:4873 bun add -g @xyd-js/cli 
+npm_config_registry=http://localhost:4873 npm i -g @xyd-js/cli 
+npm_config_registry=http://localhost:4873 pnpm add -g @xyd-js/cli
+```
+
+Build xyd from using verdaccio packages
+```
+npm_config_registry=http://localhost:4873 xyd build 
+```
+
+Run xyd-js cli in dev mode
+```
+XYD_DEV_MODE=1 XYD_NODE_PM=pnpm xyd
+```
+
+npm cache cleaning
+```
+rm -rf $HOME/.npm/_cacache
+```
+
+run local xyd cli server
+```
+npm_config_registry=http://localhost:4873 xyd
+```
+
+### Tests
+### e2e
+With local npm registry
+```
+npm_config_registry=http://localhost:4873 pnpm run test:e2e ./__tests__/e2e/<PATH>
+```
+
+
 ### Release process
 
 run changeset
@@ -178,22 +192,29 @@ changeset publish
 pnpm changeset publish --otp=<OTP_CODE>
 ```
 
-deprecate package
 ```
+npm uninstall -g @xyd-js/cli
+```
+
+### changeset verdaccio publish
+```bash
+npm_config_registry=http://localhost:4873 pnpm changeset publish
+``
+
+deprecate package
+```bash
 pnpm deprecate <PACKAGE> "<MESSAGE>"
 ```
 
 mark package version as latest
-```
+```bash
 npm dist-tag add <PACKAGE>@<VERSION> latest
 ```
 
-## Dev flags
+### Dev flags
 
-```
+```bash
 XYD_DEV_MODE=1 - Enable dev mode
-
-XYD_DEV_CLI_NOINSTALL=1 - Skip CLI packages installation after a build
 ```
 
 ## Documentation Development
@@ -228,11 +249,10 @@ This approach is equivalent to running `xyd dev` but allows for better integrati
 When developing documents, you can use the following environment flags:
 
 - `XYD_DEV_MODE=1`: Enables development mode
-- `XYD_DEV_CLI_NOINSTALL=1`: Skips CLI packages installation after a build
 
 Example with flags:
 ```bash
-XYD_DEV_MODE=1 XYD_DEV_CLI_NOINSTALL=1 pnpm run --filter "./packages/xyd-documan" build
+XYD_DEV_MODE=1 pnpm run --filter "./packages/xyd-documan" build
 ```
 
 Note: This is the recommended approach during development as it:

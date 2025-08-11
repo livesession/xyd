@@ -1,0 +1,30 @@
+@import "./header-sketch.css";
+
+:root {
+    --decorator-sketch-border-color: var(--dark32);
+    --color-header-border: var(--decorator-sketch-border-color);
+    --xyd-sidebar-divider-color: var(--decorator-sketch-border-color);
+}
+
+@layer decorators {
+    xyd-layout-primary {
+        &[data-hide-subheader="true"] {
+            xyd-subnav {
+                border-top: none;
+            }
+        }
+
+        &:not([data-layout="wide"]) {
+            [part="page-article"] {
+                border-right: 1px solid var(--decorator-sketch-border-color);
+            }
+        }
+
+        /* component: BaseTheme.ContentSecondary */
+        xyd-secondary-content {
+            [part="secondary-content-header"] {
+                border-bottom: 1px solid var(--decorator-sketch-border-color);
+            }
+        }
+    }
+}

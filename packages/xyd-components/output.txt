@@ -1,0 +1,13 @@
+
+> @xyd-js/components@0.1.0-build.127 prebuild /Users/zdunecki/Code/livesession/xyd/packages/xyd-components
+> pnpm clean
+
+
+> @xyd-js/components@0.1.0-build.127 clean /Users/zdunecki/Code/livesession/xyd/packages/xyd-components
+> rimraf build
+
+
+> @xyd-js/components@0.1.0-build.127 build /Users/zdunecki/Code/livesession/xyd/packages/xyd-components
+> rollup -c rollup.config.js
+
+⚙️ inlined SVGs into dist/index.css

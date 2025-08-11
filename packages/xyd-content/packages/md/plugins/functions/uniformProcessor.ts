@@ -1,13 +1,13 @@
-import path from 'node:path';
-import fs from 'node:fs';
-import os from 'node:os';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
+import * as os from 'node:os';
 import { VFile } from 'vfile';
 
 import { Metadata, Settings } from '@xyd-js/core';
 import { sourcesToUniform, sourcesToUniformV2, type TypeDocReferenceContext } from '@xyd-js/sources/ts';
 import { reactDocgenToUniform, uniformToReactUniform } from '@xyd-js/sources/react';
 import { gqlSchemaToReferences } from "@xyd-js/gql"
-import { oapSchemaToReferences, deferencedOpenAPI } from "@xyd-js/openapi"
+import {oapSchemaToReferences, deferencedOpenAPI, uniformPluginXDocsSidebar} from "@xyd-js/openapi"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
 import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
@@ -27,12 +27,12 @@ export async function processUniformFunctionCall(
     file: VFile,
     resolveFrom?: string,
     settings?: Settings,
-): Promise<any[] | null> {
+): Promise<Reference[] | null> {
     // Parse the import path to extract file path
     const { filePath, regions, lineRanges } = parseImportPath(value);
 
     // Resolve path aliases and get the base directory
-    let resolvedFilePath = resolvePathAlias(filePath, settings, process.cwd());
+    let resolvedFilePath = resolvePathAlias(filePath, settings, file);
 
     if (resolvedFilePath.startsWith("~/")) {
         resolvedFilePath = path.join(process.cwd(), resolvedFilePath.slice(2));
@@ -46,6 +46,11 @@ export async function processUniformFunctionCall(
     }
 
     const plugins = globalThis.__xydUserUniformVitePlugins || []
+    const matter = file.data?.matter as Metadata
+    if (matter?.openapi) {
+        plugins.push(uniformPluginXDocsSidebar)
+    }
+
     const uniformRefs = uniform(references, {
         plugins: [
             ...plugins,
@@ -98,7 +103,7 @@ async function processUniformFile(
                                 case 'ts': {
                                     const typedocRefs = await sourcesToUniformV2(
                                         packageDir,
-                                        [packageDir]
+                                        [relativeFilePath]
                                     )
 
                                     if (!typedocRefs || !typedocRefs.references) {
@@ -131,6 +136,7 @@ async function processUniformFile(
                                         packageDir,
                                         [relativeFilePath]
                                     )
+
                                     if (!resp || !resp.references || !resp.projectJson) {
                                         console.error("Failed to process uniform file", filePath)
                                         return null
@@ -152,16 +158,6 @@ async function processUniformFile(
                         console.error("package.json not found", filePath)
                     }
                 }
-
-                // case 'tsx': {
-                //     const code = fs.readFileSync(resolvedFilePath, 'utf8');
-                //     const references = reactDocgenToUniform(
-                //         code,
-                //         filePath
-                //     );
-
-                //     return references;
-                // }
 
                 case 'graphql': {
                     const references = await gqlSchemaToReferences(resolvedFilePath, {

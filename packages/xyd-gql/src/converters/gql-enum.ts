@@ -14,6 +14,7 @@ export function gqlEnumToUniformRef(ctx: Context, gqlType: GraphQLEnumType): Ref
     }))
 
     return uniformify(
+        ctx,
         gqlType,
         [
             {

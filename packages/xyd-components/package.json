@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/components",
-  "version": "0.1.0-xyd.11",
+  "version": "0.1.0-build.167",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -10,9 +10,6 @@
     "./index.css": "./dist/index.css",
     ".": {
       "import": "./dist/index.js"
-    },
-    "./brand": {
-      "import": "./dist/brand.js"
     },
     "./coder": {
       "import": "./dist/coder.js"
@@ -26,14 +23,17 @@
     "./pages": {
       "import": "./dist/pages.js"
     },
+    "./system": {
+      "import": "./dist/system.js"
+    },
     "./views": {
       "import": "./dist/views.js"
     },
     "./writer": {
       "import": "./dist/writer.js"
     },
-    "./system": {
-      "import": "./dist/system.js"
+    "./uxsdk": {
+      "import": "./dist/uxsdk.js"
     },
     "./coder/themes/*": {
       "import": "./dist/coder/themes/*"
@@ -46,37 +46,32 @@
     "clean": "rimraf build"
   },
   "dependencies": {
-    "@radix-ui/react-icons": "^1.3.0",
-    "@radix-ui/react-tabs": "^1.1.1",
     "codehike": "^1.0.3",
-    "lucide-react": "^0.447.0"
+    "lucide-react": "^0.447.0",
+    "radix-ui": "^1.4.2",
+    "rollup-plugin-string": "^3.0.0"
   },
   "peerDependencies": {
     "@xyd-js/core": "workspace:*",
     "@code-hike/lighter": "^1.0.3",
-    "react": "^19.0.0"
+    "openux-js": "0.0.0-pre.1",
+    "react": "^19.1.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.26.0",
-    "@babel/preset-flow": "^7.25.9",
-    "@babel/preset-react": "^7.26.0",
-    "@babel/preset-typescript": "^7.26.0",
-    "@linaria/atomic": "^6.2.0",
     "@linaria/core": "^6.2.0",
-    "@rollup/plugin-alias": "^5.1.1",
+    "@linaria/rollup": "^5.0.4",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-typescript": "^12.1.1",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@rollup/plugin-url": "^8.0.2",
+    "@types/react": "^19.1.0",
     "@wyw-in-js/rollup": "^0.5.5",
-    "@wyw-in-js/vite": "^0.5.5",
     "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.47",
-    "postcss-import": "^16.1.0",
+    "postcss-url": "^10.1.3",
     "rimraf": "^3.0.2",
     "rollup": "^4.27.4",
+    "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-postcss": "^4.0.2",

@@ -1,11 +1,16 @@
-import {css} from "@linaria/core";
+import { css } from "@linaria/core";
 
 export const LineNumberHost = css`
     @layer defaults {
         display: flex;
+        position: relative;
         
         [part="line-number"] {
-            margin: 0 12px 0px 4px;
+            /* margin: 0 12px 0px 4px; */
+            width: 25px;
+            left: -15px;
+            position: absolute;
+            margin: 0;
             text-align: right;
             user-select: none;
             opacity: 0.5;
@@ -26,6 +31,8 @@ export const MarkHost = css`
         }
 
         &[data-diff="true"] {
+            position: relative;
+
             &[data-query="-"] {
                 border-color: var(--xyd-text-color--error--active);
                 background-color: var(--xyd-text-color--error--muted);
@@ -35,10 +42,20 @@ export const MarkHost = css`
                 border-color: var(--xyd-text-color--success--active);
                 background-color: var(--xyd-text-color--success--muted);
             }
+
+            & > :first-child {
+                position: absolute;
+                left: 5px;
+            }
         }
 
         [part="line"] {
             flex: 1 1 0%;
+        }
+
+        xyd-code-linenumber [part="line"]{
+            position: relative;
+            left: 25px;
         }
     }
 `;
@@ -82,21 +99,53 @@ export const CodeHost = css`
         margin: 0;
         padding: 8px 16px;
 
-        border-top: 1px solid var(--xyd-coder-code-border-color);
-        border-bottom-left-radius: 10px;
-        border-bottom-right-radius: 10px;
+        border-top: 1px solid var(--user-coder-code-border-color, --xyd-coder-code-border-color);
+        
+        &:not(:has(+ [part="code-description"])) {
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
 
-        white-space: pre-wrap;
+        /* white-space: pre-wrap; */ // TODO: optional wrap?
         word-break: break-all;
 
-        overflow-y: scroll;
+        overflow: auto;
 
-        [data-size="full"] {
+        &[data-size="full"] {
             max-height: 100%;   
         }
-
+/* 
         & > div {
-        }
+            // TODO: for some reasons we need that - fix in the future
+            max-width: max-content !important;
+        } */
     }
 `;
 
+
+export const CodeDescription = css`
+    padding: 17px 20px 10px;
+    background-color: var(--xyd-coder-code-description-bgcolor);
+    border-radius: 0 0 8px 7px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    color: var(--text-primary);
+
+    & > div:first-child {
+        display: flex;
+        align-items: center;
+        padding-top: 5px;
+    }
+
+    & > div:last-child {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        > span {
+            display: flex;
+            align-items: center;
+        }
+    }
+`

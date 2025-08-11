@@ -1,3 +1,5 @@
+export { SearchButtonFullWidth } from "./AppearanceDecorator.styles"
+
 export {
     ReactContent,
 

@@ -14,9 +14,15 @@ import {
     ReferenceType
 } from "@xyd-js/uniform";
 
+const operationTypeToTypeNode = {
+    [ReferenceType.GRAPHQL_QUERY]: OperationTypeNode.QUERY,
+    [ReferenceType.GRAPHQL_MUTATION]: OperationTypeNode.MUTATION,
+    [ReferenceType.GRAPHQL_SUBSCRIPTION]: OperationTypeNode.SUBSCRIPTION,
+}
+
 // simpleGraphqlExample is a helper function to create a simple GraphQL example query or mutation.
 export function simpleGraphqlExample(
-    operationType: ReferenceType.GRAPHQL_QUERY | ReferenceType.GRAPHQL_MUTATION,
+    operationType: ReferenceType.GRAPHQL_QUERY | ReferenceType.GRAPHQL_MUTATION | ReferenceType.GRAPHQL_SUBSCRIPTION,
     operationName: string,
     args: DefinitionProperty[],
     returns: DefinitionProperty[],
@@ -93,7 +99,7 @@ export function simpleGraphqlExample(
         definitions: [
             {
                 kind: Kind.OPERATION_DEFINITION,
-                operation: operationType === ReferenceType.GRAPHQL_QUERY ? OperationTypeNode.QUERY : OperationTypeNode.MUTATION,
+                operation: operationTypeToTypeNode[operationType],
                 name: hasArgVars ? {
                     kind: Kind.NAME,
                     value: operationName

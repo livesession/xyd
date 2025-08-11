@@ -1,10 +1,10 @@
 import path from "path";
-import {promises as fs} from "fs";
-import {fileURLToPath} from "node:url";
+import { promises as fs } from "fs";
+import { fileURLToPath } from "node:url";
 
 import matterStringify from "gray-matter/lib/stringify";
-import {Plugin as VitePlugin} from "vite"
-import {route} from "@react-router/dev/routes";
+import { Plugin as VitePlugin } from "vite"
+import { route } from "@react-router/dev/routes";
 
 import {
     Settings,
@@ -20,12 +20,13 @@ import uniform, {
     OpenAPIReferenceContext,
     GraphQLReferenceContext
 } from "@xyd-js/uniform";
+import { uniformPluginXDocsSidebar } from "@xyd-js/openapi";
 
-import {Preset, PresetData} from "../../types";
+import { Preset, PresetData } from "../../types";
 
-import {createRequire} from 'module';
-import {VIRTUAL_CONTENT_FOLDER} from "../../const";
-import {getHostPath} from "../../utils";
+import { createRequire } from 'module';
+import { VIRTUAL_CONTENT_FOLDER } from "../../const";
+import { getHostPath } from "../../utils";
 
 const require = createRequire(import.meta.url);
 const matter = require('gray-matter'); // TODO: !!! BETTER SOLUTION !!!
@@ -33,16 +34,16 @@ const matter = require('gray-matter'); // TODO: !!! BETTER SOLUTION !!!
 export async function ensureAndCleanupVirtualFolder() {
     try {
         // Create directory recursively if it doesn't exist
-        await fs.mkdir(VIRTUAL_CONTENT_FOLDER, {recursive: true});
+        await fs.mkdir(VIRTUAL_CONTENT_FOLDER, { recursive: true });
 
         // Read all files and directories in the folder
-        const entries = await fs.readdir(VIRTUAL_CONTENT_FOLDER, {withFileTypes: true});
+        const entries = await fs.readdir(VIRTUAL_CONTENT_FOLDER, { withFileTypes: true });
 
         // Delete each entry recursively
         for (const entry of entries) {
             const fullPath = path.join(VIRTUAL_CONTENT_FOLDER, entry.name);
             if (entry.isDirectory()) {
-                await fs.rm(fullPath, {recursive: true, force: true});
+                await fs.rm(fullPath, { recursive: true, force: true });
             } else {
                 await fs.unlink(fullPath);
             }
@@ -58,6 +59,7 @@ export interface uniformPresetOptions {
     urlPrefix?: string
     sourceTheme?: boolean
     disableFSWrite?: boolean
+    fileRouting?: { [key: string]: string }
 }
 
 function flatPages(
@@ -67,7 +69,7 @@ function flatPages(
 ) {
     sidebar.map(async side => {
         if ("route" in side) {
-            side.items.map(item => {
+            side?.pages.map(item => {
                 return flatPages([item], groups, resp)
             })
 
@@ -104,7 +106,7 @@ function flatGroups(
 ) {
     sidebar.map(async side => {
         if ("route" in side) {
-            side.items.map(item => {
+            side?.pages.map(item => {
                 return flatGroups([item], resp)
             })
 
@@ -198,27 +200,31 @@ async function uniformResolver(
         })
     }
 
-    if (!urlPrefix) {
+    const resolvedApiFile = path.relative(process.cwd(), path.resolve(process.cwd(), apiFile))
+    const uniformRefs = await uniformApiResolver(resolvedApiFile)
+    const plugins = globalThis.__xydUserUniformVitePlugins || []
+
+    if (!urlPrefix && options?.fileRouting?.[resolvedApiFile]) {
+        matchRoute = options.fileRouting[resolvedApiFile]
+    }
+
+    if (!urlPrefix && matchRoute) {
         sidebar?.push({
             route: matchRoute,
-            items: []
+            pages: []
         })
         urlPrefix = matchRoute
     }
-
     if (!urlPrefix && options?.urlPrefix) {
         urlPrefix = options.urlPrefix
     }
-
     if (!urlPrefix) {
         throw new Error('(uniformResolver): urlPrefix not found')
     }
 
-
-    const apiFilePath = path.join(root, apiFile); // TODO: support https
-    const uniformRefs = await uniformApiResolver(apiFilePath)
-    const plugins = globalThis.__xydUserUniformVitePlugins || []
-
+    if (uniformType === "openapi") {
+        plugins.push(uniformPluginXDocsSidebar)
+    }
     const uniformWithNavigation = uniform(uniformRefs, {
         plugins: [
             ...plugins,
@@ -226,7 +232,13 @@ async function uniformResolver(
                 urlPrefix,
             }),
         ]
-    })
+    }) as {
+        references: Reference[];
+        out: {
+            sidebar: Sidebar[];
+            pageFrontMatter: Record<string, any>;
+        };
+    };
 
     let pageLevels = {}
 
@@ -249,7 +261,9 @@ async function uniformResolver(
         }
     }
 
-    const uniformSidebars: SidebarRoute[] = []
+    let uniformSidebars: SidebarRoute[] = []
+
+    mergeSidebarsInPlace(sidebar as (SidebarRoute | Sidebar)[])
 
     if (sidebar && matchRoute) {
         // TODO: DRY
@@ -261,6 +275,8 @@ async function uniformResolver(
             }
         })
 
+        mergeSidebarsInPlace(uniformSidebars);
+    
         if (uniformSidebars.length > 1) {
             throw new Error('multiple sidebars found for uniform match')
         }
@@ -300,6 +316,15 @@ async function uniformResolver(
         }
     }
 
+    {
+        const routeFolder = path.join(root, matchRoute)
+        try {
+            await fs.access(routeFolder);
+        } catch {
+            await fs.mkdir(routeFolder, { recursive: true });
+        }
+    }
+
     let composedFileMap: Record<string, string> = {}
     if (!settings.engine?.uniform?.store) {
         composedFileMap = await composeFileMap(root, matchRoute)
@@ -308,7 +333,6 @@ async function uniformResolver(
     const basePath = settings.engine?.uniform?.store
         ? root
         : path.join(root, VIRTUAL_CONTENT_FOLDER)
-
 
     await Promise.all(
         uniformWithNavigation.references.map(async (ref) => {
@@ -327,7 +351,17 @@ async function uniformResolver(
                 layout: "wide"
             }
 
-            const resolvedApiFile = path.join("~/", apiFile)
+
+            // const mdFilePath = path.join(basePath, byCanonical)
+            const absoluteApiFile = path.join(
+                process.cwd(),
+                apiFile,
+            )
+            // const relativeApiFile = path.relative(
+            //     mdFilePath,
+            //     absoluteApiFile
+            // )
+            const resolvedApiFile = absoluteApiFile // TODO: leave absolute or relative?
             let region = ""
             // TODO: in the future more advanced composition? - not only like `GET /users/{id}`
             switch (uniformType) {
@@ -365,13 +399,13 @@ async function uniformResolver(
                 composedContent = resp.content
             }
 
-            const content = matterStringify({content: composedContent}, meta);
+            const content = matterStringify({ content: composedContent }, meta);
 
             if (!disableFSWrite) {
                 try {
                     await fs.access(path.dirname(mdPath));
                 } catch {
-                    await fs.mkdir(path.dirname(mdPath), {recursive: true});
+                    await fs.mkdir(path.dirname(mdPath), { recursive: true });
                 }
 
                 await fs.writeFile(mdPath, content)
@@ -381,21 +415,49 @@ async function uniformResolver(
 
     if (!sidebar) {
         return {
-            sidebar: uniformWithNavigation.out.sidebar,
+            sidebar: [
+                {
+                    route: matchRoute,
+                    pages: uniformWithNavigation.out.sidebar
+                }
+            ] as SidebarRoute[],
             data: uniformData.data
         }
     }
 
+    
     if (matchRoute) {
         // TODO: in the future custom position - before / after
-        uniformSidebars[0].items.unshift(...uniformWithNavigation.out.sidebar)
+        // if (uniformSidebars.length > 0) {
+        //     uniformSidebars[0].pages.unshift(...uniformWithNavigation.out.sidebar as any)
+        // }
+        
+        // sidebar[0].pages.unshift({
+        //     route: matchRoute,
+        //     pages: uniformWithNavigation.out.sidebar
+        // })
+
+        const sidebarItem = sidebar?.find(item => {
+            if ("route" in item) {
+                return item.route === matchRoute
+            }
+        
+            return false
+        })
+
+        if (sidebarItem) {
+            sidebarItem.pages?.push(...uniformWithNavigation.out.sidebar as any)
+        }
 
         return {
             data: uniformData.data,
         }
     }
 
-    sidebar.unshift(...uniformWithNavigation.out.sidebar)
+    sidebar.unshift({
+        route: matchRoute,
+        pages: uniformWithNavigation.out.sidebar as any
+    })
 
     return {
         data: uniformData.data,
@@ -422,7 +484,7 @@ async function composeFileMap(basePath: string, matchRoute: string) {
     const routeMap: Record<string, string> = {};
 
     async function processDirectory(dirPath: string) {
-        const entries = await fs.readdir(dirPath, {withFileTypes: true});
+        const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
         for (const entry of entries) {
             const fullPath = path.join(dirPath, entry.name);
@@ -432,7 +494,7 @@ async function composeFileMap(basePath: string, matchRoute: string) {
             } else if (entry.isFile() && (entry.name.endsWith('.md') || entry.name.endsWith('.mdx'))) {
                 try {
                     const content = await fs.readFile(fullPath, 'utf-8');
-                    const {data: frontmatter} = matter(content);
+                    const { data: frontmatter } = matter(content);
 
                     if (frontmatter && frontmatter.openapi) {
                         const route = frontmatter.openapi;
@@ -449,15 +511,66 @@ async function composeFileMap(basePath: string, matchRoute: string) {
     return routeMap;
 }
 
+// Helper function to merge sidebars with the same route
+function mergeSidebars(sidebars: SidebarRoute[]): SidebarRoute[] {
+    const mergedMap = new Map<string, SidebarRoute>();
+    
+    for (const sidebar of sidebars) {
+        const existing = mergedMap.get(sidebar.route);
+        
+        if (existing) {
+            // Merge pages from both sidebars
+            const mergedPages = [...(existing.pages || []), ...(sidebar.pages || [])];
+            mergedMap.set(sidebar.route, {
+                ...existing,
+                pages: mergedPages
+            });
+        } else {
+            mergedMap.set(sidebar.route, sidebar);
+        }
+    }
+    
+    return Array.from(mergedMap.values());
+}
+
+// Helper function to merge sidebars in place, modifying the original array
+function mergeSidebarsInPlace(sidebars: (SidebarRoute | Sidebar)[]): void {
+    const mergedMap = new Map<string, SidebarRoute>();
+    
+    // First pass: collect all sidebars by route
+    for (const sidebar of sidebars) {
+        if ("route" in sidebar) {
+            const existing = mergedMap.get(sidebar.route);
+            
+            if (existing) {
+                // Merge pages from both sidebars
+                const mergedPages = [...(existing.pages || []), ...(sidebar.pages || [])];
+                mergedMap.set(sidebar.route, {
+                    ...existing,
+                    pages: mergedPages
+                });
+            } else {
+                mergedMap.set(sidebar.route, sidebar);
+            }
+        }
+    }
+    
+    // Second pass: replace the original array with merged results
+    const mergedArray = Array.from(mergedMap.values());
+    sidebars.length = 0; // Clear the original array
+    sidebars.push(...mergedArray); // Add the merged items
+}
+
 // preinstall adds uniform navigation to settings
 function preinstall(
     id: string,
     uniformApiResolver: (filePath: string) => Promise<Reference[]>,
     apiFile: APIFile,
     uniformType: UniformType,
-    disableFSWrite?: boolean
+    disableFSWrite?: boolean,
+    options?: uniformPresetOptions,
 ) {
-    return function preinstallInner(options: uniformPresetOptions) {
+    return function preinstallInner(innerOptions: any) {
         return async function uniformPluginInner(settings: Settings, data: PresetData) {
             const root = process.cwd()
 
@@ -478,8 +591,11 @@ function preinstall(
                     routeMatch,
                     apiFile,
                     uniformApiResolver,
-                    settings?.navigation?.sidebar,
-                    options,
+                    settings?.navigation?.sidebar as (SidebarRoute | Sidebar)[],
+                    {
+                        ...options,
+                        ...innerOptions,
+                    },
                     uniformType,
                     disableFSWrite
                 )
@@ -511,8 +627,11 @@ function preinstall(
                         routeMatch,
                         uniform,
                         uniformApiResolver,
-                        settings?.navigation?.sidebar,
-                        options,
+                        settings?.navigation?.sidebar as (SidebarRoute | Sidebar)[],
+                        {
+                            ...options,
+                            ...innerOptions,
+                        },
                         uniformType,
                         disableFSWrite
                     )
@@ -539,12 +658,9 @@ function preinstall(
                     await resolve(apiFile["route"], apiFile["source"])
                 } else {
                     for (const apiKey in apiFile) {
-                        const uniform = apiFile?.[apiKey]?.source || ""
+                        const uniform = apiFile?.[apiKey]?.source || apiFile?.[apiKey] || ""
                         const routeMatch = settings.api?.[id]?.[apiKey]?.route || ""
 
-                        if (!routeMatch) {
-                            throw new Error(`route match not found for ${apiKey}`)
-                        }
                         if (!uniform) {
                             throw new Error(`uniform not found for ${apiKey}`)
                         }
@@ -562,8 +678,8 @@ function preinstall(
 function vitePluginUniformContent(pluginId: string) {
     return function vitePluginUniformContentInner() {
         return async function ({
-                                   preinstall
-                               }): Promise<VitePlugin> {
+            preinstall
+        }): Promise<VitePlugin> {
             return {
                 name: `virtual:xyd-plugin-docs/${pluginId}`, // TODO: unique name per plugin ?
                 resolveId(id) {
@@ -638,18 +754,26 @@ function uniformPreset(
 
         return {
             preinstall: [
-                preinstall(id, uniformApiResolver, apiFile, uniformType, disableFSWrite)
+                preinstall(
+                    id,
+                    uniformApiResolver,
+                    apiFile,
+                    uniformType,
+                    disableFSWrite,
+                    options
+                )
             ],
             routes: routeMatches.map((routeMatch, i) => route(
-                    `${routeMatch}/*`,
-                    path.join(basePath, pageTheme), {
-                        id: `xyd-plugin-docs/${id}-${i}`,
-                    }
-                ),
+                `${routeMatch}/*`,
+                path.join(basePath, pageTheme), {
+                id: `xyd-plugin-docs/${id}-${i}`,
+            }
+            ),
             ),
             vitePlugins: [
                 vitePluginUniformContent(id),
-            ]
+            ],
+            basePath
         }
     } satisfies Preset<unknown>
 }
@@ -659,6 +783,7 @@ function uniformPreset(
 export abstract class UniformPreset {
     private _urlPrefix: string;
     private _sourceTheme: boolean;
+    private _fileRouting: { [key: string]: string } = {};
 
     protected constructor(
         private presetId: string,
@@ -682,6 +807,12 @@ export abstract class UniformPreset {
         return this
     }
 
+    protected fileRouting(file: string, route: string): this {
+        this._fileRouting[file] = route
+
+        return this
+    }
+
     protected newUniformPreset() {
         return uniformPreset(
             this.presetId,
@@ -690,6 +821,7 @@ export abstract class UniformPreset {
             {
                 urlPrefix: this._urlPrefix,
                 sourceTheme: this._sourceTheme,
+                fileRouting: this._fileRouting,
             },
             this.uniformRefResolver,
             this.disableFSWrite

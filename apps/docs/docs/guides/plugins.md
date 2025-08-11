@@ -3,7 +3,7 @@ title: Plugins
 icon: blocks
 ---
 
-# Plugins
+# Plugins {label="Coming Soon"}
 :::subtitle
 Learn how to use plugins
 :::

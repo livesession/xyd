@@ -9,13 +9,30 @@ export const NavHost = css`
         background: transparent;
         display: flex;
 
-        [part="shadow"] {
+        [role="tablist"] {
+            display: flex;
+            align-items: center;
+        }
+
+        [part="shadow"]::before {
             pointer-events: none;
             position: absolute;
             z-index: -1;
             height: 100%;
             width: 100%;
             background-color: var(--xyd-nav-shadow-bgcolor);
+        }
+
+        [part="nav-left"] {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            overflow: auto;
+        }
+        @media (max-width: 1024px) {
+            &:has([part="nav-center"]) [part="nav-left"] {
+                flex: none;
+            }
         }
 
         [part="nav"] {
@@ -25,48 +42,103 @@ export const NavHost = css`
             align-items: center;
             justify-content: flex-end;
             gap: 8px;
-            padding-left: calc(max(env(safe-area-inset-left), 16px));
-            padding-right: calc(max(env(safe-area-inset-right), 16px));
+            padding: 0 var(--xyd-nav-padding);
         }
-        &[data-kind="middle"] [part="nav"] {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            align-items: center;
+
+        [part="nav-center"] {
+            flex: 1;
+
+            [role="tablist"] {
+                justify-content: center;
+            }
         }
 
         [part="logo"] {
             display: flex;
             align-items: center;
-            margin-right: auto;
-            width: 100%;
+            /* margin-right: auto; */
+            height: 28px;
+            width: auto;
+
+            img {
+                height: 28px;
+                width: auto;
+            }
         }
 
-        [part="list"] {
+        /* @media (min-width: 1024px) {
+            [part="logo"] {
+                width: 100%;
+            }
+        } */
+
+        [part="nav-list"] {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: auto;
         }
 
-        [part="right"] {
+        @media (max-width: 1024px) {
+            [part="nav-list"] {
+                display: none;
+            }
+        }
+
+        [part="nav-right"] {
             display: flex;
             align-items: center;
             justify-content: flex-end;
+            flex: 1;
+        }
+        @media (max-width: 1024px) {
+            [part="nav-right"] {
+               width: 100%;
+               overflow: auto;
+            }
+
+            [role="tablist"] {
+                overflow: auto;
+            }
+        }
+
+        [part="nav-right"] [role="tablist"] {
+            display: flex;
+        }
+
+        [part="nav-float-right"] {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        &[data-appearance-separator="right"] {
+            [part="nav-float-right"]::before {
+                border-inline-end: 1px solid var(--color-header-border, var(--dark32));
+                content: "";
+                display: block;
+                position: absolute;
+                left: 0;
+                height: calc(100% - var(--xyd-nav-item-padding-y) * 2);
+            }
         }
     }
 `;
 
-
 export const ItemHost = css`
     @layer defaults {
+        --xyd-anchor-color: currentColor;
+        --xyd-anchor-color--hover: currentColor;
+
         position: relative;
         white-space: nowrap;
         color: var(--xyd-nav-item-color);
-        padding: 8px 16px;
+        padding: var(--xyd-nav-item-padding-y) var(--xyd-nav-item-padding);
         display: flex;
         align-items: center;
         justify-content: center;
-        
+
         &:hover {
             color: var(--xyd-nav-item-color--active);
         }
@@ -77,7 +149,7 @@ export const ItemHost = css`
             border-radius: 8px;
         }
 
-        [part="title1"] {
+        [part="nav-item1"] {
             position: absolute;
             inset: 0;
             text-align: center;
@@ -86,7 +158,7 @@ export const ItemHost = css`
             justify-content: center;
         }
 
-        [part="title2"] {
+        [part="nav-item2"] {
             visibility: hidden;
             font-weight: var(--xyd-font-weight-semibold);
         }

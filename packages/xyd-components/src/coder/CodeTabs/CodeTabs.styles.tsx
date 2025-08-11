@@ -1,7 +1,7 @@
 import { css } from "@linaria/core";
 
 export const CodeTabsHost = css`
-    display: block;
+    display: grid;
 `
 
 export const CodeTabsRoot = css`
@@ -26,10 +26,16 @@ export const CodeTabsRoot = css`
 
 export const CodeTabsLanguagesHost = css`
     @layer defaults {
+        --codetabs-color: var(--user-codetabs-color, var(--xyd-codetabs-color));
+        --codetabs-color--active: var(--user-codetabs-color--active, var(--xyd-codetabs-color--active));
+        --codetabs-color--hover: var(--user-codetabs-color--hover, var(--xyd-codetabs-color--hover));
+
+        position: relative;
         display: flex;
+        justify-content: space-between;
         flex: 1 1 0%;
 
-        background: var(--xyd-codetabs-bgcolor);
+        background: var(--user-codetabs-bgcolor, var(--xyd-codetabs-bgcolor));
         
         border-top-right-radius: 10px;
         border-top-left-radius: 10px;
@@ -46,10 +52,11 @@ export const CodeTabsLanguagesHost = css`
 
         [part="description"] {
             display: flex;
+            flex: 1;
             align-items: center;
             gap: 4px;
 
-            color: var(--xyd-codetabs-color);
+            color: var(--codetabs-color);
             
             margin-left: 4px;
             margin-right: 4px;
@@ -70,10 +77,9 @@ export const CodeTabsLanguagesHost = css`
 
         [part="languages-list"] {
             display: flex;
-            flex-grow: 1;
-            justify-content: end;
             gap: 8px;
             padding: 0 10px;
+            overflow: auto;
         }
 
         [part="language-trigger"] {
@@ -88,18 +94,18 @@ export const CodeTabsLanguagesHost = css`
             border-radius: 6px;
             padding: 6px;
 
-            color: var(--xyd-codetabs-color);
+            color: var(--codetabs-color);
             
             &[data-state="active"] {
-                color: var(--xyd-codetabs-color--active);
-                border-bottom: 1px solid var(--xyd-codetabs-color--active);
+                color: var(--codetabs-color--active);
+                border-bottom: 1px solid var(--codetabs-color--active);
                 border-bottom-left-radius: 0px;
                 border-bottom-right-radius: 0px;
             }
             
             &:hover {
                 transition: ease-in 0.1s;
-                background: var(--xyd-codetabs-color--hover);
+                background: var(--codetabs-color--hover);
             }
         }
 
@@ -110,9 +116,8 @@ export const CodeTabsLanguagesHost = css`
             align-items: center;
         }
         &[data-single="true"] [part="copy"] {
-            top: 17px;
-            position: relative;
-            right: 5px;
+            position: absolute;
+            right: 0;
         }
     }
 `;

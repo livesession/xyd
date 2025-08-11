@@ -1,15 +1,19 @@
 import React, { createContext, useState, use, useEffect, Suspense } from "react";
 import { Theme } from "@code-hike/lighter";
 import { highlight } from "codehike/code";
-import type { HighlightedCode } from "codehike/code";
+import type { HighlightedCode as CodeHikeHighlightedCode } from "codehike/code";
 
-import defaultTheme from "../themes/cosmo-light"
+import defaultTheme from "../themes/cosmo"
 import { Loader } from "../../kit";
 
 export interface CodeThemeProps {
     codeblocks?: CodeThemeBlockProps[];
     theme?: Theme
     children: React.ReactNode;
+}
+
+export interface SyntaxHighlightedCode extends CodeHikeHighlightedCode {
+    title?: string
 }
 
 export interface CodeThemeBlockProps {
@@ -20,12 +24,14 @@ export interface CodeThemeBlockProps {
     /** Metadata string (the content after the language name in a markdown codeblock). */
     meta: string;
 
+    title?: string
+
     /** The highlighted code. */
-    highlighted?: HighlightedCode
+    highlighted?: SyntaxHighlightedCode
 }
 
 const CodeThemeProvider = createContext<{
-    highlighted: HighlightedCode[];
+    highlighted: SyntaxHighlightedCode[];
 }>({
     highlighted: [],
 });
@@ -68,11 +74,12 @@ export function CodeTheme(props: CodeThemeProps) {
                 return {
                     ...codeblock.highlighted,
                     meta: codeblock.highlighted?.meta || codeblock.meta,
+                    title: codeblock.title
                 };
             }
 
-            return {};
-        }) as HighlightedCode[]
+            return null
+        }).filter(Boolean) as SyntaxHighlightedCode[]
     }
 
     async function clientSideHighlight() {
@@ -80,49 +87,13 @@ export function CodeTheme(props: CodeThemeProps) {
             return;
         }
 
-        // Only highlight codeblocks that don't already have highlighting
-        const codeblocksToHighlight = props.codeblocks.filter(
-            codeblock => !codeblock.highlighted || !codeblock.highlighted.tokens
-        );
-
-        if (codeblocksToHighlight.length === 0) {
+        const allHighlighted = props.codeblocks.every(codeblock => codeblock.highlighted)
+        if (allHighlighted) {
             return;
         }
-
-        const newHighlighted = await fetchHighlight(codeblocksToHighlight, props.theme || defaultTheme);
-
-        // Merge with existing highlighted codeblocks
-        setHighlighted(prevHighlighted => {
-            if (!prevHighlighted) return newHighlighted;
-
-            // Create a map of existing highlighted codeblocks
-            const highlightedMap = new Map();
-            prevHighlighted?.forEach((codeblock, index) => {
-                if (codeblock.highlighted && codeblock.highlighted.tokens) {
-                    highlightedMap.set(index, codeblock.highlighted);
-                }
-            });
-
-            // Create the final array with all codeblocks highlighted
-            const result: HighlightedCode[] = [];
-            props.codeblocks?.forEach((_, index) => {
-                if (highlightedMap.has(index)) {
-                    result.push(highlightedMap.get(index));
-
-                    return
-                }
-
-                // Find the corresponding newly highlighted codeblock
-                const newIndex = codeblocksToHighlight.findIndex(
-                    cb => cb.value === props.codeblocks![index].value
-                );
-                if (newIndex >= 0) {
-                    result.push(newHighlighted[newIndex]);
-                }
-            });
-
-            return result;
-        });
+        
+        const newHighlighted = await fetchHighlight(props.codeblocks, props.theme || defaultTheme);
+        setHighlighted(newHighlighted)
 
         setClientSideFetch(false)
     }

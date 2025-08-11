@@ -17,6 +17,7 @@ export function gqlUnionToUniformRef(ctx: Context, unionType: GraphQLUnionType):
     ]
 
     return uniformify(
+        ctx,
         unionType,
         definitions,
         []

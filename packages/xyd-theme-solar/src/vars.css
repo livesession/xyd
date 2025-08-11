@@ -1,0 +1,87 @@
+@import "@xyd-js/themes/dist/decorators/atlas-vars.css";
+
+/* Core */
+:root {
+    --dark8: rgba(250, 250, 250, 0.5);
+    --dark16: rgba(112, 112, 112, 0.05);
+    --dark32: #f4f4f7;
+    --dark48: #424240;
+    --dark60: #282827;
+    --dark80: #1a1a19;
+
+    --color-bg: #FCFCF9;
+    --color-text: var(--dark48);
+    --color-primary: #091717;
+    --color-primary--active: color-mix(in srgb, var(--color-primary) 85%, transparent);
+
+    --xyd-heading-color: var(--dark80);
+    --xyd-anchor-color: var(--color-text);
+    --xyd-anchor-color--hover: var(--color-text);
+}
+/* Page Home */
+:root {
+    --page-home-hero-background: var(--dark16);
+}
+
+/* Sidebar */
+:root {
+    --xyd-sidebar-bgcolor: var(--color-bg);
+    --xyd-sidebar-width: 320px;
+}
+
+/* Subnav */
+:root {
+    --xyd-subnav-item-color--active: var(--dark60);
+    --xyd-subnav-bgcolor: var(--color-bg);
+}
+
+/* Sidebar Item */
+:root {
+    --xyd-sidebar-item-bgcolor--active: var(--dark16);
+    --xyd-sidebar-item-bgcolor--active-hover: var(--dark8);
+}
+
+/* Coder */
+:root {
+    --xyd-coder-code-description-bgcolor: var(--dark16);
+}
+
+@define-mixin dark-theme {
+    --color-bg: #091717;
+    --xyd-heading-color: #F6F6F5;
+    --color-text: #fff;
+    --dark8: #1a1a1a;
+    --dark16: #2d2d2d;
+    --dark32: #404040;
+    --dark48: #F6F6F5;
+    --dark60: var(--color-text);
+    --dark80: var(--color-text);
+
+    --xyd-text-color--default: var(--color-text);
+    --theme-color-primary: var(--color-bg);
+    --xyd-heading-icon-color: var(--color-text);
+    --color-primary: var(--theme-color-primary);
+
+    --xyd-sidebar-item-color--default: var(--color-text);
+    --xyd-sidebar-bgcolor: var(--color-bg);
+    
+    --xyd-tabs-bgcolor--active: var(--color-text);
+
+    --xyd-steps-marker-color: var(--color-text);
+
+    --xyd-badge-color--default: var(--color-text);
+
+    --xyd-button-primary-border: var(--dark32);
+    --xyd-button-primary-bg-hover: none;
+    --xyd-button-primary-border-hover: var(--xyd-button-primary-border);
+}
+
+[data-color-scheme="dark"] {
+    @mixin dark-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        @mixin dark-theme;
+    }
+}

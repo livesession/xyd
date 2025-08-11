@@ -1,0 +1,48 @@
+{
+    "theme": {
+        "icons": {
+            "library": [
+                {
+                    "name": "lucide",
+                    "default": true
+                }
+            ]
+        }
+    },
+    "navigation": {
+        "sidebar": [
+            {
+                "route": "docs",
+                "pages": [
+                    {
+                        "group": "Getting Started",
+                        "icon": "code",
+                        "pages": [
+                            "docs/introduction",
+                            "docs/components"
+                        ]
+                    },
+                    {
+                        "group": "Guides",
+                        "pages": [
+                            "docs/guides/introduction",
+                            "docs/guides/components"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "docs/api",
+                "pages": [
+                    {
+                        "group": "API",
+                        "pages": [
+                            "docs/api/introduction",
+                            "docs/api/error-handling"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

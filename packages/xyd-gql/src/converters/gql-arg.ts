@@ -41,7 +41,7 @@ export function gqlArgToUniformDefinitionProperty(
                 ],
             });
         } else {
-            const defProperty = propsUniformify(arg)
+            const defProperty = propsUniformify(ctx, arg)
             resp.push(defProperty)
         }
     });

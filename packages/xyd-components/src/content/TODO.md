@@ -1,0 +1,1 @@
+move decorators to xyd-components/decorators?

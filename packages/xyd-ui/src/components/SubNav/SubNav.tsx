@@ -1,5 +1,5 @@
 import React from "react"
-import * as RadixTabs from "@radix-ui/react-tabs";
+import { Tabs as RadixTabs } from "radix-ui"; // TODO: remove and use separation
 
 import * as cn from "./SubNav.styles";
 
@@ -14,9 +14,9 @@ export interface SubNavProps {
 export function SubNav({ children, title, value, onChange, className }: SubNavProps) {
     return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
         <xyd-subnav className={`${cn.SubNavHost} ${className || ""}`}>
-            <div part="prefix">
+            {title && <div part="prefix">
                 {title}
-            </div>
+            </div>}
             <RadixTabs.List asChild>
                 <ul part="list">
                     {children}
@@ -37,12 +37,10 @@ SubNav.Item = function SubNavItem({ children, value, href, as }: SubNavItemProps
     const Link = as || $Link;
 
     return <RadixTabs.Trigger asChild value={value}>
-        <xyd-subnav-item>
-            <li className={cn.SubNavLi}>
-                <Link part="link" href={href}>
-                    {children}
-                </Link>
-            </li>
+        <xyd-subnav-item className={cn.SubNavItem}>
+            <Link part="link" href={href}>
+                {children}
+            </Link>
         </xyd-subnav-item>
     </RadixTabs.Trigger>
 }

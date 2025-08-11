@@ -49,9 +49,10 @@ export class MultiSignatureLoader {
  */
 export function signatureTextByLine(
     sign: SignatureTextLoader,
-    targetLine: number
+    targetLine: number,
+    options?: any // TODO: fix any
 ) {
-    return signatureText.call(sign, targetLine)
+    return signatureText.call(sign, targetLine, options)
 }
 
 /**
@@ -61,7 +62,7 @@ export function signatureTextByLine(
  * @param targetLine - the line number of the signature in source code
  *
  * @returns source code of the signature
-*/
+ */
 export function signatureSourceCodeByLine(
     sign: SignatureTextLoader,
     targetLine: number
@@ -71,7 +72,8 @@ export function signatureSourceCodeByLine(
 
 function signatureText(
     this: SignatureTextLoader,
-    targetLine: number
+    targetLine: number,
+    options?: any // TODO: fix any
 ) {
     const sourceFile = this.sourceFile;
     const signatureNode = findSignatureNode.call(
@@ -85,14 +87,13 @@ function signatureText(
         return
     }
 
-    const printableSignatureNode = nodeToPrintableSignatureNode(signatureNode);
+    const printableSignatureNode = nodeToPrintableSignatureNode(signatureNode, options?.typeOnly);
     if (!printableSignatureNode) {
         console.error("(signatureText): cannot convert `signatureNode` to `printableSignatureNode`");
         return
     }
 
     return printer.printNode(ts.EmitHint.Unspecified, printableSignatureNode, sourceFile).trim()
-
 }
 
 // TODO: this function is probably not optimized well (recursion when not needed)
@@ -147,7 +148,15 @@ function signatureSourceCode(
     return sourceFile.text.substring(start, end).trim();
 }
 
-function nodeToPrintableSignatureNode(node: ts.Node) {
+function nodeToPrintableSignatureNode(node: ts.Node, typeOnly: boolean = false): ts.Node | undefined {
+    if (typeOnly) {
+        if ("type" in node) {
+            return node.type as ts.Node
+        }
+
+        return
+    }
+
     let resp: ts.Node | undefined;
 
     if (ts.isFunctionDeclaration(node)) {
@@ -194,6 +203,16 @@ function nodeToPrintableSignatureNode(node: ts.Node) {
             node.typeParameters,
             node.type
         );
+    } else if (ts.isPropertySignature(node)) {
+        resp = ts.factory.updatePropertySignature(
+            node,
+            node.modifiers,
+            node.name,
+            node.questionToken,
+            node.type
+        );
+    } else {
+        resp = node
     }
 
     if (!resp) {

@@ -1,0 +1,9 @@
+{
+    "navigation": {
+        "sidebar": [
+            "overview",
+            "quickstart",
+            "guides/introduction"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "navigation": {
+        "sidebar": [
+            {
+                "group": "Get Started",
+                "pages": [
+                    "docs/guides/introduction",
+                    "docs/guides/getting-started",
+                    "docs/guides/deploy"
+                ]
+            }
+        ]
+    }
+}

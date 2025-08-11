@@ -1,0 +1,5 @@
+{
+  "api": {
+    "graphql": "../../../__fixtures__/graphql/basic.route.graphql"
+  }
+}

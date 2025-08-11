@@ -2,32 +2,14 @@
 title: Overview
 ---
 
-# Functions Overview
+# Functions API
 :::subtitle
-Learn how to use dynamic content capabilities through functions
+Reference for dynamic content capabilities through functions
 :::
 
-Guide to using functions in XYD for enhancing your documentation with dynamic content and code integration.
+Guide to using functions in `xyd` for enhancing your documentation with dynamic content and code integration.
 
-In XYD markdown files, you can use special functions to reference code, generate documentation, and reuse content. These functions help you create more maintainable and interactive documentation.
-
-## Available Functions
-
-Here's the list of all functions available:
-
-- `@importCode` - Import and display code from external files
-- `@uniform` - Generate API documentation from your codebase
-- `@import` - Include content from other markdown files
-
-## Usage
-
-Functions can be used in your markdown files like this:
-
-```md
-@importCode "./path/to/file.ts"
-@uniform "./api/types.ts"
-@import "./shared/introduction.md"
-```
+In `xyd` markdown files, you can use special functions to reference code, generate documentation, and reuse content. These functions help you create more maintainable and interactive documentation.
 
 ## Features
 

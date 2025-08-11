@@ -1,10 +1,8 @@
-import path from "node:path";
-
 import {
+    index,
     route,
-    layout,
 } from "@react-router/dev/routes";
-import { Settings } from "@xyd-js/core";
+import {pathRoutes} from "./pathRoutes";
 
 // Declare the global property type
 declare global {
@@ -13,32 +11,8 @@ declare global {
 
 const basePath = globalThis.__xydBasePath
 
-// TODO: !!!! NESTED ROUTES !!!
-function getDocsRoutes(navigation: Settings['navigation']) {
-    if (!navigation?.sidebar) return [];
-
-    const routes: string[] = [];
-
-    // Process each sidebar group
-    navigation.sidebar.forEach(sidebarGroup => {
-        // Add the route of the sidebar group
-        if ('route' in sidebarGroup) {
-            const route = sidebarGroup.route;
-            if (route) {
-                routes.push(route.startsWith("/") ? route : `/${route}`)
-            }
-        }
-    });
-
-    return routes.map(r => {
-        return layout(path.join(basePath, "src/pages/layout.tsx"), { id: `layout:${r}` }, [
-            route(r + "/*", path.join(basePath, "src/pages/page.tsx"), { id: r })
-        ])
-    })
-}
-
-const navigation = __xydSettings?.navigation || { sidebar: [] };
-const docsRoutes = getDocsRoutes(navigation)
+const navigation = __xydSettings?.navigation || {sidebar: []};
+const docsRoutes = pathRoutes(basePath, navigation)
 
 // TODO: !!!! if not routes found then '*' !!!
 export const routes = [
@@ -46,7 +20,11 @@ export const routes = [
 
     // TODO: in the future better sitemap + robots.txt
     route("/sitemap.xml", "./sitemap.ts"),
-    route("/robots.txt", "./robots.ts")
+    route("/robots.txt", "./robots.ts"),
+    route(
+        "/.well-known/appspecific/com.chrome.devtools.json",
+        "./debug-null.tsx",
+    ),
 ]
 
 if (globalThis.__xydStaticFiles?.length) {

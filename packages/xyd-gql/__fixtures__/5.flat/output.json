@@ -10,18 +10,19 @@
       "graphqlName": "author",
       "group": [
         "Queries"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
         {
-          "description": "Example request",
+          "description": "",
           "examples": [
             {
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "Query reference",
+                    "title": "",
                     "language": "graphql",
                     "code": "query author($id: ID!) {\n  author(id: $id) {\n    # author fields\n  }\n}"
                   }
@@ -52,8 +53,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           },
           {
@@ -65,12 +66,13 @@
               "graphqlName": "AuthorDetailsInput",
               "group": [
                 "Inputs"
-              ]
+              ],
+              "scopes": []
             },
             "properties": [],
             "meta": [],
-            "typeDef": {
-              "symbolId": "inputs/authordetailsinput"
+            "symbolDef": {
+              "canonical": "inputs/AuthorDetailsInput"
             }
           }
         ]
@@ -79,7 +81,7 @@
         "title": "Returns",
         "properties": [
           {
-            "name": "author",
+            "name": "",
             "type": "Author",
             "description": "",
             "context": {
@@ -88,14 +90,9 @@
               "graphqlBuiltInType": false
             },
             "properties": [],
-            "meta": [
-              {
-                "name": "flat",
-                "value": "true"
-              }
-            ],
-            "typeDef": {
-              "symbolCanonical": "objects/author"
+            "meta": [],
+            "symbolDef": {
+              "canonical": "objects/Author"
             }
           }
         ]
@@ -105,7 +102,7 @@
   {
     "title": "authorDelete",
     "description": "",
-    "canonical": "queries/authordelete",
+    "canonical": "queries/authorDelete",
     "category": "graphql",
     "type": "graphql_query",
     "context": {
@@ -113,18 +110,19 @@
       "graphqlName": "authorDelete",
       "group": [
         "Queries"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": [
         {
-          "description": "Example request",
+          "description": "",
           "examples": [
             {
               "codeblock": {
                 "tabs": [
                   {
-                    "title": "Query reference",
+                    "title": "",
                     "language": "graphql",
                     "code": "query authorDelete($id: ID!) {\n  authorDelete(id: $id) {\n    # authorDelete fields\n  }\n}"
                   }
@@ -155,8 +153,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]
@@ -165,7 +163,7 @@
         "title": "Returns",
         "properties": [
           {
-            "name": "authorDelete",
+            "name": "",
             "type": "Boolean",
             "description": "",
             "context": {
@@ -175,8 +173,8 @@
             },
             "properties": [],
             "meta": [],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]
@@ -186,7 +184,7 @@
   {
     "title": "Author",
     "description": "",
-    "canonical": "objects/author",
+    "canonical": "objects/Author",
     "category": "graphql",
     "type": "graphql_object",
     "context": {
@@ -194,12 +192,24 @@
       "graphqlName": "Author",
       "group": [
         "Objects"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
     },
     "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
       {
         "title": "Fields",
         "properties": [
@@ -219,8 +229,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           },
           {
@@ -239,8 +249,8 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           },
           {
@@ -259,9 +269,15 @@
                 "value": "true"
               }
             ],
-            "typeDef": {
-              "symbolCanonical": "objects/authordetails"
+            "symbolDef": {
+              "canonical": "objects/AuthorDetails"
             }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
           }
         ]
       }
@@ -270,7 +286,7 @@
   {
     "title": "AuthorDetails",
     "description": "",
-    "canonical": "objects/authordetails",
+    "canonical": "objects/AuthorDetails",
     "category": "graphql",
     "type": "graphql_object",
     "context": {
@@ -278,12 +294,24 @@
       "graphqlName": "AuthorDetails",
       "group": [
         "Objects"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
     },
     "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [],
+        "variants": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "arguments"
+          }
+        ]
+      },
       {
         "title": "Fields",
         "properties": [
@@ -298,9 +326,15 @@
             },
             "properties": [],
             "meta": [],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "fields"
           }
         ]
       }
@@ -309,7 +343,7 @@
   {
     "title": "AuthorDetailsInput",
     "description": "",
-    "canonical": "inputs/authordetailsinput",
+    "canonical": "inputs/AuthorDetailsInput",
     "category": "graphql",
     "type": "graphql_input",
     "context": {
@@ -317,7 +351,8 @@
       "graphqlName": "AuthorDetailsInput",
       "group": [
         "Inputs"
-      ]
+      ],
+      "scopes": []
     },
     "examples": {
       "groups": []
@@ -337,8 +372,8 @@
             },
             "properties": [],
             "meta": [],
-            "typeDef": {
-              "symbolCanonical": ""
+            "symbolDef": {
+              "canonical": ""
             }
           }
         ]

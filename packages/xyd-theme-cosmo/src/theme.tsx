@@ -1,40 +1,59 @@
-import React from "react"
-
-import { Theme as ThemeSettings } from "@xyd-js/core"
 import { BaseTheme } from "@xyd-js/themes"
 
-// @ts-ignore
-import { SearchButton } from 'virtual-component:Search'
-
-import { syntaxThemeCosmoLight } from "./syntaxTheme"
+import syntaxThemeCosmo from "@xyd-js/components/coder/themes/cosmo.js"
 
 import "./imports.css"
 
 import "@xyd-js/themes/index.css"
+import "@xyd-js/components/coder/themes/cosmo.css"
 
 import './index.css';
-import './override.css';
 import './vars.css';
+import './override.css';
 
 export default class ThemeCosmo extends BaseTheme {
     constructor() {
         super();
 
-        if (this.settings?.markdown) {
-            this.settings.markdown.syntaxHighlight = syntaxThemeCosmoLight;
-        } else {
-            this.settings.markdown = {
-                syntaxHighlight: syntaxThemeCosmoLight,
+        this.theme.Update({
+            coder: {
+                syntaxHighlight: syntaxThemeCosmo
+            },
+            appearance: {
+                logo: {
+                    header: true
+                },
+                header: {
+                    buttonSize: "sm"
+                },
+                footer: {
+                    surface: "page"
+                },
+                search: {
+                    fullWidth: true,
+                    sidebar: "mobile",
+                    middle: "desktop"
+                },
+                sidebar: {
+                    scrollShadow: true,
+                }
             }
-        }
+        })
 
-        this.surfaces.define("nav.right", <_Search />)
+
+        if (this.theme?.appearance?.colors?.primary) {
+            this.theme.Update({
+                appearance: {
+                    cssTokens: {
+                        "--syntax-primary": "var(--color-primary)",
+                        "--syntax-secondary": "var(--color-text)",
+                        "--syntax-tertiary": "var(--color-text)",
+                    }
+                }
+            })
+        }
     }
 }
 
-
-function _Search() {
-    return <SearchButton />
-}
 
 

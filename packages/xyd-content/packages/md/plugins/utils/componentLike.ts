@@ -15,7 +15,7 @@ export function componentLike(
     children: any[]
 ) {
     console.time('componentLike:total');
-    
+
     console.time('componentLike:createElement');
     // Ensure proper escaping in props and children before creating the React element
     const escapedProps = ensureProperEscaping(props);
@@ -40,7 +40,7 @@ export function componentLike(
         mdastExtensions: [mdxJsxFromMarkdown()]
     });
     console.timeEnd('componentLike:fromMarkdown');
-    
+
     console.timeEnd('componentLike:total');
     return ast
 }
@@ -51,15 +51,19 @@ export function componentLike(
  * Fixes backslashes like `curl --request POST \` into double `\\` to fix JSON format
  */
 function ensureProperEscaping(obj: any): any {
+    if (React.isValidElement(obj)) {
+        return obj
+    }
+    // return obj
     if (typeof obj === 'string') {
         // Replace any single backslashes that aren't already part of an escape sequence
         return obj.replace(/(?<!\\)\\(?!\\)/g, '\\\\');
     }
-    
+
     if (Array.isArray(obj)) {
         return obj.map(item => ensureProperEscaping(item));
     }
-    
+
     if (obj && typeof obj === 'object') {
         const result = { ...obj };
         for (const key in result) {
@@ -67,6 +71,6 @@ function ensureProperEscaping(obj: any): any {
         }
         return result;
     }
-    
+
     return obj;
 }

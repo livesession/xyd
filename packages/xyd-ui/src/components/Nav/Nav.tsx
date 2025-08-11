@@ -1,48 +1,73 @@
 import React from "react";
-import * as RadixTabs from "@radix-ui/react-tabs";
+import { Tabs as RadixTabs } from "radix-ui"; // TODO: remove and use separation
 
 import * as cn from "./Nav.styles";
 
 export interface NavProps {
     children: React.ReactNode
-    value: string
-    onChange?: (value: string) => void
     logo?: React.ReactNode;
-    kind?: "middle"
     className?: string;
+    leftSurface?: React.ReactNode;
+    centerSurface?: React.ReactNode;
     rightSurface?: React.ReactNode;
+    floatRightSurface?: React.ReactNode;
+    appearance?: {
+        separator?: "right"
+    }
 }
 
-export function Nav({ children, value, onChange, logo, kind, className, rightSurface }: NavProps) {
-    return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
+export function Nav(props: NavProps) {
+    const {
+        children,
+        logo,
+        className,
+        leftSurface,
+        centerSurface,
+        rightSurface,
+        floatRightSurface,
+        appearance,
+    } = props
+
+    const defaultList = <div part="nav-list">
+        {children}
+    </div>
+
+    return <>
         <xyd-nav
             className={`${cn.NavHost} ${className || ""}`}
-            data-kind={kind}
+            data-appearance-separator={appearance?.separator || undefined}
         >
             <div part="shadow" />
+
             <nav part="nav">
-                <div part="logo">
-                    {logo}
+                <div part="nav-left">
+                    {
+                        leftSurface ? leftSurface : <>
+                            {logo && <div part="logo">
+                                {logo}
+                            </div>}
+                            {defaultList}
+                        </>
+                    }
                 </div>
-                <RadixTabs.List asChild>
-                    <div part="list">
-                        {children}
-                    </div>
-                </RadixTabs.List>
-                {(kind === "middle" || rightSurface) && <div part="right">{rightSurface}</div>}
+
+                {centerSurface && <div part="nav-center">{centerSurface}</div>}
+
+                {rightSurface && <div part="nav-right">{rightSurface}</div>}
+                {floatRightSurface && <div part="nav-float-right">{floatRightSurface}</div>}
             </nav>
         </xyd-nav>
-    </RadixTabs.Root>
+    </>
 }
 
-interface TabProps {
+interface TabsProps {
     children: React.ReactNode
     value: string
     onChange?: (value: string) => void
 }
 
-Nav.Tab = function Tab({ children, value, onChange }: TabProps) {
-    return <RadixTabs.Root asChild value={value} onValueChange={onChange}>
+Nav.Tabs = function TabTabs({ children, value, onChange }: TabsProps) {
+    return <RadixTabs.Root value={value} onValueChange={onChange}>
         <RadixTabs.List >
             {children}
         </RadixTabs.List>
@@ -51,23 +76,35 @@ Nav.Tab = function Tab({ children, value, onChange }: TabProps) {
 
 export interface NavItemProps {
     children: React.ReactNode;
-    href: string;
-    value: string;
+    href?: string;
+    value?: string;
     as?: React.ElementType;
 }
 
-Nav.Item = function NavItem({ children, value, href, as }: NavItemProps) {
-    const Link = as || $Link;
-
-    return <RadixTabs.Trigger asChild value={value}>
-        <xyd-nav-item className={cn.ItemHost}>
-            <Link href={href}>
-                <span part="title1">{children}</span>
-                <span part="title2">{children}</span>
-            </Link>
-        </xyd-nav-item>
+Nav.Item = function NavItem(props: NavItemProps) {
+    return <RadixTabs.Trigger asChild value={props.value}>
+        <Nav.ItemRaw {...props} />
     </RadixTabs.Trigger>
 };
+
+Nav.ItemRaw = function NavItemRaw({ children, href, as, ...rest }: Omit<NavItemProps, "value">) {
+    const Link = as || $Link;
+
+    // const links = <>
+    //     <span part="nav-item1">{children}</span>
+    //     <span part="nav-item2">{children}</span>
+    // </>
+    const links = children;
+
+    return <xyd-nav-item className={cn.ItemHost} {...rest}>
+        {
+            typeof href === "string" ? <Link href={href}>
+                {links}
+            </Link>
+                : links
+        }
+    </xyd-nav-item>
+}
 
 function $Link({ children, ...props }) {
     return <a {...props}>{children}</a>

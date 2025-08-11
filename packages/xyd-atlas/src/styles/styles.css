@@ -1,0 +1,104 @@
+@layer overrides {
+    :root {
+        --oas-method-get-color: #15803d;
+        --oas-method-get-bg: rgba(74, 222, 128, .2);
+        --oas-method-get-color--active: var(--white);
+        --oas-method-get-bg--active: #2ab673;
+
+        --oas-method-post-color: #1D4ED8;
+        --oas-method-post-bg: rgba(96, 165, 250, .2);
+        --oas-method-post-color--active: var(--white);
+        --oas-method-post-bg--active: #3064e3;
+
+        --oas-method-put-color: #C28C30;
+        --oas-method-put-bg: rgba(250, 204, 21, .2);
+        --oas-method-put-color--active: var(--white);
+        --oas-method-put-bg--active: #C28C30;
+
+        --oas-method-delete-color: #B91C1C;
+        --oas-method-delete-bg: rgba(248, 114, 114, 0.2);
+        --oas-method-delete-color--active: var(--white);
+        --oas-method-delete-bg--active: #cb3a32;
+
+        --oas-method-patch-color: #c2410c;
+        --oas-method-patch-bg: rgba(251, 146, 60, .2);
+        --oas-method-patch-color--active: var(--white);
+        --oas-method-patch-bg--active: #DA622B;
+    }
+
+    /* HTTP Method Colors */
+    [data-atlas-oas-method="GET"] {
+        /* --method-color: var(--oas-method-get-color); */
+        /* --method-bg: var(--oas-method-get-bg); */
+
+        --method-color: var(--oas-method-get-color);
+        --method-bg: unset;
+
+        /* &[data-active="true"] {
+            --method-bg: var(--oas-method-get-bg--active);
+            --method-color: var(--oas-method-get-color--active);
+        } */
+    }
+
+    [data-atlas-oas-method="POST"] {
+        /* --method-color: var(--oas-method-post-color); */
+        /* --method-bg: var(--oas-method-post-bg); */
+
+        --method-color: var(--oas-method-post-color);
+        --method-bg: unset;
+
+        /* &[data-active="true"] {
+            --method-bg: var(--oas-method-post-bg--active);
+            --method-color: var(--oas-method-post-color--active);
+        } */
+    }
+
+    [data-atlas-oas-method="PUT"] {
+        /* --method-color: var(--oas-method-put-color); */
+        /* --method-bg: var(--oas-method-put-bg); */
+
+        --method-color: var(--oas-method-put-color);
+        --method-bg: unset;
+
+        /* &[data-active="true"] {
+            --method-bg: var(--oas-method-put-bg--active);
+            --method-color: var(--oas-method-put-color--active);
+        } */
+    }
+
+    [data-atlas-oas-method="DELETE"] {
+        /* --method-color: var(--oas-method-delete-color); */
+        /* --method-bg: var(--oas-method-delete-bg); */
+
+        --method-color: var(--oas-method-delete-color);
+        --method-bg: unset;
+
+        /* &[data-active="true"] {
+            --method-bg: var(--oas-method-delete-bg--active);
+            --method-color: var(--oas-method-delete-color--active);
+        } */
+    }
+
+    [data-atlas-oas-method="PATCH"] {
+        /* --method-color: var(--oas-method-patch-color); */
+        /* --method-bg: var(--oas-method-patch-bg); */
+
+        --method-color: var(--oas-method-patch-color);
+        --method-bg: unset;
+
+        /* &[data-active="true"] {
+            --method-bg: var(--oas-method-patch-bg--active);
+            --method-color: var(--oas-method-patch-color--active);
+        } */
+    }
+
+    [data-atlas-oas-method] {
+        color: var(--method-color);
+    }
+
+    [data-atlas-oas-method] xyd-badge {
+        background-color: var(--method-bg);
+        color: var(--method-color);
+        font-weight: var(--xyd-font-weight-bold);
+    }
+}

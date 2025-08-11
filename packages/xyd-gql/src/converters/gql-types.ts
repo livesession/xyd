@@ -6,6 +6,7 @@ import type {
     GraphQLScalarType,
     GraphQLSchema,
     GraphQLUnionType,
+    GraphQLNamedType,
 } from "graphql";
 import {
     isIntrospectionType,
@@ -37,7 +38,9 @@ export function graphqlTypesToUniformReferences(
         const builtInType = isSpecifiedScalarType(gqlType) ||
             isIntrospectionType(gqlType) ||
             gqlType.name === "Mutation" ||
-            gqlType.name === "Query"
+            gqlType.name === "Query" ||
+            gqlType.name === "Subscription" ||
+            isInternalOpenDocsType(gqlType)
 
         if (builtInType) {
             continue;
@@ -62,9 +65,11 @@ export function graphqlTypesToUniformReferences(
                             options,
                             {
                                 flat,
-                            }
+                            },
+                            schema
                         ),
-                        type
+                        type,
+                        
                     )
                 }
                 break
@@ -80,7 +85,8 @@ export function graphqlTypesToUniformReferences(
                             options,
                             {
                                 flat,
-                            }
+                            },
+                            schema
                         ),
                         type
                     )
@@ -95,7 +101,9 @@ export function graphqlTypesToUniformReferences(
                     ref = gqlEnumToUniformRef(
                         new Context(
                             new Set(),
-                            options
+                            options,
+                            {},
+                            schema
                         ),
                         type
                     )
@@ -110,7 +118,9 @@ export function graphqlTypesToUniformReferences(
                     ref = gqlScalarToUniformRef(
                         new Context(
                             new Set(),
-                            options
+                            options,
+                            {},
+                            schema
                         ),
                         type
                     )
@@ -129,7 +139,8 @@ export function graphqlTypesToUniformReferences(
                             {
                                 flat,
                                 flatArg: flat || false
-                            }
+                            },
+                            schema
                         ),
                         type,
                     )
@@ -148,7 +159,8 @@ export function graphqlTypesToUniformReferences(
                             options,
                             {
                                 flat
-                            }
+                            },
+                            schema
                         ),
                         type,
                     )
@@ -169,3 +181,15 @@ export function graphqlTypesToUniformReferences(
     return references;
 }
 
+function isInternalOpenDocsType(type: GraphQLNamedType): boolean {
+    const internalTypes = [
+        'OpenDocsScope',
+        'OpenDocsSidebarItemType',
+        'OpenDocsPage',
+        'OpenDocsExampleInput',
+        'OpenDocsSortInput',
+        'OpenDocsSortStackInput'
+
+    ]
+    return internalTypes.includes(type.name)
+}

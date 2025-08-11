@@ -9,6 +9,9 @@ export interface TableProps {
     /** The content to be rendered inside the table */
     children: React.ReactNode;
 
+    /** Optional kind of the table, can be used for styling purposes */
+    kind?: "secondary"
+
     /** Optional CSS class name to be applied to the table */
     className?: string;
 }
@@ -19,9 +22,9 @@ export interface TableProps {
  * 
  * @category Component
  */
-export function Table({ children, className }: TableProps) {
+export function Table({ children, kind, className }: TableProps) {
     return (
-        <table className={`${cn.Host} ${className || ''}`}>
+        <table data-kind={kind || undefined} className={`${cn.Host} ${className || ''}`}>
             {children}
         </table>
     );

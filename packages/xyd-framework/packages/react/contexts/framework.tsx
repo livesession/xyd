@@ -2,27 +2,33 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigation } from "react-router";
 
 import { Metadata, Settings } from "@xyd-js/core";
+import { Banner } from "@xyd-js/components/writer";
 import { type ITOC, type IBreadcrumb, type INavLinks, ProgressBar } from "@xyd-js/ui";
 
-import { FwSidebarGroupProps } from "../components/Sidebar";
-import { SurfaceContext, Surfaces } from "../components/Surfaces";
+import { FwSidebarItemProps } from "../components/FwSidebarItem";
+import { SurfaceContext } from "../components/Surfaces";
+import { Surfaces } from "../../../src"
 
 export interface IFramework {
     settings: Readonly<Settings>
 
-    sidebarGroups: Readonly<FwSidebarGroupProps[]>
+    sidebarGroups: Readonly<FwSidebarItemProps[]>
     metadata: Readonly<Metadata>
     setMetadata: (metadata: Metadata) => void
-
-    IconComponent: React.ComponentType<{ name: string, width?: number, height?: number }>
+    components?: Readonly<{ [componentName: string]: React.ComponentType<any> }>
+    BannerContent: React.ComponentType<any> | null
 }
 
 const framework: IFramework = {
     settings: {},
-    metadata: {},
+    metadata: {
+        title: "",
+    },
     sidebarGroups: [],
-    setMetadata: () => { },
-    IconComponent: () => null
+    setMetadata: () => {
+    },
+    components: {},
+    BannerContent: null,
 }
 const FrameworkContext = createContext<IFramework>(framework)
 
@@ -31,36 +37,52 @@ export interface FrameworkProps {
 
     settings: Settings,
     metadata: Metadata,
-    sidebarGroups: FwSidebarGroupProps[],
+    sidebarGroups: FwSidebarItemProps[],
     surfaces: Surfaces,
-    IconComponent: React.ComponentType<{ name: string, width?: number, height?: number }>
+    components?: { [componentName: string]: React.ComponentType<any> },
+    BannerContent: React.ComponentType<any>
 }
 
 export function Framework(props: FrameworkProps) {
     const navigation = useNavigation()
-    const [metadata, setMetadata] = useState<Metadata | undefined>(props.metadata)
-    
-    return <FrameworkContext value={{
-        settings: Object.freeze({ ...props.settings }),
-        sidebarGroups: Object.freeze([...props.sidebarGroups]),
-        metadata: Object.freeze({ ...metadata }),
-        setMetadata: setMetadata,
-        IconComponent: props.IconComponent
-    }}>
-        <SurfaceContext value={{
-            surfaces: props.surfaces
-        }}>
-            <ProgressBar isActive={navigation.state === 'loading'} />
 
-            {props.children}
-        </SurfaceContext>
-    </FrameworkContext>
+    const [metadata, setMetadata] = useState<Metadata | undefined>(props.metadata)
+
+    const BannerContent = props.BannerContent || null
+    const BannerComponent = props?.settings?.components?.banner?.kind === "secondary" ? Banner.Secondary : Banner
+    const appearance = props.settings.theme?.appearance
+
+    return <>
+        <FrameworkContext value={{
+            settings: Object.freeze({ ...props.settings }),
+            sidebarGroups: Object.freeze([...props.sidebarGroups]),
+            metadata: Object.freeze({ ...metadata, title: metadata?.title || "" }),
+            setMetadata: setMetadata,
+            components: Object.freeze(props.components || {}),
+            BannerContent: props.BannerContent || null,
+        }}>
+            <SurfaceContext value={{
+                surfaces: props.surfaces
+            }}>
+                <ProgressBar isActive={navigation.state === 'loading'} />
+                {BannerContent && !appearance?.banner?.fixed ? <BannerComponent
+                    label={props.settings?.components?.banner?.label}
+                    icon={props.settings?.components?.banner?.icon}
+                    href={props.settings?.components?.banner?.href}
+                >
+                    <BannerContent />
+                </BannerComponent> : null}
+                {props.children}
+            </SurfaceContext>
+        </FrameworkContext>
+    </>
 }
 
 interface FrameworkPageProps {
     children: React.ReactNode
 
-    ContentComponent?: (props: { components: any, children: React.ReactNode }) => React.JSX.Element
+    ContentComponent?: (props: { components: any, children: React.ReactNode }) => React.JSX.Element 
+    ContentOriginal?: (props: { components: any, children: React.ReactNode }) => React.JSX.Element
 
     metadata: Metadata
     breadcrumbs?: IBreadcrumb[],
@@ -70,7 +92,8 @@ interface FrameworkPageProps {
 }
 
 interface IFrameworkPageContext {
-    ContentComponent: (props: { components: any, children: React.ReactNode }) => React.JSX.Element
+    ContentComponent: (props: { components: any, children?: React.ReactNode }) => React.JSX.Element
+    ContentOriginal: (props: { components: any, children?: React.ReactNode }) => React.JSX.Element
     metadata: Readonly<Metadata>
     breadcrumbs?: Readonly<IBreadcrumb[]>
     rawPage?: Readonly<string>
@@ -80,6 +103,7 @@ interface IFrameworkPageContext {
 
 const FrameworkPageContext = createContext<IFrameworkPageContext>({
     ContentComponent: () => <></>,
+    ContentOriginal: () => <></>,
     metadata: {
         title: "",
     }
@@ -94,6 +118,7 @@ export function FrameworkPage(props: FrameworkPageProps) {
 
     return <FrameworkPageContext value={{
         ContentComponent: props.ContentComponent || (() => <></>),
+        ContentOriginal: props.ContentOriginal || (() => <></>),
         metadata: Object.freeze(props.metadata),
         breadcrumbs: Object.freeze(props.breadcrumbs),
         rawPage: Object.freeze(props.rawPage),
@@ -102,12 +127,6 @@ export function FrameworkPage(props: FrameworkPageProps) {
     }}>
         {props.children}
     </FrameworkPageContext>
-}
-
-export function useIconComponent() {
-    const ctx = useContext(FrameworkContext)
-
-    return ctx.IconComponent
 }
 
 export function useSidebarGroups() {
@@ -126,6 +145,12 @@ export function useMetadata() {
     const ctx = useContext(FrameworkContext)
 
     return ctx.metadata
+}
+
+export function useComponents() {
+    const ctx = useContext(FrameworkContext)
+
+    return ctx.components
 }
 
 export function useToC() {
@@ -156,6 +181,25 @@ export function useRawPage() {
 
 export function useContentComponent() {
     const ctx = useContext(FrameworkPageContext)
-    
+
     return ctx.ContentComponent
+}
+
+// TODO: !!! IN THE FUTURE BETTER API !!!
+export function useContentOriginal() {
+    const ctx = useContext(FrameworkPageContext)
+
+    return ctx.ContentOriginal
+}
+
+export function useAppearance() {
+    const ctx = useContext(FrameworkContext)
+
+    return ctx.settings.theme?.appearance
+}
+
+export function useBannerContent() {
+    const ctx = useContext(FrameworkContext)
+
+    return ctx.BannerContent
 }

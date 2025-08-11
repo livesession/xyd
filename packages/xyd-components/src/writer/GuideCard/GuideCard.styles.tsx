@@ -1,9 +1,21 @@
 import { css } from "@linaria/core";
 
+export const globals = css`
+    :global() {
+        html[data-color-primary="true"] {
+            xyd-guidecard [part="icon"] svg {
+                fill: var(--color-primary) !important;  // TODO: fix important
+                color: var(--color-primary) !important; // TODO: fix important
+            }
+        }
+    }
+`
+
 export const GuideHost = css`
     @layer defaults {
         display: block;
-
+        height: auto;
+        
         &[data-kind="secondary"] {
             display: flex;
             position: relative;
@@ -14,6 +26,8 @@ export const GuideHost = css`
             padding: 24px;
             z-index: 0;
             transition: box-shadow .2s ease-in-out, background-image .2s ease;
+            /* height: auto; */
+            height: 100%;
 
             &:hover {
                 background: var(--xyd-guidecard-bgcolor--secondary-hover);
@@ -32,8 +46,8 @@ export const GuideHost = css`
         [part="item"] {
             border-radius: 8px;
             display: flex;
-
             align-items: flex-start;
+
             cursor: pointer;
             transition: opacity .15s;
 
@@ -50,7 +64,6 @@ export const GuideHost = css`
         }
 
         [part="icon"] {
-            height: 32px;
             display: flex;
             justify-content: center;
             align-items: center;

@@ -21,3 +21,9 @@ declare module 'virtual:xyd-theme' {
     }
     export default ConcreteTheme;
 }
+declare module 'virtual:xyd-user-components' {
+    const components: any
+    export {
+        components
+    }
+}

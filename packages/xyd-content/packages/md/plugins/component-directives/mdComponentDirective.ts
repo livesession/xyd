@@ -7,6 +7,7 @@ import { Node as UnistNode } from "unist";
 import { highlight } from "codehike/code"
 
 import { Settings } from "@xyd-js/core";
+import { uniformToMiniUniform } from "@xyd-js/sources/ts";
 
 import { FunctionName } from "../functions/types";
 import { MarkdownComponentDirectiveMap } from "./types";
@@ -14,6 +15,8 @@ import { functionMatch, parseFunctionCall } from "../functions/utils";
 import { processUniformFunctionCall } from "../functions/uniformProcessor";
 
 import { getComponentName } from "./utils";
+import { Reference, TypeDocReferenceContext } from "@xyd-js/uniform";
+import { mdParameters } from "../utils/mdParameters";
 
 // TODO: in the future custom component: `this.registerComponent(MyComponent, "my-component")` ? but core should move to `symbolx`?
 const supportedDirectives: MarkdownComponentDirectiveMap = {
@@ -27,21 +30,36 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
 
     steps: true,
 
-    "guide-card": "GuideCard", 
+    "guide-card": "GuideCard",
 
-    "code-group": "DirectiveCodeGroup", 
+    "code-group": "DirectiveCodeGroup",
 
-    tabs: "UnderlineNav",
+    tabs: "Tabs",
 
     atlas: true,
 
     badge: true,
 
     grid: "GridDecorator",
+
+    button: true,
+
+    update: true,
+
+    card: true,
+
+    feature: true,
 }
 
 const supportedTextDirectives: MarkdownComponentDirectiveMap = {
     icon: true,
+    br: true,
+}
+
+const supportedLeafDirectives: MarkdownComponentDirectiveMap = {
+    atlas: true,
+    card: true,
+    "color-scheme-button": "ColorSchemeButton",
 }
 
 const tableComponents: MarkdownComponentDirectiveMap = {
@@ -59,7 +77,7 @@ const codeComponents: MarkdownComponentDirectiveMap = {
 }
 
 const navComponents: MarkdownComponentDirectiveMap = {
-    tabs: "UnderlineNav",
+    tabs: "Tabs",
 }
 
 const parseMarkdown = (content: string) => {
@@ -74,14 +92,15 @@ const parseMarkdown = (content: string) => {
 // TODO: BETTER SETTINGS MANAGEMENT FOR MD 
 
 export function mdComponentDirective(settings?: Settings): Plugin {
-    return function() {
-        return  async (tree: UnistNode, file: VFile) => {
+    return function () {
+        return async (tree: UnistNode, file: VFile) => {
             console.time('plugin:mdComponentDirective');
             const promises: Promise<void>[] = [];
-    
+
             visit(tree, 'containerDirective', recreateComponent(file, promises, supportedDirectives, settings));
             visit(tree, 'textDirective', recreateComponent(file, promises, supportedTextDirectives, settings));
-    
+            visit(tree, 'leafDirective', recreateComponent(file, promises, supportedLeafDirectives, settings));
+
             await Promise.all(promises);
             console.timeEnd('plugin:mdComponentDirective');
         }
@@ -109,12 +128,28 @@ function recreateComponent(
         const isCodeLike = codeComponents[node.name];
 
         if (isNavLike) {
-            mdNav(node, directivesMap);
+            componentProps(
+                node,
+                attributes,
+                promises,
+                file,
+                settings,
+            );
+
+            mdNav(node, directivesMap, attributes);
             return;
         }
 
         if (isStepsLike) {
-            mdSteps(node, directivesMap);
+            componentProps(
+                node,
+                attributes,
+                promises,
+                file,
+                settings,
+            );
+
+            mdSteps(node, directivesMap, attributes);
             return;
         }
 
@@ -124,7 +159,16 @@ function recreateComponent(
         }
 
         if (isCodeLike) {
-            mdCode(node, promises, directivesMap, settings);
+              componentProps(
+                node,
+                attributes,
+                promises,
+                file,
+                settings,
+            );
+
+
+            mdCode(node, promises, directivesMap, settings, attributes);
             return
         }
 
@@ -143,14 +187,14 @@ function recreateComponent(
             type: 'mdxJsxFlowElement',
             name: componentName,
             attributes: attributes,
-            children: node.children
+            children: node.children,
         };
 
         Object.assign(node, jsxNode);
     }
 }
 
-function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap) {
+function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap, attributes: any[]) {
     const componentName = getComponentName(node.name, directivesMap);
 
     // Parse the nav directive content to extract tabs and their content
@@ -193,7 +237,7 @@ function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap) {
                                     name: 'value',
                                     value: tabValue
                                 },
-                                {   
+                                {
                                     type: 'mdxJsxAttribute',
                                     name: 'href',
                                     value: tabValue
@@ -225,13 +269,14 @@ function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap) {
         }
     });
 
-    // Create the UnderlineNav component with tabs and content
+    // Create the Tabs component with tabs and content
     const jsxNode = {
         type: 'mdxJsxFlowElement',
         name: componentName,
-        attributes: [
-            // We don't need to provide value or onChange for uncontrolled mode
-        ],
+        attributes,
+        // attributes: [
+        //     // We don't need to provide value or onChange for uncontrolled mode
+        // ],
         children: [...tabItems, ...tabContents]
     };
 
@@ -240,7 +285,7 @@ function mdNav(node: any, directivesMap: MarkdownComponentDirectiveMap) {
     return;
 }
 
-function mdSteps(node: any, directivesMap: MarkdownComponentDirectiveMap) {
+function mdSteps(node: any, directivesMap: MarkdownComponentDirectiveMap, attributes: any[]) {
     const componentName = getComponentName(node.name, directivesMap);
 
     const steps = node.children.map((child: any) => {
@@ -253,10 +298,36 @@ function mdSteps(node: any, directivesMap: MarkdownComponentDirectiveMap) {
                 return
             }
 
+            const attributes: any[] = []
+
+            if (item.children.length) {
+                const firstChild = item.children[0]
+
+                if (firstChild?.children?.length === 1) {
+                    const step = firstChild?.children[0]
+                    if (step?.type === "text" || step?.type === "paragraph" && step?.value) {
+                        const stepParams = mdParameters(step.value)
+
+                        // TODO: sanitize text
+                        if (stepParams.attributes && Object.keys(stepParams.attributes).length) {
+                            firstChild.children[0].value = stepParams.sanitizedText
+
+                            for (const [key, value] of Object.entries(stepParams.attributes)) {
+                                attributes.push({
+                                    type: 'mdxJsxAttribute',
+                                    name: key,
+                                    value: value
+                                })
+                            }
+                        }
+                    }
+                }
+            }
+
             return {
                 type: 'mdxJsxFlowElement',
                 name: `${componentName}.Item`,
-                attributes: [],
+                attributes,
                 children: item.children
             };
         }).flat();
@@ -265,13 +336,13 @@ function mdSteps(node: any, directivesMap: MarkdownComponentDirectiveMap) {
     const jsxNode = {
         type: 'mdxJsxFlowElement',
         name: componentName,
-        attributes: [],
+        attributes,
         children: steps
     };
 
     Object.assign(node, jsxNode);
 
-    return; 
+    return;
 }
 
 // TODO: support tsx tables like: [<>`Promise<Reference[]>`</>] ?
@@ -323,24 +394,33 @@ function mdTable(node: any, directivesMap: MarkdownComponentDirectiveMap) {
     return;
 }
 
-function mdCode(node: any, promises: Promise<any>[], directivesMap: MarkdownComponentDirectiveMap, settings?: Settings) {
+function mdCode(node: any, promises: Promise<any>[], directivesMap: MarkdownComponentDirectiveMap, settings?: Settings, attributes: any[]) {
     const componentName = getComponentName(node.name, directivesMap);
 
     const description = node.attributes?.title || '';
     const codeblocks: any[] = [];
 
     function rewriteNode() {
-        // Add metadata to the node
-        node.data = {
-            ...node.data,
-            hName: componentName,
-            hProperties: {
-                description,
-                codeblocks: JSON.stringify(codeblocks),
-            },
+        const jsxNode = {
+            type: 'mdxJsxFlowElement',
+            name: componentName,
+            attributes: [
+                ...attributes,
+                {
+                    type: 'mdxJsxAttribute',
+                    name: 'description',
+                    value: description
+                },
+                {
+                    type: 'mdxJsxAttribute',
+                    name: 'codeblocks',
+                    value: JSON.stringify(codeblocks)
+                }
+            ],
+            children: []
         };
-
-        node.children = [];
+    
+        Object.assign(node, jsxNode);
     }
 
     for (const child of node.children) {
@@ -355,7 +435,7 @@ function mdCode(node: any, promises: Promise<any>[], directivesMap: MarkdownComp
                     value: value,
                     lang,
                     meta: meta || lang || ""
-                }, settings?.theme?.markdown?.syntaxHighlight || "github-dark") // TODO: theme
+                }, settings?.theme?.coder?.syntaxHighlight || "github-dark") // TODO: theme
 
                 codeblocks.push({ value, lang, meta, highlighted: highlighted });
                 rewriteNode()
@@ -364,8 +444,6 @@ function mdCode(node: any, promises: Promise<any>[], directivesMap: MarkdownComp
             promises.push(promise)
         }
     }
-
-    return
 }
 
 
@@ -430,17 +508,22 @@ function mdUniformAttribute(
         return
     };
 
-    const importPath = result[1];
+    const importPath = result[0];
+    const importArgs = result[1];
 
     const promise = (async () => {
         try {
             // Process the uniform function call
-            const references = await processUniformFunctionCall(
+            let references = await processUniformFunctionCall(
                 importPath,
                 file,
                 "",
                 settings,
             );
+
+            if (importArgs?.mini && references) { // TODO: move to `processUniformFunctionCall`
+                references = uniformToMiniUniform(importArgs.mini, references as Reference<TypeDocReferenceContext>[]);
+            }
 
             if (references && references.length > 0) {
                 attributes.push({

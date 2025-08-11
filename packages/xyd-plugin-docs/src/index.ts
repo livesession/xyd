@@ -18,6 +18,9 @@ export { readSettings } from "./presets/docs/settings"
 export interface PluginDocsOptions {
     disableAPIGeneration?: boolean
     disableFSWrite?: boolean
+    appInit?: any
+    onUpdate?: (callback: (settings: Settings) => void) => void
+    doNotInstallPluginDependencies?: boolean
 }
 
 // TODO: better plugin runner
@@ -30,11 +33,13 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
 
     // base docs preset setup
     {
-        const options = {
-            urlPrefix: "" // TODO: configurable
+        const presetOptions = {
+            urlPrefix: "", // TODO: configurable,
+            appInit: options?.appInit,
+            onUpdate: options?.onUpdate
         }
 
-        const docs = docsPreset(undefined, options)
+        const docs = docsPreset(undefined, presetOptions)
         docs.preinstall = docs.preinstall || []
 
         let preinstallMerge = {}
@@ -75,7 +80,6 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
     }
 
     await ensureAndCleanupVirtualFolder()
-
 
     // graphql preset setup
     if (!options?.disableAPIGeneration && settings?.api?.graphql) {
@@ -159,9 +163,7 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
         const src = sourcesPreset(settings, opt)
         src.preinstall = src.preinstall || []
 
-        let preinstallMerge = {
-
-        }
+        let preinstallMerge = {}
 
         for (const preinstall of src.preinstall) {
             const resp = await preinstall(opt)(settings, {
@@ -199,35 +201,108 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
 
     sortSidebarGroups(settings?.navigation?.sidebar || [])
 
+    const indexPage = await findIndexPage()
+
+    if (indexPage) {
+        pagePathMapping["index"] = indexPage
+    }
+
     return {
         vitePlugins,
         settings,
         routes,
         basePath,
-        pagePathMapping
+        pagePathMapping,
+        hasIndexPage: !!indexPage
     }
 }
 
-function sortSidebarGroups(sidebar: (SidebarRoute | Sidebar)[]) {
-    // Sort items within each SidebarRoute
-    for (const group of sidebar) {
-        if ('items' in group) {
-            group.items.sort((a, b) => {
-                // If both have numeric sort values, compare them
-                if (typeof a.sort === 'number' && typeof b.sort === 'number') {
-                    return a.sort - b.sort
+async function findIndexPage(): Promise<string> {
+    if (fs.existsSync("index.md")) {
+        return "index.md"
+    }
+
+    if (fs.existsSync("index.mdx")) {
+        return "index.mdx"
+    }
+
+    return ""
+}
+
+export function sortSidebarGroups(sidebar: (SidebarRoute | Sidebar | string)[]) {
+    // Apply recursive sorting to all routes
+    for (const entry of sidebar) {
+        if (typeof entry === 'string') continue;
+        if (!entry.pages) continue;
+
+        // Recursively sort nested groups first
+        for (const page of entry.pages) {
+            if (typeof page === 'object' && 'pages' in page && page.pages) {
+                sortSidebarGroups([page as Sidebar]);
+            }
+        }
+
+        // Separate groups with order from other items
+        const groupsWithOrder: Sidebar[] = [];
+        const otherItems: (Sidebar | string)[] = [];
+
+        for (const page of entry.pages) {
+            if (typeof page === 'object' && 'group' in page && page.group && 'order' in page && page.order !== undefined) {
+                groupsWithOrder.push(page as Sidebar);
+            } else {
+                otherItems.push(page as Sidebar | string);
+            }
+        }
+
+        // Sort groups with order
+        if (groupsWithOrder.length > 0) {
+            const groupMap = new Map<string, Sidebar>();
+            for (const group of groupsWithOrder) {
+                if (group.group) {
+                    groupMap.set(group.group, group);
                 }
-                // If only a has numeric sort, it comes first
-                if (typeof a.sort === 'number') {
-                    return -1
+            }
+
+            const sortedGroups: Sidebar[] = [];
+
+            // First pass: order: 0 (always on top)
+            for (const [_, group] of groupMap) {
+                if (group.order === 0) sortedGroups.push(group);
+            }
+
+            // Second pass: groups without "before/after"
+            for (const [name, group] of groupMap) {
+                if (!group.order || typeof group.order === 'number') {
+                    if (group.order !== 0 && group.order !== -1) {
+                        sortedGroups.push(group);
+                    }
                 }
-                // If only b has numeric sort, it comes first
-                if (typeof b.sort === 'number') {
-                    return 1
+            }
+
+            // Third pass: before/after
+            for (const [name, group] of groupMap) {
+                if (group.order && typeof group.order === 'object' && ('before' in group.order || 'after' in group.order)) {
+                    const target = 'before' in group.order ? group.order.before : group.order.after;
+                    const idx = sortedGroups.findIndex(g => g.group === target);
+                    if (idx !== -1) {
+                        if ('before' in group.order) {
+                            sortedGroups.splice(idx, 0, group);
+                        } else {
+                            sortedGroups.splice(idx + 1, 0, group);
+                        }
+                    } else {
+                        sortedGroups.push(group); // fallback
+                    }
                 }
-                // If neither has numeric sort, maintain original order
-                return 0
-            })
+            }
+
+            // Last: order: -1 (always at end)
+            for (const [_, group] of groupMap) {
+                if (group.order === -1) sortedGroups.push(group);
+            }
+
+            // Replace the original pages with sorted groups + other items
+            entry.pages = [...sortedGroups, ...otherItems];
         }
     }
 }
@@ -272,19 +347,34 @@ function mapNavigationToPagePathMapping(navigation: Navigation) {
         }
     }
 
+    let sidebarFlatOnly = false
     // Process each sidebar route
-    for (const sidebar of navigation.sidebar) {
-        if ('items' in sidebar) {
+    for (const sidebar of navigation?.sidebar || []) {
+        if (typeof sidebar === 'string') {
+            sidebarFlatOnly = true
+            break
+        } else if ('pages' in sidebar && "route" in sidebar) {
             // Handle SidebarRoute
-            for (const item of sidebar.items) {
-                if (item.pages) {
+            for (const item of sidebar.pages) {
+                if (item?.pages) {
                     processPages(item.pages)
+                } else if (typeof item === 'string') {
+                    // Handle direct string pages in SidebarRoute
+                    const existingPath = getExistingFilePath(item)
+                    if (existingPath) {
+                        mapping[item] = existingPath
+                    }
                 }
             }
-        } else if (sidebar.pages) {
+        } else if ('pages' in sidebar) {
             // Handle Sidebar
-            processPages(sidebar.pages)
+            processPages(sidebar.pages || [])
         }
+    }
+
+    if (sidebarFlatOnly) {
+        const sidebar = navigation?.sidebar as string[] || []
+        processPages(sidebar)
     }
 
     return mapping

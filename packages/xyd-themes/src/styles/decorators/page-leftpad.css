@@ -1,0 +1,46 @@
+@layer decorators {
+    xyd-layout-primary {
+        --theme-sidebar-left: unset;
+        --theme-sidebar-width: unset;
+
+        /* media: Large Desktop */
+        @media (min-width: 1440px) {
+            --theme-layout-max-width: 1600px;
+            --theme-sidebar-width-var: 350px; 
+
+            --theme-sidebar-left-padding-space: 32px;
+            --theme-sidebar-left-vars: (var(--theme-layout-max-width) / 2) + var(--theme-sidebar-left-padding-space);
+            --theme-sidebar-left-calc: calc(50% - var(--theme-sidebar-left-vars));
+
+            --theme-sidebar-width-padding-space: 8px;
+
+            --theme-sidebar-left: max(32px, var(--theme-sidebar-left-calc));
+            --theme-sidebar-width: calc((100% - (var(--theme-layout-max-width))) / 2 + var(--theme-sidebar-width-var) + var(--theme-sidebar-width-padding-space));
+        }
+
+        /* layout: Sidebar */
+        [part="sidebar"] {
+            padding-left: var(--theme-sidebar-left);
+            width: var(--theme-sidebar-width);
+        }
+
+        /* component: Nav */
+        xyd-nav {
+            [part="nav"]>*:first-child {
+                position: relative;
+                left: calc(var(--theme-sidebar-left) + var(--xyd-sidebar-item-padding-total) - var(--xyd-nav-padding));
+            }
+        }
+
+        /* component: SubNav */
+        xyd-subnav {
+            padding-left: var(--theme-sidebar-left);
+        }
+
+        @media (max-width: 1024px) {
+            xyd-subnav {
+                padding-left: var(--xyd-nav-padding);
+            }
+        }
+    }
+}

@@ -1,0 +1,75 @@
+@import "@xyd-js/themes/dist/decorators/atlas-vars.css";
+
+/* Core */
+:root {
+    --dark8: color(display-p3 .008 .184 .125 / .067);
+    --dark32: color(display-p3 .012 .094 .051 / .095);
+    --color-text: color(display-p3 0.107 0.129 0.118);
+    --color-primary: color(display-p3 0.08 0.5 0.43);
+    --color-primary--active: color(display-p3 0.08 0.5 0.43);
+
+
+    /* Font Sizes */
+    --xyd-font-size-xsmall: 13px;
+    --xyd-font-size-small: 14px;
+    --xyd-font-size-medium: 17px;
+    --xyd-font-size-large: 19px;
+    --xyd-font-size-xlarge: 23px;
+    --xyd-font-size-xxlarge: 27px;
+    --xyd-font-size-2xl: 33px;
+
+    /* Line Heights */
+    --xyd-line-height-xsmall: 17px;
+    --xyd-line-height-small: 20px;
+    --xyd-line-height-medium: 26px;
+    --xyd-line-height-large: 28px;
+    --xyd-line-height-xlarge: 34px;
+    --xyd-line-height-xxlarge: 40px;
+    --xyd-line-height-2xl: 45px;
+}
+
+/* Sidebar */
+:root {
+    --xyd-sidebar-bgcolor: var(--white);
+}
+
+/* Subnav */
+:root {
+    --xyd-subnav-bgcolor: var(--white);
+}
+
+/* Banner */
+:root {
+    --xyd-banner-bgcolor: color(display-p3 .004 .643 .494 / .24);
+}
+
+/* Utils */
+:root {
+    --xyd-page-gutter: 0;
+}
+
+/* Coder */
+:root {
+    --xyd-codetabs-color: var(--white);
+
+    --xyd-coder-code-mark-bgcolor: var(--dark80);
+    --xyd-coder-code-mark-border-color: var(--color-primary);
+
+    --xyd-codetabs-color--active: var(--white);
+}
+
+@define-mixin dark-theme {
+    --xyd-codetabs-color: var(--black);
+    --color-text: var(--black);
+    --xyd-codetabs-color--active: var(--black);
+}
+
+[data-color-scheme="dark"] {
+    @mixin dark-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        @mixin dark-theme;
+    }
+}

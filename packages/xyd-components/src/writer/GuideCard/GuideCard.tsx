@@ -2,6 +2,8 @@ import React from "react"
 
 import * as cn from "./GuideCard.styles";
 
+import { Icon } from "../Icon"
+
 /**
  * Props for the GuideCard component
  */
@@ -13,10 +15,10 @@ export interface GuideCardProps {
     href: string
 
     /** Title displayed at the top of the card */
-    title: string;
+    title?: string;
 
     /** Optional icon displayed to the left of the content */
-    icon?: React.ReactNode;
+    icon?: React.ReactNode | string;
 
     /** Visual style variant of the card */
     kind?: "secondary"
@@ -49,6 +51,8 @@ export function GuideCard({
 }: GuideCardProps) {
     const Link = as || $Link
 
+    const iconElement = icon && typeof icon === 'string' ? <Icon name={icon} /> : icon
+
     return <xyd-guidecard
         className={`${cn.GuideHost} ${className || ""}`}
         data-kind={kind}
@@ -56,16 +60,11 @@ export function GuideCard({
     >
         <Link part="link" href={href}>
             <div part="item">
-                {icon && <div part="icon">
-                    {icon}
+                {iconElement && <div part="icon">
+                    {iconElement}
                 </div>}
                 <div part="right">
-                    <div part="title">
-                        <div part="title-body">
-                            {title}
-                        </div>
-                        <$Pointer />
-                    </div>
+                    {title && <GuideCard.Title>{title}</GuideCard.Title>}
                     <div part="body">
                         {children}
                     </div>
@@ -73,6 +72,14 @@ export function GuideCard({
             </div>
         </Link>
     </xyd-guidecard>
+}
+GuideCard.Title = function GuideCardTitle({ children }: { children: React.ReactNode }) {
+    return <div part="title">
+        <div part="title-body">
+            {children}
+        </div>
+        <$Pointer />
+    </div>
 }
 
 /**

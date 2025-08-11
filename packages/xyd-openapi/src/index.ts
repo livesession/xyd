@@ -13,3 +13,9 @@ export * from "./converters/oas-responses"
 export * from "./converters/oas-schema"
 
 export * from "./utils"
+
+export * from "./xdocs/types"
+
+export {getXDocs} from "./xdocs"
+
+export {uniformPluginXDocsSidebar} from "./xdocs/pluginSidebar"

@@ -4,12 +4,12 @@ title: LiveSession
 
 # LiveSession
 :::subtitle
-Learn how to send analytics events to LiveSEssion
+Learn how to send analytics events to LiveSession
 :::
 
 Add the following to your docs.json file to send analytics to LiveSession.
 
-:::code-group{title="Analytics options in xyd.json"}
+:::code-group{title="Analytics options in docs.json"}
 ```json Schema
 {
     "integrations": {
@@ -33,5 +33,8 @@ Add the following to your docs.json file to send analytics to LiveSession.
     }
 }
 ```
+:::
 
+:::callout
+Sign up to [LiveSession](https://signup.livesession.io/signup/?source_id=xyd) to get your `trackId`.
 :::

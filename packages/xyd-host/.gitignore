@@ -2,3 +2,5 @@ node_modules
 dist
 .react-router
 app/shared-data.ts
+package-lock.json
+pnpm-lock.yaml

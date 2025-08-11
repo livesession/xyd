@@ -30,9 +30,9 @@ import {
 import {GQLTypeInfo, GQLOperation} from "./types";
 import {gqlFieldToUniformDefinitionProperty} from "./converters/gql-field";
 import {Context} from "./context";
-import {openDocsToGroup} from "./opendocs";
+import {openDocsCanonical, openDocsToGroup} from "./opendocs";
 
-type GraphqlUniformReferenceType =
+export type GraphqlUniformReferenceType =
     | GraphQLScalarType
     | GraphQLObjectType
     | GraphQLInterfaceType
@@ -42,10 +42,67 @@ type GraphqlUniformReferenceType =
     | GQLOperation
     | GraphQLField<any, any> | GraphQLInputField | GraphQLArgument
 
+export function extractScopesFromDocDirective(
+    ctx: Context,
+    gqlType: GraphqlUniformReferenceType,
+): string[] {
+    const scopes: string[] = []
+
+    const schema = ctx?.schema
+
+    if (gqlType.astNode?.directives) {
+        for (const directive of gqlType.astNode.directives) {
+            if (directive.name.value === "doc") {
+                const scopesArg = directive.arguments?.find(arg => arg.name.value === 'scopes')
+                if (scopesArg?.value.kind === 'ListValue') {
+                    for (const scopeValue of scopesArg.value.values) {
+                        if (scopeValue.kind === 'EnumValue') {
+                            // For enum values, we need to find the enum type and its value with @scope directive
+                            let enumType: GraphQLEnumType | undefined
+
+                            // First check if current type is an enum
+                            if (gqlType instanceof GraphQLEnumType) {
+                                enumType = gqlType
+                            }
+                            // If not and we have a schema, try to find the enum type
+                            else if (schema) {
+                                const type = schema.getType('OpenDocsScope')
+                                if (type instanceof GraphQLEnumType) {
+                                    enumType = type
+                                }
+                            }
+
+                            if (enumType) {
+                                const enumValue = enumType.getValue(scopeValue.value)
+                                if (enumValue?.astNode?.directives) {
+                                    for (const enumDirective of enumValue.astNode.directives) {
+                                        if (enumDirective.name.value === 'scope') {
+                                            const valueArg = enumDirective.arguments?.find(arg => arg.name.value === 'value')
+                                            if (valueArg?.value.kind === 'StringValue') {
+                                                scopes.push(valueArg.value.value)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (scopeValue.kind === 'StringValue') {
+                            // Handle string literal (e.g. "user:write")
+                            scopes.push(scopeValue.value)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return scopes
+}
+
 export function uniformify(
+    ctx: Context,
     gqlType: GraphqlUniformReferenceType,
     definitions: Definition[],
-    examples: ExampleGroup[]
+    examples: ExampleGroup[],
 ): Reference {
     let canonicalPrefix = ""
     let graphqlTypeShort = ""
@@ -89,22 +146,36 @@ export function uniformify(
                 refType = ReferenceType.GRAPHQL_MUTATION
                 break;
             }
+            case "subscription": {
+                canonicalPrefix = "subscriptions"
+                graphqlTypeShort = "subscription"
+                refType = ReferenceType.GRAPHQL_SUBSCRIPTION
+                break;
+            }
         }
     } else {
         const info = gqlFieldTypeInfo(gqlType)
-        if (info?.typeFlat && !isBuiltInType(info?.typeFlat)) { // TODO: in the future options + check if defined in schema
+        if (info?.typeFlat && !isBuiltInType(info?.typeFlat)) {
             if (info?.typeFlat) {
-                return uniformify(info.typeFlat, definitions, examples)
+                return uniformify(ctx, info.typeFlat, definitions, examples)
             }
         }
     }
 
     const slugger = new GithubSlugger();
-    const slug = slugger.slug(gqlType.name);
+    // const slug = slugger.slug(gqlType.name);
+    const slug = gqlType.name;
+
+    const odCanonical = openDocsCanonical(ctx, gqlType);
+
     let canonical = ""
-    if (canonicalPrefix) {
-        canonical = `${canonicalPrefix}/${slug}`;
+    if (odCanonical) {
+        canonical = odCanonical;
+    } else if (canonicalPrefix) {
+        canonical = [canonicalPrefix, slug].join("/")
     }
+
+    const scopes = extractScopesFromDocDirective(ctx, gqlType) || []
     return {
         title: gqlType.name,
         description: gqlType.description || "",
@@ -116,7 +187,8 @@ export function uniformify(
         context: {
             graphqlTypeShort: graphqlTypeShort,
             graphqlName: gqlType.name,
-            group: openDocsToGroup(gqlType),
+            group: openDocsToGroup(ctx, gqlType),
+            scopes
         },
 
         examples: {
@@ -128,12 +200,13 @@ export function uniformify(
 }
 
 export function propsUniformify(
+    ctx: Context,
     field: GraphQLField<any, any> | GraphQLInputField | GraphQLArgument,
     properties?: DefinitionProperty[],
     meta?: DefinitionPropertyMeta[]
 ): DefinitionProperty {
     const fieldInfo = gqlFieldTypeInfo(field);
-    const objRef = uniformify(field, [], []);
+    const objRef = uniformify(ctx, field, [], []);
 
     const builtInType = fieldInfo?.typeFlat ? isBuiltInType(fieldInfo?.typeFlat) : undefined
 
@@ -162,7 +235,7 @@ export function gqlObjectPropsUniformify(
     obj: GraphQLInputObjectType | GraphQLObjectType,
     meta?: DefinitionPropertyMeta[]
 ): DefinitionProperty {
-    const objRef = uniformify(obj, [], []);
+    const objRef = uniformify(ctx, obj, [], []);
     const inputFields = obj.getFields?.()
     const nestedProps: DefinitionProperty[] = []
 

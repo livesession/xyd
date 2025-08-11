@@ -1,0 +1,61 @@
+@import "@xyd-js/themes/dist/decorators/atlas-vars.css";
+
+/* Core */
+:root {
+    --dark32: #ececf1;
+    --dark48: #484444;
+    --color-text: #000;
+    --color-primary: #10a37f;
+    --color-primary--active: #1a7f64;
+
+    --theme-color-primary: var(--color-primary);
+    /* --theme-color-primary-active: var(--color-primary--active); */
+    --color-primary--active: color-mix(in srgb, var(--color-primary) 85%, transparent);
+}
+
+/* Utils */
+:root {
+    --xyd-page-gutter: 0;
+}
+
+/* Subnav */
+:root {
+    --xyd-subnav-bgcolor: var(--white);
+}
+
+/* Banner Item */
+:root {
+    --xyd-banner-bgcolor: color(display-p3 .004 .643 .494 / .24);
+}
+
+/* Sidebar */
+:root {
+    --xyd-sidebar-width: 320px;
+    --xyd-sidebar-bgcolor: var(--white);
+}
+
+/* Coder */
+:root {
+    --xyd-codetabs-color: var(--color-text);
+
+    --xyd-coder-code-mark-bgcolor: var(--dark32);
+    --xyd-coder-code-mark-border-color: var(--color-primary);
+}
+
+@define-mixin dark-theme {
+    --color-text: rgb(222, 226, 226);
+    --dark16: rgb(222, 226, 226, 0.05);
+    --dark32: rgb(255,255,255, 0.07);
+    --dark48: rgb(158,163,162);
+    --xyd-codetabs-color: var(--black);
+    --color-text: var(--black);
+}
+[data-color-scheme="dark"] {
+    @mixin dark-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        @mixin dark-theme;
+    }
+}

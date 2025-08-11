@@ -1,0 +1,114 @@
+[
+  {
+    "title": "GuideCard",
+    "canonical": "@xyd-js/sources/components/GuideCard",
+    "description": "A card component that displays content with a title and optional icon.\nThe entire card is clickable and links to the specified URL.\n",
+    "context": {
+      "symbolId": "1",
+      "symbolName": "GuideCard",
+      "symbolKind": 64,
+      "packageName": "@xyd-js/sources",
+      "fileName": "1.flat-interface.tsx",
+      "fileFullPath": "__fixtures__/-2.react.basic/src/1.flat-interface.tsx",
+      "line": 36,
+      "col": 16,
+      "signatureText": {
+        "code": "",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "",
+        "lang": "ts"
+      },
+      "meta": [],
+      "category": "Component",
+      "group": [
+        "@xyd-js",
+        "sources",
+        "Component"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Props",
+        "properties": [
+          {
+            "name": "children",
+            "type": "React.ReactNode",
+            "description": "Content to be displayed in the card body\n",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "href",
+            "type": "string",
+            "description": "URL the card links to\n",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "description": "Title displayed at the top of the card\n",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "icon",
+            "type": "React.ReactNode",
+            "description": "Optional icon displayed to the left of the content\n",
+            "meta": []
+          },
+          {
+            "name": "kind",
+            "type": "\"secondary\"",
+            "description": "Visual style variant of the card\n",
+            "meta": []
+          },
+          {
+            "name": "size",
+            "type": "\"sm\" | \"md\"",
+            "description": "Size variant of the card\n",
+            "symbolDef": {
+              "id": []
+            },
+            "meta": []
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "description": "Additional CSS class names to apply to the card\n",
+            "meta": []
+          },
+          {
+            "name": "as",
+            "type": "React.ElementType<any, keyof IntrinsicElements>",
+            "description": "Additional props to pass to the link element\n",
+            "meta": []
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "parameters"
+          }
+        ]
+      }
+    ]
+  }
+]

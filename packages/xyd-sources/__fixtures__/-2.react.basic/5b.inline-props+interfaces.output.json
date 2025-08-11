@@ -1,0 +1,92 @@
+[
+  {
+    "title": "Text",
+    "canonical": "@xyd-js/sources/components/Text",
+    "description": "A flexible text component that supports different sizes, styles, and weights.\n",
+    "context": {
+      "symbolId": "107",
+      "symbolName": "Text",
+      "symbolKind": 64,
+      "packageName": "5b.inline-props+interfaces",
+      "fileName": "5b.inline-props+interfaces.tsx",
+      "fileFullPath": "__fixtures__/-2.react.basic/src/5b.inline-props+interfaces.tsx",
+      "line": 47,
+      "col": 16,
+      "signatureText": {
+        "code": "",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "",
+        "lang": "ts"
+      },
+      "category": "Component",
+      "group": [
+        "@xyd-js",
+        "sources",
+        "Component"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Props",
+        "properties": [
+          {
+            "name": "size",
+            "type": "\"xsmall\" | \"small\" | \"medium\" | \"large\" | \"xlarge\" | \"xxlarge\"",
+            "description": "Font size of the text\n",
+            "symbolDef": {
+              "id": "110"
+            }
+          },
+          {
+            "name": "kind",
+            "type": "\"default\" | \"ghost\" | \"success\" | \"warn\" | \"error\" | \"primary\" | \"secondary\"",
+            "description": "Visual style/kind of the text\n",
+            "symbolDef": {
+              "id": "111"
+            }
+          },
+          {
+            "name": "weight",
+            "type": "\"normal\" | \"bold\" | \"extra-bold\"",
+            "description": "Font weight of the text\n",
+            "symbolDef": {
+              "id": "112"
+            }
+          },
+          {
+            "name": "children",
+            "type": "React.ReactNode",
+            "description": "Content to be rendered inside the text component\n"
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "description": "Additional CSS class name\n"
+          },
+          {
+            "name": "id",
+            "type": "string",
+            "description": "HTML id attribute\n"
+          },
+          {
+            "name": "onClick",
+            "type": "",
+            "description": "Click event handler\n",
+            "properties": []
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "parameters"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -15,6 +15,7 @@ declare global {
         'atlas-apiref-propname': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'atlas-apiref-proptype': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'atlas-apiref-propmeta': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+        'atlas-apiref-meta-info': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       }
     }
   }

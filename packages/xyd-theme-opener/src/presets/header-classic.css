@@ -1,0 +1,14 @@
+/* TODO: its helmet */
+@layer presets {
+    xyd-layout-primary {
+        --xyd-nav-padding: var(--xyd-padding-xlarge);
+
+        /* component: Nav */
+        xyd-nav {
+            [part="nav"]>*:first-child {
+                position: relative;
+                left: unset;
+            }
+        }
+    }
+}

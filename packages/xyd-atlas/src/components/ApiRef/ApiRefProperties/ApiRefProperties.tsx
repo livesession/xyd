@@ -1,44 +1,59 @@
-import React, { useState } from "react";
-import { DefinitionProperty, DefinitionPropertyMeta } from "@xyd-js/uniform";
+import React, { useContext, useState } from "react";
+import { DEFINED_DEFINITION_PROPERTY_TYPE, DefinitionProperty, DefinitionPropertyMeta } from "@xyd-js/uniform";
 
 import * as cn from "./ApiRefProperties.styles";
-import { useBaseMatch } from "@/components/Atlas/AtlasContext";
+import { AtlasContext, useBaseMatch } from "@/components/Atlas/AtlasContext";
+import { Badge } from "@xyd-js/components/writer";
 
 export interface ApiRefPropertiesProps {
     properties: DefinitionProperty[]
 }
 
+// TODO: in the future configurable
+const HIDE_INTERNAL = true
+
 export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
     return <ul className={cn.ApiRefPropertiesUlHost}>
         {
-            properties?.map((property, i) => {
+            filterProperties(properties)?.map((property, i) => {
                 const propName = property.name
                 const propValue = property.type
+                const propertyProperties = propProperties(property)
+                const description = property.ofProperty?.description || property.description || ""
+                const metaInfo = renderMetaInfo(property.meta)
 
                 return <li className={cn.ApiRefPropertiesLiHost} key={i}>
                     {
                         propName || propValue ?
                             <dl className={cn.ApiRefPropertiesDlHost}>
-                                <PropName value={propName} meta={property.meta || []} />
+                                <PropName property={property} meta={property.meta || []} />
                                 <PropType
                                     property={property}
-                                    meta={property.meta || []}
                                 />
                                 <PropMetaList
                                     metas={property.meta || []}
                                 />
                             </dl> : null
                     }
-                    <div className={cn.ApiRefPropertiesDescriptionHost}>
-                       <>
-                           {property.description}
-                       </>
-                    </div>
+
                     {
-                        property.properties ?
+                        description || metaInfo ? <div className={cn.ApiRefPropertiesDescriptionHost}>
+                            <>
+                                <div>
+                                    {description}
+                                </div>
+                                <div>
+                                    {renderMetaInfo(property.meta)}
+                                </div>
+                            </>
+                        </div> : null
+                    }
+
+                    {
+                        propertyProperties?.length > 0 ?
                             <SubProperties
                                 parent={property}
-                                properties={property.properties}
+                                properties={propertyProperties}
                             /> : null
                     }
                 </li>
@@ -49,13 +64,15 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
 
 
 interface PropNameProps {
-    value: string
+    property: DefinitionProperty
     meta: DefinitionPropertyMeta[]
     parentChoiceType?: boolean
 }
 
 function PropName(props: PropNameProps) {
-    if (!props.value) {
+    const value = props.property.name
+
+    if (!value) {
         return null
     }
 
@@ -64,113 +81,35 @@ function PropName(props: PropNameProps) {
             <code
                 data-parent-choice-type={props.parentChoiceType ? "true" : undefined}
                 className={cn.ApiRefPropertiesPropNameCodeHost}
-            >{props.value}</code>
+            >{value}</code>
         </dd>
     </atlas-apiref-propname>
 }
 
 interface PropTypeProps {
     property: DefinitionProperty
-
-    meta?: PropMetaProps[]
 }
 
-function propTypesMap(property: DefinitionProperty, multipleTypesMap: { [key: string]: number } = {}) {
-    const propType = property.type
+function PropType({ property }: PropTypeProps) {
+    const { Link = "a" } = useContext(AtlasContext)
+    const href = useSymbolLink(property)
 
-    if (propType === "$$enum") {
-        const types = property?.properties?.reduce((acc, prop) => {
-            return {
-                ...acc,
-                [prop.type]: 1
-            }
-        }, {})
-        Object.keys(types).forEach(t => {
-            multipleTypesMap[t] = 1
-        })
-    } else if (propType === "$$xor" || propType === "$$union") {
-        const types = property?.properties?.reduce((acc, prop) => {
-            return {
-                ...acc,
-                [prop.type]: 1
-            }
-        }, {})
-        Object.keys(types).forEach(t => {
-            switch (t) {
-                case "$$array": {
-                    multipleTypesMap["array"] = 1
+    const symbol = resolvePropertySymbol(property)
 
-                    break;
-                }
+    let propSymbol: string | React.ReactNode = symbol
 
-                case "$$enum": {
-                    if (property.properties) {
-                        property.properties.forEach(p => {
-                            propTypesMap(p, multipleTypesMap)
-                        })
-                    }
-
-                    break
-                }
-
-                default: {
-                    multipleTypesMap[t] = 1
-
-                    break;
-                }
-            }
-        })
-    } else if (propType === "$$array") {
-        multipleTypesMap["array"] = 1
-    } else {
-        multipleTypesMap[propType] = 1
-    }
-
-    return multipleTypesMap
-}
-
-
-function PropType({ property, meta }: PropTypeProps) {
-    const baseMatch = useBaseMatch()
-
-    if (!property || !property.type) {
+    if (!propSymbol) {
         return null
     }
 
-    const propType = property.type
-
-    let href = ""
-    let valueText = propType
-
-    if (property?.symbolDef?.canonical) {
-        let symbolLink = property.symbolDef.canonical
-        if (!Array.isArray(symbolLink)) { // TODO: support array of canonicals
-            if (!symbolLink.startsWith("/")) {
-                symbolLink = "/" + symbolLink
-            }
-            href = `${baseMatch}${symbolLink}`;
-        }
+    if (href) {
+        propSymbol = <Link className={cn.ApiRefPropertiesPropTypeCodeLink} href={href}>{propSymbol}</Link>
     }
-
-    const multipleTypes = Object.keys(propTypesMap(property))
-
-    for (const m of meta || []) { // TODO: find better way to do this
-        if (m.name === "nullable") {
-            multipleTypes.push("null")
-        }
-    }
-    valueText = multipleTypes.join(" or ")
 
     return <atlas-apiref-proptype>
         <dd>
             <code className={cn.ApiRefPropertiesPropTypeCodeHost}>
-                {
-                    href
-                        ? <>
-                            (<a className={cn.ApiRefPropertiesPropTypeCodeLink} href={href}>{valueText}</a>)
-                        </>
-                        : valueText
-                }
+                {propSymbol}
             </code>
         </dd>
     </atlas-apiref-proptype>
@@ -196,6 +135,16 @@ function PropMeta(props: PropMetaProps) {
         case "nullable":
             return null
         case "enum-type":
+            return null
+        case "minimum":
+            return null
+        case "maximum":
+            return null
+        case "example":
+            return null
+        case "examples":
+            return null
+        case "internal":
             return null
         case "hasArguments":
             return null
@@ -246,11 +195,32 @@ interface SubPropertiesProps {
 function SubProperties({ parent, properties }: SubPropertiesProps) {
     const [expanded, setExpanded] = useState(false)
 
+    // Get the actual properties to display
+    const foundProperties = filterProperties(properties || [])
+
     const choiceType = isChoiceType(parent)
+    const noChildProps = function () {
+        if (parent?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM) {
+            return false
+        }
+
+        return foundProperties.every(prop => {
+            if (prop.ofProperty) {
+                return false
+            }
+
+            return !(prop.properties?.length ?? 0)
+        })
+    }()
+
+    if (choiceType && noChildProps) {
+        return null
+    }
+
     const hasArguments = parent.meta?.some(m => m.name === 'hasArguments' && m.value === 'true')
 
     return <>
-        {properties?.length ? <PropToggle
+        {foundProperties?.length ? <PropToggle
             choiceType={choiceType}
             isArgument={hasArguments}
             onClick={() => setExpanded(!expanded)}
@@ -263,37 +233,51 @@ function SubProperties({ parent, properties }: SubPropertiesProps) {
             <div className={cn.ApiRefPropertiesSubPropsBox}>
                 <ul role="list" className={cn.ApiRefPropertiesSubPropsUl}>
                     {
-                        properties?.map((prop, i) => {
-                            const propName = (prop.name)
-                            const propValue = (prop.type)
+                        foundProperties?.map((prop, i) => {
+                            const propName = prop.name
+                            const propValue = prop.type
+                            const properties = propProperties(prop)
+                            const description = prop.ofProperty?.description || prop.description || ""
+                            const metaInfo = renderMetaInfo(prop.meta)
 
                             return <li className={cn.ApiRefPropertiesSubPropsLi} key={i}>
                                 {
                                     propName || propValue ?
                                         <dl className={cn.ApiRefPropertiesDlHost}>
                                             <PropName
+                                                property={prop}
+                                                meta={prop.meta || []}
                                                 parentChoiceType={choiceType || !!hasArguments}
-                                                meta={prop.meta || []} value={propName}
                                             />
                                             <PropType
                                                 property={prop}
-                                                meta={prop.meta || []}
                                             />
                                             <PropMetaList
                                                 metas={prop.meta || []}
                                             />
                                         </dl> : null
                                 }
-                                <div className={cn.ApiRefPropertiesDescriptionHost}>
-                                   <>
-                                       {prop.description}
-                                   </>
-                                </div>
+
                                 {
-                                    prop.properties ?
+                                    description || metaInfo
+                                        ? <div className={cn.ApiRefPropertiesDescriptionHost}>
+                                            <>
+                                                <div>
+                                                    {description}
+                                                </div>
+                                                <div>
+                                                    {renderMetaInfo(prop.meta)}
+                                                </div>
+                                            </>
+                                        </div>
+                                        : null
+                                }
+                                {
+                                    properties?.length ?
                                         <SubProperties
                                             parent={prop}
-                                            properties={prop.properties} /> : null
+                                            properties={properties}
+                                        /> : null
                                 }
                             </li>
                         })
@@ -355,5 +339,327 @@ function PropToggle(
 }
 
 function isChoiceType(property: DefinitionProperty) {
-    return ["$$enum", "$$xor", "$$union", "$$array"].includes(property.type)
+    if (property.ofProperty) {
+        return isChoiceType(property.ofProperty)
+    }
+
+    return [
+        DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
+        DEFINED_DEFINITION_PROPERTY_TYPE.XOR,
+        DEFINED_DEFINITION_PROPERTY_TYPE.ENUM,
+    ].includes(property.type as DEFINED_DEFINITION_PROPERTY_TYPE)
+}
+
+function useSymbolLink(property: DefinitionProperty) {
+    const baseMatch = useBaseMatch()
+
+    if (!property?.symbolDef?.canonical?.length) {
+        return ""
+    }
+
+    let symbolLink = property.symbolDef.canonical
+
+    if (!Array.isArray(symbolLink)) { // TODO: support array of canonicals
+        if (!symbolLink.startsWith("/")) {
+            symbolLink = "/" + symbolLink
+        }
+
+        return `${baseMatch}${symbolLink}`;
+    } else {
+        console.warn("Multiple canonical links found for property", property.name, property.symbolDef.canonical)
+    }
+
+    return ""
+}
+
+function propProperties(prop: DefinitionProperty): DefinitionProperty[] {
+    if (prop.properties?.length) {
+        return prop.properties
+    }
+
+    if (prop.ofProperty) {
+        return propProperties(prop.ofProperty)
+    }
+
+    return []
+}
+
+function filterProperties(properties: DefinitionProperty[]): DefinitionProperty[] {
+    return properties.filter(property => {
+        if (property?.meta?.some(m => m.name === "internal" && m.value === "true")) {
+            if (HIDE_INTERNAL) {
+                return false
+            }
+        }
+
+        return true
+    })
+}
+
+function resolvePropertySymbol(property: DefinitionProperty): string {
+    function resolvePropertySymbolInner(property: DefinitionProperty) {
+        if (property?.ofProperty) {
+            switch (property.ofProperty.type) {
+                case DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY: {
+                    let ofOfSymbols: string[] = []
+
+                    if (property.type) {
+                        ofOfSymbols.push(property.type)
+                    }
+
+                    if (property.ofProperty.ofProperty) {
+                        const symbol = groupSymbol(property.ofProperty.ofProperty)
+
+                        if (symbol) {
+                            ofOfSymbols.push(symbol)
+                        }
+                    }
+
+                    const atomicDefinedSymbol = atomicDefinedPropertySymbol(property.ofProperty)
+                    const ofPrefix = [
+                        atomicDefinedSymbol,
+                        "of"
+                    ]
+
+                    return [
+                        [
+                            ...ofPrefix,
+                            ...ofOfSymbols
+                        ].join(" ")
+                    ]
+                }
+                case DEFINED_DEFINITION_PROPERTY_TYPE.UNION:
+                case DEFINED_DEFINITION_PROPERTY_TYPE.ENUM:
+                case DEFINED_DEFINITION_PROPERTY_TYPE.XOR: {
+                    if (property.ofProperty.properties?.length) {
+                        const atomicDefinedSymbol = atomicDefinedPropertySymbol(property)
+
+                        if (atomicDefinedSymbol) {
+                            const unionSymbol = groupSymbol({
+                                name: "",
+                                description: "",
+                                type: DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
+                                properties: property.ofProperty.properties || [],
+                            })
+
+                            if (unionSymbol?.length && unionSymbol.includes("$$")) {
+                                return [atomicDefinedSymbol]
+                            }
+
+                            return [
+                                [
+                                    atomicDefinedSymbol,
+                                    "of",
+                                    unionSymbol
+                                ].join(" ")
+                            ]
+                        }
+
+                        return [
+                            property.type,
+                            groupSymbol(property.ofProperty)
+                        ]
+                    }
+
+                    if (property.ofProperty?.ofProperty) {
+                        return [property.ofProperty?.ofProperty?.type]
+                    }
+
+                    return []
+                }
+                default: {
+                    if (!property.ofProperty.name) {
+                        const defined = atomicDefinedPropertySymbol(property)
+                        const symbol = atomicPropertySymbol(property)
+
+                        if (symbol.startsWith("$$")) {
+                            return [property.ofProperty.type]
+                        }
+
+                        const chains = [
+                            symbol
+                        ]
+
+                        if (defined) {
+                            chains.push("of")
+                        }
+
+                        chains.push(
+                            groupSymbol(property.ofProperty)
+                        )
+
+                        return chains
+                    }
+
+                    return [
+                        property.ofProperty.type
+                    ]
+                }
+            }
+        }
+
+        switch (property.type) {
+            case DEFINED_DEFINITION_PROPERTY_TYPE.UNION, DEFINED_DEFINITION_PROPERTY_TYPE.XOR: {
+                if (property.properties?.length) {
+                    const respMap = {}
+                    let resp: string[] = []
+                    for (const prop of property.properties) {
+                        let symbols = resolvePropertySymbolInner(prop)
+
+                        if (prop.ofProperty && symbols.length > 1) {
+                            symbols = [[
+                                symbols[0],
+                                ...symbols.slice(1, symbols.length),
+                            ].join("")]
+                        }
+
+                        resp.push(...symbols)
+                    }
+
+                    let hasOr = false // TODO: in the future better
+                    for (const symbol of resp) {
+                        if (symbol.trim() === "or") {
+                            hasOr = true
+                            break
+                        }
+                        respMap[symbol] = true
+                    }
+
+                    if (!hasOr) {
+                        resp = Object.keys(respMap)
+                    }
+
+                    return [resp.join(" or ")]
+                }
+
+                break
+            }
+
+            case DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY: {
+                return ["array"]
+            }
+
+            case DEFINED_DEFINITION_PROPERTY_TYPE.ENUM: {
+                return ["enum"]
+            }
+        }
+
+        if (property.type?.startsWith("$$")) {
+            return []
+        }
+
+        return [property.type]
+    }
+
+    const symbolsParts = resolvePropertySymbolInner(property)
+    if (nullableProperty(property)) {
+        if (symbolsParts.length) {
+            symbolsParts.push("or", "null")
+        } else {
+            symbolsParts.push("null")
+        }
+    }
+
+    return symbolsParts.join(" ")
+}
+
+function atomicDefinedPropertySymbol(property: DefinitionProperty): string {
+    switch (property.type) {
+        case DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY: {
+            return "array"
+        }
+        case DEFINED_DEFINITION_PROPERTY_TYPE.UNION:
+        case DEFINED_DEFINITION_PROPERTY_TYPE.ENUM:
+        case DEFINED_DEFINITION_PROPERTY_TYPE.XOR: {
+            return ""
+        }
+
+        default: {
+            return ""
+        }
+    }
+}
+
+function groupSymbol(property: DefinitionProperty) {
+    const symbol = resolvePropertySymbol(property)
+    if (symbol?.startsWith("$$")) {
+        return ""
+    }
+
+    return symbol
+}
+
+function atomicPropertySymbol(property: DefinitionProperty): string {
+    const defined = atomicDefinedPropertySymbol(property)
+
+    if (!defined) {
+        return property.type
+    }
+
+    return defined
+}
+
+function nullableProperty(property: DefinitionProperty): boolean {
+    return property.meta?.some(m => m.name === "nullable" && m.value === "true") || false
+}
+
+function renderMetaInfo(meta: DefinitionPropertyMeta[] | undefined) {
+    if (!meta?.length) return null;
+
+    const minimum = meta.find(m => m.name === 'minimum')?.value;
+    const maximum = meta.find(m => m.name === 'maximum')?.value;
+    const example = meta.find(m => m.name === 'example')?.value;
+    const examples = meta.find(m => m.name === 'examples')?.value;
+
+    const rangeInfo: React.ReactNode[] = [];
+    if (minimum !== undefined && maximum !== undefined) {
+        rangeInfo.push(
+            <div>
+                Required range: <Badge>
+                    {`${minimum} <= x <= ${maximum}`}
+                </Badge>
+            </div>
+        );
+    } else if (minimum !== undefined) {
+        rangeInfo.push(
+            <div>
+                Required range: <Badge>
+                    {`x >= ${minimum}`}
+                </Badge>
+            </div>
+        );
+    } else if (maximum !== undefined) {
+        rangeInfo.push(
+            <div>
+                Required range: <Badge>
+                    {`x <= ${maximum}`}
+                </Badge>
+            </div>
+        );
+    }
+
+    const exampleInfo = example || examples ? <div part="examples">
+        <span>Examples:</span>
+        {
+            example ? <Badge>{`${example}`}</Badge> : null
+        }
+        {
+            Array.isArray(examples) && <div part="examples-list">
+                {examples.map((example, i) => (
+                    <Badge key={`example-${i}`}>{`${example}`}</Badge>
+                ))}
+            </div>
+        }
+    </div> : null
+
+    if (!rangeInfo?.length && !exampleInfo) {
+        return null
+    }
+    
+    return <atlas-apiref-meta-info className={cn.ApiRefPropertiesMetaInfoHost}>
+        {rangeInfo?.map((info, i) => (
+            <div key={`range-${i}`}>{info}</div>
+        ))}
+        {exampleInfo}
+    </atlas-apiref-meta-info>
 }

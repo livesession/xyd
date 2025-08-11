@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-opener",
-  "version": "0.1.0-xyd.0",
+  "version": "0.1.0-build.156",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -10,28 +10,25 @@
     "./index.css": "./dist/index.css",
     ".": {
       "import": "./dist/index.js"
-    }
+    },
+    "./presets/*": "./dist/presets/*"
   },
   "scripts": {
     "clean": "rimraf build",
     "build": "rollup -c rollup.config.js"
   },
   "dependencies": {
-    "@docsearch/css": "^3.9.0",
-    "@docsearch/react": "^3.9.0",
-    "@linaria/atomic": "^6.2.0",
-    "@linaria/core": "^6.2.0",
-    "@orama/react-components": "^0.7.0",
-    "@xyd-js/atlas": "workspace:*",
-    "@xyd-js/ui": "workspace:*"
+    "@linaria/core": "^6.2.0"
   },
   "peerDependencies": {
+    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/ui": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/themes": "workspace:*",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router": "^7.5.0"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router": "^7.7.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",

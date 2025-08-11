@@ -2,20 +2,22 @@
 title: Algolia
 ---
 
-# LiveSession
+# Algolia {label="Experimental"}
 :::subtitle
-Learn how to send analytics events to LiveSEssion
+Learn how to use Algolia
 :::
 
-Add the following to your docs.json file to send analytics to LiveSession.
+To enable [Algolia](http://algolia.com) set it in docs.json:
 
-:::code-group{title="Analytics options in xyd.json"}
+:::code-group{title="Search options in docs.json"}
+
 ```json Schema
 {
     "integrations": {
-        "analytics": {
-            "livesession": {
-                "trackId": "required"
+        "search": {
+            "algolia": {
+                "appId": "required",
+                "apiKey": "required"
             }
         }
     }
@@ -25,9 +27,10 @@ Add the following to your docs.json file to send analytics to LiveSession.
 ```json Example
 {
     "integrations": {
-        "analytics": {
-            "livesession": {
-                "trackId": "aeb.beaea"
+        "search": {
+            "algolia": {
+                "appId": "123",
+                "apiKey": "321"
             }
         }
     }

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router";
+
 import { UXAnalytics } from "openux-js";
 import { plugAnalytics, type AnalyticsProvider, PlugAnalytics } from "pluganalytics"
 
@@ -11,13 +12,13 @@ interface XYDAnalyticsProps {
     loader: any // TODO: types
 }
 
-interface XYDAnalyticsContextProps {
+interface AnalyticsContextProps {
     analytics: PlugAnalytics
 }
 
-const XYDAnalyticsContext = createContext<XYDAnalyticsContextProps>({} as XYDAnalyticsContextProps)
+const AnalyticsContext = createContext<AnalyticsContextProps>({} as AnalyticsContextProps)
 
-export function XYDAnalytics({ children, settings, loader }: XYDAnalyticsProps) {
+export function Analytics({ children, settings, loader }: XYDAnalyticsProps) {
     const location = useLocation()
     const [plugAnalyticsInstance, setPlugAnalyticsInstance] = useState(() => plugAnalytics({ providers: [] }))
 
@@ -39,18 +40,17 @@ export function XYDAnalytics({ children, settings, loader }: XYDAnalyticsProps) 
         plugAnalyticsInstance.page()
     }, [location.pathname])
 
-    return <XYDAnalyticsContext
+    return <AnalyticsContext
         value={{ analytics: plugAnalyticsInstance }}
     >
         <UXAnalytics analytics={plugAnalyticsInstance}>
             {children}
         </UXAnalytics>
-    </XYDAnalyticsContext>
+    </AnalyticsContext>
 }
 
-
 export function useAnalytics() {
-    const ctx = useContext(XYDAnalyticsContext)
+    const ctx = useContext(AnalyticsContext)
 
     return ctx.analytics
 }
@@ -69,11 +69,19 @@ async function loadAnalyticsModules(
             return
         }
 
-        if (Array.isArray(providerOptions)) {
-            return module(...providerOptions)
+
+        let options = providerOptions
+
+        // TODO: in the future better API
+        if (provider === "livesession") {
+            options = providerOptions.trackId
         }
 
-        return module(providerOptions)
+        if (Array.isArray(options)) {
+            return module(...options)
+        }
+
+        return module(options)
     })
 
     const providerModules = await Promise.all(loadingProviderModules)

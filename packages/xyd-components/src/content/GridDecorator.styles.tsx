@@ -23,6 +23,20 @@ export default {
                 width: 100%;
             }
 
+
+            &[data-cols="2"] { --data-cols: 2; }
+            &[data-cols="3"] { --data-cols: 3; }
+            &[data-cols="4"] { --data-cols: 4; }
+            &[data-cols="5"] { --data-cols: 5; }
+            &[data-cols="6"] { --data-cols: 6; }
+
+            &[data-cols] {
+                --cols: var(--data-cols, 2);
+                ul ul {
+                    grid-template-columns: repeat(var(--cols), 1fr);
+                }
+            }
+
             @media (max-width: 768px) {
                 > ul {
                     gap: 0;
@@ -30,7 +44,25 @@ export default {
                 ul ul {
                     grid-template-columns: 1fr;
                 }
+                
+                /* Override data-cols for mobile */
+                &[data-cols] {
+                    --data-cols: 1;
+                }
             }
+
+            /* Tablet breakpoint for 2 columns */
+            @media (min-width: 769px) and (max-width: 1024px) {
+                ul ul {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                
+                /* Override data-cols for tablet */
+                &[data-cols] {
+                    --data-cols: 2;
+                }
+            }
+
 
             ul, ol, li {
                 &::before {

@@ -1,0 +1,66 @@
+type Query
+type Mutation
+
+extend schema @docs(
+    group: ["API & Reference"]
+    # above `group` is the root that every node will inherit
+)
+
+extend type Query @doc(
+    group: ["Users", "Queries"],
+    path: "users/queries"
+    # `group` and `path` will be inherited by all operations in this type
+) {
+    getUser(id: ID!): User
+    @doc(
+        path: "get"
+    )
+}
+
+extend type Query @doc(
+    group: ["Todos", "Queries"],
+    path: "todos/queries"
+    # `group` and `path` will be inherited by all operations in this type
+    # NOTE: is a different type from the previous one, so it can have its own `group` and `path`
+) {
+    getTodo(id: ID!): User
+}
+
+extend type Mutation @doc(
+    group: ["Users", "Mutations"],
+    path: "users/mutations"
+) {
+    createUser(input: createUserInput!): User
+    # if `path` is not specified, it will be derived from the operation name
+}
+
+type User @doc(
+    group: ["Users", "Objects"],
+    # we can declare `group` for the type itself
+) {
+    id: ID!
+    name: String!
+    email: String!
+}
+
+input createUserInput @doc(
+    group: ["Users", "Inputs"],
+    # we can declare `group` for the input type itself
+) {
+    name: String!
+    email: String!
+}
+
+scalar Email @doc(
+    group: ["Scalars"]
+    # we can declare `group` for the scalar type itself too
+)
+
+type Todo @doc(
+    group: ["Todos", "Objects"],
+) {
+    id: ID!
+    title: String!
+    completed: Boolean!
+}
+

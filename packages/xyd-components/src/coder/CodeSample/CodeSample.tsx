@@ -1,7 +1,7 @@
-import React from "react";
-import { Theme } from "@code-hike/lighter";
+import React, {useEffect, useState} from "react";
+import {Theme} from "@code-hike/lighter";
 
-import type { CodeThemeBlockProps } from "../CodeTheme";
+import type {CodeThemeBlockProps} from "../CodeTheme";
 
 import {
     Code,
@@ -10,7 +10,9 @@ import {
 import {
     withCodeTabs
 } from "../CodeTabs";
-import { useCodeTheme } from "../CodeTheme";
+import {useCodeTheme} from "../CodeTheme";
+import {useCoder} from "../CoderProvider";
+import {CodeSampleAnalytics} from "./CodeSampleAnalytics";
 
 export interface CodeSampleProps {
     name: string;
@@ -18,48 +20,99 @@ export interface CodeSampleProps {
     codeblocks?: CodeThemeBlockProps[];
     theme?: Theme
     size?: "full"
+    lineNumbers?: boolean
+    descriptionHead?: string
+    descriptionContent?: string | React.ReactNode
+    descriptionIcon?: string
     kind?: "secondary"
     controlByMeta?: boolean // TODO: BETTER IN THE FUTURE
 }
 
+const CodeContext = React.createContext<{
+    size?: "full"
+    lineNumbers?: boolean
+    descriptionHead?: string
+    descriptionContent?: string | React.ReactNode
+    descriptionIcon?: string
+}>({})
+
 export function CodeSample(props: CodeSampleProps) {
-    return <Code
-        codeblocks={props.codeblocks}
-        theme={props.theme}
-    >
-        <$ThemedCodeSample {...props} />
-    </Code>
+    return <CodeSampleAnalytics>
+        <Code
+            codeblocks={props.codeblocks}
+            theme={props.theme}
+        >
+            <$ThemedCodeSample {...props} />
+        </Code>
+    </CodeSampleAnalytics>
 }
 
 function $ThemedCodeSample(props: CodeSampleProps) {
-    const { highlighted } = useCodeTheme()
+    const {highlighted} = useCodeTheme()
+    const coder = useCoder()
 
     if (props.kind === "secondary") {
-        return <Code.Pre
-            codeblock={highlighted[0]}
-            handlers={[
-                annotations.mark,
-                annotations.bg,
-                annotations.lineNumbers
-            ]}
-        />
+        return <CodeContext value={{
+            size: props.size,
+            lineNumbers: props.lineNumbers,
+            descriptionHead: props.descriptionHead,
+            descriptionContent: props.descriptionContent,
+            descriptionIcon: props.descriptionIcon,
+        }}>
+            <Code.Pre
+                codeblock={highlighted[0]}
+                handlers={[
+                    annotations.mark,
+                    annotations.bg,
+                    annotations.lineNumbers
+                ]}
+            />
+        </CodeContext>
     }
 
-    return <$CodeSampleTabs
-        description={props.description}
-        highlighted={highlighted}
-        size={props.size}
-        controlByMeta={props.controlByMeta}
-    />
+    let size: "full" | undefined = undefined
+    if (typeof props.size === "string") {
+        size = props.size
+    } else if (typeof coder.scroll === "boolean" && !coder.scroll) {
+        size = "full"
+    }
+
+    const lineNumbers = props.lineNumbers ?? coder.lines
+
+    return <CodeContext value={{
+        size,
+        lineNumbers,
+        descriptionHead: props.descriptionHead,
+        descriptionContent: props.descriptionContent,
+        descriptionIcon: props.descriptionIcon,
+    }}>
+        <$CodeSampleTabs
+            description={props.description}
+            highlighted={highlighted}
+            controlByMeta={props.controlByMeta}
+        />
+    </CodeContext>
 }
 
-const $CodeSampleTabs = withCodeTabs((props) => <Code.Pre
-    {...props}
-    handlers={[
+const $CodeSampleTabs = withCodeTabs((props) => {
+    const {lineNumbers, size, descriptionHead, descriptionContent, descriptionIcon} = React.useContext(CodeContext)
+    const handlers = [
         annotations.mark,
         annotations.bg,
-        annotations.lineNumbers,
         annotations.diff
-    ]}
-/>)
+    ]
+
+    if (lineNumbers) {
+        handlers.push(annotations.lineNumbers)
+    }
+
+    return <Code.Pre
+        {...props}
+        descriptionHead={descriptionHead}
+        descriptionContent={descriptionContent}
+        descriptionIcon={descriptionIcon}
+        size={size}
+        handlers={handlers}
+    />
+})
 

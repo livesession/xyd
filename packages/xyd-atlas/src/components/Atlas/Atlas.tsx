@@ -34,7 +34,10 @@ export function Atlas<T>(props: AtlasProps<T>) {
 
     return <AtlasDecorator>
         <div className={cn.AtlasHost}>
-            <AtlasComponent references={references} />
+            <AtlasComponent
+                references={references}
+                apiRefItemKind={props.apiRefItemKind}
+            />
         </div>
     </AtlasDecorator>
 }

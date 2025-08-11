@@ -10,6 +10,14 @@ export const DetailsHost = css`
             border-radius: 8px;
         }
 
+        &[data-kind="tertiary"] {
+            padding: 8px;
+
+            [part="content"] {
+                border-radius: 8px;
+            }
+        }
+
         &[open] [part="summary"] svg[data-icon="true"] { 
             transform: rotate(90deg);
         }

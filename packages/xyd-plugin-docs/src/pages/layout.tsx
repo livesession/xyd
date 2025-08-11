@@ -1,101 +1,125 @@
+import { useEffect, useMemo } from "react";
 import {
     Outlet,
     useLoaderData,
     useLocation,
     useNavigate,
     useNavigation,
-    type Route,
-    isRouteErrorResponse,
     useMatches
 } from "react-router";
 
+import { UXNode } from "openux-js";
+
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 
-import type { Metadata, MetadataMap, Theme as ThemeSettings } from "@xyd-js/core";
+import type { Metadata, MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core";
 import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
-import { Framework, FwLink, useSettings, type FwSidebarGroupProps } from "@xyd-js/framework/react";
+import { Framework, FwLink, FwLogo, useSettings, type FwSidebarItemProps } from "@xyd-js/framework/react";
 import { ReactContent } from "@xyd-js/components/content";
 import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
-import { Surfaces } from "@xyd-js/framework/react";
+import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
+
+import { Surfaces, pageMetaLayout } from "@xyd-js/framework";
 import { Composer } from "@xyd-js/composer";
-import { BaseTheme } from "@xyd-js/themes";
-import parse from 'html-react-parser';
+import { Analytics, useAnalytics } from "@xyd-js/analytics";
 // @ts-ignore
 import { iconSet } from 'virtual:xyd-icon-set';
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
 // @ts-ignore
-const { settings: getSettings } = virtualSettings
+const { settings: getSettings, settingsClone, userPreferences } = virtualSettings
+
 // const settings = globalThis.__xydSettings
 import Theme from "virtual:xyd-theme";
+// @ts-ignore
+import { loadProvider } from 'virtual:xyd-analytics-providers'
 
 // @ts-ignore
 import "virtual:xyd-theme/index.css"
 import "virtual:xyd-theme-override/index.css"
+import 'katex/dist/katex.min.css'
+
+// @ts-ignore
+import { components as userComponents } from 'virtual:xyd-user-components';
 
 import { PageContext } from "./context";
-import { ReactElement, SVGProps } from "react";
 import React from "react";
 
+import { markdownPlugins } from "@xyd-js/content/md";
+import { ContentFS } from "@xyd-js/content";
+import { Icon, IconProvider } from "@xyd-js/components/writer";
+import { CoderProvider } from "@xyd-js/components/coder";
+import { SearchButton } from "@xyd-js/components/system"
+
 globalThis.__xydSettings = getSettings
-    
-new Composer() // TODO: better API
-const settings = globalThis.__xydSettings
+globalThis.__xydSettingsClone = settingsClone
+globalThis.__xydUserComponents = userComponents // Add user components to global scope TODO: problematic
+globalThis.__xydUserPreferences = userPreferences
 
-// TODO: better place for that? - it should be managed by framework?
-function Icon({name, width = 24, height = 24}: {name: string, width?: number, height?: number}) {
-    if (!iconSet) {
-        return null
-    }
+const settings = globalThis.__xydSettings as Settings
 
-    const ico = iconSet[name]
-    if (!ico || !ico.svg) {
-        return null
-    }
-
-    const icon = parse(ico.svg) as ReactElement<SVGProps<SVGSVGElement>>
-    if (React.isValidElement(icon)) {
-        return React.cloneElement(icon, {
-            width,
-            height,
-            style: { width, height }
-        })
-    }
-
-    return null
-}
-
+// console.log(JSON.stringify(settings?.navigation?.sidebar, null, 2), "settings?.navigation?.sidebar")
 
 const surfaces = new Surfaces()
+const atlasXyd = AtlasXydPlugin()(settings) // TODO: in the future via standard plugin API
+const SidebarItemRight = atlasXyd?.customComponents?.["AtlasSidebarItemRight"]
+
+if (SidebarItemRight) {
+    surfaces.define(
+        SidebarItemRight.surface,
+        SidebarItemRight.component,
+    )
+}
+
 const reactContent = new ReactContent(settings, {
     Link: FwLink,
     components: {
         Atlas,
-        Icon
     },
     useLocation, // // TODO: !!!! BETTER API !!!!!
     useNavigate,
     useNavigation
 })
 globalThis.__xydThemeSettings = settings?.theme
+globalThis.__xydNavigation = settings?.navigation
+globalThis.__xydWebeditor = settings?.webeditor
 globalThis.__xydReactContent = reactContent
 globalThis.__xydSurfaces = surfaces
 
 const theme = new Theme()
+//@ts-ignore TODO: in the future better api like PageLoad interface or something like that
+if (theme.mergeUserAppearance) {
+    // its needed after user declaration
+    //@ts-ignore
+    theme.mergeUserAppearance()
+}
+
+if (
+    settings?.theme?.appearance?.sidebar?.scrollbar === "secondary"
+) {
+    import("@xyd-js/themes/decorators/sidebar-scroll.css").catch(() => {
+        // Ignore CSS import errors during development
+    });
+}
 
 const { Layout: BaseThemeLayout } = theme
 
 interface LoaderData {
-    sidebarGroups: FwSidebarGroupProps[]
+    sidebarGroups: FwSidebarItemProps[]
     breadcrumbs: IBreadcrumb[],
     toc: MetadataMap,
     slug: string
     metadata: Metadata | null
     navlinks?: INavLinks,
+    bannerContentCode?: string
 }
 
 export async function loader({ request }: { request: any }) {
+    globalThis.__xydFrontmatterNotExists = {}
+
+    new Composer() // TODO: better API
+
     const slug = getPathname(request.url || "index") || "index"
 
     const {
@@ -109,12 +133,32 @@ export async function loader({ request }: { request: any }) {
         slug,
     )
 
+    let bannerContentCode = ""
+
+    const mdPlugins = await markdownPlugins({
+        maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
+    }, settings)
+    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)
+
+    if (settings?.components?.banner?.content && typeof settings?.components?.banner?.content === "string") {
+        bannerContentCode = await contentFs.compileContent(
+            settings?.components?.banner?.content,
+        )
+    }
+
+    // TODO: IN THE FUTURE BETTER API
+    const layout = pageMetaLayout(metadata)
+    if (metadata && layout) {
+        metadata.layout = layout
+    }
+
     return {
         sidebarGroups,
         breadcrumbs,
         navlinks,
         slug,
         metadata,
+        bannerContentCode
     } as LoaderData
 }
 
@@ -138,29 +182,81 @@ export default function Layout() {
         ];
     }
 
+    let bannerContent: any = null
+    // TODO: !!!! BETTER API !!!!
+    if (loaderData.bannerContentCode) {
+        const content = mdxContent(loaderData.bannerContentCode)
+        const BannerContent = MemoMDXComponent(content.component)
+
+        bannerContent = function () {
+            return <BannerContent components={theme.reactContentComponents()} />
+        }
+    }
+
+    const userComponents = (globalThis.__xydUserComponents || []).reduce((acc, component) => {
+        acc[component.name] = component.component;
+        return acc;
+    }, {});
+
     return <>
-        <Framework
-            settings={settings || globalThis.__xydSettings}
-            sidebarGroups={loaderData.sidebarGroups || []}
-            metadata={loaderData.metadata || {}}
-            surfaces={surfaces}
-            IconComponent={Icon}
-        >
-            <AtlasContext
-                value={{
-                    syntaxHighlight: settings?.theme?.markdown?.syntaxHighlight || null,
-                    baseMatch: lastMatchId || "",
-                    variantToggles: atlasVariantToggles
-                }}
-            >
-                <BaseThemeLayout>
-                    <PageContext value={{ theme }}>
-                        <Outlet />
-                    </PageContext>
-                </BaseThemeLayout>
-            </AtlasContext>
-        </Framework>
+        <Analytics settings={settings} loader={loadProvider}>
+            <IconProvider value={{
+                iconSet: iconSet
+            }}>
+                {/* TOOD: better solution for roto ux node cuz for example in user components then its not defined but neede to use analyitcs hooks (but should be optional?) */}
+                <UXNode
+                    name="Framework"
+                    props={{
+                        location: "",
+                    }}
+                >
+                    <Framework
+                        settings={settings || globalThis.__xydSettings}
+                        sidebarGroups={loaderData.sidebarGroups || []}
+                        metadata={loaderData.metadata || {}}
+                        surfaces={surfaces}
+                        BannerContent={bannerContent}
+                        components={{
+                            Search: SearchButton,
+                            Logo: FwLogo,
+                            ...userComponents
+                        }}
+                    >
+                        <AtlasContext
+                            value={{
+                                Link: FwLink,
+                                syntaxHighlight: settings?.theme?.coder?.syntaxHighlight || null,
+                                baseMatch: lastMatchId || "",
+                                variantToggles: atlasVariantToggles
+                            }}
+                        >
+                            <CoderProvider lines={settings?.theme?.coder?.lines} scroll={settings?.theme?.coder?.scroll}>
+                                <BaseThemeLayout>
+                                    <PageContext value={{ theme }}>
+                                        <PostLayout>
+                                            <Outlet />
+                                        </PostLayout>
+                                    </PageContext>
+                                </BaseThemeLayout>
+                            </CoderProvider>
+                        </AtlasContext>
+                    </Framework>
+                </UXNode>
+
+            </IconProvider>
+        </Analytics>
     </>
+}
+
+function PostLayout({ children }: { children: React.ReactNode }) {
+    const analytics = useAnalytics()
+    
+    useEffect(() => {
+        // @ts-ignore
+        window.analytics = analytics
+    }, [])
+
+    return children
 }
 
 function getPathname(url: string) {
@@ -168,3 +264,77 @@ function getPathname(url: string) {
     return parsedUrl.pathname.replace(/^\//, '');
 }
 
+
+// TODO: move to content?
+function mdxExport(code: string) {
+    // Create a wrapper around React.createElement that adds keys to elements in lists
+    const scope = {
+        Fragment: React.Fragment,
+        jsxs: createElementWithKeys,
+        jsx: createElementWithKeys,
+        jsxDEV: createElementWithKeys,
+    }
+    const fn = new Function(...Object.keys(scope), code)
+
+    return fn(scope)
+}
+
+
+// // TODO: move to content?
+function mdxContent(code: string) {
+    const content = mdxExport(code) // TODO: fix any
+    if (!mdxExport) {
+        return {}
+    }
+
+    return {
+        component: content?.default,
+    }
+}
+
+const createElementWithKeys = (type: any, props: any) => {
+    // Process children to add keys to all elements
+    const processChildren = (childrenArray: any[]): any[] => {
+        return childrenArray.map((child, index) => {
+            // If the child is a React element and doesn't have a key, add one
+            if (React.isValidElement(child) && !child.key) {
+                return React.cloneElement(child, { key: `mdx-${index}` });
+            }
+            // If the child is an array, process it recursively
+            if (Array.isArray(child)) {
+                return processChildren(child);
+            }
+            return child;
+        });
+    };
+
+    // Handle both cases: children as separate args or as props.children
+    let processedChildren;
+
+    if (props && props.children) {
+        if (Array.isArray(props.children)) {
+            processedChildren = processChildren(props.children);
+        } else if (React.isValidElement(props.children) && !props.children.key) {
+            // Single child without key
+            processedChildren = React.cloneElement(props.children, { key: 'mdx-child' });
+        } else {
+            // Single child with key or non-React element
+            processedChildren = props.children;
+        }
+    } else {
+        processedChildren = [];
+    }
+
+    // Create the element with processed children
+    return React.createElement(type, {
+        ...props,
+        children: processedChildren
+    });
+};
+
+function MemoMDXComponent(codeComponent: any) {
+    return useMemo(
+        () => codeComponent ? codeComponent : null,
+        [codeComponent]
+    )
+}

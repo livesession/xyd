@@ -1,0 +1,233 @@
+openapi: 3.0.0
+info:
+  title: User Management API
+  version: 1.0.0
+  description: A simple API for managing users and their profiles
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /users:
+    get:
+      summary: Get all users
+      description: Retrieve a list of all users
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    
+    post:
+      summary: Create a new user
+      description: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: User ID
+    
+    get:
+      summary: Get a user by ID
+      description: Retrieve a specific user by their ID
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+    
+    put:
+      summary: Update a user
+      description: Update an existing user by their ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+    
+    delete:
+      summary: Delete a user
+      description: Delete a user by their ID
+      responses:
+        '204':
+          description: User deleted successfully
+        '404':
+          description: User not found
+
+  /users/{id}/profile:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: User ID
+    
+    get:
+      summary: Get user profile
+      description: Retrieve the profile information for a specific user
+      responses:
+        '200':
+          description: User profile found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '404':
+          description: User profile not found
+    
+    put:
+      summary: Update user profile
+      description: Update the profile information for a specific user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileInput'
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '404':
+          description: User profile not found
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the user
+        email:
+          type: string
+          format: email
+          description: The user's email address
+        username:
+          type: string
+          description: The user's username
+        createdAt:
+          type: string
+          format: date-time
+          description: When the user account was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the user account was last updated
+      required:
+        - id
+        - email
+        - username
+        - createdAt
+        - updatedAt
+    
+    UserInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: The user's email address
+        username:
+          type: string
+          description: The user's username
+        password:
+          type: string
+          format: password
+          description: The user's password
+      required:
+        - email
+        - username
+        - password
+
+    UserProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: The ID of the user this profile belongs to
+        firstName:
+          type: string
+          description: The user's first name
+        lastName:
+          type: string
+          description: The user's last name
+        bio:
+          type: string
+          description: A short biography of the user
+        avatarUrl:
+          type: string
+          format: uri
+          description: URL to the user's avatar image
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the profile was last updated
+      required:
+        - userId
+        - updatedAt
+
+    UserProfileInput:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The user's first name
+        lastName:
+          type: string
+          description: The user's last name
+        bio:
+          type: string
+          description: A short biography of the user
+        avatarUrl:
+          type: string
+          format: uri
+          description: URL to the user's avatar image
+      required:
+        - firstName
+        - lastName
+
+x-docs:
+  route: docs/api-reference2

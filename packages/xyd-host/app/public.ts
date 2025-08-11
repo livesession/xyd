@@ -11,13 +11,14 @@ const MIME_TYPES: Record<string, string> = {
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
+    '.webp': 'image/webp',
     '.gif': 'image/gif',
     '.svg': 'image/svg+xml',
     '.ico': 'image/x-icon',
     '.txt': 'text/plain',
 };
 
-const BINARY_FILE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.ico'];
+const BINARY_FILE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.ico', '.webp'];
 
 export async function loader({ params }: any) {
     const filePath = path.join(process.cwd(), "public", params["*"])

@@ -1,0 +1,8 @@
+{
+  "api": {
+    "openapi": {
+      "source": "../../../__fixtures__/openapi/basic.yaml",
+      "route": "docs/api-reference"
+    }
+  }
+}

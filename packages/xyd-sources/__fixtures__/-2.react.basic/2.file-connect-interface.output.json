@@ -1,0 +1,60 @@
+[
+  {
+    "title": "GuideCard",
+    "canonical": "@xyd-js/sources/components/GuideCard",
+    "description": "A card component that displays content with a title and optional icon.\nThe entire card is clickable and links to the specified URL.\n",
+    "context": {
+      "symbolId": "14",
+      "symbolName": "GuideCard",
+      "symbolKind": 64,
+      "packageName": "@xyd-js/sources",
+      "fileName": "2.file-connect-interface.tsx",
+      "fileFullPath": "__fixtures__/-2.react.basic/src/2.file-connect-interface.tsx",
+      "line": 23,
+      "col": 16,
+      "signatureText": {
+        "code": "",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "",
+        "lang": "ts"
+      },
+      "category": "Component",
+      "group": [
+        "@xyd-js",
+        "sources",
+        "Component"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Props",
+        "properties": [
+          {
+            "name": "children",
+            "type": "React.ReactNode",
+            "description": "Content to be displayed in the card body\n"
+          },
+          {
+            "name": "kind",
+            "type": "\"primary\" | \"secondary\"",
+            "description": "Visual style variant of the card\n",
+            "symbolDef": {
+              "id": "17"
+            }
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "parameters"
+          }
+        ]
+      }
+    ]
+  }
+]

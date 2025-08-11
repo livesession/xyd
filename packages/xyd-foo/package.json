@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/foo",
-  "version": "0.1.0-xyd.1",
+  "version": "0.1.0-build.157",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
@@ -20,11 +20,9 @@
     "prebuild": "pnpm clean",
     "build": "rollup -c rollup.config.js"
   },
-  "dependencies": {
-
-  },
+  "dependencies": {},
   "peerDependencies": {
-    "react": "^19.0.0"
+    "react": "^19.1.0"
   },
   "devDependencies": {
     "@linaria/atomic": "^6.2.0",

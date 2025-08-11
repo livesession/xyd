@@ -142,7 +142,7 @@ export interface FontDetailsType {
 }
 
 /** Available theme preset names */
-export type ThemePresetName = "poetry" | "cosmo" | "opener"
+export type ThemePresetName = "poetry" | "cosmo" | "opener" | "picasso" | "picasso"
 
 /** Search bar location options */
 export type SearchType = "side" | "top"
@@ -240,7 +240,7 @@ export interface Header {
     /** The name of the button */
     name?: string
 
-    /** The url once you click on the button. Example: https://mintlify.com/contact */
+    /** The url once you click on the button */
     url?: string
 
     /** Sub-header configuration */

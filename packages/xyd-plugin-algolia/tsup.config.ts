@@ -1,14 +1,8 @@
-import {copyFile} from 'node:fs/promises';
-import {join} from 'node:path';
+import { copyFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
-import {defineConfig, Options} from 'tsup';
+import { defineConfig, Options } from 'tsup';
 
-import pkg from './package.json';
-
-const deps = [
-    // ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.devDependencies || {}),
-]
 const config: Options = {
     entry: {
         index: 'src/index.ts',
@@ -26,7 +20,7 @@ const config: Options = {
     sourcemap: true,
     clean: true,
     external: [
-        ...deps,
+        "virtual:xyd-plugin-algolia-data",
     ],
     onSuccess: async () => {
         await copyFile(

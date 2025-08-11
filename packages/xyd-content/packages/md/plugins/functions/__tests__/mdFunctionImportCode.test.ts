@@ -6,7 +6,14 @@ import { describe, it, expect } from 'vitest';
 import { mdFunctionImportCode } from '../mdFunctionImportCode';
 import { parseImportPath, processContent, detectLanguage } from '../utils';
 
-import { createMockTree, createMockFile, createMockFetch, restoreFetch, createMockTreeAlternativeSyntax } from './testHelpers';
+import {
+    importCodeMockTree,
+    createMockFile,
+    createMockFetch,
+    restoreFetch,
+    importCodeMockTreeAlternative,
+    importCodeMdAttributesMockTree
+} from './testHelpers';
 
 // Get the absolute path to the fixtures directory
 const fixturesDir = path.resolve(__dirname, '../__fixtures__');
@@ -162,13 +169,13 @@ line9
         });
     });
 
-    describe('transformer', () => {
-        it('should transform @importCode statements to code blocks', async () => {
-            const transformer = mdFunctionImportCode()();
-            const tree = createMockTree('test.ts');
+    describe('function call', () => {
+        it('should call @importCode statements to code blocks', async () => {
+            const fnCall = mdFunctionImportCode()();
+            const tree = importCodeMockTree('test.ts');
             const file = createMockFile();
 
-            await transformer(tree, file);
+            await fnCall(tree, file);
 
             expect(tree.children[0].type).toBe('code');
             expect((tree.children[0] as any).lang).toBe('typescript');
@@ -176,8 +183,8 @@ line9
         });
 
         it('should handle non-existent files gracefully', async () => {
-            const transformer = mdFunctionImportCode()();
-            const tree = createMockTree('nonexistent.ts');
+            const fnCall = mdFunctionImportCode()();
+            const tree = importCodeMockTree('nonexistent.ts');
             const file = createMockFile();
 
             // Mock console.error to prevent test output pollution
@@ -185,7 +192,7 @@ line9
             console.error = () => {
             };
 
-            await transformer(tree, file);
+            await fnCall(tree, file);
 
             // Restore console.error
             console.error = originalConsoleError;
@@ -196,11 +203,11 @@ line9
 
         it('should handle custom resolveFrom option', async () => {
             const customFixturesDir = path.resolve(__dirname, '../__fixtures__');
-            const transformer = mdFunctionImportCode()({ resolveFrom: customFixturesDir });
-            const tree = createMockTree('test.ts');
+            const fnCall = mdFunctionImportCode()({ resolveFrom: customFixturesDir });
+            const tree = importCodeMockTree('test.ts');
             const file = createMockFile('/some/other/directory');
 
-            await transformer(tree, file);
+            await fnCall(tree, file);
 
             expect(tree.children[0].type).toBe('code');
             expect((tree.children[0] as any).lang).toBe('typescript');
@@ -208,11 +215,11 @@ line9
         });
 
         it('should handle complex import paths with regions and line ranges', async () => {
-            const transformer = mdFunctionImportCode()()
-            const tree = createMockTree('test.ts#testRegion{1-3}');
+            const fnCall = mdFunctionImportCode()()
+            const tree = importCodeMockTree('test.ts#testRegion{1-3}');
             const file = createMockFile();
 
-            await transformer(tree, file);
+            await fnCall(tree, file);
 
             expect(tree.children[0].type).toBe('code');
             expect((tree.children[0] as any).lang).toBe('typescript');
@@ -220,11 +227,11 @@ line9
         });
 
         it('should handle import paths with only regions', async () => {
-            const transformer = mdFunctionImportCode()()
-            const tree = createMockTree('test.ts#testRegion');
+            const fnCall = mdFunctionImportCode()()
+            const tree = importCodeMockTree('test.ts#testRegion');
             const file = createMockFile();
 
-            await transformer(tree, file);
+            await fnCall(tree, file);
 
             expect(tree.children[0].type).toBe('code');
             expect((tree.children[0] as any).lang).toBe('typescript');
@@ -232,11 +239,11 @@ line9
         });
 
         it('should handle import paths with only line ranges', async () => {
-            const transformer = mdFunctionImportCode()()
-            const tree = createMockTree('test.ts{1-3}');
+            const fnCall = mdFunctionImportCode()()
+            const tree = importCodeMockTree('test.ts{1-3}');
             const file = createMockFile();
 
-            await transformer(tree, file);
+            await fnCall(tree, file);
 
             expect(tree.children[0].type).toBe('code');
             expect((tree.children[0] as any).lang).toBe('typescript');
@@ -251,11 +258,11 @@ line9
                 [externalUrl]: fixtureContent
             });
 
-            const transformer = mdFunctionImportCode()()
-            const tree = createMockTree(externalUrl);
+            const fnCall = mdFunctionImportCode()()
+            const tree = importCodeMockTree(externalUrl);
             const file = createMockFile();
 
-            await transformer(tree, file);
+            await fnCall(tree, file);
 
             // Restore original fetch
             restoreFetch(originalFetch);
@@ -266,26 +273,38 @@ line9
         });
 
         it('should debug visit function', async () => {
-            const transformer = mdFunctionImportCode()()
-            const tree = createMockTree('test.ts');
+            const fnCall = mdFunctionImportCode()()
+            const tree = importCodeMockTree('test.ts');
 
             const file = createMockFile();
 
             // Create a promise that resolves when the transformer is done
-            const transformPromise = transformer(tree, file);
-
-            // Wait for the promise to resolve
-            await transformPromise;
+            await fnCall(tree, file);
 
             expect(tree.children[0].type).toBe('code');
         });
 
         it('should handle alternative syntax like @importCode("test.ts")', async () => {
-            const transformer = mdFunctionImportCode()()
-            const tree = createMockTreeAlternativeSyntax('test.ts');
+            const fnCall = mdFunctionImportCode()()
+            const tree = importCodeMockTreeAlternative('test.ts');
             const file = createMockFile();
 
-            await transformer(tree, file);
+            await fnCall(tree, file);
+
+            expect(tree.children[0].type).toBe('code');
+            expect((tree.children[0] as any).lang).toBe('typescript');
+            expect((tree.children[0] as any).value).toContain('export function testFunction');
+        });
+
+        it('should handle md attributes', async () => {
+            const fnCall = mdFunctionImportCode()()
+            const tree = importCodeMdAttributesMockTree('test.ts', {
+                descHead: 'Tip',
+                desc: 'You can use md attributes!'
+            });
+            const file = createMockFile();
+
+            await fnCall(tree, file);
 
             expect(tree.children[0].type).toBe('code');
             expect((tree.children[0] as any).lang).toBe('typescript');

@@ -18,7 +18,8 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "node"
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -35,7 +36,8 @@
     ],
     "strictNullChecks": true,
     "typeRoots": [
-      "./types.d.ts"
+      "./types.d.ts",
+      "./node_modules/@types"
     ]
   },
   "include": [

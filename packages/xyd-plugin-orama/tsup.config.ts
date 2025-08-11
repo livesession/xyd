@@ -3,19 +3,13 @@ import {join} from 'node:path';
 
 import {defineConfig, Options} from 'tsup';
 
-import pkg from './package.json';
-
-const deps = [
-    // ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.devDependencies || {}),
-]
 const config: Options = {
     entry: {
-        index: 'src/index.ts',
+        index: 'src/index.ts'
     },
     dts: {
         entry: {
-            index: 'src/index.ts',
+            index: 'src/index.ts'
         },
         resolve: true, // Resolve external types
     },
@@ -26,7 +20,7 @@ const config: Options = {
     sourcemap: true,
     clean: true,
     external: [
-        ...deps,
+        'virtual:xyd-plugin-orama-data'
     ],
     onSuccess: async () => {
         await copyFile(

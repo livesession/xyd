@@ -5,6 +5,8 @@ import type { Plugin } from '@xyd-js/plugins'
 
 import type { AlgoliaPluginOptions } from './types'
 
+import AlgoliaSearch from "./Search"
+
 export default function AlgoliaPlugin(
     pluginOptions?: AlgoliaPluginOptions
 ): Plugin {
@@ -16,6 +18,13 @@ export default function AlgoliaPlugin(
                     settings,
                     pluginOptions,
                 )
+            ],
+            components: [
+                {
+                    component: AlgoliaSearch,
+                    name: "Search",
+                    dist: "@xyd-js/plugin-algolia/Search" // TODO: better in the future
+                }
             ]
         }
     }
@@ -34,14 +43,6 @@ function vitePlugin(
     return {
         name: 'xyd-plugin-algolia',
         enforce: 'pre',
-
-        config: () => ({
-            resolve: {
-                alias: {
-                    'virtual-component:Search': new URL('./Search.tsx', import.meta.url).pathname
-                }
-            }
-        }),
 
         async configResolved(config: ResolvedConfig) {
             if (resolveConfig) {

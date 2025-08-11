@@ -1,6 +1,9 @@
 ---
-title: Custom theme
+title: Custom Theme
 icon: palette
 ---
 
-# TODO
+# Custom Theme{label="Coming Soon"}
+:::subtitle
+Learn how to create a custom theme from scratch
+:::

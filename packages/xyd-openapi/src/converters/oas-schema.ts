@@ -19,8 +19,11 @@ import {httpMethodToUniformMethod} from "../utils";
 // oapSchemaToReferences converts an OpenAPI schema to a list of uniform References
 export function oapSchemaToReferences(
     schema: OpenAPIV3.Document,
-    options?: uniformOasOptions
+    options?: uniformOasOptions,
 ): Reference[] {
+    if (!schema) {
+        return []
+    }
     const references: Reference[] = [];
     const oas = new Oas(schema as any);
 
@@ -61,7 +64,22 @@ export function oapSchemaToReferences(
 
                 const scopes: string[] = []
                 const oapMethod = oapPath?.[httpMethod] as OpenAPIV3.OperationObject
+                if (schema?.security?.length) {
+                    for (const security of schema.security) {
+                        for (const securityKey of Object.keys(security)) {
+                            if (securityKey === "oauth2" || securityKey === "OAuth2") {
+                                const securityScopes = security[securityKey]
+                                if (Array.isArray(securityScopes)) {
+                                    scopes.push(...securityScopes)
+                                }
+                            }
+                        }
+                    }
+                }
                 if (oapMethod?.security) {
+                    if (!oapMethod?.security?.length) {
+                        scopes.length = 0
+                    }
                     for (const security of oapMethod.security) {
                         for (const securityKey of Object.keys(security)) {
                             const securityScheme = schema?.components?.securitySchemes?.[securityKey]
@@ -86,7 +104,7 @@ export function oapSchemaToReferences(
 
     const schemas = schemaComponentsToUniformReferences(
         schema,
-        options
+        options,
     )
     references.push(...schemas)
 

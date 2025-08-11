@@ -1,69 +1,42 @@
 {
   "name": "@xyd-js/cli",
-  "version": "0.1.0-xyd.35",
+  "version": "0.1.0-build.327",
   "keywords": [],
   "author": "",
   "description": "",
   "type": "module",
-  "main": ".cli/index.js",
+  "main": "dist/index.js",
   "bin": {
-    "xyd": ".cli/bin.js"
+    "xyd": "dist/index.js"
   },
   "files": [
     "dist",
     "package.json"
   ],
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "test": "vitest"
   },
   "dependencies": {
-    "@graphql-markdown/core": "^1.12.0",
-    "@graphql-markdown/graphql": "^1.1.4",
-    "@graphql-markdown/types": "^1.4.0",
-    "@react-router/dev": "^7.5.0",
-    "@react-router/node": "^7.5.0",
-    "@react-router/serve": "^7.5.0",
-    "@readme/oas-to-snippet": "^26.0.1",
+    "@xyd-js/documan": "workspace:*",
+    "@xyd-js/host": "workspace:*",
+    "@xyd-js/core": "workspace:*",
+    "@mdx-js/mdx": "^3.1.0",
     "arg": "^5.0.2",
-    "codehike": "^1.0.3",
     "colors": "^1.4.0",
-    "compression": "^1.7.5",
-    "express": "^4.21.1",
-    "get-port": "^7.1.0",
-    "graphql-config": "^5.1.2",
-    "gray-matter": "^4.0.3",
-    "isbot": "^5.1.17",
-    "js-yaml": "^4.1.0",
-    "json-schema-ref-parser": "^9.0.9",
-    "json-to-graphql-query": "^2.3.0",
-    "lightningcss": "^1.27.0",
-    "morgan": "^1.10.0",
-    "oas": "^25.0.3",
-    "openapi-sampler": "^1.5.1",
-    "openapi-types": "^12.1.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router": "^7.5.0",
+    "mdast-util-to-string": "^4.0.0",
+    "picocolors": "^1.1.1",
     "remark": "^15.0.1",
-    "remark-frontmatter": "^5.0.0",
-    "remark-gfm": "^4.0.0",
-    "remark-mdx-frontmatter": "^5.0.0",
+    "remark-directive": "^3.0.0",
+    "remark-mdx": "^3.0.0",
     "remark-stringify": "^11.0.0",
     "semver": "^7.6.3",
-    "source-map-support": "^0.5.21",
-    "typescript": "^5.6.3",
-    "unist-builder": "^4.0.0",
     "unist-util-visit": "^5.0.0",
-    "vfile": "^6.0.3",
-    "vite-tsconfig-paths": "^5.1.4",
-    "yaml": "^2.6.0"
+    "update-notifier": "^7.3.1"
   },
   "devDependencies": {
-    "@xyd-js/documan": "workspace:*",
-    "arg": "^5.0.2",
-    "colors": "^1.4.0",
-    "semver": "^7.6.3",
+    "@types/update-notifier": "^6.0.8",
     "tsup": "^8.3.0",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vitest": "^2.1.8"
   }
 }

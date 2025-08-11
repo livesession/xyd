@@ -1,0 +1,16 @@
+{
+    "seo": {
+        "domain": "https://your-domain.com",
+        "metatags": {
+            "og:image": "https://your-domain.com/default-social-image.jpg",
+            "description": "Your default site description"
+        }
+    },
+    "navigation": {
+        "sidebar": [
+            "overview",
+            "quickstart",
+            "guides/introduction"
+        ]
+    }
+}

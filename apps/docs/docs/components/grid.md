@@ -5,6 +5,7 @@ layout: wide
 uniform: "@components/content/GridDecorator.tsx"
 ---
 
+# Grid
 
 <<<examples
 ```md

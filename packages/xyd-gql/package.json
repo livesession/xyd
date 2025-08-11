@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/gql",
-  "version": "0.1.0-xyd.13",
+  "version": "0.1.0-build.169",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",
@@ -18,10 +18,7 @@
     "@xyd-js/core": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
     "github-slugger": "^2.0.0",
-    "graphql": "^16.8.1",
-    "graphql-config": "^5.1.2",
-    "gray-matter": "^4.0.3",
-    "json-to-graphql-query": "^2.3.0"
+    "graphql": "^16.8.1"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",

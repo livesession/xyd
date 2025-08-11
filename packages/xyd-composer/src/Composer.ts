@@ -11,9 +11,10 @@ import { fromMarkdown } from 'mdast-util-from-markdown';
 import { htmlToJsx } from "html-to-jsx-transform";
 
 import { type AtlasProps } from "@xyd-js/atlas";
-import { type Theme as ThemeSettings } from "@xyd-js/core"
+import { Metadata, type Theme as ThemeSettings, Settings } from "@xyd-js/core"
 
-import { VarCode } from "@xyd-js/content";
+import { VarCode, ContentFS } from "@xyd-js/content";
+import { markdownPlugins } from "@xyd-js/content/md";
 import { ExampleRoot, Definition, DefinitionProperty } from "@xyd-js/uniform";
 
 import { metaComponent } from './decorators';
@@ -43,7 +44,84 @@ interface ExampleGroup {
     examples: ExampleObject[];
 }
 
+
+
 export class Composer {
+    @metaComponent("home", "PageHome")
+    private async homeMetaComponent(
+        themeSettings: ThemeSettings,
+        props: any,
+        vars: AtlasVars,
+        treeChilds: readonly RootContent[],
+        meta: Metadata
+    ) {
+        if (meta) {
+            meta.layout = "page"
+        }
+        return props
+    }
+
+    @metaComponent("bloghome", "PageBlogHome")
+    private async blogHomeMetaComponent(
+        themeSettings: ThemeSettings,
+        props: any,
+        vars: AtlasVars,
+        treeChilds: readonly RootContent[],
+        meta: Metadata
+    ) {
+        if (meta) {
+            meta.layout = "page"
+        }
+        return props
+    }
+    
+
+    @metaComponent("firstslide", "PageFirstSlide")
+    private async firstSlideMetaComponent(
+        themeSettings: ThemeSettings,
+        props: any,
+        vars: AtlasVars,
+        treeChilds: readonly RootContent[],
+        meta: Metadata,
+        settings: Settings
+    ) {
+        if (meta) {
+            meta.layout = "page"
+        }
+
+        if (props.rightContent) {
+            // Use existing markdown processing pipeline
+            const mdPlugins = await markdownPlugins({
+                maxDepth: 2,
+            }, settings)
+
+            const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)
+
+            try {
+                const compiledContent = await contentFs.compileContent(props.rightContent)
+                const mdxResult = mdxExport(compiledContent)
+                
+                if (mdxResult && mdxResult.default) {
+                    const MDXComponent = mdxResult.default
+                    // TODO: !!! support all components from react content !!!
+                    const reactElement = MDXComponent({
+                        components: {
+                            "DirectiveCodeGroup": "DirectiveCodeGroup",
+                            "Callout": "Callout",
+                        }
+                    })
+                    props.rightContent = reactElement
+                }
+                
+            } catch (error) {
+                console.error('Error processing rightContent:', error)
+                // Fallback to original content if processing fails
+            }
+        }
+
+        return props
+    }
+
     // TODO: !!! COMPOSE API !!!!
     // TODO: this.themeSettings but currently issues with decorators
     @metaComponent("atlas", "Atlas")
@@ -53,6 +131,10 @@ export class Composer {
         vars: AtlasVars,
         treeChilds: readonly RootContent[]
     ) {
+        if (!props.references) {
+            props.references = []
+        }
+
         //@ts-ignore
         const outputVarExamples: ExampleRoot = {
             groups: []
@@ -132,7 +214,7 @@ export class Composer {
 
                 if (child.type === "heading" && child.depth === 1) {
                     const firstChild = child.children[0];
-                    if (firstChild.type === 'text') {
+                    if (firstChild.type === 'text' && props.references[0]) {
                         props.references[0].title = firstChild.value;
                     }
                 } else {
@@ -217,7 +299,7 @@ export class Composer {
                                 value: tab.code,
                                 lang: tab.language,
                                 meta: tab.title,
-                            }, themeSettings?.markdown?.syntaxHighlight || "github-dark")
+                            }, themeSettings?.coder?.syntaxHighlight || "github-dark")
 
                             tab.highlighted = highlighted
                         }
@@ -465,8 +547,6 @@ function isMarkdownText(text: string) {
     return found;
 }
 
-
-
 /**
  * List of standard MDAST node types
  */
@@ -512,4 +592,15 @@ function isStandardMdastType(type: string): boolean {
 
 function isMdxElement(type: string): boolean {
     return type === 'mdxJsxFlowElement'
+}
+
+function mdxExport(code: string) {
+    const scope = {
+        Fragment: React.Fragment,
+        jsxs: React.createElement,
+        jsx: React.createElement,
+        jsxDEV: React.createElement,
+    }
+    const fn = new Function(...Object.keys(scope), code)
+    return fn(scope)
 }

@@ -25,6 +25,10 @@ export const ApiRefPropertiesLiHost = css`
 `;
 
 export const ApiRefPropertiesDescriptionHost = css`
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
     color: var(--XydAtlas-Component-ApiRef-Properties__color-description);
 
     p {
@@ -111,7 +115,7 @@ export const ApiRefPropertiesPropToggleHost = css`
     display: flex;
     align-items: center;
     padding: 0;
-    margin-top: 16px;
+    margin-top: 5px;
 
     background: none;
     outline: inherit;
@@ -173,4 +177,26 @@ export const globals = css`
         }
     }
   }
+`;
+
+export const ApiRefPropertiesMetaInfoHost = css`
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    [part="examples"] {
+        display: inline;
+
+        span {
+            margin-right: 2px;
+        }
+    }
+
+    [part="examples-list"] {
+        display: inline;
+
+        xyd-badge {
+            margin-right: 2px;
+        }
+    }
 `;

@@ -1,0 +1,21 @@
+{
+    "name": "@xyd-js/openapi-sampler",
+    "version": "0.1.0-build.137",
+    "description": "",
+    "main": "./dist/index.js",
+    "types": "./src/index.d.ts",
+    "type": "module",
+    "scripts": {
+        "clean": "rimraf dist",
+        "prebuild": "pnpm clean",
+        "build": "rollup -c"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^25.0.0",
+        "@rollup/plugin-node-resolve": "^15.0.0",
+        "openapi-sampler": "^1.6.1",
+        "rimraf": "^3.0.2",
+        "rollup": "^4.0.0"
+    }
+}

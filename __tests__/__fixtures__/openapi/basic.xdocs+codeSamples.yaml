@@ -1,0 +1,204 @@
+openapi: 3.0.0
+info:
+  title: Todo API
+  version: 1.0.0
+  description: A simple API for managing todos
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /todos:
+    get:
+      summary: Get all todos
+      description: Retrieve a list of all todos
+      x-codeSamples:
+        - lang: bash
+          label: List all todos
+          source: |
+            curl -X GET http://localhost:3000/todos
+        - lang: javascript
+          label: List all todos
+          source: |
+            const response = await fetch('http://localhost:3000/todos');
+            const todos = await response.json();
+      responses:
+        '200':
+          description: A list of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+    
+    post:
+      summary: Create a new todo
+      description: Create a new todo item
+      x-codeSamples:
+        - lang: bash
+          label: Create a new todo
+          source: |
+            curl -X POST http://localhost:3000/todos \
+              -H "Content-Type: application/json" \
+              -d '{"title": "Buy groceries", "completed": false}'
+        - lang: javascript
+          label: Create a new todo
+          source: |
+            const response = await fetch('http://localhost:3000/todos', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                title: 'Buy groceries',
+                completed: false
+              })
+            });
+            const newTodo = await response.json();
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+
+  /todos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Todo ID
+    
+    get:
+      summary: Get a todo by ID
+      description: Retrieve a specific todo by its ID
+      x-codeSamples:
+        - lang: bash
+          label: Get todo by ID
+          source: |
+            curl -X GET http://localhost:3000/todos/123
+        - lang: javascript
+          label: Get todo by ID
+          source: |
+            const response = await fetch('http://localhost:3000/todos/123');
+            const todo = await response.json();
+      responses:
+        '200':
+          description: Todo found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+    
+    put:
+      summary: Update a todo
+      description: Update an existing todo by its ID
+      x-codeSamples:
+        - lang: bash
+          label: Update todo
+          source: |
+            curl -X PUT http://localhost:3000/todos/123 \
+              -H "Content-Type: application/json" \
+              -d '{"title": "Updated task", "completed": true}'
+        - lang: javascript
+          label: Update todo
+          source: |
+            const response = await fetch('http://localhost:3000/todos/123', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                title: 'Updated task',
+                completed: true
+              })
+            });
+            const updatedTodo = await response.json();
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+    
+    delete:
+      summary: Delete a todo
+      description: Delete a todo by its ID
+      x-codeSamples:
+        - lang: bash
+          label: Delete todo
+          source: |
+            curl -X DELETE http://localhost:3000/todos/123
+        - lang: javascript
+          label: Delete todo
+          source: |
+            const response = await fetch('http://localhost:3000/todos/123', {
+              method: 'DELETE'
+            });
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '404':
+          description: Todo not found
+
+components:
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the todo
+        title:
+          type: string
+          description: The title of the todo
+        completed:
+          type: boolean
+          description: Whether the todo is completed
+        createdAt:
+          type: string
+          format: date-time
+          description: When the todo was created
+      required:
+        - id
+        - title
+        - completed
+        - createdAt
+    
+    TodoInput:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the todo
+        completed:
+          type: boolean
+          description: Whether the todo is completed
+      required:
+        - title
+
+x-docs:
+  route: docs/api-reference

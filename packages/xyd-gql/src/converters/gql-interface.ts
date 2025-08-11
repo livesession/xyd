@@ -18,6 +18,7 @@ export function gqlInterfaceToUniformRef(ctx: Context, interfaceType: GraphQLInt
     ]
 
     return uniformify(
+        ctx,
         interfaceType,
         definitions,
         []

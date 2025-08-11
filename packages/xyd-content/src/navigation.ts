@@ -1,18 +1,20 @@
-import { promises as fs } from 'fs';
+import {promises as fs} from 'fs';
 import path from 'path';
 
 import React from "react";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
-import { VFile } from "vfile";
-import { compile as mdxCompile } from "@mdx-js/mdx";
+import {VFile} from "vfile";
+import {compile as mdxCompile} from "@mdx-js/mdx";
 
-import { Metadata, Sidebar, MetadataMap, Header, PageURL, VirtualPage } from "@xyd-js/core";
+import {Metadata, Sidebar, MetadataMap, PageURL, VirtualPage} from "@xyd-js/core";
 
 // TODO: better algorithm + data structures - since it's on build time it's not a big deal nevertheless it should be changed in the future
 
 // pageFrontMatters gets frontmatters for given navigation
-export async function pageFrontMatters(navigation: Sidebar[], pagePathMapping: { [key: string]: string }): Promise<MetadataMap> {
+export async function pageFrontMatters(navigation: Sidebar[], pagePathMapping: {
+    [key: string]: string
+}): Promise<MetadataMap> {
     const frontmatters: MetadataMap = {}
 
     const promises: Promise<any>[] = []
@@ -21,7 +23,7 @@ export async function pageFrontMatters(navigation: Sidebar[], pagePathMapping: {
         if (typeof page !== "string") {
             if ("virtual" in page) {
                 promises.push(job(page, frontmatters, pagePathMapping))
-            } else {
+            } else if ("pages" in page) {
                 page.pages?.forEach(mapPages)
             }
             return
@@ -31,80 +33,23 @@ export async function pageFrontMatters(navigation: Sidebar[], pagePathMapping: {
     }
 
     navigation.map(async (nav: Sidebar) => {
+        if (typeof nav === "string") {
+            mapPages(nav)
+            return
+        }
+
         nav.pages?.forEach(mapPages)
     })
 
     await Promise.all(promises)
 
-    return frontmatters
-}
-
-// filterNavigation filter navigation items by top levels of 'header' configuration and current 'slug'
-export function filterNavigationByLevels(
-    headers: Header[],
-    slug: string
-) {
-    const topLevelTabMatcher = headers?.reduce((acc: any, header) => {
-        const tabLevel = header?.url?.split("/")?.length
-
-        if (!tabLevel) {
-            return {
-                ...acc
-            }
-        }
-
-        if (!acc[tabLevel]) {
-            return {
-                ...acc,
-                [tabLevel]: new Set().add(header?.url)
-            }
-        }
-
-        return {
-            ...acc,
-            [tabLevel]: acc[tabLevel].add(header?.url)
-        }
-    }, {}) as { [level: number]: Set<string> }
-
-    return (nav: Sidebar) => {
-        let match = false
-
-        Object.keys(topLevelTabMatcher).forEach((levelStr) => {
-            if (match) {
-                return true
-            }
-            const level = parseInt(levelStr)
-            const findThisSlug = slug.split("/").filter(s => !!s).slice(0, level).join("/")
-
-            function findMatchedPage(page: PageURL) {
-                if (typeof page !== "string") {
-                    if ("virtual" in page) {
-                        return matchPage(page.virtual)
-                    } else {
-                        page.pages?.forEach(findMatchedPage)
-                    }
-                    return
-                }
-
-                return matchPage(page)
-            }
-
-            function matchPage(page: string) {
-                const findThisPage = page.split("/").filter(p => !!p).slice(0, level).join("/")
-
-                const set = topLevelTabMatcher[level]
-
-                if (set.has(findThisPage) && findThisPage === findThisSlug) {
-                    match = true
-                    return true
-                }
-            }
-
-            nav?.pages?.forEach(findMatchedPage)
-        })
-
-        return match
+    // TODO: IN THE FUTURE BETTER API
+    // @ts-ignore
+    if (globalThis.__xydHasIndexPage) {
+        await job("index", frontmatters, pagePathMapping)
     }
+
+    return frontmatters
 }
 
 function mdxExport(code: string) {
@@ -136,6 +81,9 @@ async function getFrontmatter(filePath: string): Promise<Metadata> {
         recmaPlugins: [],
         outputFormat: 'function-body',
         development: false,
+        
+        // outputFormat: "program",
+        // jsx: true,
     });
 
     const code = String(compiled)
@@ -167,16 +115,32 @@ async function job(page: string | VirtualPage, frontmatters: MetadataMap, pagePa
     let pageName = ""
     if (typeof page === "string") {
         pageName = page
-    } else {
+    } else if (page.page) {
         pageName = page.page
     }
 
-    if (!pagePathMapping[pageName]) {
-        throw new Error(`Content file for page "${pageName}" does not exist. Please check if you added a content file correctly`)
+    // @ts-ignore TODO: IN THE FUTURE BETTER API
+    if (globalThis.__xydFrontmatterNotExists && globalThis.__xydFrontmatterNotExists[pageName]) {
+        return
+    }
+
+    if (!pageName || !pagePathMapping[pageName]) {
+        console.log(`⚠️ "${pageName}" is defined in the docs.json navigation but the file does not exist.`)
+
+        // @ts-ignore
+        if (!globalThis.__xydFrontmatterNotExists) {
+            // @ts-ignore
+            globalThis.__xydFrontmatterNotExists = {}
+        }
+
+        // @ts-ignore 
+        globalThis.__xydFrontmatterNotExists[pageName] = true
+
+        return
     }
 
     const filePath = path.join(process.cwd(), pagePathMapping[pageName])
-    
+
     const matter = await getFrontmatter(filePath)
 
     frontmatters[pageName] = matter

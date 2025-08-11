@@ -5,7 +5,7 @@ export const ButtonHost = css`
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 6px;
+        border-radius: var(--xyd-button-border-radius, 6px);
         border: 1px solid transparent;
         font-weight: var(--xyd-font-weight-medium);
         transition: all 0.2s ease;
@@ -14,25 +14,60 @@ export const ButtonHost = css`
         white-space: nowrap;
         gap: 8px;
 
+        &[data-size="xs"] {
+            height: 24px;
+            padding: 0 8px;
+            gap: 4px;
+
+            font-size: var(--xyd-font-size-xsmall);
+            line-height: var(--xyd-line-height-xsmall);
+
+            p {
+                font-size: var(--xyd-font-size-xsmall);
+                line-height: var(--xyd-line-height-xsmall);
+            }
+        }
+
         &[data-size="sm"] {
             height: 28px;
             padding: 0 12px;
-            font-size: 13px;
             gap: 6px;
+
+            font-size: var(--xyd-font-size-xsmall);
+            line-height: var(--xyd-line-height-xsmall);
+
+            p {
+                font-size: var(--xyd-font-size-xsmall);
+                line-height: var(--xyd-line-height-xsmall);
+            }
         }
 
         &[data-size="md"] {
             height: 36px;
             padding: 0 16px;
-            font-size: 14px;
             gap: 8px;
+
+            font-size: var(--xyd-font-size-small);
+            line-height: var(--xyd-line-height-small);
+
+            p {
+                font-size: var(--xyd-font-size-small);
+                line-height: var(--xyd-line-height-small);
+            }
         }
 
         &[data-size="lg"] {
             height: 44px;
             padding: 0 20px;
-            font-size: 15px;
             gap: 10px;
+
+            font-size: var(--xyd-font-size-medium);
+            line-height: var(--xyd-line-height-medium);
+
+            p {
+                font-size: var(--xyd-font-size-medium);
+                line-height: var(--xyd-line-height-medium);
+            }
         }
 
         &[data-kind="primary"] {
@@ -40,7 +75,7 @@ export const ButtonHost = css`
             color: var(--xyd-button-primary-color);
             border-color: var(--xyd-button-primary-border);
 
-            &:hover:not(:disabled) {
+            &:hover:not(:disabled):not([aria-disabled="true"]) {
                 background-color: var(--xyd-button-primary-bg-hover);
                 border-color: var(--xyd-button-primary-border-hover);
             }
@@ -51,7 +86,7 @@ export const ButtonHost = css`
             color: var(--xyd-button-secondary-color);
             border-color: var(--xyd-button-secondary-border);
 
-            &:hover:not(:disabled) {
+            &:hover:not(:disabled):not([aria-disabled="true"]) {
                 background-color: var(--xyd-button-secondary-bg-hover);
                 border-color: var(--xyd-button-secondary-border-hover);
             }
@@ -62,13 +97,33 @@ export const ButtonHost = css`
             color: var(--xyd-button-tertiary-color);
             border-color: var(--xyd-button-tertiary-border);
 
-            &:hover:not(:disabled) {
+            &:hover:not(:disabled):not([aria-disabled="true"]) {
                 background-color: var(--xyd-button-tertiary-bg-hover);
                 border-color: var(--xyd-button-tertiary-border-hover);
             }
         }
 
-        &:disabled {
+        &[data-theme="ghost"] {
+            background-color: unset;
+            border: unset;
+            padding: 0;
+
+            &:hover {
+                background-color: unset;
+                border: unset;
+                
+                svg {
+                    color: var(--dark60)
+                }
+            }
+
+            svg {
+                color: var(--dark48)
+            }
+        }
+
+        &:disabled,
+        &[aria-disabled="true"] {
             opacity: 0.5;
             cursor: not-allowed;
         }
@@ -85,14 +140,10 @@ export const ButtonHost = css`
             justify-content: center;
             flex-shrink: 0;
         }
+        &:not([data-theme="ghost"]) [part="icon"] svg {
+                width: 16px !important;
+                height: 16px !important;
+        }
     }
 `;
 
-export const ButtonIcon = css`
-    @layer defaults {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-`; 
