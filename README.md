@@ -119,7 +119,9 @@ Development guide with setup instructions, available scripts, and contribution g
  <a href="https://docs.yourdomain.com" target="_blank" rel="noopener">
   <img alt="Slack Community" src="https://img.shields.io/badge/Slack-Community-4A154B?logo=slack&logoColor=white">
  </a>
+ 
  &nbsp;
+
  <a href="https://github.com/livesession/xyd/discussions">
   <img
     alt="GitHub Discussions"
