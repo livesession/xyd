@@ -58,7 +58,7 @@ function setLatestTags() {
             
             try {
                 // Execute the npm dist-tag command
-                const command = `sudo npm_config_registry=${REGISTRY} npm dist-tag add ${package.name}@${package.version} latest`;
+                const command = `npm_config_registry=${REGISTRY} npm dist-tag add ${package.name}@${package.version} latest`;
                 execSync(command, { stdio: 'inherit' });
                 
                 console.log(`✅ Successfully set latest tag for ${package.name}@${package.version}`);
