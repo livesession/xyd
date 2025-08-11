@@ -25,6 +25,10 @@ export const cliSpec: CLI = {
             description: 'Migrate your docs to the new xyd framework',
             usage: 'xyd migrateme  <resource> [flags]',
         },
+        components: {
+            description: 'Manage xyd components',
+            usage: 'xyd components <subcommand> [args] [flags]',
+        },
     },
     globalFlags: {
         'help': {

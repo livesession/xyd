@@ -1,10 +1,10 @@
 import path from 'node:path';
 
-import { describe, it, expect } from 'vitest';
+import {describe, it, expect} from 'vitest';
 
-import { mdFunctionInclude } from '../mdFunctionInclude';
+import {mdFunctionInclude} from '../mdFunctionInclude';
 
-import { createMockFile } from './testHelpers';
+import {createMockFile} from './testHelpers';
 
 describe('mdFunctionInclude', () => {
     it('should transform @include statements to include markdown content', async () => {
@@ -27,9 +27,18 @@ describe('mdFunctionInclude', () => {
 
         await transformer(tree, file);
 
-        // The node should be transformed to a root type with children
-        expect(tree.children[0].type).toBe('root');
-        expect(tree.children[0].children).toBeDefined();
-        expect(tree.children[0].children.length).toBeGreaterThan(0);
+        expect(tree.children.map(c => c.type)).toEqual([
+                "heading",
+                "paragraph",
+                "heading",
+                "list",
+                "heading",
+                "code",
+                "heading",
+                "list",
+                "list",
+                "mdxJsxFlowElement"
+            ]
+        );
     });
 });

@@ -1,8 +1,9 @@
-import path from "node:path";
+import path, { dirname } from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { execSync, ExecSyncOptions } from "node:child_process";
 import crypto from "node:crypto";
+import { realpathSync } from 'node:fs';
 
 import { createServer, PluginOption as VitePluginOption, Plugin as VitePlugin } from "vite";
 import { reactRouter } from "@react-router/dev/vite";
@@ -17,6 +18,7 @@ import { type UniformPlugin } from "@xyd-js/uniform";
 
 import { BUILD_FOLDER_PATH, CACHE_FOLDER_PATH, HOST_FOLDER_PATH, XYD_FOLDER_PATH } from "./const";
 import { CLI } from './cli';
+import { componentDependencies, componentsInstall } from "./componentsInstall";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -161,6 +163,12 @@ export async function appInit(options?: PluginDocsOptions) {
     globalThis.__xydSettingsClone = JSON.parse(JSON.stringify(respPluginDocs.settings)) // TODO: finish
 
     // appearanceWebEditor(respPluginDocs.settings)
+
+    if (respPluginDocs.settings.integrations?.diagrams) {
+        if (!componentExists("diagrams")) {
+            await componentsInstall("diagrams")
+        }
+    }
 
     return {
         respPluginDocs,
@@ -514,6 +522,27 @@ export function getXydFolderPath() {
     );
 }
 
+export function getCLIRoot(): string {
+    const cliPath = realpathSync(process.argv[1]);
+
+    return path.dirname(path.dirname(cliPath));
+}
+
+export function getCLIComponentsJsonPath(): string {
+    return path.join(getCLIRoot(), 'cliComponents.json');
+}
+
+export function componentExists(component: string): boolean {
+    const cliComponentsJson = getCLIComponentsJsonPath();
+
+    try {
+        const components = JSON.parse(fs.readFileSync(cliComponentsJson, 'utf8'));
+        return components[component] === true;
+    } catch (error) {
+        return false;
+    }
+}
+
 export function getHostPath() {
     if (process.env.XYD_DEV_MODE) {
         if (process.env.XYD_HOST) {
@@ -662,21 +691,21 @@ function integrationsToPlugins(integrations: Integrations) {
 
     if (integrations?.support?.chatwoot) {
         plugins.push([
-            "@xyd-js/plugin-chatwoot", 
+            "@xyd-js/plugin-chatwoot",
             integrations.support.chatwoot
         ])
     }
 
     if (integrations?.support?.intercom) {
         plugins.push([
-            "@xyd-js/plugin-intercom", 
+            "@xyd-js/plugin-intercom",
             integrations.support.intercom
         ])
     }
 
     if (integrations?.support?.livechat) {
         plugins.push([
-            "@xyd-js/plugin-livechat", 
+            "@xyd-js/plugin-livechat",
             integrations.support.livechat
         ])
     }
@@ -726,7 +755,7 @@ export async function preWorkspaceSetup(options: {
 
 export function calculateFolderChecksum(folderPath: string): string {
     const hash = crypto.createHash('sha256');
-    const ignorePatterns = [...getGitignorePatterns(folderPath), '.xydchecksum', "node_modules", "dist", ".react-router", "package-lock.json", "pnpm-lock.yaml"];
+    const ignorePatterns = [...getGitignorePatterns(folderPath), '.xydchecksum', "node_modules", "dist", ".react-router", "package-lock.json", "pnpm-lock.yaml", "cliComponents.json"];
 
     function processFile(filePath: string) {
         const relativePath = path.relative(folderPath, filePath);
@@ -865,6 +894,18 @@ export async function postWorkspaceSetup(settings: Settings) {
             ...pluginDeps,
         }
 
+        // TODO: rename to plugins:["diagrams"]
+        if (settings.integrations?.diagrams) {
+            const componentDeps = componentDependencies("diagrams", true)
+
+            if (componentDeps) {
+                packageJson.dependencies = {
+                    ...packageJson.dependencies,
+                    ...componentDeps,
+                }
+            }
+        }
+
         fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
 
         await nodeInstallPackages(hostPath)
@@ -981,7 +1022,7 @@ async function setupPluginDependencies(
                     // 3. if not found in host deps, use xyd plugin version
                     else if (xydPluginVersion) {
                         dependencies[pluginName] = xydPluginVersion
-                    } 
+                    }
                     // 4. otherwise use latest version
                     else {
                         dependencies[pluginName] = "latest"
@@ -1014,7 +1055,7 @@ async function setupPluginDependencies(
     return dependencies
 }
 
-function nodeInstallPackages(hostPath: string) {
+export function nodeInstallPackages(hostPath: string) {
     const cmdInstall = pmInstall()
 
     const execOptions: ExecSyncOptions = {
@@ -1039,7 +1080,7 @@ function nodeInstallPackages(hostPath: string) {
     execSync(cmdInstall, execOptions)
 }
 
-function pmInstall() {
+export function pmInstall() {
     if (process.env.XYD_NODE_PM) {
         switch (process.env.XYD_NODE_PM) {
             case 'npm': {

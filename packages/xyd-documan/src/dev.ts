@@ -133,6 +133,11 @@ export async function dev(options?: DevOptions) {
 
     const port = options?.port ?? parseInt(process.env.XYD_PORT ?? "5175")
 
+    // Determine conditional externals based on settings
+    const enableMermaid = !!respPluginDocs?.settings?.integrations?.diagrams
+    const externalPackages = enableMermaid ? [] : ["rehype-mermaid"]
+    const optimizeDepsExclude = enableMermaid ? [] : ["rehype-mermaid"]
+
     // Store initial settings for comparison
     let initialSettings = respPluginDocs.settings || {};
 
@@ -166,7 +171,7 @@ export async function dev(options?: DevOptions) {
         }
     }
 
-    const preview = await createServer({
+    const preview = await createServer({    
         root: appRoot,
         publicDir: '/public',
         server: {
@@ -185,23 +190,26 @@ export async function dev(options?: DevOptions) {
         },
         resolve: {
             alias: {
-                process: 'process/browser'
+                process: 'process/browser',
+                // When rehype-mermaid is externalized, resolve it from CLI's node_modules
+                ...(enableMermaid ? {} : { 'rehype-mermaid': path.resolve(getHostPath(), './node_modules/rehype-mermaid') })
             },
             // preserveSymlinks: true
         },
         build: {
             rollupOptions: {
-                external: []
+                external: externalPackages
             },
         },
         ssr: {
-            external: [],
+            external: externalPackages,
         },
         optimizeDeps: {
             include: [
                 "react/jsx-runtime",
                 ...USE_CONTEXT_ISSUE_PACKAGES,
             ],
+            exclude: optimizeDepsExclude,
             // exclude: ["react", "react-dom"]
         },
         plugins: [

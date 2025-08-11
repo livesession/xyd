@@ -3,9 +3,9 @@ import {fileURLToPath} from "node:url";
 
 import {describe, expect, it} from 'vitest'
 
-import {mintlifyMigrator} from "../mintlify";
-import {cloneRepoIfNeeded} from "./utils";
-import {cloneDocsPath} from "../../migration";
+import {mintlifyMigrator} from "../../mintlify";
+import {cloneRepoIfNeeded} from "../utils";
+import {cloneDocsPath} from "../../../migration";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,7 +23,7 @@ const docsRepos = {
 }
 
 describe("mintlifyMigrator", {timeout: 15000}, () => {
-    const fixtures = path.resolve(__dirname, "..", "__fixtures__/.data");
+    const fixtures = path.resolve(__dirname, "../../", "__fixtures__/.data");
 
     const getDocsPath = (name: string) => path.join(fixtures, `1.e2e.${name}`);
     const getOutDir = (name: string) => path.join(fixtures, `1.e2e.${name}_output`);

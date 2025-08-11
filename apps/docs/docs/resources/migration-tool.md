@@ -8,8 +8,6 @@ icon: download
 Learn how to migrate from your existing docs framework
 :::
 
-You can use our CLI to convert your existing documentation from:
-
 ![migrateme](/public/assets/migrateme.gif)
 
 :::grid

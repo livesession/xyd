@@ -12,6 +12,7 @@ export default defineConfig({
         exclude: [
             '__tests__/e2e/**',
             '__tests__/node-support/**',
+            '**/__tests__/e2e/**',
             '**/node_modules/**',
             '**/dist/**',
             '**/build/**'

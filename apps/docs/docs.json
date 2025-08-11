@@ -20,6 +20,7 @@
         "head": []
     },
     "integrations": {
+        "diagrams": true,
         "search": {
             "orama": true
         },

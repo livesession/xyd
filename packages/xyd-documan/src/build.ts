@@ -46,6 +46,10 @@ export async function build() {
         await setupInstallableEnvironmentV2()
     }
 
+    // Determine conditional externals based on settings
+    const enableMermaid = !!respPluginDocs?.settings?.integrations?.diagrams
+    const externalPackages = enableMermaid ? [] : ["rehype-mermaid"]
+
     try {
         // Build the client-side bundle
         await viteBuild({
@@ -66,8 +70,18 @@ export async function build() {
             },
             resolve: {
                 alias: {
-                    process: 'process/browser'
+                    process: 'process/browser',
+                    // When rehype-mermaid is externalized, resolve it from CLI's node_modules
+                    ...(enableMermaid ? {} : { 'rehype-mermaid': path.resolve(getHostPath(), './node_modules/rehype-mermaid') })
                 }
+            },
+            build: {
+                rollupOptions: {
+                    external: externalPackages,
+                },
+            },
+            ssr: {
+                external: externalPackages,
             },
             // ssr: {
             //     noExternal: ["react", "react-dom", "react-router"]
@@ -80,6 +94,9 @@ export async function build() {
             root: appRoot,
             build: {
                 ssr: true,
+                rollupOptions: {
+                    external: externalPackages,
+                },
                 // rollupOptions: {
                 //     external: ["@xyd-js/framework/hydration", "fs"]
                 // }
@@ -103,9 +120,14 @@ export async function build() {
             resolve: {
                 alias: {
                     process: 'process/browser',
+                    // When rehype-mermaid is externalized, resolve it from CLI's node_modules
+                    ...(enableMermaid ? {} : { 'rehype-mermaid': path.resolve(__dirname, '../../../node_modules/rehype-mermaid') }),
                     // react: path.resolve(workspaceNodeModulesPath, "react"),
                     // "react-dom": path.resolve(workspaceNodeModulesPath, "react-dom")
                 }
+            },
+            ssr: {
+                external: externalPackages,
             },
             // ssr: {
             //     noExternal: ["react", "react-dom", "react-router"]

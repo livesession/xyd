@@ -1,5 +1,77 @@
 # @xyd-js/plugins
 
+## 0.1.0-build.156
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-build.188
+  - @xyd-js/uniform@0.1.0-build.171
+
+## 0.1.0-build.155
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-build.187
+  - @xyd-js/uniform@0.1.0-build.170
+
+## 0.1.0-build.154
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-build.186
+  - @xyd-js/uniform@0.1.0-build.169
+
+## 0.1.0-build.153
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-build.185
+  - @xyd-js/uniform@0.1.0-build.168
+
+## 0.1.0-build.152
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-build.184
+  - @xyd-js/uniform@0.1.0-build.167
+
+## 0.1.0-build.151
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-build.183
+  - @xyd-js/uniform@0.1.0-build.166
+
+## 0.1.0-build.150
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-build.182
+  - @xyd-js/uniform@0.1.0-build.165
+
+## 0.1.0-build.149
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-build.181
+  - @xyd-js/uniform@0.1.0-build.164
+
 ## 0.1.0-build.148
 
 ### Patch Changes

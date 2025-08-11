@@ -11,9 +11,6 @@ Welcome to `xyd`, the documentation platform built for people who value simplici
 
 Our mission is to create the Docs Platform for future dev, read our [blog post.](https://blog.livesession.dev/why-another-yet-docs-framework)
 
-<feature data-feature="ab-message" data-match="on">
-    Show my content
-</feature>
 
 ## Five Principles
 - Developer Experience - designed to be easy to use, with a focus on developer experience.

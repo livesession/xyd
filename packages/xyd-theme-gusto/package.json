@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-gusto",
-  "version": "0.1.0-build.147",
+  "version": "0.1.0-build.155",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

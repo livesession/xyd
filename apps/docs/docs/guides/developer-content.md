@@ -260,8 +260,22 @@ You can use [@include](/docs/reference/functions/include) function to include an
 
 ## Diagrams [maxTocDepth=3]
 
-### Mermaid
+### Mermaid {label="Beta"}
 Visualize complex concepts and workflows using [Mermaid](https://mermaid.js.org) diagrams directly in your Markdown. Mermaid supports multiple diagram types including flowcharts, sequence diagrams, class diagrams, state diagrams, and Gantt charts. 
+
+:::callout{kind="warning"}
+Before you start writing a diagrams make sure you enabled `diagrams` integration: 
+
+```json docs.json
+{
+  ...
+  "integrations": {
+    "diagrams": true
+  }
+}
+```
+
+:::
 
 Simply wrap your diagram syntax in a `mermaid` code block:
 ~~~

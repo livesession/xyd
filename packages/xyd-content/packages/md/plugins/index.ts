@@ -102,7 +102,7 @@ export async function thirdPartyRehypePlugins(settings?: Settings) {
     rehypeKatex,
   ]
 
-  if (settings?.engine?.mermaid) {
+  if (settings?.integrations?.diagrams) {
     plugins.push(await getMermaidPlugin())
   }
 

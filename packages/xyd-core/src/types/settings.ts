@@ -927,6 +927,11 @@ export interface Integrations {
     abtesting?: IntegrationABTesting
 
     /**
+     * Diagrams configuration
+     */
+    diagrams?: boolean
+
+    /**
      * Custom apps directory.
      */
     [".apps"]?: AppsDirectory
@@ -1239,11 +1244,6 @@ export interface Engine {
      *
      */
     uniform?: EngineUniform
-
-    /**
-     * Mermaid configuration
-     */
-    mermaid?: boolean
 }
 
 export type EnginePaths = { [key: string]: string[] }

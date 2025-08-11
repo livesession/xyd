@@ -1,5 +1,101 @@
 # @xyd-js/theme-poetry
 
+## 0.1.0-build.183
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.172
+  - @xyd-js/components@0.1.0-build.167
+  - @xyd-js/framework@0.1.0-build.188
+  - @xyd-js/themes@0.1.1-build.159
+  - @xyd-js/ui@0.1.0-build.172
+
+## 0.1.0-build.182
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.171
+  - @xyd-js/components@0.1.0-build.166
+  - @xyd-js/framework@0.1.0-build.187
+  - @xyd-js/themes@0.1.1-build.158
+  - @xyd-js/ui@0.1.0-build.171
+
+## 0.1.0-build.181
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.170
+  - @xyd-js/components@0.1.0-build.165
+  - @xyd-js/framework@0.1.0-build.186
+  - @xyd-js/themes@0.1.1-build.157
+  - @xyd-js/ui@0.1.0-build.170
+
+## 0.1.0-build.180
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.169
+  - @xyd-js/components@0.1.0-build.164
+  - @xyd-js/framework@0.1.0-build.185
+  - @xyd-js/themes@0.1.1-build.156
+  - @xyd-js/ui@0.1.0-build.169
+
+## 0.1.0-build.179
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.168
+  - @xyd-js/components@0.1.0-build.163
+  - @xyd-js/framework@0.1.0-build.184
+  - @xyd-js/themes@0.1.1-build.155
+  - @xyd-js/ui@0.1.0-build.168
+
+## 0.1.0-build.178
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.167
+  - @xyd-js/components@0.1.0-build.162
+  - @xyd-js/framework@0.1.0-build.183
+  - @xyd-js/themes@0.1.1-build.154
+  - @xyd-js/ui@0.1.0-build.167
+
+## 0.1.0-build.177
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.166
+  - @xyd-js/components@0.1.0-build.161
+  - @xyd-js/framework@0.1.0-build.182
+  - @xyd-js/themes@0.1.1-build.153
+  - @xyd-js/ui@0.1.0-build.166
+
+## 0.1.0-build.176
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.165
+  - @xyd-js/components@0.1.0-build.160
+  - @xyd-js/framework@0.1.0-build.181
+  - @xyd-js/themes@0.1.1-build.152
+  - @xyd-js/ui@0.1.0-build.165
+
 ## 0.1.0-build.175
 
 ### Patch Changes

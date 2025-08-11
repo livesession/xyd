@@ -1,5 +1,77 @@
 # @xyd-js/gql
 
+## 0.1.0-build.169
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.169
+  - @xyd-js/uniform@0.1.0-build.171
+
+## 0.1.0-build.168
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.168
+  - @xyd-js/uniform@0.1.0-build.170
+
+## 0.1.0-build.167
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.167
+  - @xyd-js/uniform@0.1.0-build.169
+
+## 0.1.0-build.166
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.166
+  - @xyd-js/uniform@0.1.0-build.168
+
+## 0.1.0-build.165
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.165
+  - @xyd-js/uniform@0.1.0-build.167
+
+## 0.1.0-build.164
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.164
+  - @xyd-js/uniform@0.1.0-build.166
+
+## 0.1.0-build.163
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.163
+  - @xyd-js/uniform@0.1.0-build.165
+
+## 0.1.0-build.162
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.162
+  - @xyd-js/uniform@0.1.0-build.164
+
 ## 0.1.0-build.161
 
 ### Patch Changes

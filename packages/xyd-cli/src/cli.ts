@@ -38,15 +38,16 @@ export async function cli(argv = process.argv.slice(2)) {
         process.exit(1);
     }
 
-    const args = []
+    const commandArgs = commands.slice(1);
 
-    if (commands.length > 1) {
-        args.push(...commands.slice(1))
+    switch (globalCommand) {
+        case 'components':
+            // Handle subcommands for components
+            await globalCommands.components(commandArgs, globalFlags);
+            break;
+        default:
+            await (globalCommands[globalCommand as keyof typeof globalCommands] as any)(...commandArgs, globalFlags);
     }
-
-    args.push(globalFlags)
-
-    await (globalCommands[globalCommand as keyof typeof globalCommands] as any)(...args);
 }
 
 function prerequisites() {

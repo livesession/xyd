@@ -1,5 +1,69 @@
 # @xyd-js/components
 
+## 0.1.0-build.167
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.169
+
+## 0.1.0-build.166
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.168
+
+## 0.1.0-build.165
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.167
+
+## 0.1.0-build.164
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.166
+
+## 0.1.0-build.163
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.165
+
+## 0.1.0-build.162
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.164
+
+## 0.1.0-build.161
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.163
+
+## 0.1.0-build.160
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.162
+
 ## 0.1.0-build.159
 
 ### Patch Changes

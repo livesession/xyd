@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-opener",
-  "version": "0.1.0-build.148",
+  "version": "0.1.0-build.156",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
