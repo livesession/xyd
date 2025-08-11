@@ -1,0 +1,1 @@
+sudo rm -rf ./.data/1.e2e.*_output

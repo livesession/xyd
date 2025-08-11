@@ -45,7 +45,7 @@ export async function mapContentToDocSections(
         content: '',
     }
 
-    const { remarkPlugins, rehypePlugins } = markdownPlugins({}, xydSettings)
+    const { remarkPlugins, rehypePlugins } = await markdownPlugins({}, xydSettings)
 
     const processor = unified()
         .use(remarkParse)

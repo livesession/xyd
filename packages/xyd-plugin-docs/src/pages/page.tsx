@@ -125,7 +125,7 @@ export async function loader({ request }: { request: any }) {
     let code = ""
     let rawPage = ""
 
-    const mdPlugins = markdownPlugins({
+    const mdPlugins = await markdownPlugins({
         maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
 

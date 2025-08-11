@@ -3,7 +3,6 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkDirective from 'remark-directive'
 import rehypeRaw from 'rehype-raw';
-import rehypeMermaid from 'rehype-mermaid'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 
@@ -87,19 +86,32 @@ export function remarkFunctionPlugins(settings?: Settings) {
   ]
 }
 
-export function thirdPartyRehypePlugins() {
-  return [
+let rehypeMermaid
+async function getMermaidPlugin() {
+  if (!rehypeMermaid) {
+    rehypeMermaid = (await import('rehype-mermaid')).default
+  }
+  return rehypeMermaid
+}
+
+export async function thirdPartyRehypePlugins(settings?: Settings) {
+  const plugins = [
     [rehypeRaw, {
       passThrough: ['mdxjsEsm', 'mdxJsxFlowElement', 'mdxJsxTextElement'],
     }] as any,
-    rehypeMermaid,
     rehypeKatex,
   ]
+
+  if (settings?.engine?.mermaid) {
+    plugins.push(await getMermaidPlugin())
+  }
+
+  return plugins
 }
 
-export function defaultRehypePlugins(settings?: Settings) {
+export async function defaultRehypePlugins(settings?: Settings) {
   return [
-    ...thirdPartyRehypePlugins(),
+    ...(await thirdPartyRehypePlugins(settings)),
     rehypeHeading,
     mdImageRehype,
     mdCodeRehype(settings),

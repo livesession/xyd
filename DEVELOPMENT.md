@@ -139,6 +139,7 @@ Install xyd-js cli from verdaccio
 ```
 npm_config_registry=http://localhost:4873 bun add -g @xyd-js/cli 
 npm_config_registry=http://localhost:4873 npm i -g @xyd-js/cli 
+npm_config_registry=http://localhost:4873 pnpm add -g @xyd-js/cli
 ```
 
 Build xyd from using verdaccio packages

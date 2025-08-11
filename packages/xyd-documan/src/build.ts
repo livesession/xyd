@@ -31,7 +31,7 @@ export async function build() {
     }
     const {respPluginDocs, resolvedPlugins} = inited
 
-    const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)
+    const commonRunVitePlugins = await commonVitePlugins(respPluginDocs, resolvedPlugins)
     const appRoot = getAppRoot();
 
     if (!skip) {

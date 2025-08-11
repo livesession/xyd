@@ -1,15 +1,15 @@
-import {join, relative, sep} from "node:path";
-import {exec} from "node:child_process";
-import {promisify} from "node:util";
-import {existsSync} from "node:fs";
-import {readdir, readFile, rm, writeFile} from "node:fs/promises";
+import { join, relative, sep } from "node:path";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+import { existsSync } from "node:fs";
+import { readdir, readFile, rm, writeFile } from "node:fs/promises";
 
-import {createProcessor} from "@mdx-js/mdx";
-import {remark} from "remark";
+import { createProcessor } from "@mdx-js/mdx";
+import { remark } from "remark";
 import remarkDirective from "remark-directive";
 import remarkStringify from "remark-stringify";
 
-import {Settings as XydSettings} from "@xyd-js/core";
+import { Settings as XydSettings } from "@xyd-js/core";
 
 import {
     AnchorsSchema,
@@ -48,8 +48,8 @@ export async function isMintlify(docsPath: string, fileName: string) {
     }
 }
 
-export async function mintlifyMigrator(docsPath: string) {
-    return new MintlifyMigrator(docsPath).run();
+export async function mintlifyMigrator(docsPath: string, options?: MintlifyMigratorOptions) {
+    return new MintlifyMigrator(docsPath, options).run();
 }
 
 // ----------------------------------------------------------------------------
@@ -59,15 +59,129 @@ export async function mintlifyMigrator(docsPath: string) {
 const sh = promisify(exec);
 
 class Logger {
-    constructor(private readonly enabled = true) {
+    private stepCount = 0;
+    private totalSteps = 0;
+    private errors: Array<{ file?: string; error: string }> = [];
+    private verbose: boolean;
+    private docsPath: string = "";
+
+    constructor(private readonly enabled = true, verbose = false) {
+        this.verbose = verbose;
+    }
+    
+    setDocsPath(docsPath: string) {
+        this.docsPath = docsPath;
     }
 
-    info = (...args: any[]) => this.enabled && console.log(...args);
-    warn = (...args: any[]) => this.enabled && console.warn(...args);
-    error = (...args: any[]) => console.error(...args);
-    debug = (...args: any[]) => this.enabled && console.log(...args);
+    startMigration(totalSteps: number) {
+        this.totalSteps = totalSteps;
+        this.stepCount = 0;
+        this.errors = [];
+        console.log("\n🚀 Starting Mintlify to xyd migration...");
+        console.log("=".repeat(50));
+    }
+
+    step(message: string) {
+        this.stepCount++;
+        const progress = `[${this.stepCount}/${this.totalSteps}]`;
+        console.log(`\n${progress} ${message}`);
+    }
+
+    info = (...args: any[]) => this.enabled && console.log("   ℹ️ ", ...args);
+    warn = (...args: any[]) => this.enabled && console.warn("   ⚠️ ", ...args);
+    error = (...args: any[]) => {
+        console.error("   ❌", ...args);
+        this.errors.push({ error: args.join(" ") });
+    };
+
+    errorVerbose = (error: any, context?: string) => {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const fullError = error instanceof Error ? error.stack || String(error) : String(error);
+
+        console.error("   ❌", context ? `${context}: ${errorMessage}` : errorMessage);
+        if (this.verbose && fullError !== errorMessage) {
+            console.error("   🔍 Full error details:");
+            console.error("   " + fullError.split('\n').join('\n   '));
+        }
+
+        // Extract file path from context if it contains a file path
+        let file: string | undefined;
+        if (context) {
+            const fileMatch = context.match(/Failed to migrate (.+)$/);
+            if (fileMatch) {
+                file = fileMatch[1];
+            }
+        }
+
+        this.errors.push({ file, error: context ? `${context}: ${errorMessage}` : errorMessage });
+    };
+
+    debug = (...args: any[]) => this.enabled && console.log("   🔍", ...args);
+
+    success = (...args: any[]) => this.enabled && console.log("   ✅", ...args);
+    progress = (...args: any[]) => this.enabled && console.log("   📝", ...args);
+    file = (...args: any[]) => this.enabled && console.log("   📄", ...args);
+    resource = (...args: any[]) => this.enabled && console.log("   🖼️ ", ...args);
+
+    addError(file: string, error: string) {
+        this.errors.push({ file, error });
+    }
+
+    details = (summary: string, content: string | string[]) => {
+        if (!this.verbose) return;
+
+        console.log(`   📋 ${summary}:`);
+
+        const lines = Array.isArray(content) ? content : content.split('\n');
+        lines.forEach(line => {
+            console.log("   " + line);
+        });
+        console.log("   ");
+    };
+
+        complete() {
+        console.log("\n" + "=".repeat(50));
+        
+        if (this.errors.length > 0) {
+            console.log("⚠️  Migration completed with errors:");
+            console.log("=".repeat(50));
+            console.log(`   ${this.errors.length} error(s) encountered:`);
+            
+            this.errors.forEach((err, index) => {
+                if (err.file) {
+                    console.log(`   ${index + 1}. File: ${err.file}`);
+                    console.log(`      Error: ${err.error}`);
+                } else {
+                    console.log(`   ${index + 1}. ${err.error}`);
+                }
+            });
+            
+            console.log("\n   Some files may not have been migrated correctly.");
+            console.log("   Please review the errors above and fix any issues.");
+            if (!this.verbose) {
+                console.log("   Run with --verbose flag to see detailed error information.");
+            }
+        } else {
+            console.log("🎉 Migration completed successfully!");
+        }
+        
+        console.log("\n📖 Next steps:");
+        console.log(`   • cd "${this.docsPath}"`);
+        console.log("   • Run `xyd` to start the development server");
+        console.log("   • Run `xyd build` to build static HTML files");
+        console.log("   • Visit http://localhost:3000 to preview your docs");
+        console.log("\n💡 Learn more:");
+        console.log("   • Visit https://xyd.dev for documentation and examples");
+        console.log("   • ⭐ Star us on GitHub: https://github.com/livesession/xyd");
+        console.log("   • 🚀 Help us grow by giving us a star! ✨");
+        
+        console.log("=".repeat(50) + "\n");
+    }
 }
 
+export interface MintlifyMigratorOptions {
+    verbose?: boolean;
+}
 class MintlifyMigrator {
     // ------ static helpers kept public-ish for unit reuse ------
     static validMintlifyJsonFile = (fileName: string) =>
@@ -78,20 +192,26 @@ class MintlifyMigrator {
     }
 
     // ----------------------------------------------------------
-    private logger = new Logger(true);
+    private logger: Logger;
 
     private docsJsonPath = "";
     private publicDir = "";
     private docsJson!: MintlifyJSON;
     private xydSettings!: XydSettings;
 
-    constructor(private readonly docsPath: string) {
+    constructor(
+        private readonly docsPath: string,
+        private readonly options: MintlifyMigratorOptions = {}
+    ) {
+        this.logger = new Logger(true, options.verbose || false);
+        this.logger.setDocsPath(docsPath);
     }
 
     async run() {
-        this.logger.info("⏳Starting Mintlify migration...");
+        this.logger.startMigration(5);
 
         // 1) resolve docs.json / mint.json
+        this.logger.step("🔍Analyzing Mintlify configuration");
         this.docsJsonPath = join(this.docsPath, "docs.json");
         try {
             if (!existsSync(this.docsJsonPath)) {
@@ -106,21 +226,30 @@ class MintlifyMigrator {
             this.logger.error("Invalid Mintlify configuration: missing or incorrect.");
             return;
         }
+        this.logger.success("Configuration file found and parsed");
 
         // 2) prepare settings & public dir
+        this.logger.step("⚙️Preparing xyd settings and directories");
         this.xydSettings = this.preSettings(this.docsJson);
         await this.ensurePublicDir();
+        this.logger.success("Settings prepared and public directory ready");
 
         // 3) migrate docs.json → xyd settings
+        this.logger.step("🔄Converting Mintlify configuration to xyd format");
         await this.mintlifyDocsJsonToXydSettings();
+        this.logger.success("Configuration converted successfully");
 
         // 4) write xyd settings
+        this.logger.step("💾Writing xyd configuration file");
         await writeFile(join(this.docsPath, "docs.json"), JSON.stringify(this.xydSettings, null, 2));
+        this.logger.success("Configuration file written");
 
         // 5) migrate content files
+        this.logger.step("📝Migrating content files (MDX → Markdown)");
         await this.migrateContent();
+        this.logger.success("Content migration completed");
 
-        this.logger.info("✅ Mintlify migration completed!");
+        this.logger.complete();
     }
 
     // ---------------------------------------------------------------------------
@@ -165,9 +294,11 @@ class MintlifyMigrator {
         this.publicDir = join(this.docsPath, "public");
         try {
             await readdir(this.publicDir);
+            this.logger.info("Public directory already exists");
         } catch {
-            this.logger.info("Creating public directory...");
+            this.logger.progress("Creating public directory...");
             await sh(`mkdir -p "${this.publicDir}"`);
+            this.logger.success("Public directory created");
         }
     }
 
@@ -231,20 +362,10 @@ class MintlifyMigrator {
                 };
 
                 // Debug
-                this.logger.debug(`\n--- Processing anchor: ${title} ---`);
-                this.logger.debug(`hasHref: ${!!hasHref}`);
-                this.logger.debug(`hasGroups: ${!!hasGroups}`);
-                this.logger.debug(`hasPages: ${!!hasPages}`);
-                this.logger.debug(`nav object keys:`, Object.keys(nav));
-                if ("groups" in nav) this.logger.debug(`groups length:`, (nav as any)?.groups?.length);
-                if ("pages" in nav) this.logger.debug(`pages length:`, (nav as any)?.pages?.length);
-                if ("pages" in nav && nav.pages) this.logger.debug(`hasNestedGroups:`, this.hasNestedGroups(nav.pages));
-
                 if (hasHref && !hasGroups && !hasPages) {
                     // External link
                     headerEntry.href = nav.href;
                     headerEntry.float = "right";
-                    this.logger.debug(`Created external header link: ${title} -> ${nav.href}`);
                 } else if (hasGroups) {
                     // Complex navigation → create page route
                     let route = title.toLowerCase().replace(/\s+/g, "-");
@@ -252,7 +373,6 @@ class MintlifyMigrator {
                     if ("pages" in nav && nav.pages && !("groups" in nav && nav.groups)) {
                         if (this.isFlatStructure(nav.pages)) {
                             // flat sidebar (no route)
-                            this.logger.debug(`Detected flat structure for ${title}, creating flat sidebar`);
                             headerEntry.page = "";
 
                             const flatSidebarPages: any[] = [];
@@ -275,7 +395,6 @@ class MintlifyMigrator {
                             }
 
                             xydSettings.navigation!.sidebar!.push(...flatSidebarPages);
-                            this.logger.debug(`Created flat sidebar for ${title} with ${flatSidebarPages.length} pages`);
                             xydSettings.navigation!.tabs!.push(headerEntry);
                             continue;
                         } else {
@@ -287,12 +406,10 @@ class MintlifyMigrator {
                     }
 
                     headerEntry.page = route;
-                    this.logger.debug(`Created complex header page: ${title} -> ${route}`);
 
                     const sidebarPages: any[] = [];
 
                     if ("groups" in nav && nav.groups) {
-                        this.logger.debug(`Creating route structure for tab with groups: ${title}`);
                         for (const group of (nav.groups as any[]) ?? []) {
                             if ("pages" in group && group.pages) {
                                 const pages: any[] = [];
@@ -303,7 +420,7 @@ class MintlifyMigrator {
                                     }
                                     pages.push(pageOrGroup);
                                 }
-                                sidebarPages.push({group: (group as any).group, pages});
+                                sidebarPages.push({ group: (group as any).group, pages });
                             }
                             // skip API-related groups (openapi/asyncapi)
                         }
@@ -316,23 +433,20 @@ class MintlifyMigrator {
                                 }
                                 sidebarPages.push(pageOrGroup);
                             } else if (typeof pageOrGroup === "object" && pageOrGroup.group && (pageOrGroup as any).pages) {
-                                sidebarPages.push({group: pageOrGroup.group, pages: (pageOrGroup as any).pages});
+                                sidebarPages.push({ group: pageOrGroup.group, pages: (pageOrGroup as any).pages });
                             }
                         }
                     }
 
                     const isValidRoute = this.validateRoutePages(route, sidebarPages);
                     if (isValidRoute) {
-                        xydSettings.navigation!.sidebar!.push({route, pages: sidebarPages});
-                        this.logger.debug(`Created sidebar route: ${route} for anchor: ${title}`);
+                        xydSettings.navigation!.sidebar!.push({ route, pages: sidebarPages });
                     } else {
-                        this.logger.debug(`Invalid route pattern for ${title} - adding pages directly to sidebar`);
                         xydSettings.navigation!.sidebar!.push(...sidebarPages);
                         headerEntry.page = "";
                         const firstPage = this.findFirstPage(sidebarPages);
                         if (firstPage) {
                             headerEntry.href = "/" + firstPage;
-                            this.logger.debug(`Set href for non-route tab ${title}: ${headerEntry.href}`);
                         }
                     }
                 } else if (hasPages && !hasGroups) {
@@ -341,15 +455,10 @@ class MintlifyMigrator {
                         const firstPage = nav.pages[0];
                         if (typeof firstPage === "string") {
                             headerEntry.href = firstPage;
-                            this.logger.debug(
-                                `Created simple header page: ${title} -> empty page with href: ${firstPage}`
-                            );
                         }
                     } else {
-                        this.logger.debug(`Created simple header page: ${title} -> empty page (no href found)`);
                     }
                     xydSettings.navigation!.sidebar!.push(title.toLowerCase().replace(/\s+/g, "-"));
-                    this.logger.debug(`Added simple sidebar entry: ${title}`);
                 }
 
                 xydSettings.navigation!.tabs!.push(headerEntry);
@@ -357,29 +466,37 @@ class MintlifyMigrator {
         };
 
         if ("groups" in docsJson.navigation) {
-            this.logger.info("Migrating groups...");
+            this.logger.progress("Migrating navigation groups...");
             migrateNav(docsJson.navigation.groups);
+            this.logger.success("Navigation groups migrated");
         }
         if ("tabs" in docsJson.navigation) {
-            this.logger.info("Migrating links...");
+            this.logger.progress("Migrating navigation tabs...");
             migrateNav(docsJson.navigation.tabs);
+            this.logger.success("Navigation tabs migrated");
         }
         if ("anchors" in docsJson.navigation) {
-            this.logger.info("Migrating anchors...");
+            this.logger.progress("Migrating navigation anchors...");
             migrateNav(docsJson.navigation.anchors);
+            this.logger.success("Navigation anchors migrated");
         }
         if ("dropdowns" in docsJson.navigation) {
-            this.logger.info("Migrating dropdowns...");
+            this.logger.progress("Migrating navigation dropdowns...");
             migrateNav(docsJson.navigation.dropdowns);
+            this.logger.success("Navigation dropdowns migrated");
         }
         if ("versions" in docsJson.navigation) {
-            this.logger.info("\n\x1b[33m⚠️  Note: Version navigation is not currently supported\x1b[0m");
-            this.logger.info("\x1b[33m   Only the first version navigation will be created\x1b[0m");
-            this.logger.info("\x1b[36m   📋 Roadmap: https://github.com/orgs/livesession/projects/4\x1b[0m\n");
+            this.logger.warn("Version navigation is not currently supported");
+            this.logger.info("Only the first version navigation will be created");
+            this.logger.info("📋 Roadmap: https://github.com/orgs/livesession/projects/4");
 
             if (docsJson.navigation?.versions?.length) {
                 const firstVersion = docsJson.navigation.versions[0];
-                if ("groups" in firstVersion && (firstVersion as any).groups) migrateNav([firstVersion] as any);
+                if ("groups" in firstVersion && (firstVersion as any).groups) {
+                    this.logger.progress("Migrating first version navigation...");
+                    migrateNav([firstVersion] as any);
+                    this.logger.success("First version navigation migrated");
+                }
             }
         }
     }
@@ -388,22 +505,23 @@ class MintlifyMigrator {
     // Theme & branding
     // ---------------------------------------------------------------------------
     private migrateColors() {
-        const {docsJson, xydSettings} = this;
+        const { docsJson, xydSettings } = this;
         if (!docsJson.colors) return;
 
-        this.logger.info("Migrating theme colors...");
+        this.logger.progress("Migrating theme colors...");
         xydSettings.theme!.appearance ||= {} as any;
         xydSettings.theme!.appearance!.colors = {
             primary: docsJson.colors.primary,
             dark: docsJson.colors.dark,
             light: docsJson.colors.light,
         } as any;
+        this.logger.success("Theme colors migrated");
     }
 
     private async migrateLogo() {
-        const {docsJson} = this;
+        const { docsJson } = this;
         if (!docsJson.logo) return;
-        this.logger.info("Migrating logo...");
+        this.logger.progress("Migrating logo...");
 
         if (typeof docsJson.logo === "string") {
             (this.xydSettings.theme as any).logo = await this.moveResourceToPublic(docsJson.logo);
@@ -414,12 +532,13 @@ class MintlifyMigrator {
                 href: docsJson.logo.href,
             } as any;
         }
+        this.logger.success("Logo migrated");
     }
 
     private async migrateFavicon() {
-        const {docsJson} = this;
+        const { docsJson } = this;
         if (!docsJson.favicon) return;
-        this.logger.info("Migrating favicon...");
+        this.logger.progress("Migrating favicon...");
 
         if (typeof docsJson.favicon === "string") {
             (this.xydSettings.theme as any).favicon = await this.moveResourceToPublic(docsJson.favicon);
@@ -428,12 +547,13 @@ class MintlifyMigrator {
             const darkFavicon = await this.moveResourceToPublic(docsJson.favicon.dark);
             (this.xydSettings.theme as any).favicon = lightFavicon || darkFavicon;
         }
+        this.logger.success("Favicon migrated");
     }
 
     private migrateNavbarLinks() {
-        const {docsJson, xydSettings} = this;
+        const { docsJson, xydSettings } = this;
         if (!docsJson.navbar?.links) return;
-        this.logger.info("Migrating navbar links...");
+        this.logger.progress("Migrating navbar links...");
 
         xydSettings.webeditor!.header = docsJson.navbar.links.map((link) => ({
             title: link.label,
@@ -441,12 +561,13 @@ class MintlifyMigrator {
             icon: typeof link.icon === "string" ? link.icon : (link.icon as any)?.name,
             float: "right",
         }));
+        this.logger.success("Navbar links migrated");
     }
 
     private migrateFooter() {
-        const {docsJson, xydSettings} = this;
+        const { docsJson, xydSettings } = this;
         if (!docsJson.footer) return;
-        this.logger.info("Migrating footer...");
+        this.logger.progress("Migrating footer...");
 
         const xydSocials: Record<string, string> = {};
         if (docsJson.footer.socials) {
@@ -474,22 +595,24 @@ class MintlifyMigrator {
             social: Object.keys(xydSocials).length > 0 ? xydSocials : undefined,
             links: docsJson.footer.links?.map((group) => ({
                 header: group.header || "",
-                items: group.items.map((item) => ({label: item.label, href: item.href})),
+                items: group.items.map((item) => ({ label: item.label, href: item.href })),
             })),
         };
+        this.logger.success("Footer migrated");
     }
 
     private migrateRedirects() {
         if (this.docsJson.redirects) {
-            this.logger.warn("Currently redirects are not supported in xyd.");
-            // Intentionally left – parity with original
+            this.logger.warn("Redirects are not currently supported in xyd");
+            this.logger.info("Redirects will be skipped");
         }
     }
 
     private migrateSeo() {
         if (!this.docsJson.seo) return;
-        this.logger.info("Migrating SEO...");
-        (this.xydSettings as any).seo = {metatags: this.docsJson.seo.metatags || undefined};
+        this.logger.progress("Migrating SEO settings...");
+        (this.xydSettings as any).seo = { metatags: this.docsJson.seo.metatags || undefined };
+        this.logger.success("SEO settings migrated");
     }
 
     // ---------------------------------------------------------------------------
@@ -517,7 +640,7 @@ class MintlifyMigrator {
             }
 
             await sh(`mv "${sourcePath}" "${destPath}"`);
-            this.logger.info(`Moved resource: ${cleanPath} -> public/${relativePath}`);
+            this.logger.resource(`Moved: ${cleanPath}`);
             return `/public/${relativePath}`;
         } catch (_) {
             this.logger.info(`Resource not found or already in public: ${cleanPath}`);
@@ -526,12 +649,14 @@ class MintlifyMigrator {
     }
 
     private async migratePublicResources() {
-        this.logger.info("Scanning for image resources...");
+        this.logger.progress("Scanning for image resources...");
 
         const imageExtensions = new Set([".svg", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico"]);
+        let movedCount = 0;
+        let skippedCount = 0;
 
         const scan = async (currentDir: string) => {
-            const items = await readdir(currentDir, {withFileTypes: true});
+            const items = await readdir(currentDir, { withFileTypes: true });
             for (const item of items) {
                 const fullPath = join(currentDir, item.name);
                 if (item.isDirectory()) {
@@ -556,41 +681,64 @@ class MintlifyMigrator {
                         try {
                             await readFile(destPath);
                             this.logger.info(`Image already exists in public: ${rel}`);
+                            skippedCount++;
                         } catch {
                             await sh(`mv "${fullPath}" "${destPath}"`);
-                            this.logger.info(`Moved image: ${fullPath} -> public/${rel}`);
+                            this.logger.resource(`Moved: ${rel}`);
+                            movedCount++;
                         }
                     } catch (error) {
-                        this.logger.warn(`Error moving image ${item.name}:`, error);
+                        this.logger.errorVerbose(error, `Error moving image ${item.name}`);
                     }
                 }
             }
         };
 
         await scan(this.docsPath);
+
+        if (movedCount > 0 || skippedCount > 0) {
+            this.logger.success(`Public resources migrated: ${movedCount} moved, ${skippedCount} already existed`);
+        } else {
+            this.logger.info("No image resources found to migrate");
+        }
     }
 
     // ---------------------------------------------------------------------------
     // Content (.mdx → .md)
     // ---------------------------------------------------------------------------
     private async migrateContent() {
-        this.logger.info("Migrating content files...");
+        this.logger.progress("Scanning for MDX files...");
 
         const mdxFiles = await this.findMdxFiles(this.docsPath);
         this.logger.info(`Found ${mdxFiles.length} MDX files to migrate`);
 
+        let successCount = 0;
+        let errorCount = 0;
+
         for (const mdxFile of mdxFiles) {
-            await this.migrateMdxFile(mdxFile);
+            try {
+                await this.migrateMdxFile(mdxFile);
+                successCount++;
+            } catch (error) {
+                errorCount++;
+                const relativePath = relative(this.docsPath, mdxFile);
+                this.logger.errorVerbose(error, `Failed to migrate ${relativePath}`);
+            }
         }
 
-        this.logger.info("✅ Content migration completed!");
+        if (errorCount > 0) {
+            this.logger.warn(`Content migration completed with ${errorCount} error(s)`);
+            this.logger.success(`${successCount} files migrated successfully`);
+        } else {
+            this.logger.success(`All ${successCount} files migrated successfully`);
+        }
     }
 
     private async findMdxFiles(dir: string): Promise<string[]> {
         const found: string[] = [];
 
         const scan = async (currentDir: string) => {
-            const items = await readdir(currentDir, {withFileTypes: true});
+            const items = await readdir(currentDir, { withFileTypes: true });
             for (const item of items) {
                 const fullPath = join(currentDir, item.name);
                 if (item.isDirectory()) {
@@ -608,21 +756,39 @@ class MintlifyMigrator {
     }
 
     private async migrateMdxFile(filePath: string) {
+        const content = await readFile(filePath, "utf-8");
+
         try {
-            const content = await readFile(filePath, "utf-8");
             const converted = await this.convertMDXComponents(content, filePath);
             const newFilePath = filePath.replace(/\.mdx$/, ".md");
             await writeFile(newFilePath, converted);
             await rm(filePath);
+            this.logger.file(`Migrated: ${relative(this.docsPath, filePath)}`);
         } catch (error) {
-            this.logger.error(`❌ Error migrating ${filePath}:`, error);
+            // If MDX transformation fails, try a simple fallback
+            const relativePath = relative(this.docsPath, filePath);
+            this.logger.warn(`Using fallback conversion for ${relativePath}`);
+
+            // Simple fallback: strip MDX components and keep basic markdown
+            const fallbackContent = content
+                .replace(/<[^>]*\/>/g, '') // Remove self-closing tags
+                .replace(/<[^>]*>.*?<\/[^>]*>/g, '') // Remove paired tags
+                .replace(/import\s+.*?from\s+['"][^'"]*['"];?\s*/g, '') // Remove imports
+                .replace(/\n\s*\n\s*\n/g, '\n\n') // Clean up excessive newlines
+                .trim();
+
+            const newFilePath = filePath.replace(/\.mdx$/, ".md");
+            await writeFile(newFilePath, fallbackContent);
+            await rm(filePath);
+            this.logger.file(`Migrated (fallback): ${relativePath}`);
+
+            // Re-throw the original error so it's tracked in the completion summary
+            throw error;
         }
     }
 
     private async convertMDXComponents(content: string, filePath: string): Promise<string> {
         try {
-            this.logger.info("Processing MDX content...", filePath);
-
             let hasFrontmatter = content.startsWith("---");
             let frontmatter = "";
             let body = content;
@@ -638,7 +804,7 @@ class MintlifyMigrator {
                 hasFrontmatter = true;
             }
 
-            const processor = createProcessor({jsx: true, development: false});
+            const processor = createProcessor({ jsx: true, development: false });
             const ast: any = await processor.parse(body);
 
             const originalMdxString = body;
@@ -663,51 +829,53 @@ class MintlifyMigrator {
 
             if (title || description) {
                 const nodes: any[] = [];
-                if (title) nodes.push({type: "heading", depth: 1, children: [{type: "text", value: title}]});
+                if (title) nodes.push({ type: "heading", depth: 1, children: [{ type: "text", value: title }] });
                 if (description)
                     nodes.push({
                         type: "containerDirective",
                         name: "subtitle",
-                        children: [{type: "text", value: description}]
+                        children: [{ type: "text", value: description }]
                     });
                 ast.children = [...nodes, ...ast.children];
             }
 
-            try {
-                const markdown = remark()
-                    .use(remarkDirective as any)
-                    .use(remarkStringify as any, {
-                        bullet: "-",
-                        fences: true,
-                        listItemIndent: "one",
-                        incrementListMarker: true,
-                        quote: '"',
-                        emphasis: "*",
-                        strong: "*",
-                        tightDefinitions: true,
-                    })
-                    .stringify(ast)
-                    .replace(/&#x20;/g, " ")
-                    .replace(/&nbsp;/g, " ")
-                    .replace(/&amp;/g, "&")
-                    .replace(/&lt;/g, "<")
-                    .replace(/&gt;/g, ">")
-                    .replace(/&quot;/g, '"')
-                    .replace(/&#39;/g, "'")
-                    .replace(/\\\[/g, "[")
-                    .replace(/\\\]/g, "]")
-                    .replace(/\\\(/g, "(")
-                    .replace(/\\\)/g, ")");
+            const markdown = remark()
+                .use(remarkDirective as any)
+                .use(remarkStringify as any, {
+                    bullet: "-",
+                    fences: true,
+                    listItemIndent: "one",
+                    incrementListMarker: true,
+                    quote: '"',
+                    emphasis: "*",
+                    strong: "*",
+                    tightDefinitions: true,
+                })
+                .stringify(ast)
+                .replace(/&#x20;/g, " ")
+                .replace(/&nbsp;/g, " ")
+                .replace(/&amp;/g, "&")
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">")
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'")
+                .replace(/\\\[/g, "[")
+                .replace(/\\\]/g, "]")
+                .replace(/\\\(/g, "(")
+                .replace(/\\\)/g, ")");
 
-                return frontmatter + "\n\n" + markdown;
-            } catch (e) {
-                await writeFile(join(this.docsPath, "ast.json"), JSON.stringify(ast, null, 2));
-                this.logger.error("Error converting MDX to markdown", filePath);
-                throw e;
-            }
+            return frontmatter + "\n\n" + markdown;
         } catch (error) {
-            this.logger.error("Error processing MDX:", error);
-            return content; // fallback
+            // If transformation fails, log the error and re-throw it so it's tracked in the completion summary
+            const relativePath = relative(this.docsPath, filePath);
+            if (this.options.verbose) {
+                this.logger.errorVerbose(error, `MDX transformation error in ${relativePath}`);
+            } else {
+                this.logger.warn(`Failed to transform MDX components in ${relativePath}, using fallback`);
+            }
+
+            // Re-throw the error so it's properly tracked in the migration summary
+            throw error;
         }
     }
 
@@ -728,7 +896,7 @@ class MintlifyMigrator {
                 src = `/public${src}`;
             }
 
-            return {colorScheme, src, alt};
+            return { colorScheme, src, alt };
         }
 
         return null;
@@ -771,11 +939,10 @@ class MintlifyMigrator {
                     if (importPath.startsWith("./") || importPath.startsWith("/")) {
                         xydPath = importPath.replace(/^\.?\//, "~/").replace(/\.mdx$/, ".md");
                     }
-                    this.logger.debug("importMappings", componentName, xydPath);
                     includeMapping[componentName] = xydPath;
                     return null; // strip import
                 }
-                return {type: "html", value: `<!-- Import statement not supported: ${importStatement} -->`};
+                return { type: "html", value: `<!-- Import statement not supported: ${importStatement} -->` };
             }
 
             if (
@@ -807,16 +974,16 @@ class MintlifyMigrator {
 
                         const listItems = children.map((child: any) => ({
                             type: "listItem",
-                            children: [{type: "paragraph", children: [child]}],
+                            children: [{ type: "paragraph", children: [child] }],
                         }));
 
                         const list = {
                             type: "list",
                             ordered: false,
-                            children: [{type: "listItem", children: listItems}]
+                            children: [{ type: "listItem", children: listItems }]
                         };
 
-                        return {type: "containerDirective", name: "grid", attributes: {cols}, children: [list]} as any;
+                        return { type: "containerDirective", name: "grid", attributes: { cols }, children: [list] } as any;
                     }
 
                     case "Card": {
@@ -827,7 +994,7 @@ class MintlifyMigrator {
                         const description = node.attributes?.find((a: any) => a.name === "description")?.value || "";
                         const imgSrc = node.attributes?.find((a: any) => a.name === "imgSrc")?.value || "";
 
-                        const cardAttributes: any = {kind: "secondary"};
+                        const cardAttributes: any = { kind: "secondary" };
                         if (title) cardAttributes.title = title;
                         if (href) cardAttributes.href = href;
                         if (icon) cardAttributes.icon = icon;
@@ -835,7 +1002,7 @@ class MintlifyMigrator {
                         if (description) cardAttributes.description = description;
                         if (imgSrc) cardAttributes.imgSrc = imgSrc;
 
-                        return {type: "containerDirective", name: "guide-card", attributes: cardAttributes, children};
+                        return { type: "containerDirective", name: "guide-card", attributes: cardAttributes, children };
                     }
 
                     case "Frame": {
@@ -850,7 +1017,7 @@ class MintlifyMigrator {
                             }
                         }
                         pictureHtml += "</picture>";
-                        return {type: "html", value: pictureHtml};
+                        return { type: "html", value: pictureHtml };
                     }
 
                     case "Note":
@@ -879,8 +1046,8 @@ class MintlifyMigrator {
                         return {
                             type: "containerDirective",
                             name: "callout",
-                            attributes: {kind},
-                            children: [{type: "paragraph", children}],
+                            attributes: { kind },
+                            children: [{ type: "paragraph", children }],
                         } as any;
                     }
 
@@ -888,8 +1055,8 @@ class MintlifyMigrator {
                         return {
                             type: "containerDirective",
                             name: "steps",
-                            attributes: {kind: "secondary"},
-                            children: [{type: "list", ordered: true, start: 1, children}],
+                            attributes: { kind: "secondary" },
+                            children: [{ type: "list", ordered: true, start: 1, children }],
                         } as any;
                     }
 
@@ -898,8 +1065,8 @@ class MintlifyMigrator {
                         const stepIcon = node.attributes?.find((a: any) => a.name === "icon")?.value || "";
 
                         const attrs: { name: string; value: string }[] = [];
-                        if (stepIcon) attrs.push({name: "icon", value: stepIcon});
-                        if (stepTitle) attrs.push({name: "title", value: stepTitle});
+                        if (stepIcon) attrs.push({ name: "icon", value: stepIcon });
+                        if (stepTitle) attrs.push({ name: "title", value: stepTitle });
 
                         const listItemChildren: any[] = [];
                         if (attrs.length) listItemChildren.push({
@@ -908,15 +1075,15 @@ class MintlifyMigrator {
                         });
                         listItemChildren.push(...children);
 
-                        return {type: "listItem", children: [{type: "paragraph", children: listItemChildren}]};
+                        return { type: "listItem", children: [{ type: "paragraph", children: listItemChildren }] };
                     }
 
                     case "Tabs": {
                         return {
                             type: "containerDirective",
                             name: "tabs",
-                            attributes: {kind: "secondary"},
-                            children: [{type: "list", ordered: true, start: 1, children}],
+                            attributes: { kind: "secondary" },
+                            children: [{ type: "list", ordered: true, start: 1, children }],
                         } as any;
                     }
 
@@ -925,21 +1092,41 @@ class MintlifyMigrator {
                         const parts: any[] = [];
                         if (tabTitle) {
                             const typeValue = String(tabTitle).toLowerCase();
-                            parts.push({type: "text", value: `[${tabTitle}](type=${typeValue})`});
-                            parts.push({type: "text", value: "\n"});
+                            parts.push({ type: "text", value: `[${tabTitle}](type=${typeValue})` });
+                            parts.push({ type: "text", value: "\n" });
                         }
                         parts.push(...children);
-                        return {type: "listItem", children: [{type: "paragraph", children: parts}]};
+                        return { type: "listItem", children: [{ type: "paragraph", children: parts }] };
                     }
 
                     default: {
                         if ((includeMapping as any)[componentName]) {
                             return {
                                 type: "paragraph",
-                                children: [{type: "text", value: `@include "${includeMapping[componentName]}"`}]
+                                children: [{ type: "text", value: `@include "${includeMapping[componentName]}"` }]
                             };
                         }
-                        return {type: "html", value: `<!-- ${componentName} NOT SUPPORTED YET -->`};
+                        // For unsupported components, try to extract text content and create a comment
+                        const textContent = children
+                            .filter((child: any) => child.type === "text" || child.type === "paragraph")
+                            .map((child: any) => {
+                                if (child.type === "text") return child.value;
+                                if (child.type === "paragraph" && child.children) {
+                                    return child.children
+                                        .filter((c: any) => c.type === "text")
+                                        .map((c: any) => c.value)
+                                        .join(" ");
+                                }
+                                return "";
+                            })
+                            .join(" ")
+                            .trim();
+
+                        const comment = textContent
+                            ? `<!-- ${componentName}: ${textContent} -->`
+                            : `<!-- ${componentName} component not supported -->`;
+
+                        return { type: "html", value: comment };
                     }
                 }
             }
@@ -949,7 +1136,7 @@ class MintlifyMigrator {
         };
 
         const transformed = await transformNode(ast);
-        return transformed || {type: "root", children: []};
+        return transformed || { type: "root", children: [] };
     }
 
     // ---------------------------------------------------------------------------

@@ -91,7 +91,7 @@ export class Composer {
 
         if (props.rightContent) {
             // Use existing markdown processing pipeline
-            const mdPlugins = markdownPlugins({
+            const mdPlugins = await markdownPlugins({
                 maxDepth: 2,
             }, settings)
 

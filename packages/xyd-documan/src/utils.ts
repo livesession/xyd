@@ -257,14 +257,14 @@ export function virtualProvidersPlugin(
     }
 }
 
-export function commonVitePlugins(
+export async function commonVitePlugins(
     respPluginDocs: PluginOutput,
     resolvedPlugins: PluginConfig[],
 ) {
     const userVitePlugins = resolvedPlugins.map(p => p.vite).flat() || []
 
     return [
-        ...(xydContentVitePlugins({
+        ...(await xydContentVitePlugins({
             toc: {
                 maxDepth: respPluginDocs.settings.theme?.writer?.maxTocDepth || 2,
             },

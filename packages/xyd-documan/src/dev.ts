@@ -114,7 +114,7 @@ export async function dev(options?: DevOptions) {
     const watchAllow = process.cwd()
 
     const appRoot = getAppRoot()
-    const commonRunVitePlugins = commonVitePlugins(respPluginDocs, resolvedPlugins)
+    const commonRunVitePlugins = await commonVitePlugins(respPluginDocs, resolvedPlugins)
     spinner.stopSpinner();
 
     if (!skip) {

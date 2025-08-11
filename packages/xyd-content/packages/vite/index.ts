@@ -10,9 +10,9 @@ export interface VitePluginInterface {
     settings: Settings
 }
 
-export function vitePlugins(options: VitePluginInterface): Plugin[] {
+export async function vitePlugins(options: VitePluginInterface): Promise<Plugin[]> {
     return [
-        mdx(markdownPlugins(
+        mdx(await markdownPlugins(
             options.toc,
             options.settings
         )),

@@ -1239,6 +1239,11 @@ export interface Engine {
      *
      */
     uniform?: EngineUniform
+
+    /**
+     * Mermaid configuration
+     */
+    mermaid?: boolean
 }
 
 export type EnginePaths = { [key: string]: string[] }

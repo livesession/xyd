@@ -1,5 +1,41 @@
 # @xyd-js/foo
 
+## 0.1.0-build.149
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-build.148
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-build.147
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-build.146
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-build.145
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-build.144
+
+### Patch Changes
+
+- update all packages
+
 ## 0.1.0-build.143
 
 ### Patch Changes

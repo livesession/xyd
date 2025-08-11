@@ -68,7 +68,9 @@ async function frameworkMigration(
     outDir: string | boolean = false
 ) {
     // 1. if copy is true, clone the docsPath directory
-    docsPath = await cloneDocsPath(docsPath, outDir)
+    if (outDir) {
+        docsPath = await cloneDocsPath(docsPath, outDir)
+    }
 
     switch (framework) {
         case DocsFramework.MINTLIFY:

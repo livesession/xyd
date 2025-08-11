@@ -1,5 +1,5 @@
 import React, {createContext, ReactElement, SVGProps, use} from "react";
-import parse from 'html-react-parser';
+import parse, { HTMLReactParserOptions, Element } from "html-react-parser";
 
 import * as cn from "./Icon.styles"
 // TODO: html-react-parser is not the best choice, but it works for now
@@ -29,7 +29,8 @@ export function Icon(props: IconProps): ReactElement | null {
         return null
     }
 
-    const icon = parse(ico.svg) as ReactElement<SVGProps<SVGSVGElement>>
+    const icon = parseIcon(ico.svg) as ReactElement<SVGProps<SVGSVGElement>>
+
     if (React.isValidElement(icon)) {
         return React.cloneElement(icon, {
             width: size,
@@ -60,3 +61,39 @@ Icon.ExternalArrow = function ExternalArrow() {
         />
     </svg>
 }
+
+
+function parseIcon(svg: string) {
+    const options: HTMLReactParserOptions = {
+      htmlparser2: { xmlMode: true }, // preserves case of *attributes*, still lowercase tags
+      replace(domNode) {
+        if (domNode.type === "tag") {
+          const el = domNode as Element;
+  
+          // ✅ Fix tag name casing
+          if (el.name === "lineargradient") el.name = "linearGradient";
+          if (el.name === "radialgradient") el.name = "radialGradient";
+          if (el.name === "clippath") el.name = "clipPath";
+          if (el.name === "pattern") el.name = "pattern"; // example: stays same
+  
+          // ✅ Fix attribute casing for React
+          const attrs = el.attribs || {};
+          if ("stop-color" in attrs) {
+            attrs.stopColor = attrs["stop-color"];
+            delete attrs["stop-color"];
+          }
+          if ("fill-rule" in attrs) {
+            attrs.fillRule = attrs["fill-rule"];
+            delete attrs["fill-rule"];
+          }
+          if ("clip-rule" in attrs) {
+            attrs.clipRule = attrs["clip-rule"];
+            delete attrs["clip-rule"];
+          }
+        }
+        return domNode;
+      },
+    };
+  
+    return parse(svg, options);
+  }

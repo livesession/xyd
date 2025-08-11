@@ -7,13 +7,13 @@ export { RemarkMdxTocOptions, } from "./plugins/mdToc";
 export { mapSettingsToDocSections } from "./search"
 export type { DocSectionSchema } from "./search/types"
 
-export function markdownPlugins(
+export async function markdownPlugins(
     toc: RemarkMdxTocOptions, // TODO: unify this cuz it should come from core -global settings and toc options?
     settings?: Settings
 ) {
     const remarkPlugins = [...defaultRemarkPlugins(toc, settings)]
 
-    const rehypePlugins = [...defaultRehypePlugins(settings)]
+    const rehypePlugins = [...(await defaultRehypePlugins(settings))]
 
     const recmaPlugins = [...defaultRecmaPlugins(settings)]
 

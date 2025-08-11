@@ -135,7 +135,7 @@ export async function loader({ request }: { request: any }) {
 
     let bannerContentCode = ""
 
-    const mdPlugins = markdownPlugins({
+    const mdPlugins = await markdownPlugins({
         maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
     const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)

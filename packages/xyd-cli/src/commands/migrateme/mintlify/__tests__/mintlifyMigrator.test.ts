@@ -4,7 +4,7 @@ import {fileURLToPath} from "node:url";
 import {describe, expect, it} from 'vitest'
 
 import {mintlifyMigrator} from "../mintlify";
-import {cloneRepoIfNeeded} from "./utilts";
+import {cloneRepoIfNeeded} from "./utils";
 import {cloneDocsPath} from "../../migration";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,7 +14,7 @@ const docsRepos = {
     chatwoot: "https://github.com/chatwoot/docs",
     // continue: "https://github.com/continuedev/continue/tree/main/docs", // TODO:
     hoppscotch: "https://github.com/hoppscotch/docs",
-    // modelcontextprotocol: "https://github.com/modelcontextprotocol/modelcontextprotocol/tree/main/docs",
+    // modelcontextprotocol: "https://github.com/modelcontextprotocol/modelcontextprotocol/tree/main/docs", // TODO:
     phare: "https://github.com/phare/docs",
     stellarco: "https://github.com/stellarco/docs",
     teardownDev: "https://github.com/teardown-dev/docs",
@@ -39,7 +39,9 @@ describe("mintlifyMigrator", {timeout: 15000}, () => {
 
                 const out = await cloneDocsPath(docsPath, outDir)
 
-                await mintlifyMigrator(out);
+                await mintlifyMigrator(out, {
+                    verbose: false,
+                });
             })
         }
     })
