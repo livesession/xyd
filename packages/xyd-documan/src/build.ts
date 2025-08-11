@@ -121,7 +121,7 @@ export async function build() {
                 alias: {
                     process: 'process/browser',
                     // When rehype-mermaid is externalized, resolve it from CLI's node_modules
-                    ...(enableMermaid ? {} : { 'rehype-mermaid': path.resolve(__dirname, '../../../node_modules/rehype-mermaid') }),
+                    ...(enableMermaid ? {} : { 'rehype-mermaid': path.resolve(getHostPath(), './node_modules/rehype-mermaid') })
                     // react: path.resolve(workspaceNodeModulesPath, "react"),
                     // "react-dom": path.resolve(workspaceNodeModulesPath, "react-dom")
                 }
