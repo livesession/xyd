@@ -14,6 +14,7 @@
     "schema:docs.json": "cd ./packages/xyd-core && npx ts-json-schema-generator --path ./src/types/settings.ts --type 'Settings' --no-top-ref --out ../../apps/docs/public/docs.json",
     "clean": "./clear.sh",
     "prepare": "husky",
+    "pretest:unit": "pnpm build",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:local": "npm_config_registry=http://localhost:4873 playwright test",

@@ -536,8 +536,9 @@ function mergeSidebars(sidebars: SidebarRoute[]): SidebarRoute[] {
 // Helper function to merge sidebars in place, modifying the original array
 function mergeSidebarsInPlace(sidebars: (SidebarRoute | Sidebar)[]): void {
     const mergedMap = new Map<string, SidebarRoute>();
+    const nonRouteSidebars: Sidebar[] = [];
     
-    // First pass: collect all sidebars by route
+    // First pass: collect all sidebars by route and separate non-route sidebars
     for (const sidebar of sidebars) {
         if ("route" in sidebar) {
             const existing = mergedMap.get(sidebar.route);
@@ -552,13 +553,16 @@ function mergeSidebarsInPlace(sidebars: (SidebarRoute | Sidebar)[]): void {
             } else {
                 mergedMap.set(sidebar.route, sidebar);
             }
+        } else {
+            // Keep non-route sidebars (those with "group" property)
+            nonRouteSidebars.push(sidebar);
         }
     }
     
     // Second pass: replace the original array with merged results
     const mergedArray = Array.from(mergedMap.values());
     sidebars.length = 0; // Clear the original array
-    sidebars.push(...mergedArray); // Add the merged items
+    sidebars.push(...nonRouteSidebars, ...mergedArray); // Add non-route sidebars first, then merged route sidebars
 }
 
 // preinstall adds uniform navigation to settings

@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/framework",
-  "version": "0.1.0-build.188",
+  "version": "0.1.0-build.193",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

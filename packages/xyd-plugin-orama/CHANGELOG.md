@@ -1,5 +1,65 @@
 # @xyd-js/plugin-orama
 
+## 0.1.0-build.161
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-build.161
+  - @xyd-js/components@0.1.0-build.172
+  - @xyd-js/content@0.1.0-build.175
+  - @xyd-js/core@0.1.0-build.174
+  - @xyd-js/plugins@0.1.0-build.161
+
+## 0.1.0-build.160
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-build.160
+  - @xyd-js/components@0.1.0-build.171
+  - @xyd-js/content@0.1.0-build.174
+  - @xyd-js/core@0.1.0-build.173
+  - @xyd-js/plugins@0.1.0-build.160
+
+## 0.1.0-build.159
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-build.159
+  - @xyd-js/components@0.1.0-build.170
+  - @xyd-js/content@0.1.0-build.173
+  - @xyd-js/core@0.1.0-build.172
+  - @xyd-js/plugins@0.1.0-build.159
+
+## 0.1.0-build.158
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-build.158
+  - @xyd-js/components@0.1.0-build.169
+  - @xyd-js/content@0.1.0-build.172
+  - @xyd-js/core@0.1.0-build.171
+  - @xyd-js/plugins@0.1.0-build.158
+
+## 0.1.0-build.157
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-build.157
+  - @xyd-js/components@0.1.0-build.168
+  - @xyd-js/content@0.1.0-build.171
+  - @xyd-js/core@0.1.0-build.170
+  - @xyd-js/plugins@0.1.0-build.157
+
 ## 0.1.0-build.156
 
 ### Patch Changes

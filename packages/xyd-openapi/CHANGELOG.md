@@ -1,5 +1,50 @@
 # @xyd-js/openapi
 
+## 0.1.0-build.172
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-build.142
+  - @xyd-js/uniform@0.1.0-build.176
+
+## 0.1.0-build.171
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-build.141
+  - @xyd-js/uniform@0.1.0-build.175
+
+## 0.1.0-build.170
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-build.140
+  - @xyd-js/uniform@0.1.0-build.174
+
+## 0.1.0-build.169
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-build.139
+  - @xyd-js/uniform@0.1.0-build.173
+
+## 0.1.0-build.168
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/openapi-sampler@0.1.0-build.138
+  - @xyd-js/uniform@0.1.0-build.172
+
 ## 0.1.0-build.167
 
 ### Patch Changes

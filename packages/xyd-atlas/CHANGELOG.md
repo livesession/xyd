@@ -1,5 +1,65 @@
 # @xyd-js/atlas
 
+## 0.1.0-build.177
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.172
+  - @xyd-js/core@0.1.0-build.174
+  - @xyd-js/framework@0.1.0-build.193
+  - @xyd-js/plugins@0.1.0-build.161
+  - @xyd-js/uniform@0.1.0-build.176
+
+## 0.1.0-build.176
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.171
+  - @xyd-js/core@0.1.0-build.173
+  - @xyd-js/framework@0.1.0-build.192
+  - @xyd-js/plugins@0.1.0-build.160
+  - @xyd-js/uniform@0.1.0-build.175
+
+## 0.1.0-build.175
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.170
+  - @xyd-js/core@0.1.0-build.172
+  - @xyd-js/framework@0.1.0-build.191
+  - @xyd-js/plugins@0.1.0-build.159
+  - @xyd-js/uniform@0.1.0-build.174
+
+## 0.1.0-build.174
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.169
+  - @xyd-js/core@0.1.0-build.171
+  - @xyd-js/framework@0.1.0-build.190
+  - @xyd-js/plugins@0.1.0-build.158
+  - @xyd-js/uniform@0.1.0-build.173
+
+## 0.1.0-build.173
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.168
+  - @xyd-js/core@0.1.0-build.170
+  - @xyd-js/framework@0.1.0-build.189
+  - @xyd-js/plugins@0.1.0-build.157
+  - @xyd-js/uniform@0.1.0-build.172
+
 ## 0.1.0-build.172
 
 ### Patch Changes

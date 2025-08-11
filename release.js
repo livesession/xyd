@@ -6,6 +6,7 @@ const path = require('path');
 
 // Check if --prod flag is provided
 const isProduction = process.argv.includes('--prod');
+const setLatestTags = process.argv.includes('--set-latest-tags');
 
 // Helper function to run commands
 function runCommand(command, description) {
@@ -88,6 +89,7 @@ async function main() {
             '@xyd-js/themes',
             '@xyd-js/ui',
             '@xyd-js/uniform',
+            '@xyd-js/cli'
         ], 'update all packages');
 
         // Step 3: Clear npm cache
@@ -103,28 +105,11 @@ async function main() {
         runCommand(publishCommand, 'Publishing packages');
     }
 
-    {
-        // Step 6: Create changeset for CLI package
-        console.log('🔄 Creating changeset for CLI package...\n');
-        createChangeset([
-            '@xyd-js/cli'
-        ], 'update cli');
 
-        // Step 7: Version packages
-        runCommand('pnpm changeset version', 'Versioning packages');
-
-        // Step 8: Publish packages
-        const publishCommand = isProduction 
-            ? 'pnpm changeset publish' 
-            : 'npm_config_registry=http://localhost:4873 pnpm changeset publish';
-        runCommand(publishCommand, 'Publishing packages');
-    }
-
-    
-    if (!isProduction) {
+    if (!isProduction || setLatestTags) {
         // TODO: FIX IN THE FUTURE CUZ IT SHOULD BE AUTOMATICALLY DONE BY NPM
         // set latest tags
-        runCommand('node set-latest-tags.js', 'Setting latest tags');
+        runCommand(`node set-latest-tags.js ${isProduction ? '--prod' : ''}`, 'Setting latest tags');
     }
 
     console.log('🎉 Release process completed successfully!\n');
@@ -133,4 +118,4 @@ async function main() {
 main().catch(error => {
     console.error('❌ Release process failed:', error);
     process.exit(1);
-}); 
+});
