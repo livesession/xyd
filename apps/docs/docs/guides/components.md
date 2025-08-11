@@ -161,7 +161,7 @@ componentProps:
             href: https://xyd.dev
         secondaryButton:
             title: View Documentation
-            href: https://docs.xyd.dev
+            href: https://xyd.dev
 
     rightContent: |
         ```yaml index.md

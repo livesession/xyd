@@ -515,7 +515,7 @@
       "properties": {
         "githubStar": {
           "$ref": "#/definitions/IntegrationAppGithubStar",
-          "description": "Github star app configuration. List of all [options](https://github.com/buttons/react-github-btn)."
+          "description": "Github star app configuration."
         },
         "supademo": {
           "$ref": "#/definitions/IntegrationAppSupademo",
@@ -823,10 +823,19 @@
     },
     "IntegrationABTesting": {
       "additionalProperties": false,
+      "description": "A/B testing configuration",
       "properties": {
-        "growthbook": {
-          "$ref": "#/definitions/IntegrationABTestingGrowthBook",
-          "description": "GrowthBook configuration"
+        "contextMaxAge": {
+          "description": "Context max age in milliseconds",
+          "type": "number"
+        },
+        "contextStorageKey": {
+          "description": "Context storage key used to store the context in the browser storage",
+          "type": "string"
+        },
+        "providers": {
+          "$ref": "#/definitions/IntegrationABTestingProviders",
+          "description": "Providers configuration"
         }
       },
       "type": "object"
@@ -847,6 +856,33 @@
         "apiHost",
         "clientKey"
       ],
+      "type": "object"
+    },
+    "IntegrationABTestingLaunchDarkly": {
+      "additionalProperties": false,
+      "properties": {
+        "env": {
+          "description": "LaunchDarkly environment key",
+          "type": "string"
+        }
+      },
+      "required": [
+        "env"
+      ],
+      "type": "object"
+    },
+    "IntegrationABTestingProviders": {
+      "additionalProperties": false,
+      "properties": {
+        "growthbook": {
+          "$ref": "#/definitions/IntegrationABTestingGrowthBook",
+          "description": "GrowthBook configuration"
+        },
+        "launchdarkly": {
+          "$ref": "#/definitions/IntegrationABTestingLaunchDarkly",
+          "description": "LaunchDarkly configuration"
+        }
+      },
       "type": "object"
     },
     "IntegrationAnalytics": {
@@ -1071,6 +1107,10 @@
         "analytics": {
           "$ref": "#/definitions/IntegrationAnalytics",
           "description": "Configurations to add third-party analytics integrations. See full list of supported analytics here."
+        },
+        "diagrams": {
+          "description": "Diagrams configuration",
+          "type": "boolean"
         },
         "search": {
           "$ref": "#/definitions/IntegrationSearch",

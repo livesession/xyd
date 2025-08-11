@@ -1,2 +1,6 @@
 @import "./counter.css";
 @import "./supademo.css";
+
+[part=logo] img {
+    height: 18px;
+}

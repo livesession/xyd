@@ -13,7 +13,7 @@ List of websites built with xyd
 :::grid{cols=3}
 - 
     - 
-        ::card{title="xyd" href="https://docs.xyd.dev" description="Official documentation for the xyd framework—learn, explore, and master all its features." imgSrc="/public/assets/not-monday.png" logoSrc="/public/assets/xyd-emblemat.png" logoAlt="xyd logo"}
+        ::card{title="xyd" href="https://xyd.dev" description="Official documentation for the xyd framework—learn, explore, and master all its features." imgSrc="/public/assets/not-monday.png" logoSrc="/public/assets/xyd-emblemat.png" logoAlt="xyd logo"}
         
     - 
         ::card{title="LiveSession Dev" href="https://livesession.dev" description="A modern developer platform for building product analytics apps with ease." imgSrc="/public/assets/not-openai.png" logoSrc="/public/assets/livesession.jpeg" logoAlt="LiveSession Logo"}

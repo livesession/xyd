@@ -56,7 +56,7 @@ The `docs.json` file is validated against a JSON schema to ensure proper configu
 
 ```json
 {
-    "$schema": "https://docs.xyd.dev/public/docs.json"
+    "$schema": "https://xyd.dev/public/docs.json"
 }
 ```
 

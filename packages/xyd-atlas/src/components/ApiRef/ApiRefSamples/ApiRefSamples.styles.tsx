@@ -6,7 +6,7 @@ export const ApiRefSamplesContainerHost = css`
     gap: 32px;
     flex-direction: column;
     position: relative;
-    top: var(--sidebar-top, 12px);
+    top: var(--sidebar-subheader-top, 12px);
 
     @media (min-width: 1280px) {
         position: sticky;

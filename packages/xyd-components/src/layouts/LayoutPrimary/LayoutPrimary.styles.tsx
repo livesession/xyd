@@ -245,6 +245,9 @@ export const LayoutPrimaryHost = css`
                 padding: 0 24px;
             }
         }
+        &[data-layout="wide"] [part="page-scroll"] {
+            padding-top: 15px;
+        }
 
         [part="page-container"] {
             max-width: var(--xyd-layout-width-medium);

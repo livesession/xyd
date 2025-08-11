@@ -47,14 +47,12 @@
         }
     },
     "seo": {
-        "domain": "docs.xyd.dev"
+        "domain": "xyd.dev"
     },
     "components": {
-        "banner2": {
-            "content": "**xyd 0.1.x** - Docs platform for future dev",
-            "label": "Coming Soon",
-            "icon": "sparkles",
-            "href": "https://github.com/orgs/livesession/projects/4/views/1"
+        "banner": {
+            "content": "**xyd 0.1.0-alpha** - Coming Soon",
+            "icon": "sparkles"
         },
         "footer": {
             "kind": "minimal",
