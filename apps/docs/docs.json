@@ -24,13 +24,6 @@
         "search": {
             "orama": true
         },
-        "abtesting": {
-           "providers": {
-                "launchdarkly": {
-                    "env": "$LAUNCH_DARKLY_ENV"
-                }
-           }
-        },
         ".apps": {
             "githubStar": {
                 "title": "Star",

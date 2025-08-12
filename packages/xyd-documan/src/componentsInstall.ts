@@ -1,10 +1,9 @@
-import { execSync } from 'node:child_process';
+import { execSync, ExecSyncOptions } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import path, { dirname, join } from 'node:path';
-import colors from 'picocolors';
 import { createRequire } from 'node:module';
-import { pathToFileURL } from 'node:url';
+
+import colors from 'picocolors';
 
 import { getCLIRoot, getHostPath, getCLIComponentsJsonPath, nodeInstallPackages } from './utils';
 
@@ -195,11 +194,18 @@ async function installComponent(
             if (config.postInstall) {
                 for (const cmd of config.postInstall) {
                     console.log(colors.gray(`Running: ${cmd}`));
-                    execSync(cmd, {
+
+                    const execOptions: ExecSyncOptions = {
                         cwd: pathname,
                         stdio: 'inherit',
                         encoding: 'utf8'
-                    });
+                    }
+
+                    if (process.env.XYD_VERBOSE) {
+                        execOptions.stdio = 'inherit'
+                    }
+
+                    execSync(cmd, execOptions);
                 }
             }
 
