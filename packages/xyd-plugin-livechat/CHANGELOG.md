@@ -1,5 +1,12 @@
 # @xyd-js/plugin-livechat
 
+## 0.1.0-build.29
+
+### Patch Changes
+
+- update all packages
+- update all packages
+
 ## 0.1.0-build.28
 
 ### Patch Changes

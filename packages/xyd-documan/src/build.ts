@@ -106,6 +106,11 @@ export async function build() {
                 ...postInstallVitePlugins,
 
                 tsconfigPaths(),
+                stopOnBuild({
+                    exit: true,
+                    log: false,
+                    delayMs: 1000 * 1,
+                })
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
@@ -135,6 +140,42 @@ export async function build() {
     } catch (error) {
         console.error('Build failed:', error);  // TODO: better message
     }
+}
+
+// TODO: it's a fix for Vite to exit after build, some issues with vite + react-router build  - BETTER SOLUTION !!!
+function stopOnBuild(options?: {
+    log?: boolean, // default true
+    onBeforeExit?: (activeHandles: string[]) => void;
+    exit?: boolean; // default true
+    delayMs?: number; // default 50
+}): VitePlugin {
+    const log = options?.log ?? true;
+    const exit = options?.exit ?? true;
+    const delayMs = options?.delayMs ?? 50;
+
+    return {
+        name: 'stop-on-build',
+        apply: 'build',
+        closeBundle() {
+            // Give Vite a tick to finish any async write operations
+            setTimeout(() => {
+                const handles =
+                    (process as any)._getActiveHandles?.()
+                        ?.map((h: any) => h?.constructor?.name || typeof h) || [];
+
+                options?.onBeforeExit?.(handles);
+
+                // If anything is still keeping the event loop alive, you can force-exit.
+                if (exit) {
+                    // Optional: print what’s keeping Node alive to help you fix root cause
+                    if (handles.length) {
+                        log && console.log('[stop-on-build] Active handles:', handles);
+                    }
+                    process.exit(0);
+                }
+            }, delayMs);
+        },
+    };
 }
 
 function setupInstallableEnvironmentV2() {

@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/openapi",
-  "version": "0.1.0-build.179",
+  "version": "0.1.0-build.180",
   "description": "",
   "main": "./dist/index.js",
   "type": "module",

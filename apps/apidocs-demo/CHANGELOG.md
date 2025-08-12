@@ -1,5 +1,27 @@
 # @xyd-js/apidocs-demo
 
+## 0.0.1-build.85
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.185
+  - @xyd-js/components@0.1.0-build.180
+  - @xyd-js/core@0.1.0-build.182
+  - @xyd-js/framework@0.1.0-build.201
+  - @xyd-js/gql@0.1.0-build.182
+  - @xyd-js/openapi@0.1.0-build.180
+  - @xyd-js/theme-cosmo@0.1.0-build.169
+  - @xyd-js/theme-gusto@0.1.0-build.168
+  - @xyd-js/theme-opener@0.1.0-build.169
+  - @xyd-js/theme-picasso@0.1.0-build.169
+  - @xyd-js/theme-poetry@0.1.0-build.196
+  - @xyd-js/theme-solar@0.1.0-build.83
+  - @xyd-js/themes@0.1.1-build.172
+  - @xyd-js/ui@0.1.0-build.185
+  - @xyd-js/uniform@0.1.0-build.184
+
 ## 0.0.1-build.84
 
 ### Patch Changes

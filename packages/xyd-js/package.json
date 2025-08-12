@@ -28,7 +28,7 @@
       "clean:all": "rimraf node_modules"
     },
     "dependencies": {
-      "@xyd-js/cli": "0.1.0-build.337"
+      "@xyd-js/cli": "0.1.0-build.341"
     },
     "devDependencies": {
       "rimraf": "^5.0.1"
