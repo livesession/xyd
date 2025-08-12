@@ -1,5 +1,41 @@
 # @xyd-js/gql
 
+## 0.1.0-build.178
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.178
+  - @xyd-js/uniform@0.1.0-build.180
+
+## 0.1.0-build.177
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.177
+  - @xyd-js/uniform@0.1.0-build.179
+
+## 0.1.0-build.176
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.176
+  - @xyd-js/uniform@0.1.0-build.178
+
+## 0.1.0-build.175
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.175
+  - @xyd-js/uniform@0.1.0-build.177
+
 ## 0.1.0-build.174
 
 ### Patch Changes

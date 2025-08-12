@@ -16,6 +16,11 @@ import type { IconLibrary, WebEditorNavigationItem } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
 
+import pluginDemoVersion from "../../xyd-plugin-supademo/package.json";
+import pluginChatwootVersion from "../../xyd-plugin-chatwoot/package.json";
+import pluginIntercomVersion from "../../xyd-plugin-intercom/package.json";
+import pluginLivechatVersion from "../../xyd-plugin-livechat/package.json";
+
 import { BUILD_FOLDER_PATH, CACHE_FOLDER_PATH, HOST_FOLDER_PATH, XYD_FOLDER_PATH } from "./const";
 import { CLI } from './cli';
 import { componentDependencies, componentsInstall } from "./componentsInstall";
@@ -30,10 +35,10 @@ const ANALYTICS_INTEGRATION_DEPENDENCIES = {
 }
 
 const EXTERNAL_XYD_PLUGINS = {
-    "@xyd-js/plugin-supademo": "0.0.0",
-    "@xyd-js/plugin-chatwoot": "0.0.0",
-    "@xyd-js/plugin-intercom": "0.0.0",
-    "@xyd-js/plugin-livechat": "0.0.0"
+    "@xyd-js/plugin-supademo": pluginDemoVersion.version,
+    "@xyd-js/plugin-chatwoot": pluginChatwootVersion.version,
+    "@xyd-js/plugin-intercom": pluginIntercomVersion.version,
+    "@xyd-js/plugin-livechat": pluginLivechatVersion.version
 }
 
 export async function appInit(options?: PluginDocsOptions) {
@@ -611,7 +616,7 @@ async function loadPlugins(
         try {
             mod = await import(pluginName)
         } catch (e) {
-            pluginName = path.join(process.cwd(), pluginName)
+            pluginName = path.join(process.cwd(), ".xyd/host/node_modules", pluginName);
 
             // TODO: find better solution? use this every time?
             const pluginPreview = await createServer({
@@ -1038,11 +1043,15 @@ async function setupPluginDependencies(
     }
 
 
-    if (install) {
+    if (install && Object.keys(dependencies).length) {
         spinner.startSpinner('Installing plugin dependencies...');
 
         const packageJson = await hostPackageJson()
         const packageJsonPath = path.join(hostPath, 'package.json')
+        packageJson.dependencies = {
+            ...packageJson.dependencies,
+            ...dependencies
+        }
 
         fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
 

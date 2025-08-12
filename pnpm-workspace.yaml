@@ -2,4 +2,5 @@ packages:
   - 'apps/apidocs-demo'
   # - 'cli'
   - 'packages/*'
+  - '!packages/xyd-js'
   - '.xyd/host'

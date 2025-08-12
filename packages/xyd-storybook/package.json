@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/storybook",
-  "version": "0.0.1-build.171",
+  "version": "0.0.1-build.175",
   "type": "module",
   "scripts": {
     "dev": "storybook dev -p 6006",

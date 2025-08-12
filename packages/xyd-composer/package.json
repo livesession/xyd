@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/composer",
-  "version": "0.1.0-build.161",
+  "version": "0.1.0-build.165",
   "description": "xyd composer API",
   "main": "dist/index.js",
   "type": "module",

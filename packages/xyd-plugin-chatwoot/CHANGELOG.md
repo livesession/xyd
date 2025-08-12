@@ -1,5 +1,29 @@
 # @xyd-js/plugin-orama
 
+## 0.1.0-build.25
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-build.24
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-build.23
+
+### Patch Changes
+
+- update all packages
+
+## 0.1.0-build.22
+
+### Patch Changes
+
+- update all packages
+
 ## 0.1.0-build.21
 
 ### Patch Changes

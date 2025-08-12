@@ -1,5 +1,89 @@
 # @xyd-js/apidocs-demo
 
+## 0.0.1-build.81
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.181
+  - @xyd-js/components@0.1.0-build.176
+  - @xyd-js/core@0.1.0-build.178
+  - @xyd-js/framework@0.1.0-build.197
+  - @xyd-js/gql@0.1.0-build.178
+  - @xyd-js/openapi@0.1.0-build.176
+  - @xyd-js/theme-cosmo@0.1.0-build.165
+  - @xyd-js/theme-gusto@0.1.0-build.164
+  - @xyd-js/theme-opener@0.1.0-build.165
+  - @xyd-js/theme-picasso@0.1.0-build.165
+  - @xyd-js/theme-poetry@0.1.0-build.192
+  - @xyd-js/theme-solar@0.1.0-build.79
+  - @xyd-js/themes@0.1.1-build.168
+  - @xyd-js/ui@0.1.0-build.181
+  - @xyd-js/uniform@0.1.0-build.180
+
+## 0.0.1-build.80
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.180
+  - @xyd-js/components@0.1.0-build.175
+  - @xyd-js/core@0.1.0-build.177
+  - @xyd-js/framework@0.1.0-build.196
+  - @xyd-js/gql@0.1.0-build.177
+  - @xyd-js/openapi@0.1.0-build.175
+  - @xyd-js/theme-cosmo@0.1.0-build.164
+  - @xyd-js/theme-gusto@0.1.0-build.163
+  - @xyd-js/theme-opener@0.1.0-build.164
+  - @xyd-js/theme-picasso@0.1.0-build.164
+  - @xyd-js/theme-poetry@0.1.0-build.191
+  - @xyd-js/theme-solar@0.1.0-build.78
+  - @xyd-js/themes@0.1.1-build.167
+  - @xyd-js/ui@0.1.0-build.180
+  - @xyd-js/uniform@0.1.0-build.179
+
+## 0.0.1-build.79
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.179
+  - @xyd-js/components@0.1.0-build.174
+  - @xyd-js/core@0.1.0-build.176
+  - @xyd-js/framework@0.1.0-build.195
+  - @xyd-js/gql@0.1.0-build.176
+  - @xyd-js/openapi@0.1.0-build.174
+  - @xyd-js/theme-cosmo@0.1.0-build.163
+  - @xyd-js/theme-gusto@0.1.0-build.162
+  - @xyd-js/theme-opener@0.1.0-build.163
+  - @xyd-js/theme-picasso@0.1.0-build.163
+  - @xyd-js/theme-poetry@0.1.0-build.190
+  - @xyd-js/theme-solar@0.1.0-build.77
+  - @xyd-js/themes@0.1.1-build.166
+  - @xyd-js/ui@0.1.0-build.179
+  - @xyd-js/uniform@0.1.0-build.178
+
+## 0.0.1-build.78
+
+### Patch Changes
+
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.178
+  - @xyd-js/components@0.1.0-build.173
+  - @xyd-js/core@0.1.0-build.175
+  - @xyd-js/framework@0.1.0-build.194
+  - @xyd-js/gql@0.1.0-build.175
+  - @xyd-js/openapi@0.1.0-build.173
+  - @xyd-js/theme-cosmo@0.1.0-build.162
+  - @xyd-js/theme-gusto@0.1.0-build.161
+  - @xyd-js/theme-opener@0.1.0-build.162
+  - @xyd-js/theme-picasso@0.1.0-build.162
+  - @xyd-js/theme-poetry@0.1.0-build.189
+  - @xyd-js/theme-solar@0.1.0-build.76
+  - @xyd-js/themes@0.1.1-build.165
+  - @xyd-js/ui@0.1.0-build.178
+  - @xyd-js/uniform@0.1.0-build.177
+
 ## 0.0.1-build.77
 
 ### Patch Changes

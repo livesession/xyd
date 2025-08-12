@@ -61,6 +61,9 @@ function getPackagesFromDirectory() {
                 try {
                     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
                     const packageName = packageJson.name;
+                    if (packageName === "xyd") {
+                        continue
+                    }
                     const version = packageJson.version;
                     
                     if (packageName && version) {

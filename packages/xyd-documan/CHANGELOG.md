@@ -1,5 +1,57 @@
 # @xyd-js/documan
 
+## 0.1.0-build.197
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/content@0.1.0-build.179
+  - @xyd-js/core@0.1.0-build.178
+  - @xyd-js/host@0.1.0-build.166
+  - @xyd-js/plugin-docs@0.1.0-build.168
+  - @xyd-js/plugins@0.1.0-build.165
+  - @xyd-js/uniform@0.1.0-build.180
+
+## 0.1.0-build.196
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/content@0.1.0-build.178
+  - @xyd-js/core@0.1.0-build.177
+  - @xyd-js/host@0.1.0-build.165
+  - @xyd-js/plugin-docs@0.1.0-build.167
+  - @xyd-js/plugins@0.1.0-build.164
+  - @xyd-js/uniform@0.1.0-build.179
+
+## 0.1.0-build.195
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/content@0.1.0-build.177
+  - @xyd-js/core@0.1.0-build.176
+  - @xyd-js/host@0.1.0-build.164
+  - @xyd-js/plugin-docs@0.1.0-build.166
+  - @xyd-js/plugins@0.1.0-build.163
+  - @xyd-js/uniform@0.1.0-build.178
+
+## 0.1.0-build.194
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/content@0.1.0-build.176
+  - @xyd-js/core@0.1.0-build.175
+  - @xyd-js/host@0.1.0-build.163
+  - @xyd-js/plugin-docs@0.1.0-build.165
+  - @xyd-js/plugins@0.1.0-build.162
+  - @xyd-js/uniform@0.1.0-build.177
+
 ## 0.1.0-build.193
 
 ### Patch Changes

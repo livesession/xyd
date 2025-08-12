@@ -33,7 +33,6 @@
     "@xyd-js/themes": "0.1.1-build.128",
     "@xyd-js/ui": "0.1.0-build.141",
     "@xyd-js/uniform": "0.1.0-build.140",
-    "xyd-host-dev": "0.1.0-build.127",
     "@xyd-js/plugin-chatwoot": "0.1.0-build.0",
     "@xyd-js/plugin-intercom": "0.1.0-build.0",
     "@xyd-js/plugin-livechat": "0.1.0-build.0",
@@ -109,6 +108,10 @@
     "release-1754939597167",
     "release-1754939692356",
     "release-1754942114405",
-    "release-1754942172490"
+    "release-1754942172490",
+    "release-1754986479953",
+    "release-1754986703013",
+    "release-1754989459565",
+    "release-1754992172409"
   ]
 }
