@@ -66,7 +66,6 @@ export async function build() {
             },
             define: {
                 'process.env.NODE_ENV': JSON.stringify('production'),
-                'process.env': {}
             },
             resolve: {
                 alias: {

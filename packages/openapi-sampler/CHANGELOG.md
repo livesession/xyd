@@ -1,5 +1,11 @@
 # @xyd-js/openapi-sampler
 
+## 0.1.0-build.149
+
+### Patch Changes
+
+- update all packages
+
 ## 0.1.0-build.148
 
 ### Patch Changes

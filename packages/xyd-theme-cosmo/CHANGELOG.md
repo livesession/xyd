@@ -1,5 +1,16 @@
 # @xyd-js/theme-cosmo
 
+## 0.1.0-build.168
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.184
+  - @xyd-js/components@0.1.0-build.179
+  - @xyd-js/framework@0.1.0-build.200
+  - @xyd-js/themes@0.1.1-build.171
+
 ## 0.1.0-build.167
 
 ### Patch Changes

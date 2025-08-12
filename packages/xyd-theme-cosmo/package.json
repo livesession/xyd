@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-cosmo",
-  "version": "0.1.0-build.167",
+  "version": "0.1.0-build.168",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

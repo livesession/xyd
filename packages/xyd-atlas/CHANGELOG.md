@@ -1,5 +1,17 @@
 # @xyd-js/atlas
 
+## 0.1.0-build.184
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.179
+  - @xyd-js/core@0.1.0-build.181
+  - @xyd-js/framework@0.1.0-build.200
+  - @xyd-js/plugins@0.1.0-build.168
+  - @xyd-js/uniform@0.1.0-build.183
+
 ## 0.1.0-build.183
 
 ### Patch Changes

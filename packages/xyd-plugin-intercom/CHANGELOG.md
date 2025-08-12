@@ -1,5 +1,11 @@
 # @xyd-js/plugin-intercom
 
+## 0.1.0-build.28
+
+### Patch Changes
+
+- update all packages
+
 ## 0.1.0-build.27
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @xyd-js/gql
 
+## 0.1.0-build.181
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.181
+  - @xyd-js/uniform@0.1.0-build.183
+
 ## 0.1.0-build.180
 
 ### Patch Changes
