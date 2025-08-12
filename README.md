@@ -10,7 +10,7 @@
 <p align="center">Docs Framework for future dev.</p>
 <p align="center">
   <a href="https://www.npmjs.com/package/xyd-js"><img alt="npm" src="https://img.shields.io/npm/v/xyd-js?style=flat-square" /></a>
-  <a href="https://docs.yourdomain.com" target="_blank" rel="noopener">
+  <a href="https://xyd-docs.slack.com" target="_blank" rel="noopener">
    <img alt="Slack Community" src="https://img.shields.io/badge/Slack-Community-4A154B?logo=slack&logoColor=white">
   </a>
 </p>
@@ -30,7 +30,7 @@
   </a>
 </p>
 
-[![xyd README hero](assets/readme-hero.png)](https://xyd.dev)
+[![xyd README hero](assets/readme-hero.png)](https://www.youtube.com/watch?v=8FVINsWUgUs)
 
 ---
 
