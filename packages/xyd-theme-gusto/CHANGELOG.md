@@ -1,5 +1,17 @@
 # @xyd-js/theme-gusto
 
+## 0.1.0-build.165
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/atlas@0.1.0-build.182
+  - @xyd-js/components@0.1.0-build.177
+  - @xyd-js/framework@0.1.0-build.198
+  - @xyd-js/themes@0.1.1-build.169
+  - @xyd-js/ui@0.1.0-build.182
+
 ## 0.1.0-build.164
 
 ### Patch Changes

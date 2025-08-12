@@ -63,9 +63,7 @@ storybook-static/
 # xyd
 .xyd
 
-
 # dev cli
-cli/
 .cli/
 
 # nx

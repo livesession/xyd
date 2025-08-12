@@ -1,5 +1,16 @@
 # @xyd-js/plugin-algolia
 
+## 0.1.0-build.166
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.177
+  - @xyd-js/content@0.1.0-build.180
+  - @xyd-js/core@0.1.0-build.179
+  - @xyd-js/plugins@0.1.0-build.166
+
 ## 0.1.0-build.165
 
 ### Patch Changes

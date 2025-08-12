@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-picasso",
-  "version": "0.1.0-build.165",
+  "version": "0.1.0-build.166",
   "description": "",
   "type": "module",
   "main": "dist/index.js",

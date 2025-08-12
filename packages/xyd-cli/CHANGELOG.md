@@ -1,5 +1,15 @@
 # @xyd-js/cli
 
+## 0.1.0-build.339
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/core@0.1.0-build.179
+  - @xyd-js/documan@0.1.0-build.198
+  - @xyd-js/host@0.1.0-build.167
+
 ## 0.1.0-build.338
 
 ### Patch Changes

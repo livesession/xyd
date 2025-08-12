@@ -1,5 +1,14 @@
 # @xyd-js/plugins
 
+## 0.1.0-build.166
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/framework@0.1.0-build.198
+  - @xyd-js/uniform@0.1.0-build.181
+
 ## 0.1.0-build.165
 
 ### Patch Changes

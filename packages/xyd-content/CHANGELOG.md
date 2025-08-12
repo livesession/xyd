@@ -1,5 +1,18 @@
 # @xyd-js/content
 
+## 0.1.0-build.180
+
+### Patch Changes
+
+- update all packages
+- Updated dependencies
+  - @xyd-js/components@0.1.0-build.177
+  - @xyd-js/context@0.1.0-build.166
+  - @xyd-js/core@0.1.0-build.179
+  - @xyd-js/gql@0.1.0-build.179
+  - @xyd-js/openapi@0.1.0-build.177
+  - @xyd-js/sources@0.1.1-build.169
+
 ## 0.1.0-build.179
 
 ### Patch Changes
