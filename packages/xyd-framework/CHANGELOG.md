@@ -1,5 +1,19 @@
 # @xyd-js/framework
 
+## 0.1.0-build.199
+
+### Patch Changes
+
+- update all packages
+- update all packages
+- Updated dependencies
+- Updated dependencies
+  - @xyd-js/analytics@0.1.0-build.167
+  - @xyd-js/components@0.1.0-build.178
+  - @xyd-js/content@0.1.0-build.181
+  - @xyd-js/core@0.1.0-build.180
+  - @xyd-js/ui@0.1.0-build.183
+
 ## 0.1.0-build.198
 
 ### Patch Changes

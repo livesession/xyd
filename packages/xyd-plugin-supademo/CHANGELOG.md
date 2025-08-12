@@ -1,5 +1,12 @@
 # @xyd-js/plugin-supademo
 
+## 0.1.0-build.27
+
+### Patch Changes
+
+- update all packages
+- update all packages
+
 ## 0.1.0-build.26
 
 ### Patch Changes

@@ -36,7 +36,8 @@
     "@xyd-js/plugin-chatwoot": "0.1.0-build.0",
     "@xyd-js/plugin-intercom": "0.1.0-build.0",
     "@xyd-js/plugin-livechat": "0.1.0-build.0",
-    "@xyd-js/plugin-supademo": "0.1.0-build.0"
+    "@xyd-js/plugin-supademo": "0.1.0-build.0",
+    "xyd-host-dev": "0.1.0-build.167"
   },
   "changesets": [
     "release-1753563935291",
@@ -113,6 +114,8 @@
     "release-1754986703013",
     "release-1754989459565",
     "release-1754992172409",
-    "release-1754996838802"
+    "release-1754996838802",
+    "release-1754998219477",
+    "release-1754998251378"
   ]
 }

@@ -55,7 +55,8 @@ const xydContentPath = resolveModuleV2(getCLIRoot(), '@xyd-js/content');
 const COMPONENTS: Record<string, ComponentConfig> = {
     diagrams: {
         packages: ['rehype-mermaid@^3.0.0', 'playwright@^1.54.2'],
-        postInstall: ['npx playwright install --with-deps chromium'],
+        // postInstall: ['npx playwright install --with-deps chromium'],
+        postInstall: ['npx playwright install chromium'],
         xydModules: [
             xydContentPath || "",
         ]

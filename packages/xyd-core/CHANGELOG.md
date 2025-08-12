@@ -1,5 +1,12 @@
 # @xyd-js/core
 
+## 0.1.0-build.180
+
+### Patch Changes
+
+- update all packages
+- update all packages
+
 ## 0.1.0-build.179
 
 ### Patch Changes

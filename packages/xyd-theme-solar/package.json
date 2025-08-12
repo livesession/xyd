@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/theme-solar",
-  "version": "0.1.0-build.80",
+  "version": "0.1.0-build.81",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
