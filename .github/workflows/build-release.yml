@@ -11,6 +11,9 @@ jobs:
     name: 👷‍♂️ Build Release
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    strategy:
+      matrix:
+        node-version: [ 22.12.0 ]
     permissions:
       contents: write
       pull-requests: write
@@ -21,11 +24,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 🟢 Setup Node.js
+      - name: 🟢 Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: ${{ matrix.node-version }}
 
       - name: 🔐 Setup npm auth
         run: |
