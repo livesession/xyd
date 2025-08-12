@@ -77,8 +77,8 @@ xyd build
 For more info [**head over to our docs**](https://xyd.dev/docs).
 
 ## Resources
-### [Storybook](https://components.xyd.dev)
-📚 Collection of built-in components.
+### [Starter](https://github.com/xyd-js/starter)
+🚀 The starter for xyd docs
 
 ### [Examples](https://github.com/xyd-js/examples)
 🚀 Ready-to-run xyd examples
@@ -86,8 +86,8 @@ For more info [**head over to our docs**](https://xyd.dev/docs).
 ### [Deploy Samples](https://github.com/xyd-js/deploy-samples)
 🚀 Ready-to-run xyd deploy samples
 
-### [Starter](https://github.com/xyd-js/starter)
-🚀 The starter for xyd docs
+### [Storybook](https://components.xyd.dev)
+📚 Collection of built-in components.
 
 ## FAQ
 
