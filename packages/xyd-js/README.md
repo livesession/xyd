@@ -30,17 +30,22 @@
 
 ### Installation
 
-Download the xyd CLI using the following command
-
+Download the xyd CLI using the following command:
 ```
 npm i -g xyd-js
 ```
 
 ### Development
 
-#### `xyd`
+Run a dev server:
+```
+xyd
+```
 
-Run this command at the root of your xyd project to preview changes locally.
+Production build:
+```
+xyd build
+```
 
-#### `xyd build`
-Build your xyd project for production. This command generates a `.xyd/build/client` folder containing the static files for your documentation.
+> This command generates a `.xyd/build/client` folder containing the static files for your documentation.
+

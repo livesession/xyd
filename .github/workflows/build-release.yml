@@ -1,0 +1,48 @@
+name: 👷‍♂️ Build Release
+
+on:
+  workflow_run:
+    workflows: ["tests:unit"]
+    branches: [master]
+    types: [completed]
+
+jobs:
+  cli-release:
+    name: 👷‍♂️ Build Release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 🔐 Setup npm auth
+        run: |
+          echo "registry=https://registry.npmjs.org" >> ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install the packages
+        run: pnpm i
+
+      - name: 🏗 Build packages
+        run: pnpm run build
+
+      - name: 🚀 Publish build release
+        run: pnpm run build-release
+          
+
+    
+

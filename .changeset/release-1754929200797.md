@@ -1,5 +1,0 @@
----
-"@xyd-js/cli": patch
----
-
-update cli

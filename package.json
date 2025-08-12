@@ -12,6 +12,7 @@
     "build:storybook": "pnpm run build && pnpm run --filter=\"./packages/**/*\" build:storybook",
     "build:apidocs-demo": "pnpm --filter \"./packages/**/*\" --filter \"@xyd-js/apidocs-demo\" build",
     "schema:docs.json": "cd ./packages/xyd-core && npx ts-json-schema-generator --path ./src/types/settings.ts --type 'Settings' --no-top-ref --out ../../apps/docs/public/docs.json",
+    "build-release": "node release.js --prod", 
     "clean": "./clear.sh",
     "prepare": "husky",
     "pretest:unit": "pnpm build",
