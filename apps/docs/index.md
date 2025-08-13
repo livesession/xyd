@@ -31,7 +31,7 @@ componentProps:
                     children: Explore the complete API documentation and component library.
                     kind: secondary
                     icon: code
-                    href: "/docs/reference/core"
+                    href: "/docs/reference/core/overview"
         - 
             title:  Resources
             cards:
