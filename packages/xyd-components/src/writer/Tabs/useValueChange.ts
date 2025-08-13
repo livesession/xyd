@@ -63,7 +63,6 @@ export function useValueChange(
         }
 
         // Dispatch custom event if tabsRef is provided
-        console.log(tabsRef)
         if (tabsRef?.current) {
             const eventData = {
                 value: newValue,

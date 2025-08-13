@@ -3,7 +3,8 @@ name: ⏭️ CLI Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*.*.*' # stable e.g. v0.1.0
+      - 'v*.*.*-*' # pre-release e.g. v0.1.0-alpha.1
 
 jobs:
   cli-release:
