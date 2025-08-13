@@ -60,25 +60,26 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: 📝 Generate release notes
-        id: release_notes
-        run: |
-          chmod +x scripts/generate-release-notes.sh
-          RELEASE_BODY=$(./scripts/generate-release-notes.sh "${{ steps.version.outputs.VERSION }}")
-          echo "RELEASE_BODY<<EOF" >> $GITHUB_OUTPUT
-          echo "$RELEASE_BODY" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+#      - name: 📝 Generate release notes
+#        id: release_notes
+#        run: |
+#          chmod +x scripts/release-notes.mjs
+#          RELEASE_BODY=$(./scripts/release-notes.mjs "${{ steps.version.outputs.VERSION }}")
+#          echo "RELEASE_BODY<<EOF" >> $GITHUB_OUTPUT
+#          echo "$RELEASE_BODY" >> $GITHUB_OUTPUT
+#          echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: 🏷️ Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ steps.version.outputs.VERSION }}
-          body: ${{ steps.release_notes.outputs.RELEASE_BODY }}
-          draft: false
-          prerelease: ${{ contains(steps.version.outputs.VERSION, '-') }}
+      # TODO: 
+      # - name: 🏷️ Create GitHub Release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     release_name: Release ${{ steps.version.outputs.VERSION }}
+      #     body: ${{ steps.release_notes.outputs.RELEASE_BODY }}
+      #     draft: false
+      #     prerelease: ${{ contains(steps.version.outputs.VERSION, '-') }}
 
 
 

@@ -18,6 +18,8 @@ jobs:
       contents: write
       pull-requests: write
       id-token: write
+    outputs:
+      BUILD_VERSION: ${{ steps.version.outputs.BUILD_VERSION }}
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -60,8 +62,19 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: 🕵️ Check for changes
+        id: version
+        run: |
+          # get latest commit sha
+          SHA=$(git rev-parse HEAD)
+          # get first 7 characters of sha
+          SHORT_SHA=${SHA::7}
+          BUILD_VERSION=build+${SHORT_SHA}
+          # set output so it can be used in other jobs
+          echo "BUILD_VERSION=${BUILD_VERSION}" >> $GITHUB_OUTPUT
+
       - name: 🚀 Publish build release
-        run: pnpm run build-release
+        run: node ./release.js --prod --snapshot ${{ steps.version.outputs.BUILD_VERSION }}
           
 
     

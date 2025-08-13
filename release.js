@@ -7,6 +7,10 @@ const path = require('path');
 // Check if --prod flag is provided
 const isProduction = process.argv.includes('--prod');
 const setLatestTags = process.argv.includes('--set-latest-tags');
+const noPublish = process.argv.includes('--no-publish');
+// const snapshot = process.argv.includes('--snapshot');
+const snapshotIndex = process.argv.indexOf('--snapshot');
+const snapshot = snapshotIndex !== -1 ? process.argv[snapshotIndex + 1] : false;
 
 // Helper function to run commands
 function runCommand(command, description) {
@@ -33,6 +37,8 @@ function createChangeset(packages, message) {
     const changesetDir = '.changeset';
     const timestamp = Date.now();
     const filename = `release-${timestamp}.md`;
+    // const filename = 'trigger-patch-for-build-release.md';
+
     const filepath = path.join(changesetDir, filename);
 
     let content = '---\n';
@@ -96,17 +102,22 @@ async function main() {
         runCommand('rm -rf $HOME/.npm/_cacache', 'Clearing npm cache');
 
         // Step 4: Update all CLI dependencies packages versions
-        runCommand('pnpm changeset version', 'Versioning CLI dependencies packages');
+        if (snapshot) {
+            runCommand(`pnpm changeset version --snapshot ${snapshot}`, 'Versioning CLI dependencies packages');
+        } else {
+            runCommand('pnpm changeset version', 'Versioning CLI dependencies packages');
+        }
 
         // Step 5: Publish all CLI dependencies packages
-        const publishCommand = isProduction 
-            ? 'pnpm changeset publish' 
-            : 'npm_config_registry=http://localhost:4873 pnpm changeset publish';
-        runCommand(publishCommand, 'Publishing packages');
+        if (!noPublish) {
+            const publishCommand = isProduction
+                ? 'pnpm changeset publish'
+                : 'npm_config_registry=http://localhost:4873 pnpm changeset publish';
+            runCommand(publishCommand, 'Publishing packages');
+        }
     }
 
-
-    if (!isProduction || setLatestTags) {
+    if (!noPublish && (!isProduction || setLatestTags)) {
         // TODO: FIX IN THE FUTURE CUZ IT SHOULD BE AUTOMATICALLY DONE BY NPM
         // set latest tags
         runCommand(`node set-latest-tags.js ${isProduction ? '--prod' : ''}`, 'Setting latest tags');
