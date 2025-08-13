@@ -1,15 +1,35 @@
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import {readFileSync, realpathSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import {dirname, join} from 'node:path';
 
 import colors from 'picocolors';
 
-import { cliSpec } from './spec';
+import {cliSpec} from './spec';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const packageJsonPath = join(__dirname, '..', 'package.json');
-const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+let packageJson: any = {};
+
+(() => {
+    const cliPath = realpathSync(process.argv[1]);
+
+    let packageJsonRaw = ""
+    try {
+        packageJsonRaw = readFileSync(join(cliPath, 'package.json'), 'utf8')
+    } catch (e) {
+        try {
+            packageJsonRaw = readFileSync(join(cliPath, '..', 'package.json'), 'utf8')
+        } catch (e) {
+        }
+    }
+
+    if (!packageJsonRaw) {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = dirname(__filename);
+        const packageJsonPath = join(__dirname, '..', 'package.json');
+        packageJsonRaw = readFileSync(packageJsonPath, 'utf8')
+    }
+
+    packageJson = JSON.parse(packageJsonRaw || "{}")
+})();
 
 export function getPackageJson() {
     return packageJson;
