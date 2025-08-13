@@ -396,8 +396,23 @@ export async function downloadContent(
         // Fetch external content
         content = await fetchFileContent(filePath);
     } else {
-        const baseDir = resolveFrom || (file.dirname || process.cwd());
-        content = readLocalFile(filePath, baseDir);
+        // Check if the current file is from a remote URL
+        // Look for the original remote URL in the history, or use the current path
+        const originalRemoteUrl = file.history?.find(path => path.startsWith('http://') || path.startsWith('https://'));
+        const currentFilePath = file.path || file.history?.[0];
+        const isCurrentFileRemote = originalRemoteUrl || (currentFilePath && (currentFilePath.startsWith('http://') || currentFilePath.startsWith('https://')));
+        
+        if (isCurrentFileRemote) {
+            // Handle relative paths for remote files
+            // Use the original remote URL if available, otherwise use the current path
+            const baseUrl = originalRemoteUrl || currentFilePath;
+            const absoluteUrl = new URL(filePath, baseUrl).href;
+            content = await fetchFileContent(absoluteUrl);
+        } else {
+            // Handle local files as before
+            const baseDir = resolveFrom || (file.dirname || process.cwd());
+            content = readLocalFile(filePath, baseDir);
+        }
     }
 
     return content;
@@ -411,13 +426,25 @@ export function functionMatch(value: string, functionName: string): boolean {
  * Resolves a path alias if the given path is an alias defined in the settings.
  * @param inputPath The path to resolve
  * @param settings The settings object containing path aliases
- * @param baseDir Optional base directory to resolve the final path from
+ * @param currentFile Optional VFile object to get the current file context
+ * @param cwd Optional current working directory
  * @returns The resolved path or the original path if no alias is found
  */
 export function resolvePathAlias(inputPath: string, settings?: Settings, currentFile?: VFile, cwd: string = process.cwd()): string {
-    const baseDir = path.join(cwd, currentFile?.dirname || "");
+    // Check if the current file is from a remote URL
+    // Look for the original remote URL in the history, or use the current path
+    const originalRemoteUrl = currentFile?.history?.find(path => path.startsWith('http://') || path.startsWith('https://'));
+    const currentFilePath = currentFile?.path || currentFile?.history?.[0];
+    const isCurrentFileRemote = originalRemoteUrl || (currentFilePath && (currentFilePath.startsWith('http://') || currentFilePath.startsWith('https://')));
 
     if (!settings?.engine?.paths) {
+        // If no path aliases and current file is remote, convert relative paths to absolute URLs
+        if (isCurrentFileRemote && !inputPath.startsWith('http://') && !inputPath.startsWith('https://')) {
+            // Use the original remote URL if available, otherwise use the current path
+            const baseUrl = originalRemoteUrl || currentFilePath;
+            const resolvedUrl = new URL(inputPath, baseUrl).href;
+            return resolvedUrl;
+        }
         return parseIfLocalHomePath(inputPath)
     }
 
@@ -439,18 +466,31 @@ export function resolvePathAlias(inputPath: string, settings?: Settings, current
             const matchedPart = inputPath.substring(aliasPrefix.length);
             // Remove leading slash if present
             const cleanMatchedPart = matchedPart.startsWith('/') ? matchedPart.slice(1) : matchedPart;
+            
             // If aliasPath contains *, replace it with the matched part, otherwise append the matched part
             if (aliasPath.includes('*')) {
                 resolvedPath = aliasPath.replace(/\*/g, cleanMatchedPart);
             } else {
-                resolvedPath = path.join(aliasPath, cleanMatchedPart);
+                // If the alias path is a remote URL, use URL constructor to properly join paths
+                if (aliasPath.startsWith('http://') || aliasPath.startsWith('https://')) {
+                    resolvedPath = new URL(cleanMatchedPart, aliasPath).href;
+                } else {
+                    resolvedPath = path.join(aliasPath, cleanMatchedPart);
+                }
             }
         }
     }
 
     // If we found a match and have a base directory, resolve the path relative to it
     if (longestMatch) {
-        resolvedPath = path.resolve(cwd, resolvedPath);
+        // If the resolved path is a remote URL, don't resolve against local cwd
+        if (!resolvedPath.startsWith('http://') && !resolvedPath.startsWith('https://')) {
+            resolvedPath = path.resolve(cwd, resolvedPath);
+        }
+    } else if (isCurrentFileRemote && !resolvedPath.startsWith('http://') && !resolvedPath.startsWith('https://')) {
+        // If no alias match found but current file is remote, convert relative paths to absolute URLs
+        const baseUrl = originalRemoteUrl || currentFilePath;
+        resolvedPath = new URL(resolvedPath, baseUrl).href;
     }
 
     return resolvedPath;

@@ -11,6 +11,24 @@ import { Settings } from "@xyd-js/core"
 
 export type { VarCode } from "./types"
 
+/**
+ * Check if a path is a remote URL
+ */
+function isRemoteUrl(filePath: string): boolean {
+    return filePath.startsWith('http://') || filePath.startsWith('https://');
+}
+
+/**
+ * Fetch content from a remote URL
+ */
+async function fetchRemoteContent(url: string): Promise<string> {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+    }
+    return response.text();
+}
+
 export class ContentFS {
     constructor(
         private readonly settings: Settings,
@@ -20,9 +38,16 @@ export class ContentFS {
     ) { }
 
     public async compile(filePath: string): Promise<string> {
-        await fs.access(filePath)
-
-        const content = await fs.readFile(filePath, "utf-8");
+        let content: string;
+        
+        if (isRemoteUrl(filePath)) {
+            // Handle remote URLs
+            content = await fetchRemoteContent(filePath);
+        } else {
+            // Handle local files
+            await fs.access(filePath);
+            content = await fs.readFile(filePath, "utf-8");
+        }
 
         return await this.compileContent(content, filePath)
     }
@@ -72,10 +97,13 @@ export class ContentFS {
     }
 
     public async readRaw(filePath: string) {
-        await fs.access(filePath)
-
-        const content = await fs.readFile(filePath, "utf-8");
-
-        return content
+        if (isRemoteUrl(filePath)) {
+            // Handle remote URLs
+            return await fetchRemoteContent(filePath);
+        } else {
+            // Handle local files
+            await fs.access(filePath);
+            return await fs.readFile(filePath, "utf-8");
+        }
     }
 }

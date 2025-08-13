@@ -10,9 +10,8 @@ import {
     parseImportPath,
     processContent,
     detectLanguage,
-    readLocalFile,
-    fetchFileContent,
-    resolvePathAlias
+    resolvePathAlias,
+    downloadContent
 } from './utils';
 import { injectCodeMeta } from '../utils/injectCodeMeta';
 import path from 'node:path';
@@ -34,29 +33,16 @@ export function mdFunctionImportCode(settings?: Settings) {
                 const args = result[1];
                 const mdAttrs = args?.__mdAttrs || {};
 
-                // let fullDirPath = path.join(process.cwd(), file.dirname || "")
-                // fullDirPath = process.cwd()
                 // Parse the import path to extract file path, regions, and line ranges
                 const { filePath, regions, lineRanges } = parseImportPath(
                     resolvePathAlias(importPath, settings, file) || importPath
                 );
 
-                // Determine if this is a local or external file
-                const isExternal = filePath.startsWith('http://') || filePath.startsWith('https://');
-
                 // Create a promise for this node
                 const promise = (async () => {
                     try {
-                        // Get the file content
-                        let content: string;
-
-                        if (isExternal) {
-                            // Fetch external content
-                            content = await fetchFileContent(filePath);
-                        } else {
-                            const baseDir = options.resolveFrom || (file.dirname || process.cwd());
-                            content = readLocalFile(filePath, baseDir);
-                        }
+                        // Get the file content using the improved downloadContent function
+                        const content = await downloadContent(filePath, file, options.resolveFrom);
 
                         // Process the content based on regions and line ranges
                         let processedContent = processContent(content, regions, lineRanges);
