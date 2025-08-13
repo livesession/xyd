@@ -92,7 +92,7 @@ Just point to generated folder which you could upload to your provider.
     - type: web
         name: your-xyd-docs-name
         env: static
-        buildCommand: bun x @xyd-js/cli build
+        buildCommand: bun x xyd-js build
         staticPublishPath: .xyd/build/client 
         envVars:
         - key: BUN_VERSION

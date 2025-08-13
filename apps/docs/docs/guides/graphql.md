@@ -7,7 +7,7 @@ tocCard:
       description: Interactive demo of GraphQL features
       icon: globe
       
-    - link: https://github.com/xyd-js/graphql-samples
+    - link: https://github.com/xyd-js/examples/tree/master/graphql
       title: GraphQL Samples
       description: Learn how to setup GraphQL pages
       icon: docs:github
@@ -374,6 +374,6 @@ extend schema @docs(
 You can also check out our [interactive API Docs Demo](http://apidocs-demo.xyd.dev/) to see these features in action and experiment with different GraphQL configurations in real-time.
 
 ## GraphQL Samples
-Learn [how to setup GraphQL pages](https://github.com/xyd-js/graphql-samples).
+Learn [how to setup GraphQL pages](https://github.com/xyd-js/examples/tree/master/graphql).
 
 

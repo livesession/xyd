@@ -16,9 +16,11 @@ By default font is loaded based on specific [theme](/docs/guides/themes). The sy
 
 ```json 
 {
-    "fonts": {
-        "family": "Roboto",
-        "src": "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    "theme": {
+        "fonts": {
+            "family": "Roboto",
+            "src": "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        }
     }
 }
 ```
@@ -29,10 +31,12 @@ you can also set font settings for specific areas:
 1. [Body](type=body)
     ```json
     {
-        "fonts": {
-            "body": {
-                "family": "Roboto",
-                "src": "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        "theme": {
+            "fonts": {
+                "body": {
+                    "family": "Roboto",
+                    "src": "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+                }
             }
         }
     }
@@ -41,10 +45,12 @@ you can also set font settings for specific areas:
 2. [Codeblocks](type=coder)
     ```json
     {
-        "fonts": {
-            "coder": {
-                "family": "\"JetBrains Mono\", monospace",
-                "src": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+        "theme": {
+            "fonts": {
+                "coder": {
+                    "family": "\"JetBrains Mono\", monospace",
+                    "src": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+                }
             }
         }
     }
@@ -54,10 +60,12 @@ you can also set font settings for specific areas:
 or use any `src` you want:
 ```json
 {
-    "fonts": {
-        "coder": {
-            "family": "JetBrains Mono Variable",
-            "src": "https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono:vf@latest/latin-wght-normal.woff2"
+    "theme": {
+        "fonts": {
+            "coder": {
+                "family": "JetBrains Mono Variable",
+                "src": "https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono:vf@latest/latin-wght-normal.woff2"
+            }
         }
     }
 }
@@ -70,19 +78,21 @@ You can also load multiple font atomically by using an array configuration. This
 
 ```json [descHead="Info" desc="This configuration will automatically generate <code>@font-face</code> declarations for each font weight specified in the array."]
     {
-        "fonts": {
-            "coder": [
-                {
-                    "family": "Monaspace Xenon",
-                    "weight": 200,
-                    "src": "https://cdn.jsdelivr.net/fontsource/fonts/monaspace-xenon@latest/latin-200-normal.woff2"
-                },
-                {
-                    "family": "Monaspace Xenon",
-                    "weight": 400,
-                    "src": "https://cdn.jsdelivr.net/fontsource/fonts/monaspace-xenon@latest/latin-400-normal.woff2"
-                }
-            ]
+        "theme": {
+            "fonts": {
+                "coder": [
+                    {
+                        "family": "Monaspace Xenon",
+                        "weight": 200,
+                        "src": "https://cdn.jsdelivr.net/fontsource/fonts/monaspace-xenon@latest/latin-200-normal.woff2"
+                    },
+                    {
+                        "family": "Monaspace Xenon",
+                        "weight": 400,
+                        "src": "https://cdn.jsdelivr.net/fontsource/fonts/monaspace-xenon@latest/latin-400-normal.woff2"
+                    }
+                ]
+            }
         }
     }
 ```
@@ -93,11 +103,13 @@ Bundling helps self-hosting fonts that can significantly improve website perform
 
 ```json [descHead="Info" desc="This will downloads fonts during build and self-host at the end."]
 {
-    "fonts": {
-        "body": {
-            "bundle": true,
-            "family": "Roboto",
-            "src": "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    "theme": {
+        "fonts": {
+            "body": {
+                "bundle": true,
+                "family": "Roboto",
+                "src": "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+            }
         }
     }
 }

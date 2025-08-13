@@ -7,7 +7,7 @@ tocCard:
       description: Interactive demo of OpenAPI features
       icon: globe
 
-    - link: https://github.com/xyd-js/openapi-samples
+    - link: https://github.com/xyd-js/examples/tree/master/openapi
       title: OpenAPI Samples
       description: Learn how to setup OpenAPI pages
       icon: docs:github
@@ -347,4 +347,4 @@ Support for OpenAPI webhook documentation is currently in development and will b
 You can also check out our [interactive API Docs Demo](http://apidocs-demo.xyd.dev/) to see these features in action and experiment with different OpenAPI configurations in real-time.
 
 ## OpenAPI Samples
-Learn [how to setup OpenAPI pages](#).
+Learn [how to setup OpenAPI pages](https://github.com/xyd-js/examples/tree/master/openapi).

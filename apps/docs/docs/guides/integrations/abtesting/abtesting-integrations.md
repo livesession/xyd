@@ -1,6 +1,12 @@
 ---
 title: AB Testing Integrations
+tocCard: 
+    - link: https://github.com/xyd-js/examples/tree/master/abtesting
+      title: AB Testing Samples
+      description: Learn how to setup AB tests
+      icon: docs:github
 ---
+
 
 # AB Testing Integrations {label="Experimental"}
 :::subtitle
@@ -99,3 +105,6 @@ You can also use feature flags directly in your markdown content using the `feat
 ```
 ## Analytics Integration {label="Coming Soon"}
 Track [user behavior](https://livesession.io) and engagement with your A/B testing experiments. Send [analytics events](/docs/guides/integrations/analytics/analytics-integrations) to measure which content versions perform better and optimize your documentation based on real user data. 
+
+## AB Testing Samples
+Learn [how to setup AB tests](https://github.com/xyd-js/examples/tree/master/abtesting).
