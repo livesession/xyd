@@ -116,7 +116,7 @@ Development guide with setup instructions, available scripts, and contribution g
  <p>
    <b>Join our community</b>&nbsp;
  </p>
- <a href="https://docs.yourdomain.com" target="_blank" rel="noopener">
+ <a href="https://xyd-docs.slack.com" target="_blank" rel="noopener">
   <img alt="Slack Community" src="https://img.shields.io/badge/Slack-Community-4A154B?logo=slack&logoColor=white">
  </a>
   &nbsp;
