@@ -70,7 +70,7 @@ xyd build
 - 🎨 **Themes** - Built-in themes: Solar, Gusto, Poetry, Picasso, Opener, and Cosmo
 - 🚀 **Plug & Play Dev Server** - Instant development server with hot reload and zero configuration
 - ⚙️ **Easy customization** - Extend and modify every component, layout, and functionality
-- 📚 **OpenAPI / GraphQL API docs generation** - Automatic documentation generation from API specifications
+- 🔗 **OpenAPI / GraphQL API docs generation** - Automatic documentation generation from API specifications
 - 🔌 **Plugins** - Rich ecosystem of plugins for search, analytics, chat, and more
 - 📊 **Analytics** - Built-in analytics integration with support for custom events and session replay with LiveSession
 - 🧪 **A/B testing** - Built-in integration for A/B testing experiments with LaunchDarkly and GrowthBook
@@ -87,13 +87,16 @@ For more info [**head over to our docs**](https://xyd.dev/docs).
 🚀 The starter for xyd docs
 
 ### [Examples](https://github.com/xyd-js/examples)
-🚀 Ready-to-run xyd examples
+📚 Ready-to-run xyd examples
 
 ### [Deploy Samples](https://github.com/xyd-js/deploy-samples)
-🚀 Ready-to-run xyd deploy samples
+📦 Ready-to-run xyd deploy samples
+
+### [API Docs Demo](https://apidocs-demo.xyd.dev/)
+🔗 Live demo showcasing xyd's API documentation capabilities.
 
 ### [Storybook](https://components.xyd.dev)
-📚 Collection of built-in components.
+👩‍🎤 Collection of built-in components.
 
 ## FAQ
 

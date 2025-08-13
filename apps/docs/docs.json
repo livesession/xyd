@@ -120,6 +120,10 @@
                     "href": "https://github.com/xyd-js/examples"
                 },
                 {
+                    "label": "API Docs Demo",
+                    "href": "https://apidocs-demo.xyd.dev"
+                },
+                {
                     "label": "CodeSandbox",
                     "href": "https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox"
                 },
@@ -195,31 +199,6 @@
             }
         ],
         "segments": [
-            {
-                "route": "docs/reference",
-                "pages": [
-                    {
-                        "title": "Core",
-                        "page": "docs/reference/core",
-                        "icon": "asterisk"
-                    },
-                    {
-                        "title": "Functions",
-                        "page": "docs/reference/functions",
-                        "icon": "parentheses"
-                    },
-                    {
-                        "title": "Composer",
-                        "page": "docs/reference/composer",
-                        "icon": "docs:atom-2-line"
-                    },
-                    {
-                        "title": "CLI",
-                        "page": "docs/reference/cli",
-                        "icon": "square-terminal"
-                    }
-                ]
-            },
             {
                 "route": "docs/reference",
                 "appearance": "sidebarDropdown",
