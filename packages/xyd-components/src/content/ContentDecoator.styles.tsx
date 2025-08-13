@@ -23,7 +23,7 @@ export default {
                 }
             }
 
-            & > img {
+            & > img, p > img {
                 margin-top: var(--space-medium);
             }
 
@@ -45,10 +45,6 @@ export default {
                 margin-top: var(--space-medium);
             }
             
-            img {
-                margin-top: var(--space-medium);
-            }
-
             xyd-steps {
                 margin-top: var(--space-medium);
             }

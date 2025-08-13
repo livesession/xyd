@@ -5,6 +5,8 @@ on:
     workflows: ["tests:unit"]
     branches: [master]
     types: [completed]
+    paths:
+      - 'packages/**'
 
 jobs:
   cli-release:

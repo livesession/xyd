@@ -81,5 +81,5 @@ Please checkout [examples](https://github.com/xyd-js/examples) to learn how to s
 ## CodeSandbox Demo
 Please checkout [CodeSanbox demo](https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox).
 
-## API Docs Playground
-Please checkout [API docs demo](http://apidocs-demo.xyd.dev).
+<!-- ## API Docs Playground
+Please checkout [API docs demo](http://apidocs-demo.xyd.dev). -->

@@ -70,7 +70,7 @@ Just point to generated folder which you could upload to your provider.
     compatibility_date = "2025-07-01"
 
     [build]
-    command = "bunx @xyd-js/cli build"
+    command = "bunx xyd-js build"
 
     [assets]
     directory = ".xyd/build/client"     
@@ -109,7 +109,7 @@ Just point to generated folder which you could upload to your provider.
          repo_clone_url: https://github.com/xyd-js/deploy-samples-digitalocean.git
          branch: master
        environment_slug: node-js
-       build_command: npm install -g bun && bunx @xyd-js/cli build
+       build_command: npm install -g bun && bunx xyd-js build
        output_dir: .xyd/build/client
    ```
 :::
