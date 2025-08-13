@@ -31,7 +31,7 @@ componentProps:
                     children: Explore the complete API documentation and component library.
                     kind: secondary
                     icon: code
-                    href: "/docs/reference"
+                    href: "/docs/reference/core"
         - 
             title:  Resources
             cards:
@@ -47,13 +47,14 @@ componentProps:
                     children: View the open source codebase and contribute to the project.
                     kind: secondary
                     icon: docs:github
+                    href: https://github.com/livesession/xyd
 
                 - 
-                    title: Awesome Docs
-                    children: Discover curated collection of documentation built with xyd.
+                    title: Starter
+                    children: Get up and running quickly. Discover the starter for xyd docs.
                     kind: secondary
                     icon: star
-                    href: https://github.com/livesession/awesomedocs
+                    href: https://github.com/xyd-js/starter
 
                 - 
                     title: Feedback

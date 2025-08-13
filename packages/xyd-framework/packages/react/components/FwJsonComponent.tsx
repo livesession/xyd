@@ -117,7 +117,8 @@ function useJsonComponents() {
                 // Add the new component with its group prefix
                 components[`${componentSet.group}.${name}`] = component
                 
-                console.debug(`Component name conflict resolved: ${name} -> ${existingGroup}.${name} and ${componentSet.group}.${name}`)
+                // TODO: fix debug mode
+                // console.debug(`Component name conflict resolved: ${name} -> ${existingGroup}.${name} and ${componentSet.group}.${name}`)
             } else {
                 // No conflict, add the component normally
                 components[name] = component
