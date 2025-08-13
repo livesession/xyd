@@ -15,6 +15,9 @@ export default defineConfig({
   ],
   ssr: {
     external: ["@xyd-js/framework/hydration", "fs"]
+  },
+  define: {
+    'import.meta.env.APP_URL': JSON.stringify(process.env.APP_URL || 'https://apidocs-demo.xyd.dev')
   }
 });
 

@@ -30,21 +30,21 @@ export const links: Route.LinksFunction = () => {
 
   switch (SETTINGS?.theme?.name) {
     case "poetry":
-      links.push({ rel: "stylesheet", href: poetryCss });
+      links.push({ rel: "stylesheet", href: poetryCss, "data-theme-style": "true" });
       break;
     case "opener":
-      links.push({ rel: "stylesheet", href: openerCss });
+      links.push({ rel: "stylesheet", href: openerCss, "data-theme-style": "true" });
       break;
     case "cosmo":
-      links.push({ rel: "stylesheet", href: cosmoCss });
+      links.push({ rel: "stylesheet", href: cosmoCss, "data-theme-style": "true" });
       break;
     case "picasso":
-      links.push({ rel: "stylesheet", href: picassoCss, "data-xyd-theme-default": "true" });
+      links.push({ rel: "stylesheet", href: picassoCss, "data-theme-style": "true" });
     case "gusto":
-      links.push({ rel: "stylesheet", href: gustoCss });
+      links.push({ rel: "stylesheet", href: gustoCss, "data-theme-style": "true" });
       break;
     case "solar":
-      links.push({ rel: "stylesheet", href: solarCss });
+      links.push({ rel: "stylesheet", href: solarCss, "data-theme-style": "true" });
       break;
   }
 

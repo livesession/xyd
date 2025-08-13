@@ -1,6 +1,6 @@
 export const SETTINGS = Object.freeze({
     "theme": {
-        "name": "picasso",
+        "name": "gusto",
         "icons": {
             "library": [
                 {
@@ -27,9 +27,9 @@ export const SETTINGS = Object.freeze({
             }
         }
     },
+    "webeditor": {
+    },
     "navigation": {
-        "header": [],
-        "subheader": [],
         "sidebar": [
             {
                 "route": "/docs/api",

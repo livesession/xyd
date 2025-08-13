@@ -9,6 +9,9 @@ import {
 import { Box, Button, Dropdown, Flex, TextField, Text, Spinner, FixedZIndex } from 'gestalt';
 import GitHubButton from 'react-github-btn'
 
+import { UXNode } from "openux-js";
+
+
 import { Badge } from "@xyd-js/components/writer"
 import { ReactContent } from "@xyd-js/components/content";
 import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
@@ -20,6 +23,8 @@ import ThemeCosmo from "@xyd-js/theme-cosmo";
 import ThemePicasso from "@xyd-js/theme-picasso";
 import ThemeGusto from "@xyd-js/theme-gusto";
 import ThemeSolar from "@xyd-js/theme-solar";
+import { Analytics, useAnalytics } from "@xyd-js/analytics";
+import { SearchButton } from "@xyd-js/components/system"
 
 import poetryCss from '@xyd-js/theme-poetry/index.css?url';
 import openerCss from '@xyd-js/theme-opener/index.css?url';
@@ -68,8 +73,22 @@ const reactContent = new ReactContent(SETTINGS, {
     useNavigate,
     useNavigation
 })
+
+let cloneSettings: any = null
+
+if (!cloneSettings) {
+    if (globalThis.__xydSettingsClone) {
+        cloneSettings = globalThis.__xydSettingsClone
+    } else {
+        cloneSettings = JSON.parse(JSON.stringify(SETTINGS))
+    }
+}
+
 // TODO: !!! for demo it cannot be globalThis cuz its globally for whole server !!!
 globalThis.__xydThemeSettings = SETTINGS?.theme
+globalThis.__xydSettingsClone = cloneSettings
+globalThis.__xydNavigation = SETTINGS?.navigation
+globalThis.__xydWebeditor = SETTINGS?.webeditor
 globalThis.__xydReactContent = reactContent
 globalThis.__xydSurfaces = surfaces
 
@@ -88,7 +107,7 @@ switch (SETTINGS?.theme?.name) {
     case "picasso":
         theme = new ThemePicasso()
         break
-    case "gusto":   
+    case "gusto":
         theme = new ThemeGusto()
         break
     case "solar":
@@ -122,7 +141,8 @@ export async function loader() {
     return {
         defaultExample: await toUniform(
             "/docs/api",
-            "https://raw.githubusercontent.com/livesession/livesession-openapi/master/openapi.yaml",
+            // "https://raw.githubusercontent.com/livesession/livesession-openapi/master/openapi.yaml",
+            `${import.meta.env.APP_URL || 'https://apidocs-demo.xyd.dev'}/livesession-openapi.yaml`,
             "",
             ""
         ),
@@ -222,34 +242,46 @@ const Layout2 = React.memo(function Layout2({
         ];
     }
 
-    return <Framework
-        settings={effectiveActionData.settings || {}}
-        sidebarGroups={effectiveActionData.groups || []}
-        metadata={{
-            layout: "wide",
-            uniform: "1",
-            title: "OpenAPI Demo"
-        }}
-        surfaces={surfaces}
-    // BannerContent={MemoizedActionDropdownExample}
-    >
-        <AtlasContext
-            value={{
-                syntaxHighlight: effectiveActionData.settings?.theme?.coder?.syntaxHighlight || null,
-                baseMatch: "/docs/api",
-                variantToggles: atlasVariantToggles,
-                Link: FwLink,
+    return <Analytics settings={effectiveActionData.settings || {}} loader={() => { }}>
+        <UXNode
+            name="Framework"
+            props={{
+                location: "",
             }}
         >
-            <MemoizedActionDropdownExample />
-            <BaseThemeLayout>
-                <UrlContext.Provider value={{ BaseThemePage }}>
-                    <Outlet />
-                </UrlContext.Provider>
-            </BaseThemeLayout>
-            <Loader />
-        </AtlasContext>
-    </Framework>
+            <Framework
+                settings={effectiveActionData.settings || {}}
+                sidebarGroups={effectiveActionData.groups || []}
+                metadata={{
+                    layout: "wide",
+                    uniform: "1",
+                    title: "OpenAPI Demo"
+                }}
+                surfaces={surfaces}
+                components={{
+                    Search: () => <SearchButton onClick={() => alert("Demo! Check out https://xyd.dev")} />,
+                }}
+            // BannerContent={MemoizedActionDropdownExample}
+            >
+                <AtlasContext
+                    value={{
+                        syntaxHighlight: effectiveActionData.settings?.theme?.coder?.syntaxHighlight || null,
+                        baseMatch: "/docs/api",
+                        variantToggles: atlasVariantToggles,
+                        Link: FwLink,
+                    }}
+                >
+                    <MemoizedActionDropdownExample />
+                    <BaseThemeLayout>
+                        <UrlContext.Provider value={{ BaseThemePage }}>
+                            <Outlet />
+                        </UrlContext.Provider>
+                    </BaseThemeLayout>
+                    <Loader />
+                </AtlasContext>
+            </Framework>
+        </UXNode>
+    </Analytics>
 }, (prevProps, nextProps) => {
     return JSON.stringify(prevProps.effectiveActionData) === JSON.stringify(nextProps.effectiveActionData);
 });
@@ -441,7 +473,7 @@ function SelectPredefinedUniformURL({
         // },
         livesession: {
             value: "livesession",
-            url: "https://raw.githubusercontent.com/livesession/livesession-openapi/master/openapi.yaml",
+            url: `${import.meta.env.APP_URL || 'https://apidocs-demo.xyd.dev'}/livesession-openapi.yaml`,
             label: "Livesession",
             type: "openapi"
         },
@@ -574,6 +606,14 @@ function SelectTheme() {
         {
             value: "picasso",
             label: "Picasso",
+        },
+        {
+            value: "gusto",
+            label: "Gusto",
+        },
+        {
+            value: "solar",
+            label: "Solar",
         },
     ]
     const [open, setOpen] = useState(false);

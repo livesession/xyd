@@ -14,7 +14,7 @@
 /* FIX IMPORANT */
 xyd-layout-primary {
     [part=sidebar], atlas-apiref-samples {
-        top: 50px !important;
+        top: 65px !important;
     }
 }
 
@@ -29,7 +29,7 @@ xyd-layout-primary > header {
     display: none
 }
 xyd-layout-primary > main {
-    top: 100px
+    top: 65px
 }
 
 .banner-container {
