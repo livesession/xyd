@@ -112,16 +112,12 @@
             ],
             "links": [
                 {
+                    "label": "LiveSession OpenSource ®",
+                    "href": "https://livesession.io"
+                },
+                {
                     "label": "Examples",
                     "href": "https://github.com/xyd-js/examples"
-                },
-                {
-                    "label": "API Docs Demo",
-                    "href": "https://apidocs-demo.xyd.dev"
-                },
-                {
-                    "label": "Live Preview",
-                    "href": "https://preview.xyd.dev"
                 },
                 {
                     "label": "CodeSandbox",
@@ -129,7 +125,7 @@
                 },
                 {
                     "label": "Storybook",
-                    "href": "http://sb.xyd.dev"
+                    "href": "http://components.xyd.dev"
                 }
             ],
             "footnote": {
