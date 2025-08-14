@@ -27,7 +27,8 @@ export const NavHost = css`
             display: flex;
             align-items: center;
             flex: 1;
-            overflow: auto;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
         @media (max-width: 1024px) {
             &:has([part="nav-center"]) [part="nav-left"] {
