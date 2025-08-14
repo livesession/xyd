@@ -65,8 +65,6 @@
     --xyd-sidebar-item-color--default: var(--color-text);
     --xyd-sidebar-bgcolor: var(--color-bg);
     
-    --xyd-tabs-bgcolor--active: var(--color-text);
-
     --xyd-steps-marker-color: var(--color-text);
 
     --xyd-badge-color--default: var(--color-text);

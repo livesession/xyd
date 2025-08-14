@@ -13,7 +13,7 @@ export async function cli(argv = process.argv.slice(2)) {
         process.exit(1);
     }
 
-    updateNotify()
+    await updateNotify()
 
     process.env.XYD_CLI = 'true';
 
@@ -62,6 +62,10 @@ function prerequisites() {
 
 function updateNotify() {
     const packageJson = getPackageJson();
-    const notifier = updateNotifier({ pkg: packageJson });
-    notifier.notify();
+    const notifier = updateNotifier({
+        pkg: packageJson,
+        updateCheckInterval: 1000 * 60 * 60 * 1, // 1 hour
+    });
+
+    notifier.notify({ defer: false });
 }

@@ -2,8 +2,8 @@
 title: Icons
 icon: image
 tocCard: 
-    link: https://github.com/xyd-js/icon-samples
-    title: Icons Samples
+    link: https://github.com/xyd-js/examples/tree/master/custom-icons
+    title: Icon Samples
     description: Learn how to setup Icons
     icon: docs:github
 ---
@@ -65,7 +65,7 @@ icon: <icon_name>
 ---
 ```
 
-2. [Sidebar group](/docs/guides/routing#groups):
+2. [Sidebar group](/docs/guides/navigation#groups):
 ```json [descHead="Info" desc="This allows to add icon into specified sidebar group. "]
 {
   "group": "Integrations",
