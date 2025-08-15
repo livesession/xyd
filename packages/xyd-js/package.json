@@ -1,6 +1,6 @@
 {
     "name": "xyd-js",
-    "version": "0.1.0-prealpha.3",
+    "version": "0.1.0-prealpha.2",
     "description": "The xyd CLI",
     "engines": {
         "node": ">=22.12.0"
