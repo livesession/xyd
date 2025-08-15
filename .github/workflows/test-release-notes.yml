@@ -32,6 +32,8 @@ jobs:
 
       - name: Generate release notes
         id: release_notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           chmod +x scripts/release-notes.mjs
           

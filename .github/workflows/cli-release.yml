@@ -102,6 +102,8 @@ jobs:
 
       - name: 📝 Generate release notes
         id: release_notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           chmod +x scripts/release-notes.mjs
           RELEASE_BODY=$(./scripts/release-notes.mjs "${{ steps.version.outputs.VERSION }}")
