@@ -1,0 +1,92 @@
+name: 📊 Generate Baseline
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to generate baseline for (e.g., 0.1.0)'
+        required: true
+        type: string
+
+jobs:
+  generate-baseline:
+    name: 📊 Generate Baseline
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    strategy:
+      matrix:
+        node-version: [22.12.0]
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.10.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install
+
+      - name: 🔧 Install n version manager
+        run: |
+          npm install -g n
+          # Set N_PREFIX to a directory we can write to
+          echo "N_PREFIX=$HOME/.n" >> $GITHUB_ENV
+          export N_PREFIX=$HOME/.n
+          mkdir -p $HOME/.n
+
+      - name: 🔧 Install xyd-js globally via bun
+        run: |
+          # Install bun if not already available
+          if ! command -v bun &> /dev/null; then
+            curl -fsSL https://bun.sh/install | bash
+            export PATH="$HOME/.bun/bin:$PATH"
+          fi
+          
+          # Install xyd-js globally
+          bun add -g xyd-js
+
+      - name: 🧪 Run Node.js support tests
+        run: |
+          echo "🧪 Running Node.js support tests to generate baseline data..."
+          pnpm run test:node-support
+
+      - name: 🚀 Generate baseline
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ github.event.inputs.version }}
+        run: |
+          echo "🚀 Generating baseline for version: ${{ github.event.inputs.version }}"
+          node ./scripts/generate-baseline.mjs
+
+      - name: ✅ Success message
+        run: |
+          echo "✅ Successfully generated baseline for version ${{ github.event.inputs.version }}!"
+          echo "📊 Baseline image uploaded to GitHub release"
+          echo "🔗 Check the release assets for the baseline image"

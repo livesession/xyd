@@ -177,13 +177,13 @@ async function main() {
     // The test results are already in baseline format
     console.log('📊 Baseline data loaded:', JSON.stringify(testResults, null, 2));
     const toolGroups = parseTestResults(testResults);
-    
+
     // Generate baseline URL
     const baselineUrl = generateBaselineUrl(toolGroups);
     console.log('🔗 Generated baseline URL:', baselineUrl);
     
     // Download the image
-    const filename = `node-support-baseline-${VERSION}.png`;
+    const filename = `node-support-baseline.png`;
     await downloadImage(baselineUrl, filename);
     
     // Upload to GitHub release

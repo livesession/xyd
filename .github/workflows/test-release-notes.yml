@@ -1,4 +1,4 @@
-name: 🧪 Test Release Notes
+name: 🧪 Release Notes Manual
 
 on:
   workflow_dispatch:
