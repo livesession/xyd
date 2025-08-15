@@ -1,36 +1,36 @@
 {
     "name": "xyd-js",
-    "version": "0.1.0-prealpha.2",
+    "version": "0.1.0-prealpha.3",
     "description": "The xyd CLI",
     "engines": {
-      "node": ">=22.12.0"
+        "node": ">=22.12.0"
     },
     "author": "LiveSession",
     "bugs": {
-      "url": "https://github.com/livesession/xyd/issues"
+        "url": "https://github.com/livesession/xyd/issues"
     },
     "license": "MIT",
     "keywords": [
-      "xyd",
-      "livesession",
-      "docs",
-      "cli"
+        "xyd",
+        "livesession",
+        "docs",
+        "cli"
     ],
     "type": "module",
     "publishConfig": {
-      "access": "public",
-      "registry": "https://registry.npmjs.org"
+        "access": "public",
+        "registry": "https://registry.npmjs.org"
     },
     "bin": {
-      "xyd": "index.js"
+        "xyd": "index.js"
     },
     "scripts": {
-      "clean:all": "rimraf node_modules"
+        "clean:all": "rimraf node_modules"
     },
     "dependencies": {
-      "@xyd-js/cli": "0.0.0-build-9d786d9-20250814163057"
+        "@xyd-js/cli": "^0.0.0-build-7d6b8b2-20250815140556"
     },
     "devDependencies": {
-      "rimraf": "^5.0.1"
+        "rimraf": "^5.0.1"
     }
-  }
+}
