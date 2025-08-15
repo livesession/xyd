@@ -79,7 +79,7 @@ jobs:
         fi
         
         echo "📦 Installing @xyd-js/cli@${LATEST_BUILD_VERSION}"
-        pnpm add @xyd-js/cli@${LATEST_BUILD_VERSION} --registry=https://registry.npmjs.org
+        pnpm add -g @xyd-js/cli@${LATEST_BUILD_VERSION} --registry=https://registry.npmjs.org
 
     - name: 🧪 Run E2E tests
       run: pnpm run test:e2e
