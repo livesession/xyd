@@ -1,0 +1,84 @@
+name: 🚀 CLI Release Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_version:
+        description: 'Build version to install (e.g., 0.0.0-build-commitsha-20250815025358)'
+        required: true
+        type: string
+      chosen_version:
+        description: 'Version to set in package.json (e.g., 0.1.0-alpha.1)'
+        required: true
+        type: string
+
+jobs:
+  cli-release-publish:
+    name: 🚀 CLI Release Publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 🔐 Setup npm auth
+        run: |
+          echo "registry=https://registry.npmjs.org" >> ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 🔧 Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: 📦 Install CLI package
+        run: |
+          cd packages/xyd-js
+          echo "Installing @xyd-js/cli@${{ github.event.inputs.build_version }}"
+          npm install @xyd-js/cli@${{ github.event.inputs.build_version }}
+
+      - name: 🔄 Update package version
+        run: |
+          cd packages/xyd-js
+          echo "Updating package.json version to ${{ github.event.inputs.chosen_version }}"
+          npm version ${{ github.event.inputs.chosen_version }} --no-git-tag-version
+
+      - name: 📋 Verify changes
+        run: |
+          cd packages/xyd-js
+          echo "Current package.json version:"
+          node -p "require('./package.json').version"
+          echo "Current @xyd-js/cli dependency:"
+          node -p "require('./package.json').dependencies['@xyd-js/cli']"
+
+      - name: 🔄 Commit and push changes
+        run: |
+          git add packages/xyd-js/package.json packages/xyd-js/package-lock.json
+          git commit -m "chore(release): 🚀 v${{ github.event.inputs.chosen_version }} 🚀"
+          git push origin master
+
+      - name: 🏷️ Create and push tag
+        run: |
+          git tag v${{ github.event.inputs.chosen_version }}
+          git push origin v${{ github.event.inputs.chosen_version }}
+
+      - name: ✅ Success message
+        run: |
+          echo "✅ Successfully published CLI release!"
+          echo "📦 Build version installed: ${{ github.event.inputs.build_version }}"
+          echo "🏷️ Package version updated to: ${{ github.event.inputs.chosen_version }}"
+          echo "🔗 Tag created: v${{ github.event.inputs.chosen_version }}"

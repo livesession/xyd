@@ -37,7 +37,7 @@ function parseTestResults(results) {
 
 // Generate baseline URL
 function generateBaselineUrl(toolGroups) {
-  const baseUrl = 'https://basely-432902314303.us-central1.run.app/baseline.png';
+  const baseUrl = 'https://api.basely.dev/baseline.png';
   const params = new URLSearchParams({
     title: 'Node.js Support',
     width: '1024',

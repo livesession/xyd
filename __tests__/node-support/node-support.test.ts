@@ -1,6 +1,6 @@
 import {test, expect} from '@playwright/test'
 
-import {PACKAGE_MANAGER_NODE_MATRIX, TestResult, TEST_CONFIGS} from './const'
+import {PACKAGE_MANAGER_NODE_MATRIX, TestResult, TEST_CONFIGS, PACKAGE_MANAGER, NODE_VERSIONS} from './const'
 import {
     setupWorkspace,
     testBuild,
@@ -23,27 +23,24 @@ test.describe.serial('CLI Node Support - Node.js and Package Manager Compatibili
         resultSummary(testResults)
         
         // Transform test results to baseline format
-        const nodeVersions = ['22', '23', '24'];
-        const packageManagers = ['npm', 'pnpm', 'bun'];
-        
-        const toolGroups = packageManagers.map(pm => {
+        const toolGroups = PACKAGE_MANAGER.map(pm => {
             const group: any[] = [];
             
             // Check if any tests pass for this package manager
-            const allTestsPass = testResults.every(result => 
-                result.packageManager === pm && result.success
-            );
+            const allTestsPass = testResults.filter(result =>
+                result.packageManager === pm.name
+            ).every(result => result.success);
             
             // Always add package manager entry, but only if supported
             if (allTestsPass) {
-                group.push({ tool: pm, supported: true });
+                group.push({ tool: pm.name, supported: true });
                 
                 // Add Node.js versions for this package manager
-                nodeVersions.forEach(nodeVersion => {
-                    // Check if ALL test types pass for this combination
+                NODE_VERSIONS.forEach(nodeVersion => {
+                    // Check if test pass for this combination
                     const testPass = testResults.find(result => 
                         result.nodeVersion === nodeVersion && 
-                        result.packageManager === pm &&
+                        result.packageManager === pm.name &&
                         result.success
                     );
 

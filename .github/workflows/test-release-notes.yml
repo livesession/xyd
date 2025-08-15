@@ -1,0 +1,54 @@
+name: 🧪 Test Release Notes
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to create release for (e.g., v1.2.3)'
+        required: true
+        type: string
+      previous_tag:
+        description: 'Previous tag to compare against (optional)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          chmod +x scripts/release-notes.mjs
+          
+          if [ -n "${{ github.event.inputs.previous_tag }}" ]; then
+            RELEASE_BODY=$(./scripts/release-notes.mjs "${{ github.event.inputs.version }}" "${{ github.event.inputs.previous_tag }}")
+          else
+            RELEASE_BODY=$(./scripts/release-notes.mjs "${{ github.event.inputs.version }}")
+          fi
+          
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_OUTPUT
+          echo "$RELEASE_BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create release
+        run: |
+          gh release create ${{ github.event.inputs.version }} \
+            --title "Release ${{ github.event.inputs.version }}" \
+            --notes "${{ steps.release_notes.outputs.RELEASE_BODY }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

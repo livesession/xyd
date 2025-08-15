@@ -1,0 +1,13 @@
+[
+  [
+    {
+      "tool": "npm",
+      "supported": true
+    },
+    {
+      "tool": "node",
+      "supported": true,
+      "label": "22"
+    }
+  ]
+]
