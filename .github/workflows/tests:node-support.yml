@@ -48,6 +48,9 @@ jobs:
     - name: Install Playwright browsers
       run: pnpm exec playwright install
 
+    - name: 🔧 Install n version manager
+      run: npm install -g n
+
     - name: 🔧 Install xyd-js globally via bun
       run: |
         # Install bun if not already available
