@@ -21,45 +21,47 @@ test.describe.serial('CLI Node Support - Node.js and Package Manager Compatibili
 
     test.afterAll(async () => {
         resultSummary(testResults)
-        
-        // Transform test results to baseline format
-        const toolGroups = PACKAGE_MANAGER.map(pm => {
-            const group: any[] = [];
-            
-            // Check if any tests pass for this package manager
-            const allTestsPass = testResults.filter(result =>
-                result.packageManager === pm.name
-            ).every(result => result.success);
-            
-            // Always add package manager entry, but only if supported
-            if (allTestsPass) {
-                group.push({ tool: pm.name, supported: true });
-                
-                // Add Node.js versions for this package manager
-                NODE_VERSIONS.forEach(nodeVersion => {
-                    // Check if test pass for this combination
-                    const testPass = testResults.find(result => 
-                        result.nodeVersion === nodeVersion && 
-                        result.packageManager === pm.name &&
-                        result.success
-                    );
 
-                    if (!testPass) {
-                        return;
-                    }
-                    
-                    group.push({
-                        tool: 'node',
-                        supported: true,
-                        label: nodeVersion
+        // Transform test results to baseline format
+        const toolGroups = PACKAGE_MANAGER
+            .filter(pm => !["bunx", "npx"].includes(pm.name))
+            .map(pm => {
+                const group: any[] = [];
+
+                // Check if any tests pass for this package manager
+                const allTestsPass = testResults.filter(result =>
+                    result.packageManager === pm.name
+                ).every(result => result.success);
+
+                // Always add package manager entry, but only if supported
+                if (allTestsPass) {
+                    group.push({tool: pm.name, supported: true});
+
+                    // Add Node.js versions for this package manager
+                    NODE_VERSIONS.forEach(nodeVersion => {
+                        // Check if test pass for this combination
+                        const testPass = testResults.find(result =>
+                            result.nodeVersion === nodeVersion &&
+                            result.packageManager === pm.name &&
+                            result.success
+                        );
+
+                        if (!testPass) {
+                            return;
+                        }
+
+                        group.push({
+                            tool: 'node',
+                            supported: true,
+                            label: nodeVersion
+                        });
                     });
-                });
-            }
-            // If not supported, group remains empty []
-            
-            return group;
-        });
-        
+                }
+                // If not supported, group remains empty []
+
+                return group;
+            });
+
         // Save baseline data to JSON file
         const fs = require('fs');
         const resultsPath = 'test-results.json';

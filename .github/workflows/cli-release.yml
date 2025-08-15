@@ -3,7 +3,7 @@ name: ⏭️ CLI Release
 on:
   push:
     tags:
-      - 'v*.*.*' # stable e.g. v0.1.0
+      - 'v[0-9]+.[0-9]+.[0-9]+' # stable e.g. v0.1.0 (excludes pre-releases like v0.1.0-alpha.0)
 
 jobs:
   cli-release:
