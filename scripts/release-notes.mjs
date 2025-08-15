@@ -4,7 +4,8 @@
  * No dependencies. Works on Node 18+ (global fetch).
  *
  * Usage:
- *   node scripts/generate-release-notes.mjs <version> [previous_tag]
+ *   node scripts/generate-release-notes.mjs <version> [previous_tag_or_hash]
+ *   node scripts/generate-release-notes.mjs <version> <from_hash> <to_hash>
  * Env:
  *   GITHUB_TOKEN (repo scope; Actions' default token works)
  */
@@ -13,6 +14,7 @@ import process from "node:process";
 
 const VERSION = process.argv[2] || "";
 const PREVIOUS_TAG_ARG = process.argv[3] || "";
+const TO_HASH_ARG = process.argv[4] || "";
 const TOKEN = process.env.GITHUB_TOKEN;
 
 if (!VERSION) { console.error("❌ Provide version"); process.exit(1); }
@@ -87,10 +89,23 @@ function latestMatchingTag(exclude) {
   
   return "";
 }
-const PREVIOUS_TAG = PREVIOUS_TAG_ARG || latestMatchingTag(VERSION);
-const BASE = PREVIOUS_TAG || firstSha();
-const HEAD = "HEAD";
+
+// Determine base and head based on arguments
+let BASE, HEAD;
+
+if (TO_HASH_ARG) {
+  // If we have 4 arguments, treat as: version from_hash to_hash
+  BASE = PREVIOUS_TAG_ARG;
+  HEAD = TO_HASH_ARG;
+} else {
+  // If we have 3 arguments, treat as: version previous_tag_or_hash
+  const PREVIOUS_TAG = PREVIOUS_TAG_ARG || latestMatchingTag(VERSION);
+  BASE = PREVIOUS_TAG || firstSha();
+  HEAD = "HEAD";
+}
+
 if (!BASE) { console.error("❌ Could not determine base ref"); process.exit(1); }
+if (!HEAD) { console.error("❌ Could not determine head ref"); process.exit(1); }
 
 // GitHub REST (no deps)
 async function gh(path) {
