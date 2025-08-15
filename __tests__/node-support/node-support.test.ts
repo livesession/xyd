@@ -21,6 +21,54 @@ test.describe.serial('CLI Node Support - Node.js and Package Manager Compatibili
 
     test.afterAll(async () => {
         resultSummary(testResults)
+        
+        // Transform test results to baseline format
+        const nodeVersions = ['22', '23', '24'];
+        const packageManagers = ['npm', 'pnpm', 'bun'];
+        
+        const toolGroups = packageManagers.map(pm => {
+            const group: any[] = [];
+            
+            // Check if any tests pass for this package manager
+            const allTestsPass = testResults.every(result => 
+                result.packageManager === pm && result.success
+            );
+            
+            // Always add package manager entry, but only if supported
+            if (allTestsPass) {
+                group.push({ tool: pm, supported: true });
+                
+                // Add Node.js versions for this package manager
+                nodeVersions.forEach(nodeVersion => {
+                    // Check if ALL test types pass for this combination
+                    const testPass = testResults.find(result => 
+                        result.nodeVersion === nodeVersion && 
+                        result.packageManager === pm &&
+                        result.success
+                    );
+
+                    if (!testPass) {
+                        return;
+                    }
+                    
+                    group.push({
+                        tool: 'node',
+                        supported: true,
+                        label: nodeVersion
+                    });
+                });
+            }
+            // If not supported, group remains empty []
+            
+            return group;
+        });
+        
+        // Save baseline data to JSON file
+        const fs = require('fs');
+        const resultsPath = 'test-results.json';
+        fs.writeFileSync(resultsPath, JSON.stringify(toolGroups, null, 2));
+        console.log(`📊 Baseline data saved to ${resultsPath}`);
+        console.log('📊 Generated tool groups:', JSON.stringify(toolGroups, null, 2));
     })
 
     // Set timeout for all tests in this describe block to 10 minutes

@@ -1,0 +1,61 @@
+name: ⏭️ CLI Pre-release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*-*' # pre-release e.g. v0.1.0-alpha.1
+
+jobs:
+  cli-prerelease:
+    name: ⏭️ CLI Pre-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 🔐 Setup npm auth
+        run: |
+          echo "registry=https://registry.npmjs.org" >> ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 📦 Extract version from tag
+        id: version
+        run: |
+          # Extract version from git tag (remove 'v' prefix)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
+
+      - name: 🔍 Verify version matches package.json
+        run: |
+          cd packages/xyd-js
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "Package version: $PACKAGE_VERSION"
+          echo "Tag version: ${{ steps.version.outputs.VERSION }}"
+          
+          if [ "$PACKAGE_VERSION" != "${{ steps.version.outputs.VERSION }}" ]; then
+            echo "❌ Version mismatch! Package.json has $PACKAGE_VERSION but tag is ${{ steps.version.outputs.VERSION }}"
+            exit 1
+          fi
+          echo "✅ Version match confirmed"
+
+      - name: 🚀 Publish to npm
+        run: |
+          cd packages/xyd-js
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

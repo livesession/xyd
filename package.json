@@ -18,7 +18,7 @@
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:local": "npm_config_registry=http://localhost:4873 playwright test",
-    "test:node-support": "playwright test --config=playwright.config.node-support.ts",
+    "test:node-support": "playwright test --config=playwright.node-support.config.ts",
     "test:node-support:local": "npm_config_registry=http://localhost:4873 playwright test --config=playwright.node-support.config.ts",
     "test:e2e:ui": "playwright test --ui"
   },

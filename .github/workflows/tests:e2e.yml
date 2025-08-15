@@ -1,0 +1,85 @@
+name: tests:e2e
+
+on:
+  workflow_run:
+    workflows: ["👷‍♂️ Build Release"]
+    branches: [master]
+    types: [completed]
+
+jobs:
+  test:
+    name: 🧪 E2E Tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    strategy:
+      matrix:
+        node-version: [22.12.0]
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9.10.0
+
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - name: Setup pnpm cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      run: pnpm i
+
+    - name: 🕵️ Get build version from previous workflow
+      id: get-version
+      run: |
+        # Get the build version from the previous workflow
+        BUILD_VERSION="${{ github.event.workflow_run.outputs.BUILD_VERSION }}"
+        if [ -z "$BUILD_VERSION" ]; then
+          # Fallback: get latest commit sha
+          SHA=$(git rev-parse HEAD)
+          SHORT_SHA=${SHA::7}
+          BUILD_VERSION=build-${SHORT_SHA}
+        fi
+        # The actual version format is 0.0.0-build-{SHORT_SHA}-{TIMESTAMP}
+        # We need to find the latest version that matches our build pattern
+        echo "BUILD_VERSION=${BUILD_VERSION}" >> $GITHUB_OUTPUT
+        echo "Using build version: ${BUILD_VERSION}"
+
+    - name: 🔧 Install @xyd-js/cli from built version
+      run: |
+        # Install the CLI package from the built version
+        # The actual version format is 0.0.0-build-{SHORT_SHA}-{TIMESTAMP}
+        # We need to find the latest version that matches our build pattern
+        SHORT_SHA="${{ steps.get-version.outputs.BUILD_VERSION }}"
+        SHORT_SHA=${SHORT_SHA#build-}  # Remove 'build-' prefix
+        
+        # Get the latest version that matches our build pattern
+        LATEST_BUILD_VERSION=$(npm view @xyd-js/cli versions --json | jq -r '.[] | select(test("^0\\.0\\.0-build-'${SHORT_SHA}'-[0-9]+$")) | .' | sort -V | tail -n1)
+        
+        if [ -z "$LATEST_BUILD_VERSION" ]; then
+          echo "❌ No build version found for SHA: ${SHORT_SHA}"
+          exit 1
+        fi
+        
+        echo "📦 Installing @xyd-js/cli@${LATEST_BUILD_VERSION}"
+        pnpm add @xyd-js/cli@${LATEST_BUILD_VERSION} --registry=https://registry.npmjs.org
+
+    - name: 🧪 Run E2E tests
+      run: pnpm run test:e2e

@@ -50,10 +50,41 @@ const { schema: TAG_SCHEMA, prefix: TAG_PREFIX } = detectSchema(VERSION);
 const firstSha = () => { try { return sh("git rev-list --max-parents=0 HEAD").split("\n")[0]; } catch { return ""; } };
 function latestMatchingTag(exclude) {
   const all = sh("git tag --sort=-version:refname").split("\n").filter(Boolean);
-  if (TAG_SCHEMA === "v*") return all.find(t => /^v[0-9]/.test(t) && t !== exclude) || "";
-  if (TAG_SCHEMA.includes("@")) return all.find(t => t.startsWith(TAG_PREFIX) && t !== exclude) || "";
+  
+  // Check if current version is a stable version (no pre-release suffix)
+  const isStableVersion = !VERSION.includes('-');
+  
+  if (TAG_SCHEMA === "v*") {
+    if (isStableVersion) {
+      // For stable versions, only consider other stable versions
+      return all.find(t => /^v[0-9]/.test(t) && !t.includes('-') && t !== exclude) || "";
+    } else {
+      // For pre-release versions, consider all versions
+      return all.find(t => /^v[0-9]/.test(t) && t !== exclude) || "";
+    }
+  }
+  
+  if (TAG_SCHEMA.includes("@")) {
+    if (isStableVersion) {
+      // For stable versions, only consider other stable versions
+      return all.find(t => t.startsWith(TAG_PREFIX) && !t.includes('-') && t !== exclude) || "";
+    } else {
+      // For pre-release versions, consider all versions
+      return all.find(t => t.startsWith(TAG_PREFIX) && t !== exclude) || "";
+    }
+  }
+  
   const mm = (VERSION.match(/^(\d+\.\d+)\./) || [, ""])[1];
-  if (mm) return all.find(t => t.startsWith(`${mm}.`) && t !== exclude) || "";
+  if (mm) {
+    if (isStableVersion) {
+      // For stable versions, only consider other stable versions
+      return all.find(t => t.startsWith(`${mm}.`) && !t.includes('-') && t !== exclude) || "";
+    } else {
+      // For pre-release versions, consider all versions
+      return all.find(t => t.startsWith(`${mm}.`) && t !== exclude) || "";
+    }
+  }
+  
   return "";
 }
 const PREVIOUS_TAG = PREVIOUS_TAG_ARG || latestMatchingTag(VERSION);

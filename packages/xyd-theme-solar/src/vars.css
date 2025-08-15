@@ -43,7 +43,7 @@
 
 /* Coder */
 :root {
-    --xyd-coder-code-description-bgcolor: var(--dark16);
+    --xyd-coder-code-description-bgcolor: var(--color-bg);
 }
 
 @define-mixin dark-theme {

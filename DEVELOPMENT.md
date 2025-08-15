@@ -137,9 +137,9 @@ npm login --registry http://localhost:4873 (test, test)
 
 Install xyd-js cli from verdaccio
 ```
-npm_config_registry=http://localhost:4873 bun add -g @xyd-js/cli 
-npm_config_registry=http://localhost:4873 npm i -g @xyd-js/cli 
-npm_config_registry=http://localhost:4873 pnpm add -g @xyd-js/cli
+npm_config_registry=http://localhost:4873 bun add -g xyd-js 
+npm_config_registry=http://localhost:4873 npm i -g xyd-js 
+npm_config_registry=http://localhost:4873 pnpm add -g xyd-js
 ```
 
 Build xyd from using verdaccio packages
@@ -193,7 +193,7 @@ pnpm changeset publish --otp=<OTP_CODE>
 ```
 
 ```
-npm uninstall -g @xyd-js/cli
+npm uninstall -g xyd-js
 ```
 
 ### changeset verdaccio publish

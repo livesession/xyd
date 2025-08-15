@@ -4,7 +4,6 @@ on:
   push:
     tags:
       - 'v*.*.*' # stable e.g. v0.1.0
-      - 'v*.*.*-*' # pre-release e.g. v0.1.0-alpha.1
 
 jobs:
   cli-release:
@@ -54,6 +53,47 @@ jobs:
           fi
           echo "✅ Version match confirmed"
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.10.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: 🧪 Run Unit Tests
+        run: pnpm test:unit
+
+      - name: 🧪 Run E2E Tests
+        run: pnpm test:e2e
+
+      - name: 🧪 Run Node Support Tests
+        run: |
+          # Install bun if not already available
+          if ! command -v bun &> /dev/null; then
+            curl -fsSL https://bun.sh/install | bash
+            echo "$HOME/.bun/bin" >> $GITHUB_PATH
+          fi
+          
+          # Install xyd-js globally
+          bun add -g xyd-js
+          
+          # Run node support tests
+          pnpm run test:node-support
+
       - name: 🚀 Publish to npm
         run: |
           cd packages/xyd-js
@@ -61,26 +101,29 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-#      - name: 📝 Generate release notes
-#        id: release_notes
-#        run: |
-#          chmod +x scripts/release-notes.mjs
-#          RELEASE_BODY=$(./scripts/release-notes.mjs "${{ steps.version.outputs.VERSION }}")
-#          echo "RELEASE_BODY<<EOF" >> $GITHUB_OUTPUT
-#          echo "$RELEASE_BODY" >> $GITHUB_OUTPUT
-#          echo "EOF" >> $GITHUB_OUTPUT
+      - name: 📝 Generate release notes
+        id: release_notes
+        run: |
+          chmod +x scripts/release-notes.mjs
+          RELEASE_BODY=$(./scripts/release-notes.mjs "${{ steps.version.outputs.VERSION }}")
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_OUTPUT
+          echo "$RELEASE_BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-      # TODO: 
-      # - name: 🏷️ Create GitHub Release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     tag_name: ${{ github.ref }}
-      #     release_name: Release ${{ steps.version.outputs.VERSION }}
-      #     body: ${{ steps.release_notes.outputs.RELEASE_BODY }}
-      #     draft: false
-      #     prerelease: ${{ contains(steps.version.outputs.VERSION, '-') }}
+      - name: 🏷️ Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ steps.version.outputs.VERSION }}
+          body: ${{ steps.release_notes.outputs.RELEASE_BODY }}
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.VERSION, '-') }}
 
-
-
+      - name: 🎨 Generate Node.js Support Baseline
+        run: |
+          chmod +x scripts/generate-baseline.mjs
+          VERSION=${{ steps.version.outputs.VERSION }} node scripts/generate-baseline.mjs test-results.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
