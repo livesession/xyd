@@ -45,12 +45,15 @@ jobs:
     - name: Install dependencies
       run: pnpm i
 
+    - name: Install Playwright browsers
+      run: pnpm exec playwright install
+
     - name: 🔧 Install xyd-js globally via bun
       run: |
         # Install bun if not already available
         if ! command -v bun &> /dev/null; then
           curl -fsSL https://bun.sh/install | bash
-          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.bun/bin:$PATH"
         fi
         
         # Install xyd-js globally
