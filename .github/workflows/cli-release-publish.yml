@@ -48,8 +48,8 @@ jobs:
       - name: 📦 Install CLI package
         run: |
           cd packages/xyd-js
-          echo "Installing @xyd-js/cli@${{ github.event.inputs.build_version }}"
-          npm install @xyd-js/cli@${{ github.event.inputs.build_version }}
+          echo "Installing @xyd-js/cli@${{ github.event.inputs.build_version }} --save-exact"
+          npm install @xyd-js/cli@${{ github.event.inputs.build_version }} --save-exact
 
       - name: 🔄 Update package version
         run: |
