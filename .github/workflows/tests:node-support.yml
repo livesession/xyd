@@ -49,7 +49,12 @@ jobs:
       run: pnpm exec playwright install
 
     - name: 🔧 Install n version manager
-      run: npm install -g n
+      run: |
+        npm install -g n
+        # Set N_PREFIX to a directory we can write to
+        echo "N_PREFIX=$HOME/.n" >> $GITHUB_ENV
+        export N_PREFIX=$HOME/.n
+        mkdir -p $HOME/.n
 
     - name: 🔧 Install xyd-js globally via bun
       run: |
