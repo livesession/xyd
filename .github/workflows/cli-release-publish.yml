@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_DEPLOY }}
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
@@ -69,6 +69,7 @@ jobs:
         run: |
           git add packages/xyd-js/package.json packages/xyd-js/package-lock.json
           git commit -m "chore(release): 🚀 v${{ github.event.inputs.chosen_version }} 🚀"
+          git remote set-url origin https://x-access-token:${{ secrets.PAT_DEPLOY }}@github.com/${{ github.repository }}.git
           git push origin master
 
       - name: 🏷️ Create and push tag
