@@ -121,6 +121,10 @@ Development guide with setup instructions, available scripts, and contribution g
 
 ---
 
+<img src="https://api.basely.dev/github/download/releases/livesession/xyd?asset=node-support-baseline.png"/>
+
+---
+
 <div style="display: flex;">
  <p>
    <b>Join our community</b>&nbsp;
