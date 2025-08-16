@@ -181,34 +181,32 @@ async function processUniformFile(
                 }
             }
 
-        }
-
-        throw new Error("current implementation does not support remote files")
-
-        // For remote files, download the content
-        const content = await downloadContent(
-            filePath,
-            file,
-            resolveFrom,
-        );
-
-        // Fallback to creating temporary folder structure if no package.json found
-        const tempDir = await createTempFolderStructure(content);
-
-        try {
-            // Get the path to the package directory
-            const tempPackageDir = path.join(tempDir, 'packages', 'package');
-
-            // Process the content using sourcesToUniform
-            const references = await sourcesToUniformV2(
-                tempDir,
-                [tempPackageDir]
+        } else {
+            // Handle remote files
+            const content = await downloadContent(
+                filePath,
+                file,
+                resolveFrom,
             );
 
-            return references || null;
-        } finally {
-            // Clean up the temporary directory when done
-            cleanupTempFolder(tempDir);
+            // For remote files, we need to create a temporary structure
+            const tempDir = await createTempFolderStructure(content);
+
+            try {
+                // Get the path to the package directory
+                const tempPackageDir = path.join(tempDir, 'packages', 'package');
+
+                // Process the content using sourcesToUniform
+                const references = await sourcesToUniformV2(
+                    tempDir,
+                    [tempPackageDir]
+                );
+
+                return references || null;
+            } finally {
+                // Clean up the temporary directory when done
+                cleanupTempFolder(tempDir);
+            }
         }
 
     } catch (error) {

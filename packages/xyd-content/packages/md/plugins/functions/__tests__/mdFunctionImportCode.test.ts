@@ -1,5 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs';
+import {VFile} from 'vfile';
 
 import { describe, it, expect } from 'vitest';
 
@@ -261,6 +262,35 @@ line9
             const fnCall = mdFunctionImportCode()()
             const tree = importCodeMockTree(externalUrl);
             const file = createMockFile();
+
+            await fnCall(tree, file);
+
+            // Restore original fetch
+            restoreFetch(originalFetch);
+
+            expect(tree.children[0].type).toBe('code');
+            expect((tree.children[0] as any).lang).toBe('typescript');
+            expect((tree.children[0] as any).value).toContain('export function externalFunction');
+        });
+
+        it('should handle relative paths when file is from remote URL', async () => {
+            // Create mock fetch with our fixture content for relative paths
+            const remoteBaseUrl = 'https://raw.githubusercontent.com/xyd-js/examples/refs/heads/master/abtesting/';
+            const relativePath1 = '@snippets/installation.ts';
+            const relativePath2 = './tutorial1.ts';
+            
+            const fixtureContent = fs.readFileSync(path.resolve(fixturesDir, 'external.ts'), 'utf8');
+            const originalFetch = createMockFetch({
+                [`${remoteBaseUrl}${relativePath1}`]: fixtureContent,
+                [`${remoteBaseUrl}${relativePath2}`]: fixtureContent
+            });
+
+            const fnCall = mdFunctionImportCode()()
+            const tree = importCodeMockTree(relativePath1);
+            const file = new VFile({
+                path: `${remoteBaseUrl}index.md`,
+                value: 'test content'
+            });
 
             await fnCall(tree, file);
 

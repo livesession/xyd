@@ -44,9 +44,6 @@ export function mdFunctionInclude(settings?: Settings) {
                 const resolvedPath =
                     resolvePathAlias(importPath, settings, file) || importPath;
 
-                const resolvedIncludeBasePath =
-                    resolvePathAlias(resolvedPath, settings, file) || importPath;
-
                 const promise = (async () => {
                     try {
                         const ext = resolvedPath.split('.').pop();
@@ -56,10 +53,23 @@ export function mdFunctionInclude(settings?: Settings) {
                             options.resolveFrom,
                         );
 
-                        const includeFilePath = path.join(file.dirname || "", resolvedIncludeBasePath)
+                        // Handle file path construction for both local and remote files
+                        let includeFilePath: string;
+                        let includeFileDirname: string;
+                        
+                        if (resolvedPath.startsWith('http://') || resolvedPath.startsWith('https://')) {
+                            // For remote files, use the resolved path directly
+                            includeFilePath = resolvedPath;
+                            includeFileDirname = new URL(resolvedPath).pathname.replace(/\/[^\/]*$/, '');
+                        } else {
+                            // For local files, use the original logic
+                            includeFilePath = path.join(file.dirname || "", resolvedPath);
+                            includeFileDirname = path.dirname(includeFilePath);
+                        }
+                        
                         const includedFile = new VFile({
                             path: includeFilePath,
-                            dirname: path.dirname(includeFilePath),
+                            dirname: includeFileDirname,
                             value: content
                         });
 
