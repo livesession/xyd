@@ -20,6 +20,11 @@
         "head": []
     },
     "integrations": {
+        "editLink": {
+            "baseUrl": "https://github.com/livesession/xyd/edit/master/apps/docs",
+            "title": "Edit page",
+            "icon": "docs:github"
+        },
         "diagrams": true,
         "search": {
             "orama": true
@@ -235,7 +240,8 @@
                         "pages": [
                             "docs/guides/introduction",
                             "docs/guides/quickstart",
-                            "docs/guides/deploy"
+                            "docs/guides/deploy",
+                            "docs/guides/compare"
                         ]
                     },
                     {
@@ -343,7 +349,8 @@
                                 "icon": "layout-grid",
                                 "pages": [
                                     "docs/guides/integrations/apps/github-star",
-                                    "docs/guides/integrations/apps/supademo"
+                                    "docs/guides/integrations/apps/supademo",
+                                    "docs/guides/integrations/apps/edit-link"
                                 ]
                             }
                         ]

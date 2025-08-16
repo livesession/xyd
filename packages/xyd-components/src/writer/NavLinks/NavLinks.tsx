@@ -15,6 +15,8 @@ export interface NavLinksProps {
     as?: React.ElementType
 
     className?: string
+
+    children?: React.ReactNode
 }
 
 export function NavLinks(
@@ -26,32 +28,36 @@ export function NavLinks(
         <xyd-navlinks
             className={`${cn.NavLinksHost} ${props.className || ""}`}
         >
-            {props.prev ? (
-                <Link
-                    href={props.prev.href}
-                    title={props.prev.title}
-                    part="link"
-                >
-                    <$ArrowLeftIcon part="icon"/>
-                    {props.prev.title}
-                </Link>
-            ) : <div/>}
-            {props.next && (
-                <Link
-                    href={props.next.href}
-                    title={props.next.title}
-                    part="link"
-                >
-                    {props.next.title}
-                    <$ArrowRightIcon part="icon"/>
-                </Link>
-            )}
+            {props.children}
+            
+            <div>
+                {props.prev ? (
+                    <Link
+                        href={props.prev.href}
+                        title={props.prev.title}
+                        part="link"
+                    >
+                        <$ArrowLeftIcon part="icon" />
+                        {props.prev.title}
+                    </Link>
+                ) : <div />}
+                {props.next && (
+                    <Link
+                        href={props.next.href}
+                        title={props.next.title}
+                        part="link"
+                    >
+                        {props.next.title}
+                        <$ArrowRightIcon part="icon" />
+                    </Link>
+                )}
+            </div>
         </xyd-navlinks>
     )
 }
 
 
-function $Anchor({children, ...rest}) {
+function $Anchor({ children, ...rest }) {
     return <a {...rest}>
         {children}
     </a>
@@ -77,7 +83,7 @@ function $ArrowRightIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 function $ArrowLeftIcon(props: React.SVGProps<SVGSVGElement>) {
-    return  <svg
+    return <svg
         width={15}
         height={15}
         viewBox="0 0 15 15"
@@ -93,3 +99,4 @@ function $ArrowLeftIcon(props: React.SVGProps<SVGSVGElement>) {
         />
     </svg>
 }
+    

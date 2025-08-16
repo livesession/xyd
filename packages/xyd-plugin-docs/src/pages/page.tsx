@@ -37,6 +37,7 @@ interface loaderData {
     metadata: Metadata | null
     rawPage: string // TODO: in the future routing like /docs/quickstart.md but some issues with react-router like *.md in `route` config
     navlinks?: INavLinks,
+    editLink?: string,
 }
 
 class timedebugLoader {
@@ -151,6 +152,10 @@ export async function loader({ request }: { request: any }) {
         metadata.layout = pageMetaLayout(metadata)
     }
 
+    let editLink = settings?.integrations?.editLink?.baseUrl ?
+        path.join(settings?.integrations?.editLink?.baseUrl || "", pagePath) :
+        undefined
+
     return {
         sidebarGroups,
         breadcrumbs,
@@ -159,6 +164,7 @@ export async function loader({ request }: { request: any }) {
         code,
         metadata,
         rawPage,
+        editLink,
     } as loaderData
 }
 
@@ -432,6 +438,7 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
                 navlinks={loaderData.navlinks}
                 ContentComponent={Content}
                 ContentOriginal={ContentOriginal}
+                editLink={loaderData.editLink}
             >
                 <Page>
                     <ContentOriginal components={{

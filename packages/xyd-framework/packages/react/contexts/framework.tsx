@@ -89,6 +89,7 @@ interface FrameworkPageProps {
     rawPage?: string
     toc?: ITOC[],
     navlinks?: INavLinks
+    editLink?: string
 }
 
 interface IFrameworkPageContext {
@@ -99,6 +100,7 @@ interface IFrameworkPageContext {
     rawPage?: Readonly<string>
     toc?: Readonly<ITOC[]>
     navlinks?: Readonly<INavLinks>
+    editLink?: Readonly<string>
 }
 
 const FrameworkPageContext = createContext<IFrameworkPageContext>({
@@ -124,6 +126,7 @@ export function FrameworkPage(props: FrameworkPageProps) {
         rawPage: Object.freeze(props.rawPage),
         toc: Object.freeze(props.toc || []),
         navlinks: Object.freeze(props.navlinks),
+        editLink: Object.freeze(props.editLink),
     }}>
         {props.children}
     </FrameworkPageContext>
@@ -172,6 +175,11 @@ export function useNavLinks() {
     return ctx.navlinks
 }
 
+export function useEditLink() {
+    const ctx = useContext(FrameworkPageContext)
+
+    return ctx.editLink
+}
 
 export function useRawPage() {
     const ctx = useContext(FrameworkPageContext)

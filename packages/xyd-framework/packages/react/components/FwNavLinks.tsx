@@ -1,10 +1,14 @@
 import React from "react";
-import {NavLinks} from "@xyd-js/components/writer";
+import { NavLinks } from "@xyd-js/components/writer";
 
-import {useNavLinks} from "../contexts";
-import {FwLink} from "./FwLink";
+import { useNavLinks } from "../contexts";
+import { FwLink } from "./FwLink";
 
-export function FwNavLinks() {
+export interface FwNavLinksProps {
+    children?: React.ReactNode
+}
+
+export function FwNavLinks({ children }: FwNavLinksProps) {
     const navlinks = useNavLinks()
 
     if (navlinks?.prev || navlinks?.next) {
@@ -12,7 +16,9 @@ export function FwNavLinks() {
             prev={navlinks.prev}
             next={navlinks.next}
             as={FwLink}
-        />
+        >
+            {children}
+        </NavLinks>
     }
 
     return null

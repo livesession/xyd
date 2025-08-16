@@ -3,29 +3,35 @@ import {css} from "@linaria/core";
 export const NavLinksHost = css`
     @layer defaults {
         font-weight: var(--xyd-font-weight-semibold);
-        display: flex;
-        padding-top: 2rem;
+        display: block;
+        padding-top: 8px;
         margin-top: 2rem;
         margin-bottom: 2rem;
-        justify-content: space-between;
-        align-items: center;
         border-top-width: 1px;
         border-color: var(--xyd-navlinks-border-color);
 
-        [part="link"] {
+        > div {
+            flex: 1;
             display: flex;
-            gap: 8px;
+            justify-content: space-between;
             align-items: center;
-            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 300ms;
-            max-width: 50%;
-        }
+            margin-top: 1rem;
 
-        [part="icon"] {
-            display: inline;
-            height: 1.25rem;
-            flex-shrink: 0;
+            [part="link"] {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+                transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+                transition-duration: 300ms;
+                max-width: 50%;
+            }
+
+            [part="icon"] {
+                display: inline;
+                height: 1.25rem;
+                flex-shrink: 0;
+            }
         }
     }
 `;

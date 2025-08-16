@@ -932,9 +932,31 @@ export interface Integrations {
     diagrams?: boolean
 
     /**
+     * Edit link configuration
+     */
+    editLink?: EditLink
+
+    /**
      * Custom apps directory.
      */
     [".apps"]?: AppsDirectory
+}
+
+export interface EditLink {
+    /**
+     * The base URL for the edit link
+     */
+    baseUrl: string
+
+    /**
+     * The title for the edit link
+     */
+    title?: string
+
+    /**
+     * The icon for the edit link
+     */
+    icon?: string
 }
 
 // #region IntegrationAnalytics

@@ -682,6 +682,27 @@
       },
       "type": "object"
     },
+    "EditLink": {
+      "additionalProperties": false,
+      "properties": {
+        "baseUrl": {
+          "description": "The base URL for the edit link",
+          "type": "string"
+        },
+        "icon": {
+          "description": "The icon for the edit link",
+          "type": "string"
+        },
+        "title": {
+          "description": "The title for the edit link",
+          "type": "string"
+        }
+      },
+      "required": [
+        "baseUrl"
+      ],
+      "type": "object"
+    },
     "Engine": {
       "additionalProperties": false,
       "description": "Engine configuration",
@@ -1111,6 +1132,10 @@
         "diagrams": {
           "description": "Diagrams configuration",
           "type": "boolean"
+        },
+        "editLink": {
+          "$ref": "#/definitions/EditLink",
+          "description": "Edit link configuration"
         },
         "search": {
           "$ref": "#/definitions/IntegrationSearch",
