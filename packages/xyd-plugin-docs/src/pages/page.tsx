@@ -132,7 +132,7 @@ export async function loader({ request }: { request: any }) {
 
     const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)
 
-    const pagePath = globalThis.__xydPagePathMapping[slug]
+    let pagePath = globalThis.__xydPagePathMapping[slug]
     if (pagePath) {
         timedebug.compile
         code = await contentFs.compile(pagePath)
@@ -152,8 +152,18 @@ export async function loader({ request }: { request: any }) {
         metadata.layout = pageMetaLayout(metadata)
     }
 
-    let editLink = settings?.integrations?.editLink?.baseUrl ?
-        path.join(settings?.integrations?.editLink?.baseUrl || "", pagePath) :
+    let baseUrl = settings?.integrations?.editLink?.baseUrl
+
+    if (baseUrl && baseUrl.endsWith("/")) {
+        baseUrl = baseUrl.slice(0, -1)
+    }
+
+    if (pagePath && !pagePath.startsWith("/")) {
+        pagePath = `/${pagePath}`
+    }
+
+    let editLink = baseUrl ?
+        `${baseUrl}${pagePath}` :
         undefined
 
     return {
