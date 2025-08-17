@@ -15,7 +15,7 @@ export const NavLinksHost = css`
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 1rem;
+            margin-top: 2rem;
 
             [part="link"] {
                 display: flex;
