@@ -1,8 +1,8 @@
-import {OpenAPIV3} from "openapi-types";
+import { OpenAPIV3 } from "openapi-types";
 
-import {DefinitionProperty} from "@xyd-js/uniform";
+import { DefinitionProperty } from "@xyd-js/uniform";
 
-import { schemaObjectToUniformDefinitionPropertyMeta } from "../oas-core";
+import { schemaObjectToUniformDefinitionProperties, schemaObjectToUniformDefinitionProperty, schemaObjectToUniformDefinitionPropertyMeta } from "../oas-core";
 
 // oapParametersToDefinitionProperties converts OpenAPI parameters to uniform DefinitionProperties
 export function oapParametersToDefinitionProperties(
@@ -17,24 +17,20 @@ export function oapParametersToDefinitionProperties(
 
         const schema = param.schema as OpenAPIV3.SchemaObject
 
-        const meta = [
-            ...(schemaObjectToUniformDefinitionPropertyMeta(schema, param.name) || []),
-            ...(schemaObjectToUniformDefinitionPropertyMeta(param, param.name) || []),
-        ]
+        const property = schemaObjectToUniformDefinitionProperty(
+            param.name,
+            schema,
+            param.required,
+            schema?.type === "array" ? true : false,
+        )
 
-        let oapV2Type = ""
-        if ("type" in param) {
-            oapV2Type = param.type as string
+        if (property) {
+            parameterIn[param.in].push({
+                ...property,
+                description: param.description || "",
+            })
         }
-        
-        const property: DefinitionProperty = {
-            name: param.name,
-            type: schema?.type || oapV2Type || "",
-            description: param.description || "",
-            meta
-        }
-    
-        parameterIn[param.in].push(property)
+
     })
 
     return parameterIn

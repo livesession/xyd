@@ -641,12 +641,12 @@ function renderMetaInfo(meta: DefinitionPropertyMeta[] | undefined) {
     const exampleInfo = example || examples ? <div part="examples">
         <span>Examples:</span>
         {
-            example ? <Badge>{`${example}`}</Badge> : null
+            example ? <Badge pre>{`${example}`}</Badge> : null
         }
         {
             Array.isArray(examples) && <div part="examples-list">
                 {examples.map((example, i) => (
-                    <Badge key={`example-${i}`}>{`${example}`}</Badge>
+                    <Badge key={`example-${i}`} pre>{`${example}`}</Badge>
                 ))}
             </div>
         }

@@ -22,6 +22,11 @@ export interface BadgeProps {
      * The kind of the badge.
      */
     kind?: "warning" | "info" | "default"
+
+    /**
+     * Whether the badge should be pre-formatted.
+     */
+    pre?: boolean
 }
 
 /**
@@ -33,12 +38,14 @@ export function Badge({
     className,
     children,
     size = "sm",
-    kind = "default"
+    kind = "default",
+    pre = false
 }: BadgeProps) {
     return <xyd-badge
         className={`${cn.BadgeHost} ${className || ''}`}
         data-size={size}
         data-kind={kind}
+        data-pre={pre ? "true" : undefined}
     >
         <span part="child">
             {children}

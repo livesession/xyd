@@ -22,6 +22,14 @@ export const BadgeHost = css`
             font-size: var(--xyd-font-size-xsmall);
         }
         
+        &[data-pre="true"] {
+            white-space: pre;
+            height: auto;
+            padding: 2px 10px;
+            max-width: 400px;
+            overflow: auto;
+        }
+
         /* Kind variants */
         &[data-kind="default"] {
             color: var(--xyd-badge-color--default);

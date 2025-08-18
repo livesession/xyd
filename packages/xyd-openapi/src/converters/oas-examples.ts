@@ -143,7 +143,7 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
             }
 
             let value = param.example
-            if (!value && param.schema) {
+            if (!value && param.schema && param.required) {
                 value = openApiSampler(sanitizeSchema(param.schema as JSONSchema7))
             }
             if (value !== undefined) {
@@ -198,16 +198,43 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
         const langs = xDocsLanguages(operation.api) || DEFAULT_CODE_LANGUAGES
         langs.forEach(lang => {
             // Sanitize operation to remove circular references before passing to oasToSnippet
-            let snippetOperation = operation
-            const v = operation?.api?.paths?.[operation?.path]?.[operation?.method]
-            if (v) {
-                snippetOperation = fixCircularReferences(v);
+            // Use the original operation but handle the circular reference error at the JSON.stringify level
+            let code = "";
+            try {
+                const result = oasToSnippet(oas, operation, {
+                    ...paramData,
+                    ...bodyData
+                }, null, lang);
+                code = result.code || "";
+            } catch (error) {
+                // TODO: in the future better solution
+                // If we get a circular reference error, it's likely in the oas library's internal processing
+                // Let's try to work around it by temporarily monkey-patching JSON.stringify
+                const originalStringify = JSON.stringify;
+                try {
+                    JSON.stringify = function(value, replacer, space) {
+                        const seen = new WeakSet();
+                        const customReplacer = (key: any, val: any) => {
+                            if (typeof val === 'object' && val !== null) {
+                                if (seen.has(val)) {
+                                    return '[Circular]';
+                                }
+                                seen.add(val);
+                            }
+                            return val;
+                        };
+                        return originalStringify(value, customReplacer, space);
+                    };
+                    
+                    const result = oasToSnippet(oas, operation, {
+                        ...paramData,
+                        ...bodyData
+                    }, null, lang);
+                    code = result.code || "";
+                } finally {
+                    JSON.stringify = originalStringify;
+                }
             }
-
-            const {code} = oasToSnippet(oas, snippetOperation, {
-                ...paramData,
-                ...bodyData
-            }, null, lang)
 
             tabs.push({
                 title: lang,
@@ -514,8 +541,9 @@ function fixCircularReferences(schema: any, visited: WeakMap<any, any> = new Wea
     visited.set(schema, fixedSchema); // Set early to prevent infinite recursion
     
     for (const [key, value] of Object.entries(schema)) {
+        // Skip unsafe properties that might cause circular references
         if (key === '__UNSAFE_circular' || key === '__UNSAFE_refPath') {
-            continue; // Skip unsafe properties
+            continue;
         }
         
         if (typeof value === 'object' && value !== null) {

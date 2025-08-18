@@ -21,6 +21,7 @@
           "examples": [
             {
               "codeblock": {
+                "title": "List all users",
                 "tabs": [
                   {
                     "title": "bash",
@@ -66,12 +67,12 @@
             "description": "Maximum number of items to return",
             "meta": [
               {
-                "name": "defaults",
-                "value": 20
-              },
-              {
                 "name": "required",
                 "value": "true"
+              },
+              {
+                "name": "defaults",
+                "value": 20
               }
             ]
           },
