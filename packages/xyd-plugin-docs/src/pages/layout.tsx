@@ -166,8 +166,12 @@ export default function Layout() {
     const loaderData = useLoaderData<LoaderData>()
     const matches = useMatches()
 
-    const lastMatchId = matches[matches.length - 1]?.id || null
+    let lastMatchId = matches[matches.length - 1]?.id || null
 
+    // TODO: better solution in the future
+    if (lastMatchId && lastMatchId.includes(".xyd")) {
+        lastMatchId = ""
+    }
     let atlasVariantToggles: VariantToggleConfig[] = [];
 
     // TODO: BETTER HANDLE THAT

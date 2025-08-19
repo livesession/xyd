@@ -49,6 +49,7 @@ import { Metadata } from '@xyd-js/core';
 import { useRef } from 'react';
 import { useUXEvents } from '@xyd-js/analytics';
 import { useUXUnreachableElementTracker } from "@xyd-js/components/uxsdk";
+import { Nav } from '@xyd-js/ui';
 
 export class BaseTheme extends Theme {
     constructor() {
@@ -221,9 +222,9 @@ export class BaseTheme extends Theme {
         }
 
         return <>
-            <$Breadcrumbs />
-
             <ContentDecorator metaComponent={meta?.component || undefined}>
+                <$Breadcrumbs />
+
                 {children}
             </ContentDecorator>
 
@@ -428,28 +429,32 @@ export class BaseTheme extends Theme {
         const hideSidebar = this.useHideSidebar()
         const editLink = useEditLink()
         const settings = useSettings()
+        const meta = useMetadata()
+        const defaultContent = isDefaultContent(meta)
 
-        const editLinkElement = editLink ? <Button
-            theme="ghost"
-            href={editLink}
-            icon={
-                settings?.integrations?.editLink?.icon ?
-                    <Icon name={settings?.integrations?.editLink?.icon || ""} /> :
-                    <svg
-                        aria-hidden="true"
-                        width={16}
-                        height={16}
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                    >
-                        <path d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-1.1-.22 1 1 0 0 0-.32.22l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8c.1-.1.17-.2.22-.33a1 1 0 0 0 0-.24v-.14l.07-.05ZM6.83 20H4v-2.83l9.93-9.93 2.83 2.83L6.83 20ZM18.17 8.66l-2.83-2.83 1.42-1.41 2.82 2.82-1.41 1.42Z" />
-                    </svg>}>
-            {settings?.integrations?.editLink?.title || "Edit page"}
-        </Button> : null
+        const editLinkElement = (editLink && !defaultContent) ? <Nav.ItemRaw>
+            <Button
+                theme="ghost"
+                href={editLink}
+                icon={
+                    settings?.integrations?.editLink?.icon ?
+                        <Icon name={settings?.integrations?.editLink?.icon || ""} /> :
+                        <svg
+                            aria-hidden="true"
+                            width={16}
+                            height={16}
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                        >
+                            <path d="M22 7.24a1 1 0 0 0-.29-.71l-4.24-4.24a1 1 0 0 0-1.1-.22 1 1 0 0 0-.32.22l-2.83 2.83L2.29 16.05a1 1 0 0 0-.29.71V21a1 1 0 0 0 1 1h4.24a1 1 0 0 0 .76-.29l10.87-10.93L21.71 8c.1-.1.17-.2.22-.33a1 1 0 0 0 0-.24v-.14l.07-.05ZM6.83 20H4v-2.83l9.93-9.93 2.83 2.83L6.83 20ZM18.17 8.66l-2.83-2.83 1.42-1.41 2.82 2.82-1.41 1.42Z" />
+                        </svg>}>
+                {settings?.integrations?.editLink?.title || "Edit page"}
+            </Button>
+        </Nav.ItemRaw> : null
 
         if (hideSidebar) {
             if (editLinkElement) {
-                return <NavLinks>   
+                return <NavLinks>
                     {editLinkElement}
                 </NavLinks>
             }

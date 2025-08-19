@@ -25,11 +25,11 @@
     --green32: #d4f5e7;
     --green60: #14c397;
     --green80: #28a745;
-    --green100: #00936f;
+    --green100: #007155;
     --red80: #dc3545;
     --red100: #b91c1c;
     --yellow80: #ffc107;
-    --yellow100: #dea806;
+    --yellow100: #a65f00;
 
     --color-bg: var(--white);
     --color-text: var(--dark100);
@@ -67,11 +67,11 @@
     --blue80: #1971a8;
     --blue100: #00529b;
     --green80: #28a745;
-    --green100: #108944;
+    --green100: #007155;
     --red80: #dc3545;
     --red100: #b91c1c;
     --yellow80: #ffc107;
-    --yellow100: #dea806;
+    --yellow100: #a65f00;
     --color-bg: var(--white);
     --color-text: var(--dark100);
 
@@ -109,11 +109,11 @@
         --blue80: #1971a8;
         --blue100: #00529b;
         --green80: #28a745;
-        --green100: #108944;
+        --green100: #007155;
         --red80: #dc3545;
         --red100: #b91c1c;
         --yellow80: #ffc107;
-        --yellow100: #dea806;
+        --yellow100: #a65f00;
 
         --color-bg: var(--white);
         --color-text: var(--dark100);
@@ -175,13 +175,13 @@
 
     /* Line Heights */
     --xyd-line-height-xsmall: 16px;
-    --xyd-line-height-small: 19px;
-    --xyd-line-height-medium: 25px;
-    --xyd-line-height-large: 27px;
-    --xyd-line-height-xlarge: 33px;
-    --xyd-line-height-xxlarge: 39px;
-    --xyd-line-height-2xl: 44px;
-    --xyd-line-height-3xl: 56px;
+    --xyd-line-height-small: 20px;
+    --xyd-line-height-medium: 28px;
+    --xyd-line-height-large: 32px;
+    --xyd-line-height-xlarge: 36px;
+    --xyd-line-height-xxlarge: 40px;
+    --xyd-line-height-2xl: 48px;
+    --xyd-line-height-3xl: 64px;
 
     /* Font Weights */
     --xyd-font-weight-normal: 400;
@@ -384,7 +384,7 @@
     --xyd-nav-height: 50px;
     --xyd-nav-shadow-bgcolor: var(--color-bg);
     --xyd-nav-item-color: var(--text-primary);
-    --xyd-nav-item-color--active: var(--dark80);
+    --xyd-nav-item-color--active: var(--color-primary--active, var(--dark100));
     --xyd-nav-item-bgcolor--active: var(--dark16);
     --xyd-nav-padding: var(--xyd-padding-medium);
     --xyd-nav-padding-y: calc(var(--xyd-nav-padding) / 2);

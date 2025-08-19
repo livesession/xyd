@@ -56,9 +56,9 @@ export function FwNav() {
         </>
         }
         floatRightSurface={<>
-            <Nav.ItemRaw>
+            {appearance?.colorScheme !== false && <Nav.ItemRaw>
                 <ColorSchemeButton />
-            </Nav.ItemRaw>
+            </Nav.ItemRaw>}
             <Nav.ItemRaw>
                 <LayoutPrimary.Hamburger />
             </Nav.ItemRaw>

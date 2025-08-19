@@ -5,7 +5,7 @@ import {css} from "@linaria/core";
 import {ColorSchemeButton} from "@xyd-js/components/writer";
 import {UISidebar} from "@xyd-js/ui";
 import {BaseTheme} from "@xyd-js/themes"
-import {FwLogo} from "@xyd-js/framework/react";
+import {FwLogo, useSettings} from "@xyd-js/framework/react";
 import syntaxThemeClassic from "@xyd-js/components/coder/themes/classic.js"
 
 import "./imports.css"
@@ -52,12 +52,14 @@ export default class ThemeGusto extends BaseTheme {
 }
 
 function _SidebarTop() {
+    const settings = useSettings()
+    
     return <>
         <UISidebar.Item ghost>
             <div className={styles.SidebarTop}>
                 <FwLogo/>
                 <div>
-                    <ColorSchemeButton/>
+                    {settings?.theme?.appearance?.colorScheme !== false && <ColorSchemeButton/>}
                 </div>
             </div>
         </UISidebar.Item>

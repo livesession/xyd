@@ -30,9 +30,9 @@ export function pluginNavigation(
     settings: Settings,
     options: pluginNavigationOptions
 ): UniformPlugin<pluginNavigationOutput> {
-    if (!options.urlPrefix) {
-        throw new Error("urlPrefix is required")
-    }
+    // if (!options.urlPrefix) {
+    //     throw new Error("urlPrefix is required")
+    // }
 
     return function pluginNavigationInner({
         defer,

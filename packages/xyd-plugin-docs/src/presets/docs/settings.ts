@@ -33,14 +33,15 @@ const extensions = ['tsx', 'ts', 'json'];
  */
 export async function readSettings() {
     const dirPath = process.cwd();
-    const baseFileName = 'docs';
 
     // Load environment variables from .env files first
     await loadEnvFiles(dirPath);
 
+    const baseFileName = 'docs';
     let settingsFilePath = '';
     let reactSettings = false;
 
+    let error: string | null = null
     try {
         const files = await fs.readdir(dirPath);
         const settingsFile = files.find(file => {
@@ -52,44 +53,94 @@ export async function readSettings() {
             settingsFilePath = path.join(dirPath, settingsFile);
             reactSettings = path.extname(settingsFile) !== '.json';
         } else {
-            console.error(`No settings file found.\nFile must be named 'docs' with one of the following extensions: ${extensions.join(', ')}`);
-            return null;
+            error = "No settings file found.\nFile must be named 'docs' with one of the following extensions: ${extensions.join(', ')}"
         }
     } catch (error) {
         console.error(error);
         return null;
     }
 
-    if (reactSettings) {
-        const settingsPreview = await createServer({
-            optimizeDeps: {
-                include: ["react/jsx-runtime"],
-            },
-        });
-        const config = await settingsPreview.ssrLoadModule(settingsFilePath);
-        const mod = config.default as Settings;
+    let settings: Settings | null = null
 
-        // Replace environment variables in the settings
-        const processedSettings = replaceEnvVars(mod);
-        presets(processedSettings)
-
-        return processedSettings
-    } else {
-        const rawJsonSettings = await fs.readFile(settingsFilePath, 'utf-8');
-        try {
-            let json = JSON.parse(rawJsonSettings) as Settings
-
-            // Replace environment variables in the settings
-            const processedSettings = replaceEnvVars(json);
-            presets(processedSettings)
-
-            return processedSettings
-        } catch (e) {
-            console.error("⚠️ Error parsing settings file")
-
-            return null
+    if (!error) {
+        if (reactSettings) {
+            const settingsPreview = await createServer({
+                optimizeDeps: {
+                    include: ["react/jsx-runtime"],
+                },
+            });
+            const config = await settingsPreview.ssrLoadModule(settingsFilePath);
+            const mod = config.default as Settings;
+    
+            settings = postLoadSetup(mod)
+        } else {
+            const rawJsonSettings = await fs.readFile(settingsFilePath, 'utf-8');
+            try {
+                let json = JSON.parse(rawJsonSettings) as Settings
+    
+                settings = postLoadSetup(json)
+            } catch (e) {
+                console.error("⚠️ Error parsing settings file")
+    
+                return null
+            }
         }
     }
+
+    const fastServeSettings = await fastServeSetup(settings)
+    if (fastServeSettings) {
+        return fastServeSettings
+    }
+
+    return settings
+}
+
+// TODO: it's concept only
+async function fastServeSetup(currentSettings: Settings | null) {
+    const args = process.argv.slice(2);
+    const [command, optionalFastServePath] = args;
+
+    const fastServeMode = (command === 'dev' || command === 'build') && optionalFastServePath
+    if (!fastServeMode) {
+        return null
+    }
+
+    const extension = path.extname(optionalFastServePath).slice(1);
+
+    let fastServeSettings: Settings = {
+        theme: {
+            name: "gusto",
+            appearance: {
+                //@ts-ignore
+                search: false,
+                colorScheme: false
+            }
+        },
+    }
+    if (currentSettings) {
+        fastServeSettings = deepMerge(fastServeSettings, currentSettings)
+    }
+
+    switch (extension) {
+        case 'graphql': 
+        case 'graphqls': {
+            fastServeSettings.api = {
+                graphql: optionalFastServePath,
+            }
+
+            return postLoadSetup(fastServeSettings)
+        }
+    }
+
+    return null
+}
+
+function postLoadSetup(settings: Settings) {
+    // Replace environment variables in the settings
+    const processedSettings = replaceEnvVars(settings);
+    presets(processedSettings)
+
+    return processedSettings
 }
 
 // if (settings?.theme?.coder?.syntaxHighlight) {
@@ -179,7 +230,7 @@ async function loadEnvFiles(dirPath: string) {
 
             try {
                 await fs.access(envPath);
-                const result = dotenvConfig({ 
+                const result = dotenvConfig({
                     path: envPath,
                     override: true // Ensure variables are overridden
                 });
@@ -201,7 +252,7 @@ async function loadEnvFiles(dirPath: string) {
  * @param obj - The object to process
  * @returns The object with environment variables replaced
  */
-function replaceEnvVars(obj: any): any {
+function replaceEnvVars<T>(obj: T): T {
     if (obj === null || obj === undefined) {
         return obj;
     }
@@ -216,13 +267,13 @@ function replaceEnvVars(obj: any): any {
                     return match;
                 }
                 return envValue;
-            });
+            }) as T
         }
         return obj;
     }
 
     if (Array.isArray(obj)) {
-        return obj.map(item => replaceEnvVars(item));
+        return obj.map(item => replaceEnvVars(item)) as T;
     }
 
     if (typeof obj === 'object') {
@@ -259,4 +310,35 @@ function ensureNavigation(json: Settings) {
     if (!json?.navigation?.sidebar) {
         json.navigation.sidebar = []
     }
+}
+
+type DeepPartial<T> = {
+    [P in keyof T]?: T[P] extends object
+    ? T[P] extends Function
+    ? T[P]
+    : T[P] extends Array<infer U>
+    ? Array<DeepPartial<U>>
+    : DeepPartial<T[P]>
+    : T[P]
+}
+
+function deepMerge<T>(target: T, source: DeepPartial<T>): T {
+    for (const key in source) {
+        const sourceVal = source[key]
+        const targetVal = target[key]
+
+        if (
+            sourceVal &&
+            typeof sourceVal === "object" &&
+            !Array.isArray(sourceVal) &&
+            typeof targetVal === "object" &&
+            targetVal !== null
+        ) {
+            target[key] = deepMerge(targetVal, sourceVal)
+        } else if (sourceVal !== undefined) {
+            target[key] = sourceVal as any
+        }
+    }
+
+    return target
 }

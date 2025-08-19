@@ -106,7 +106,7 @@ export default {
             }
             h4 {
                 &[data-kind="muted"] {
-                    margin: 4px 0 16px;
+                    margin: 4px 0 32px;
                 }
             }
             
@@ -153,6 +153,7 @@ export default {
             xyd-breadcrumbs {
                 font-size: var(--xyd-font-size-small);
                 line-height: var(--xyd-line-height-small);
+                margin-bottom: var(--space-small);
             }
 
             xyd-grid-decorator {
