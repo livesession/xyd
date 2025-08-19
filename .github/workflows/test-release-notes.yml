@@ -33,24 +33,32 @@ jobs:
       - name: Generate release notes
         id: release_notes
         env:
+          # for your Node script's fetch() calls
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
         run: |
-          chmod +x scripts/release-notes.mjs
-          
-          if [ -n "${{ github.event.inputs.previous_tag }}" ]; then
-            RELEASE_BODY=$(./scripts/release-notes.mjs "${{ github.event.inputs.version }}" "${{ github.event.inputs.previous_tag }}")
+          set -euo pipefail
+
+          VERSION="${{ github.event.inputs.version }}"
+          PREV="${{ github.event.inputs.previous_tag }}"
+
+          if [ -n "$PREV" ]; then
+            RELEASE_BODY="$(node ./scripts/release-notes.mjs "$VERSION" "$PREV")"
           else
-            RELEASE_BODY=$(./scripts/release-notes.mjs "${{ github.event.inputs.version }}")
+            RELEASE_BODY="$(node ./scripts/release-notes.mjs "$VERSION")"
           fi
-          
-          echo "RELEASE_BODY<<EOF" >> $GITHUB_OUTPUT
-          echo "$RELEASE_BODY" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+
+          {
+            echo "RELEASE_BODY<<EOF"
+            echo "$RELEASE_BODY"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create release
+        env:
+          # gh CLI uses GH_TOKEN (or GITHUB_TOKEN)
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create ${{ github.event.inputs.version }} \
+          gh release create "${{ github.event.inputs.version }}" \
             --title "${{ github.event.inputs.version }}" \
             --notes "${{ steps.release_notes.outputs.RELEASE_BODY }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
