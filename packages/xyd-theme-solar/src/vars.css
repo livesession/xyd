@@ -8,15 +8,16 @@
     --dark48: #424240;
     --dark60: #282827;
     --dark80: #1a1a19;
+    --dark100: #000;
 
     --color-bg: #FCFCF9;
     --color-text: var(--dark48);
     --color-primary: #091717;
-    --color-primary--active: color-mix(in srgb, var(--color-primary) 85%, transparent);
+    --color-primary--active: color-mix(in srgb, var(--color-primary) 75%, transparent);
 
     --xyd-heading-color: var(--dark80);
     --xyd-anchor-color: var(--color-text);
-    --xyd-anchor-color--hover: var(--color-text);
+    --xyd-anchor-color--hover: var(--dark100);
 }
 /* Page Home */
 :root {
@@ -27,6 +28,11 @@
 :root {
     --xyd-sidebar-bgcolor: var(--color-bg);
     --xyd-sidebar-width: 320px;
+}
+
+/* Nav */
+:root {
+    --xyd-nav-item-color--active: var(--xyd-anchor-color--hover);
 }
 
 /* Subnav */

@@ -28,9 +28,11 @@ export function NavLinks(
         <xyd-navlinks
             className={`${cn.NavLinksHost} ${props.className || ""}`}
         >
-            {props.children}
+            {React.Children.count(props.children) > 0 ? (
+                <div part="children-slot">{props.children}</div>
+            ) : null}
             
-            <div>
+            <div part="links">
                 {props.prev ? (
                     <Link
                         href={props.prev.href}

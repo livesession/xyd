@@ -4,7 +4,6 @@ componentProps:
     hero:
         title: Welcome to xyd by LiveSession
         description: The docs framework for future dev.
-        image: "/public/assets/logo.svg"
         button: 
             title: "Get Started"
             href: "/docs/guides/introduction"

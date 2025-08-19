@@ -174,7 +174,7 @@ export interface Appearance {
     /**
      * The default color scheme to use.
      */
-    colorScheme?: "light" | "dark" | "os"
+    colorScheme?: "light" | "dark" | "os" | false
 
     /**
      * Colors configuration for the theme.
@@ -443,7 +443,7 @@ export interface Icons {
 }
 
 /** Available theme preset names */
-export type ThemePresetName = "poetry" | "cosmo" | "opener" | "picasso"
+export type ThemePresetName = "poetry" | "cosmo" | "opener" | "picasso" | "gusto" | "solar"
 
 /** Search bar location options */
 export type SearchType = "side" | "top"
@@ -833,11 +833,14 @@ export type APIFileMap = {
  * API file advanced type
  */
 export type APIFileAdvanced = {
-    /** API information configuration */
-    info?: APIInfo
+    /** Source configuration */
+    source: string
 
     /** Route configuration */
-    route: string
+    route?: string
+
+    /** API information configuration */
+    info?: APIInfo
 }
 
 /**

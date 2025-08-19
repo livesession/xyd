@@ -325,7 +325,8 @@ function generateColorTokens(primary: string): Record<string, string> {
         "--xyd-toc-item-color--active": 'var(--color-primary)',
         "--theme-color-primary": 'var(--color-primary)',
         "--theme-color-primary-active": 'var(--color-primary)',
-        "--color-primary--active": 'color-mix(in srgb, var(--color-primary) 85%, transparent)',
+        "--color-primary--active": 'color-mix(in srgb, var(--color-primary) 75%, transparent)',
+        "--xyd-breadcrumbs-color": 'var(--color-primary)',
     };
 }
 

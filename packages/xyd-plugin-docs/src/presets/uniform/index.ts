@@ -200,7 +200,10 @@ async function uniformResolver(
         })
     }
 
-    const resolvedApiFile = path.relative(process.cwd(), path.resolve(process.cwd(), apiFile))
+    let resolvedApiFile = path.relative(process.cwd(), path.resolve(process.cwd(), apiFile))
+    if (apiFile.startsWith("http") || apiFile.startsWith("https")) {
+        resolvedApiFile = apiFile
+    }
     const uniformRefs = await uniformApiResolver(resolvedApiFile)
     const plugins = globalThis.__xydUserUniformVitePlugins || []
 
@@ -218,9 +221,9 @@ async function uniformResolver(
     if (!urlPrefix && options?.urlPrefix) {
         urlPrefix = options.urlPrefix
     }
-    if (!urlPrefix) {
-        throw new Error('(uniformResolver): urlPrefix not found')
-    }
+    // if (!urlPrefix) {
+    //     throw new Error('(uniformResolver): urlPrefix not found')
+    // }
 
     if (uniformType === "openapi") {
         plugins.push(uniformPluginXDocsSidebar)
@@ -276,7 +279,7 @@ async function uniformResolver(
         })
 
         mergeSidebarsInPlace(uniformSidebars);
-    
+
         if (uniformSidebars.length > 1) {
             throw new Error('multiple sidebars found for uniform match')
         }
@@ -361,7 +364,10 @@ async function uniformResolver(
             //     mdFilePath,
             //     absoluteApiFile
             // )
-            const resolvedApiFile = absoluteApiFile // TODO: leave absolute or relative?
+            let resolvedApiFile = absoluteApiFile // TODO: leave absolute or relative?
+            if (apiFile.startsWith("http") || apiFile.startsWith("https")) {
+                resolvedApiFile = apiFile
+            }
             let region = ""
             // TODO: in the future more advanced composition? - not only like `GET /users/{id}`
             switch (uniformType) {
@@ -425,13 +431,13 @@ async function uniformResolver(
         }
     }
 
-    
+
     if (matchRoute) {
         // TODO: in the future custom position - before / after
         // if (uniformSidebars.length > 0) {
         //     uniformSidebars[0].pages.unshift(...uniformWithNavigation.out.sidebar as any)
         // }
-        
+
         // sidebar[0].pages.unshift({
         //     route: matchRoute,
         //     pages: uniformWithNavigation.out.sidebar
@@ -441,7 +447,7 @@ async function uniformResolver(
             if ("route" in item) {
                 return item.route === matchRoute
             }
-        
+
             return false
         })
 
@@ -514,10 +520,10 @@ async function composeFileMap(basePath: string, matchRoute: string) {
 // Helper function to merge sidebars with the same route
 function mergeSidebars(sidebars: SidebarRoute[]): SidebarRoute[] {
     const mergedMap = new Map<string, SidebarRoute>();
-    
+
     for (const sidebar of sidebars) {
         const existing = mergedMap.get(sidebar.route);
-        
+
         if (existing) {
             // Merge pages from both sidebars
             const mergedPages = [...(existing.pages || []), ...(sidebar.pages || [])];
@@ -529,7 +535,7 @@ function mergeSidebars(sidebars: SidebarRoute[]): SidebarRoute[] {
             mergedMap.set(sidebar.route, sidebar);
         }
     }
-    
+
     return Array.from(mergedMap.values());
 }
 
@@ -537,12 +543,12 @@ function mergeSidebars(sidebars: SidebarRoute[]): SidebarRoute[] {
 function mergeSidebarsInPlace(sidebars: (SidebarRoute | Sidebar)[]): void {
     const mergedMap = new Map<string, SidebarRoute>();
     const nonRouteSidebars: Sidebar[] = [];
-    
+
     // First pass: collect all sidebars by route and separate non-route sidebars
     for (const sidebar of sidebars) {
         if ("route" in sidebar) {
             const existing = mergedMap.get(sidebar.route);
-            
+
             if (existing) {
                 // Merge pages from both sidebars
                 const mergedPages = [...(existing.pages || []), ...(sidebar.pages || [])];
@@ -558,7 +564,7 @@ function mergeSidebarsInPlace(sidebars: (SidebarRoute | Sidebar)[]): void {
             nonRouteSidebars.push(sidebar);
         }
     }
-    
+
     // Second pass: replace the original array with merged results
     const mergedArray = Array.from(mergedMap.values());
     sidebars.length = 0; // Clear the original array
@@ -587,7 +593,7 @@ function preinstall(
             // TODO: support NOT ROUTE MATCH
 
             if (typeof apiFile === "string") {
-                const routeMatch = id
+                const routeMatch = ""
 
                 const resolved = await uniformResolver(
                     settings,
@@ -795,6 +801,11 @@ export abstract class UniformPreset {
         private sidebar: (SidebarRoute | Sidebar)[],
         private disableFSWrite?: boolean
     ) {
+        if (apiFile && typeof apiFile === "object" && "source" in apiFile) {
+            if (!apiFile.route) {
+                apiFile.route = ""
+            }
+        }
     }
 
     protected abstract uniformRefResolver(filePath: string): Promise<Reference[]>

@@ -7,7 +7,7 @@ import { Metadata, Settings } from '@xyd-js/core';
 import { sourcesToUniform, sourcesToUniformV2, type TypeDocReferenceContext } from '@xyd-js/sources/ts';
 import { reactDocgenToUniform, uniformToReactUniform } from '@xyd-js/sources/react';
 import { gqlSchemaToReferences } from "@xyd-js/gql"
-import {oapSchemaToReferences, deferencedOpenAPI, uniformPluginXDocsSidebar} from "@xyd-js/openapi"
+import { oapSchemaToReferences, deferencedOpenAPI, uniformPluginXDocsSidebar } from "@xyd-js/openapi"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
 import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
@@ -68,7 +68,8 @@ async function processUniformFile(
     resolveFrom?: string
 ): Promise<any[] | null> {
     try {
-        if (!isSupportedProgrammingSource(filePath)) {
+        const isRemote = isRemotePath(filePath)
+        if (!isRemote && !isSupportedProgrammingSource(filePath)) {
             // TODO: openapi + graphql
             throw new Error(`Unsupported file type: ${filePath}`);
         }
@@ -79,137 +80,115 @@ async function processUniformFile(
         if (matter?.openapi) {
             ext = "openapi"
         }
+        if (matter?.graphql) {
+            ext = "graphql"
+        }
 
-        if (isLocalPath(filePath)) {
-            const baseDir = resolveFrom || (file.dirname || process.cwd());
-            const resolvedFilePath = path.resolve(baseDir, filePath);
 
-            switch (ext) {
-                case 'ts':
-                case 'tsx': {
-                    const packageDir = findClosestPackageJsonDir(
-                        baseDir,
-                        filePath,
-                    );
+        const baseDir = resolveFrom || (file.dirname || process.cwd());
+        let resolvedFilePath = path.resolve(baseDir, filePath);
 
-                    if (packageDir) {
-                        // Extract the relative file path from the package directory
-                        const relativeFilePath = path.relative(packageDir, resolvedFilePath);
+        if (isRemote) {
+            // TODO: cache
+            resolvedFilePath = filePath
+        }
 
-                        try {
-                            let references: Reference[] = []
+        switch (ext) {
+            case 'ts':
+            case 'tsx': {
+                const packageDir = findClosestPackageJsonDir(
+                    baseDir,
+                    filePath,
+                );
 
-                            switch (ext) {
-                                case 'ts': {
-                                    const typedocRefs = await sourcesToUniformV2(
-                                        packageDir,
-                                        [relativeFilePath]
-                                    )
+                if (packageDir) {
+                    // Extract the relative file path from the package directory
+                    const relativeFilePath = path.relative(packageDir, resolvedFilePath);
 
-                                    if (!typedocRefs || !typedocRefs.references) {
-                                        console.error("Failed to process uniform file", filePath)
-                                        break
-                                    }
+                    try {
+                        let references: Reference[] = []
 
-                                    references = typedocRefs.references.filter(ref => {
-                                        const ctx = ref?.context as TypeDocReferenceContext
-        
-                                        const pathMatch = ctx?.fileFullPath === relativeFilePath
-                                        
+                        switch (ext) {
+                            case 'ts': {
+                                const typedocRefs = await sourcesToUniformV2(
+                                    packageDir,
+                                    [relativeFilePath]
+                                )
 
-                                        if (regions.length > 0) {
-                                            const regionMatch = regions.some(region => {
-                                                return region.name === ctx?.symbolName // TODO: BETTER REGION API FOR TYPEDOC
-                                            })
-
-                                            return pathMatch && regionMatch
-                                        }
-
-                                        return pathMatch
-                                    })
-
+                                if (!typedocRefs || !typedocRefs.references) {
+                                    console.error("Failed to process uniform file", filePath)
                                     break
                                 }
-                                
-                                case 'tsx': {
-                                    const resp = await sourcesToUniformV2(
-                                        packageDir,
-                                        [relativeFilePath]
-                                    )
 
-                                    if (!resp || !resp.references || !resp.projectJson) {
-                                        console.error("Failed to process uniform file", filePath)
-                                        return null
+                                references = typedocRefs.references.filter(ref => {
+                                    const ctx = ref?.context as TypeDocReferenceContext
+
+                                    const pathMatch = ctx?.fileFullPath === relativeFilePath
+
+
+                                    if (regions.length > 0) {
+                                        const regionMatch = regions.some(region => {
+                                            return region.name === ctx?.symbolName // TODO: BETTER REGION API FOR TYPEDOC
+                                        })
+
+                                        return pathMatch && regionMatch
                                     }
-                                    const typedocRefs = resp.references as Reference<TypeDocReferenceContext>[]
 
-                                    references = uniformToReactUniform(typedocRefs, resp.projectJson)
+                                    return pathMatch
+                                })
 
-                                    break
-                                }
+                                break
                             }
 
-                            return references
-                        } finally {
-                            // Clean up the temporary directory when done
-                            // cleanupTempFolder(tempDir);
+                            case 'tsx': {
+                                const resp = await sourcesToUniformV2(
+                                    packageDir,
+                                    [relativeFilePath]
+                                )
+
+                                if (!resp || !resp.references || !resp.projectJson) {
+                                    console.error("Failed to process uniform file", filePath)
+                                    return null
+                                }
+                                const typedocRefs = resp.references as Reference<TypeDocReferenceContext>[]
+
+                                references = uniformToReactUniform(typedocRefs, resp.projectJson)
+
+                                break
+                            }
                         }
-                    } else {
-                        console.error("package.json not found", filePath)
+
+                        return references
+                    } finally {
                     }
-                }
-
-                case 'graphql': {
-                    const references = await gqlSchemaToReferences(resolvedFilePath, {
-                        regions: regions.map(region => region.name),
-                    });
-
-                    return references;
-                }
-
-                case 'openapi': {
-                    const schema = await deferencedOpenAPI(resolvedFilePath);
-                    const references = oapSchemaToReferences(schema, {
-                        regions: regions.map(region => region.name)
-                    });
-
-                    return references;
-                }
-
-                default: {
-                    throw new Error(`Unsupported file extension: ${ext}`);
+                } else {
+                    console.error("package.json not found", filePath)
                 }
             }
 
+            case 'graphql': {
+                const references = await gqlSchemaToReferences(resolvedFilePath, {
+                    regions: regions.map(region => region.name),
+                });
+
+                return references;
+            }
+
+            case 'openapi': {
+                const schema = await deferencedOpenAPI(resolvedFilePath);
+                const references = oapSchemaToReferences(schema, {
+                    regions: regions.map(region => region.name)
+                });
+
+                return references;
+            }
+
+            default: {
+                throw new Error(`Unsupported file extension: ${ext}`);
+            }
         }
 
-        throw new Error("current implementation does not support remote files")
 
-        // For remote files, download the content
-        const content = await downloadContent(
-            filePath,
-            file,
-            resolveFrom,
-        );
-
-        // Fallback to creating temporary folder structure if no package.json found
-        const tempDir = await createTempFolderStructure(content);
-
-        try {
-            // Get the path to the package directory
-            const tempPackageDir = path.join(tempDir, 'packages', 'package');
-
-            // Process the content using sourcesToUniform
-            const references = await sourcesToUniformV2(
-                tempDir,
-                [tempPackageDir]
-            );
-
-            return references || null;
-        } finally {
-            // Clean up the temporary directory when done
-            cleanupTempFolder(tempDir);
-        }
 
     } catch (error) {
         console.error(`Error processing uniform file: ${filePath}`, error);
@@ -217,63 +196,6 @@ async function processUniformFile(
     }
 }
 
-
-/**
- * Creates a temporary folder structure with package.json, tsconfig.json, and src/index.ts
- * @param content The content to be placed in src/index.ts
- * @returns The path to the temporary directory
- */
-async function createTempFolderStructure(content: string): Promise<string> {
-    // Create a temporary directory
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'xyd-uniform-'));
-
-    // Create the package directory
-    const packageDir = path.join(tempDir, 'packages', 'package');
-    fs.mkdirSync(packageDir, { recursive: true });
-
-    // Create the src directory
-    const srcDir = path.join(packageDir, 'src');
-    fs.mkdirSync(srcDir, { recursive: true });
-
-    // Create package.json
-    const packageJson = {
-        "name": "@xyd-sources-examples/package-a",
-        "main": "dist/index.js"
-    };
-    fs.writeFileSync(
-        path.join(packageDir, 'package.json'),
-        JSON.stringify(packageJson, null, 2)
-    );
-
-    // Create tsconfig.json
-    const tsconfigJson = {
-        "compilerOptions": {
-            "outDir": "./dist"
-        }
-    };
-    fs.writeFileSync(
-        path.join(packageDir, 'tsconfig.json'),
-        JSON.stringify(tsconfigJson, null, 2)
-    );
-
-    // Create src/index.ts with the provided content
-    fs.writeFileSync(path.join(srcDir, 'index.ts'), content);
-
-    return tempDir;
-}
-
-/**
- * Cleans up the temporary folder structure
- * @param tempDir The path to the temporary directory
- */
-function cleanupTempFolder(tempDir: string): void {
-    try {
-        // Recursively delete the temporary directory
-        fs.rmSync(tempDir, { recursive: true, force: true });
-    } catch (error) {
-        console.error(`Error cleaning up temporary directory: ${tempDir}`, error);
-    }
-}
 
 const supportedProgrammingExtensions: Record<string, boolean> = {
     'ts': true,
@@ -339,11 +261,7 @@ function findClosestPackageJsonDir(
     return null;
 }
 
-/**
- * Check if a path is a local file path (not a URL)
- * @param filePath The path to check
- * @returns True if the path is local
- */
-function isLocalPath(filePath: string): boolean {
-    return !filePath.startsWith('http://') && !filePath.startsWith('https://');
+
+function isRemotePath(filePath: string): boolean {
+    return filePath.startsWith('http://') || filePath.startsWith('https://');
 }

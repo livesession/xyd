@@ -28,6 +28,7 @@
         xyd-nav {
             padding-inline: var(--theme-sidebar-padding);
             border-bottom: 1px solid var(--decorator-sketch-border-color);
+            font-weight: 500;
         }
 
         xyd-subnav {
@@ -57,7 +58,7 @@
         }
 
         xyd-content-decorator {
-            a {
+            a:not(xyd-guidecard a) {
                 text-decoration: underline;
 
                 &:hover {

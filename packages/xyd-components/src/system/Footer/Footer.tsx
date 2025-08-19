@@ -56,7 +56,9 @@ export function Footer(props: FooterProps) {
 
                 <div part="social-links">
                     {props.socials?.map((social, index) => (
-                        <a target="_blank" href={social.href} key={`${social.href}-${index}`}>{social.logo}</a>
+                        <div key={`${social.href}-${index}`}>
+                            <a target="_blank" href={social.href}>{social.logo}</a>
+                        </div>
                     ))}
                 </div>
             </div>

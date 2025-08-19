@@ -1,9 +1,12 @@
 import { css } from "@linaria/core";
 
 export const Footer = css`
+  --footer-anchor-color: var(--dark48);
+  --footer-anchor-color--secondary: var(--dark32);
+  --footer-anchor-color--hover: var(--xyd-anchor-color--hover);
   /* transform: translateY(-100%); */
 
-  border-top: 1px solid var(--dark32);
+  border-top: 1px solid var(--footer-anchor-color--secondary);
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -13,17 +16,17 @@ export const Footer = css`
     font-weight: bold;
   }
   hr {
-    background: var(--dark32);
+    background: var(--footer-anchor-color--secondary);
     width: 100%;
     height: 1px;
   }
 
   a {
-    color: var(--dark48);
+    color: var(--footer-anchor-color);
     font-weight: var(--xyd-font-weight-medium);
 
     &:hover {
-        color: var(--dark80);
+        color: var(--footer-anchor-color--hover);
     }
   }
 
@@ -189,12 +192,12 @@ export const Footer = css`
         width: 24px;
         height: 24px;
 
-        color: var(--dark48);
-        fill: var(--dark48);
+        color: var(--footer-anchor-color);
+        fill: var(--footer-anchor-color);
 
         &:hover {
-            color: var(--dak80);
-            fill: var(--dak80);
+            color: var(--footer-anchor-color--hover);
+            fill: var(--footer-anchor-color--hover);
         }
     }
   }

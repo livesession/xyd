@@ -10,7 +10,11 @@ export const NavLinksHost = css`
         border-top-width: 1px;
         border-color: var(--xyd-navlinks-border-color);
 
-        > div {
+        [part="children-slot"] {
+            display: flex;
+        }
+
+        [part="links"] {
             flex: 1;
             display: flex;
             justify-content: space-between;

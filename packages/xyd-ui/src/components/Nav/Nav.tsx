@@ -90,19 +90,17 @@ Nav.Item = function NavItem(props: NavItemProps) {
 Nav.ItemRaw = function NavItemRaw({ children, href, as, ...rest }: Omit<NavItemProps, "value">) {
     const Link = as || $Link;
 
-    // const links = <>
-    //     <span part="nav-item1">{children}</span>
-    //     <span part="nav-item2">{children}</span>
-    // </>
-    const links = children;
+    if (href) {
+        return <Link href={href}>
+            <xyd-nav-item className={cn.ItemHost} {...rest}>
+                {children}
+            </xyd-nav-item>
+        </Link>
+
+    }
 
     return <xyd-nav-item className={cn.ItemHost} {...rest}>
-        {
-            typeof href === "string" ? <Link href={href}>
-                {links}
-            </Link>
-                : links
-        }
+        {children}
     </xyd-nav-item>
 }
 
