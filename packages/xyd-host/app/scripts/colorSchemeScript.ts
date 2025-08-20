@@ -1,12 +1,9 @@
 (function () {
     try {
         var theme = localStorage.getItem('xyd-color-scheme') || 'auto';
-        var isDark = false;
 
-        if (theme === 'dark') {
-            isDark = true;
-        } else if (theme === 'auto') {
-            isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (theme === 'auto') {
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
             if (isDark) {
                 document.documentElement.setAttribute('data-color-scheme', 'dark');
