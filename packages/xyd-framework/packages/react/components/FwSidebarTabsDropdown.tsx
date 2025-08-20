@@ -7,6 +7,7 @@ import { SidebarTabsDropdown, UISidebar } from "@xyd-js/ui"
 
 import { useActivePage, useActiveSegment, useMatchedSegmentSidebarDropdown } from "../hooks"
 import { NavigationItem } from "@xyd-js/core"
+import { pageLink } from "../utils"
 
 export function FwSidebarTabsDropdown() {
     const settings = useSettings()
@@ -36,13 +37,28 @@ function $NavigationItemsSidebarTabs({ items, active }: { items: NavigationItem[
         return null
     }
 
+
+
     return <SidebarTabsDropdown
-        options={items.map(item => ({
-            label: item.title ?? "",
-            description: item.description,
-            value: item.page || item.href || "",
-            icon: item.icon ? <Icon name={item.icon} size={18} /> : null
-        }))}
+        options={items.map(item => {
+            let href: string | null = null
+
+            if (typeof item.href === "string") {
+                href = pageLink(item.href)
+            }
+
+            if (!href && typeof item.page === "string") {
+                href = pageLink(item.page)
+            }
+
+            return {
+                label: item.title ?? "",
+                description: item.description,
+                value: item.page || item.href || "",
+                icon: item.icon ? <Icon name={item.icon} size={18} /> : null,
+                href: href
+            }
+        })}
         value={active || ""}
     />
 }
