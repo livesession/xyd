@@ -697,6 +697,8 @@ function SelectTheme() {
             themeStyles.href = themeCss
             themeStyles.setAttribute('data-theme-style', 'true');
 
+            const oldThemeStyles = document.querySelectorAll('link[data-theme-style]:not([href*="' + themeName + '"])');
+
             // Load new CSS first and wait for it to be ready
             await new Promise<void>((resolve, reject) => {
                 themeStyles.onload = () => resolve();
@@ -708,7 +710,6 @@ function SelectTheme() {
             await new Promise(resolve => setTimeout(resolve, 200));
 
             // Only after new CSS is loaded, remove old theme styles
-            const oldThemeStyles = document.querySelectorAll('link[data-theme-style]:not([href*="' + themeName + '"])');
             oldThemeStyles.forEach(style => style.remove());
 
             // Remove default theme styles
