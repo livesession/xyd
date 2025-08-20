@@ -102,9 +102,13 @@ function clientColorScheme() {
             isDark = true;
         } else if (theme === 'auto') {
             isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
 
-        return isDark ? "dark" : undefined
+            if (isDark) {
+                return "dark"
+            }
+        } else if (theme === 'light') {
+            return "light"
+        }
     } catch (e) {
         // Fallback to system preference if localStorage fails
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {

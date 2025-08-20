@@ -7,10 +7,12 @@
             isDark = true;
         } else if (theme === 'auto') {
             isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
 
-        if (isDark) {
-            document.documentElement.setAttribute('data-color-scheme', 'dark');
+            if (isDark) {
+                document.documentElement.setAttribute('data-color-scheme', 'dark');
+            }
+        } else if (theme === 'light') {
+            document.documentElement.setAttribute('data-color-scheme', 'light');
         }
     } catch (e) {
         // Fallback to system preference if localStorage fails
