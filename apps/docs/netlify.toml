@@ -3,6 +3,18 @@
   publish = ".xyd/build/client"
 
 [[redirects]]
+  from = "/"
+  to = "/docs/guides/introduction/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/index.html"
+  to = "/docs/guides/introduction/"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/docs/guides"
   to = "/docs/guides/introduction"
   status = 301
