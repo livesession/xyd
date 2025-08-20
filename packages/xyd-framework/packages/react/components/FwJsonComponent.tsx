@@ -51,6 +51,10 @@ export function FwJsonComponent(args: ComponentLike) {
     //     console.log(Component, 33333, Component.name);
     // }
 
+    if (Component === null) {
+        return null
+    }
+
     if (Component) {
         // console.log(props, 3333, Component.name);
         return <Component {...props}>

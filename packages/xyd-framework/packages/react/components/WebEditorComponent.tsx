@@ -26,19 +26,25 @@ export function WebEditorComponent(
             dataTags["data-desktop"] = true
         }
 
+        const component = FwJsonComponent({
+            component: props.component || "",
+            props: {
+                ...props.props,
+                children: props.props?.children,
+            }
+        })
+
+        if (component === null) {
+            return null
+        }
+
         const content = (
             <Component
                 {...componentProps}
                 {...dataTags}
             >
                 {
-                    props.component ? <FwJsonComponent
-                        component={props.component || ""}
-                        props={{
-                            ...props.props,
-                            children: props.props?.children,
-                        }}
-                    /> : defaultValue
+                    props.component ? component : defaultValue
                 }
                 {props.children}
             </Component>

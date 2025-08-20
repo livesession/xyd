@@ -9,6 +9,10 @@ export const SETTINGS = Object.freeze({
                 },
                 "./icons/iconify.json"
             ]
+        },
+        "appearance": {
+            "colorScheme": "light",
+            "colorSchemeButton": false,
         }
     },
     "integrations": {

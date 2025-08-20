@@ -1,4 +1,4 @@
-import React, { useState, useRef, createContext, useContext, useEffect, useMemo } from 'react';
+import React, {useState, useRef, createContext, useContext, useEffect, useMemo} from 'react';
 import {
     Outlet,
     useFetcher,
@@ -6,25 +6,25 @@ import {
     useNavigate,
     useNavigation,
 } from "react-router";
-import { Box, Button, Dropdown, Flex, TextField, Text, Spinner, FixedZIndex } from 'gestalt';
+import {Box, Button, Dropdown, Flex, TextField, Text, Spinner, FixedZIndex} from 'gestalt';
 import GitHubButton from 'react-github-btn'
 
-import { UXNode } from "openux-js";
+import {UXNode} from "openux-js";
 
 
-import { Badge } from "@xyd-js/components/writer"
-import { ReactContent } from "@xyd-js/components/content";
-import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
-import { Surfaces } from "@xyd-js/framework";
-import { Framework, FwLink } from "@xyd-js/framework/react";
+import {Badge} from "@xyd-js/components/writer"
+import {ReactContent} from "@xyd-js/components/content";
+import {Atlas, AtlasContext, type VariantToggleConfig} from "@xyd-js/atlas";
+import {Surfaces} from "@xyd-js/framework";
+import {Framework, FwLink} from "@xyd-js/framework/react";
 import ThemePoetry from "@xyd-js/theme-poetry";
 import ThemeOpener from "@xyd-js/theme-opener";
 import ThemeCosmo from "@xyd-js/theme-cosmo";
 import ThemePicasso from "@xyd-js/theme-picasso";
 import ThemeGusto from "@xyd-js/theme-gusto";
 import ThemeSolar from "@xyd-js/theme-solar";
-import { Analytics, useAnalytics } from "@xyd-js/analytics";
-import { SearchButton } from "@xyd-js/components/system"
+import {Analytics, useAnalytics} from "@xyd-js/analytics";
+import {SearchButton} from "@xyd-js/components/system"
 
 import poetryCss from '@xyd-js/theme-poetry/index.css?url';
 import openerCss from '@xyd-js/theme-opener/index.css?url';
@@ -33,12 +33,12 @@ import picassoCss from '@xyd-js/theme-picasso/index.css?url';
 import gustoCss from '@xyd-js/theme-gusto/index.css?url';
 import solarCss from '@xyd-js/theme-solar/index.css?url';
 
-import { SETTINGS } from '../settings';
-import { useGlobalState } from '../context';
+import {SETTINGS} from '../settings';
+import {useGlobalState} from '../context';
 
-import { DOCS_PREFIX } from '~/const';
-import { UrlContext } from '~/context';
-import { toUniform } from '~/utils/toUniform';
+import {DOCS_PREFIX} from '~/const';
+import {UrlContext} from '~/context';
+import {toUniform} from '~/utils/toUniform';
 
 const surfaces = new Surfaces()
 
@@ -150,10 +150,10 @@ export async function loader() {
     }
 }
 
-export default function Layout({ loaderData }: { loaderData: any }) {
+export default function Layout({loaderData}: { loaderData: any }) {
     const [example, setExample] = useState<any>(null);
     const [isThemeSwitching, setIsThemeSwitching] = useState(false);
-    const { actionData: globalActionData, setActionData } = useGlobalState();
+    const {actionData: globalActionData, setActionData} = useGlobalState();
     const fetcher = useFetcher();
     const navigate = useNavigate()
 
@@ -213,18 +213,25 @@ export default function Layout({ loaderData }: { loaderData: any }) {
     } = currentTheme || {};
 
     return (
-        <DemoContext.Provider value={{ example, setExample, settings: effectiveActionData?.settings || SETTINGS, fetcher, isThemeSwitching, setIsThemeSwitching }}>
+        <DemoContext.Provider value={{
+            example,
+            setExample,
+            settings: effectiveActionData?.settings || SETTINGS,
+            fetcher,
+            isThemeSwitching,
+            setIsThemeSwitching
+        }}>
             <Layout2 effectiveActionData={effectiveActionData} BaseThemePage={BaseThemePage}
-                BaseThemeLayout={BaseThemeLayout} />
+                     BaseThemeLayout={BaseThemeLayout}/>
         </DemoContext.Provider>
     );
 }
 
 const Layout2 = React.memo(function Layout2({
-    effectiveActionData,
-    BaseThemeLayout,
-    BaseThemePage
-}: {
+                                                effectiveActionData,
+                                                BaseThemeLayout,
+                                                BaseThemePage
+                                            }: {
     effectiveActionData: any;
     BaseThemeLayout: any;
     BaseThemePage: any;
@@ -233,16 +240,17 @@ const Layout2 = React.memo(function Layout2({
     let atlasVariantToggles: VariantToggleConfig[] = [];
     if (effectiveActionData.exampleType === "openapi") {
         atlasVariantToggles = [
-            { key: "status", defaultValue: "200" },
-            { key: "contentType", defaultValue: "application/json" }
+            {key: "status", defaultValue: "200"},
+            {key: "contentType", defaultValue: "application/json"}
         ];
     } else {
         atlasVariantToggles = [
-            { key: "symbolName", defaultValue: "" }
+            {key: "symbolName", defaultValue: ""}
         ];
     }
 
-    return <Analytics settings={effectiveActionData.settings || {}} loader={() => { }}>
+    return <Analytics settings={effectiveActionData.settings || {}} loader={() => {
+    }}>
         <UXNode
             name="Framework"
             props={{
@@ -259,9 +267,10 @@ const Layout2 = React.memo(function Layout2({
                 }}
                 surfaces={surfaces}
                 components={{
-                    Search: () => <SearchButton onClick={() => alert("Demo! Check out https://xyd.dev")} />,
+                    Search: null,
+                    // Search: () => <SearchButton onClick={() => alert("Demo! Check out https://xyd.dev")} />,
                 }}
-            // BannerContent={MemoizedActionDropdownExample}
+                // BannerContent={MemoizedActionDropdownExample}
             >
                 <AtlasContext
                     value={{
@@ -271,13 +280,42 @@ const Layout2 = React.memo(function Layout2({
                         Link: FwLink,
                     }}
                 >
-                    <MemoizedActionDropdownExample />
+                    <MemoizedActionDropdownExample/>
                     <BaseThemeLayout>
-                        <UrlContext.Provider value={{ BaseThemePage }}>
-                            <Outlet />
+                        <UrlContext.Provider value={{BaseThemePage}}>
+                            <Outlet/>
                         </UrlContext.Provider>
                     </BaseThemeLayout>
-                    <Loader />
+                    <Loader/>
+                    <Box
+                        position="fixed"
+                        bottom
+                        left
+                        right
+                        zIndex={new FixedZIndex(1000)}
+                        padding={4}
+                        color="default"
+                        borderStyle="raisedTopShadow"
+                    >
+                        <Flex alignItems="center" justifyContent="center" gap={3}>
+                            <Flex alignItems="center" gap={2}>
+                                <Text size="200" weight="bold" color="default">
+                                    🚀 Demo Mode
+                                </Text>
+                                <Text size="200" color="subtle">
+                                    For better performance and faster builds, use the{" "}
+                                    <FwLink href="https://xyd.dev/docs/guides/quickstart" target="_blank"
+                                            rel="noopener">
+                                        <Button
+                                            size="sm"
+                                            text="CLI"
+                                        />
+                                    </FwLink>
+                                </Text>
+                            </Flex>
+
+                        </Flex>
+                    </Box>
                 </AtlasContext>
             </Framework>
         </UXNode>
@@ -287,7 +325,7 @@ const Layout2 = React.memo(function Layout2({
 });
 
 function Loader() {
-    const { fetcher, isThemeSwitching } = useContext(DemoContext)
+    const {fetcher, isThemeSwitching} = useContext(DemoContext)
     const location = useLocation()
     const [inProgress, setInProgress] = useState(false)
 
@@ -339,16 +377,16 @@ function Loader() {
 }
 
 function MemoizedActionDropdownExample() {
-    const { settings: globalSettings } = useContext(DemoContext)
-    return <ActionDropdownExample settings={globalSettings} />
+    const {settings: globalSettings} = useContext(DemoContext)
+    return <ActionDropdownExample settings={globalSettings}/>
 }
 
-function ActionDropdownExample({ settings }: { settings: any }) {
-    const { example } = useContext(DemoContext)
-    const { setActionData } = useGlobalState();
-    const { actionData: globalActionData } = useGlobalState();
+function ActionDropdownExample({settings}: { settings: any }) {
+    const {example} = useContext(DemoContext)
+    const {setActionData} = useGlobalState();
+    const {actionData: globalActionData} = useGlobalState();
     const navigate = useNavigate()
-    const { fetcher } = useContext(DemoContext)
+    const {fetcher} = useContext(DemoContext)
     const formRef = useRef(null)
 
     useEffect(() => {
@@ -400,42 +438,42 @@ function ActionDropdownExample({ settings }: { settings: any }) {
                 value: example?.value,
                 example: example?.url
             },
-            { action: "/api/try", method: "post" }
+            {action: "/api/try", method: "post"}
         );
     }
 
     return (
         <div className="banner-container">
             <div className="banner-left">
-                <GithubStars settings={settings} />
+                <GithubStars settings={settings}/>
             </div>
 
             <fetcher.Form method="POST" action="/api/try" ref={formRef}>
-                <input type="hidden" name="type" value={example?.type} />
-                <input type="hidden" name="value" value={example?.value} />
-                <input type="hidden" name="currentSettings" value={JSON.stringify(settings)} />
+                <input type="hidden" name="type" value={example?.type}/>
+                <input type="hidden" name="value" value={example?.value}/>
+                <input type="hidden" name="currentSettings" value={JSON.stringify(settings)}/>
                 <Flex alignItems="center" gap={2}>
-                    <UniformURLInput />
+                    <UniformURLInput/>
 
                     <Flex>
-                        <Button type="submit" size="sm" text="Try!" disabled={disabled} />
+                        <Button type="submit" size="sm" text="Try!" disabled={disabled}/>
                     </Flex>
 
                     <Flex width="100%">
-                        <SelectPredefinedUniformURL onSelect={onSelect} />
+                        <SelectPredefinedUniformURL onSelect={onSelect}/>
                     </Flex>
                     {/* TODO: in the futures */}
                     <Flex width="100%">
-                        <SelectTheme />
+                        <SelectTheme/>
                     </Flex>
                 </Flex>
             </fetcher.Form>
-            <div />
+            <div/>
         </div>
     );
 }
 
-function GithubStars({ settings }: { settings: any }) {
+function GithubStars({settings}: { settings: any }) {
     return <>
         {
             settings?.integrations?.apps?.githubStar && <>
@@ -458,9 +496,9 @@ function GithubStars({ settings }: { settings: any }) {
 }
 
 function SelectPredefinedUniformURL({
-    onSelect: onSelectCb
-}: any) {
-    const { setExample, example } = useContext(DemoContext)
+                                        onSelect: onSelectCb
+                                    }: any) {
+    const {setExample, example} = useContext(DemoContext)
 
     const exmaples = {
         // openai: {
@@ -539,7 +577,7 @@ function SelectPredefinedUniformURL({
 
     const selected = Object.values(exmaples).find((entry: any) => entry.url === example?.url) as any
 
-    const onSelect = ({ item }: any) => {
+    const onSelect = ({item}: any) => {
         // setSelected(item)
         setOpen(false)
 
@@ -573,7 +611,7 @@ function SelectPredefinedUniformURL({
                 {Object.values(exmaples).map((example: any) => (
                     <Dropdown.Item
                         onSelect={onSelect}
-                        option={{ value: example.value, label: example.label }}
+                        option={{value: example.value, label: example.label}}
                         selected={{
                             value: selected?.value || "",
                             label: selected?.label || ""
@@ -619,10 +657,10 @@ function SelectTheme() {
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState(null);
     const anchorRef = useRef(null);
-    const { setActionData } = useGlobalState();
-    const { setIsThemeSwitching } = useContext(DemoContext);
+    const {setActionData} = useGlobalState();
+    const {setIsThemeSwitching} = useContext(DemoContext);
 
-    const onSelect = async ({ item }: { item: any }) => {
+    const onSelect = async ({item}: { item: any }, stopPropagation: boolean = false) => {
         setSelected(item);
         setOpen(false);
         setIsThemeSwitching(true);
@@ -641,7 +679,7 @@ function SelectTheme() {
             // Dynamically import theme CSS
             const themeName = item.value;
 
-            // Create new theme style link first (but don't append yet)
+            // Create new theme style link
             const themeStyles = document.createElement('link');
             themeStyles.rel = 'stylesheet';
             let themeCss = poetryCss
@@ -659,24 +697,23 @@ function SelectTheme() {
             themeStyles.href = themeCss
             themeStyles.setAttribute('data-theme-style', 'true');
 
-
-            // Now that new CSS is loaded, remove old theme styles
-            const oldThemeStyles = document.querySelectorAll('link[data-theme-style]:not([href*="' + themeName + '"])');
-            oldThemeStyles.forEach(style => style.remove());
-
-            // Wait for CSS to load BEFORE removing old styles
+            // Load new CSS first and wait for it to be ready
             await new Promise<void>((resolve, reject) => {
                 themeStyles.onload = () => resolve();
                 themeStyles.onerror = () => reject(new Error('Failed to load theme CSS'));
                 document.head.appendChild(themeStyles);
             });
 
+            // Wait a bit more to ensure CSS is fully applied
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            // Only after new CSS is loaded, remove old theme styles
+            const oldThemeStyles = document.querySelectorAll('link[data-theme-style]:not([href*="' + themeName + '"])');
+            oldThemeStyles.forEach(style => style.remove());
+
             // Remove default theme styles
             const defaultThemeStyles = document.querySelectorAll('link[data-xyd-theme-default]');
             defaultThemeStyles.forEach(style => style.remove());
-
-            // Small delay to ensure CSS is applied
-            await new Promise(resolve => setTimeout(resolve, 100));
 
             // Update global state to trigger re-render with new theme
             setActionData((prev: any) => ({
@@ -688,6 +725,15 @@ function SelectTheme() {
             console.error('Error switching theme:', error);
         } finally {
             setIsThemeSwitching(false);
+        }
+
+        {
+            // TODO: its a hotfix cuz some issues with first theme switch - not all changed
+
+            if (stopPropagation) {
+                return
+            }
+            onSelect({item}, true)
         }
     };
 
@@ -715,7 +761,7 @@ function SelectTheme() {
                         <Dropdown.Item
                             key={theme.value}
                             onSelect={onSelect}
-                            option={{ value: theme.value, label: theme.label }}
+                            option={{value: theme.value, label: theme.label}}
                             selected={selected}
                         />
                     ))}
@@ -726,7 +772,7 @@ function SelectTheme() {
 }
 
 function UniformURLInput() {
-    const { example, setExample } = useContext(DemoContext)
+    const {example, setExample} = useContext(DemoContext)
 
     function handleChange(value: string) {
         setExample({
@@ -745,7 +791,7 @@ function UniformURLInput() {
             <Box width={400}>
                 <TextField
                     id="header-example"
-                    onChange={({ value }) => {
+                    onChange={({value}) => {
                         handleChange(value);
                     }}
                     placeholder="URL to OpenAPI / GraphQL / React"
