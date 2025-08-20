@@ -9,6 +9,7 @@ import * as cn from "./SidebarTabsDropdown.styles";
 export interface SidebarTabsDropdownOption {
     label: string;
     value: string;
+    href?: string | null;
     description?: string;
     icon?: React.ReactNode | string;
 }
@@ -46,7 +47,7 @@ export function SidebarTabsDropdown({ options, value }: SidebarTabsDropdownProps
                         key={opt.value}
                         part={"dropdown-listitem"}
                         aria-selected={opt.value === value}
-                        to={opt.value}
+                        to={opt.href || opt.value}
                         onClick={() => setOpen(false)}
                     >
                         <IconWrapper icon={opt.icon} />

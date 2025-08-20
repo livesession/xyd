@@ -63,6 +63,8 @@
 @define-mixin dark-theme {
     --opener-gray4-rgb: var(--dark32-rgb);
     --opener-gray4: var(--dark32);
+    --color-primary: var(--opener-blue);
+    --theme-color-primary: var(--color-primary);
 
     --xyd-codetabs-color: var(--black);
     --xyd-tabs-primary-border-color: unset;

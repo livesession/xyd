@@ -8,7 +8,6 @@
     --dark48: #424240;
     --dark60: #282827;
     --dark80: #1a1a19;
-    --dark100: #000;
 
     --color-bg: #FCFCF9;
     --color-text: var(--dark48);
@@ -32,6 +31,7 @@
 
 /* Nav */
 :root {
+    --xyd-nav-item-color: var(--dark48);
     --xyd-nav-item-color--active: var(--xyd-anchor-color--hover);
 }
 
@@ -55,13 +55,13 @@
 @define-mixin dark-theme {
     --color-bg: #091717;
     --xyd-heading-color: #F6F6F5;
-    --color-text: #fff;
     --dark8: #1a1a1a;
     --dark16: #2d2d2d;
     --dark32: #404040;
-    --dark48: #F6F6F5;
-    --dark60: var(--color-text);
-    --dark80: var(--color-text);
+    --dark48: #9e9e9e;
+    --color-text: var(--dark48);
+    --dark60: var(--black);
+    --dark80: var(--black);
 
     --xyd-text-color--default: var(--color-text);
     --theme-color-primary: var(--color-bg);
@@ -78,6 +78,10 @@
     --xyd-button-primary-border: var(--dark32);
     --xyd-button-primary-bg-hover: none;
     --xyd-button-primary-border-hover: var(--xyd-button-primary-border);
+
+    --xyd-sidebar-item-color--active: var(--black);
+    --xyd-toc-item-color--active: var(--black);
+    --xyd-breadcrumbs-color: var(--black);
 }
 
 [data-color-scheme="dark"] {

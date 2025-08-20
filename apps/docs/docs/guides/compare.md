@@ -247,7 +247,7 @@ Compare with other popular docs frameworks
 | React Docs Generation | ✖ | ✔ (natively supported) | React docs support
 | Python Docs Generation | ✖ | [coming soon](https://github.com/orgs/livesession/projects/4) | Python docs support
 | CLI Docs Generation | ✖ | [coming soon](https://github.com/orgs/livesession/projects/4) | CLI docs
-| Robust Themes | ✖ | ✔ | Multiple beautiful built-in themes
+| Robust Themes | ✔ | ✔ | Multiple beautiful built-in themes
 | SDK Generation | ✔ | [coming soon](https://github.com/orgs/livesession/projects/4) | Automatic SDK generation
 | Web/Desktop App | ✔ | [coming soon](https://github.com/orgs/livesession/projects/4) | Installable WYSIWYG application
 
