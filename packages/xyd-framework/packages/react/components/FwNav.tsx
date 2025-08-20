@@ -11,13 +11,14 @@ import { useActivePage, useDefaultHeaderItems } from "../hooks";
 import { Surface } from "./Surfaces";
 import { FwLogo } from "./FwLogo";
 import { FwHeaderItem, FwHeaderItems } from "./FwHeaderItems";
-import { useAppearance } from "../contexts";
+import { useAppearance, useShowColorSchemeButton } from "../contexts";
 import { WebEditorComponent } from "./WebEditorComponent";
 
 // TODO: renamte to FwHeader ?
 export function FwNav() {
     const activeHeaderPage = useActivePage()
     const appearance = useAppearance()
+    const showColorSchemeButton = useShowColorSchemeButton()
 
     const Header = FwHeaderItems()
     const logo = appearance?.logo?.header ? <WebEditorComponent.NavItemRaw
@@ -56,7 +57,7 @@ export function FwNav() {
         </>
         }
         floatRightSurface={<>
-            {appearance?.colorScheme !== false && <Nav.ItemRaw>
+            {showColorSchemeButton && <Nav.ItemRaw>
                 <ColorSchemeButton />
             </Nav.ItemRaw>}
             <Nav.ItemRaw>

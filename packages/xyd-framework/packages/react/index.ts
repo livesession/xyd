@@ -19,6 +19,7 @@ export {
     useAppearance,
     useContentOriginal,
     useEditLink,
+    useShowColorSchemeButton,
 } from "./contexts"
 
 export {

@@ -177,6 +177,11 @@ export interface Appearance {
     colorScheme?: "light" | "dark" | "os" | false
 
     /**
+     * If `false` then the color scheme button will not be displayed.
+     */
+    colorSchemeButton?: false
+
+    /**
      * Colors configuration for the theme.
      */
     colors?: Colors

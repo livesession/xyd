@@ -81,7 +81,7 @@ export function Framework(props: FrameworkProps) {
 interface FrameworkPageProps {
     children: React.ReactNode
 
-    ContentComponent?: (props: { components: any, children: React.ReactNode }) => React.JSX.Element 
+    ContentComponent?: (props: { components: any, children: React.ReactNode }) => React.JSX.Element
     ContentOriginal?: (props: { components: any, children: React.ReactNode }) => React.JSX.Element
 
     metadata: Metadata
@@ -210,4 +210,13 @@ export function useBannerContent() {
     const ctx = useContext(FrameworkContext)
 
     return ctx.BannerContent
+}
+
+export function useShowColorSchemeButton() {
+    const ctx = useContext(FrameworkContext)
+
+    const showColorSchemeButton = ctx.settings.theme?.appearance?.colorScheme !== false
+        && ctx.settings.theme?.appearance?.colorSchemeButton !== false
+
+    return showColorSchemeButton
 }

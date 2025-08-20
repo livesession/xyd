@@ -135,9 +135,17 @@ function DefaultMetas() {
 }
 
 function ColorSchemeScript() {
+    const defaultColorScheme = settings?.theme?.appearance?.colorScheme || 'os'
+    
+    // Inject settings into the script
+    const scriptWithSettings = `
+        window.__xydColorSchemeSettings = ${JSON.stringify({ defaultColorScheme })};
+        ${colorSchemeScript}
+    `;
+
     return <script
         dangerouslySetInnerHTML={{
-            __html: colorSchemeScript
+            __html: scriptWithSettings
         }}
     />
 }
