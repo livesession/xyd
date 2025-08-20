@@ -96,11 +96,14 @@ export const CodeTabsLanguagesHost = css`
 
             color: var(--codetabs-color);
             
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+
+            border-bottom: 1px solid transparent;
+
             &[data-state="active"] {
                 color: var(--codetabs-color--active);
-                border-bottom: 1px solid var(--codetabs-color--active);
-                border-bottom-left-radius: 0px;
-                border-bottom-right-radius: 0px;
+                border-bottom-color: var(--codetabs-color--active);
             }
             
             &:hover {
@@ -118,6 +121,7 @@ export const CodeTabsLanguagesHost = css`
         &[data-single="true"] [part="copy"] {
             position: absolute;
             right: 0;
+            top: 5px;
         }
     }
 `;

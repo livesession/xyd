@@ -43,6 +43,7 @@ export const SearchButton = css`
         [part="container"] {
             align-items: center;
             display: flex;
+            gap: var(--xyd-padding-small);
         }
 
         [part="placeholder"] {
