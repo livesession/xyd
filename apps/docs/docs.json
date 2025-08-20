@@ -1,7 +1,7 @@
 {
     "$schema": "./public/docs.json",
     "theme": {
-        "name": "opener",
+        "name": "solar",
         "logo": {
             "light": "/public/assets/logo.svg",
             "dark": "/public/assets/logo-dark.svg"
