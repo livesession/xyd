@@ -37,7 +37,13 @@ npm i -g xyd-js
 ```
 :::
 
-2. Navigate to the docs directory (where the [settings file](/docs/guides/settings) is located) and execute the following command:
+2. Clone [starter](https://github.com/xyd-js/starter) by following command:
+```
+git clone https://github.com/xyd-js/starter
+cd starter
+```
+
+3. Execute [CLI](https://www.npmjs.com/package/xyd-js) with the following command:
 ```bash [descHead="Info" desc="Above command runs a dev server"]
 xyd
 ```
