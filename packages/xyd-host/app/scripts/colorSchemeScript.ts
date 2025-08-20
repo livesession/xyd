@@ -13,6 +13,8 @@
             }
         } else if (theme === 'light') {
             document.documentElement.setAttribute('data-color-scheme', 'light');
+        } else if (theme === 'dark') {
+            document.documentElement.setAttribute('data-color-scheme', 'dark');
         }
     } catch (e) {
         // Fallback to system preference if localStorage fails

@@ -108,6 +108,8 @@ function clientColorScheme() {
             }
         } else if (theme === 'light') {
             return "light"
+        } else if (theme === 'dark') {
+            return "dark"
         }
     } catch (e) {
         // Fallback to system preference if localStorage fails
@@ -127,7 +129,6 @@ function getPathname(url: string) {
     const parsedUrl = new URL(url);
     return parsedUrl.pathname.replace(/^\//, '');
 }
-
 
 function DefaultMetas() {
     return <>
