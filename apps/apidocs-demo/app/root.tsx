@@ -52,8 +52,13 @@ export const links: Route.LinksFunction = () => {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const colorScheme = SETTINGS?.theme?.appearance?.colorScheme || "os"
+
   return (
-    <html lang="en">
+    <html
+      data-color-scheme={colorScheme}
+      lang="en"
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
