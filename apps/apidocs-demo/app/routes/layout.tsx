@@ -304,7 +304,7 @@ const Layout2 = React.memo(function Layout2({
                                 </Text>
                                 <Text size="200" color="subtle">
                                     For better performance and faster builds, use the{" "}
-                                    <FwLink href="https://xyd.dev/docs/guides/quickstart" target="_blank"
+                                    <FwLink href="https://xyd.dev/docs/guides/quickstart/#installation" target="_blank"
                                             rel="noopener">
                                         <Button
                                             size="sm"

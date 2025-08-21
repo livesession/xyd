@@ -1,8 +1,8 @@
 import path from "node:path";
 import fs from "node:fs";
-import {fileURLToPath} from "node:url";
+import { fileURLToPath } from "node:url";
 
-import {build as viteBuild, Plugin as VitePlugin} from 'vite';
+import { build as viteBuild, Plugin as VitePlugin } from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
 
 import {
@@ -29,7 +29,7 @@ export async function build() {
     if (!inited) {
         return
     }
-    const {respPluginDocs, resolvedPlugins} = inited
+    const { respPluginDocs, resolvedPlugins } = inited
 
     const commonRunVitePlugins = await commonVitePlugins(respPluginDocs, resolvedPlugins)
     const appRoot = getAppRoot();
@@ -41,7 +41,7 @@ export async function build() {
         storeChecksum(newChecksum);
     }
     const postInstallVitePlugins = commonPostInstallVitePlugins(respPluginDocs, resolvedPlugins)
-    
+
     {
         await setupInstallableEnvironmentV2()
     }
@@ -106,11 +106,11 @@ export async function build() {
                 ...postInstallVitePlugins,
 
                 tsconfigPaths(),
-                stopOnBuild({
+                finishBuild({
                     exit: true,
                     log: false,
                     delayMs: 1000 * 1,
-                })
+                }),
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
@@ -140,42 +140,6 @@ export async function build() {
     } catch (error) {
         console.error('Build failed:', error);  // TODO: better message
     }
-}
-
-// TODO: it's a fix for Vite to exit after build, some issues with vite + react-router build  - BETTER SOLUTION !!!
-function stopOnBuild(options?: {
-    log?: boolean, // default true
-    onBeforeExit?: (activeHandles: string[]) => void;
-    exit?: boolean; // default true
-    delayMs?: number; // default 50
-}): VitePlugin {
-    const log = options?.log ?? true;
-    const exit = options?.exit ?? true;
-    const delayMs = options?.delayMs ?? 50;
-
-    return {
-        name: 'stop-on-build',
-        apply: 'build',
-        closeBundle() {
-            // Give Vite a tick to finish any async write operations
-            setTimeout(() => {
-                const handles =
-                    (process as any)._getActiveHandles?.()
-                        ?.map((h: any) => h?.constructor?.name || typeof h) || [];
-
-                options?.onBeforeExit?.(handles);
-
-                // If anything is still keeping the event loop alive, you can force-exit.
-                if (exit) {
-                    // Optional: print what’s keeping Node alive to help you fix root cause
-                    if (handles.length) {
-                        log && console.log('[stop-on-build] Active handles:', handles);
-                    }
-                    process.exit(0);
-                }
-            }, delayMs);
-        },
-    };
 }
 
 function setupInstallableEnvironmentV2() {
@@ -278,7 +242,6 @@ function fixManifestPlugin(
 
                     asset.source = JSON.stringify(fixed, null, 2);
                     fs.writeFileSync(manifestPath, asset.source, 'utf8');
-
                 }
 
                 // B) fix any CSS asset metadata (originalFileNames)
@@ -292,4 +255,155 @@ function fixManifestPlugin(
 
         },
     }
+}
+
+/**
+ * Vite plugin that runs the route renaming after the build completes.
+ */
+function finishBuild(options?: {
+    log?: boolean, // default true
+    onBeforeExit?: (activeHandles: string[]) => void;
+    exit?: boolean; // default true
+    delayMs?: number; // default 50
+}): VitePlugin {
+    const log = options?.log ?? true;
+    const exit = options?.exit ?? true;
+    const delayMs = options?.delayMs ?? 50;
+    return {
+        name: 'rename-routes',
+        apply: 'build',
+        async closeBundle() {
+            console.log('Processing build completion...');
+
+            // Run the route renaming
+            // https://github.com/remix-run/react-router/discussions/12596
+            renamePrerenderedRoutes();
+
+            // Give Vite a tick to finish any async write operations
+            // TODO: better solution
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+
+            const handles =
+                (process as any)._getActiveHandles?.()
+                    ?.map((h: any) => h?.constructor?.name || typeof h) || [];
+
+            options?.onBeforeExit?.(handles);
+
+            // If anything is still keeping the event loop alive, you can force-exit.
+            if (exit) {
+                // Optional: print what's keeping Node alive to help you fix root cause
+                if (handles.length) {
+                    log && console.log('[stop-on-build] Active handles:', handles);
+                }
+
+                console.log('Build completed, exiting...');
+                process.exit(0);
+            }
+        },
+    };
+}
+
+
+type ConflictPolicy = "skip" | "overwrite" | "suffix";
+
+interface Options {
+    rootDir?: string;                         // defaults to <build>/client
+    ext?: string;                             // defaults to ".html"
+    onConflict?: ConflictPolicy;              // defaults to "skip"
+    dryRun?: boolean;                         // defaults to false
+    removeEmptyDirs?: boolean;                // defaults to true
+}
+
+function renamePrerenderedRoutes(opts: Options = {}) {
+    const {
+        rootDir = path.join(getBuildPath(), "client"),
+        ext = ".html",
+        onConflict = "skip",
+        dryRun = false,
+        removeEmptyDirs = true,
+    } = opts;
+
+    if (!fs.existsSync(rootDir)) {
+        // console.log(`[flatten] Skip: ${rootDir} does not exist.`);
+        return;
+    }
+
+    let moved = 0, skipped = 0, overwritten = 0, removedDirs = 0;
+
+    const isIgnorableJunk = (name: string) =>
+        name === ".DS_Store" || name === "Thumbs.db";
+
+    const dirIsEmpty = (dir: string) => {
+        try {
+            const entries = fs.readdirSync(dir, { withFileTypes: true })
+                .filter(e => !isIgnorableJunk(e.name));
+            return entries.length === 0;
+        } catch {
+            return false;
+        }
+    };
+
+    const uniqueWithSuffix = (targetPath: string) => {
+        const { dir, name, ext: e } = path.parse(targetPath);
+        let i = 1;
+        let candidate = targetPath;
+        while (fs.existsSync(candidate)) {
+            candidate = path.join(dir, `${name}-${i}${e}`);
+            i++;
+        }
+        return candidate;
+    };
+
+    const moveIndexUp = (parentDir: string, subdirName: string) => {
+        const folderPath = path.join(parentDir, subdirName);
+        const indexHtmlPath = path.join(folderPath, "index.html");
+        if (!fs.existsSync(indexHtmlPath)) return;
+
+        let newHtmlPath = path.join(parentDir, `${subdirName}${ext}`);
+
+        if (fs.existsSync(newHtmlPath)) {
+            if (onConflict === "skip") {
+                // console.log(`[flatten] Skip (exists): ${newHtmlPath}`);
+                skipped++;
+                return;
+            }
+            if (onConflict === "overwrite") {
+                // console.log(`[flatten] Overwrite: ${newHtmlPath}`);
+                if (!dryRun) fs.rmSync(newHtmlPath);
+                overwritten++;
+            }
+            if (onConflict === "suffix") {
+                const suffixed = uniqueWithSuffix(newHtmlPath);
+                // console.log(`[flatten] Conflict → suffix: ${path.basename(newHtmlPath)} -> ${path.basename(suffixed)}`);
+                newHtmlPath = suffixed;
+            }
+        }
+
+        // console.log(`[flatten] ${path.relative(rootDir, indexHtmlPath)} -> ${path.relative(rootDir, newHtmlPath)}`);
+        if (!dryRun) fs.renameSync(indexHtmlPath, newHtmlPath);
+        moved++;
+
+        if (removeEmptyDirs && dirIsEmpty(folderPath)) {
+            // console.log(`[flatten] Removing empty dir: ${path.relative(rootDir, folderPath)}`);
+            if (!dryRun) fs.rmSync(folderPath, { recursive: true });
+            removedDirs++;
+        }
+    };
+
+    const dfs = (dir: string) => {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+            if (entry.isDirectory()) {
+                const subdir = path.join(dir, entry.name);
+                // 1) descend first (process children)
+                dfs(subdir);
+                // 2) then flatten this subdir's index.html up into 'dir'
+                moveIndexUp(dir, entry.name);
+            }
+        }
+    };
+
+    dfs(rootDir);
+
+    // console.log(`[flatten] Done. moved=${moved}, skipped=${skipped}, overwritten=${overwritten}, removedDirs=${removedDirs}, dryRun=${dryRun}`);
 }
