@@ -95,6 +95,7 @@ UISidebar.Item = function SidebarItem({
                     ...(target ? { target } : {})
                 })}
                 onClick={onClick}
+                prefetch="intent"
             >
                 <div
                     part="primary-item"

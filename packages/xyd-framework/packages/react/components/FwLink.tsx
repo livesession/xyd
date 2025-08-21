@@ -65,6 +65,7 @@ export function FwLink({children, ...rest}) {
         // @ts-ignore TODO: fix type for `to`
         to={to}
         target={external ? "_blank" : rest.target}
+        prefetch="intent"
     >
         {children}
     </Anchor>
