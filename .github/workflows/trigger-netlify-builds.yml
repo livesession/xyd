@@ -1,0 +1,84 @@
+name: 🚀 Trigger Netlify Builds
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to trigger builds from (optional, defaults to master)'
+        required: false
+        default: 'master'
+
+jobs:
+  trigger-netlify-builds:
+    name: 🚀 Trigger Netlify Builds
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [XYD_DOCS, XYD_STARTER, XYD_APIDOCS_DEMO, XYD_STORYBOOK, XYD_GUSTO, XYD_PICASSO, XYD_COSMO, XYD_POETRY, XYD_OPENER, XYD_SOLAR, XYD_OPENAI_CLONE, XYD_MONDAY_CLONE, XYD_CHATWOOT, XYD_HOPPSCOTCH, XYD_EXAMPLES_GRAPHQL, XYD_EXAMPLES_ABTESTING]
+      fail-fast: false
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Trigger Netlify build for ${{ matrix.project }}
+        run: |
+          echo "🚀 Triggering build for project: ${{ matrix.project }}"
+          
+          # Try build hook first (recommended)
+          if [ -n "${{ secrets[format('NETLIFY_BUILD_HOOK_{0}', matrix.project)] }}" ]; then
+            echo "🔗 Using build hook for ${{ matrix.project }}"
+            HOOK_URL="${{ secrets[format('NETLIFY_BUILD_HOOK_{0}', matrix.project)] }}"
+            
+            RESPONSE=$(curl -s -w "%{http_code}" -X POST -d '{}' "$HOOK_URL")
+            HTTP_CODE="${RESPONSE: -3}"
+            BODY="${RESPONSE%???}"
+            
+            if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ]; then
+              echo "✅ Build hook triggered successfully for ${{ matrix.project }}"
+              echo "📊 Response: $BODY"
+            else
+              echo "❌ Failed to trigger build hook for ${{ matrix.project }}"
+              echo "📊 HTTP Code: $HTTP_CODE"
+              echo "📊 Response: $BODY"
+              exit 1
+            fi
+          
+          # Fallback to API if build hook not available
+          elif [ -n "${{ secrets.NETLIFY_TOKEN }}" ] && [ -n "${{ secrets[format('NETLIFY_SITE_ID_{0}', matrix.project)] }}" ]; then
+            echo "🔌 Using API for ${{ matrix.project }}"
+            SITE_ID="${{ secrets[format('NETLIFY_SITE_ID_{0}', matrix.project)] }}"
+            TOKEN="${{ secrets.NETLIFY_TOKEN }}"
+            
+            RESPONSE=$(curl -s -w "%{http_code}" \
+              -H "Authorization: Bearer $TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"branch\":\"${{ github.event.inputs.branch || 'master' }}\"}" \
+              "https://api.netlify.com/api/v1/sites/$SITE_ID/builds")
+            
+            HTTP_CODE="${RESPONSE: -3}"
+            BODY="${RESPONSE%???}"
+            
+            if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ]; then
+              echo "✅ API build triggered successfully for ${{ matrix.project }}"
+              echo "📊 Response: $BODY"
+            else
+              echo "❌ Failed to trigger API build for ${{ matrix.project }}"
+              echo "📊 HTTP Code: $HTTP_CODE"
+              echo "📊 Response: $BODY"
+              exit 1
+            fi
+          
+          else
+            echo "❌ No build hook or API credentials found for ${{ matrix.project }}"
+            echo "💡 Add NETLIFY_BUILD_HOOK_${{ matrix.project }} or NETLIFY_SITE_ID_${{ matrix.project }} + NETLIFY_TOKEN secrets"
+            exit 1
+          fi
+
+      - name: ✅ Build triggered for ${{ matrix.project }}
+        run: |
+          echo "✅ Successfully triggered build for project: ${{ matrix.project }}"
+          echo "🌿 Branch: ${{ github.event.inputs.branch || 'master' }}"
+          echo "👤 Triggered by: ${{ github.actor }}"
+          echo "🆔 Workflow run: ${{ github.run_id }}"
+          echo "⏰ Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
