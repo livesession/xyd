@@ -45,7 +45,7 @@
         }
     },
     "seo": {
-        "domain": "xyd.dev"
+        "domain": "https://xyd.dev"
     },
     "components": {
         "banner": {
@@ -151,8 +151,12 @@
         "anchors": {
             "header": [
                 {
-                    "title": "Demo",
-                    "href": "https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox"
+                    "title": "Examples",
+                    "href": "https://github.com/xyd-js/examples"
+                },
+                {
+                    "title": "API Docs Demo",
+                    "href": "https://apidocs-demo.xyd.dev"
                 },
                 {
                     "title": "Feedback",

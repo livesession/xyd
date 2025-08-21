@@ -34,7 +34,7 @@ export function WebEditorComponent(
             }
         })
 
-        if (component === null) {
+        if (component === null && !props.children) {
             return null
         }
 
