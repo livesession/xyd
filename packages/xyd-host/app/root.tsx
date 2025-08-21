@@ -47,12 +47,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
     const { component: UserAppearance, classes: UserAppearanceClasses } = userAppearance()
 
+    const production = process.env.NODE_ENV === 'production'
+
+    const userStyles = <>
+        <UserStyleTokens />
+        <UserThemeColors />
+        {UserAppearance}
+    </>
+
     return (
         <html
             data-color-scheme={colorScheme}
             data-color-primary={settings?.theme?.appearance?.colors?.primary ? "true" : undefined}
         >
-
             <head>
                 <PreloadScripts />
                 <DefaultMetas />
@@ -65,15 +72,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Meta />
                 <Links />
                 <PresetStyles />
+                {/* TODO: in the future better solution - issues with css loading - import on dev is under this */}
+                {production ? userStyles : null}
             </head>
+
+            {production ? null : userStyles}
 
             <body className={UserAppearanceClasses}>
                 {children}
                 <ScrollRestoration />
                 <Scripts />
-                <UserStyleTokens />
-                <UserPreferenceStyles />
-                {UserAppearance}
                 {/* TODO: in the future better solution? */}
             </body>
         </html>
@@ -136,7 +144,7 @@ function DefaultMetas() {
 
 function ColorSchemeScript() {
     const defaultColorScheme = settings?.theme?.appearance?.colorScheme || 'os'
-    
+
     // Inject settings into the script
     const scriptWithSettings = `
         window.__xydColorSchemeSettings = ${JSON.stringify({ defaultColorScheme })};
@@ -245,7 +253,7 @@ function UserStyleTokens() {
     </>
 }
 
-function UserPreferenceStyles() {
+function UserThemeColors() {
     const themeColors = userPreferences?.themeColors
     if (!themeColors) {
         return null
