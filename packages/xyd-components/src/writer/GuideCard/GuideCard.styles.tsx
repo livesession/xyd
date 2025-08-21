@@ -11,7 +11,7 @@ export const GuideHost = css`
             overflow: hidden;
             border: 1px solid var(--xyd-guidecard-border-color--secondary);
             background: var(--xyd-guidecard-bgcolor--secondary);
-            border-radius: 8px;
+            border-radius: var(--xyd-border-radius-medium);
             padding: 24px;
             z-index: 0;
             transition: box-shadow .2s ease-in-out, background-image .2s ease;
@@ -33,9 +33,10 @@ export const GuideHost = css`
         }
 
         [part="item"] {
-            border-radius: 8px;
+            border-radius: var(--xyd-border-radius-medium);
             display: flex;
             align-items: flex-start;
+            flex-direction: column;
 
             cursor: pointer;
             transition: opacity .15s;
@@ -68,7 +69,7 @@ export const GuideHost = css`
             height: 48px;
             box-sizing: border-box;
             border: 1px solid var(--dark32);
-            border-radius: 8px;
+            border-radius: var(--xyd-border-radius-medium);
             background: var(--dark8);
             color: var(--xyd-guidecard-icon-color);
             font-size: 24px;
@@ -85,11 +86,11 @@ export const GuideHost = css`
             flex-shrink: 0;
         }
 
-        [part="right"] {
-            padding-left: 16px;
+        [part="content"] {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: var(--xyd-padding-small);
+            margin-top: var(--xyd-padding-medium);
         }
 
         [part="title"] {

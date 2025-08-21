@@ -24,7 +24,7 @@ export function PageHome(props: PageHomeProps) {
                 {props.hero?.description}
             </Heading>
 
-            {props?.hero?.button ? <Button href={props.hero.button.href}>{props.hero.button.title}</Button> : null}
+            {props?.hero?.button ? <Button size="lg" href={props.hero.button.href}>{props.hero.button.title}</Button> : null}
         </div>
 
         <div part="sections">

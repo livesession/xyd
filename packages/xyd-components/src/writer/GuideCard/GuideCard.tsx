@@ -63,7 +63,7 @@ export function GuideCard({
                 {iconElement && <div part="icon">
                     {iconElement}
                 </div>}
-                <div part="right">
+                <div part="content">
                     {title && <GuideCard.Title>{title}</GuideCard.Title>}
                     <div part="body">
                         {children}

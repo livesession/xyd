@@ -119,12 +119,12 @@ export default {
             }
             
             xyd-guidecard [part="body"]  {
-                color: var(--dark48);
+                color: var(--xyd-text-color--default, var(--dark48));
                 font-size: var(--xyd-font-size-small);
                 line-height: var(--xyd-line-height-medium);
 
                 p {
-                    color: var(--dark48);
+                    color: var(--xyd-text-color--default, var(--dark48));
                     font-size: var(--xyd-font-size-small);
                     line-height: var(--xyd-line-height-medium);
                 }
@@ -154,6 +154,7 @@ export default {
                 font-size: var(--xyd-font-size-small);
                 line-height: var(--xyd-line-height-small);
                 margin-bottom: var(--space-small);
+                font-weight: var(--xyd-font-weight-semibold);
             }
 
             xyd-grid-decorator {

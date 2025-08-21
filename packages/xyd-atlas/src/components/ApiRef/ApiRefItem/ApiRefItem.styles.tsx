@@ -18,7 +18,7 @@ export const ApiRefItemNavbarContainer = css`
     border-radius: 8px;
     display: flex;
     gap: 4px;
-    overflow: scroll;
+    overflow: auto;
 `;
 
 export const ApiRefItemNavbarLabel = css`

@@ -43,7 +43,7 @@ export const ButtonHost = css`
         }
 
         &[data-size="md"] {
-            height: 36px;
+            height: 32px;
             padding: 0 16px;
             gap: 8px;
 

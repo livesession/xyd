@@ -332,6 +332,7 @@ function generateColorTokens(primary: string): Record<string, string> {
         "--color-primary": primary,
         "--xyd-sidebar-item-bgcolor--active": 'color-mix(in srgb, var(--color-primary) 10%, transparent)',
         "--xyd-sidebar-item-color--active": 'var(--color-primary)',
+        "--xyd-sidebar-item-bgcolor--active-hover": 'var(--xyd-sidebar-item-bgcolor--active)',
         "--xyd-toc-item-color--active": 'var(--color-primary)',
         "--theme-color-primary": 'var(--color-primary)',
         "--theme-color-primary-active": 'var(--color-primary)',

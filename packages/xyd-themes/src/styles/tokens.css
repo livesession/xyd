@@ -150,7 +150,7 @@
     --xyd-header-total-height: calc(var(--xyd-nav-height) + var(--xyd-subnav-height) + var(--xyd-banner-height-dynamic));
 
     --xyd-layout-width-small: 800px;
-    --xyd-layout-width-medium: 1000px;
+    --xyd-layout-width-medium: 1040px;
     --xyd-layout-width-large: 1200px;
     
     --xyd-layout-nav-width-small: 200px;
@@ -299,8 +299,9 @@
     --xyd-guidecard-bgcolor--secondary: var(--dark16);
     --xyd-guidecard-bgcolor--secondary-active: var(--color-bg);
     --xyd-guidecard-icon-color: var(--text-primary);
-    --xyd-guidecard-title-color: var(--text-primary);
+    --xyd-guidecard-title-color: var(--xyd-heading-color);
     --xyd-guidecard-color: var(--dark48);
+    
     /* Heading */
     --xyd-heading-color: var(--text-primary);
     --xyd-heading-color--muted: var(--dark48);

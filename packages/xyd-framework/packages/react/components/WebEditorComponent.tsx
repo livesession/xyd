@@ -34,7 +34,7 @@ export function WebEditorComponent(
             }
         })
 
-        if (component === null && !props.children) {
+        if (component === false && !props.children) {
             return null
         }
 
@@ -44,7 +44,7 @@ export function WebEditorComponent(
                 {...dataTags}
             >
                 {
-                    props.component ? component : defaultValue
+                    props.component ? (component || null) : defaultValue
                 }
                 {props.children}
             </Component>
