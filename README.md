@@ -1,9 +1,9 @@
 <p align="center">
   <a href="https://xyd.dev">
     <picture>
-      <source srcset="assets/readme-logo-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="assets/readme-logo.svg" media="(prefers-color-scheme: light)">
-      <img src="assets/readme-logo.svg" alt="xyd logo">
+      <source srcset=".github/assets/readme-logo-dark.svg" media="(prefers-color-scheme: dark)">
+      <source srcset=".github/assets/readme-logo.svg" media="(prefers-color-scheme: light)">
+      <img src=".github/assets/readme-logo.svg" alt="xyd logo">
     </picture>
   </a>
 </p>
@@ -36,7 +36,7 @@
   </a>
 </p>
 
-[![xyd README hero](assets/readme-hero.png)](https://www.youtube.com/watch?v=8FVINsWUgUs)
+[![xyd README hero](.github/assets/readme-hero.png)](https://www.youtube.com/watch?v=8FVINsWUgUs)
 
 ---
 
