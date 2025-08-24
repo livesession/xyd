@@ -67,7 +67,7 @@ xyd build
 5. Open - we believe that docs frameworks should be fully open source
 
 ## Major Features
-- 🎨 **Themes** - Built-in themes: Solar, Gusto, Poetry, Picasso, Opener, and Cosmo
+- 🎨 **Themes** - Built-in [themes](https://github.com/xyd-js/themes): [Solar](https://solar.xyd.dev), [Gusto](https://gusto.xyd.dev), [Poetry](https://poetry.xyd.dev), [Picasso](https://picasso.xyd.dev), [Opener](https://opener.xyd.dev), and [Cosmo](https://cosmo.xyd.dev)
 - 🚀 **Plug & Play Dev Server** - Instant development server with hot reload and zero configuration
 - ⚙️ **Easy customization** - Extend and modify every component, layout, and functionality
 - 🔗 **OpenAPI / GraphQL API docs generation** - Automatic documentation generation from API specifications
