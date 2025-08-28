@@ -972,15 +972,15 @@ export interface EditLink {
  * Analytics configuration
  */
 export interface IntegrationAnalytics {
-    /** Livesession analytics configuration */
+    /** LiveSession analytics configuration */
     livesession?: IntegrationAnalyticsLiveSession
 }
 
 /**
- * Livesession analytics configuration
+ * LiveSession analytics configuration
 */
 export interface IntegrationAnalyticsLiveSession {
-    /** Livesession's TrackID */
+    /** LiveSession's TrackID */
     trackId: string
 }
 // #endregion IntegrationAnalytics

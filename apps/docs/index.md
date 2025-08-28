@@ -1,4 +1,5 @@
 ---
+title: xyd | Docs Framework for future dev
 component: home
 componentProps:
     hero:
@@ -67,7 +68,7 @@ componentProps:
                     children: Join our community and get help from other developers.
                     kind: secondary
                     icon: docs:slack
-                    href: https://xyd-docs.slack.com
+                    href: https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A
 
                 - 
                     title: Roadmap

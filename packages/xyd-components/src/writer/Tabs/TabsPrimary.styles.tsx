@@ -7,7 +7,6 @@ export const TabsPrimaryHost = css`
         [part="nav"] {
             align-items: center;
             display: flex;
-            height: 42px;
             background-color: var(--xyd-tabs-primary-bgcolor);
             border-bottom: 1px solid var(--xyd-tabs-primary-border-color);
             z-index: 99;

@@ -71,10 +71,14 @@
         "route": {
           "description": "Route configuration",
           "type": "string"
+        },
+        "source": {
+          "description": "Source configuration",
+          "type": "string"
         }
       },
       "required": [
-        "route"
+        "source"
       ],
       "type": "object"
     },
@@ -203,9 +207,18 @@
           "enum": [
             "light",
             "dark",
-            "os"
+            "os",
+            false
           ],
-          "type": "string"
+          "type": [
+            "string",
+            "boolean"
+          ]
+        },
+        "colorSchemeButton": {
+          "const": false,
+          "description": "If `false` then the color scheme button will not be displayed.",
+          "type": "boolean"
         },
         "colors": {
           "$ref": "#/definitions/Colors",
@@ -912,17 +925,17 @@
       "properties": {
         "livesession": {
           "$ref": "#/definitions/IntegrationAnalyticsLiveSession",
-          "description": "Livesession analytics configuration"
+          "description": "LiveSession analytics configuration"
         }
       },
       "type": "object"
     },
     "IntegrationAnalyticsLiveSession": {
       "additionalProperties": false,
-      "description": "Livesession analytics configuration",
+      "description": "LiveSession analytics configuration",
       "properties": {
         "trackId": {
-          "description": "Livesession's TrackID",
+          "description": "LiveSession's TrackID",
           "type": "string"
         }
       },
@@ -1952,7 +1965,9 @@
         "poetry",
         "cosmo",
         "opener",
-        "picasso"
+        "picasso",
+        "gusto",
+        "solar"
       ],
       "type": "string"
     },

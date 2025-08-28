@@ -80,7 +80,7 @@ export const DocsTemplateDecorator = ({ toc = true }: DocsTemplateDecoratorOptio
                     logo: <Youtube />
                 }
             ]}
-            footnote="© Livesession 2025"
+            footnote="© LiveSession 2025"
         />
 
         {/* <$Footer /> */}

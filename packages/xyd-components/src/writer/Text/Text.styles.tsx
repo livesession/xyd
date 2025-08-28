@@ -29,6 +29,10 @@ export const TextHost = css`
             font-size: var(--xyd-font-size-xxlarge);
             line-height: var(--xyd-line-height-xxlarge);
         }
+        &[data-size="inherit"] { 
+            font-size: inherit;
+            line-height: inherit;
+        }
 
         &[data-kind="default"] { 
             color: var(--xyd-text-color--default);

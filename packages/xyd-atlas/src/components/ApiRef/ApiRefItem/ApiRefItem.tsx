@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useState, useCallback, useEffect} from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 
 import {
     Definition,
@@ -8,14 +8,14 @@ import {
     Reference,
     ReferenceCategory
 } from "@xyd-js/uniform";
-import {Heading, Code, Badge, Text} from "@xyd-js/components/writer";
+import { Heading, Code, Badge, Text } from "@xyd-js/components/writer";
 
 import {
     ApiRefProperties,
     ApiRefSamples
 } from "@/components/ApiRef";
 import * as cn from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
-import {useVariantToggles, type VariantToggleConfig} from "@/components/Atlas/AtlasContext";
+import { useVariantToggles, type VariantToggleConfig } from "@/components/Atlas/AtlasContext";
 
 export interface ApiRefItemProps {
     reference: Reference
@@ -24,13 +24,13 @@ export interface ApiRefItemProps {
 
 // TODO: context with current referene?
 export function ApiRefItem({
-                               kind,
-                               reference
-                           }: ApiRefItemProps) {
+    kind,
+    reference
+}: ApiRefItemProps) {
     const hasExamples = reference.examples?.groups?.length || false
 
-    let header: React.ReactNode | null = <$IntroHeader reference={reference}/>
-    let examples: React.ReactNode | null = <ApiRefSamples examples={reference.examples}/>
+    let header: React.ReactNode | null = <$IntroHeader reference={reference} />
+    let examples: React.ReactNode | null = <ApiRefSamples examples={reference.examples} />
 
     if (kind === "secondary") {
         header = null
@@ -55,7 +55,7 @@ export function ApiRefItem({
     </atlas-apiref-item>
 }
 
-function $IntroHeader({reference}: ApiRefItemProps) {
+function $IntroHeader({ reference }: ApiRefItemProps) {
     let topNavbar;
 
     switch (reference?.category) {
@@ -76,7 +76,7 @@ function $IntroHeader({reference}: ApiRefItemProps) {
         }
     }
     return <>
-        <$Title title={reference.title}/>
+        <$Title title={reference.title} />
 
         {topNavbar}
 
@@ -84,7 +84,7 @@ function $IntroHeader({reference}: ApiRefItemProps) {
     </>
 }
 
-function $Authorization({reference}: ApiRefItemProps) {
+function $Authorization({ reference }: ApiRefItemProps) {
     if (!reference.context) {
         return null;
     }
@@ -98,7 +98,7 @@ function $Authorization({reference}: ApiRefItemProps) {
     return <div>
         <div className={cn.ApiRefItemDefinitionsItem}>
             <div part="header">
-                <$Subtitle title="Scopes"/>
+                <$Subtitle title="Scopes" />
             </div>
 
             <$DefinitionBody definition={{
@@ -132,9 +132,9 @@ const VariantContext = createContext<{
 });
 
 function $Definitions({
-                          kind,
-                          reference
-                      }: ApiRefItemProps) {
+    kind,
+    reference
+}: ApiRefItemProps) {
     let argDefinition: Definition | undefined
     let definitions = reference?.definitions || []
 
@@ -158,50 +158,50 @@ function $Definitions({
         definitions = gqlDefinitions
             .filter(definition => definition?.properties?.length)
             .map(definition => {
-            if (!definition.properties?.length) return definition
+                if (!definition.properties?.length) return definition
 
-            // For each property in the definition
-            const updatedProperties = definition.properties.map(prop => {
-                // Find matching variant in argDefinition by symbolName
-                const matchingVariant = argDefinition?.variants?.find(variant => {
-                    const symbolMeta = variant.meta?.find(m => m.name === 'symbolName')
-                    return symbolMeta?.value === prop.name
+                // For each property in the definition
+                const updatedProperties = definition.properties.map(prop => {
+                    // Find matching variant in argDefinition by symbolName
+                    const matchingVariant = argDefinition?.variants?.find(variant => {
+                        const symbolMeta = variant.meta?.find(m => m.name === 'symbolName')
+                        return symbolMeta?.value === prop.name
+                    })
+
+                    if (matchingVariant) {
+                        // Add meta flag to indicate this property has arguments, but only if it doesn't already have it
+                        const meta = prop.meta || []
+                        if (!meta.some(m => m.name === 'hasArguments')) {
+                            meta.push({
+                                name: 'hasArguments', // TODO: better solution in the future
+                                value: 'true'
+                            })
+                        }
+
+                        // Merge properties from the matching variant
+                        return {
+                            ...prop,
+                            meta,
+                            properties: matchingVariant.properties || []
+                        }
+                    }
+
+                    return prop
                 })
 
-                if (matchingVariant) {
-                    // Add meta flag to indicate this property has arguments, but only if it doesn't already have it
-                    const meta = prop.meta || []
-                    if (!meta.some(m => m.name === 'hasArguments')) {
-                        meta.push({
-                            name: 'hasArguments', // TODO: better solution in the future
-                            value: 'true'
-                        })
-                    }
-
-                    // Merge properties from the matching variant
-                    return {
-                        ...prop,
-                        meta,
-                        properties: matchingVariant.properties || []
-                    }
+                return {
+                    ...definition,
+                    properties: updatedProperties
                 }
-
-                return prop
             })
-
-            return {
-                ...definition,
-                properties: updatedProperties
-            }
-        })
     }
 
     return <atlas-apiref-definitions className={cn.ApiRefItemDefinitionsHost}>
-        <$Authorization reference={reference}/>
+        <$Authorization reference={reference} />
 
         {definitions?.map((definition, i) => {
             if (kind === "secondary") {
-                return <$DefinitionBody key={i} definition={definition}/>
+                return <$DefinitionBody key={i} definition={definition} />
             }
 
             return <$VariantsProvider key={i} definition={definition}>
@@ -209,13 +209,13 @@ function $Definitions({
                     {
                         definition?.title ? <div key={i} className={cn.ApiRefItemDefinitionsItem}>
                             <div part="header">
-                                <$Subtitle title={definition.title}/>
+                                <$Subtitle title={definition.title} />
                                 <div part="controls">
-                                    <$VariantSelects/>
+                                    <$VariantSelects />
                                 </div>
                             </div>
 
-                            <$DefinitionBody definition={definition}/>
+                            <$DefinitionBody definition={definition} />
                         </div> : null
                     }
                 </div>
@@ -224,7 +224,7 @@ function $Definitions({
     </atlas-apiref-definitions>
 }
 
-function $VariantsProvider({definition, children}: {
+function $VariantsProvider({ definition, children }: {
     definition: Definition,
     children: React.ReactNode
 }) {
@@ -234,8 +234,8 @@ function $VariantsProvider({definition, children}: {
             ...metaAcc,
             [meta.name]: 1,
         }), {}) || {}
-        
-        
+
+
         return {
             ...acc,
             ...allMetaNames,
@@ -252,7 +252,7 @@ function $VariantsProvider({definition, children}: {
     });
 
     const setSelectedValue = useCallback((key: string, value: string) => {
-        setSelectedValues(prev => ({...prev, [key]: value}));
+        setSelectedValues(prev => ({ ...prev, [key]: value }));
     }, []);
 
 
@@ -291,7 +291,7 @@ function findMatchingVariant(variants: DefinitionVariant[], selectedValues: Reco
 }
 
 function $VariantSelects() {
-    const {variantToggles, selectedValues, setSelectedValue, variants} = useContext(VariantContext);
+    const { variantToggles, selectedValues, setSelectedValue, variants } = useContext(VariantContext);
 
     if (!variants?.length) return null;
 
@@ -385,22 +385,22 @@ interface DefinitionBodyProps {
 }
 
 function $DefinitionBody(props: DefinitionBodyProps) {
-    const {definition} = props;
-    const {variant} = useContext(VariantContext);
+    const { definition } = props;
+    const { variant } = useContext(VariantContext);
 
     let apiRefProperties: React.ReactNode | null = null;
 
     if (variant) {
         if (variant.properties?.length) {
-            apiRefProperties = <ApiRefProperties properties={variant.properties}/>;
+            apiRefProperties = <ApiRefProperties properties={variant.properties} />;
         } else if (variant.rootProperty) {
-            apiRefProperties = <ApiRefProperties properties={[variant.rootProperty]}/>;
+            apiRefProperties = <ApiRefProperties properties={[variant.rootProperty]} />;
         }
     } else {
         if (definition.properties?.length) {
-            apiRefProperties = <ApiRefProperties properties={definition.properties}/>;
+            apiRefProperties = <ApiRefProperties properties={definition.properties} />;
         } else if (definition.rootProperty) {
-            apiRefProperties = <ApiRefProperties properties={[definition.rootProperty]}/>;
+            apiRefProperties = <ApiRefProperties properties={[definition.rootProperty]} />;
         }
     }
 
@@ -470,7 +470,7 @@ interface NavbarProps {
     matchSubtitle?: string
 }
 
-function $Navbar({label, subtitle, matchSubtitle}: NavbarProps) {
+function $Navbar({ label, subtitle, matchSubtitle }: NavbarProps) {
     const renderSubtitle = () => {
         if (!matchSubtitle) {
             return subtitle;
@@ -486,25 +486,14 @@ function $Navbar({label, subtitle, matchSubtitle}: NavbarProps) {
         const after = subtitle.substring(index + matchSubtitle.length);
 
         return (
-            <>
+            <span>
                 {before}
-                <Text as="span" weight="bold">
+                <Text size="inherit" as="span" weight="bold">
                     {match}
                 </Text>
                 {after}
-            </>
+            </span>
         );
-    };
-
-    const handleClick = (e: React.MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const range = document.createRange();
-        range.selectNodeContents(target);
-        const selection = window.getSelection();
-        if (selection) {
-            selection.removeAllRanges();
-            selection.addRange(range);
-        }
     };
 
     return <>
@@ -518,9 +507,8 @@ function $Navbar({label, subtitle, matchSubtitle}: NavbarProps) {
                         </Badge>
                     </div>
                 </div>
-                <div 
+                <div
                     className={cn.ApiRefItemNavbarSubtitle}
-                    onClick={handleClick}
                 >
                     {renderSubtitle()}
                 </div>
@@ -529,7 +517,7 @@ function $Navbar({label, subtitle, matchSubtitle}: NavbarProps) {
     </>
 }
 
-function $Title({title}: { title: string }) {
+function $Title({ title }: { title: string }) {
     return <>
         <Heading size={1}>
             {title}
@@ -537,7 +525,7 @@ function $Title({title}: { title: string }) {
     </>
 }
 
-function $Subtitle({title}: { title: string }) {
+function $Subtitle({ title }: { title: string }) {
     return <>
         <Heading size={3}>
             {title}

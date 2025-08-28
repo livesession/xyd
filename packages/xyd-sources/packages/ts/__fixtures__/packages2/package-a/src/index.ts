@@ -463,9 +463,9 @@ export interface Integrations {
  * Analytics configuration
  */
 export interface Analytics {
-    /** Livesession analytics configuration */
+    /** LiveSession analytics configuration */
     livesession: {
-        /** Tracking ID for Livesession */
+        /** Tracking ID for LiveSession */
         trackId: string
     }
 }

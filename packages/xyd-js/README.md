@@ -13,7 +13,7 @@
   <p>
 
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fxyd.dev&logo=xyd)](https://xyd.dev)
-<a href="https://xyd-docs.slack.com" target="_blank" rel="noopener">
+<a href="https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A" target="_blank" rel="noopener">
 <img alt="Slack Community" src="https://img.shields.io/badge/Slack-Community-4A154B?logo=slack&logoColor=white">
 </a>
 

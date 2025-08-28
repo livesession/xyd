@@ -34,7 +34,7 @@ Learn how to use built-in components
         "footer": {
                 "social": {
                     "github": "https://github.com/livesession/xyd",
-                    "slack": "https://xyd-docs.slack.com"
+                    "slack": "https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A"
                 },
                 "links": [
                     {

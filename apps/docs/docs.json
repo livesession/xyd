@@ -4,7 +4,8 @@
         "name": "opener",
         "logo": {
             "light": "/public/assets/logo.svg",
-            "dark": "/public/assets/logo-dark.svg"
+            "dark": "/public/assets/logo-dark.svg",
+            "page": "/docs/guides/introduction"
         },
         "favicon": "/public/assets/logo.svg",
         "icons": {

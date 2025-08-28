@@ -512,7 +512,7 @@ function SelectPredefinedUniformURL({
         livesession: {
             value: "livesession",
             url: `${import.meta.env.APP_URL || 'https://apidocs-demo.xyd.dev'}/livesession-openapi.yaml`,
-            label: "Livesession",
+            label: "LiveSession",
             type: "openapi"
         },
         vercel: {

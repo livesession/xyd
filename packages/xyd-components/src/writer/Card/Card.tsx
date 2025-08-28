@@ -38,57 +38,61 @@ export function Card(props: CardProps) {
 
     const Link = link
 
-    return <xyd-card
-        data-shadow={shadow || undefined}
-        className={cn.CardHost}
-    >
-        {imgSrc && (
-            <div part="image-container">
-                <div part="bg">
-                    <img src={imgSrc} alt={imgAlt} />
-                    <div part="bg-shadow" />
+    const cardContent = (
+        <xyd-card
+            data-shadow={shadow || undefined}
+            className={cn.CardHost}
+        >
+            {imgSrc && (
+                <div part="image-container">
+                    <div part="bg">
+                        <img src={imgSrc} alt={imgAlt} />
+                        <div part="bg-shadow" />
+                    </div>
+
+                    {
+                        Link && href && logoSrc && <span
+                            part="author-link"
+                        >
+                            <img
+                                src={logoSrc}
+                                alt={logoAlt}
+                            />
+                        </span>
+                    }
+
                 </div>
+            )}
 
-                {
-                    Link && href && logoSrc && <Link
-                        target="_blank"
-                        rel="noopener"
-                        part="author-link"
-                        href={href}
-                    >
-                        <img
-                            src={logoSrc}
-                            alt={logoAlt}
-                        />
-                    </Link>
-                }
-
-            </div>
-        )}
-
-        <div part="body">
-            <div part="header">
-                {Link && href && !logoSrc ?
+            <div part="body">
+                <div part="header">
                     <Text weight="bold">
-                        <Link href={href}>
-                            {title}
-                        </Link>
-                    </Text>
-                    : <Text weight="bold">
                         {title}
-                    </Text>}
-                {
-                    btnText && <Button size="md" kind="secondary">
-                        {btnText}
-                    </Button>
-                }
+                    </Text>
+                    {
+                        btnText && <Button size="md" kind="secondary">
+                            {btnText}
+                        </Button>
+                    }
+                </div>
+                <div part="description">
+                    <Text size="small">
+                        {description}
+                    </Text>
+                </div>
             </div>
-            <div part="description">
-                <Text size="small">
-                    {description}
-                </Text>
-            </div>
-        </div>
-    </xyd-card>
+        </xyd-card>
+    )
+
+    // If no imgSrc and we have Link and href, wrap the entire card in a link
+    if (!btnText && Link && href) {
+        return (
+            <Link href={href}>
+                {cardContent}
+            </Link>
+        )
+    }
+
+    return cardContent
 }
 

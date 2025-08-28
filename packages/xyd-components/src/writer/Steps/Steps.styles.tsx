@@ -65,6 +65,9 @@ export const StepsItem = css`
                 height: ${bulletPx}px;
                 width: ${bulletPx}px;
                 border-radius: 12px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
         }
 

@@ -54,12 +54,12 @@ function useDefaultBehaviour(initialActiveItems: any[]) {
     const forceUpdate = () => setForceUpdate((prev) => prev + 1);
 
     useEffect(() => {
-        // if (navigation.state !== 'loading') {
-        //     setActiveItems(createItemsMap(initialActiveItems));
-        //     forceUpdate();
-        // }
-        setActiveItems(createItemsMap(initialActiveItems));
-        forceUpdate();
+        if (navigation.state !== 'loading') {
+            setActiveItems(createItemsMap(initialActiveItems));
+            forceUpdate();
+        }
+        // setActiveItems(createItemsMap(initialActiveItems));
+        // forceUpdate();
     }, [initialActiveItems, navigation.state]);
 
     function addItem(item: FooSidebarItemProps) {

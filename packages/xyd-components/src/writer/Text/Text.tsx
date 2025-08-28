@@ -5,7 +5,7 @@ import * as cn from "./Text.styles";
 /**
  * Available font sizes for the Text component
  */
-export type TextFontSizes = "xsmall" | "small" | "medium" | "large" | "xlarge" | "xxlarge";
+export type TextFontSizes = "xsmall" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "inherit";
 
 /**
  * Available text styles/kinds for the Text component

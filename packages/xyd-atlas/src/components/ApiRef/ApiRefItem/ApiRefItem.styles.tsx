@@ -31,6 +31,10 @@ export const ApiRefItemNavbarSubtitle = css`
     letter-spacing: 1px;
     white-space: nowrap;
     text-overflow: ellipsis;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
 `;
 
 export const ApiRefItemHost = css`
