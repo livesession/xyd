@@ -1,5 +1,12 @@
 [build]
-  command = "bunx xyd-js build"
+  command = """
+  curl -fsSL https://bun.com/install | bash -s "bun-v1.2.20"
+  export BUN_INSTALL="$HOME/.bun"
+  export PATH="$BUN_INSTALL/bin:$PATH"
+  bun --version
+  bunx xyd-js build
+  """
+  
   publish = ".xyd/build/client"
 
 [build.environment]
