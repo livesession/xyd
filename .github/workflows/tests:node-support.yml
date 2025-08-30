@@ -60,7 +60,7 @@ jobs:
       run: |
         # Install bun if not already available
         if ! command -v bun &> /dev/null; then
-          curl -fsSL https://bun.sh/install | bash
+          curl -fsSL https://bun.com/install | bash -s "bun-v1.2.20"
           export PATH="$HOME/.bun/bin:$PATH"
         fi
         
