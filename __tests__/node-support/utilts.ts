@@ -137,7 +137,8 @@ export async function testDevServer(pm: typeof PACKAGE_MANAGER[0], testConfig: T
         const serverStarted = await waitForServer(port, 1000 * 60 * 5)
         
         if (!serverStarted) {
-            throw new Error(`Server failed to start on port ${port} within 2 minutes`)
+            console.error(`Server failed to start on port ${port} within 2 minutes`)
+            return false
         }
 
         browser = await chromium.launch()
@@ -208,7 +209,8 @@ export async function testBuiltPages(pm: typeof PACKAGE_MANAGER[0], testConfig: 
         const serverStarted = await waitForServer(port, 1000 * 60 * 5)
         
         if (!serverStarted) {
-            throw new Error(`Server failed to start on port ${port} within 2 minutes`)
+            console.error(`Server failed to start on port ${port} within 2 minutes`)
+            return false
         }
 
         browser = await chromium.launch()
