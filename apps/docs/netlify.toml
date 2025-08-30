@@ -6,7 +6,7 @@
   bun --version
   bunx xyd-js build
   """
-  
+
   publish = ".xyd/build/client"
 
 [build.environment]

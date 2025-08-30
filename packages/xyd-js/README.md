@@ -1,7 +1,7 @@
 <div align="center">
   <a href="https://xyd.dev">
     <img
-      src="https://github.com/livesession/xyd/raw/master/assets/readme-logo.svg"
+      src="https://github.com/livesession/xyd/raw/master/.github/assets/readme-logo.svg"
       alt="xyd Logo"
       height="64"
     />

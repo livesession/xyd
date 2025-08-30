@@ -37,6 +37,10 @@ npm i -g xyd-js
 ```
 :::
 
+::::callout{kind="warning"}
+**Note:** There are known issues with Bun v1.2.21. If you encounter problems, consider using a different Bun version or switch to another supported package manager.
+::::
+
 2. Clone [starter](https://github.com/xyd-js/starter) by following command:
 ```
 git clone https://github.com/xyd-js/starter
