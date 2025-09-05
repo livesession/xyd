@@ -1,5 +1,5 @@
 ---
-title: Quicktart
+title: Quickstart
 icon: rocket
 tocCard: 
     link: https://github.com/xyd-js/starter
