@@ -155,7 +155,9 @@ export function schemaObjectToUniformDefinitionProperty(
         refPath = schema.__UNSAFE_refPath();
         const defProp = visitedRefs.get(refPath);
         if (defProp) {
-            return JSON.parse(JSON.stringify(defProp)); // Return a deep copy circular json
+            const v = JSON.parse(JSON.stringify(defProp))
+            v.name = name;
+            return v; // Return a deep copy circular json
         }
     }
 
