@@ -253,6 +253,8 @@ export interface OpenAPIReferenceContext extends BaseReferenceContext {
     fullPath?: string;
 
     componentSchema?: string
+
+    servers?: string[]
 }
 
 export type TypeDocReferenceContextMeta = Meta<"internal">

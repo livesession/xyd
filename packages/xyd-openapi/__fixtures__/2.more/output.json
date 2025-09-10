@@ -8,10 +8,10 @@
     "context": {
       "method": "get",
       "path": "/users",
-      "fullPath": "/users",
       "group": [
         ""
       ],
+      "fullPath": "/users",
       "scopes": []
     },
     "examples": {

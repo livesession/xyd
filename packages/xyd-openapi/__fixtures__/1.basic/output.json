@@ -8,9 +8,13 @@
     "context": {
       "method": "get",
       "path": "/users",
-      "fullPath": "http:/api.example.com/v1/users",
       "group": [
         ""
+      ],
+      "fullPath": "http:/api.example.com/v1/users",
+      "servers": [
+        "http://api.example.com/v1",
+        "http://staging-api.example.com"
       ],
       "scopes": []
     },
@@ -204,9 +208,13 @@
     "context": {
       "method": "post",
       "path": "/users",
-      "fullPath": "http:/api.example.com/v1/users",
       "group": [
         ""
+      ],
+      "fullPath": "http:/api.example.com/v1/users",
+      "servers": [
+        "http://api.example.com/v1",
+        "http://staging-api.example.com"
       ],
       "scopes": []
     },
@@ -440,9 +448,13 @@
     "context": {
       "method": "get",
       "path": "/users/{userId}",
-      "fullPath": "http:/api.example.com/v1/users/{userId}",
       "group": [
         ""
+      ],
+      "fullPath": "http:/api.example.com/v1/users/{userId}",
+      "servers": [
+        "http://api.example.com/v1",
+        "http://staging-api.example.com"
       ],
       "scopes": []
     },
@@ -612,9 +624,13 @@
     "context": {
       "method": "put",
       "path": "/users/{userId}",
-      "fullPath": "http:/api.example.com/v1/users/{userId}",
       "group": [
         ""
+      ],
+      "fullPath": "http:/api.example.com/v1/users/{userId}",
+      "servers": [
+        "http://api.example.com/v1",
+        "http://staging-api.example.com"
       ],
       "scopes": []
     },
@@ -848,9 +864,13 @@
     "context": {
       "method": "patch",
       "path": "/users/{userId}",
-      "fullPath": "http:/api.example.com/v1/users/{userId}",
       "group": [
         ""
+      ],
+      "fullPath": "http:/api.example.com/v1/users/{userId}",
+      "servers": [
+        "http://api.example.com/v1",
+        "http://staging-api.example.com"
       ],
       "scopes": []
     },
@@ -1070,9 +1090,13 @@
     "context": {
       "method": "delete",
       "path": "/users/{userId}",
-      "fullPath": "http:/api.example.com/v1/users/{userId}",
       "group": [
         ""
+      ],
+      "fullPath": "http:/api.example.com/v1/users/{userId}",
+      "servers": [
+        "http://api.example.com/v1",
+        "http://staging-api.example.com"
       ],
       "scopes": []
     },
@@ -1140,9 +1164,13 @@
     "context": {
       "method": "get",
       "path": "/users/{userId}/posts",
-      "fullPath": "http:/api.example.com/v1/users/{userId}/posts",
       "group": [
         ""
+      ],
+      "fullPath": "http:/api.example.com/v1/users/{userId}/posts",
+      "servers": [
+        "http://api.example.com/v1",
+        "http://staging-api.example.com"
       ],
       "scopes": []
     },
@@ -1296,9 +1324,13 @@
     "context": {
       "method": "post",
       "path": "/users/{userId}/posts",
-      "fullPath": "http:/api.example.com/v1/users/{userId}/posts",
       "group": [
         ""
+      ],
+      "fullPath": "http:/api.example.com/v1/users/{userId}/posts",
+      "servers": [
+        "http://api.example.com/v1",
+        "http://staging-api.example.com"
       ],
       "scopes": []
     },

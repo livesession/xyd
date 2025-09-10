@@ -1,3 +1,4 @@
+import {join} from "node:path";
 import {OpenAPIV3} from "openapi-types";
 
 import {
@@ -48,6 +49,11 @@ export function oapPathToReference(
     const tag = getFirstTag(oapMethod)
     const group = [tag]
 
+    const ctx: OpenAPIReferenceContext = {
+        method: httpMethod,
+        path: `${encodeURIComponent(path)}`,
+        group,
+    }
     const endpointRef: Reference = {
         title: title(oapMethod, httpMethod, path),
         canonical: canonical(oapMethod, httpMethod, path),
@@ -55,17 +61,20 @@ export function oapPathToReference(
         type: mType,
         category: ReferenceCategory.REST,
 
-        context: {
-            method: httpMethod,
-            path: `${encodeURIComponent(path)}`,
-            fullPath: path,
-            group,
-        } as OpenAPIReferenceContext,
+        context: ctx,
 
         examples: {
             groups: exampleGroups,
         },
         definitions: definitions,
+    }
+
+    if (oapPath.servers?.length) {
+        const defaultServerUrl = oapPath.servers[0]?.url
+        ctx.servers =  oapPath.servers.map(server => server.url)
+        if (defaultServerUrl) {
+            ctx.fullPath = join(defaultServerUrl, path)
+        }
     }
 
     if (oapMethod.parameters) {

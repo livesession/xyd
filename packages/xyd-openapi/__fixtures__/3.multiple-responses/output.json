@@ -8,10 +8,10 @@
     "context": {
       "method": "get",
       "path": "/response",
-      "fullPath": "/response",
       "group": [
         ""
       ],
+      "fullPath": "/response",
       "scopes": []
     },
     "examples": {

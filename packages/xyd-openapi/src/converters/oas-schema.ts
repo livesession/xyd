@@ -57,7 +57,13 @@ export function oapSchemaToReferences(
             if (reference) {
                 const ctx = reference.context as OpenAPIReferenceContext
                 ctx.path = endpointPath
-                ctx.fullPath = path.join(server, endpointPath)
+                if (!ctx.fullPath) {
+                    ctx.fullPath = path.join(server, endpointPath)
+                }
+
+                if (!ctx.servers?.length && schema.servers?.length) {
+                    ctx.servers = schema.servers.map(server => server.url) || []
+                }
 
                 const operation = oas.operation(endpointPath, httpMethod);
                 reference.examples.groups = oapExamples(oas, operation)
