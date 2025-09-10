@@ -45,13 +45,21 @@ export async function loader({ request }: { request: Request }) {
             selectedRepo = savedSettings.repo || (repositories[0]?.name);
             if (repositories && repositories.length > 0 && selectedRepo) {
                 branches = await githubService.getRepositoryBranches(org.githubToken, selectedOrgLogin, selectedRepo);
-
             }
         }
 
-        return { githubOrgs, repositories, branches, organizationId, savedSettings } as LoaderData;
+        return;
     } catch (error) {
         console.error('git-settings.loader:', error);
-        return { githubOrgs: [], repositories: [], branches: [], organizationId: "", savedSettings: {} } as LoaderData;
+        throw error;
+    } finally {
+        return {
+            githubOrgs: githubOrgs || [],
+            repositories: repositories || [],
+            branches: branches || [],
+            organizationId: organizationId || "",
+            savedSettings: savedSettings || {}
+        } as LoaderData;
+
     }
 }

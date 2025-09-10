@@ -9,5 +9,13 @@ export default defineConfig({
     alias: {
       '~': path.resolve(__dirname, './app'),
     },
-  }
+  },
+  ssr: {
+    // te pakiety muszą przejść przez transformację Vite (nie externalizuj)
+    noExternal: ['@primer/react', '@primer/primitives'],
+  },
+  optimizeDeps: {
+    // opcjonalne, pomaga w dev/prebundle po stronie klienta
+    include: ['@primer/react'],
+  },
 })

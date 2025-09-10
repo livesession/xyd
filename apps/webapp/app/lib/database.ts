@@ -42,3 +42,4 @@ export const COLLECTIONS = {
   USERS: 'users',
   ORGANIZATIONS: 'organizations',
 } as const;
+

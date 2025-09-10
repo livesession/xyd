@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy } from "react";
 
 import {
     Links,
@@ -9,10 +9,16 @@ import {
 } from "react-router";
 
 import "@livesession/authjs-ui/index.css"
+import '@primer/primitives/dist/css/functional/themes/light.css'
+import '@primer/primitives/dist/css/primitives.css'
 
 import './index.css'
 
 import { AuthProvider } from "./contexts/AuthContext";
+
+export function HydrateFallback() {
+    return <div>Loading fallback...</div>;
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
     return (

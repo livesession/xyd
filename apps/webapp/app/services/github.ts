@@ -27,6 +27,29 @@ export interface GitHubBranch {
   protected: boolean;
 }
 
+export interface GitHubFile {
+  name: string;
+  path: string;
+  sha: string;
+  size: number;
+  url: string;
+  html_url: string;
+  git_url: string;
+  download_url: string | null;
+  type: 'file' | 'dir';
+  content?: string; // Base64 encoded content for files
+  encoding?: string;
+}
+
+export interface GitHubTreeItem {
+  path: string;
+  mode: string;
+  type: 'blob' | 'tree';
+  sha: string;
+  size?: number;
+  url: string;
+}
+
 export class GitHubService {
   private static instance: GitHubService;
 
@@ -158,6 +181,105 @@ export class GitHubService {
     }
 
     return await response.json();
+  }
+
+  /**
+   * Get repository contents (files and directories)
+   */
+  async getRepositoryContents(
+    accessToken: string, 
+    owner: string, 
+    repo: string, 
+    path: string = '', 
+    branch: string = 'main'
+  ): Promise<GitHubFile[]> {
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
+    
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch repository contents: ${response.statusText}`);
+    }
+
+    return await response.json();
+  }
+
+  /**
+   * Get a specific file content
+   */
+  async getFileContent(
+    accessToken: string, 
+    owner: string, 
+    repo: string, 
+    path: string, 
+    branch: string = 'main'
+  ): Promise<string> {
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
+    
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch file content: ${response.statusText}`);
+    }
+
+    const fileData = await response.json();
+    
+    if (fileData.type !== 'file' || !fileData.content) {
+      throw new Error('Path does not point to a file or file has no content');
+    }
+
+    // Decode base64 content
+    return Buffer.from(fileData.content, 'base64').toString('utf-8');
+  }
+
+  /**
+   * Get repository tree recursively
+   */
+  async getRepositoryTree(
+    accessToken: string, 
+    owner: string, 
+    repo: string, 
+    branch: string = 'main'
+  ): Promise<GitHubTreeItem[]> {
+    // First get the branch info to get the tree SHA
+    const branchResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/branches/${branch}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    if (!branchResponse.ok) {
+      throw new Error(`Failed to fetch branch info: ${branchResponse.statusText}`);
+    }
+
+    const branchData = await branchResponse.json();
+    const treeSha = branchData.commit.commit.tree.sha;
+
+    // Get the tree recursively
+    const treeResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${treeSha}?recursive=1`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    if (!treeResponse.ok) {
+      throw new Error(`Failed to fetch repository tree: ${treeResponse.statusText}`);
+    }
+
+    const treeData = await treeResponse.json();
+    return treeData.tree;
   }
 }
 
