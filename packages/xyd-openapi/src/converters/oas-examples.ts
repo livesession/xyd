@@ -201,9 +201,22 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
             // Use the original operation but handle the circular reference error at the JSON.stringify level
             let code = "";
             try {
+                let selectedServer = 0;
+                const operationServerUrl = operation.schema.servers?.[0]?.url
+                if (operationServerUrl) {
+                    const servers = operation.api.servers
+                    // TODO: fix any
+                    const operationServerIndex = servers?.findIndex((s: any) => s.url === operationServerUrl)
+                    if (operationServerIndex) {
+                        selectedServer = operationServerIndex;
+                    }
+                }
                 const result = oasToSnippet(oas, operation, {
                     ...paramData,
-                    ...bodyData
+                    ...bodyData,
+                    server: {
+                        selected: selectedServer,
+                    }
                 }, null, lang);
                 code = result.code || "";
             } catch (error) {

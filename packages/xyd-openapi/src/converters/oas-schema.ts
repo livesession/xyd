@@ -27,10 +27,22 @@ export function oapSchemaToReferences(
     const references: Reference[] = [];
     const oas = new Oas(schema as any);
 
-    const server = schema.servers?.[0]?.url || ""
+    const serverUrls =  schema?.servers?.map(s => s.url) || []
+    const server = serverUrls[0] || ""
+
+    if (!schema.servers) {
+        schema.servers = []
+    }
 
     Object.entries(schema.paths).forEach(([endpointPath, oapPath]) => {
         SUPPORTED_HTTP_METHODS.forEach((eachMethod) => {
+            if (schema?.servers && oapPath?.servers?.length) {
+                for (const pathServer of oapPath.servers) {
+                    if (!schema?.servers.find(s => s.url === pathServer.url)) {
+                        schema.servers.push(pathServer)
+                    }
+                }
+            }
             const httpMethod = eachMethod.toLowerCase() as OpenAPIV3.HttpMethods
 
             const found = httpMethodToUniformMethod(httpMethod)
