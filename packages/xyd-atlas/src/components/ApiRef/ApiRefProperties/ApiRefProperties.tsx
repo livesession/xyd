@@ -1,9 +1,9 @@
-import React, { useContext, useState } from "react";
-import { DEFINED_DEFINITION_PROPERTY_TYPE, DefinitionProperty, DefinitionPropertyMeta } from "@xyd-js/uniform";
+import React, {useContext, useState} from "react";
+import {DEFINED_DEFINITION_PROPERTY_TYPE, DefinitionProperty, DefinitionPropertyMeta} from "@xyd-js/uniform";
 
 import * as cn from "./ApiRefProperties.styles";
-import { AtlasContext, useBaseMatch } from "@/components/Atlas/AtlasContext";
-import { Badge } from "@xyd-js/components/writer";
+import {AtlasContext, useBaseMatch} from "@/components/Atlas/AtlasContext";
+import {Badge} from "@xyd-js/components/writer";
 
 export interface ApiRefPropertiesProps {
     properties: DefinitionProperty[]
@@ -12,7 +12,7 @@ export interface ApiRefPropertiesProps {
 // TODO: in the future configurable
 const HIDE_INTERNAL = true
 
-export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
+export function ApiRefProperties({properties}: ApiRefPropertiesProps) {
     return <ul className={cn.ApiRefPropertiesUlHost}>
         {
             filterProperties(properties)?.map((property, i) => {
@@ -26,7 +26,7 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
                     {
                         propName || propValue ?
                             <dl className={cn.ApiRefPropertiesDlHost}>
-                                <PropName property={property} meta={property.meta || []} />
+                                <PropName property={property} meta={property.meta || []}/>
                                 <PropType
                                     property={property}
                                 />
@@ -90,8 +90,8 @@ interface PropTypeProps {
     property: DefinitionProperty
 }
 
-function PropType({ property }: PropTypeProps) {
-    const { Link = "a" } = useContext(AtlasContext)
+function PropType({property}: PropTypeProps) {
+    const {Link = "a"} = useContext(AtlasContext)
     const href = useSymbolLink(property)
 
     const symbol = resolvePropertySymbol(property)
@@ -167,8 +167,8 @@ export interface PropMetaListProps {
     metas: PropMetaProps[]
 }
 
-function PropMetaList({ metas }: PropMetaListProps) {
-    const order = { deprecated: 0, required: 1, defaults: 2 };
+function PropMetaList({metas}: PropMetaListProps) {
+    const order = {deprecated: 0, required: 1, defaults: 2};
 
     const sortedMetas = [...metas].sort((a, b) => {
         return (order[a.name as keyof typeof order] ?? 3) - (order[b.name as keyof typeof order] ?? 3);
@@ -192,7 +192,7 @@ interface SubPropertiesProps {
     properties: DefinitionProperty[]
 }
 
-function SubProperties({ parent, properties }: SubPropertiesProps) {
+function SubProperties({parent, properties}: SubPropertiesProps) {
     const [expanded, setExpanded] = useState(false)
 
     // Get the actual properties to display
@@ -201,8 +201,8 @@ function SubProperties({ parent, properties }: SubPropertiesProps) {
     const choiceType = isChoiceType(parent)
     const noChildProps = function () {
         if (
-            (   
-                parent?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY && 
+            (
+                parent?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY &&
                 parent?.ofProperty?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM
             ) ||
             parent?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM
@@ -346,7 +346,7 @@ function PropToggle(
 
 function isChoiceType(property: DefinitionProperty) {
     if (
-        property.type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY && 
+        property.type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY &&
         property.ofProperty?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM
     ) {
         return true
@@ -468,6 +468,7 @@ function resolvePropertySymbol(property: DefinitionProperty): string {
                                     type: DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
                                     properties: property.ofProperty.properties || [],
                                 })
+                            }
 
                             if (unionSymbol?.length && unionSymbol.includes("$$")) {
                                 return [atomicDefinedSymbol]
@@ -643,24 +644,24 @@ function renderMetaInfo(meta: DefinitionPropertyMeta[] | undefined) {
         rangeInfo.push(
             <div>
                 Required range: <Badge>
-                    {`${minimum} <= x <= ${maximum}`}
-                </Badge>
+                {`${minimum} <= x <= ${maximum}`}
+            </Badge>
             </div>
         );
     } else if (minimum !== undefined) {
         rangeInfo.push(
             <div>
                 Required range: <Badge>
-                    {`x >= ${minimum}`}
-                </Badge>
+                {`x >= ${minimum}`}
+            </Badge>
             </div>
         );
     } else if (maximum !== undefined) {
         rangeInfo.push(
             <div>
                 Required range: <Badge>
-                    {`x <= ${maximum}`}
-                </Badge>
+                {`x <= ${maximum}`}
+            </Badge>
             </div>
         );
     }
@@ -682,7 +683,7 @@ function renderMetaInfo(meta: DefinitionPropertyMeta[] | undefined) {
     if (!rangeInfo?.length && !exampleInfo) {
         return null
     }
-    
+
     return <atlas-apiref-meta-info className={cn.ApiRefPropertiesMetaInfoHost}>
         {rangeInfo?.map((info, i) => (
             <div key={`range-${i}`}>{info}</div>
