@@ -58,6 +58,10 @@ const tests: {
     {
         name: "7.examples",
         description: "OpenAPI examples property",
+    },
+    {
+        name: "8.enums",
+        description: "OpenAPI enums",
     }
 ]
 

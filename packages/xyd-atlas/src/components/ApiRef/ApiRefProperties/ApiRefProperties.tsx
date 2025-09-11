@@ -200,7 +200,13 @@ function SubProperties({ parent, properties }: SubPropertiesProps) {
 
     const choiceType = isChoiceType(parent)
     const noChildProps = function () {
-        if (parent?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM) {
+        if (
+            (   
+                parent?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY && 
+                parent?.ofProperty?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM
+            ) ||
+            parent?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM
+        ) {
             return false
         }
 
@@ -339,6 +345,13 @@ function PropToggle(
 }
 
 function isChoiceType(property: DefinitionProperty) {
+    if (
+        property.type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY && 
+        property.ofProperty?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM
+    ) {
+        return true
+    }
+
     if (property.ofProperty) {
         return isChoiceType(property.ofProperty)
     }
@@ -435,12 +448,26 @@ function resolvePropertySymbol(property: DefinitionProperty): string {
                         const atomicDefinedSymbol = atomicDefinedPropertySymbol(property)
 
                         if (atomicDefinedSymbol) {
-                            const unionSymbol = groupSymbol({
-                                name: "",
-                                description: "",
-                                type: DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
-                                properties: property.ofProperty.properties || [],
-                            })
+                            let unionSymbol = ""
+                            if (
+                                property.ofProperty.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM &&
+                                property.ofProperty.ofProperty?.type
+                            ) {
+                                unionSymbol = groupSymbol({
+                                    name: "",
+                                    description: "",
+                                    type: property.ofProperty.ofProperty?.type,
+                                    properties: property.ofProperty.properties || [],
+                                })
+                            }
+
+                            if (!unionSymbol) {
+                                unionSymbol = groupSymbol({
+                                    name: "",
+                                    description: "",
+                                    type: DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
+                                    properties: property.ofProperty.properties || [],
+                                })
 
                             if (unionSymbol?.length && unionSymbol.includes("$$")) {
                                 return [atomicDefinedSymbol]

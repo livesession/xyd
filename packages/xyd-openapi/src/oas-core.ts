@@ -414,6 +414,11 @@ export function schemaObjectToUniformDefinitionProperty(
             description: schema.description || "",
             meta,
             properties: enumProperties || [],
+            ofProperty: {
+                name: "",
+                description: "",
+                type: schema.type || "",
+            }
         };
 
         if (refPath) {

@@ -8,9 +8,13 @@
     "context": {
       "method": "get",
       "path": "/users",
-      "fullPath": "http:/api.example.com/v1/users",
       "group": [
         ""
+      ],
+      "fullPath": "http:/api.example.com/v1/users",
+      "servers": [
+        "http://api.example.com/v1",
+        "http://staging-api.example.com"
       ],
       "scopes": []
     },
@@ -150,7 +154,12 @@
                       "description": "",
                       "meta": []
                     }
-                  ]
+                  ],
+                  "ofProperty": {
+                    "name": "",
+                    "description": "",
+                    "type": "string"
+                  }
                 },
                 {
                   "name": "createdAt",
@@ -245,7 +254,12 @@
                 "description": "",
                 "meta": []
               }
-            ]
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "string"
+            }
           },
           {
             "name": "createdAt",

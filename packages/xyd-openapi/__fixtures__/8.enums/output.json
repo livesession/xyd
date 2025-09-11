@@ -11,7 +11,10 @@
       "group": [
         ""
       ],
-      "fullPath": "/users",
+      "fullPath": "http:/api.example.com/v1/users",
+      "servers": [
+        "http://api.example.com/v1"
+      ],
       "scopes": []
     },
     "examples": {
@@ -25,22 +28,22 @@
                   {
                     "title": "shell",
                     "language": "shell",
-                    "code": "curl --request GET \\\n     --url https://example.com/users \\\n     --header 'accept: application/json'"
+                    "code": "curl --request GET \\\n     --url http://api.example.com/v1/users \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"status\": [\n    \"active\"\n  ]\n}\n'"
                   },
                   {
                     "title": "javascript",
                     "language": "javascript",
-                    "code": "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://example.com/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
+                    "code": "const options = {\n  method: 'GET',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({status: ['active']})\n};\n\nfetch('http://api.example.com/v1/users', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));"
                   },
                   {
                     "title": "python",
                     "language": "python",
-                    "code": "import requests\n\nurl = \"https://example.com/users\"\n\nheaders = {\"accept\": \"application/json\"}\n\nresponse = requests.get(url, headers=headers)\n\nprint(response.text)"
+                    "code": "import requests\n\nurl = \"http://api.example.com/v1/users\"\n\npayload = { \"status\": [\"active\"] }\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.get(url, json=payload, headers=headers)\n\nprint(response.text)"
                   },
                   {
                     "title": "go",
                     "language": "go",
-                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://example.com/users\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"http://api.example.com/v1/users\"\n\n\tpayload := strings.NewReader(\"{\\\"status\\\":[\\\"active\\\"]}\")\n\n\treq, _ := http.NewRequest(\"GET\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
                   }
                 ]
               }
@@ -48,7 +51,7 @@
           ]
         },
         {
-          "description": "Example response",
+          "description": "A sample JSON response",
           "examples": [
             {
               "codeblock": {
@@ -57,7 +60,7 @@
                   {
                     "title": "application/json",
                     "language": "json",
-                    "code": "[\n  {\n    \"message\": \"string\",\n    \"id\": 0,\n    \"username\": \"string\",\n    \"email\": \"user@example.com\",\n    \"status\": \"active\",\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"updatedAt\": \"2019-08-24T14:15:22Z\"\n  }\n]"
+                    "code": "{\n  \"id\": 1,\n  \"username\": \"John Doe\"\n}"
                   }
                 ]
               }
@@ -68,6 +71,62 @@
     },
     "definitions": [
       {
+        "title": "Request body",
+        "variants": [
+          {
+            "title": "application/json",
+            "description": "",
+            "properties": [
+              {
+                "name": "status",
+                "type": "$$array",
+                "description": "",
+                "meta": [],
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "$$enum",
+                  "properties": [
+                    {
+                      "name": "active",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    },
+                    {
+                      "name": "inactive",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    }
+                  ],
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "enum-type",
+                      "value": "string"
+                    }
+                  ],
+                  "ofProperty": {
+                    "name": "",
+                    "description": "",
+                    "type": "string"
+                  }
+                }
+              }
+            ],
+            "meta": [
+              {
+                "name": "contentType",
+                "value": "application/json"
+              }
+            ]
+          }
+        ],
+        "properties": [],
+        "meta": []
+      },
+      {
         "title": "Response",
         "variants": [
           {
@@ -77,12 +136,6 @@
             "rootProperty": {
               "type": "$$array",
               "properties": [
-                {
-                  "name": "message",
-                  "type": "string",
-                  "description": "",
-                  "meta": []
-                },
                 {
                   "name": "id",
                   "type": "integer",
@@ -168,61 +221,12 @@
                 "name": "definitionDescription",
                 "value": ""
               }
-            ],
-            "symbolDef": {
-              "id": []
-            }
+            ]
           }
         ],
         "properties": []
       }
     ]
-  },
-  {
-    "title": "Response",
-    "description": "",
-    "canonical": "objects/Response",
-    "definitions": [
-      {
-        "title": "Response",
-        "properties": [
-          {
-            "name": "message",
-            "type": "string",
-            "description": "",
-            "meta": []
-          }
-        ],
-        "meta": []
-      }
-    ],
-    "examples": {
-      "groups": [
-        {
-          "description": "Example",
-          "examples": [
-            {
-              "codeblock": {
-                "tabs": [
-                  {
-                    "title": "json",
-                    "language": "json",
-                    "code": "{\n  \"message\": \"\"\n}"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    "type": "rest_component_schema",
-    "context": {
-      "componentSchema": "Response",
-      "group": [
-        "Objects"
-      ]
-    }
   },
   {
     "title": "User",
@@ -329,6 +333,28 @@
     "type": "rest_component_schema",
     "context": {
       "componentSchema": "User",
+      "group": [
+        "Objects"
+      ]
+    }
+  },
+  {
+    "title": "Status",
+    "description": "",
+    "canonical": "objects/Status",
+    "definitions": [
+      {
+        "title": "Status",
+        "properties": [],
+        "meta": []
+      }
+    ],
+    "examples": {
+      "groups": []
+    },
+    "type": "rest_component_schema",
+    "context": {
+      "componentSchema": "Status",
       "group": [
         "Objects"
       ]

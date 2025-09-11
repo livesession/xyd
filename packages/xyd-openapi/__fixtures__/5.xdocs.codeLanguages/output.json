@@ -158,7 +158,12 @@
                       "description": "",
                       "meta": []
                     }
-                  ]
+                  ],
+                  "ofProperty": {
+                    "name": "",
+                    "description": "",
+                    "type": "string"
+                  }
                 },
                 {
                   "name": "createdAt",
@@ -313,7 +318,12 @@
                     "description": "",
                     "meta": []
                   }
-                ]
+                ],
+                "ofProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "string"
+                }
               }
             ],
             "meta": [
@@ -394,7 +404,12 @@
                     "description": "",
                     "meta": []
                   }
-                ]
+                ],
+                "ofProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "string"
+                }
               },
               {
                 "name": "createdAt",
@@ -554,7 +569,12 @@
                     "description": "",
                     "meta": []
                   }
-                ]
+                ],
+                "ofProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "string"
+                }
               },
               {
                 "name": "createdAt",
@@ -719,7 +739,12 @@
                     "description": "",
                     "meta": []
                   }
-                ]
+                ],
+                "ofProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "string"
+                }
               }
             ],
             "meta": [
@@ -800,7 +825,12 @@
                     "description": "",
                     "meta": []
                   }
-                ]
+                ],
+                "ofProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "string"
+                }
               },
               {
                 "name": "createdAt",
@@ -944,7 +974,12 @@
                     "description": "",
                     "meta": []
                   }
-                ]
+                ],
+                "ofProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "string"
+                }
               }
             ],
             "meta": [
@@ -1021,7 +1056,12 @@
                     "description": "",
                     "meta": []
                   }
-                ]
+                ],
+                "ofProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "string"
+                }
               },
               {
                 "name": "createdAt",
@@ -1540,7 +1580,12 @@
                 "description": "",
                 "meta": []
               }
-            ]
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "string"
+            }
           },
           {
             "name": "createdAt",
@@ -1639,7 +1684,12 @@
                 "description": "",
                 "meta": []
               }
-            ]
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "string"
+            }
           }
         ],
         "meta": []
@@ -1716,7 +1766,12 @@
                 "description": "",
                 "meta": []
               }
-            ]
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "string"
+            }
           }
         ],
         "meta": []
