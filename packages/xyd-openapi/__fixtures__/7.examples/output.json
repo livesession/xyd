@@ -8,13 +8,9 @@
     "context": {
       "method": "get",
       "path": "/users",
+      "fullPath": "http:/api.example.com/v1/users",
       "group": [
         ""
-      ],
-      "fullPath": "http:/api.example.com/v1/users",
-      "servers": [
-        "http://api.example.com/v1",
-        "http://staging-api.example.com"
       ],
       "scopes": []
     },
@@ -43,7 +39,7 @@
           ]
         },
         {
-          "description": "Example response",
+          "description": "A sample JSON response",
           "examples": [
             {
               "codeblock": {
@@ -52,7 +48,7 @@
                   {
                     "title": "application/json",
                     "language": "json",
-                    "code": "[\n  {\n    \"id\": 0,\n    \"username\": \"string\",\n    \"email\": \"user@example.com\",\n    \"status\": \"active\",\n    \"createdAt\": \"2019-08-24T14:15:22Z\",\n    \"updatedAt\": \"2019-08-24T14:15:22Z\"\n  }\n]"
+                    "code": "{\n  \"id\": 1,\n  \"username\": \"John Doe\"\n}"
                   }
                 ]
               }

@@ -27,7 +27,7 @@ const tests: {
     //     //     uniformPluginXDocsSidebar
     //     // ]
     // },
-
+    //
     {
         name: "1.basic",
         description: "Basic OpenAPI API example",
@@ -55,6 +55,10 @@ const tests: {
         name: "6.codeSamples",
         description: "x-codeSamples OpenAPI API example",
     },
+    {
+        name: "7.examples",
+        description: "OpenAPI examples property",
+    }
 ]
 
 describe("oapSchemaToReferences", {timeout: 15000}, () => {

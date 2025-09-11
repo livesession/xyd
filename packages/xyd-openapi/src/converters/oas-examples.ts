@@ -93,6 +93,8 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
 
     // Handle x-codeSamples if present
     if (operation.schema['x-codeSamples']) {
+        let exampleGroupDescription: string = "Example request"
+
         const codeSamples = operation.schema['x-codeSamples'] as Array<{ lang: string; source: string; label?: string }>
         
         // Group code samples by label
@@ -105,6 +107,11 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
             }
             groupedByLabel.get(label)!.push(sample)
         })
+
+        if (groupedByLabel?.size === 1) {
+            const firstLabel = Array.from(groupedByLabel.keys())[0];
+            exampleGroupDescription = firstLabel;
+        }
 
         // Create examples for each label group
         groupedByLabel.forEach((samples, label) => {
@@ -126,7 +133,7 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
 
         if (examples.length > 0) {
             exampleGroups.push({
-                description: "Example request",
+                description: exampleGroupDescription,
                 examples
             })
 
@@ -278,8 +285,9 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
 function resBodyExmaples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSchema7 | JSONSchema7[], any>): ExampleGroup[] {
     const exampleGroups: ExampleGroup[] = []
 
-
     if (operation.schema.responses) {
+        let exampleGroupDescription: string = "Example response"
+
         const responses = operation.schema.responses as OpenAPIV3.ResponsesObject
 
         const examples: Example[] = []
@@ -322,8 +330,10 @@ function resBodyExmaples(operation: Operation, oas: Oas, vistedExamples?: Map<JS
                                 return
                             }
 
+                            exampleGroupDescription = data.summary || ""
+
                             namedExamples.push({
-                                description: "",
+                                description: data.summary || "",
                                 codeblock: {
                                     title: exampleName,
                                     tabs: [
@@ -399,7 +409,7 @@ function resBodyExmaples(operation: Operation, oas: Oas, vistedExamples?: Map<JS
 
         if (examples.length > 0) {
             exampleGroups.push({
-                description: "Example response",
+                description: exampleGroupDescription,
                 examples
             })
         }
@@ -568,4 +578,3 @@ function fixCircularReferences(schema: any, visited: WeakMap<any, any> = new Wea
 
     return fixedSchema;
 }
-
