@@ -32,7 +32,7 @@ export function loader({ request }: { request: any }) {
         return
     }
 
-    const slug = getPathname(request.url || "index") || "index"
+    const slug = getPathname(request.url || "index", settings?.advanced?.basename) || "index"
 
     if (settings?.redirects) {
         const shouldRedirect = settings.redirects.find((redirect: any) => redirect.source === slug)
@@ -130,9 +130,21 @@ export default function App() {
     return <Outlet />;
 }
 
-function getPathname(url: string) {
+function getPathname(url: string, basename?: string) {
     const parsedUrl = new URL(url);
-    return parsedUrl.pathname.replace(/^\//, '');
+    let pathname = parsedUrl.pathname;
+    
+    // Trim basename from the pathname if it exists
+    if (basename && basename !== "/" && pathname.startsWith(basename)) {
+        pathname = pathname.slice(basename.length);
+    }
+    
+    // Ensure we have a leading slash and then remove it to get the slug
+    if (!pathname.startsWith("/")) {
+        pathname = "/" + pathname;
+    }
+    
+    return pathname.replace(/^\//, '');
 }
 
 function DefaultMetas() {
