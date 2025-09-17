@@ -23,9 +23,21 @@ import { PageContext } from "./context";
 import { SUPPORTED_META_TAGS } from "./metatags";
 import { useAnalytics } from "@xyd-js/analytics";
 
-function getPathname(url: string) {
+function getPathname(url: string, basename?: string) {
     const parsedUrl = new URL(url);
-    return parsedUrl.pathname.replace(/^\//, '');
+    let pathname = parsedUrl.pathname;
+    
+    // Trim basename from the pathname if it exists
+    if (basename && basename !== "/" && pathname.startsWith(basename)) {
+        pathname = pathname.slice(basename.length);
+    }
+    
+    // Ensure we have a leading slash and then remove it to get the slug
+    if (!pathname.startsWith("/")) {
+        pathname = "/" + pathname;
+    }
+    
+    return pathname.replace(/^\//, '');
 }
 
 interface loaderData {
@@ -87,7 +99,7 @@ export async function loader({ request }: { request: any }) {
 
     timedebug.total
 
-    const slug = getPathname(request.url || "index") || "index"
+    const slug = getPathname(request.url || "index", settings?.advanced?.basename) || "index"
     if (path.extname(slug)) {
         console.log(`(loader): currently not supporting file extension in slug: ${slug}`);
         timedebug.totalEnd

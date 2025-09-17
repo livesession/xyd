@@ -90,5 +90,6 @@ export default {
     ssr: false,
     prerender: prerenderPaths,
     buildDirectory: path.join(cwd, ".xyd/build"),
+    basename: __xydSettings?.advanced?.basename || "/",
     // return a list of URLs to prerender at build time
 } satisfies Config;

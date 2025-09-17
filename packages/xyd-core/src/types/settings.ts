@@ -5,7 +5,7 @@ import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
 /**
  * Main settings interface for the application
  */
-export interface Settings {
+export interface Settings {    
     /** Theme configuration for the application */
     theme?: Theme
 
@@ -25,6 +25,11 @@ export interface Settings {
      * SEO configuration
      */
     seo?: SEO
+
+    /**
+     * Advanced configuration
+     */
+    advanced?: Advanced
 
     /** 
      * @internal
@@ -1235,6 +1240,16 @@ export interface SEO {
      * Meta tags
      */
     metatags?: { [tag: string]: string } // TODO: in the future type-safe
+}
+
+/**
+ * Advanced configuration
+ */
+export interface Advanced {
+    /**
+     * basename
+     */
+    basename?: string
 }
 
 // ------ END  settings for redirects END ------
