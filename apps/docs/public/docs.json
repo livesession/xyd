@@ -144,6 +144,17 @@
       },
       "type": "object"
     },
+    "Advanced": {
+      "additionalProperties": false,
+      "description": "Advanced configuration",
+      "properties": {
+        "basename": {
+          "description": "basename",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "AnchorHeader": {
       "anyOf": [
         {
@@ -2297,6 +2308,10 @@
   },
   "description": "Main settings interface for the application",
   "properties": {
+    "advanced": {
+      "$ref": "#/definitions/Advanced",
+      "description": "Advanced configuration"
+    },
     "api": {
       "$ref": "#/definitions/API",
       "description": "API Docs configuration"
