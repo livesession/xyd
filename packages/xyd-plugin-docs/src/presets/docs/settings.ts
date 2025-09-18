@@ -4,6 +4,7 @@ import { URL } from "node:url";
 
 import { createServer } from "vite";
 import { config as dotenvConfig } from "dotenv";
+import yaml from "js-yaml";
 
 import { Settings } from "@xyd-js/core";
 import { getThemeColors } from "@code-hike/lighter";
@@ -124,6 +125,16 @@ async function fastServeSetup(currentSettings: Settings | null) {
   }
 
   switch (extension) {
+    case "yaml":
+    case "yml": {
+      if (await isOpenApiYaml(optionalFastServePath)) {
+        fastServeSettings.api = {
+          openapi: optionalFastServePath,
+        };
+
+        return postLoadSetup(fastServeSettings);
+      }
+    }
     case "graphql":
     case "graphqls": {
       fastServeSettings.api = {
@@ -166,7 +177,7 @@ function presets(settings: Settings) {
 }
 
 function ensureBasename(settings: Settings) {
-  const basename = settings?.advanced?.basename
+  const basename = settings?.advanced?.basename;
   if (!basename) {
     return;
   }
@@ -186,10 +197,7 @@ function ensureBasename(settings: Settings) {
     };
   }
   if (typeof settings?.theme?.favicon === "string") {
-    settings.theme.favicon = path.join(
-      basename,
-      settings?.theme?.favicon
-    );
+    settings.theme.favicon = path.join(basename, settings?.theme?.favicon);
   }
 }
 
@@ -387,4 +395,19 @@ function deepMerge<T>(target: T, source: DeepPartial<T>): T {
   }
 
   return target;
+}
+
+async function isOpenApiYaml(filePath: string): Promise<boolean> {
+  try {
+    const content = await fs.readFile(filePath, "utf-8");
+    const parsed = yaml.load(content);
+    if (!parsed) {
+      return false;
+    }
+
+    return parsed && typeof parsed === "object" && "openapi" in parsed;
+  } catch (error) {
+    console.warn(`⚠️ Error reading or parsing YAML file ${filePath}:`, error);
+    return false;
+  }
 }
