@@ -79,11 +79,16 @@ globalThis.__xydStaticFiles = staticFiles
 const prerenderPaths = [
     ...navigationPaths,
     ...staticFiles,
-
-    "/sitemap.xml",
-    "/robots.txt",
     // ...docFiles,
 ];
+// cuz of issues for prerender - TODO: to fix
+if (prerenderPaths.length) {
+    prerenderPaths.push(
+        "/sitemap.xml",
+        "/robots.txt",
+    )
+}
+
 const cwd = process.cwd();
 
 export default {

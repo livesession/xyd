@@ -34,7 +34,7 @@ export function oapSchemaToReferences(
         schema.servers = []
     }
 
-    Object.entries(schema.paths).forEach(([endpointPath, oapPath]) => {
+    Object.entries(schema?.paths || {}).forEach(([endpointPath, oapPath]) => {
         SUPPORTED_HTTP_METHODS.forEach((eachMethod) => {
             if (schema?.servers && oapPath?.servers?.length) {
                 for (const pathServer of oapPath.servers) {
