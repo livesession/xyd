@@ -1,0 +1,30 @@
+{
+  "name": "@xyd-js/mcp",
+  "version": "0.1.0-build.1",
+  "description": "Model Context Protocol (MCP) server implementation for xyd",
+  "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "bun build index.ts client.ts --outdir dist --target node",
+    "dev": "bun --watch index.ts",
+    "start": "bun index.ts",
+    "client": "bun client.ts",
+    "example": "bun example.ts"
+  },
+  "dependencies": {
+    "@xyd-js/openapi": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.18.1",
+    "express": "^5.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "typescript": "^5.6.2"
+  }
+}

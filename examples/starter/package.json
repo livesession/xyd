@@ -1,0 +1,13 @@
+{
+  "name": "starter",
+  "version": "0.0.0",
+  "dependencies": {
+    "@xyd-js/cli": "0.1.0-xyd.197"
+  },
+  "scripts": {
+    "build": "xyd build"
+  },
+  "engines": {
+    "node": "22"
+  }
+}
