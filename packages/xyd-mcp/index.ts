@@ -68,27 +68,73 @@ function detectLanguage(content) {
   return "text";
 }
 
+const remapLanguage = (language: string) => {
+  if (language === "shellscript") {
+    return "bash";
+  }
+  return language;
+};
+
 const turndownService = new turndown();
 turndownService.addRule("strikethrough", {
   filter: ["pre"],
   replacement: function (content, node) {
     const explicitLang = node.getAttribute("data-lang");
-    const language = explicitLang || detectLanguage(content);
+    const language = remapLanguage(explicitLang || detectLanguage(content));
 
     // Format with Prettier only for supported programming languages
     let formattedContent = content;
 
     // Clean up bash/shell content
     if (language === "bash") {
-      // Simple cleanup for curl commands
-      formattedContent = content
-        .replace(/\\\\/g, "\\") // Fix double escaping
-        .replace(/\\\-/g, "-") // Fix escaped dashes
-        .replace(/\s+/g, " ") // Normalize spaces first
-        .replace(/\s*\\\s*/g, " ") // Replace backslash mess with single space
-        .replace(/\s+--/g, " \\\n  --") // Add clean line breaks before each option
-        .replace(/curl\s+/, "curl ") // Clean curl start
-        .trim();
+      // Completely rebuild curl commands for clean formatting
+      if (content.includes("curl")) {
+        // Extract curl command parts
+        let cleanContent = content
+          .replace(/\\\\/g, "\\") // Fix double escaping
+          .replace(/\\\-/g, "-") // Fix escaped dashes
+          .replace(/\s+/g, " ") // Normalize all whitespace
+          .trim();
+
+        // Split by -- to get command parts
+        const parts = cleanContent
+          .split(/\s+--/)
+          .map((part) => part.trim())
+          .filter(Boolean);
+
+        if (parts.length > 0) {
+          // First part should contain 'curl'
+          let curlPart = parts[0];
+          if (!curlPart.startsWith("curl")) {
+            curlPart = "curl " + curlPart;
+          }
+
+          // Rebuild with proper formatting
+          const otherParts = parts.slice(1).map((part) => {
+            // Fix header capitalization
+            if (part.includes("header 'accept:")) {
+              part = part.replace(/header 'accept:/gi, "header 'Accept:");
+            }
+            return "--" + part;
+          });
+
+          if (otherParts.length > 0) {
+            formattedContent =
+              curlPart + " \\\n  " + otherParts.join(" \\\n  ");
+          } else {
+            formattedContent = curlPart;
+          }
+        } else {
+          formattedContent = cleanContent;
+        }
+      } else {
+        // Non-curl bash content
+        formattedContent = content
+          .replace(/\\\\/g, "\\")
+          .replace(/\\\-/g, "-")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
     } else {
       // Apply Prettier for programming languages
       try {
@@ -118,14 +164,10 @@ turndownService.addRule("strikethrough", {
   },
 });
 
-// Track if we need to add table header
-let needsTableHeader = true;
-
 // Handle individual properties with smart table headers and nested property support
 turndownService.addRule("atlas-apiref-prop", {
   filter: ["atlas-apiref-prop"],
   replacement: function (content, node) {
-
     // Recursive function to process a prop and its nested props
     function processProp(n, parentName = "") {
       // Extract property name
@@ -143,15 +185,18 @@ turndownService.addRule("atlas-apiref-prop", {
 
       // Extract meta info (required/optional)
       const metaEl = n.querySelector("atlas-apiref-propmeta");
-      const notes = metaEl?.getAttribute("data-name") === "required" &&
-                    metaEl?.getAttribute("data-value") === "true" ? "Required" : "Optional";
+      const notes =
+        metaEl?.getAttribute("data-name") === "required" &&
+        metaEl?.getAttribute("data-value") === "true"
+          ? "Required"
+          : "Optional";
 
       // Add this property row
       let md = `| \`${fullName}\` | ${propType} | ${description} | ${notes} |\n`;
 
       // Recursively process nested props (inside div > ul)
       const nestedProps = n.querySelectorAll("div ul atlas-apiref-prop");
-      nestedProps.forEach(child => {
+      nestedProps.forEach((child) => {
         md += processProp(child, fullName);
       });
 
@@ -170,17 +215,18 @@ turndownService.addRule("atlas-apiref-prop", {
     result += processProp(node);
 
     return result;
-  }
+  },
 });
-
 
 // Handle collapsed sections that contain nested properties
 turndownService.addRule("collapsed-properties", {
-  filter: function(node) {
-    return node.nodeName === 'DIV' && 
-           node.className && 
-           node.className.includes('a1fjyrqx') &&
-           node.querySelectorAll('atlas-apiref-prop').length > 0;
+  filter: function (node) {
+    return (
+      node.nodeName === "DIV" &&
+      node.className &&
+      node.className.includes("a1fjyrqx") &&
+      node.querySelectorAll("atlas-apiref-prop").length > 0
+    );
   },
   replacement: function (content, node) {
     // Process nested properties in collapsed sections
@@ -209,6 +255,145 @@ app.post("/mcp", async (req, res) => {
     // Reuse existing transport
     transport = transports[sessionId];
   } else if (!sessionId && isInitializeRequest(req.body)) {
+    // New initialization request
+    transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: () => randomUUID(),
+      onsessioninitialized: (sessionId) => {
+        // Store the transport by session ID
+        transports[sessionId] = transport;
+      },
+      // DNS rebinding protection is disabled by default for backwards compatibility. If you are running this server
+      // locally, make sure to set:
+      // enableDnsRebindingProtection: true,
+      // allowedHosts: ['127.0.0.1'],
+    });
+
+    // Clean up transport when closed
+    transport.onclose = () => {
+      if (transport.sessionId) {
+        delete transports[transport.sessionId];
+      }
+    };
+    const server = new McpServer({
+      name: "xyd-mcp-server",
+      version: "1.0.0",
+    });
+
+    // Register tools using the new API
+    // server.registerTool(
+    //   "get_weather",
+    //   {
+    //     title: "Weather Tool",
+    //     description: "Get weather information for a city",
+    //     inputSchema: {
+    //       city: z.string().describe("The city to get weather for"),
+    //     },
+    //   },
+    //   async ({ city }) => {
+    //     const weather = {
+    //       city,
+    //       temperature: Math.floor(Math.random() * 40) - 10,
+    //       condition: ["sunny", "cloudy", "rainy", "snowy"][
+    //         Math.floor(Math.random() * 4)
+    //       ],
+    //       humidity: Math.floor(Math.random() * 100),
+    //     };
+    //     return {
+    //       content: [
+    //         {
+    //           type: "text",
+    //           text: `Weather in ${city}: ${weather.temperature}°C, ${weather.condition}, ${weather.humidity}% humidity`,
+    //         },
+    //       ],
+    //     };
+    //   }
+    // );
+
+    // server.registerTool(
+    //   "calculate",
+    //   {
+    //     title: "Calculator Tool",
+    //     description: "Perform basic arithmetic calculations",
+    //     inputSchema: {
+    //       expression: z
+    //         .string()
+    //         .describe(
+    //           "Mathematical expression to evaluate (e.g., '2 + 3 * 4')"
+    //         ),
+    //     },
+    //   },
+    //   async ({ expression }) => {
+    //     try {
+    //       const result = Function(`"use strict"; return (${expression})`)();
+    //       return {
+    //         content: [
+    //           {
+    //             type: "text",
+    //             text: `Result: ${result}`,
+    //           },
+    //         ],
+    //       };
+    //     } catch (error: any) {
+    //       return {
+    //         content: [
+    //           {
+    //             type: "text",
+    //             text: `Error: Invalid expression - ${error.message}`,
+    //           },
+    //         ],
+    //       };
+    //     }
+    //   }
+    // );
+
+    // Register resources using the new API
+    // server.registerResource(
+    //   "getting-started",
+    //   "xyd://docs/getting-started",
+    //   {
+    //     title: "Getting Started Guide",
+    //     description: "Basic guide to get started with XYD",
+    //     mimeType: "text/plain",
+    //   },
+    //   async () => ({
+    //     contents: [
+    //       {
+    //         uri: "xyd://docs/getting-started",
+    //         mimeType: "text/plain",
+    //         text: "# Getting Started with XYD\n\n1. Install the CLI\n2. Initialize your project\n3. Add your first component\n4. Build and deploy",
+    //       },
+    //     ],
+    //   })
+    // );
+
+    // server.registerResource(
+    //   "status",
+    //   "xyd://status",
+    //   {
+    //     title: "Server Status",
+    //     description: "Current server status and metrics",
+    //     mimeType: "application/json",
+    //   },
+    //   async () => ({
+    //     contents: [
+    //       {
+    //         uri: "xyd://status",
+    //         mimeType: "application/json",
+    //         text: JSON.stringify(
+    //           {
+    //             status: "healthy",
+    //             uptime: process.uptime(),
+    //             memory: process.memoryUsage(),
+    //             timestamp: new Date().toISOString(),
+    //           },
+    //           null,
+    //           2
+    //         ),
+    //       },
+    //     ],
+    //   })
+    // );
+
     const openApiSpec = await deferencedOpenAPI("./openapi.json" as string);
     if (openApiSpec) {
       const references = await oapSchemaToReferences(openApiSpec);
@@ -283,146 +468,37 @@ app.post("/mcp", async (req, res) => {
       await fs.writeFile("./references.md", md);
 
       console.log("CSS content inlined from files:", cssFiles);
-    }
 
-    // New initialization request
-    transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: () => randomUUID(),
-      onsessioninitialized: (sessionId) => {
-        // Store the transport by session ID
-        transports[sessionId] = transport;
-      },
-      // DNS rebinding protection is disabled by default for backwards compatibility. If you are running this server
-      // locally, make sure to set:
-      // enableDnsRebindingProtection: true,
-      // allowedHosts: ['127.0.0.1'],
-    });
+      if (references?.length) {
+        for (const reference of references) {
+          const refHtml = References({ references: [reference], cssContent });
+          const refMd = turndownService.turndown(refHtml);
 
-    // Clean up transport when closed
-    transport.onclose = () => {
-      if (transport.sessionId) {
-        delete transports[transport.sessionId];
-      }
-    };
-    const server = new McpServer({
-      name: "xyd-mcp-server",
-      version: "1.0.0",
-    });
+          const uri = `xyd://api-reference/${reference.canonical}`;
+          const mimeType = "text/markdown";
 
-    // Register tools using the new API
-    server.registerTool(
-      "get_weather",
-      {
-        title: "Weather Tool",
-        description: "Get weather information for a city",
-        inputSchema: {
-          city: z.string().describe("The city to get weather for"),
-        },
-      },
-      async ({ city }) => {
-        const weather = {
-          city,
-          temperature: Math.floor(Math.random() * 40) - 10,
-          condition: ["sunny", "cloudy", "rainy", "snowy"][
-            Math.floor(Math.random() * 4)
-          ],
-          humidity: Math.floor(Math.random() * 100),
-        };
-        return {
-          content: [
+          server.registerResource(
+            reference.canonical,
+            uri,
             {
-              type: "text",
-              text: `Weather in ${city}: ${weather.temperature}°C, ${weather.condition}, ${weather.humidity}% humidity`,
+              title: reference.title,
+              description: reference.description,
+              mimeType,
             },
-          ],
-        };
-      }
-    );
+            async () => ({
+              contents: [
+                {
+                  uri,
+                  mimeType,
+                  text: refMd,
+                },
+              ],
+            })
+          );
 
-    server.registerTool(
-      "calculate",
-      {
-        title: "Calculator Tool",
-        description: "Perform basic arithmetic calculations",
-        inputSchema: {
-          expression: z
-            .string()
-            .describe(
-              "Mathematical expression to evaluate (e.g., '2 + 3 * 4')"
-            ),
-        },
-      },
-      async ({ expression }) => {
-        try {
-          const result = Function(`"use strict"; return (${expression})`)();
-          return {
-            content: [
-              {
-                type: "text",
-                text: `Result: ${result}`,
-              },
-            ],
-          };
-        } catch (error: any) {
-          return {
-            content: [
-              {
-                type: "text",
-                text: `Error: Invalid expression - ${error.message}`,
-              },
-            ],
-          };
         }
       }
-    );
-
-    // Register resources using the new API
-    server.registerResource(
-      "getting-started",
-      "xyd://docs/getting-started",
-      {
-        title: "Getting Started Guide",
-        description: "Basic guide to get started with XYD",
-        mimeType: "text/plain",
-      },
-      async () => ({
-        contents: [
-          {
-            uri: "xyd://docs/getting-started",
-            mimeType: "text/plain",
-            text: "# Getting Started with XYD\n\n1. Install the CLI\n2. Initialize your project\n3. Add your first component\n4. Build and deploy",
-          },
-        ],
-      })
-    );
-
-    server.registerResource(
-      "status",
-      "xyd://status",
-      {
-        title: "Server Status",
-        description: "Current server status and metrics",
-        mimeType: "application/json",
-      },
-      async () => ({
-        contents: [
-          {
-            uri: "xyd://status",
-            mimeType: "application/json",
-            text: JSON.stringify(
-              {
-                status: "healthy",
-                uptime: process.uptime(),
-                memory: process.memoryUsage(),
-                timestamp: new Date().toISOString(),
-              },
-              null,
-              2
-            ),
-          },
-        ],
-      })
-    );
+    }
 
     // Connect to the MCP server
     await server.connect(transport);

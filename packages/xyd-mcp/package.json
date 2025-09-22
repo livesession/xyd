@@ -15,11 +15,10 @@
     "dev": "bun --watch index.ts",
     "start": "bun index.ts",
     "client": "bun client.ts",
-    "example": "bun example.ts"
+    "example": "bun example.ts",
+    "mcp:inspector": "npx @modelcontextprotocol/inspector http://localhost:3000/mcp"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.18.1",
-    "@prettier/sync": "^0.6.1",
     "@xyd-js/atlas": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/core": "workspace:*",
@@ -27,6 +26,8 @@
     "@xyd-js/openapi": "workspace:*",
     "@xyd-js/plugins": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.18.1",
+    "@prettier/sync": "^0.6.1",
     "express": "^5.1.0",
     "openux-js": "^0.0.0-pre.0",
     "prettier": "^3.6.2",
