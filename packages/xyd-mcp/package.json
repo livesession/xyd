@@ -18,9 +18,19 @@
     "example": "bun example.ts"
   },
   "dependencies": {
-    "@xyd-js/openapi": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.18.1",
+    "@prettier/sync": "^0.6.1",
+    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/framework": "workspace:*",
+    "@xyd-js/openapi": "workspace:*",
+    "@xyd-js/plugins": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
     "express": "^5.1.0",
+    "openux-js": "^0.0.0-pre.0",
+    "prettier": "^3.6.2",
+    "turndown": "^7.2.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

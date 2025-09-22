@@ -1,11 +1,196 @@
 import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
+import { highlight } from "codehike/code";
 import express from "express";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
-import {deferencedOpenAPI, oapSchemaToReferences} from "@xyd-js/openapi"
+import { deferencedOpenAPI, oapSchemaToReferences } from "@xyd-js/openapi";
 import { z } from "zod";
+
+import prettier from "@prettier/sync";
+import turndown from "turndown";
+
+import syntaxThemeClassic from "@xyd-js/components/coder/themes/classic.js";
+
+import { References } from "./References.tsx";
+
+// TODO: better language detection
+function detectLanguage(content) {
+  // Check for shell/curl commands first
+  if (
+    content.includes("curl ") ||
+    content.includes("--request") ||
+    content.includes("bash") ||
+    content.includes("sh ")
+  ) {
+    return "bash";
+  }
+
+  // Check for actual programming languages
+  if (
+    content.includes("interface ") ||
+    content.includes(": string") ||
+    content.includes(": number") ||
+    content.includes("export ")
+  ) {
+    return "typescript";
+  }
+  if (
+    content.includes("function ") ||
+    content.includes("const ") ||
+    content.includes("let ") ||
+    content.includes("var ")
+  ) {
+    return "javascript";
+  }
+  if (content.trim().startsWith("{") && content.trim().endsWith("}")) {
+    return "json";
+  }
+  if (
+    content.includes("<") &&
+    content.includes(">") &&
+    (content.includes("html") || content.includes("div"))
+  ) {
+    return "html";
+  }
+  if (
+    content.includes("{") &&
+    (content.includes("color:") ||
+      content.includes("margin:") ||
+      content.includes("padding:"))
+  ) {
+    return "css";
+  }
+  return "text";
+}
+
+const turndownService = new turndown();
+turndownService.addRule("strikethrough", {
+  filter: ["pre"],
+  replacement: function (content, node) {
+    const explicitLang = node.getAttribute("data-lang");
+    const language = explicitLang || detectLanguage(content);
+
+    // Format with Prettier only for supported programming languages
+    let formattedContent = content;
+
+    // Clean up bash/shell content
+    if (language === "bash") {
+      // Simple cleanup for curl commands
+      formattedContent = content
+        .replace(/\\\\/g, "\\") // Fix double escaping
+        .replace(/\\\-/g, "-") // Fix escaped dashes
+        .replace(/\s+/g, " ") // Normalize spaces first
+        .replace(/\s*\\\s*/g, " ") // Replace backslash mess with single space
+        .replace(/\s+--/g, " \\\n  --") // Add clean line breaks before each option
+        .replace(/curl\s+/, "curl ") // Clean curl start
+        .trim();
+    } else {
+      // Apply Prettier for programming languages
+      try {
+        const parserMap = {
+          typescript: "typescript",
+          javascript: "babel",
+          json: "json",
+          html: "html",
+          css: "css",
+        };
+
+        const parser = parserMap[language];
+        if (parser) {
+          formattedContent = prettier.format(content, {
+            parser,
+            semi: true,
+            singleQuote: false,
+            tabWidth: 2,
+          });
+        }
+      } catch (error) {
+        console.warn(`Failed to format ${language} code:`, error);
+      }
+    }
+
+    return `\`\`\`${language}\n${formattedContent}\n\`\`\``;
+  },
+});
+
+// Track if we need to add table header
+let needsTableHeader = true;
+
+// Handle individual properties with smart table headers and nested property support
+turndownService.addRule("atlas-apiref-prop", {
+  filter: ["atlas-apiref-prop"],
+  replacement: function (content, node) {
+
+    // Recursive function to process a prop and its nested props
+    function processProp(n, parentName = "") {
+      // Extract property name
+      const propNameEl = n.querySelector("atlas-apiref-propname code");
+      const propName = propNameEl ? propNameEl.textContent.trim() : "(unknown)";
+      const fullName = parentName ? `${parentName}.${propName}` : propName;
+
+      // Extract type
+      const propTypeEl = n.querySelector("atlas-apiref-proptype code");
+      const propType = propTypeEl ? propTypeEl.textContent.trim() : "";
+
+      // Extract description
+      const descEl = n.querySelector("atlas-apiref-propdescription");
+      const description = descEl ? descEl.textContent.trim() : "";
+
+      // Extract meta info (required/optional)
+      const metaEl = n.querySelector("atlas-apiref-propmeta");
+      const notes = metaEl?.getAttribute("data-name") === "required" &&
+                    metaEl?.getAttribute("data-value") === "true" ? "Required" : "Optional";
+
+      // Add this property row
+      let md = `| \`${fullName}\` | ${propType} | ${description} | ${notes} |\n`;
+
+      // Recursively process nested props (inside div > ul)
+      const nestedProps = n.querySelectorAll("div ul atlas-apiref-prop");
+      nestedProps.forEach(child => {
+        md += processProp(child, fullName);
+      });
+
+      return md;
+    }
+
+    // Only add table header if this is the first property in the group
+    const prevSibling = node.previousElementSibling;
+    let result = "";
+    if (!prevSibling || prevSibling.nodeName !== "ATLAS-APIREF-PROP") {
+      result += "\n| Property | Type | Description | Notes |\n";
+      result += "|----------|------|-------------|-------|\n";
+    }
+
+    // Process this node and any nested props
+    result += processProp(node);
+
+    return result;
+  }
+});
+
+
+// Handle collapsed sections that contain nested properties
+turndownService.addRule("collapsed-properties", {
+  filter: function(node) {
+    return node.nodeName === 'DIV' && 
+           node.className && 
+           node.className.includes('a1fjyrqx') &&
+           node.querySelectorAll('atlas-apiref-prop').length > 0;
+  },
+  replacement: function (content, node) {
+    // Process nested properties in collapsed sections
+    // Return the content so turndown processes the nested elements
+    return content;
+  },
+});
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
@@ -19,15 +204,85 @@ app.post("/mcp", async (req, res) => {
   const sessionId = req.headers["mcp-session-id"] as string | undefined;
   let transport: StreamableHTTPServerTransport;
 
-  console.log('sessionId', sessionId)
+  console.log("sessionId", sessionId);
   if (sessionId && transports[sessionId]) {
     // Reuse existing transport
     transport = transports[sessionId];
   } else if (!sessionId && isInitializeRequest(req.body)) {
-    const openApiSpec = await deferencedOpenAPI("./openapi.json" as string)
+    const openApiSpec = await deferencedOpenAPI("./openapi.json" as string);
     if (openApiSpec) {
-      const references = await oapSchemaToReferences(openApiSpec)
-      console.log("references", references)
+      const references = await oapSchemaToReferences(openApiSpec);
+
+      for (const reference of references) {
+        if (reference.examples) {
+          for (const group of reference.examples.groups) {
+            for (const example of group.examples) {
+              if (example.codeblock?.tabs) {
+                for (const tab of example.codeblock.tabs) {
+                  if (tab.code && tab.language) {
+                    try {
+                      const highlighted = await highlight(
+                        {
+                          value: tab.code,
+                          lang: tab.language,
+                          meta: tab.title || "",
+                        },
+                        syntaxThemeClassic
+                      );
+                      tab.highlighted = highlighted;
+                      console.log(
+                        `Highlighted ${tab.language} code for ${reference.title || "unknown"}`
+                      );
+                    } catch (error) {
+                      console.warn(
+                        `Failed to highlight code for ${reference.title}:`,
+                        error
+                      );
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Read CSS file contents
+      const cssFiles = [
+        // TODO: temporary
+        // path.resolve(__dirname, "../xyd-atlas/dist/tokens.css"),
+        // path.resolve(__dirname, "../xyd-atlas/dist/index.css"),
+        // path.resolve(__dirname, "../xyd-atlas/dist/styles.css"),
+        // path.resolve(__dirname, "../xyd-components/dist/index.css"),
+        // path.resolve(__dirname, "../xyd-theme-gusto/dist/index.css"),
+      ];
+
+      const cssContent = await Promise.all(
+        cssFiles.map(async (filePath) => {
+          try {
+            return await fs.readFile(filePath, "utf-8");
+          } catch (error) {
+            console.warn(
+              `Warning: Could not read CSS file ${filePath}:`,
+              error
+            );
+            return "";
+          }
+        })
+      );
+
+      const referencesHtml = References({ references, cssContent });
+      await fs.writeFile(
+        "./references.json",
+        JSON.stringify(references, null, 2)
+      );
+      await fs.writeFile("./references.html", referencesHtml);
+
+      // Convert to markdown with language detection
+      const md = turndownService.turndown(referencesHtml);
+      await fs.writeFile("./references.md", md);
+
+      console.log("CSS content inlined from files:", cssFiles);
     }
 
     // New initialization request

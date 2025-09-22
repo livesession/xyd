@@ -12,24 +12,25 @@ async function main() {
   
   const client = new XydMcpClient();
   
+
   try {
     await client.connect();
     
-    // Multiple calculations
-    const calculations = ["2 + 2", "10 * 5", "100 / 4", "Math.sqrt(16)"];
+    // // Multiple calculations
+    // const calculations = ["2 + 2", "10 * 5", "100 / 4", "Math.sqrt(16)"];
     
-    console.log("\n🧮 Running multiple calculations:");
-    for (const expr of calculations) {
-      await client.callTool("calculate", { expression: expr });
-    }
+    // console.log("\n🧮 Running multiple calculations:");
+    // for (const expr of calculations) {
+    //   await client.callTool("calculate", { expression: expr });
+    // }
     
-    // Multiple weather requests
-    const cities = ["London", "Tokyo", "Sydney", "San Francisco"];
+    // // Multiple weather requests
+    // const cities = ["London", "Tokyo", "Sydney", "San Francisco"];
     
-    console.log("\n🌍 Getting weather for multiple cities:");
-    for (const city of cities) {
-      await client.callTool("get_weather", { city });
-    }
+    // console.log("\n🌍 Getting weather for multiple cities:");
+    // for (const city of cities) {
+    //   await client.callTool("get_weather", { city });
+    // }
     
   } catch (error) {
     console.error("❌ Advanced example failed:", error);

@@ -417,6 +417,15 @@
               "type": "string",
               "format": "date-time",
               "description": "When the user was last updated"
+            },
+            "address": {
+              "type": "object",
+              "properties": {
+                "street": {
+                  "type": "string",
+                  "description": "User's street address"
+                }
+              }
             }
           },
           "required": ["id", "email", "firstName", "lastName", "role", "isActive", "createdAt", "updatedAt"]
