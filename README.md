@@ -10,7 +10,7 @@
 <p align="center">Docs Framework for future dev.</p>
 <p align="center">
   <a href="https://www.npmjs.com/package/xyd-js"><img alt="npm" src="https://img.shields.io/npm/v/xyd-js?style=flat-square&color=70e000" /></a>
-  <a href="https://xyd-docs.slack.com" target="_blank" rel="noopener">
+  <a href="https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A" target="_blank" rel="noopener">
    <img alt="Slack Community" src="https://img.shields.io/badge/Slack-Community-4A154B?logo=slack&logoColor=white">
   </a>
    <a href="https://github.com/livesession/xyd/discussions">
