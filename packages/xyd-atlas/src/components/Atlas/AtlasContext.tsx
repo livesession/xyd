@@ -9,11 +9,13 @@ export interface VariantToggleConfig {
 
 export const AtlasContext = createContext<{
     syntaxHighlight: Theme | null,
+    markdownFormat?: boolean,
     baseMatch?: string,
     variantToggles?: VariantToggleConfig[], // Array of toggle configurations
     Link?: any
 }>({
-    syntaxHighlight: null
+    syntaxHighlight: null,
+    markdownFormat: false
 })
 
 export function useSyntaxHighlight() {

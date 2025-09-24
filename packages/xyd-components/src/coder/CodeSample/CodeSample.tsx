@@ -24,16 +24,18 @@ export interface CodeSampleProps {
     descriptionHead?: string
     descriptionContent?: string | React.ReactNode
     descriptionIcon?: string
+    markdownFormat?: boolean
     kind?: "secondary"
     controlByMeta?: boolean // TODO: BETTER IN THE FUTURE
 }
 
-const CodeContext = React.createContext<{
+export const CodeContext = React.createContext<{
     size?: "full"
     lineNumbers?: boolean
     descriptionHead?: string
     descriptionContent?: string | React.ReactNode
     descriptionIcon?: string
+    markdownFormat?: boolean
 }>({})
 
 export function CodeSample(props: CodeSampleProps) {
@@ -58,6 +60,7 @@ function $ThemedCodeSample(props: CodeSampleProps) {
             descriptionHead: props.descriptionHead,
             descriptionContent: props.descriptionContent,
             descriptionIcon: props.descriptionIcon,
+            markdownFormat: props.markdownFormat,
         }}>
             <Code.Pre
                 codeblock={highlighted[0]}
@@ -85,6 +88,7 @@ function $ThemedCodeSample(props: CodeSampleProps) {
         descriptionHead: props.descriptionHead,
         descriptionContent: props.descriptionContent,
         descriptionIcon: props.descriptionIcon,
+        markdownFormat: props.markdownFormat,
     }}>
         <$CodeSampleTabs
             description={props.description}

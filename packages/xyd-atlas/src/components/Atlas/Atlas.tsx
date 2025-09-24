@@ -41,7 +41,7 @@ export function Atlas<T>(props: AtlasProps<T>) {
 
   // TODO: temporary, remove when we will have proper analytics
   const Wrapper = props.analytics ? UXAnalytics : React.Fragment;
-
+  
   return (
     <Wrapper analytics={noopAnalytics}>
       <AtlasDecorator>

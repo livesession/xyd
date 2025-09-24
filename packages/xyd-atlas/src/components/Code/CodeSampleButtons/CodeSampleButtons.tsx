@@ -38,7 +38,7 @@ export function CodeExampleButtons({examples, activeExample, onClick}: CodeExamp
     }
 
     return (
-        <div className={cn.CodeSampleButtonsHost}>
+        <atlas-sample-buttons className={cn.CodeSampleButtonsHost}>
             <div className={cn.CodeSampleButtonsContainer}>
                 {showLeftArrow && (
                     <button
@@ -75,7 +75,7 @@ export function CodeExampleButtons({examples, activeExample, onClick}: CodeExamp
                     </button>
                 )}
             </div>
-        </div>
+        </atlas-sample-buttons>
     )
 }
 
@@ -89,6 +89,7 @@ function SampleButton({onClick, children, activeExample, example}: {
         (activeExample?.codeblock?.title && activeExample?.codeblock?.title === example.codeblock.title)
 
     return <button
+        data-sample-button-title={example.codeblock.title}
         onClick={onClick}
         className={`${cn.CodeSampleButtonsButtonHost} ${markExampleAsActive && cn.CodeSampleButtonsButtonActive}`}
     >

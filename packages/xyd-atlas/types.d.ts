@@ -18,6 +18,8 @@ declare global {
         'atlas-apiref-propmeta': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'atlas-apiref-meta-info': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
         'atlas-apiref-propdescription': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+
+        'atlas-sample-buttons': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       }
     }
   }
