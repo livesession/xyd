@@ -1,6 +1,5 @@
 import path from "node:path";
 import fs from "node:fs/promises";
-
 import { highlight } from "codehike/code";
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -10,7 +9,6 @@ import syntaxThemeClassic from "@xyd-js/components/coder/themes/classic.js";
 import { References } from "../References";
 import { turndownService } from "./markdown";
 import { uniformFromSource } from "./utils";
-import { DefinitionProperty } from "@xyd-js/uniform";
 
 export async function mcpUniformResources(
   server: McpServer,
@@ -130,6 +128,3 @@ export async function mcpUniformResources(
   }
 }
 
-function uniformPropertiesToJsonSchema(
-  properties: DefinitionProperty[] | DefinitionProperty
-) {}

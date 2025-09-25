@@ -2806,7 +2806,7 @@ paths:
                 -H "Content-Type: application/json" \
                 -d '{"metadata": {"foo": "bar"}}'
             python: >
-              from openai import OpenAI
+              from openai import OpenAIa
 
               client = OpenAI()
 

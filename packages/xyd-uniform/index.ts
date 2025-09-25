@@ -4,7 +4,7 @@ export type {
     UniformPluginArgs
 } from "./src/index"
 
-export { default } from "./src/index"
+export { default, uniformToInputJsonSchema } from "./src/index"
 
 export {
     pluginJsonView,
