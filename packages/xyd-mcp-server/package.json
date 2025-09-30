@@ -10,6 +10,9 @@
       "import": "./dist/index.js"
     }
   },
+  "bin": {
+    "xyd-mcp-server": "./bin/xyd-mcp-server.mjs"
+  },
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target node --format esm",
     "dev": "bun --watch src/index.ts",

@@ -11,5 +11,8 @@ app.post("/mcp", mcp.handleConnectionRequest);
 app.get("/mcp", mcp.handleSessionRequest);
 app.delete("/mcp", mcp.handleSessionRequest);
 
-app.listen(process.env.PORT || 3000);
+const port = process.env.PORT || 3000;
+console.log("Running MCP server on port", port);
+
+app.listen(port);
 
