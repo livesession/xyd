@@ -15,15 +15,7 @@
     },
     "servers": [
       {
-        "url": "https://api.example.com/v1",
-        "description": "Production server"
-      },
-      {
-        "url": "https://staging-api.example.com/v1",
-        "description": "Staging server"
-      },
-      {
-        "url": "http://localhost:3000/v1",
+        "url": "http://localhost:5050/v1",
         "description": "Local development server"
       }
     ],

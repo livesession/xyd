@@ -91,21 +91,24 @@ export async function mcpUniformResources(
     const uri = `api-reference://${reference.canonical}`;
     const mimeType = "text/markdown";
 
-    const fullName = `./output/${reference.canonical}.md`;
-    const fullNameDir = path.dirname(fullName);
+    { 
+      // TODO: delete, for testing
+      // const fullName = `./output/${reference.canonical}.md`;
+      // const fullNameDir = path.dirname(fullName);
 
-    try {
-      await fs.access(fullName);
-    } catch (e) {
-      await fs.mkdir(fullNameDir, { recursive: true });
+      // try {
+      //   await fs.access(fullName);
+      // } catch (e) {
+      //   await fs.mkdir(fullNameDir, { recursive: true });
+      // }
+
+      // await fs.writeFile(`./output/${reference.canonical}.md`, refMd);
+      // await fs.writeFile(`./output/${reference.canonical}.html`, refHtml);
+      // await fs.writeFile(
+      //   `./output/${reference.canonical}.json`,
+      //   JSON.stringify(reference, null, 2)
+      // );
     }
-
-    await fs.writeFile(`./output/${reference.canonical}.md`, refMd);
-    await fs.writeFile(`./output/${reference.canonical}.html`, refHtml);
-    await fs.writeFile(
-      `./output/${reference.canonical}.json`,
-      JSON.stringify(reference, null, 2)
-    );
 
     server.registerResource(
       reference.canonical,

@@ -6,7 +6,7 @@ import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { mcpUniformResources, mcpUniformTools } from "../lib";
+import { mcpUniformResources, mcpUniformTools } from "@xyd-js/mcp";
 
 // Extend Express Request type to include pendingToken
 declare global {

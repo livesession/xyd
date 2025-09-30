@@ -1,5 +1,7 @@
+import { JSONSchema7 } from "json-schema";
+
 import { jsonSchemaToZod } from "json-schema-to-zod";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
   uniformToInputJsonSchema,
   type DefinitionTypeREST,
@@ -8,7 +10,6 @@ import {
 import * as z from "zod";
 
 import { uniformFromSource } from "./utils";
-import { JSONSchema7 } from "json-schema";
 
 // TODO: share uniform with tools and resources
 // TODO: support for graphql and react better
@@ -33,25 +34,28 @@ export async function mcpUniformTools(
     let inputSchema: z.ZodRawShape | null = null;
     if (inputSchemaJson) {
       const zodSchemaString = jsonSchemaToZod(inputSchemaJson, {
-        module: "esm",
+        module: "none",
       });
 
       const zodObject = await stringToZodSchema(zodSchemaString);
 
       if (zodObject && typeof zodObject === "object" && "shape" in zodObject) {
-        const shape = zodObject.shape as Record<string, any>;
-        for (const key of Object.keys(shape)) {
-          if (!inputSchema) {
-            inputSchema = {} as z.ZodRawShape;
-          }
-          inputSchema[key] = shape[key];
+        const sourceShape = zodObject.shape as Readonly<
+          Record<string, unknown>
+        >;
+        const mutableShape: Record<string, z.ZodTypeAny> = {};
+        for (const key of Object.keys(sourceShape)) {
+          mutableShape[key] = sourceShape[key] as unknown as z.ZodTypeAny;
         }
+        inputSchema = mutableShape as z.ZodRawShape;
       }
     }
+
     server.registerTool(
       reference.canonical,
       {
         description: reference.description as string,
+        //@ts-ignore TODO: fix
         inputSchema: inputSchema || undefined,
       },
       async (extra) => {
@@ -213,35 +217,12 @@ function buildFetchRequest(
   return [url, fetchOptions];
 }
 
-/**
- * Converts a Zod schema string to an actual Zod schema object using dynamic import
- * @param zodSchemaString - The string representation of a Zod schema (e.g., from jsonSchemaToZod)
- * @returns The actual Zod schema object
- */
 async function stringToZodSchema(
   zodSchemaString: string
 ): Promise<z.ZodSchema | null> {
-  try {
-    // Let Bun handle TS syntax directly
-    const moduleContent = `
-          import * as z from "zod";
-          ${zodSchemaString}
-        `;
+  const schemaFactory = new Function("z", `return (${zodSchemaString});`);
 
-    // Create a blob and turn it into an object URL
-    const blob = new Blob([moduleContent], { type: "application/typescript" });
-    const dataUrl = URL.createObjectURL(blob);
+  const schema = schemaFactory(z);
 
-    // Bun can import TS directly
-    const mod = await import(dataUrl);
-
-    // Cleanup
-    URL.revokeObjectURL(dataUrl);
-
-    return mod.default;
-  } catch (error) {
-    console.error("Error converting Zod schema string to schema:", error);
-    console.error("Problematic string:", zodSchemaString);
-    return null;
-  }
+  return schema;
 }
