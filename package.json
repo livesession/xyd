@@ -6,7 +6,10 @@
   },
   "packageManager": "pnpm@9.10.0",
   "workspaces": [
-    "packages/*"
+    "apps/apidocs-demo",
+    "packages/*",
+    "!packages/xyd-js",
+    ".xyd/host"
   ],
   "scripts": {
     "dev": "pnpm lerna watch -- lerna run build",
