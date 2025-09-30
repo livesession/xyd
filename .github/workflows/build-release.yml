@@ -38,6 +38,11 @@ jobs:
         with:
           version: 9.10.0
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 'latest'
+
       - name: Get pnpm store directory
         shell: bash
         run: |
