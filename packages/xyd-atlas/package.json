@@ -9,6 +9,7 @@
     "./package.json": "./package.json",
     "./index.css": "./dist/index.css",
     "./tokens.css": "./dist/tokens.css",
+    "./styles.css": "./dist/styles.css",
     ".": {
       "import": "./dist/index.js"
     },

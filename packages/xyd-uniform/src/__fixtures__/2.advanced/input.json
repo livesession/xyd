@@ -1,0 +1,1530 @@
+{
+  "title": "Create an assistant with a model and instructions.",
+  "canonical": "createAssistant",
+  "description": "Create an assistant with a model and instructions.",
+  "type": "rest_post",
+  "category": "rest",
+  "context": {
+    "method": "post",
+    "path": "/assistants",
+    "fullPath": "https:/api.openai.com/v1/assistants",
+    "group": [
+      "Assistants"
+    ],
+    "scopes": []
+  },
+  "definitions": [
+    {
+      "title": "Request body",
+      "type": "$rest.request.body",
+      "properties": [
+        {
+          "name": "model",
+          "type": "$$union",
+          "description": "ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.\n",
+          "properties": [
+            {
+              "name": "model",
+              "type": "string",
+              "description": "",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "model",
+              "type": "$$enum",
+              "description": "",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                },
+                {
+                  "name": "enum-type",
+                  "value": "string"
+                }
+              ],
+              "properties": [
+                {
+                  "name": "gpt-4.1",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4.1-mini",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4.1-nano",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4.1-2025-04-14",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4.1-mini-2025-04-14",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4.1-nano-2025-04-14",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "o3-mini",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "o3-mini-2025-01-31",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "o1",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "o1-2024-12-17",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4o",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4o-2024-11-20",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4o-2024-08-06",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4o-2024-05-13",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4o-mini",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4o-mini-2024-07-18",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4.5-preview",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4.5-preview-2025-02-27",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-turbo",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-turbo-2024-04-09",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-0125-preview",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-turbo-preview",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-1106-preview",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-vision-preview",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-0314",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-0613",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-32k",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-32k-0314",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-4-32k-0613",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-3.5-turbo",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-3.5-turbo-16k",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-3.5-turbo-0613",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-3.5-turbo-1106",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-3.5-turbo-0125",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "gpt-3.5-turbo-16k-0613",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "The name of the assistant. The maximum length is 256 characters.\n",
+          "meta": [
+            {
+              "name": "nullable",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "description": "The description of the assistant. The maximum length is 512 characters.\n",
+          "meta": [
+            {
+              "name": "nullable",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "name": "instructions",
+          "type": "string",
+          "description": "The system instructions that the assistant uses. The maximum length is 256,000 characters.\n",
+          "meta": [
+            {
+              "name": "nullable",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "name": "reasoning_effort",
+          "type": "$$enum",
+          "description": "**o-series models only** \n\nConstrains effort on reasoning for \n[reasoning models](https://platform.openai.com/docs/guides/reasoning).\nCurrently supported values are `low`, `medium`, and `high`. Reducing\nreasoning effort can result in faster responses and fewer tokens used\non reasoning in a response.\n",
+          "meta": [
+            {
+              "name": "defaults",
+              "value": "medium"
+            },
+            {
+              "name": "nullable",
+              "value": "true"
+            },
+            {
+              "name": "enum-type",
+              "value": "string"
+            }
+          ],
+          "properties": [
+            {
+              "name": "low",
+              "type": "string",
+              "description": "",
+              "meta": []
+            },
+            {
+              "name": "medium",
+              "type": "string",
+              "description": "",
+              "meta": []
+            },
+            {
+              "name": "high",
+              "type": "string",
+              "description": "",
+              "meta": []
+            }
+          ]
+        },
+        {
+          "name": "tools",
+          "type": "$$array",
+          "description": "A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.\n",
+          "meta": [
+            {
+              "name": "defaults",
+              "value": []
+            }
+          ],
+          "properties": [],
+          "ofProperty": {
+            "name": "",
+            "type": "$$xor",
+            "properties": [
+              {
+                "name": "Code interpreter tool",
+                "type": "object",
+                "description": "",
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "$$enum",
+                    "description": "The type of tool being defined: `code_interpreter`",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      },
+                      {
+                        "name": "enum-type",
+                        "value": "string"
+                      }
+                    ],
+                    "properties": [
+                      {
+                        "name": "code_interpreter",
+                        "type": "string",
+                        "description": "",
+                        "meta": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "FileSearch tool",
+                "type": "object",
+                "description": "",
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "$$enum",
+                    "description": "The type of tool being defined: `file_search`",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      },
+                      {
+                        "name": "enum-type",
+                        "value": "string"
+                      }
+                    ],
+                    "properties": [
+                      {
+                        "name": "file_search",
+                        "type": "string",
+                        "description": "",
+                        "meta": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "file_search",
+                    "type": "object",
+                    "description": "Overrides for the file search tool.",
+                    "meta": [],
+                    "properties": [
+                      {
+                        "name": "max_num_results",
+                        "type": "integer",
+                        "description": "The maximum number of results the file search tool should output. The default is 20 for `gpt-4*` models and 5 for `gpt-3.5-turbo`. This number should be between 1 and 50 inclusive.\n\nNote that the file search tool may output fewer than `max_num_results` results. See the [file search tool documentation](/docs/assistants/tools/file-search#customizing-file-search-settings) for more information.\n",
+                        "meta": []
+                      },
+                      {
+                        "name": "ranking_options",
+                        "type": "object",
+                        "description": "The ranking options for the file search. If not specified, the file search tool will use the `auto` ranker and a score_threshold of 0.\n\nSee the [file search tool documentation](/docs/assistants/tools/file-search#customizing-file-search-settings) for more information.\n",
+                        "meta": [],
+                        "properties": [
+                          {
+                            "name": "ranker",
+                            "type": "$$enum",
+                            "description": "The ranker to use for the file search. If not specified will use the `auto` ranker.",
+                            "meta": [
+                              {
+                                "name": "enum-type",
+                                "value": "string"
+                              }
+                            ],
+                            "properties": [
+                              {
+                                "name": "auto",
+                                "type": "string",
+                                "description": "",
+                                "meta": []
+                              },
+                              {
+                                "name": "default_2024_08_21",
+                                "type": "string",
+                                "description": "",
+                                "meta": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "score_threshold",
+                            "type": "number",
+                            "description": "The score threshold for the file search. All values must be a floating point number between 0 and 1.",
+                            "meta": [
+                              {
+                                "name": "required",
+                                "value": "true"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Function tool",
+                "type": "object",
+                "description": "",
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "$$enum",
+                    "description": "The type of tool being defined: `function`",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      },
+                      {
+                        "name": "enum-type",
+                        "value": "string"
+                      }
+                    ],
+                    "properties": [
+                      {
+                        "name": "function",
+                        "type": "string",
+                        "description": "",
+                        "meta": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "function",
+                    "type": "object",
+                    "description": "",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "properties": [
+                      {
+                        "name": "description",
+                        "type": "string",
+                        "description": "A description of what the function does, used by the model to choose when and how to call the function.",
+                        "meta": []
+                      },
+                      {
+                        "name": "name",
+                        "type": "string",
+                        "description": "The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "parameters",
+                        "type": "object",
+                        "description": "The parameters the functions accepts, described as a JSON Schema object. See the [guide](/docs/guides/function-calling) for examples, and the [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for documentation about the format. \n\nOmitting `parameters` defines a function with an empty parameter list.",
+                        "meta": []
+                      },
+                      {
+                        "name": "strict",
+                        "type": "boolean",
+                        "description": "Whether to enable strict schema adherence when generating the function call. If set to true, the model will follow the exact schema defined in the `parameters` field. Only a subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured Outputs in the [function calling guide](docs/guides/function-calling).",
+                        "meta": [
+                          {
+                            "name": "defaults",
+                            "value": false
+                          },
+                          {
+                            "name": "nullable",
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "description": "",
+            "meta": []
+          }
+        },
+        {
+          "name": "tool_resources",
+          "type": "object",
+          "description": "A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the `file_search` tool requires a list of vector store IDs.\n",
+          "meta": [
+            {
+              "name": "nullable",
+              "value": "true"
+            }
+          ],
+          "properties": [
+            {
+              "name": "code_interpreter",
+              "type": "object",
+              "description": "",
+              "meta": [],
+              "properties": [
+                {
+                  "name": "file_ids",
+                  "type": "$$array",
+                  "description": "A list of [file](/docs/api-reference/files) IDs made available to the `code_interpreter` tool. There can be a maximum of 20 files associated with the tool.\n",
+                  "meta": [
+                    {
+                      "name": "defaults",
+                      "value": []
+                    }
+                  ],
+                  "properties": [],
+                  "ofProperty": {
+                    "name": "",
+                    "type": "string",
+                    "properties": [],
+                    "description": "",
+                    "meta": [],
+                    "ofProperty": {
+                      "name": "",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "file_search",
+              "type": "$$xor",
+              "description": "",
+              "properties": [
+                {
+                  "name": "file_search",
+                  "type": "object",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "file_search",
+                  "type": "object",
+                  "description": "",
+                  "meta": []
+                }
+              ],
+              "meta": []
+            }
+          ]
+        },
+        {
+          "name": "metadata",
+          "type": "object",
+          "description": "Set of 16 key-value pairs that can be attached to an object. This can be\nuseful for storing additional information about the object in a structured\nformat, and querying for objects via API or the dashboard. \n\nKeys are strings with a maximum length of 64 characters. Values are strings\nwith a maximum length of 512 characters.\n",
+          "meta": [
+            {
+              "name": "nullable",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "name": "temperature",
+          "type": "number",
+          "description": "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.\n",
+          "meta": [
+            {
+              "name": "defaults",
+              "value": 1
+            },
+            {
+              "name": "nullable",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "name": "top_p",
+          "type": "number",
+          "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.\n\nWe generally recommend altering this or temperature but not both.\n",
+          "meta": [
+            {
+              "name": "defaults",
+              "value": 1
+            },
+            {
+              "name": "nullable",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "name": "response_format",
+          "type": "$$xor",
+          "description": "Specifies the format that the model must output. Compatible with [GPT-4o](/docs/models#gpt-4o), [GPT-4 Turbo](/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.\n\nSetting to `{ \"type\": \"json_schema\", \"json_schema\": {...} }` enables Structured Outputs which ensures the model will match your supplied JSON schema. Learn more in the [Structured Outputs guide](/docs/guides/structured-outputs).\n\nSetting to `{ \"type\": \"json_object\" }` enables JSON mode, which ensures the message the model generates is valid JSON.\n\n**Important:** when using JSON mode, you **must** also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly \"stuck\" request. Also note that the message content may be partially cut off if `finish_reason=\"length\"`, which indicates the generation exceeded `max_tokens` or the conversation exceeded the max context length.\n",
+          "properties": [
+            {
+              "name": "response_format",
+              "type": "$$enum",
+              "description": "`auto` is the default value\n",
+              "meta": [
+                {
+                  "name": "enum-type",
+                  "value": "string"
+                }
+              ],
+              "properties": [
+                {
+                  "name": "auto",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ]
+            },
+            {
+              "name": "Text",
+              "type": "object",
+              "description": "Default response format. Used to generate text responses.\n",
+              "meta": [],
+              "properties": [
+                {
+                  "name": "type",
+                  "type": "$$enum",
+                  "description": "The type of response format being defined. Always `text`.",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    },
+                    {
+                      "name": "enum-type",
+                      "value": "string"
+                    }
+                  ],
+                  "properties": [
+                    {
+                      "name": "text",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "JSON object",
+              "type": "object",
+              "description": "JSON object response format. An older method of generating JSON responses.\nUsing `json_schema` is recommended for models that support it. Note that the\nmodel will not generate JSON without a system or user message instructing it\nto do so.\n",
+              "meta": [],
+              "properties": [
+                {
+                  "name": "type",
+                  "type": "$$enum",
+                  "description": "The type of response format being defined. Always `json_object`.",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    },
+                    {
+                      "name": "enum-type",
+                      "value": "string"
+                    }
+                  ],
+                  "properties": [
+                    {
+                      "name": "json_object",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "JSON schema",
+              "type": "object",
+              "description": "JSON Schema response format. Used to generate structured JSON responses.\nLearn more about [Structured Outputs](/docs/guides/structured-outputs).\n",
+              "meta": [],
+              "properties": [
+                {
+                  "name": "type",
+                  "type": "$$enum",
+                  "description": "The type of response format being defined. Always `json_schema`.",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    },
+                    {
+                      "name": "enum-type",
+                      "value": "string"
+                    }
+                  ],
+                  "properties": [
+                    {
+                      "name": "json_schema",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    }
+                  ]
+                },
+                {
+                  "name": "json_schema",
+                  "type": "object",
+                  "description": "Structured Outputs configuration options, including a JSON Schema.\n",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ],
+                  "properties": [
+                    {
+                      "name": "description",
+                      "type": "string",
+                      "description": "A description of what the response format is for, used by the model to\ndetermine how to respond in the format.\n",
+                      "meta": []
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "description": "The name of the response format. Must be a-z, A-Z, 0-9, or contain\nunderscores and dashes, with a maximum length of 64.\n",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "schema",
+                      "type": "object",
+                      "description": "The schema for the response format, described as a JSON Schema object.\nLearn how to build JSON schemas [here](https://json-schema.org/).\n",
+                      "meta": []
+                    },
+                    {
+                      "name": "strict",
+                      "type": "boolean",
+                      "description": "Whether to enable strict schema adherence when generating the output.\nIf set to true, the model will always follow the exact schema defined\nin the `schema` field. Only a subset of JSON Schema is supported when\n`strict` is `true`. To learn more, read the [Structured Outputs\nguide](/docs/guides/structured-outputs).\n",
+                      "meta": [
+                        {
+                          "name": "defaults",
+                          "value": false
+                        },
+                        {
+                          "name": "nullable",
+                          "value": "true"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "meta": [
+            {
+              "name": "nullable",
+              "value": "true"
+            }
+          ]
+        }
+      ],
+      "meta": [
+        {
+          "name": "contentType",
+          "value": "application/json"
+        },
+        {
+          "name": "required",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "title": "Response",
+      "type": "return",
+      "variants": [
+        {
+          "title": "200",
+          "description": "OK",
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "The identifier, which can be referenced in API endpoints.",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "object",
+              "type": "$$enum",
+              "description": "The object type, which is always `assistant`.",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                },
+                {
+                  "name": "enum-type",
+                  "value": "string"
+                }
+              ],
+              "properties": [
+                {
+                  "name": "assistant",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ]
+            },
+            {
+              "name": "created_at",
+              "type": "integer",
+              "description": "The Unix timestamp (in seconds) for when the assistant was created.",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "The name of the assistant. The maximum length is 256 characters.\n",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                },
+                {
+                  "name": "nullable",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "description",
+              "type": "string",
+              "description": "The description of the assistant. The maximum length is 512 characters.\n",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                },
+                {
+                  "name": "nullable",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "model",
+              "type": "string",
+              "description": "ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.\n",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "instructions",
+              "type": "string",
+              "description": "The system instructions that the assistant uses. The maximum length is 256,000 characters.\n",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                },
+                {
+                  "name": "nullable",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "tools",
+              "type": "$$array",
+              "description": "A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.\n",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                },
+                {
+                  "name": "defaults",
+                  "value": []
+                }
+              ],
+              "properties": [],
+              "ofProperty": {
+                "name": "",
+                "type": "$$xor",
+                "properties": [
+                  {
+                    "name": "Code interpreter tool",
+                    "type": "object",
+                    "description": "",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "properties": [
+                      {
+                        "name": "type",
+                        "type": "$$enum",
+                        "description": "The type of tool being defined: `code_interpreter`",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          },
+                          {
+                            "name": "enum-type",
+                            "value": "string"
+                          }
+                        ],
+                        "properties": [
+                          {
+                            "name": "code_interpreter",
+                            "type": "string",
+                            "description": "",
+                            "meta": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "FileSearch tool",
+                    "type": "object",
+                    "description": "",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "properties": [
+                      {
+                        "name": "type",
+                        "type": "$$enum",
+                        "description": "The type of tool being defined: `file_search`",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          },
+                          {
+                            "name": "enum-type",
+                            "value": "string"
+                          }
+                        ],
+                        "properties": [
+                          {
+                            "name": "file_search",
+                            "type": "string",
+                            "description": "",
+                            "meta": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "file_search",
+                        "type": "object",
+                        "description": "Overrides for the file search tool.",
+                        "meta": [],
+                        "properties": [
+                          {
+                            "name": "max_num_results",
+                            "type": "integer",
+                            "description": "The maximum number of results the file search tool should output. The default is 20 for `gpt-4*` models and 5 for `gpt-3.5-turbo`. This number should be between 1 and 50 inclusive.\n\nNote that the file search tool may output fewer than `max_num_results` results. See the [file search tool documentation](/docs/assistants/tools/file-search#customizing-file-search-settings) for more information.\n",
+                            "meta": []
+                          },
+                          {
+                            "name": "ranking_options",
+                            "type": "object",
+                            "description": "The ranking options for the file search. If not specified, the file search tool will use the `auto` ranker and a score_threshold of 0.\n\nSee the [file search tool documentation](/docs/assistants/tools/file-search#customizing-file-search-settings) for more information.\n",
+                            "meta": [],
+                            "properties": [
+                              {
+                                "name": "ranker",
+                                "type": "$$enum",
+                                "description": "The ranker to use for the file search. If not specified will use the `auto` ranker.",
+                                "meta": [
+                                  {
+                                    "name": "enum-type",
+                                    "value": "string"
+                                  }
+                                ],
+                                "properties": [
+                                  {
+                                    "name": "auto",
+                                    "type": "string",
+                                    "description": "",
+                                    "meta": []
+                                  },
+                                  {
+                                    "name": "default_2024_08_21",
+                                    "type": "string",
+                                    "description": "",
+                                    "meta": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "score_threshold",
+                                "type": "number",
+                                "description": "The score threshold for the file search. All values must be a floating point number between 0 and 1.",
+                                "meta": [
+                                  {
+                                    "name": "required",
+                                    "value": "true"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Function tool",
+                    "type": "object",
+                    "description": "",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "properties": [
+                      {
+                        "name": "type",
+                        "type": "$$enum",
+                        "description": "The type of tool being defined: `function`",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          },
+                          {
+                            "name": "enum-type",
+                            "value": "string"
+                          }
+                        ],
+                        "properties": [
+                          {
+                            "name": "function",
+                            "type": "string",
+                            "description": "",
+                            "meta": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "function",
+                        "type": "object",
+                        "description": "",
+                        "meta": [
+                          {
+                            "name": "required",
+                            "value": "true"
+                          }
+                        ],
+                        "properties": [
+                          {
+                            "name": "description",
+                            "type": "string",
+                            "description": "A description of what the function does, used by the model to choose when and how to call the function.",
+                            "meta": []
+                          },
+                          {
+                            "name": "name",
+                            "type": "string",
+                            "description": "The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.",
+                            "meta": [
+                              {
+                                "name": "required",
+                                "value": "true"
+                              }
+                            ]
+                          },
+                          {
+                            "name": "parameters",
+                            "type": "object",
+                            "description": "The parameters the functions accepts, described as a JSON Schema object. See the [guide](/docs/guides/function-calling) for examples, and the [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for documentation about the format. \n\nOmitting `parameters` defines a function with an empty parameter list.",
+                            "meta": []
+                          },
+                          {
+                            "name": "strict",
+                            "type": "boolean",
+                            "description": "Whether to enable strict schema adherence when generating the function call. If set to true, the model will follow the exact schema defined in the `parameters` field. Only a subset of JSON Schema is supported when `strict` is `true`. Learn more about Structured Outputs in the [function calling guide](docs/guides/function-calling).",
+                            "meta": [
+                              {
+                                "name": "defaults",
+                                "value": false
+                              },
+                              {
+                                "name": "nullable",
+                                "value": "true"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tool_resources",
+              "type": "object",
+              "description": "A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the `file_search` tool requires a list of vector store IDs.\n",
+              "meta": [
+                {
+                  "name": "nullable",
+                  "value": "true"
+                }
+              ],
+              "properties": [
+                {
+                  "name": "code_interpreter",
+                  "type": "object",
+                  "description": "",
+                  "meta": [],
+                  "properties": [
+                    {
+                      "name": "file_ids",
+                      "type": "$$array",
+                      "description": "A list of [file](/docs/api-reference/files) IDs made available to the `code_interpreter`` tool. There can be a maximum of 20 files associated with the tool.\n",
+                      "meta": [
+                        {
+                          "name": "defaults",
+                          "value": []
+                        }
+                      ],
+                      "properties": [],
+                      "ofProperty": {
+                        "name": "",
+                        "type": "string",
+                        "properties": [],
+                        "description": "",
+                        "meta": [],
+                        "ofProperty": {
+                          "name": "",
+                          "type": "string",
+                          "description": "",
+                          "meta": []
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "file_search",
+                  "type": "object",
+                  "description": "",
+                  "meta": [],
+                  "properties": [
+                    {
+                      "name": "vector_store_ids",
+                      "type": "$$array",
+                      "description": "The ID of the [vector store](/docs/api-reference/vector-stores/object) attached to this assistant. There can be a maximum of 1 vector store attached to the assistant.\n",
+                      "meta": [],
+                      "properties": [],
+                      "ofProperty": {
+                        "name": "",
+                        "type": "string",
+                        "properties": [],
+                        "description": "",
+                        "meta": [],
+                        "ofProperty": {
+                          "name": "",
+                          "type": "string",
+                          "description": "",
+                          "meta": []
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "metadata",
+              "type": "object",
+              "description": "Set of 16 key-value pairs that can be attached to an object. This can be\nuseful for storing additional information about the object in a structured\nformat, and querying for objects via API or the dashboard. \n\nKeys are strings with a maximum length of 64 characters. Values are strings\nwith a maximum length of 512 characters.\n",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                },
+                {
+                  "name": "nullable",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "temperature",
+              "type": "number",
+              "description": "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.\n",
+              "meta": [
+                {
+                  "name": "defaults",
+                  "value": 1
+                },
+                {
+                  "name": "nullable",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "top_p",
+              "type": "number",
+              "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.\n\nWe generally recommend altering this or temperature but not both.\n",
+              "meta": [
+                {
+                  "name": "defaults",
+                  "value": 1
+                },
+                {
+                  "name": "nullable",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "response_format",
+              "type": "$$xor",
+              "description": "Specifies the format that the model must output. Compatible with [GPT-4o](/docs/models#gpt-4o), [GPT-4 Turbo](/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.\n\nSetting to `{ \"type\": \"json_schema\", \"json_schema\": {...} }` enables Structured Outputs which ensures the model will match your supplied JSON schema. Learn more in the [Structured Outputs guide](/docs/guides/structured-outputs).\n\nSetting to `{ \"type\": \"json_object\" }` enables JSON mode, which ensures the message the model generates is valid JSON.\n\n**Important:** when using JSON mode, you **must** also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly \"stuck\" request. Also note that the message content may be partially cut off if `finish_reason=\"length\"`, which indicates the generation exceeded `max_tokens` or the conversation exceeded the max context length.\n",
+              "properties": [
+                {
+                  "name": "response_format",
+                  "type": "$$enum",
+                  "description": "`auto` is the default value\n",
+                  "meta": [
+                    {
+                      "name": "enum-type",
+                      "value": "string"
+                    }
+                  ],
+                  "properties": [
+                    {
+                      "name": "auto",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Text",
+                  "type": "object",
+                  "description": "Default response format. Used to generate text responses.\n",
+                  "meta": [],
+                  "properties": [
+                    {
+                      "name": "type",
+                      "type": "$$enum",
+                      "description": "The type of response format being defined. Always `text`.",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        },
+                        {
+                          "name": "enum-type",
+                          "value": "string"
+                        }
+                      ],
+                      "properties": [
+                        {
+                          "name": "text",
+                          "type": "string",
+                          "description": "",
+                          "meta": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "JSON object",
+                  "type": "object",
+                  "description": "JSON object response format. An older method of generating JSON responses.\nUsing `json_schema` is recommended for models that support it. Note that the\nmodel will not generate JSON without a system or user message instructing it\nto do so.\n",
+                  "meta": [],
+                  "properties": [
+                    {
+                      "name": "type",
+                      "type": "$$enum",
+                      "description": "The type of response format being defined. Always `json_object`.",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        },
+                        {
+                          "name": "enum-type",
+                          "value": "string"
+                        }
+                      ],
+                      "properties": [
+                        {
+                          "name": "json_object",
+                          "type": "string",
+                          "description": "",
+                          "meta": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "JSON schema",
+                  "type": "object",
+                  "description": "JSON Schema response format. Used to generate structured JSON responses.\nLearn more about [Structured Outputs](/docs/guides/structured-outputs).\n",
+                  "meta": [],
+                  "properties": [
+                    {
+                      "name": "type",
+                      "type": "$$enum",
+                      "description": "The type of response format being defined. Always `json_schema`.",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        },
+                        {
+                          "name": "enum-type",
+                          "value": "string"
+                        }
+                      ],
+                      "properties": [
+                        {
+                          "name": "json_schema",
+                          "type": "string",
+                          "description": "",
+                          "meta": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "json_schema",
+                      "type": "object",
+                      "description": "Structured Outputs configuration options, including a JSON Schema.\n",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ],
+                      "properties": [
+                        {
+                          "name": "description",
+                          "type": "string",
+                          "description": "A description of what the response format is for, used by the model to\ndetermine how to respond in the format.\n",
+                          "meta": []
+                        },
+                        {
+                          "name": "name",
+                          "type": "string",
+                          "description": "The name of the response format. Must be a-z, A-Z, 0-9, or contain\nunderscores and dashes, with a maximum length of 64.\n",
+                          "meta": [
+                            {
+                              "name": "required",
+                              "value": "true"
+                            }
+                          ]
+                        },
+                        {
+                          "name": "schema",
+                          "type": "object",
+                          "description": "The schema for the response format, described as a JSON Schema object.\nLearn how to build JSON schemas [here](https://json-schema.org/).\n",
+                          "meta": []
+                        },
+                        {
+                          "name": "strict",
+                          "type": "boolean",
+                          "description": "Whether to enable strict schema adherence when generating the output.\nIf set to true, the model will always follow the exact schema defined\nin the `schema` field. Only a subset of JSON Schema is supported when\n`strict` is `true`. To learn more, read the [Structured Outputs\nguide](/docs/guides/structured-outputs).\n",
+                          "meta": [
+                            {
+                              "name": "defaults",
+                              "value": false
+                            },
+                            {
+                              "name": "nullable",
+                              "value": "true"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "meta": [
+                {
+                  "name": "nullable",
+                  "value": "true"
+                }
+              ]
+            }
+          ],
+          "meta": [
+            {
+              "name": "status",
+              "value": "200"
+            },
+            {
+              "name": "contentType",
+              "value": "application/json"
+            }
+          ],
+          "symbolDef": {
+            "id": "#/components/schemas/AssistantObject"
+          }
+        }
+      ],
+      "properties": []
+    }
+  ]
+}

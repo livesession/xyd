@@ -40,6 +40,8 @@ export type SymbolDef = {
     canonical?: string | string[];
 }
 
+export type DefinitionTypeREST = "$rest.param.path" | "$rest.param.query" | "$rest.param.header" | "$rest.param.cookie" | "$rest.request.body"
+
 export interface Definition<
     M extends DefinitionMeta = DefinitionMeta,
     VM extends DefinitionVariantMeta = DefinitionVariantMeta
@@ -69,7 +71,7 @@ export interface Definition<
     /**
      * @internal
      */
-    type?: string;
+    type?: "return" | DefinitionTypeREST
 }
 
 export type DefinitionVariantOpenAPIMeta = Meta<"status" | "contentType" | "definitionDescription" | "required">;

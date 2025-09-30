@@ -1,6 +1,11 @@
 // Define the new PluginV type with a callback function that returns another function
 import {Reference} from "./types";
 
+export {
+    uniformToInputJsonSchema,
+    uniformPropertiesToJsonSchema
+} from "./converters";
+
 export * from "./types";
 
 // Define the new PluginV type with a callback function that returns another function

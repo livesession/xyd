@@ -95,7 +95,9 @@ async function main() {
             '@xyd-js/themes',
             '@xyd-js/ui',
             '@xyd-js/uniform',
-            '@xyd-js/cli'
+            '@xyd-js/cli',
+            '@xyd-js/mcp',
+            '@xyd-js/mcp-server',
         ], 'update all packages');
 
         // Step 3: Clear npm cache

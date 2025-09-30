@@ -23,6 +23,7 @@ import {
 } from "../utils";
 import {OasJSONSchema} from "../types";
 import path from "node:path";
+import {DefinitionTypeREST} from "@xyd-js/uniform/dist";
 
 // oapPathToReference converts an OpenAPI path to a uniform Reference
 export function oapPathToReference(
@@ -73,7 +74,9 @@ export function oapPathToReference(
         const defaultServerUrl = oapPath.servers[0]?.url
         ctx.servers =  oapPath.servers.map(server => server.url)
         if (defaultServerUrl) {
-            ctx.fullPath = join(defaultServerUrl, path)
+            const u = new URL(defaultServerUrl)
+            u.pathname = join(u.pathname, path)
+            ctx.fullPath = decodeURIComponent(u.toString())
         }
     }
 
@@ -84,16 +87,23 @@ export function oapPathToReference(
 
         Object.entries(paramtersMap).forEach(([key, definitionProperties]) => {
             let title: string
-
+            let definitionType: DefinitionTypeREST
             switch (key) {
                 case 'path':
                     title = "Path parameters"
+                    definitionType = "$rest.param.path"
                     break
                 case 'query':
                     title = "Query parameters"
+                    definitionType = "$rest.param.query"
                     break
                 case 'header':
                     title = "Headers"
+                    definitionType = "$rest.param.header"
+                    break
+                case 'cookies':
+                    title = "Cookies"
+                    definitionType = "$rest.param.cookie"
                     break
                 default:
                     console.error(`Unsupported parameter type: ${key} for ${httpMethod} ${path}`)
@@ -102,7 +112,8 @@ export function oapPathToReference(
 
             definitions.push({
                 title,
-                properties: definitionProperties
+                properties: definitionProperties,
+                type: definitionType || undefined
             })
         })
     }
@@ -208,7 +219,8 @@ function oapRequestOperationToUniformDefinition(
         title: 'Request body',
         variants,
         properties: [],
-        meta
+        meta,
+        type: "$rest.request.body"
     }
 }
 
@@ -284,7 +296,8 @@ export function oapResponseOperationToUniformDefinition(
     })
 
     return {
-        title: 'Response',
+        title: "Response",
+        type: "return",
         variants,
         properties: []
     }

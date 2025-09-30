@@ -1,0 +1,48 @@
+{
+  "name": "@xyd-js/mcp",
+  "version": "0.1.0-build.1",
+  "description": "Model Context Protocol (MCP) utilities for xyd (library mode)",
+  "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "package.json",
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun build index.ts --outdir dist --target node --format esm",
+    "dev": "bun --watch index.ts",
+    "clean": "rimraf build"
+  },
+  "dependencies": {
+    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/core": "workspace:*",
+    "@xyd-js/framework": "workspace:*",
+    "@xyd-js/gql": "workspace:*",
+    "@xyd-js/openapi": "workspace:*",
+    "@xyd-js/plugins": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.18.1",
+    "json-schema-to-zod": "^2.6.1",
+    "openux-js": "^0.0.0-pre.0",
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-stringify": "^11.0.0",
+    "turndown": "^7.2.1",
+    "turndown-plugin-gfm": "^1.0.2",
+    "unist-builder": "^4.0.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "@types/turndown": "^5.0.5",
+    "typescript": "^5.6.2",
+    "rimraf": "^3.0.2"
+  }
+}

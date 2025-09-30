@@ -1,0 +1,1369 @@
+{
+  "title": "Update user",
+  "canonical": "updateUser",
+  "description": "Update an existing user",
+  "type": "rest_put",
+  "category": "rest",
+  "context": {
+    "method": "put",
+    "path": "/users/{userId}",
+    "group": [
+      "Users"
+    ],
+    "fullPath": "https:/api.example.com/v1/users/{userId}",
+    "servers": [
+      "https://api.example.com/v1",
+      "https://staging-api.example.com/v1",
+      "http://localhost:3000/v1"
+    ],
+    "scopes": []
+  },
+  "examples": {
+    "groups": [
+      {
+        "description": "Example request",
+        "examples": [
+          {
+            "codeblock": {
+              "tabs": [
+                {
+                  "title": "shell",
+                  "language": "shell",
+                  "code": "curl --request PUT \\\n     --url https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08 \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"role\": \"user\",\n  \"isActive\": true\n}\n'",
+                  "highlighted": {
+                    "value": "curl --request PUT \\\n     --url https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08 \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"role\": \"user\",\n  \"isActive\": true\n}\n'",
+                    "lang": "shellscript",
+                    "meta": "shell",
+                    "code": "curl --request PUT \\\n     --url https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08 \\\n     --header 'accept: application/json' \\\n     --header 'content-type: application/json' \\\n     --data '\n{\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"role\": \"user\",\n  \"isActive\": true\n}\n'",
+                    "tokens": [
+                      [
+                        "curl",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "--request PUT",
+                        "var(--syntax27)"
+                      ],
+                      " ",
+                      [
+                        "\\",
+                        "var(--syntax15)"
+                      ],
+                      "\n     ",
+                      [
+                        "--url https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                        "var(--syntax27)"
+                      ],
+                      " ",
+                      [
+                        "\\",
+                        "var(--syntax15)"
+                      ],
+                      "\n     ",
+                      [
+                        "--header 'accept: application/json'",
+                        "var(--syntax27)"
+                      ],
+                      " ",
+                      [
+                        "\\",
+                        "var(--syntax15)"
+                      ],
+                      "\n     ",
+                      [
+                        "--header 'content-type: application/json'",
+                        "var(--syntax27)"
+                      ],
+                      " ",
+                      [
+                        "\\",
+                        "var(--syntax15)"
+                      ],
+                      "\n     ",
+                      [
+                        "--data '",
+                        "var(--syntax27)"
+                      ],
+                      "\n",
+                      [
+                        "{",
+                        "var(--syntax27)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"firstName\": \"string\",",
+                        "var(--syntax27)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"lastName\": \"string\",",
+                        "var(--syntax27)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"role\": \"user\",",
+                        "var(--syntax27)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"isActive\": true",
+                        "var(--syntax27)"
+                      ],
+                      "\n",
+                      [
+                        "}",
+                        "var(--syntax27)"
+                      ],
+                      "\n",
+                      [
+                        "'",
+                        "var(--syntax27)"
+                      ]
+                    ],
+                    "annotations": [],
+                    "themeName": "classic",
+                    "style": {
+                      "colorScheme": "var(--ch-0)"
+                    }
+                  }
+                },
+                {
+                  "title": "javascript",
+                  "language": "javascript",
+                  "code": "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({firstName: 'string', lastName: 'string', role: 'user', isActive: true})\n};\n\nfetch('https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));",
+                  "highlighted": {
+                    "value": "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({firstName: 'string', lastName: 'string', role: 'user', isActive: true})\n};\n\nfetch('https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));",
+                    "lang": "javascript",
+                    "meta": "javascript",
+                    "code": "const options = {\n  method: 'PUT',\n  headers: {accept: 'application/json', 'content-type': 'application/json'},\n  body: JSON.stringify({firstName: 'string', lastName: 'string', role: 'user', isActive: true})\n};\n\nfetch('https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));",
+                    "tokens": [
+                      [
+                        "const",
+                        "var(--syntax24)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      " ",
+                      [
+                        "options = {",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "method",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "'PUT'",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "headers",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ": {",
+                        "var(--syntax15)"
+                      ],
+                      [
+                        "accept",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "'application/json'",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "'content-type'",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "'application/json'",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        "},",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "body",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ": JSON.stringify({",
+                        "var(--syntax15)"
+                      ],
+                      [
+                        "firstName",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "'string'",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "lastName",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "'string'",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "role",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "'user'",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "isActive",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "true",
+                        "var(--syntax24)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      [
+                        "})",
+                        "var(--syntax15)"
+                      ],
+                      "\n",
+                      [
+                        "};",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n",
+                      [
+                        "fetch(",
+                        "var(--syntax15)"
+                      ],
+                      [
+                        "'https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08'",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ", options)",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        ".then(res",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "=>",
+                        "var(--syntax15)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      " ",
+                      [
+                        "res.json())",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        ".then(res",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "=>",
+                        "var(--syntax15)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      " ",
+                      [
+                        "console.log(res))",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        ".catch(err",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "=>",
+                        "var(--syntax15)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      " ",
+                      [
+                        "console.error(err));",
+                        "var(--syntax15)"
+                      ]
+                    ],
+                    "annotations": [],
+                    "themeName": "classic",
+                    "style": {
+                      "colorScheme": "var(--ch-0)"
+                    }
+                  }
+                },
+                {
+                  "title": "python",
+                  "language": "python",
+                  "code": "import requests\n\nurl = \"https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08\"\n\npayload = {\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"role\": \"user\",\n    \"isActive\": True\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)",
+                  "highlighted": {
+                    "value": "import requests\n\nurl = \"https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08\"\n\npayload = {\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"role\": \"user\",\n    \"isActive\": True\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)",
+                    "lang": "python",
+                    "meta": "python",
+                    "code": "import requests\n\nurl = \"https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08\"\n\npayload = {\n    \"firstName\": \"string\",\n    \"lastName\": \"string\",\n    \"role\": \"user\",\n    \"isActive\": True\n}\nheaders = {\n    \"accept\": \"application/json\",\n    \"content-type\": \"application/json\"\n}\n\nresponse = requests.put(url, json=payload, headers=headers)\n\nprint(response.text)",
+                    "tokens": [
+                      [
+                        "import",
+                        "var(--syntax24)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      " ",
+                      [
+                        "requests",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n",
+                      [
+                        "url =",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08\"",
+                        "var(--syntax27)"
+                      ],
+                      "\n\n",
+                      [
+                        "payload = {",
+                        "var(--syntax15)"
+                      ],
+                      "\n    ",
+                      [
+                        "\"firstName\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"string\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n    ",
+                      [
+                        "\"lastName\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"string\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n    ",
+                      [
+                        "\"role\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"user\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n    ",
+                      [
+                        "\"isActive\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "True",
+                        "var(--syntax24)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      "\n",
+                      [
+                        "}",
+                        "var(--syntax15)"
+                      ],
+                      "\n",
+                      [
+                        "headers = {",
+                        "var(--syntax15)"
+                      ],
+                      "\n    ",
+                      [
+                        "\"accept\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"application/json\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n    ",
+                      [
+                        "\"content-type\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"application/json\"",
+                        "var(--syntax27)"
+                      ],
+                      "\n",
+                      [
+                        "}",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n",
+                      [
+                        "response = requests.put(url, json=payload, headers=headers)",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n",
+                      [
+                        "print(response.text)",
+                        "var(--syntax15)"
+                      ]
+                    ],
+                    "annotations": [],
+                    "themeName": "classic",
+                    "style": {
+                      "colorScheme": "var(--ch-0)"
+                    }
+                  }
+                },
+                {
+                  "title": "go",
+                  "language": "go",
+                  "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08\"\n\n\tpayload := strings.NewReader(\"{\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\",\\\"role\\\":\\\"user\\\",\\\"isActive\\\":true}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}",
+                  "highlighted": {
+                    "value": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08\"\n\n\tpayload := strings.NewReader(\"{\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\",\\\"role\\\":\\\"user\\\",\\\"isActive\\\":true}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}",
+                    "lang": "go",
+                    "meta": "go",
+                    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08\"\n\n\tpayload := strings.NewReader(\"{\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\",\\\"role\\\":\\\"user\\\",\\\"isActive\\\":true}\")\n\n\treq, _ := http.NewRequest(\"PUT\", url, payload)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\treq.Header.Add(\"content-type\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}",
+                    "tokens": [
+                      [
+                        "package main",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n",
+                      [
+                        "import",
+                        "var(--syntax24)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      " ",
+                      [
+                        "(",
+                        "var(--syntax15)"
+                      ],
+                      "\n\t",
+                      [
+                        "\"fmt\"",
+                        "var(--syntax27)"
+                      ],
+                      "\n\t",
+                      [
+                        "\"strings\"",
+                        "var(--syntax27)"
+                      ],
+                      "\n\t",
+                      [
+                        "\"net/http\"",
+                        "var(--syntax27)"
+                      ],
+                      "\n\t",
+                      [
+                        "\"io\"",
+                        "var(--syntax27)"
+                      ],
+                      "\n",
+                      [
+                        ")",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n",
+                      [
+                        "func main() {",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n\t",
+                      [
+                        "url :=",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"https://api.example.com/v1/users/497f6eca-6276-4993-bfeb-53cbbbba6f08\"",
+                        "var(--syntax27)"
+                      ],
+                      "\n\n\t",
+                      [
+                        "payload := strings.NewReader(",
+                        "var(--syntax15)"
+                      ],
+                      [
+                        "\"{\\\"firstName\\\":\\\"string\\\",\\\"lastName\\\":\\\"string\\\",\\\"role\\\":\\\"user\\\",\\\"isActive\\\":true}\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ")",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n\t",
+                      [
+                        "req, _ := http.NewRequest(",
+                        "var(--syntax15)"
+                      ],
+                      [
+                        "\"PUT\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ", url, payload)",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n\t",
+                      [
+                        "req.Header.Add(",
+                        "var(--syntax15)"
+                      ],
+                      [
+                        "\"accept\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"application/json\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ")",
+                        "var(--syntax15)"
+                      ],
+                      "\n\t",
+                      [
+                        "req.Header.Add(",
+                        "var(--syntax15)"
+                      ],
+                      [
+                        "\"content-type\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"application/json\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ")",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n\t",
+                      [
+                        "res, _ := http.DefaultClient.Do(req)",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n\t",
+                      [
+                        "defer",
+                        "var(--syntax24)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      " ",
+                      [
+                        "res.Body.Close()",
+                        "var(--syntax15)"
+                      ],
+                      "\n\t",
+                      [
+                        "body, _ := io.ReadAll(res.Body)",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n\t",
+                      [
+                        "fmt.Println(",
+                        "var(--syntax15)"
+                      ],
+                      [
+                        "string",
+                        "var(--syntax24)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      [
+                        "(body))",
+                        "var(--syntax15)"
+                      ],
+                      "\n\n",
+                      [
+                        "}",
+                        "var(--syntax15)"
+                      ]
+                    ],
+                    "annotations": [],
+                    "themeName": "classic",
+                    "style": {
+                      "colorScheme": "var(--ch-0)"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "description": "Example response",
+        "examples": [
+          {
+            "codeblock": {
+              "title": "200",
+              "tabs": [
+                {
+                  "title": "application/json",
+                  "language": "json",
+                  "code": "{\n  \"id\": \"497f6eca-6276-4993-bfeb-53cbbbba6f08\",\n  \"email\": \"user@example.com\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"role\": \"user\",\n  \"isActive\": true,\n  \"createdAt\": \"2019-08-24T14:15:22Z\",\n  \"updatedAt\": \"2019-08-24T14:15:22Z\",\n  \"address\": {\n    \"street\": \"string\"\n  }\n}",
+                  "highlighted": {
+                    "value": "{\n  \"id\": \"497f6eca-6276-4993-bfeb-53cbbbba6f08\",\n  \"email\": \"user@example.com\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"role\": \"user\",\n  \"isActive\": true,\n  \"createdAt\": \"2019-08-24T14:15:22Z\",\n  \"updatedAt\": \"2019-08-24T14:15:22Z\",\n  \"address\": {\n    \"street\": \"string\"\n  }\n}",
+                    "lang": "json",
+                    "meta": "application/json",
+                    "code": "{\n  \"id\": \"497f6eca-6276-4993-bfeb-53cbbbba6f08\",\n  \"email\": \"user@example.com\",\n  \"firstName\": \"string\",\n  \"lastName\": \"string\",\n  \"role\": \"user\",\n  \"isActive\": true,\n  \"createdAt\": \"2019-08-24T14:15:22Z\",\n  \"updatedAt\": \"2019-08-24T14:15:22Z\",\n  \"address\": {\n    \"street\": \"string\"\n  }\n}",
+                    "tokens": [
+                      [
+                        "{",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"id\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"497f6eca-6276-4993-bfeb-53cbbbba6f08\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"email\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"user@example.com\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"firstName\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"string\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"lastName\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"string\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"role\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"user\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"isActive\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "true",
+                        "var(--syntax24)",
+                        {
+                          "fontWeight": "bold"
+                        }
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"createdAt\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"2019-08-24T14:15:22Z\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"updatedAt\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"2019-08-24T14:15:22Z\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"address\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ": {",
+                        "var(--syntax15)"
+                      ],
+                      "\n    ",
+                      [
+                        "\"street\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"string\"",
+                        "var(--syntax27)"
+                      ],
+                      "\n  ",
+                      [
+                        "}",
+                        "var(--syntax15)"
+                      ],
+                      "\n",
+                      [
+                        "}",
+                        "var(--syntax15)"
+                      ]
+                    ],
+                    "annotations": [],
+                    "themeName": "classic",
+                    "style": {
+                      "colorScheme": "var(--ch-0)"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "codeblock": {
+              "title": "404",
+              "tabs": [
+                {
+                  "title": "application/json",
+                  "language": "json",
+                  "code": "{\n  \"error\": \"string\",\n  \"code\": \"string\",\n  \"details\": {},\n  \"timestamp\": \"2019-08-24T14:15:22Z\"\n}",
+                  "highlighted": {
+                    "value": "{\n  \"error\": \"string\",\n  \"code\": \"string\",\n  \"details\": {},\n  \"timestamp\": \"2019-08-24T14:15:22Z\"\n}",
+                    "lang": "json",
+                    "meta": "application/json",
+                    "code": "{\n  \"error\": \"string\",\n  \"code\": \"string\",\n  \"details\": {},\n  \"timestamp\": \"2019-08-24T14:15:22Z\"\n}",
+                    "tokens": [
+                      [
+                        "{",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"error\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"string\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"code\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"string\"",
+                        "var(--syntax27)"
+                      ],
+                      [
+                        ",",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"details\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ": {},",
+                        "var(--syntax15)"
+                      ],
+                      "\n  ",
+                      [
+                        "\"timestamp\"",
+                        "var(--syntax16)"
+                      ],
+                      [
+                        ":",
+                        "var(--syntax15)"
+                      ],
+                      " ",
+                      [
+                        "\"2019-08-24T14:15:22Z\"",
+                        "var(--syntax27)"
+                      ],
+                      "\n",
+                      [
+                        "}",
+                        "var(--syntax15)"
+                      ]
+                    ],
+                    "annotations": [],
+                    "themeName": "classic",
+                    "style": {
+                      "colorScheme": "var(--ch-0)"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "definitions": [
+    {
+      "title": "Path parameters",
+      "type": "$rest.param.path",
+      "properties": [
+        {
+          "name": "userId",
+          "type": "string",
+          "description": "The user ID",
+          "meta": [
+            {
+              "name": "required",
+              "value": "true"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Request body",
+      "type": "$rest.request.body",
+      "variants": [
+        {
+          "title": "application/json",
+          "description": "",
+          "properties": [
+            {
+              "name": "firstName",
+              "type": "string",
+              "description": "User's first name",
+              "meta": []
+            },
+            {
+              "name": "lastName",
+              "type": "string",
+              "description": "User's last name",
+              "meta": []
+            },
+            {
+              "name": "role",
+              "type": "$$enum",
+              "description": "User's role in the system",
+              "meta": [
+                {
+                  "name": "enum-type",
+                  "value": "string"
+                }
+              ],
+              "properties": [
+                {
+                  "name": "user",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "admin",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "moderator",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ],
+              "ofProperty": {
+                "name": "",
+                "description": "",
+                "type": "string"
+              }
+            },
+            {
+              "name": "isActive",
+              "type": "boolean",
+              "description": "Whether the user account is active",
+              "meta": []
+            }
+          ],
+          "meta": [
+            {
+              "name": "contentType",
+              "value": "application/json"
+            }
+          ]
+        }
+      ],
+      "properties": [],
+      "meta": [
+        {
+          "name": "required",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "title": "Response",
+      "type": "return",
+      "variants": [
+        {
+          "title": "200",
+          "description": "User updated successfully",
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "Unique identifier for the user",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "email",
+              "type": "string",
+              "description": "User's email address",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "firstName",
+              "type": "string",
+              "description": "User's first name",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "lastName",
+              "type": "string",
+              "description": "User's last name",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "role",
+              "type": "$$enum",
+              "description": "User's role in the system",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                },
+                {
+                  "name": "enum-type",
+                  "value": "string"
+                }
+              ],
+              "properties": [
+                {
+                  "name": "user",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "admin",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "moderator",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ],
+              "ofProperty": {
+                "name": "",
+                "description": "",
+                "type": "string"
+              }
+            },
+            {
+              "name": "isActive",
+              "type": "boolean",
+              "description": "Whether the user account is active",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "createdAt",
+              "type": "string",
+              "description": "When the user was created",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "updatedAt",
+              "type": "string",
+              "description": "When the user was last updated",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "address",
+              "type": "object",
+              "description": "",
+              "meta": [],
+              "properties": [
+                {
+                  "name": "street",
+                  "type": "string",
+                  "description": "User's street address",
+                  "meta": []
+                }
+              ]
+            }
+          ],
+          "meta": [
+            {
+              "name": "status",
+              "value": "200"
+            },
+            {
+              "name": "contentType",
+              "value": "application/json"
+            },
+            {
+              "name": "definitionDescription",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "title": "404",
+          "description": "User not found",
+          "properties": [
+            {
+              "name": "error",
+              "type": "string",
+              "description": "Error message",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "code",
+              "type": "string",
+              "description": "Error code",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "name": "details",
+              "type": "object",
+              "description": "Additional error details",
+              "meta": []
+            },
+            {
+              "name": "timestamp",
+              "type": "string",
+              "description": "When the error occurred",
+              "meta": [
+                {
+                  "name": "required",
+                  "value": "true"
+                }
+              ]
+            }
+          ],
+          "meta": [
+            {
+              "name": "status",
+              "value": "404"
+            },
+            {
+              "name": "contentType",
+              "value": "application/json"
+            },
+            {
+              "name": "definitionDescription",
+              "value": ""
+            }
+          ]
+        }
+      ],
+      "properties": []
+    }
+  ]
+}

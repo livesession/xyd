@@ -1,0 +1,35 @@
+{
+  "name": "@xyd-js/mcp-server",
+  "version": "0.1.0-build.1",
+  "type": "module",
+  "description": "MCP server for xyd",
+  "main": "dist/index.js",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "xyd-mcp-server": "./bin/xyd-mcp-server.mjs"
+  },
+  "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target node --format esm",
+    "dev": "bun --watch src/index.ts",
+    "start": "bun dist/index.js",
+    "demo:simple": "bun --watch demo/simple/server.ts",
+    "mcp:inspector": "npx @modelcontextprotocol/inspector http://localhost:3000/mcp"
+  },
+  "dependencies": {
+    "@xyd-js/mcp": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.18.1",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.9.0",
+    "openapi-typescript": "^7.4.2",
+    "typescript": "^5.6.2",
+    "@types/bun": "latest"
+  }
+}

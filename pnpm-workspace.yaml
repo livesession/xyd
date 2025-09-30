@@ -3,4 +3,5 @@ packages:
   # - 'cli'
   - 'packages/*'
   - '!packages/xyd-js'
+  # - '!packages/xyd-mcp-server' # temporary? cuz it's bun
   - '.xyd/host'

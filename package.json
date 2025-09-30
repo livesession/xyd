@@ -5,6 +5,9 @@
     "node": ">=22.12.0"
   },
   "packageManager": "pnpm@9.10.0",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "pnpm lerna watch -- lerna run build",
     "dev:styles": "pnpm --filter \"@xyd-js/components\" --filter \"@xyd-js/ui\" --parallel dev",

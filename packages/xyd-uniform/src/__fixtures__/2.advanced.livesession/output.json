@@ -1,0 +1,1448 @@
+[
+  {
+    "$id": "$rest.param.query",
+    "type": "object",
+    "properties": {
+      "page": {
+        "type": "integer",
+        "description": "The number of page to start with (default 0, max 10000)."
+      },
+      "size": {
+        "type": "integer",
+        "description": "The number of page's size (default 25, max 100)."
+      },
+      "email": {
+        "type": "string",
+        "description": "The email address that you have associated with a session via [identify](/docs/api/browser/methods#identify)."
+      },
+      "visitor_id": {
+        "type": "string",
+        "description": "The visitor ID."
+      },
+      "tz": {
+        "type": "string",
+        "description": "IANA timezone. Default Europe/London if RelativeDateString is applied."
+      },
+      "date_from": {
+        "description": "[ISO 8601](https://wikipedia.org/wiki/ISO_8601) string or [RelativeDateString](/docs/api/rest/RelativeDateString).\n",
+        "oneOf": [
+          {
+            "type": "string",
+            "description": ""
+          },
+          {
+            "description": "* `TODAY` - Today since midnight\n* `YESTERDAY` - Yesterday since midnight\n* `BEGINNING_OF_WEEK` - Nearest monday since midnight\n* `BEGINNING_OF_MONTH` - 1st of the month since midnight\n* `BEGINNING_OF_PREV_MONTH` - Previous 1st of the month since midnight\n* `TODAY-7DAYS` - Exact 7 days ago since midnight\n* `TODAY-30DAYS` - Exact 30 days ago since midnight\n",
+            "type": "string",
+            "enum": [
+              "TODAY",
+              "YESTERDAY",
+              "BEGINNING_OF_WEEK",
+              "BEGINNING_OF_MONTH",
+              "BEGINNING_OF_PREV_MONTH",
+              "TODAY-7DAYS",
+              "TODAY-30DAYS"
+            ]
+          }
+        ]
+      },
+      "date_to": {
+        "description": "[ISO 8601](https://wikipedia.org/wiki/ISO_8601) string or [RelativeDateString](/docs/api/rest/RelativeDateString).\n",
+        "oneOf": [
+          {
+            "type": "string",
+            "description": ""
+          },
+          {
+            "description": "* `TODAY` - Today since midnight\n* `YESTERDAY` - Yesterday since midnight\n* `BEGINNING_OF_WEEK` - Nearest monday since midnight\n* `BEGINNING_OF_MONTH` - 1st of the month since midnight\n* `BEGINNING_OF_PREV_MONTH` - Previous 1st of the month since midnight\n* `TODAY-7DAYS` - Exact 7 days ago since midnight\n* `TODAY-30DAYS` - Exact 30 days ago since midnight\n",
+            "type": "string",
+            "enum": [
+              "TODAY",
+              "YESTERDAY",
+              "BEGINNING_OF_WEEK",
+              "BEGINNING_OF_MONTH",
+              "BEGINNING_OF_PREV_MONTH",
+              "TODAY-7DAYS",
+              "TODAY-30DAYS"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "$id": "$rest.request.body",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the alert for easy identification"
+      },
+      "events": {
+        "type": "array",
+        "description": "List of events that will trigger the alert",
+        "items": {
+          "type": "object",
+          "description": "",
+          "properties": {
+            "kind": {
+              "type": "integer",
+              "description": "Kind of event, more info [here](/docs/api/rest/EventKind)"
+            },
+            "value": {
+              "type": "string",
+              "description": "Value or threshold that triggers the alert"
+            }
+          }
+        }
+      },
+      "provider": {
+        "description": "Notification provider for the alert, `slack` or `webhooks`",
+        "type": "string",
+        "enum": [
+          "slack",
+          "webhooks"
+        ]
+      },
+      "slack_channel_id": {
+        "type": "string",
+        "description": "Slack channel ID where notifications will be sent (required if provider is `slack`)"
+      },
+      "webhook_id": {
+        "type": "string",
+        "description": "Webhook ID where notifications will be sent (required if provider is `webhooks`)"
+      }
+    },
+    "required": [
+      "name",
+      "events",
+      "provider"
+    ]
+  },
+  {
+    "allOf": [
+      {
+        "$id": "$rest.param.path",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the alert to update"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      {
+        "$id": "$rest.request.body",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "New name for the alert"
+          },
+          "events": {
+            "type": "array",
+            "description": "Updated list of events that will trigger the alert",
+            "items": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "kind": {
+                  "type": "integer",
+                  "description": "Kind of event, more info [here](/docs/api/rest/EventKind)"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Value or threshold that triggers the alert"
+                }
+              }
+            }
+          },
+          "provider": {
+            "description": "Updated notification provider for the alert",
+            "type": "string",
+            "enum": [
+              "slack",
+              "webhooks"
+            ]
+          },
+          "slack_channel_id": {
+            "type": "string",
+            "description": "Updated Slack channel ID for notifications"
+          },
+          "webhook_id": {
+            "type": "string",
+            "description": "Updated webhook ID for notifications"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "$id": "$rest.param.path",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique identifier of the alert to delete"
+      }
+    },
+    "required": [
+      "id"
+    ]
+  },
+  {
+    "$id": "$rest.request.body",
+    "type": "object",
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "URL for the webhook"
+      },
+      "website_id": {
+        "type": "string",
+        "description": "Website ID"
+      },
+      "version": {
+        "type": "string",
+        "description": "API version (e.g., v1.0)"
+      }
+    },
+    "required": [
+      "url",
+      "website_id",
+      "version"
+    ]
+  },
+  {
+    "allOf": [
+      {
+        "$id": "$rest.param.path",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID of the webhook to update"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      {
+        "$id": "$rest.param.query",
+        "type": "object",
+        "properties": {
+          "version": {
+            "description": "API version",
+            "type": "string",
+            "enum": [
+              "v1.0"
+            ]
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      {
+        "$id": "$rest.request.body",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL for the webhook"
+          },
+          "website_id": {
+            "type": "string",
+            "description": "Website ID"
+          },
+          "version": {
+            "type": "string",
+            "description": "API version (e.g., v1.0)"
+          }
+        },
+        "required": [
+          "url",
+          "website_id",
+          "version"
+        ]
+      }
+    ]
+  },
+  {
+    "$id": "$rest.param.path",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "ID of the webhook to delete"
+      }
+    },
+    "required": [
+      "id"
+    ]
+  },
+  {
+    "$id": "$rest.request.body",
+    "type": "object",
+    "properties": {
+      "host": {
+        "type": "string",
+        "description": "Domain name or hostname of the website to track"
+      },
+      "description": {
+        "type": "string",
+        "description": "Optional description of the website for organization purposes"
+      }
+    },
+    "required": [
+      "host"
+    ]
+  },
+  {
+    "type": "object",
+    "properties": {
+      "error": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of error (e.g., validation_error, authentication_error)"
+          },
+          "code": {
+            "type": "string",
+            "description": "Machine-readable error code"
+          },
+          "param": {
+            "type": "string",
+            "description": "Name of the parameter that caused the error"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "http_status_code": {
+            "type": "integer",
+            "description": "HTTP status code associated with the error"
+          },
+          "request_id": {
+            "type": "string",
+            "description": "Unique identifier for the request that caused the error"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique identifier for the session"
+      },
+      "website_id": {
+        "type": "string",
+        "description": "ID of the website where the session was recorded"
+      },
+      "session_url": {
+        "type": "string",
+        "description": "URL to view the session in LiveSession dashboard"
+      },
+      "creation_timestamp": {
+        "type": "integer",
+        "description": "Unix timestamp when the session was created"
+      },
+      "duration": {
+        "type": "integer",
+        "description": "Total duration of the session in seconds"
+      },
+      "end_timestamp": {
+        "type": "integer",
+        "description": "Unix timestamp when the session ended"
+      },
+      "active_time": {
+        "type": "integer",
+        "description": "Total time the user was actively interacting with the page in seconds"
+      },
+      "end_url": {
+        "type": "string",
+        "description": "The last URL visited during the session"
+      },
+      "expiration_timestamp": {
+        "type": "integer",
+        "description": "Unix timestamp when the session recording will expire"
+      },
+      "last_event_timestamp": {
+        "type": "integer",
+        "description": "Unix timestamp of the last event recorded in the session"
+      },
+      "product": {
+        "type": "string",
+        "description": "Product identifier associated with the session"
+      },
+      "device": {
+        "type": "string",
+        "description": "Device type (e.g., desktop, mobile, tablet)"
+      },
+      "tags": {
+        "type": "array",
+        "description": "Custom tags associated with the session",
+        "items": {
+          "type": "string",
+          "description": ""
+        }
+      },
+      "last_seen_page_view_id": {
+        "type": "string",
+        "description": "ID of the last page view in the session"
+      },
+      "seen": {
+        "type": "boolean",
+        "description": "Whether the session has been viewed in the dashboard"
+      },
+      "referrer": {
+        "type": "string",
+        "description": "URL where the user came from before starting the session"
+      },
+      "start_url": {
+        "type": "string",
+        "description": "First URL visited during the session"
+      },
+      "visitor_first_session": {
+        "type": "boolean",
+        "description": "Whether this is the visitor's first session"
+      },
+      "engagment_score": {
+        "type": "number",
+        "description": "Calculated engagement score for the session (0-100)"
+      },
+      "visitor": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the visitor"
+          },
+          "ip": {
+            "type": "string",
+            "description": "IP address of the visitor"
+          },
+          "geolocation": {
+            "type": "object",
+            "description": "",
+            "properties": {
+              "country_code": {
+                "type": "string",
+                "description": "Two-letter country code (ISO 3166-1 alpha-2)"
+              },
+              "city": {
+                "type": "string",
+                "description": "City name"
+              },
+              "region": {
+                "type": "string",
+                "description": "Region or state name"
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the visitor if identified"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address of the visitor if identified"
+          },
+          "email_hash": {
+            "type": "string",
+            "description": "Hashed version of the visitor's email for privacy"
+          },
+          "params": {
+            "type": "array",
+            "description": "Custom parameters associated with the visitor",
+            "items": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Parameter name"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Parameter value"
+                }
+              }
+            }
+          },
+          "last_session_timestamp": {
+            "type": "integer",
+            "description": "Unix timestamp of the visitor's last session"
+          },
+          "first_session_timestamp": {
+            "type": "integer",
+            "description": "Unix timestamp of the visitor's first session"
+          }
+        }
+      },
+      "resolution": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "height": {
+            "type": "integer",
+            "description": "Screen height in pixels"
+          },
+          "width": {
+            "type": "integer",
+            "description": "Screen width in pixels"
+          },
+          "resolution": {
+            "type": "string",
+            "description": "Screen resolution (e.g., \"1920x1080\")"
+          }
+        }
+      },
+      "os": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Operating system name (e.g., Windows, macOS, iOS)"
+          },
+          "version": {
+            "type": "string",
+            "description": "Operating system version"
+          }
+        }
+      },
+      "browser": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Full browser description string"
+          },
+          "name": {
+            "type": "string",
+            "description": "Browser name (e.g., Chrome, Firefox, Safari)"
+          },
+          "version": {
+            "type": "string",
+            "description": "Browser version"
+          }
+        }
+      },
+      "utm": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "UTM source parameter (e.g., google, facebook)"
+          },
+          "medium": {
+            "type": "string",
+            "description": "UTM medium parameter (e.g., cpc, social)"
+          },
+          "campaign": {
+            "type": "string",
+            "description": "UTM campaign parameter"
+          },
+          "term": {
+            "type": "string",
+            "description": "UTM term parameter (search keywords)"
+          },
+          "content": {
+            "type": "string",
+            "description": "UTM content parameter"
+          }
+        }
+      },
+      "page_views_statistics": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "description": "Total number of page views in the session"
+          }
+        }
+      },
+      "events_statistics": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "clicks": {
+            "type": "integer",
+            "description": "Total number of clicks during the session"
+          },
+          "error_clicks": {
+            "type": "integer",
+            "description": "Number of clicks on error elements"
+          },
+          "rage_clicks": {
+            "type": "integer",
+            "description": "Number of rapid clicks indicating user frustration"
+          },
+          "error_logs": {
+            "type": "integer",
+            "description": "Number of JavaScript errors logged"
+          },
+          "net_errors": {
+            "type": "integer",
+            "description": "Number of network errors encountered"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique identifier for the visitor"
+      },
+      "ip": {
+        "type": "string",
+        "description": "IP address of the visitor"
+      },
+      "geolocation": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "country_code": {
+            "type": "string",
+            "description": "Two-letter country code (ISO 3166-1 alpha-2)"
+          },
+          "city": {
+            "type": "string",
+            "description": "City name"
+          },
+          "region": {
+            "type": "string",
+            "description": "Region or state name"
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "description": "Name of the visitor if identified"
+      },
+      "email": {
+        "type": "string",
+        "description": "Email address of the visitor if identified"
+      },
+      "email_hash": {
+        "type": "string",
+        "description": "Hashed version of the visitor's email for privacy"
+      },
+      "params": {
+        "type": "array",
+        "description": "Custom parameters associated with the visitor",
+        "items": {
+          "type": "object",
+          "description": "",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Parameter name"
+            },
+            "value": {
+              "type": "string",
+              "description": "Parameter value"
+            }
+          }
+        }
+      },
+      "last_session_timestamp": {
+        "type": "integer",
+        "description": "Unix timestamp of the visitor's last session"
+      },
+      "first_session_timestamp": {
+        "type": "integer",
+        "description": "Unix timestamp of the visitor's first session"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Operating system name (e.g., Windows, macOS, iOS)"
+      },
+      "version": {
+        "type": "string",
+        "description": "Operating system version"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "description": {
+        "type": "string",
+        "description": "Full browser description string"
+      },
+      "name": {
+        "type": "string",
+        "description": "Browser name (e.g., Chrome, Firefox, Safari)"
+      },
+      "version": {
+        "type": "string",
+        "description": "Browser version"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "source": {
+        "type": "string",
+        "description": "UTM source parameter (e.g., google, facebook)"
+      },
+      "medium": {
+        "type": "string",
+        "description": "UTM medium parameter (e.g., cpc, social)"
+      },
+      "campaign": {
+        "type": "string",
+        "description": "UTM campaign parameter"
+      },
+      "term": {
+        "type": "string",
+        "description": "UTM term parameter (search keywords)"
+      },
+      "content": {
+        "type": "string",
+        "description": "UTM content parameter"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "clicks": {
+        "type": "integer",
+        "description": "Total number of clicks during the session"
+      },
+      "error_clicks": {
+        "type": "integer",
+        "description": "Number of clicks on error elements"
+      },
+      "rage_clicks": {
+        "type": "integer",
+        "description": "Number of rapid clicks indicating user frustration"
+      },
+      "error_logs": {
+        "type": "integer",
+        "description": "Number of JavaScript errors logged"
+      },
+      "net_errors": {
+        "type": "integer",
+        "description": "Number of network errors encountered"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "base": {
+        "type": "string",
+        "description": "Base URL of the page"
+      },
+      "href": {
+        "type": "string",
+        "description": "Full URL of the page"
+      },
+      "origin": {
+        "type": "string",
+        "description": "Origin of the page (protocol + hostname)"
+      },
+      "referrer": {
+        "type": "string",
+        "description": "URL of the previous page"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "height": {
+        "type": "integer",
+        "description": "Viewport height in pixels"
+      },
+      "width": {
+        "type": "integer",
+        "description": "Viewport width in pixels"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "country_code": {
+        "type": "string",
+        "description": "Two-letter country code (ISO 3166-1 alpha-2)"
+      },
+      "city": {
+        "type": "string",
+        "description": "City name"
+      },
+      "region": {
+        "type": "string",
+        "description": "Region or state name"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Parameter name"
+      },
+      "value": {
+        "type": "string",
+        "description": "Parameter value"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "height": {
+        "type": "integer",
+        "description": "Screen height in pixels"
+      },
+      "width": {
+        "type": "integer",
+        "description": "Screen width in pixels"
+      },
+      "resolution": {
+        "type": "string",
+        "description": "Screen resolution (e.g., \"1920x1080\")"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "count": {
+        "type": "integer",
+        "description": "Total number of page views in the session"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "total": {
+        "type": "integer",
+        "description": "Total number of sessions matching the query"
+      },
+      "page": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "num": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "size": {
+            "type": "integer",
+            "description": "Number of items per page"
+          }
+        }
+      },
+      "sessions": {
+        "type": "array",
+        "description": "List of session objects",
+        "items": {
+          "type": "object",
+          "description": "",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Unique identifier for the session"
+            },
+            "website_id": {
+              "type": "string",
+              "description": "ID of the website where the session was recorded"
+            },
+            "session_url": {
+              "type": "string",
+              "description": "URL to view the session in LiveSession dashboard"
+            },
+            "creation_timestamp": {
+              "type": "integer",
+              "description": "Unix timestamp when the session was created"
+            },
+            "duration": {
+              "type": "integer",
+              "description": "Total duration of the session in seconds"
+            },
+            "end_timestamp": {
+              "type": "integer",
+              "description": "Unix timestamp when the session ended"
+            },
+            "active_time": {
+              "type": "integer",
+              "description": "Total time the user was actively interacting with the page in seconds"
+            },
+            "end_url": {
+              "type": "string",
+              "description": "The last URL visited during the session"
+            },
+            "expiration_timestamp": {
+              "type": "integer",
+              "description": "Unix timestamp when the session recording will expire"
+            },
+            "last_event_timestamp": {
+              "type": "integer",
+              "description": "Unix timestamp of the last event recorded in the session"
+            },
+            "product": {
+              "type": "string",
+              "description": "Product identifier associated with the session"
+            },
+            "device": {
+              "type": "string",
+              "description": "Device type (e.g., desktop, mobile, tablet)"
+            },
+            "tags": {
+              "type": "array",
+              "description": "Custom tags associated with the session",
+              "items": {
+                "type": "string",
+                "description": ""
+              }
+            },
+            "last_seen_page_view_id": {
+              "type": "string",
+              "description": "ID of the last page view in the session"
+            },
+            "seen": {
+              "type": "boolean",
+              "description": "Whether the session has been viewed in the dashboard"
+            },
+            "referrer": {
+              "type": "string",
+              "description": "URL where the user came from before starting the session"
+            },
+            "start_url": {
+              "type": "string",
+              "description": "First URL visited during the session"
+            },
+            "visitor_first_session": {
+              "type": "boolean",
+              "description": "Whether this is the visitor's first session"
+            },
+            "engagment_score": {
+              "type": "number",
+              "description": "Calculated engagement score for the session (0-100)"
+            },
+            "visitor": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the visitor"
+                },
+                "ip": {
+                  "type": "string",
+                  "description": "IP address of the visitor"
+                },
+                "geolocation": {
+                  "type": "object",
+                  "description": "",
+                  "properties": {
+                    "country_code": {
+                      "type": "string",
+                      "description": "Two-letter country code (ISO 3166-1 alpha-2)"
+                    },
+                    "city": {
+                      "type": "string",
+                      "description": "City name"
+                    },
+                    "region": {
+                      "type": "string",
+                      "description": "Region or state name"
+                    }
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the visitor if identified"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "Email address of the visitor if identified"
+                },
+                "email_hash": {
+                  "type": "string",
+                  "description": "Hashed version of the visitor's email for privacy"
+                },
+                "params": {
+                  "type": "array",
+                  "description": "Custom parameters associated with the visitor",
+                  "items": {
+                    "type": "object",
+                    "description": "",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Parameter name"
+                      },
+                      "value": {
+                        "type": "string",
+                        "description": "Parameter value"
+                      }
+                    }
+                  }
+                },
+                "last_session_timestamp": {
+                  "type": "integer",
+                  "description": "Unix timestamp of the visitor's last session"
+                },
+                "first_session_timestamp": {
+                  "type": "integer",
+                  "description": "Unix timestamp of the visitor's first session"
+                }
+              }
+            },
+            "resolution": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "height": {
+                  "type": "integer",
+                  "description": "Screen height in pixels"
+                },
+                "width": {
+                  "type": "integer",
+                  "description": "Screen width in pixels"
+                },
+                "resolution": {
+                  "type": "string",
+                  "description": "Screen resolution (e.g., \"1920x1080\")"
+                }
+              }
+            },
+            "os": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Operating system name (e.g., Windows, macOS, iOS)"
+                },
+                "version": {
+                  "type": "string",
+                  "description": "Operating system version"
+                }
+              }
+            },
+            "browser": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "description": "Full browser description string"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Browser name (e.g., Chrome, Firefox, Safari)"
+                },
+                "version": {
+                  "type": "string",
+                  "description": "Browser version"
+                }
+              }
+            },
+            "utm": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "description": "UTM source parameter (e.g., google, facebook)"
+                },
+                "medium": {
+                  "type": "string",
+                  "description": "UTM medium parameter (e.g., cpc, social)"
+                },
+                "campaign": {
+                  "type": "string",
+                  "description": "UTM campaign parameter"
+                },
+                "term": {
+                  "type": "string",
+                  "description": "UTM term parameter (search keywords)"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "UTM content parameter"
+                }
+              }
+            },
+            "page_views_statistics": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "count": {
+                  "type": "integer",
+                  "description": "Total number of page views in the session"
+                }
+              }
+            },
+            "events_statistics": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "clicks": {
+                  "type": "integer",
+                  "description": "Total number of clicks during the session"
+                },
+                "error_clicks": {
+                  "type": "integer",
+                  "description": "Number of clicks on error elements"
+                },
+                "rage_clicks": {
+                  "type": "integer",
+                  "description": "Number of rapid clicks indicating user frustration"
+                },
+                "error_logs": {
+                  "type": "integer",
+                  "description": "Number of JavaScript errors logged"
+                },
+                "net_errors": {
+                  "type": "integer",
+                  "description": "Number of network errors encountered"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "num": {
+        "type": "integer",
+        "description": "Current page number"
+      },
+      "size": {
+        "type": "integer",
+        "description": "Number of items per page"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Name of the alert for easy identification"
+      },
+      "events": {
+        "type": "array",
+        "description": "List of events that will trigger the alert",
+        "items": {
+          "type": "object",
+          "description": "",
+          "properties": {
+            "kind": {
+              "type": "integer",
+              "description": "Kind of event, more info [here](/docs/api/rest/EventKind)"
+            },
+            "value": {
+              "type": "string",
+              "description": "Value or threshold that triggers the alert"
+            }
+          }
+        }
+      },
+      "provider": {
+        "description": "Notification provider for the alert, `slack` or `webhooks`",
+        "type": "string",
+        "enum": [
+          "slack",
+          "webhooks"
+        ]
+      },
+      "slack_channel_id": {
+        "type": "string",
+        "description": "Slack channel ID where notifications will be sent (required if provider is `slack`)"
+      },
+      "webhook_id": {
+        "type": "string",
+        "description": "Webhook ID where notifications will be sent (required if provider is `webhooks`)"
+      }
+    },
+    "required": [
+      "name",
+      "events",
+      "provider"
+    ]
+  },
+  {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "New name for the alert"
+      },
+      "events": {
+        "type": "array",
+        "description": "Updated list of events that will trigger the alert",
+        "items": {
+          "type": "object",
+          "description": "",
+          "properties": {
+            "kind": {
+              "type": "integer",
+              "description": "Kind of event, more info [here](/docs/api/rest/EventKind)"
+            },
+            "value": {
+              "type": "string",
+              "description": "Value or threshold that triggers the alert"
+            }
+          }
+        }
+      },
+      "provider": {
+        "description": "Updated notification provider for the alert",
+        "type": "string",
+        "enum": [
+          "slack",
+          "webhooks"
+        ]
+      },
+      "slack_channel_id": {
+        "type": "string",
+        "description": "Updated Slack channel ID for notifications"
+      },
+      "webhook_id": {
+        "type": "string",
+        "description": "Updated webhook ID for notifications"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "kind": {
+        "type": "integer",
+        "description": "Kind of event, more info [here](/docs/api/rest/EventKind)"
+      },
+      "value": {
+        "type": "string",
+        "description": "Value or threshold that triggers the alert"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "alert_id": {
+        "type": "string",
+        "description": "Unique identifier for the alert"
+      },
+      "name": {
+        "type": "string",
+        "description": "Name of the alert"
+      },
+      "events": {
+        "type": "array",
+        "description": "List of events that trigger the alert",
+        "items": {
+          "type": "object",
+          "description": "",
+          "properties": {
+            "kind": {
+              "type": "integer",
+              "description": "Kind of event, more info [here](/docs/api/rest/EventKind)"
+            },
+            "value": {
+              "type": "string",
+              "description": "Value or threshold that triggers the alert"
+            }
+          }
+        }
+      },
+      "provider": {
+        "description": "Notification provider for the alert",
+        "type": "string",
+        "enum": [
+          "slack",
+          "webhooks"
+        ]
+      },
+      "slack_channel_id": {
+        "type": "string",
+        "description": "Slack channel ID for notifications"
+      },
+      "webhook_id": {
+        "type": "string",
+        "description": "Webhook ID for notifications"
+      },
+      "enabled": {
+        "type": "boolean",
+        "description": "Whether the alert is currently active"
+      },
+      "creation_date": {
+        "type": "string",
+        "description": "[ISO 8601](https://wikipedia.org/wiki/ISO_8601) timestamp when the alert was created\n"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "alert_id": {
+        "type": "string",
+        "description": "ID of the deleted alert"
+      },
+      "deleted": {
+        "type": "boolean",
+        "description": "Confirmation that the alert was deleted"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "URL for the webhook"
+      },
+      "website_id": {
+        "type": "string",
+        "description": "Website ID"
+      },
+      "version": {
+        "type": "string",
+        "description": "API version (e.g., v1.0)"
+      }
+    },
+    "required": [
+      "url",
+      "website_id",
+      "version"
+    ]
+  },
+  {
+    "type": "object",
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "URL for the webhook"
+      },
+      "website_id": {
+        "type": "string",
+        "description": "Website ID"
+      },
+      "version": {
+        "type": "string",
+        "description": "API version (e.g., v1.0)"
+      }
+    },
+    "required": [
+      "url",
+      "website_id",
+      "version"
+    ]
+  },
+  {
+    "type": "object",
+    "properties": {
+      "webhook_id": {
+        "type": "string",
+        "description": "Webhook ID"
+      },
+      "url": {
+        "type": "string",
+        "description": "URL for the webhook"
+      },
+      "website": {
+        "type": "string",
+        "description": "Website name"
+      },
+      "website_id": {
+        "type": "string",
+        "description": "Website ID"
+      },
+      "version": {
+        "type": "string",
+        "description": "API version"
+      },
+      "enabled": {
+        "type": "boolean",
+        "description": "Webhook enabled status"
+      },
+      "created_date": {
+        "type": "integer",
+        "description": "Unix timestamp for creation date"
+      },
+      "created_by": {
+        "type": "string",
+        "description": "Creator of the webhook"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "webhook_id": {
+        "type": "string",
+        "description": "Webhook ID"
+      },
+      "deleted": {
+        "type": "boolean",
+        "description": "Indicates if the webhook was deleted"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "website_id": {
+        "type": "string",
+        "description": "Unique identifier for the website"
+      },
+      "host": {
+        "type": "string",
+        "description": "Domain name or hostname of the website (e.g., example.com)"
+      }
+    }
+  },
+  {
+    "type": "object",
+    "properties": {
+      "host": {
+        "type": "string",
+        "description": "Domain name or hostname of the website to track"
+      },
+      "description": {
+        "type": "string",
+        "description": "Optional description of the website for organization purposes"
+      }
+    },
+    "required": [
+      "host"
+    ]
+  }
+]

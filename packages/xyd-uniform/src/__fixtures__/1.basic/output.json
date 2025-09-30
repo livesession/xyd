@@ -1,0 +1,44 @@
+{
+  "allOf": [
+    {
+      "$id": "$rest.param.path",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The user ID"
+        }
+      },
+      "required": [
+        "userId"
+      ]
+    },
+    {
+      "$id": "$rest.request.body",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "description": "User's first name"
+        },
+        "lastName": {
+          "type": "string",
+          "description": "User's last name"
+        },
+        "role": {
+          "description": "User's role in the system",
+          "type": "string",
+          "enum": [
+            "user",
+            "admin",
+            "moderator"
+          ]
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Whether the user account is active"
+        }
+      }
+    }
+  ]
+}
