@@ -10,7 +10,8 @@ import {
 import * as z from "zod";
 
 import { uniformFromSource } from "./utils";
-
+import { getToolName } from "./utils";
+  
 // TODO: share uniform with tools and resources
 // TODO: support for graphql and react better
 export async function mcpUniformTools(
@@ -51,8 +52,10 @@ export async function mcpUniformTools(
       }
     }
 
+    const toolName = getToolName(reference.canonical);
+
     server.registerTool(
-      reference.canonical,
+      toolName,
       {
         description: reference.description as string,
         //@ts-ignore TODO: fix
@@ -72,7 +75,7 @@ export async function mcpUniformTools(
               content: [
                 {
                   type: "text",
-                  text: `Error executing ${reference.canonical}: Unauthorized`,
+                  text: `Error executing ${toolName}: Unauthorized`,
                 },
               ],
             };

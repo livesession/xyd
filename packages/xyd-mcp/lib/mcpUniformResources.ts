@@ -8,7 +8,7 @@ import syntaxThemeClassic from "@xyd-js/components/coder/themes/classic.js";
 
 import { References } from "../References";
 import { turndownService } from "./markdown";
-import { uniformFromSource } from "./utils";
+import { uniformFromSource, getToolName } from "./utils";
 
 export async function mcpUniformResources(
   server: McpServer,
@@ -87,8 +87,10 @@ export async function mcpUniformResources(
     const refHtml = References({ references: [reference], cssContent });
     const refMd = turndownService.turndown(refHtml);
 
+    const toolName = getToolName(reference.canonical);
+
     // TODO: custom naming ?
-    const uri = `api-reference://${reference.canonical}`;
+    const uri = `api-reference://${toolName}`;
     const mimeType = "text/markdown";
 
     { 
@@ -111,7 +113,7 @@ export async function mcpUniformResources(
     }
 
     server.registerResource(
-      reference.canonical,
+      toolName,
       uri,
       {
         title: reference.title,

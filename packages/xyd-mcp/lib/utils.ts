@@ -71,3 +71,13 @@ function uniformSourceDetector(
 
   return null;
 }
+
+
+export function getToolName(canonical: string) {
+  return canonical
+    .replace(/[^a-zA-Z0-9_-]/g, '_') // Replace invalid chars with underscore
+    .replace(/_{2,}/g, '_') // Replace multiple underscores with single
+    .replace(/^_+|_+$/g, '') // Remove leading/trailing underscores
+    .toLowerCase()
+    .substring(0, 128); // Ensure max length of 128
+}
