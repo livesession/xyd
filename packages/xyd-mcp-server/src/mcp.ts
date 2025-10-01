@@ -127,9 +127,7 @@ export class MCPServer {
       await mcpUniformResources(server, this.uniformSource);
     }
     
-    if (token) {
-      await mcpUniformTools(server, this.uniformSource, token);
-    }
+    await mcpUniformTools(server, this.uniformSource, token);
 
     // Add simple token tool
     this.addSimpleTokenTool(server);

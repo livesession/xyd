@@ -488,7 +488,7 @@ function resolvePropertySymbol(property: DefinitionProperty): string {
             const defined = atomicDefinedPropertySymbol(property);
             const symbol = atomicPropertySymbol(property);
 
-            if (symbol.startsWith("$$")) {
+            if (symbol?.startsWith?.("$$")) {
               return [property.ofProperty.type];
             }
 
@@ -554,7 +554,7 @@ function resolvePropertySymbol(property: DefinitionProperty): string {
       }
     }
 
-    if (property.type?.startsWith("$$")) {
+    if (property.type?.startsWith?.("$$")) {
       return [];
     }
 
@@ -592,7 +592,7 @@ function atomicDefinedPropertySymbol(property: DefinitionProperty): string {
 
 function groupSymbol(property: DefinitionProperty) {
   const symbol = resolvePropertySymbol(property);
-  if (symbol?.startsWith("$$")) {
+  if (symbol?.startsWith?.("$$")) {
     return "";
   }
 
