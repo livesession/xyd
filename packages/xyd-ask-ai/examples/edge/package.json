@@ -1,0 +1,26 @@
+{
+  "name": "@xyd-js/ask-ai-demo-example-edge",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "netlify:dev": "netlify dev",
+    "netlify:build": "netlify build"
+  },
+  "dependencies": {
+    "@netlify/edge-functions": "^2.18.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.7.0",
+    "netlify-cli": "^17.0.0",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.7"
+  }
+}
