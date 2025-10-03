@@ -306,45 +306,11 @@ importers:
         specifier: ~5.8.3
         version: 5.8.3
 
-  packages/xyd-ask-ai-server:
+  packages/xyd-ask-ai-edge:
     dependencies:
-      '@ai-sdk/anthropic':
-        specifier: ^2.0.23
-        version: 2.0.23(zod@3.25.76)
-      '@ai-sdk/openai':
-        specifier: ^2.0.42
-        version: 2.0.42(zod@3.25.76)
-      '@lit/react':
-        specifier: ^1.0.8
-        version: 1.0.8(@types/react@19.2.0)
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.18.1
-        version: 1.19.1
-      ai:
-        specifier: ^5.0.59
-        version: 5.0.60(zod@3.25.76)
-      lit:
-        specifier: ^3.3.1
-        version: 3.3.1
-      react:
-        specifier: ^19.0.0
-        version: 19.2.0
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.0(react@19.2.0)
-    devDependencies:
-      '@types/react':
-        specifier: ^19.0.1
-        version: 19.2.0
-      '@types/react-dom':
-        specifier: ^19.0.2
-        version: 19.2.0(@types/react@19.2.0)
-      netlify-cli:
-        specifier: ^17.0.0
-        version: 17.38.1(@types/express@4.17.23)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3)(rollup@4.52.3)
-      typescript:
-        specifier: ~5.8.3
-        version: 5.8.3
+      '@xyd-js/ask-ai':
+        specifier: workspace:*
+        version: link:../xyd-ask-ai
 
   packages/xyd-ask-ai/examples/edge:
     dependencies:
@@ -17304,6 +17270,36 @@ snapshots:
       uuid: 11.1.0
       write-file-atomic: 5.0.1
 
+  '@netlify/edge-bundler@12.3.1(encoding@0.1.13)(rollup@4.52.3)':
+    dependencies:
+      '@import-maps/resolve': 1.0.1
+      '@vercel/nft': 0.27.7(encoding@0.1.13)(rollup@4.52.3)
+      ajv: 8.17.1
+      ajv-errors: 3.0.0(ajv@8.17.1)
+      better-ajv-errors: 1.2.0(ajv@8.17.1)
+      common-path-prefix: 3.0.0
+      env-paths: 3.0.0
+      esbuild: 0.21.2
+      execa: 6.1.0
+      find-up: 6.3.0
+      get-package-name: 2.2.0
+      get-port: 6.1.2
+      is-path-inside: 4.0.0
+      jsonc-parser: 3.3.1
+      node-fetch: 3.3.2
+      node-stream-zip: 1.15.0
+      p-retry: 5.1.2
+      p-wait-for: 4.1.0
+      path-key: 4.0.0
+      semver: 7.6.3
+      tmp-promise: 3.0.3
+      urlpattern-polyfill: 8.0.2
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - encoding
+      - rollup
+      - supports-color
+
   '@netlify/edge-bundler@12.3.1(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)':
     dependencies:
       '@import-maps/resolve': 1.0.1
@@ -17544,7 +17540,7 @@ snapshots:
       '@babel/types': 7.26.3
       '@netlify/binary-info': 1.0.0
       '@netlify/serverless-functions-api': 1.41.2
-      '@vercel/nft': 0.27.7(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)
+      '@vercel/nft': 0.27.7(encoding@0.1.13)(rollup@4.52.3)
       archiver: 7.0.1
       common-path-prefix: 3.0.0
       cp-file: 10.0.0
@@ -20320,6 +20316,25 @@ snapshots:
       eslint-visitor-keys: 4.2.1
 
   '@ungap/structured-clone@1.3.0': {}
+
+  '@vercel/nft@0.27.7(encoding@0.1.13)(rollup@4.52.3)':
+    dependencies:
+      '@mapbox/node-pre-gyp': 1.0.11(encoding@0.1.13)(supports-color@9.4.0)
+      '@rollup/pluginutils': 5.3.0(rollup@4.52.3)
+      acorn: 8.15.0
+      acorn-import-attributes: 1.9.5(acorn@8.15.0)
+      async-sema: 3.1.1
+      bindings: 1.5.0
+      estree-walker: 2.0.2
+      glob: 7.2.3
+      graceful-fs: 4.2.11
+      micromatch: 4.0.8
+      node-gyp-build: 4.8.4
+      resolve-from: 5.0.0
+    transitivePeerDependencies:
+      - encoding
+      - rollup
+      - supports-color
 
   '@vercel/nft@0.27.7(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)':
     dependencies:
@@ -26070,7 +26085,7 @@ snapshots:
       '@netlify/build': 29.58.0(@opentelemetry/api@1.8.0)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3)(rollup@4.52.3)
       '@netlify/build-info': 7.17.0
       '@netlify/config': 20.21.0
-      '@netlify/edge-bundler': 12.3.1(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)
+      '@netlify/edge-bundler': 12.3.1(encoding@0.1.13)(rollup@4.52.3)
       '@netlify/edge-functions': 2.11.1
       '@netlify/headers-parser': 7.3.0
       '@netlify/local-functions-proxy': 1.1.1

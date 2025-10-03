@@ -2,9 +2,7 @@ packages:
   - 'apps/apidocs-demo'
   # - 'cli'
   - 'packages/*'
-  - packages/xyd-ask-ai/examples/edge
-  - packages/xyd-ask-ai/packages/node-edge
-  - packages/xyd-ask-ai/examples/simple
+  - packages/xyd-ask-ai/examples/*
   - '!packages/xyd-js'
   # - '!packages/xyd-mcp-server' # temporary? cuz it's bun
   - '.xyd/host'

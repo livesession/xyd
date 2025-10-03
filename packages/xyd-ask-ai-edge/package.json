@@ -1,0 +1,15 @@
+{
+    "name": "@xyd-js/ask-ai-edge",
+    "version": "0.1.0-build.0",
+    "main": "index.js",
+    "type": "module",
+    "exports": {
+        ".": "./index.js"
+    },
+    "scripts": {
+        "build": "bun build index.ts --outdir dist --target node --format esm"
+    },
+    "dependencies": {
+        "@xyd-js/ask-ai": "workspace:*"
+    }
+}
