@@ -1,9 +1,9 @@
-import { html, LitElement, unsafeCSS } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { IconDislike, IconLike, IconCopy, IconRegenerate } from "./icons";
 
-import styles from "./message.css";
+import styles from "./message.styles";
 
 type MessageType = "user" | "assistant";
 
@@ -18,7 +18,7 @@ export class AskAIMessage extends LitElement {
   @property({ type: Boolean })
   showActions = false;
 
-  static styles = [unsafeCSS(styles)];
+  static styles = [styles];
 
   render() {
     return html`

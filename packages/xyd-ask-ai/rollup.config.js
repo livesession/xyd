@@ -6,7 +6,6 @@ import typescript from 'rollup-plugin-typescript2';
 import dts from 'rollup-plugin-dts';
 import {terser} from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
-import postcss from 'rollup-plugin-postcss';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import summary from 'rollup-plugin-summary';
 
@@ -49,18 +48,6 @@ export default [
                 declaration: true,
                 declarationDir: 'dist',
                 useTsconfigDeclarationDir: true
-            }),
-            postcss({
-                inject: true,
-                plugins: [
-                    require('postcss-import'),
-                    require('autoprefixer')
-                ],
-                use: {
-                    sass: null,
-                    stylus: null,
-                    less: null
-                }
             }),
             babel({
                 babelHelpers: 'bundled',

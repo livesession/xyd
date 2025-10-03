@@ -1,9 +1,9 @@
-import { html, LitElement, unsafeCSS } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { IconSend } from "./icons";
 
-import styles from "./button.css";
+import styles from "./button.styles";
 
 type Variant = "default" | "secondary";
 
@@ -24,7 +24,7 @@ export class AskAIButton extends LitElement {
   @property({ type: Boolean })
   readonly variant: Variant = "default";
 
-  static readonly styles = [unsafeCSS(styles)];
+  static readonly styles = [styles];
 
   render() {
     return html`

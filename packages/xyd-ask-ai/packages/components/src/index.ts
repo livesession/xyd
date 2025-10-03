@@ -1,4 +1,4 @@
-import { html, LitElement, unsafeCSS } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 
 import "./button";
@@ -6,7 +6,7 @@ import "./button-icon";
 import "./message";
 import "./drawer";
 
-import styles from "./index.css";
+import styles from "./index.styles";
 
 @customElement("ask-ai")
 export class AskAI extends LitElement {
@@ -24,7 +24,7 @@ export class AskAI extends LitElement {
     scrollToBottom: (options?: ScrollToOptions) => void;
   };
 
-  static styles = [unsafeCSS(styles)];
+  static styles = [styles];
 
   render() {
     return html`
