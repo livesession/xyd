@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
 
-import { createServer, searchForWorkspaceRoot, ViteDevServer, Plugin as VitePlugin } from "vite";
+import { createServer, searchForWorkspaceRoot, ViteDevServer, Plugin as VitePlugin, PluginOption } from "vite";
 
 import { readSettings } from "@xyd-js/plugin-docs";
 import { API, APIFile, Navigation, Settings, SidebarNavigation, } from "@xyd-js/core";
@@ -213,8 +213,8 @@ export async function dev(options?: DevOptions) {
             // exclude: ["react", "react-dom"]
         },
         plugins: [
-            ...commonRunVitePlugins,
-            ...postInstallVitePlugins,
+            ...(commonRunVitePlugins as PluginOption[]),
+            ...(postInstallVitePlugins as PluginOption[]),
             {
                 name: 'xyd-configureServer',
                 configureServer(s) {

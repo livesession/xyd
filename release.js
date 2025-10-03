@@ -98,6 +98,8 @@ async function main() {
             '@xyd-js/cli',
             '@xyd-js/mcp',
             '@xyd-js/mcp-server',
+            '@xyd-js/ask-ai',
+            '@xyd-js/ask-ai-edge',
         ], 'update all packages');
 
         // Step 3: Clear npm cache

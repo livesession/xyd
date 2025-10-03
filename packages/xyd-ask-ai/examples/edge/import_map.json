@@ -1,0 +1,5 @@
+{
+    "imports": {
+      "@xyd-js/ask-ai-edge": "https://esm.sh/@xyd-js/ask-ai-edge"
+    }
+}

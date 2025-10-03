@@ -1,0 +1,81 @@
+# XYD Ask AI - Cursor Rules
+
+## Semantic HTML & Component States
+
+- **PREFER `:host([attribute])` selectors over data attributes and CSS classes**
+- Use `:host([variant="header"])` for component variants
+- Use `:host([state="open"])` for component states
+- Classes should be the FINALITY - only use when `:host([attribute])` selectors are insufficient
+- Examples:
+  - ✅ `:host([variant="header"])` instead of `data-variant="header"`
+  - ✅ `:host([state="open"])` instead of `data-state="open"`
+  - ✅ `:host([disabled])` instead of `data-disabled="true"`
+
+## Component Architecture
+
+- Use LitElement for all custom components
+- Prefer TypeScript over JavaScript
+- Use CSS custom properties for theming
+- Implement proper accessibility attributes (aria-\*, role, etc.)
+- **MANDATORY: Each web component MUST have TypeScript declaration**
+  - Add `declare global` block with `HTMLElementTagNameMap` interface
+  - Example:
+    ```typescript
+    declare global {
+      interface HTMLElementTagNameMap {
+        "ask-ai-button-icon": AskAIButtonIcon;
+      }
+    }
+    ```
+
+## Styling Guidelines
+
+- Use `:host([attribute])` selectors for component variants: `:host([variant="header"])` not `.button-header`
+- Leverage CSS custom properties for consistent theming
+- Support dark mode with `@media (prefers-color-scheme: dark)`
+- Include reduced motion support with `@media (prefers-reduced-motion: reduce)`
+- Add high contrast support with `@media (prefers-contrast: high)`
+- **CSS Organization Rule**: Place `:host` and media queries at the top
+  - Structure: `:host { }` → `:host([attribute]) { }` → `@media` queries
+  - Example:
+    ```css
+    :host {
+      /* base styles */
+    }
+    
+    :host([variant="header"]) {
+      /* variant styles */
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      :host {
+        /* dark mode overrides */
+      }
+    }
+    ```
+
+## Event Handling
+
+- Use custom events for component communication
+- Prefer `@event-name` over `@click` for semantic clarity
+- Include proper event bubbling and composition
+
+## File Organization
+
+- Group related files together (component.ts, component.css)
+- Use descriptive file names
+- Keep components focused and single-purpose
+
+## Accessibility
+
+- Always include proper ARIA labels and roles
+- Support keyboard navigation
+- Ensure proper focus management
+- Use semantic HTML elements when possible
+
+## Performance
+
+- Use CSS containment where appropriate
+- Minimize DOM queries
+- Leverage CSS custom properties for dynamic styling
+- Prefer CSS over JavaScript for animations

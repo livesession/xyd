@@ -1,0 +1,1 @@
+export { handler } from "@xyd-js/ask-ai/node";
