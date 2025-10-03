@@ -1,10 +1,10 @@
 {
   "name": "@xyd-js/ask-ai-edge",
   "version": "0.1.0-build.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "type": "module",
   "exports": {
-    ".": "./index.js"
+    ".": "./dist/index.js"
   },
   "files": [
     "dist"
