@@ -12,6 +12,7 @@ interface Message {
 export function useAskAI(askUrl?: string) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [askDisabled, setAskDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event: CustomEvent<{ message: string }>) => {
     const userMessage: Message = {
@@ -33,6 +34,7 @@ export function useAskAI(askUrl?: string) {
     };
 
     setAskDisabled(true);
+    setLoading(true);
     setMessages((prev) => [...prev, initialAssistantMessage]);
 
     try {
@@ -69,6 +71,11 @@ export function useAskAI(askUrl?: string) {
 
             const chunk = decoder.decode(value, { stream: true });
             currentContent += chunk;
+
+            // Set loading to false when we start receiving content
+            if (currentContent && loading) {
+              setLoading(false);
+            }
 
             // Update the assistant message with new content immediately
             setMessages((prev) =>
@@ -109,6 +116,7 @@ export function useAskAI(askUrl?: string) {
       );
     } finally {
       setAskDisabled(false);
+      setLoading(false);
     }
   };
 
@@ -116,5 +124,6 @@ export function useAskAI(askUrl?: string) {
     messages,
     submit: handleSubmit,
     disabled: askDisabled,
+    loading,
   };
 }

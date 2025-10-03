@@ -1,21 +1,24 @@
 {
-  "name": "@xyd-js/ask-ai-example-simple",
+  "name": "@xyd-js/ask-ai-demo-example-simple",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "bun run server.ts"
   },
   "dependencies": {
     "@xyd-js/ask-ai": "workspace:*",
+    "@xyd-js/ask-ai-edge": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.7.0",
     "typescript": "~5.8.3",
     "vite": "^7.1.7"
   }
