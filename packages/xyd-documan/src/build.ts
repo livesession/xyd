@@ -2,7 +2,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { build as viteBuild, Plugin as VitePlugin } from 'vite';
+import { build as viteBuild, Plugin as VitePlugin, PluginOption } from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
 
 import {
@@ -56,8 +56,8 @@ export async function build() {
             mode: "production",
             root: appRoot,
             plugins: [
-                ...commonRunVitePlugins,
-                ...postInstallVitePlugins,
+                ...(commonRunVitePlugins as PluginOption[]),
+                ...(postInstallVitePlugins as PluginOption[]),
 
                 tsconfigPaths(),
             ],
@@ -102,8 +102,8 @@ export async function build() {
             },
             plugins: [
                 fixManifestPlugin(appRoot),
-                ...commonRunVitePlugins,
-                ...postInstallVitePlugins,
+                ...(commonRunVitePlugins as PluginOption[]),
+                ...(postInstallVitePlugins as PluginOption[]),
 
                 tsconfigPaths(),
                 finishBuild({

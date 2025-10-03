@@ -341,7 +341,7 @@ importers:
         version: 19.2.0(@types/react@19.2.0)
       netlify-cli:
         specifier: ^17.0.0
-        version: 17.38.1(@types/express@4.17.23)(@types/node@20.9.0)(encoding@0.1.13)(picomatch@4.0.3)
+        version: 17.38.1(@types/express@4.17.23)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3)(rollup@4.52.3)
       typescript:
         specifier: ~5.8.3
         version: 5.8.3
@@ -375,7 +375,7 @@ importers:
         version: 4.7.0(vite@7.1.8(@types/node@24.6.2)(jiti@2.6.1)(lightningcss@1.30.1)(sugarss@5.0.1(postcss@8.5.6))(terser@5.44.0)(yaml@2.8.1))
       netlify-cli:
         specifier: ^17.38.1
-        version: 17.38.1(@types/express@4.17.23)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3)
+        version: 17.38.1(@types/express@4.17.23)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3)(rollup@4.52.3)
       typescript:
         specifier: ~5.8.3
         version: 5.8.3
@@ -17178,146 +17178,6 @@ snapshots:
       yaml: 2.8.1
       yargs: 17.7.2
 
-  '@netlify/build@29.58.0(@opentelemetry/api@1.8.0)(@types/node@20.9.0)(encoding@0.1.13)(picomatch@4.0.3)':
-    dependencies:
-      '@bugsnag/js': 7.25.0
-      '@netlify/blobs': 7.4.0
-      '@netlify/cache-utils': 5.2.0
-      '@netlify/config': 20.21.0
-      '@netlify/edge-bundler': 12.3.1(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)
-      '@netlify/framework-info': 9.9.3
-      '@netlify/functions-utils': 5.3.18(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)
-      '@netlify/git-utils': 5.2.0
-      '@netlify/opentelemetry-utils': 1.3.1(@opentelemetry/api@1.8.0)
-      '@netlify/plugins-list': 6.80.0
-      '@netlify/run-utils': 5.2.0
-      '@netlify/zip-it-and-ship-it': 9.42.1(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)
-      '@opentelemetry/api': 1.8.0
-      '@sindresorhus/slugify': 2.2.1
-      ansi-escapes: 6.2.1
-      chalk: 5.3.0
-      clean-stack: 4.2.0
-      execa: 6.1.0
-      fdir: 6.5.0(picomatch@4.0.3)
-      figures: 5.0.0
-      filter-obj: 5.1.0
-      got: 12.6.1
-      hot-shots: 10.2.1
-      indent-string: 5.0.0
-      is-plain-obj: 4.1.0
-      js-yaml: 4.1.0
-      keep-func-props: 4.0.1
-      locate-path: 7.2.0
-      log-process-errors: 8.0.0
-      map-obj: 5.0.2
-      memoize-one: 6.0.0
-      minimatch: 9.0.5
-      node-fetch: 3.3.2
-      os-name: 5.1.0
-      p-event: 5.0.1
-      p-every: 2.0.0
-      p-filter: 3.0.0
-      p-locate: 6.0.0
-      p-map: 6.0.0
-      p-reduce: 3.0.0
-      path-exists: 5.0.0
-      path-type: 5.0.0
-      pkg-dir: 7.0.0
-      pretty-ms: 8.0.0
-      ps-list: 8.1.1
-      read-package-up: 11.0.0
-      readdirp: 3.6.0
-      resolve: 2.0.0-next.5
-      rfdc: 1.4.1
-      safe-json-stringify: 1.2.0
-      semver: 7.6.3
-      string-width: 5.1.2
-      strip-ansi: 7.1.2
-      supports-color: 9.4.0
-      terminal-link: 3.0.0
-      ts-node: 10.9.2(@types/node@20.9.0)(typescript@5.8.3)
-      typescript: 5.8.3
-      uuid: 9.0.1
-      yargs: 17.7.2
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - encoding
-      - picomatch
-      - react-native-b4a
-      - rollup
-
-  '@netlify/build@29.58.0(@opentelemetry/api@1.8.0)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3)':
-    dependencies:
-      '@bugsnag/js': 7.25.0
-      '@netlify/blobs': 7.4.0
-      '@netlify/cache-utils': 5.2.0
-      '@netlify/config': 20.21.0
-      '@netlify/edge-bundler': 12.3.1(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)
-      '@netlify/framework-info': 9.9.3
-      '@netlify/functions-utils': 5.3.18(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)
-      '@netlify/git-utils': 5.2.0
-      '@netlify/opentelemetry-utils': 1.3.1(@opentelemetry/api@1.8.0)
-      '@netlify/plugins-list': 6.80.0
-      '@netlify/run-utils': 5.2.0
-      '@netlify/zip-it-and-ship-it': 9.42.1(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)
-      '@opentelemetry/api': 1.8.0
-      '@sindresorhus/slugify': 2.2.1
-      ansi-escapes: 6.2.1
-      chalk: 5.3.0
-      clean-stack: 4.2.0
-      execa: 6.1.0
-      fdir: 6.5.0(picomatch@4.0.3)
-      figures: 5.0.0
-      filter-obj: 5.1.0
-      got: 12.6.1
-      hot-shots: 10.2.1
-      indent-string: 5.0.0
-      is-plain-obj: 4.1.0
-      js-yaml: 4.1.0
-      keep-func-props: 4.0.1
-      locate-path: 7.2.0
-      log-process-errors: 8.0.0
-      map-obj: 5.0.2
-      memoize-one: 6.0.0
-      minimatch: 9.0.5
-      node-fetch: 3.3.2
-      os-name: 5.1.0
-      p-event: 5.0.1
-      p-every: 2.0.0
-      p-filter: 3.0.0
-      p-locate: 6.0.0
-      p-map: 6.0.0
-      p-reduce: 3.0.0
-      path-exists: 5.0.0
-      path-type: 5.0.0
-      pkg-dir: 7.0.0
-      pretty-ms: 8.0.0
-      ps-list: 8.1.1
-      read-package-up: 11.0.0
-      readdirp: 3.6.0
-      resolve: 2.0.0-next.5
-      rfdc: 1.4.1
-      safe-json-stringify: 1.2.0
-      semver: 7.6.3
-      string-width: 5.1.2
-      strip-ansi: 7.1.2
-      supports-color: 9.4.0
-      terminal-link: 3.0.0
-      ts-node: 10.9.2(@types/node@24.6.2)(typescript@5.8.3)
-      typescript: 5.8.3
-      uuid: 9.0.1
-      yargs: 17.7.2
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - encoding
-      - picomatch
-      - react-native-b4a
-      - rollup
-
   '@netlify/build@29.58.0(@opentelemetry/api@1.8.0)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3)(rollup@4.52.3)':
     dependencies:
       '@bugsnag/js': 7.25.0
@@ -17443,36 +17303,6 @@ snapshots:
       tmp-promise: 3.0.3
       uuid: 11.1.0
       write-file-atomic: 5.0.1
-
-  '@netlify/edge-bundler@12.3.1(encoding@0.1.13)(rollup@4.52.3)':
-    dependencies:
-      '@import-maps/resolve': 1.0.1
-      '@vercel/nft': 0.27.7(encoding@0.1.13)(rollup@4.52.3)
-      ajv: 8.17.1
-      ajv-errors: 3.0.0(ajv@8.17.1)
-      better-ajv-errors: 1.2.0(ajv@8.17.1)
-      common-path-prefix: 3.0.0
-      env-paths: 3.0.0
-      esbuild: 0.21.2
-      execa: 6.1.0
-      find-up: 6.3.0
-      get-package-name: 2.2.0
-      get-port: 6.1.2
-      is-path-inside: 4.0.0
-      jsonc-parser: 3.3.1
-      node-fetch: 3.3.2
-      node-stream-zip: 1.15.0
-      p-retry: 5.1.2
-      p-wait-for: 4.1.0
-      path-key: 4.0.0
-      semver: 7.6.3
-      tmp-promise: 3.0.3
-      urlpattern-polyfill: 8.0.2
-      uuid: 9.0.1
-    transitivePeerDependencies:
-      - encoding
-      - rollup
-      - supports-color
 
   '@netlify/edge-bundler@12.3.1(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)':
     dependencies:
@@ -17714,7 +17544,7 @@ snapshots:
       '@babel/types': 7.26.3
       '@netlify/binary-info': 1.0.0
       '@netlify/serverless-functions-api': 1.41.2
-      '@vercel/nft': 0.27.7(encoding@0.1.13)(rollup@4.52.3)
+      '@vercel/nft': 0.27.7(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)
       archiver: 7.0.1
       common-path-prefix: 3.0.0
       cp-file: 10.0.0
@@ -20490,25 +20320,6 @@ snapshots:
       eslint-visitor-keys: 4.2.1
 
   '@ungap/structured-clone@1.3.0': {}
-
-  '@vercel/nft@0.27.7(encoding@0.1.13)(rollup@4.52.3)':
-    dependencies:
-      '@mapbox/node-pre-gyp': 1.0.11(encoding@0.1.13)(supports-color@9.4.0)
-      '@rollup/pluginutils': 5.3.0(rollup@4.52.3)
-      acorn: 8.15.0
-      acorn-import-attributes: 1.9.5(acorn@8.15.0)
-      async-sema: 3.1.1
-      bindings: 1.5.0
-      estree-walker: 2.0.2
-      glob: 7.2.3
-      graceful-fs: 4.2.11
-      micromatch: 4.0.8
-      node-gyp-build: 4.8.4
-      resolve-from: 5.0.0
-    transitivePeerDependencies:
-      - encoding
-      - rollup
-      - supports-color
 
   '@vercel/nft@0.27.7(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)':
     dependencies:
@@ -26251,302 +26062,6 @@ snapshots:
 
   nested-error-stacks@2.1.1: {}
 
-  netlify-cli@17.38.1(@types/express@4.17.23)(@types/node@20.9.0)(encoding@0.1.13)(picomatch@4.0.3):
-    dependencies:
-      '@bugsnag/js': 7.25.0
-      '@fastify/static': 7.0.4
-      '@netlify/blobs': 8.1.0
-      '@netlify/build': 29.58.0(@opentelemetry/api@1.8.0)(@types/node@20.9.0)(encoding@0.1.13)(picomatch@4.0.3)
-      '@netlify/build-info': 7.17.0
-      '@netlify/config': 20.21.0
-      '@netlify/edge-bundler': 12.3.1(encoding@0.1.13)(rollup@4.52.3)
-      '@netlify/edge-functions': 2.11.1
-      '@netlify/headers-parser': 7.3.0
-      '@netlify/local-functions-proxy': 1.1.1
-      '@netlify/redirect-parser': 14.5.0
-      '@netlify/zip-it-and-ship-it': 9.42.1(encoding@0.1.13)(rollup@4.52.3)
-      '@octokit/rest': 20.1.1
-      '@opentelemetry/api': 1.8.0
-      ansi-escapes: 7.0.0
-      ansi-styles: 6.2.1
-      ansi-to-html: 0.7.2
-      ascii-table: 0.0.9
-      backoff: 2.5.0
-      better-opn: 3.0.2
-      boxen: 7.1.1
-      chalk: 5.3.0
-      chokidar: 3.6.0
-      ci-info: 4.1.0
-      clean-deep: 3.4.0
-      commander: 10.0.1
-      comment-json: 4.2.5
-      concordance: 5.0.4
-      configstore: 6.0.0
-      content-type: 1.0.5
-      cookie: 0.7.2
-      cron-parser: 4.9.0
-      debug: 4.3.7(supports-color@9.4.0)
-      decache: 4.6.2
-      dot-prop: 9.0.0
-      dotenv: 16.4.7
-      env-paths: 3.0.0
-      envinfo: 7.14.0
-      etag: 1.8.1
-      execa: 5.1.1
-      express: 4.21.2
-      express-logging: 1.1.1
-      extract-zip: 2.0.1
-      fastest-levenshtein: 1.0.16
-      fastify: 4.28.1
-      find-up: 7.0.0
-      flush-write-stream: 2.0.0
-      folder-walker: 3.2.0
-      from2-array: 0.0.4
-      fuzzy: 0.1.3
-      get-port: 5.1.1
-      gh-release-fetch: 4.0.3
-      git-repo-info: 2.1.1
-      gitconfiglocal: 2.1.0
-      hasbin: 1.2.3
-      hasha: 5.2.2
-      http-proxy: 1.18.1(debug@4.3.7)
-      http-proxy-middleware: 2.0.7(@types/express@4.17.23)(debug@4.3.7)
-      https-proxy-agent: 7.0.5
-      inquirer: 6.5.2
-      inquirer-autocomplete-prompt: 1.4.0(inquirer@6.5.2)
-      ipx: 2.1.0(@netlify/blobs@8.1.0)
-      is-docker: 3.0.0
-      is-stream: 4.0.1
-      is-wsl: 3.1.0
-      isexe: 3.1.1
-      js-yaml: 4.1.0
-      jsonwebtoken: 9.0.2
-      jwt-decode: 4.0.0
-      lambda-local: 2.2.0
-      listr2: 8.2.5
-      locate-path: 7.2.0
-      lodash: 4.17.21
-      log-symbols: 6.0.0
-      log-update: 6.1.0
-      maxstache: 1.0.7
-      maxstache-stream: 1.0.4
-      multiparty: 4.2.3
-      netlify: 13.2.0
-      netlify-redirector: 0.5.0
-      node-fetch: 3.3.2
-      node-version-alias: 3.4.1
-      ora: 8.1.1
-      p-filter: 4.1.0
-      p-map: 7.0.2
-      p-wait-for: 5.0.2
-      parallel-transform: 1.2.0
-      parse-github-url: 1.0.3
-      parse-gitignore: 2.0.0
-      path-key: 4.0.0
-      prettyjson: 1.2.5
-      pump: 3.0.2
-      raw-body: 2.5.2
-      read-package-up: 11.0.0
-      readdirp: 3.6.0
-      semver: 7.6.3
-      source-map-support: 0.5.21
-      strip-ansi-control-characters: 2.0.0
-      tabtab: 3.0.2
-      tempy: 3.1.0
-      terminal-link: 3.0.0
-      through2-filter: 4.0.0
-      through2-map: 4.0.0
-      toml: 3.0.0
-      tomlify-j0.4: 3.0.0
-      ulid: 2.3.0
-      unixify: 1.0.0
-      update-notifier: 7.3.1
-      uuid: 9.0.1
-      wait-port: 1.1.0
-      write-file-atomic: 5.0.1
-      ws: 8.18.0
-      zod: 3.23.8
-    transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@deno/kv'
-      - '@netlify/opentelemetry-sdk-setup'
-      - '@planetscale/database'
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/express'
-      - '@types/node'
-      - '@upstash/redis'
-      - '@vercel/blob'
-      - '@vercel/functions'
-      - '@vercel/kv'
-      - aws4fetch
-      - bare-buffer
-      - bufferutil
-      - db0
-      - encoding
-      - idb-keyval
-      - ioredis
-      - picomatch
-      - react-native-b4a
-      - rollup
-      - supports-color
-      - uploadthing
-      - utf-8-validate
-
-  netlify-cli@17.38.1(@types/express@4.17.23)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3):
-    dependencies:
-      '@bugsnag/js': 7.25.0
-      '@fastify/static': 7.0.4
-      '@netlify/blobs': 8.1.0
-      '@netlify/build': 29.58.0(@opentelemetry/api@1.8.0)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3)
-      '@netlify/build-info': 7.17.0
-      '@netlify/config': 20.21.0
-      '@netlify/edge-bundler': 12.3.1(encoding@0.1.13)(rollup@4.52.3)
-      '@netlify/edge-functions': 2.11.1
-      '@netlify/headers-parser': 7.3.0
-      '@netlify/local-functions-proxy': 1.1.1
-      '@netlify/redirect-parser': 14.5.0
-      '@netlify/zip-it-and-ship-it': 9.42.1(encoding@0.1.13)(rollup@4.52.3)
-      '@octokit/rest': 20.1.1
-      '@opentelemetry/api': 1.8.0
-      ansi-escapes: 7.0.0
-      ansi-styles: 6.2.1
-      ansi-to-html: 0.7.2
-      ascii-table: 0.0.9
-      backoff: 2.5.0
-      better-opn: 3.0.2
-      boxen: 7.1.1
-      chalk: 5.3.0
-      chokidar: 3.6.0
-      ci-info: 4.1.0
-      clean-deep: 3.4.0
-      commander: 10.0.1
-      comment-json: 4.2.5
-      concordance: 5.0.4
-      configstore: 6.0.0
-      content-type: 1.0.5
-      cookie: 0.7.2
-      cron-parser: 4.9.0
-      debug: 4.3.7(supports-color@9.4.0)
-      decache: 4.6.2
-      dot-prop: 9.0.0
-      dotenv: 16.4.7
-      env-paths: 3.0.0
-      envinfo: 7.14.0
-      etag: 1.8.1
-      execa: 5.1.1
-      express: 4.21.2
-      express-logging: 1.1.1
-      extract-zip: 2.0.1
-      fastest-levenshtein: 1.0.16
-      fastify: 4.28.1
-      find-up: 7.0.0
-      flush-write-stream: 2.0.0
-      folder-walker: 3.2.0
-      from2-array: 0.0.4
-      fuzzy: 0.1.3
-      get-port: 5.1.1
-      gh-release-fetch: 4.0.3
-      git-repo-info: 2.1.1
-      gitconfiglocal: 2.1.0
-      hasbin: 1.2.3
-      hasha: 5.2.2
-      http-proxy: 1.18.1(debug@4.3.7)
-      http-proxy-middleware: 2.0.7(@types/express@4.17.23)(debug@4.3.7)
-      https-proxy-agent: 7.0.5
-      inquirer: 6.5.2
-      inquirer-autocomplete-prompt: 1.4.0(inquirer@6.5.2)
-      ipx: 2.1.0(@netlify/blobs@8.1.0)
-      is-docker: 3.0.0
-      is-stream: 4.0.1
-      is-wsl: 3.1.0
-      isexe: 3.1.1
-      js-yaml: 4.1.0
-      jsonwebtoken: 9.0.2
-      jwt-decode: 4.0.0
-      lambda-local: 2.2.0
-      listr2: 8.2.5
-      locate-path: 7.2.0
-      lodash: 4.17.21
-      log-symbols: 6.0.0
-      log-update: 6.1.0
-      maxstache: 1.0.7
-      maxstache-stream: 1.0.4
-      multiparty: 4.2.3
-      netlify: 13.2.0
-      netlify-redirector: 0.5.0
-      node-fetch: 3.3.2
-      node-version-alias: 3.4.1
-      ora: 8.1.1
-      p-filter: 4.1.0
-      p-map: 7.0.2
-      p-wait-for: 5.0.2
-      parallel-transform: 1.2.0
-      parse-github-url: 1.0.3
-      parse-gitignore: 2.0.0
-      path-key: 4.0.0
-      prettyjson: 1.2.5
-      pump: 3.0.2
-      raw-body: 2.5.2
-      read-package-up: 11.0.0
-      readdirp: 3.6.0
-      semver: 7.6.3
-      source-map-support: 0.5.21
-      strip-ansi-control-characters: 2.0.0
-      tabtab: 3.0.2
-      tempy: 3.1.0
-      terminal-link: 3.0.0
-      through2-filter: 4.0.0
-      through2-map: 4.0.0
-      toml: 3.0.0
-      tomlify-j0.4: 3.0.0
-      ulid: 2.3.0
-      unixify: 1.0.0
-      update-notifier: 7.3.1
-      uuid: 9.0.1
-      wait-port: 1.1.0
-      write-file-atomic: 5.0.1
-      ws: 8.18.0
-      zod: 3.23.8
-    transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@deno/kv'
-      - '@netlify/opentelemetry-sdk-setup'
-      - '@planetscale/database'
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/express'
-      - '@types/node'
-      - '@upstash/redis'
-      - '@vercel/blob'
-      - '@vercel/functions'
-      - '@vercel/kv'
-      - aws4fetch
-      - bare-buffer
-      - bufferutil
-      - db0
-      - encoding
-      - idb-keyval
-      - ioredis
-      - picomatch
-      - react-native-b4a
-      - rollup
-      - supports-color
-      - uploadthing
-      - utf-8-validate
-
   netlify-cli@17.38.1(@types/express@4.17.23)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3)(rollup@4.52.3):
     dependencies:
       '@bugsnag/js': 7.25.0
@@ -26555,7 +26070,7 @@ snapshots:
       '@netlify/build': 29.58.0(@opentelemetry/api@1.8.0)(@types/node@24.6.2)(encoding@0.1.13)(picomatch@4.0.3)(rollup@4.52.3)
       '@netlify/build-info': 7.17.0
       '@netlify/config': 20.21.0
-      '@netlify/edge-bundler': 12.3.1(encoding@0.1.13)(rollup@4.52.3)
+      '@netlify/edge-bundler': 12.3.1(encoding@0.1.13)(rollup@4.52.3)(supports-color@9.4.0)
       '@netlify/edge-functions': 2.11.1
       '@netlify/headers-parser': 7.3.0
       '@netlify/local-functions-proxy': 1.1.1
@@ -29639,24 +29154,6 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     optional: true
-
-  ts-node@10.9.2(@types/node@20.9.0)(typescript@5.8.3):
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.11
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.4
-      '@types/node': 20.9.0
-      acorn: 8.15.0
-      acorn-walk: 8.3.4
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      typescript: 5.8.3
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
 
   ts-node@10.9.2(@types/node@24.6.2)(typescript@5.8.3):
     dependencies:
