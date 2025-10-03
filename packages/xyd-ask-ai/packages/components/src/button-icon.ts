@@ -1,6 +1,7 @@
-import { html, LitElement, unsafeCSS } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import styles from "./button-icon.css";
+
+import styles from "./button-icon.styles";
 
 type Variant = "default" | "compact" | "header";
 
@@ -21,7 +22,7 @@ export class AskAIButtonIcon extends LitElement {
   @property({ type: String })
   variant: Variant = "default";
 
-  static styles = [unsafeCSS(styles)];
+  static styles = [styles];
 
   render() {
     return html`

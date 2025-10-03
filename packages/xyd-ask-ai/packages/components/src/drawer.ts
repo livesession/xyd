@@ -1,16 +1,16 @@
-import { html, LitElement, unsafeCSS } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
 import { IconClose } from "./icons";
 
-import styles from "./drawer.css";
+import styles from "./drawer.styles";
 
 @customElement("ask-ai-drawer")
 export class AskAIDrawer extends LitElement {
   @property({ type: Boolean })
   open = false;
 
-  static styles = [unsafeCSS(styles)];
+  static styles = [styles];
 
   render() {
     return html`
