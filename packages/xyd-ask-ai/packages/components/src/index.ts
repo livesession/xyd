@@ -26,6 +26,13 @@ export class AskAI extends LitElement {
 
   static styles = [styles];
 
+  // connectedCallback() {
+  //   super.connectedCallback()
+    
+  //   this.style.cssText += `
+  //   padding: 0 16px 24px 0;
+  // `;
+  // }
   render() {
     return html`
       ${this.welcomeButton()}

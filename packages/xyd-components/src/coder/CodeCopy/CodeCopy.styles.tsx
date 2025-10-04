@@ -4,6 +4,7 @@ export const CodeCopyHost = css`
     @layer defaults {
         all: unset;
     
+        backdrop-filter: blur(8px);
         cursor: pointer;
 
         display: flex;
