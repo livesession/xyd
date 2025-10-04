@@ -8,6 +8,7 @@
     "./package.json": "./package.json",
     "./reset.css": "./dist/reset.css",
     "./index.css": "./dist/index.css",
+    "./tokens.css": "./dist/tokens.css",
     "./decorators/*": "./dist/decorators/*",
     ".": {
       "import": "./dist/index.js"
