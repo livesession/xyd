@@ -30,7 +30,7 @@ export default css`
   }
 
   :host {
-    display: block;
+    display: flex;
     margin-bottom: 16px;
   }
 
@@ -50,10 +50,9 @@ export default css`
 
   :host([type="user"]) {
     --ask-ai-msg-text-color: var(--ask-ai-dark60);
-
-    text-align: right;
+    justify-content: flex-end;
   }
-  :host([type="user"]) p {
+  :host([type="user"]) > p, :host([type="user"]) slot {
     background-color: var(--ask-ai-msg-user-bg);
     color: var(--ask-ai-msg-user-text-color);
     padding: 12px 8px;
@@ -65,10 +64,9 @@ export default css`
   }
 
   :host([type="assistant"]) {
-    text-align: left;
+    justify-content: flex-start;
   }
-
-  :host([type="assistant"]) p {
+  :host([type="assistant"]) > p, :host([type="assistant"]) slot {
     background-color: var(--ask-ai-msg-bg);
     color: var(--ask-ai-msg-text-color);
     padding: 12px 8px;

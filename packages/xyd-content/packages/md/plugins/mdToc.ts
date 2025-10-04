@@ -106,7 +106,7 @@ export function remarkMdxToc(options: RemarkMdxTocOptions): Plugin {
                 };
             };
 
-            visit(mdast, ["heading", "mdxJsxFlowElement"], (node, index) => {
+            visit(mdast, ["heading", "mdxJsxFlowElement"], (node: any, index) => {
                 // @ts-ignore
                 let depth = 0;
                 if (node.type === "mdxJsxFlowElement") {
@@ -222,7 +222,7 @@ export function remarkMdxToc(options: RemarkMdxTocOptions): Plugin {
                     }
                 }
             };
-            mdast.children.unshift(tocExport);
+            mdast.children.unshift(tocExport as any);
             console.timeEnd('plugin:remarkMdxToc');
         };
     };

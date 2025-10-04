@@ -83,15 +83,13 @@ export default css`
     display: flex;
     align-items: center;
     justify-content: center;
-
-    &:hover {
-      background-color: var(--ask-ai-drawer-border-color);
-    }
-
-    &:focus {
-      outline: 2px solid var(--ask-ai-drawer-button-bg);
-      outline-offset: 2px;
-    }
+  }
+  header button:hover {
+    background-color: var(--ask-ai-drawer-border-color);
+  }
+  header button:focus {
+    outline: 2px solid var(--ask-ai-drawer-button-bg);
+    outline-offset: 2px;
   }
 
   main {

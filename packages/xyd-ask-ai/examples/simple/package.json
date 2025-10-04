@@ -10,10 +10,15 @@
     "server": "bun run server.ts"
   },
   "dependencies": {
+    "@code-hike/lighter": "^1.0.3",
     "@xyd-js/ask-ai": "workspace:*",
     "@xyd-js/ask-ai-edge": "workspace:*",
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/themes": "workspace:*",
+    "openux-js": "0.0.0-pre.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-remark": "^2.1.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.1",

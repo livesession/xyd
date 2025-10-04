@@ -65,13 +65,11 @@ export default css`
   }
 
   :host {
-    display: block;
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    padding: 0 16px 24px 0;
-    padding-top: 4px;
+    padding: 4px 16px 24px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -80,7 +78,7 @@ export default css`
     z-index: 20;
   }
 
-  ask-ai-drawer [slot="messages"]footer {
+  ask-ai-drawer [slot="messages"] footer {
     display: flex;
     align-items: center;
     justify-content: center;

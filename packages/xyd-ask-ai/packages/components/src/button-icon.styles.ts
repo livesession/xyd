@@ -37,17 +37,17 @@ export default css`
     justify-content: center;
     transition: all 0.2s;
     color: var(--ask-ai-button-icon-placeholder-color);
+  }
 
-    &:focus {
-      outline: 2px solid var(--ask-ai-button-icon-bg);
-      outline-offset: 2px;
-    }
+  button:focus {
+    outline: 2px solid var(--ask-ai-button-icon-bg);
+    outline-offset: 2px;
+  }
 
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-      color: var(--ask-ai-button-icon-placeholder-color);
-    }
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    color: var(--ask-ai-button-icon-placeholder-color);
   }
   button svg {
     width: 16px;

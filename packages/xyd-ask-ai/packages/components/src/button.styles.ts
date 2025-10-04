@@ -58,7 +58,7 @@ export default css`
   form:hover {
     transform: scale(1);
   }
-  
+
   :host([variant="secondary"]) form:hover {
     transform: none;
   }
@@ -146,17 +146,15 @@ export default css`
     border: none;
     cursor: pointer;
     transition: all 0.2s;
-
-    &:hover:not(:disabled) {
-      background-color: var(--ask-ai-btn-bg--hover);
-      transform: scale(1.1);
-    }
-
-    &:disabled {
-      background-color: var(--ask-ai-btn-bg--disabled);
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
+  }
+  button:hover:not(:disabled) {
+    background-color: var(--ask-ai-btn-bg--hover);
+    transform: scale(1.1);
+  }
+  button:disabled {
+    background-color: var(--ask-ai-btn-bg--disabled);
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 
   svg {
