@@ -54,6 +54,11 @@ async function main() {
         path.join(distDir, 'reset.css')
     );
 
+    await processCSS(
+        path.join(__dirname, '../src/styles/tokens.css'),
+        path.join(distDir, 'tokens.css')
+    );
+
     // Process all decorators
     try {
         const decoratorFiles = await fs.readdir(srcDecoratorsDir);
