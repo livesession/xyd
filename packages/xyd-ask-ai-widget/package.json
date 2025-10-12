@@ -4,8 +4,14 @@
   "type": "module",
   "main": "dist/server.js",
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "widget.tsx",
+    "server.ts"
   ],
+  "bin": {
+    "xyd-ask-ai-widget": "./bin/xyd-ask-ai-widget.mjs"
+  },
   "scripts": {
     "build": "NODE_ENV=production bun build server.ts --outdir dist --target node",
     "start": "bun dist/server.js",
