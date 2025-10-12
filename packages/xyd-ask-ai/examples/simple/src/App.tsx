@@ -1,16 +1,30 @@
+import { useState, useEffect, useRef } from "react";
+
+import { ProseMd } from "@prose-sdk/react";
+
 import { AskAI, useAskAI } from "@xyd-js/ask-ai/react";
-import { useState, useEffect } from "react";
 
 import "./index.css";
 
-
 export default function App() {
-  const { messages, submit, disabled, loading } = useAskAI("http://localhost:3500/ask");
+  const { messages, submit, disabled, loading } = useAskAI(
+    "http://localhost:3500"
+  );
   const [dots, setDots] = useState(1);
+  const ref = useRef<any>(null);
+
+  const lastMessage = messages?.[messages.length - 1];
+  const isWaitingForAssistant =
+    (messages.length > 0 && lastMessage?.type === "user") ||
+    (lastMessage?.type === "assistant" && lastMessage?.content === "");
+
+  useEffect(() => {
+    ref.current.scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     if (!loading) return;
-    
+
     const interval = setInterval(() => {
       setDots((prev) => (prev >= 3 ? 1 : prev + 1));
     }, 500);
@@ -20,31 +34,48 @@ export default function App() {
 
   const getPlaceholder = () => {
     if (loading) {
-      return `Loading${'.'.repeat(dots)}`;
+      return `Loading${".".repeat(dots)}`;
     }
     return "Ask a question";
   };
 
   return (
     <main>
-      <h1>Ask AI + MCP on the edge</h1>
-      <p>
-        This is a simple example of how to use Ask AI + MCP on the edge
-        <br /> deployed on Netlify Edge Functions.
-      </p>
-      <AskAI 
-        onSubmit={submit as any} 
-        disabled={disabled} 
+      <h1>AI components demo</h1>
+      <AskAI
+        onSubmit={submit as any}
+        disabled={disabled}
         placeholder={getPlaceholder()}
+        ref={ref}
       >
+        <div slot="title">
+          <span aria-hidden="true">✨</span>
+          Assistant
+        </div>
+
         {messages.map((message) => (
           <AskAI.Message
             key={message.id}
-            content={message.content}
             type={message.type}
-          />
+            content={message.type === "user" ? message.content : undefined}
+          >
+            {message.type === "assistant" ? (
+              <_Message message={message.content} />
+            ) : null}
+          </AskAI.Message>
         ))}
+
+        {loading && isWaitingForAssistant ? (
+          <AskAI.Message
+            type="assistant"
+            content={`Loading${".".repeat(dots)}`}
+          />
+        ) : null}
       </AskAI>
     </main>
   );
+}
+
+function _Message({ message }: { message: string }) {
+  return <ProseMd content={message} />;
 }

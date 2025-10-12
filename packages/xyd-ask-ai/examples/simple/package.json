@@ -7,11 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "bun run server.ts"
+    "ask-ai:server": "bun run server.ts",
+    "mcp:pokeapi": "bunx @xyd-js/mcp-server https://raw.githubusercontent.com/PokeAPI/pokeapi/refs/heads/master/openapi.yml"
   },
   "dependencies": {
     "@xyd-js/ask-ai": "workspace:*",
-    "@xyd-js/ask-ai-edge": "workspace:*",
+    "@prose-sdk/components": "^0.1.0",
+    "@prose-sdk/react": "^0.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

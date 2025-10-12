@@ -5,6 +5,7 @@ import remarkDirective from 'remark-directive'
 import rehypeRaw from 'rehype-raw';
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
+import { Plugin } from 'unified';
 
 import { Settings } from "@xyd-js/core";
 
@@ -28,14 +29,14 @@ import { recmaOverrideComponents } from "./recmaOverrideComponents";
 export function defaultRemarkPlugins(
   toc: RemarkMdxTocOptions,
   settings?: Settings
-) {
+): Plugin[] {
   return [
     ...thirdPartyRemarkPlugins(),
     ...remarkPlugins(toc, settings),
   ]
 }
 
-export function thirdPartyRemarkPlugins() {
+export function thirdPartyRemarkPlugins(): Plugin[] {
   return [
     remarkFrontmatter,
     remarkMdxFrontmatter,
@@ -48,7 +49,7 @@ export function thirdPartyRemarkPlugins() {
 function remarkPlugins(
   toc: RemarkMdxTocOptions,
   settings?: Settings
-) {
+): Plugin[] {
   return [
     mdHeadingId,
     remarkInjectCodeMeta,
@@ -64,7 +65,7 @@ function remarkPlugins(
   ]
 }
 
-export function includeRemarkPlugins(settings?: Settings) {
+export function includeRemarkPlugins(settings?: Settings): Plugin[] {
   return [
     remarkGfm,
     remarkDirective,
@@ -77,7 +78,7 @@ export function includeRemarkPlugins(settings?: Settings) {
   ]
 }
 
-export function remarkFunctionPlugins(settings?: Settings) {
+export function remarkFunctionPlugins(settings?: Settings): Plugin[] {
   return [
     mdFunctionImportCode(settings),
     mdFunctionUniform(settings),

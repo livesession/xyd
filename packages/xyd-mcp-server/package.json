@@ -8,6 +8,9 @@
     "./package.json": "./package.json",
     ".": {
       "import": "./dist/index.js"
+    },
+    "./mcp": {
+      "import": "./dist/mcp.js"
     }
   },
   "bin": {
@@ -15,6 +18,7 @@
   },
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target node --format esm",
+    "build:mcp": "bun build src/mcp.ts --outfile dist/mcp.js --target node --format esm",
     "dev": "bun --watch src/index.ts",
     "start": "bun dist/index.js",
     "demo:simple": "bun --watch demo/simple/server.ts",

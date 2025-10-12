@@ -22,7 +22,10 @@ export class AskAIMessage extends LitElement {
 
   render() {
     return html`
-      <p aria-label="message">${this.content}</p>
+      ${this.content 
+        ? html`<p aria-label="message">${this.content}</p>`
+        : html`<slot aria-label="message"></slot>`
+      }
       ${this.showActions && this.type === "assistant"
         ? this.renderActions()
         : ""}

@@ -24,7 +24,18 @@ export class AskAIButton extends LitElement {
   @property({ type: Boolean })
   readonly variant: Variant = "default";
 
+  @property({ type: Boolean })
+  showKeyboardShortcut = true;
+
   static readonly styles = [styles];
+
+  private get isMac() {
+    return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  }
+
+  private get keyboardShortcut() {
+    return this.isMac ? '⌘ + I' : 'Ctrl + I';
+  }
 
   render() {
     return html`
@@ -41,6 +52,12 @@ export class AskAIButton extends LitElement {
             @blur="${this.handleBlur}"
             @keydown="${this.triggerSubmitOnEnter}"
           />
+
+          ${this.showKeyboardShortcut ? html`
+            <span part="kbd">
+              ${this.keyboardShortcut}
+            </span>
+          ` : ''}
 
           <button
             type="submit"

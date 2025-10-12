@@ -3,7 +3,7 @@ import {
   streamText,
   stepCountIs,
 } from "ai";
-import type { LanguageModel, experimental_MCPClient as MCPClient } from "ai";
+import type { LanguageModel, experimental_MCPClient as MCPClient, ToolSet } from "ai";
 
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { createAnthropic } from "@ai-sdk/anthropic";
@@ -11,6 +11,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 
 let client: MCPClient;
 let model: LanguageModel;
+let tools: ToolSet;
 
 export async function askPrompt(
   mcpUrl: string,
@@ -21,7 +22,6 @@ export async function askPrompt(
 ) {
   try {
     if (!client) {
-      // Alternatively, you can connect to a Server-Sent Events (SSE) MCP server:
       const sseTransport = new StreamableHTTPClientTransport(
         new URL(mcpUrl || "http://localhost:3000/mcp")
       );
@@ -49,7 +49,9 @@ export async function askPrompt(
       }
     }
 
-    const tools = await client.tools(); // TODO: cache tools too
+    if (!tools) {
+      tools = await client.tools();
+    }
 
     const response = await streamText({
       model,

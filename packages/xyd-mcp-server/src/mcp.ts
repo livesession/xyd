@@ -26,13 +26,13 @@ export class MCPServer {
 
   private uniformSource: string = "";
 
-  constructor() {
+  constructor(uniformSource: string = process.argv[2]) {
     this.connect = this.connect.bind(this);
     this.handleConnectionRequest = this.handleConnectionRequest.bind(this);
     this.handleSessionRequest = this.handleSessionRequest.bind(this);
 
-    if (process.argv[2]) {
-      this.uniformSource = process.argv[2];
+    if (uniformSource) {
+      this.uniformSource = uniformSource;
     }
   }
 
