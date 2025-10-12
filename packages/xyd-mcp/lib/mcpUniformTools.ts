@@ -102,7 +102,7 @@ export async function mcpUniformTools(
             content: [
               {
                 type: "text",
-                text: `Error executing ${reference.canonical}: ${error.message}`,
+                text: `Error executing ${reference.canonical}: ${error instanceof Error ? error.message : String(error)}`,
               },
             ],
           };
@@ -150,7 +150,7 @@ function inputSchemaFromReference(ref: Reference): JSONSchema7 | undefined {
 
   // Create structured properties for each parameter type
   for (const [id, subSchema] of Object.entries(schemasByType)) {
-    const friendlyType = TYPE_MAP[id];
+    const friendlyType = TYPE_MAP[id as DefinitionTypeREST];
     if (friendlyType && subSchema && typeof subSchema === "object") {
       structuredProperties[friendlyType] = subSchema;
     }

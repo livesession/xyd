@@ -320,6 +320,9 @@ importers:
       '@xyd-js/ask-ai':
         specifier: workspace:*
         version: link:../xyd-ask-ai
+      '@xyd-js/mcp-server':
+        specifier: workspace:*
+        version: link:../xyd-mcp-server
       react:
         specifier: ^19.0.0
         version: 19.2.0

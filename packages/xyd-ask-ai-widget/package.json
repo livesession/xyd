@@ -13,13 +13,18 @@
     "xyd-ask-ai-widget": "./bin/xyd-ask-ai-widget.mjs"
   },
   "scripts": {
-    "build": "NODE_ENV=production bun build server.ts --outdir dist --target bun",
-    "start": "bun dist/server.js",
-    "dev": "bun --watch server.ts"
+    "build": "bun run build:widget && bun run build:server && bun run build:server-standalone",
+    "build:widget": "NODE_ENV=production bun build widget.tsx --outdir dist --target browser --format iife --minify",
+    "build:server": "NODE_ENV=production bun build server.ts --outdir dist --outfile dist/server.js --target node",
+    "build:server-standalone": "AS_MCP=false NODE_ENV=production bun build server-standalone.ts --outdir dist --outfile dist --target node",
+    "dev": "bun --watch server.ts",
+    "mcp:inspector": "npx @modelcontextprotocol/inspector http://localhost:3500/mcp"
   },
   "dependencies": {
     "@xyd-js/ask-ai": "workspace:*",
+    "@xyd-js/mcp-server": "workspace:*",
     "@prose-sdk/react": "^0.1.0",
+    "express": "^4.18.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   }
