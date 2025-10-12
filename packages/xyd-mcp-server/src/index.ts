@@ -15,4 +15,3 @@ const port = process.env.PORT || 3000;
 console.log("Running MCP server on port", port);
 
 app.listen(port);
-

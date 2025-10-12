@@ -47,6 +47,7 @@ export class Handler {
         });
       }
   
+
       if (request.method !== "POST") {
         return this.error(405, "Method not allowed");
       }
@@ -58,16 +59,25 @@ export class Handler {
         if (!prompt) {
           return this.error(400, "Missing prompt");
         }
+
         // TODO: !!! SOME ISSUES WITH ENV ON EDGE !!!
-        const stream = await askPrompt(
+        const promptArgs = [
           this.config.mcpUrl || env.MCP_URL || "",
           this.config.aiProvider || env.AI_PROVIDER || "",
           this.config.aiModel || env.AI_MODEL || "",
           this.config.aiToken || env.AI_TOKEN || "",
           prompt
+        ]
+
+        const stream = await askPrompt(
+          promptArgs[0],
+          promptArgs[1],
+          promptArgs[2],
+          promptArgs[3],
+          promptArgs[4]
         );
+
         const encoder = new TextEncoder();
-  
         const readableStream = new ReadableStream({
           async start(controller) {
             try {

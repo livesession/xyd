@@ -24,15 +24,17 @@ export class MCPServer {
   // Store tokens by session ID
   private sessionTokens: { [sessionId: string]: string } = {};
 
-  private uniformSource: string = "";
+  private uniformSources: string[] = []
 
-  constructor(uniformSource: string = process.argv[2]) {
+  constructor(uniformSources: string | string[] = process.argv[2]) {
     this.connect = this.connect.bind(this);
     this.handleConnectionRequest = this.handleConnectionRequest.bind(this);
     this.handleSessionRequest = this.handleSessionRequest.bind(this);
 
-    if (uniformSource) {
-      this.uniformSource = uniformSource;
+    if (uniformSources && typeof uniformSources === "string") {
+      this.uniformSources.push(uniformSources);
+    } else if (uniformSources && Array.isArray(uniformSources)) {
+      this.uniformSources.push(...uniformSources);
     }
   }
 
@@ -123,11 +125,14 @@ export class MCPServer {
       version: "1.0.0",
     });
 
-    if (this.uniformSource) {
-      await mcpUniformResources(server, this.uniformSource);
+    // TODO: !!! support multiple sources !!!
+    const source = this.uniformSources[0] || ""
+
+    if (this.uniformSources[0]) {
+      await mcpUniformResources(server, source);
     }
     
-    await mcpUniformTools(server, this.uniformSource, token);
+    await mcpUniformTools(server, source || "", token || "");
 
     // Add simple token tool
     this.addSimpleTokenTool(server);

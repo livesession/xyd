@@ -52,7 +52,7 @@ export async function mcpUniformResources(
   }
 
   // TODO: maybe in the future
-  const cssFiles = [
+  const cssFiles: string[] = [
     // TODO: temporary
     // path.resolve(__dirname, "../xyd-atlas/dist/tokens.css"),
     // path.resolve(__dirname, "../xyd-atlas/dist/index.css"),

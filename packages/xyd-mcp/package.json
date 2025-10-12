@@ -15,7 +15,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build index.ts --outdir dist --target node --format esm",
+    "build": "bun build index.ts --outdir dist --target node --format esm && bun build:types",
+    "build:types": "tsc --project tsconfig.json",
     "dev": "bun --watch index.ts",
     "clean": "rimraf build"
   },

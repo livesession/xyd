@@ -9,8 +9,12 @@ import { AskWidget } from "./src/Widget";
   // Extract data attributes
   const config = {
     askAiServer:
-      currentScript?.dataset["data-server-url"] || process.env.ASK_AI_URL,
+      currentScript?.dataset["data-server-url"] || window.__askAi?.serverUrl,
   };
+
+  if (!config?.askAiServer) {
+    config.askAiServer = "http://localhost:3500";
+  }
 
   // Create a container div and append it to body
   const container = document.createElement("div");
@@ -19,5 +23,11 @@ import { AskWidget } from "./src/Widget";
 
   // Render to the container
   const root = createRoot(container);
-  root.render(<AskWidget config={config} />);
+  root.render(
+    <AskWidget
+      config={{
+        endpointURL: `${config.askAiServer}/ask`,
+      }}
+    />
+  );
 })();

@@ -7,18 +7,22 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./mcp": {
-      "import": "./dist/mcp.js"
+      "import": "./dist/mcp.js",
+      "types": "./dist/mcp.d.ts"
     }
   },
   "bin": {
     "xyd-mcp-server": "./bin/xyd-mcp-server.mjs"
   },
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target node --format esm",
+    "build": "bun run build:server && bun run build:mcp && bun run build:types",
+    "build:server": "bun build src/index.ts --outdir dist --target node --format esm",
     "build:mcp": "bun build src/mcp.ts --outfile dist/mcp.js --target node --format esm",
+    "build:types": "tsc --project tsconfig.json",
     "dev": "bun --watch src/index.ts",
     "start": "bun dist/index.js",
     "demo:simple": "bun --watch demo/simple/server.ts",

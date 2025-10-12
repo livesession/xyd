@@ -5,7 +5,7 @@ import { ProseMd } from "@prose-sdk/react";
 import { AskAI, useAskAI } from "@xyd-js/ask-ai/react";
 
 interface WidgetConfig {
-  askAiServer?: string;
+  endpointURL?: string;
 }
 
 interface AskWidgetProps {
@@ -13,13 +13,8 @@ interface AskWidgetProps {
 }
 
 export function AskWidget({ config = {} }: AskWidgetProps) {
-  if (process.env.NODE_ENV === "development") {
-    if (!config?.askAiServer) {
-      config.askAiServer = "http://localhost:3500";
-    }
-  }
   const { messages, submit, disabled, loading } = useAskAI(
-    config?.askAiServer
+    config?.endpointURL
   );
   const [dots, setDots] = useState(1);
   const ref = useRef<any>(null);
