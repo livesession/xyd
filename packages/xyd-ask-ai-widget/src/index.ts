@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
 import { createServer } from "node:http";
+import { fileURLToPath } from "node:url";
 import express from "express";
 
 import { handler as askAiHandler } from "@xyd-js/ask-ai/node";
@@ -8,14 +9,8 @@ import type { MCPServer } from "@xyd-js/mcp-server/mcp";
 
 // Start the server
 export async function startServer(mcpServer?: MCPServer) {
-  // Check if widget is built
-  const widgetPath = join(process.cwd(), "dist", "widget.js");
-
-  if (!existsSync(widgetPath)) {
-    console.log("❌ Widget not found!");
-    console.log("🔨 Please run: bun run build:widget");
-    process.exit(1);
-  }
+  const widgetPath = findWidgetPath();
+  console.log("✅ Widget found:", widgetPath);
 
   // Find an available port
   const port = await findAvailablePort(parseInt(process.env.PORT || "3500"));
@@ -79,7 +74,7 @@ export async function startServer(mcpServer?: MCPServer) {
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
-            
+
             const chunk = decoder.decode(value, { stream: true });
             res.write(chunk);
           }
@@ -119,6 +114,30 @@ export async function startServer(mcpServer?: MCPServer) {
       console.log(`🤖 MCP endpoint: http://localhost:${port}/mcp`);
     }
   });
+}
+
+// Find the widget file in multiple possible locations
+function findWidgetPath(): string {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+
+  // Look for widget in multiple possible locations
+  const possiblePaths = [
+    join(process.cwd(), "dist", "widget.js"), // Local development
+    join(__dirname, "..", "dist", "widget.js"), // Package installation
+    join(__dirname, "dist", "widget.js"), // Alternative package location
+  ];
+
+  for (const path of possiblePaths) {
+    if (existsSync(path)) {
+      return path;
+    }
+  }
+
+  console.log("❌ Widget not found!");
+  console.log("🔨 Please run: bun run build:widget");
+  console.log("💡 Searched in:", possiblePaths);
+  process.exit(1);
 }
 
 // Find an available port
