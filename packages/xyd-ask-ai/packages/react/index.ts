@@ -1,3 +1,3 @@
-export {AskAI} from './src/components/index';
+export {AskAI} from './src/components';
 
 export { useAskAI } from './src/hooks';

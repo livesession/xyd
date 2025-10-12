@@ -75,7 +75,7 @@ export default css`
     align-items: center;
     width: 100%;
     overflow: hidden;
-    z-index: 20;
+    z-index: 999999;
   }
 
   ask-ai-drawer [slot="messages"] footer {

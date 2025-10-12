@@ -36,6 +36,11 @@ export default css`
     }
   }
 
+  [part="kbd"] {
+    color: var(--ask-ai-btn-bg);
+    margin: 0px 10px;
+  }
+
   form {
     z-index: 10;
     width: 100%;

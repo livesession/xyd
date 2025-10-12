@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/ask-ai",
-  "version": "0.1.0-build.169",
+  "version": "0.1.0-build.0",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",

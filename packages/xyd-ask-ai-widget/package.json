@@ -1,0 +1,20 @@
+{
+  "name": "@xyd-js/ask-ai-widget",
+  "version": "0.1.0-build.0",
+  "type": "module",
+  "main": "dist/server.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "NODE_ENV=production bun build server.ts --outdir dist --target node",
+    "start": "bun dist/server.js",
+    "dev": "bun --watch server.ts"
+  },
+  "dependencies": {
+    "@xyd-js/ask-ai": "workspace:*",
+    "@prose-sdk/react": "^0.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
