@@ -13,7 +13,7 @@
     "xyd-ask-ai-widget": "./bin/xyd-ask-ai-widget.mjs"
   },
   "scripts": {
-    "build": "NODE_ENV=production bun build server.ts --outdir dist --target node",
+    "build": "NODE_ENV=production bun build server.ts --outdir dist --target bun",
     "start": "bun dist/server.js",
     "dev": "bun --watch server.ts"
   },
