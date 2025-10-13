@@ -69,7 +69,7 @@ export function oapSchemaToReferences(
             if (reference) {
                 const ctx = reference.context as OpenAPIReferenceContext
                 ctx.path = endpointPath
-                if (!ctx.fullPath) {
+                if (!ctx.fullPath && server) {
                     const u = new URL(server)
                     u.pathname = path.join(u.pathname, endpointPath)
                     ctx.fullPath = decodeURIComponent(u.toString())
