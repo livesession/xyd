@@ -11,8 +11,6 @@ import { AskWidget } from "./src/Widget";
     askAiServer: resolveServerUrl(currentScript),
   };
 
-  console.log(config, 3333);
-  
   // Create a container div and append it to body
   const container = document.createElement("div");
   container.id = "xyd-ask-ai-widget";
