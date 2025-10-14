@@ -8,10 +8,11 @@ import "./index.css";
 
 export default function App() {
   const { messages, submit, disabled, loading } = useAskAI(
-    "http://localhost:3500"
+    import.meta.env.ASK_URL || "http://localhost:3500/ask"
   );
   const [dots, setDots] = useState(1);
   const ref = useRef<any>(null);
+  const [showDockInput, setShowDockInput] = useState(true);
 
   const lastMessage = messages?.[messages.length - 1];
   const isWaitingForAssistant =
@@ -42,10 +43,22 @@ export default function App() {
   return (
     <main>
       <h1>AI components demo</h1>
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+        }}
+      >
+        <button data-ask-ai-trigger>Custom Toggle Button</button>
+        <button onClick={() => setShowDockInput(!showDockInput)}>
+          On/Off Dock Input
+        </button>
+      </div>
       <AskAI
         onSubmit={submit as any}
         disabled={disabled}
         placeholder={getPlaceholder()}
+        dockInput={showDockInput}
         ref={ref}
       >
         <div slot="title">

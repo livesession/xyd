@@ -1,11 +1,21 @@
 import { MCPServer } from "@xyd-js/mcp-server/mcp";
 
 import { startServer } from "./src/index";
+import { loadSetting } from "./src/utils";
 
-const source = process.env.MCP_SOURCE;
+loadSetting()
+  .then((settings) => {
+    if (!settings.mcp?.url) {
+      throw new Error("MCP_SOURCE is not set");
+    }
 
-if (!source) {
-  throw new Error("MCP_SOURCE is not set");
-}
+    const openApiSource = settings.mcp?.sources?.openapi || "";
+    if (!openApiSource) {
+      console.warn("Open API source is not set");
+    }
 
-startServer(new MCPServer(source)).catch(console.error);
+    const mcpServer = new MCPServer(openApiSource);
+
+    return startServer(settings, mcpServer);
+  })
+  .catch(console.error);

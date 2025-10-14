@@ -2,13 +2,20 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
+
+import { Router } from 'express';
 import express from "express";
 
 import { handler as askAiHandler } from "@xyd-js/ask-ai/node";
 import type { MCPServer } from "@xyd-js/mcp-server/mcp";
 
+import type { Settings } from "./settings";
+
 // Start the server
-export async function startServer(mcpServer?: MCPServer) {
+export async function startServer(
+  settings: Settings,
+  mcpServer?: MCPServer
+) {
   const widgetPath = findWidgetPath();
   console.log("✅ Widget found:", widgetPath);
 
@@ -23,10 +30,13 @@ export async function startServer(mcpServer?: MCPServer) {
 
   // Set CORS headers
   app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header(settings.headers);
     next();
+  });
+
+  // Handle preflight OPTIONS requests
+  app.options("*", (req, res) => {
+    res.status(200).end();
   });
 
   // Serve the widget bundle at /widget.js
@@ -46,7 +56,7 @@ export async function startServer(mcpServer?: MCPServer) {
   });
 
   // Handle ask AI requests at /ask
-  app.all("/ask", async (req, res) => {
+  app.post("/ask", async (req, res) => {
     try {
       // Convert Express request to Web API Request
       const body = req.method === "POST" ? JSON.stringify(req.body) : undefined;
@@ -56,7 +66,20 @@ export async function startServer(mcpServer?: MCPServer) {
         body: body,
       });
 
-      const response = (await askAiHandler(request)) as Response;
+      let mcpUrl = settings.mcp?.url || "";
+      if (Array.isArray(mcpUrl)) {
+        console.warn("MCP as array is not supported, using the first one");
+        mcpUrl = mcpUrl[0];
+      }
+
+      const askAiHandlerFn = askAiHandler({
+        mcpUrl: mcpUrl,
+        aiProvider: settings.ai.provider || "",
+        aiModel: settings.ai.model || "",
+        aiToken: settings.ai.token || "",
+      });
+
+      const response = await askAiHandlerFn(request);
 
       // Copy response headers
       for (const [key, value] of response.headers.entries()) {
