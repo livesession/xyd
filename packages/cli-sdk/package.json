@@ -1,0 +1,25 @@
+{
+    "name": "@xyd-js/cli-sdk",
+    "version": "0.1.0-build.0",
+    "keywords": [],
+    "author": "",
+    "description": "",
+    "type": "module",
+    "main": "dist/index.js",
+    "files": [
+      "dist",
+      "package.json"
+    ],
+    "scripts": {
+      "build": "tsup",
+      "test": "vitest"
+    },
+    "dependencies": {
+   
+    },
+    "devDependencies": {
+      "@types/update-notifier": "^6.0.8",
+      "tsup": "^8.3.0",
+      "vitest": "^2.1.8"
+    }
+  }

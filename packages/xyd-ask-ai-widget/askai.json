@@ -1,0 +1,13 @@
+{
+  "ai": {
+    "provider": "$AI_PROVIDER",
+    "model": "$AI_MODEL",
+    "token": "$AI_TOKEN"
+  },
+  "mcp": {
+    "url": "$MCP_SOURCE"
+  },
+  "sources": {
+    "openapi": "$OPENAPI_SOURCE"
+  }
+}

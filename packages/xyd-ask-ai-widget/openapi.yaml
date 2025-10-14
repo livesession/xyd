@@ -1,0 +1,84 @@
+openapi: 3.0.3
+info:
+  title: Ask AI Widget API
+  description: API for the Ask AI Widget service
+  version: 0.1.0
+servers:
+  - url: http://localhost:3500
+    description: Development server
+paths:
+  /widget.js:
+    get:
+      summary: Get widget JavaScript bundle
+      description: Serves the compiled widget JavaScript bundle
+      responses:
+        '200':
+          description: Widget JavaScript bundle
+          content:
+            application/javascript:
+              schema:
+                type: string
+        '404':
+          description: Widget not found
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Widget not found. Please run 'bun run build:widget' first."
+  /ask:
+    post:
+      summary: Ask AI a prompt
+      description: Send a prompt to the AI service and get a streaming response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                  description: The prompt to ask the AI
+                  example: "What endpoints are available in the API?"
+              required:
+                - prompt
+      responses:
+        '200':
+          description: Streaming AI response
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Internal server error"
+ 
+  /mcp:
+    post:
+      summary: Handle MCP connection request
+      description: Handle Model Context Protocol connection requests
+      responses:
+        '200':
+          description: MCP connection established
+        '404':
+          description: MCP server not available
+    get:
+      summary: Handle MCP session request
+      description: Handle Model Context Protocol session requests
+      responses:
+        '200':
+          description: MCP session established
+        '404':
+          description: MCP server not available
+    delete:
+      summary: Handle MCP session termination
+      description: Terminate Model Context Protocol session
+      responses:
+        '200':
+          description: MCP session terminated
+        '404':
+          description: MCP server not available

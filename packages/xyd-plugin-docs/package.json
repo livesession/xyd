@@ -21,12 +21,13 @@
     "watch": "tsup --watch"
   },
   "dependencies": {
-    "codehike": "^1.0.3",
-    "@code-hike/lighter": "^1.0.3",
     "@xyd-js/openapi": "workspace:*",
     "@xyd-js/gql": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
     "@xyd-js/sources": "workspace:*",
+    "@xyd-js/cli-sdk": "workspace:*",
+    "codehike": "^1.0.3",
+    "@code-hike/lighter": "^1.0.3",
     "dotenv": "^16.4.7"
   },
   "peerDependencies": {

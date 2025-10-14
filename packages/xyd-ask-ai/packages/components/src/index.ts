@@ -19,6 +19,9 @@ export class AskAI extends LitElement {
   @property({ type: Boolean })
   drawerOpen = false;
 
+  @property({ type: Boolean })
+  dockInput = true;
+
   @query("ask-ai-drawer")
   private drawerEl!: HTMLElement & {
     scrollToBottom: (options?: ScrollToOptions) => void;
@@ -26,13 +29,13 @@ export class AskAI extends LitElement {
 
   static styles = [styles];
 
-  private get isMac() {
-    return navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-  }
-
   connectedCallback() {
     super.connectedCallback();
     document.addEventListener("keydown", this.handleGlobalKeydown);
+
+    document.querySelector("[data-ask-ai-trigger]")?.addEventListener("click", () => {
+      this.toggleDrawer();
+    });
   }
 
   disconnectedCallback() {
@@ -40,24 +43,18 @@ export class AskAI extends LitElement {
     document.removeEventListener("keydown", this.handleGlobalKeydown);
   }
 
-  private handleGlobalKeydown = (e: KeyboardEvent) => {
-    // Check for Cmd+I (Mac) or Ctrl+I (Windows/Linux)
-    const isCorrectKey = e.key === "i" || e.key === "I";
-    const isCorrectModifier = this.isMac ? e.metaKey : e.ctrlKey;
-
-    if (isCorrectKey && isCorrectModifier && !e.shiftKey && !e.altKey) {
-      e.preventDefault();
-      this.toggleDrawer();
-    }
-  };
-
-  private toggleDrawer() {
+  public toggleDrawer() {
     this.drawerOpen = !this.drawerOpen;
+  }
+
+  public scrollToBottom(options?: ScrollToOptions) {
+    if (!this.drawerOpen || !this.drawerEl) return;
+    this.drawerEl.scrollToBottom(options || { behavior: "smooth" });
   }
 
   render() {
     return html`
-      ${this.welcomeButton()}
+      ${this.renderDockInput()}
 
       <ask-ai-drawer
         ?open="${this.drawerOpen}"
@@ -85,17 +82,27 @@ export class AskAI extends LitElement {
     `;
   }
 
-  public scrollToBottom(options?: ScrollToOptions) {
-    if (!this.drawerOpen || !this.drawerEl) return;
-    this.drawerEl.scrollToBottom(options || { behavior: "smooth" });
+  private get isMac() {
+    return navigator.platform.toUpperCase().indexOf("MAC") >= 0;
   }
+
+  private handleGlobalKeydown = (e: KeyboardEvent) => {
+    // Check for Cmd+I (Mac) or Ctrl+I (Windows/Linux)
+    const isCorrectKey = e.key === "i" || e.key === "I";
+    const isCorrectModifier = this.isMac ? e.metaKey : e.ctrlKey;
+
+    if (isCorrectKey && isCorrectModifier && !e.shiftKey && !e.altKey) {
+      e.preventDefault();
+      this.toggleDrawer();
+    }
+  };
 
   private handleSlotchange() {
     this.scrollToBottom();
   }
 
-  private welcomeButton() {
-    if (this.drawerOpen) {
+  private renderDockInput() {
+    if (this.drawerOpen || !this.dockInput) {
       return html``;
     }
 
