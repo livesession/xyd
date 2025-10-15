@@ -5,6 +5,7 @@ import { execSync, ExecSyncOptions } from "node:child_process";
 import crypto from "node:crypto";
 import { realpathSync } from "node:fs";
 import * as fsPromises from "node:fs/promises";
+
 import { Root, ListItem } from "mdast";
 import { toMarkdown } from "mdast-util-to-markdown";
 import { u } from "unist-builder";
@@ -56,10 +57,10 @@ async function parseFrontmatterAndCreateAST(
   content: string,
   filePath: string
 ): Promise<ListItem | null> {
-  if (!settings?.ai?.llmsTxt) {
+  if (settings?.ai?.llmsTxt === false) {
     return null;
   }
-  
+
   try {
     const { data: fm } = matter(content) || { data: {} };
     const title = fm?.title || "";
@@ -101,7 +102,7 @@ function buildLLMsMarkdownAST(
   markdownItems: ListItem[]
 ): string {
   const aiLlms = settings?.ai?.llmsTxt as unknown;
-  if (!aiLlms) {
+  if (aiLlms === false) {
     return "";
   }
 
@@ -536,7 +537,7 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
     }
   }
 
-  if (respPluginDocs.settings?.ai?.llmsTxt) {
+  if (respPluginDocs.settings?.ai?.llmsTxt !== false) {
     let foundUserLLMsTxt = false;
 
     for (const pth of lookupPaths("llms.txt")) {

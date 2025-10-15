@@ -9,10 +9,14 @@
         "llmsTxt": {
           "anyOf": [
             {
+              "const": false,
+              "type": "boolean"
+            },
+            {
               "$ref": "#/definitions/LLMsTxt"
             },
             {
-              "type": "string"
+              "$ref": "#/definitions/llmsTxtString"
             }
           ],
           "description": "LLMs txt configuration"
@@ -1212,12 +1216,13 @@
       "additionalProperties": false,
       "description": "LLMs txt configuration",
       "properties": {
+        "baseUrl": {
+          "description": "Base URL of the LLMs txt",
+          "type": "string"
+        },
         "sections": {
-          "additionalProperties": {
-            "$ref": "#/definitions/LLMsTxtSection"
-          },
-          "description": "Sections of the LLMs txt",
-          "type": "object"
+          "$ref": "#/definitions/LLMsTxtSectionMap",
+          "description": "Sections of the LLMs txt"
         },
         "summary": {
           "description": "Description of the LLMs txt",
@@ -1225,32 +1230,51 @@
         },
         "title": {
           "description": "Title of the LLMs txt",
-          "type": "string"
-        }
-      },
-      "required": [
-        "title"
-      ],
-      "type": "object"
-    },
-    "LLMsTxtSection": {
-      "additionalProperties": false,
-      "properties": {
-        "description": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "url": {
+          "examples": [
+            "LLMs txt"
+          ],
           "type": "string"
         }
       },
       "required": [
         "title",
-        "url",
-        "description"
+        "baseUrl"
       ],
+      "type": "object"
+    },
+    "LLMsTxtSectionMap": {
+      "additionalProperties": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "description": "Description of the section",
+            "examples": [
+              "Description of section 1"
+            ],
+            "type": "string"
+          },
+          "title": {
+            "description": "Title of the section",
+            "examples": [
+              "Section 1"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "description": "URL of the section",
+            "examples": [
+              "https://www.example.com"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "url",
+          "description"
+        ],
+        "type": "object"
+      },
       "type": "object"
     },
     "Logo": {
@@ -2367,6 +2391,10 @@
         }
       },
       "type": "object"
+    },
+    "llmsTxtString": {
+      "description": "LLMs txt as a path to a file or a llms.txt content",
+      "type": "string"
     }
   },
   "description": "Main settings interface for the application",
