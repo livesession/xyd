@@ -303,10 +303,9 @@
                         ]
                     },
                     {
-                        "group": "SDK Generation",
+                        "group": "AI",
                         "pages": [
-                            "docs/guides/sdk-quickstart",
-                            "docs/guides/opensdk"
+                            "docs/guides/llms-txt"
                         ]
                     },
                     {
@@ -358,6 +357,13 @@
                                     "docs/guides/integrations/apps/edit-link"
                                 ]
                             }
+                        ]
+                    },
+                    {
+                        "group": "SDK Generation",
+                        "pages": [
+                            "docs/guides/sdk-quickstart",
+                            "docs/guides/opensdk"
                         ]
                     },
                     {

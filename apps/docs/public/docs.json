@@ -2,6 +2,28 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
   "definitions": {
+    "AI": {
+      "additionalProperties": false,
+      "description": "AI configuration",
+      "properties": {
+        "llmsTxt": {
+          "anyOf": [
+            {
+              "const": false,
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/LLMsTxt"
+            },
+            {
+              "$ref": "#/definitions/llmsTxtString"
+            }
+          ],
+          "description": "LLMs txt configuration"
+        }
+      },
+      "type": "object"
+    },
     "API": {
       "additionalProperties": false,
       "description": "API Docs configuration interface",
@@ -1190,6 +1212,71 @@
       ],
       "type": "object"
     },
+    "LLMsTxt": {
+      "additionalProperties": false,
+      "description": "LLMs txt configuration",
+      "properties": {
+        "baseUrl": {
+          "description": "Base URL of the LLMs txt",
+          "type": "string"
+        },
+        "sections": {
+          "$ref": "#/definitions/LLMsTxtSectionMap",
+          "description": "Sections of the LLMs txt"
+        },
+        "summary": {
+          "description": "Description of the LLMs txt",
+          "type": "string"
+        },
+        "title": {
+          "description": "Title of the LLMs txt",
+          "examples": [
+            "LLMs txt"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "baseUrl"
+      ],
+      "type": "object"
+    },
+    "LLMsTxtSectionMap": {
+      "additionalProperties": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "description": "Description of the section",
+            "examples": [
+              "Description of section 1"
+            ],
+            "type": "string"
+          },
+          "title": {
+            "description": "Title of the section",
+            "examples": [
+              "Section 1"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "description": "URL of the section",
+            "examples": [
+              "https://www.example.com"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "url",
+          "description"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
     "Logo": {
       "additionalProperties": false,
       "description": "Logo configuration interface",
@@ -2304,6 +2391,10 @@
         }
       },
       "type": "object"
+    },
+    "llmsTxtString": {
+      "description": "LLMs txt as a path to a file or a llms.txt content",
+      "type": "string"
     }
   },
   "description": "Main settings interface for the application",
@@ -2311,6 +2402,10 @@
     "advanced": {
       "$ref": "#/definitions/Advanced",
       "description": "Advanced configuration"
+    },
+    "ai": {
+      "$ref": "#/definitions/AI",
+      "description": "AI configuration"
     },
     "api": {
       "$ref": "#/definitions/API",

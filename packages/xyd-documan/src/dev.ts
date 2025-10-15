@@ -6,7 +6,7 @@ import { createServer, searchForWorkspaceRoot, ViteDevServer, Plugin as VitePlug
 import { readSettings } from "@xyd-js/plugin-docs";
 import { API, APIFile, Navigation, Settings, SidebarNavigation, } from "@xyd-js/core";
 
-import { appInit, calculateFolderChecksum, commonPostInstallVitePlugins, commonVitePlugins, getAppRoot, getDocsPluginBasePath, getHostPath, getPublicPath, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
+import { appInit, calculateFolderChecksum, commonPostInstallVitePlugins, commonVitePlugins, getAppRoot, getDocsPluginBasePath, getHostPath, getPublicPath, pluginLLMMarkdown, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
 import { CACHE_FOLDER_PATH, SUPPORTED_SETTINGS_FILES, SUPPORTED_CONTENT_FILES } from "./const";
 import { CLI } from "./cli";
 
@@ -290,6 +290,7 @@ export async function dev(options?: DevOptions) {
             // invalidateSettingsOnly(server) // if invalidate settings will be needed then + with composer? cuz issues with this
 
             invalidateSettings(server)
+            pluginLLMMarkdown(respPluginDocs)
             await touchLayoutPage()
             // await touchRootPage()
 

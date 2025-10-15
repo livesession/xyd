@@ -89,6 +89,11 @@ if (prerenderPaths.length) {
     )
 }
 
+if (globalThis.__xydRawRouteFiles) {
+    const routes = Object.keys(globalThis.__xydRawRouteFiles)
+    prerenderPaths.push(...routes)
+}
+
 const cwd = process.cwd();
 
 export default {
