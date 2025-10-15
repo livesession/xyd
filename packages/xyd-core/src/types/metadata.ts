@@ -14,7 +14,7 @@ export interface Metadata<P = void> {
     /** Title to display in the sidebar navigation */
     sidebarTitle?: string
 
-    /** Disply description for SEO purposes */
+    /** Display description for SEO/llms.txt purposes */
     description?: string
 
     /**  Icon identifier for the navigation item */

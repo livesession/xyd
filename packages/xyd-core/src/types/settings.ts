@@ -5,53 +5,58 @@ import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
 /**
  * Main settings interface for the application
  */
-export interface Settings {    
-    /** Theme configuration for the application */
-    theme?: Theme
+export interface Settings {
+  /** Theme configuration for the application */
+  theme?: Theme;
 
-    /** Navigation configuration */
-    navigation?: Navigation
+  /** Navigation configuration */
+  navigation?: Navigation;
 
-    /** API Docs configuration */
-    api?: API
+  /** API Docs configuration */
+  api?: API;
 
-    /** Integrations configuration */
-    integrations?: Integrations
+  /** Integrations configuration */
+  integrations?: Integrations;
 
-    /** Plugins configuration */
-    plugins?: Plugins
+  /** Plugins configuration */
+  plugins?: Plugins;
 
-    /**
-     * SEO configuration
-     */
-    seo?: SEO
+  /**
+   * SEO configuration
+   */
+  seo?: SEO;
 
-    /**
-     * Advanced configuration
-     */
-    advanced?: Advanced
+  /**
+   * AI configuration
+   */
+  ai?: AI;
 
-    /** 
-     * @internal
-     * 
-     * WebEditor configuration - building blocks for UI editing
-     */
-    webeditor?: WebEditor
+  /**
+   * Advanced configuration
+   */
+  advanced?: Advanced;
 
-    /**
-     * 
-     *  Components configuration
-     */
-    components?: Components
+  /**
+   * @internal
+   *
+   * WebEditor configuration - building blocks for UI editing
+   */
+  webeditor?: WebEditor;
 
-    /** Engine configuration - advanced engine-like configuration */
-    engine?: Engine
+  /**
+   *
+   *  Components configuration
+   */
+  components?: Components;
 
-    /**
-     * @internal
-     * Redirects configuration
-     */
-    redirects?: Redirects[]
+  /** Engine configuration - advanced engine-like configuration */
+  engine?: Engine;
+
+  /**
+   * @internal
+   * Redirects configuration
+   */
+  redirects?: Redirects[];
 }
 
 // ------ START settings for theme START ------
@@ -60,349 +65,352 @@ export interface Settings {
  * Theme configuration that changes the look and feel of the project
  */
 export interface Theme {
-    /**
-     * A theme name.
-     */
-    readonly name: ThemePresetName | (string & {})
+  /**
+   * A theme name.
+   */
+  readonly name: ThemePresetName | (string & {});
 
-    /**
-     * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to.
-     */
-    logo?: string | Logo | React.JSX.Element
+  /**
+   * Path to logo image or object with path to "light" and "dark" mode logo images, and where the logo links to.
+   */
+  logo?: string | Logo | React.JSX.Element;
 
-    /**
-     * Font configuration for the theme.
-     */
-    fonts?: ThemeFont
+  /**
+   * Font configuration for the theme.
+   */
+  fonts?: ThemeFont;
 
-    /**
-     * Path to the favicon image. For example: /path/to/favicon.svg
-     */
-    favicon?: string;
+  /**
+   * Path to the favicon image. For example: /path/to/favicon.svg
+   */
+  favicon?: string;
 
-    /**
-     * The iconify library setup.
-     */
-    icons?: Icons
+  /**
+   * The iconify library setup.
+   */
+  icons?: Icons;
 
-    /**
-     * Appearance configuration for the theme.
-     */
-    appearance?: Appearance
+  /**
+   * Appearance configuration for the theme.
+   */
+  appearance?: Appearance;
 
-    /**
-     * Writer configuration for the theme.
-     */
-    writer?: Writer
+  /**
+   * Writer configuration for the theme.
+   */
+  writer?: Writer;
 
-    /**
-     * Coder configuration for the theme, including options like syntax highlighting.
-     */
-    coder?: Coder
+  /**
+   * Coder configuration for the theme, including options like syntax highlighting.
+   */
+  coder?: Coder;
 
-    /**
-     * Head configuration
-     */
-    head?: HeadConfig[]
+  /**
+   * Head configuration
+   */
+  head?: HeadConfig[];
 
-    /**
-     * Custom scripts to be added to the head of the every page.
-     * Paths are relative to the root of the project or absolute.
-     */
-    scripts?: Script[]
+  /**
+   * Custom scripts to be added to the head of the every page.
+   * Paths are relative to the root of the project or absolute.
+   */
+  scripts?: Script[];
 }
 
-export type ThemeFont = Font | Font[] | {
-    body?: Font | Font[]
-    coder?: Font | Font[]
-}
+export type ThemeFont =
+  | Font
+  | Font[]
+  | {
+      body?: Font | Font[];
+      coder?: Font | Font[];
+    };
 // #endregion Theme
 
 export interface Font {
-    /**
-     * The font family to use.
-     */
-    family?: string;
+  /**
+   * The font family to use.
+   */
+  family?: string;
 
-    /**
-     * The font weight to use.
-     */
-    weight?: string;
+  /**
+   * The font weight to use.
+   */
+  weight?: string;
 
-    /**
-     * The font src to use.
-     */
-    src?: string;
+  /**
+   * The font src to use.
+   */
+  src?: string;
 
-    /**
-     * The font format to use.
-     */
-    format?: "woff2" | "woff" | "ttf"
+  /**
+   * The font format to use.
+   */
+  format?: "woff2" | "woff" | "ttf";
 }
 
 /**
  * Coder configuration for the theme, including options like syntax highlighting.
  */
 export interface Coder {
-    /**
-     * If `true` then code blocks will have line numbers by default.
-     */
-    lines?: boolean
+  /**
+   * If `true` then code blocks will have line numbers by default.
+   */
+  lines?: boolean;
 
-    /**
-     * If `true` then code blocks will have a scrollbar by default.
-     */
-    scroll?: boolean
+  /**
+   * If `true` then code blocks will have a scrollbar by default.
+   */
+  scroll?: boolean;
 
-    /**
-     * Syntax highlighting configuration.
-     */
-    syntaxHighlight?: SyntaxHighlight
+  /**
+   * Syntax highlighting configuration.
+   */
+  syntaxHighlight?: SyntaxHighlight;
 }
 
 export interface Writer {
-    /**
-     * The maximum number of table of conten§ts levels.
-     */
-    maxTocDepth?: number
+  /**
+   * The maximum number of table of conten§ts levels.
+   */
+  maxTocDepth?: number;
 
-    /**
-     * Copy page button
-     */
-    copyPage?: boolean
+  /**
+   * Copy page button
+   */
+  copyPage?: boolean;
 }
 
 /**
  * Appearance configuration for the theme.
  */
 export interface Appearance {
-    /**
-     * The default color scheme to use.
-     */
-    colorScheme?: "light" | "dark" | "os" | false
+  /**
+   * The default color scheme to use.
+   */
+  colorScheme?: "light" | "dark" | "os" | false;
 
-    /**
-     * If `false` then the color scheme button will not be displayed.
-     */
-    colorSchemeButton?: false
+  /**
+   * If `false` then the color scheme button will not be displayed.
+   */
+  colorSchemeButton?: false;
 
-    /**
-     * Colors configuration for the theme.
-     */
-    colors?: Colors
+  /**
+   * Colors configuration for the theme.
+   */
+  colors?: Colors;
 
-    /**
-     * CSS tokens for the theme.
-     */
-    cssTokens?: { [token: string]: string }
+  /**
+   * CSS tokens for the theme.
+   */
+  cssTokens?: { [token: string]: string };
 
-    // TODO: global and theme presets?
-    /**
-     * Presets for the theme.
-     */
-    presets?: string[]
+  // TODO: global and theme presets?
+  /**
+   * Presets for the theme.
+   */
+  presets?: string[];
 
-    /**
-     * Logo appearance for the theme.
-     */
-    logo?: AppearanceLogo
+  /**
+   * Logo appearance for the theme.
+   */
+  logo?: AppearanceLogo;
 
-    /**
-     * Search appearance for the theme.
-     */
-    search?: AppearanceSearch
+  /**
+   * Search appearance for the theme.
+   */
+  search?: AppearanceSearch;
 
-    /**
-     * Header appearance for the theme.
-     */
-    header?: AppearanceHeader
+  /**
+   * Header appearance for the theme.
+   */
+  header?: AppearanceHeader;
 
-    /**
-     * Tabs appearance for the theme.
-     */
-    tabs?: AppearanceTabs
+  /**
+   * Tabs appearance for the theme.
+   */
+  tabs?: AppearanceTabs;
 
-    /**
-     * Sidebar appearance for the theme.
-     */
-    sidebar?: AppearanceSidebar
+  /**
+   * Sidebar appearance for the theme.
+   */
+  sidebar?: AppearanceSidebar;
 
-    /**
-     * Buttons appearance for the theme.
-     */
-    buttons?: AppearanceButtons
+  /**
+   * Buttons appearance for the theme.
+   */
+  buttons?: AppearanceButtons;
 
-    /**
-     * Table appearance for the theme.
-     */
-    tables?: AppearanceTables
+  /**
+   * Table appearance for the theme.
+   */
+  tables?: AppearanceTables;
 
-    /**
-     * Banner appearance for the theme.
-     */
-    banner?: AppearanceBanner
+  /**
+   * Banner appearance for the theme.
+   */
+  banner?: AppearanceBanner;
 
-    /**
-     * Content appearance for the theme.
-     */
-    content?: AppearanceContent
+  /**
+   * Content appearance for the theme.
+   */
+  content?: AppearanceContent;
 
-    /**
-     * Footer appearance for the theme.
-     */
-    footer?: AppearanceFooter
+  /**
+   * Footer appearance for the theme.
+   */
+  footer?: AppearanceFooter;
 }
 
 export interface Colors {
-    /**
-     * The primary color of the theme.
-     */
-    primary: string
+  /**
+   * The primary color of the theme.
+   */
+  primary: string;
 
-    /**
-     * The light color of the theme.
-     */
-    light?: string
+  /**
+   * The light color of the theme.
+   */
+  light?: string;
 
-    /**
-     * The dark color of the theme.
-     */
-    dark?: string
+  /**
+   * The dark color of the theme.
+   */
+  dark?: string;
 }
 
 export interface AppearanceTabs {
-    /**
-     * The tabs to display in the header.
-     */
-    surface?: "center" | "sidebar"
+  /**
+   * The tabs to display in the header.
+   */
+  surface?: "center" | "sidebar";
 }
 
 /**
  * AppearanceLogo configuration for the theme.
  */
 export interface AppearanceLogo {
-    /**
-     * If `true` then the logo will be displayed on the sidebar.
-     */
-    sidebar?: boolean | "mobile" | "desktop"
+  /**
+   * If `true` then the logo will be displayed on the sidebar.
+   */
+  sidebar?: boolean | "mobile" | "desktop";
 
-    /**
-     * If `true` then the logo will be displayed on the header.
-     */
-    header?: boolean | "mobile" | "desktop"
+  /**
+   * If `true` then the logo will be displayed on the header.
+   */
+  header?: boolean | "mobile" | "desktop";
 }
 
 export interface AppearanceContent {
-    /**
-     * Content decorator for the theme.
-     */
-    contentDecorator?: "secondary"
+  /**
+   * Content decorator for the theme.
+   */
+  contentDecorator?: "secondary";
 
-    /**
-     * If `true` then the breadcrumbs will be displayed.
-     */
-    breadcrumbs?: boolean
+  /**
+   * If `true` then the breadcrumbs will be displayed.
+   */
+  breadcrumbs?: boolean;
 
-    /**
-     * If `true` then the section separator will be displayed.
-     */
-    sectionSeparator?: boolean;
+  /**
+   * If `true` then the section separator will be displayed.
+   */
+  sectionSeparator?: boolean;
 }
 
 export interface AppearanceFooter {
-    /**
-     * The footer surface.
-     */
-    surface?: "page"
+  /**
+   * The footer surface.
+   */
+  surface?: "page";
 }
 
 export interface AppearanceSearch {
-    /**
-     * If `true` then the search bar will be displayed as a full width.
-     */
-    fullWidth?: boolean
+  /**
+   * If `true` then the search bar will be displayed as a full width.
+   */
+  fullWidth?: boolean;
 
-    /**
-     * If `true` then the search bar will be displayed on the sidebar.
-     */
-    sidebar?: boolean | "mobile" | "desktop"
+  /**
+   * If `true` then the search bar will be displayed on the sidebar.
+   */
+  sidebar?: boolean | "mobile" | "desktop";
 
-    /**
-     * If `true` then the search bar will be displayed in the middle of the header.
-     */
-    middle?: boolean | "mobile" | "desktop"
+  /**
+   * If `true` then the search bar will be displayed in the middle of the header.
+   */
+  middle?: boolean | "mobile" | "desktop";
 
-    /**
-     * If `true` then the search bar will be displayed on the right side of the header.
-     */
-    right?: boolean | "mobile" | "desktop"
+  /**
+   * If `true` then the search bar will be displayed on the right side of the header.
+   */
+  right?: boolean | "mobile" | "desktop";
 }
 
 export interface AppearanceHeader {
-    /**
-     * If `true` then the header external links will display an external arrow.
-     */
-    externalArrow?: boolean
+  /**
+   * If `true` then the header external links will display an external arrow.
+   */
+  externalArrow?: boolean;
 
-    /**
-     * If `right` then separator will be displayed on the right side of the header.
-     */
-    separator?: "right"
+  /**
+   * If `right` then separator will be displayed on the right side of the header.
+   */
+  separator?: "right";
 
-    /**
-     * The type of the header.
-     */
-    type?: "classic" | "pad"
+  /**
+   * The type of the header.
+   */
+  type?: "classic" | "pad";
 
-    /**
-     * The button size of the header.
-     */
-    buttonSize?: "sm" | "md" | "lg"
+  /**
+   * The button size of the header.
+   */
+  buttonSize?: "sm" | "md" | "lg";
 }
 
 export interface AppearanceSidebar {
-    /**
-     * If `true` then the sidebar will display a scroll shadow.
-     */
-    externalArrow?: boolean
+  /**
+   * If `true` then the sidebar will display a scroll shadow.
+   */
+  externalArrow?: boolean;
 
-    /**
-     * If `true` then the sidebar will display a scroll shadow.
-     */
-    scrollShadow?: boolean
+  /**
+   * If `true` then the sidebar will display a scroll shadow.
+   */
+  scrollShadow?: boolean;
 
-    /**
-     * The color of the sidebar scrollbar.
-     */
-    scrollbar?: "secondary"
+  /**
+   * The color of the sidebar scrollbar.
+   */
+  scrollbar?: "secondary";
 
-    /**
-     * The color of the sidebar scrollbar.
-     */
-    scrollbarColor?: string
+  /**
+   * The color of the sidebar scrollbar.
+   */
+  scrollbarColor?: string;
 
-    /**
-     * The transition behaviour of the sidebar scroll when navigating to a new page.
-     */
-    scrollTransition?: "smooth" | "instant"
+  /**
+   * The transition behaviour of the sidebar scroll when navigating to a new page.
+   */
+  scrollTransition?: "smooth" | "instant";
 }
 
 export interface AppearanceButtons {
-    rounded?: boolean | "lg" | "md" | "sm"
+  rounded?: boolean | "lg" | "md" | "sm";
 }
 
 export interface AppearanceTables {
-    /**
-     * The kind of the table.
-     */
-    kind?: "secondary"
+  /**
+   * The kind of the table.
+   */
+  kind?: "secondary";
 }
 
 export interface AppearanceBanner {
-    /**
-     * If `true` then the banner will have fixed position (always visible).
-     */
-    fixed?: boolean
+  /**
+   * If `true` then the banner will have fixed position (always visible).
+   */
+  fixed?: boolean;
 }
 
 /**
@@ -411,120 +419,124 @@ export interface AppearanceBanner {
  *
  * @example: ['script', { src: 'https://example.com/script.js', defer: true }]
  */
-export type HeadConfig =
-    | [string, Record<string, string | boolean>, string?]
+export type HeadConfig = [string, Record<string, string | boolean>, string?];
 
-export type Script = string
+export type Script = string;
 
 /**
  * Logo configuration interface
  */
 export interface Logo {
-    /** Path to the logo in light mode. For example: `/path/to/logo.svg` */
-    light?: string;
+  /** Path to the logo in light mode. For example: `/path/to/logo.svg` */
+  light?: string;
 
-    /** Path to the logo in dark mode. For example: `/path/to/logo.svg` */
-    dark?: string;
+  /** Path to the logo in dark mode. For example: `/path/to/logo.svg` */
+  dark?: string;
 
-    /** External href to when clicking on the logo */
-    href?: string;
+  /** External href to when clicking on the logo */
+  href?: string;
 
-    /** The page to link to when clicking on the logo */
-    page?: string
+  /** The page to link to when clicking on the logo */
+  page?: string;
 }
 
 export interface IconLibrary {
-    /** The iconify library name */
-    name: string
+  /** The iconify library name */
+  name: string;
 
-    /** The iconify library version */
-    version?: string
+  /** The iconify library version */
+  version?: string;
 
-    /** The default iconify icon name */
-    default?: boolean
+  /** The default iconify icon name */
+  default?: boolean;
 
-    /** Merge icons from the library into the default iconify library */
-    noprefix?: boolean
+  /** Merge icons from the library into the default iconify library */
+  noprefix?: boolean;
 }
 
 export interface Icons {
-    /** The iconify library */
-    library?: string | IconLibrary | (string | IconLibrary)[]
+  /** The iconify library */
+  library?: string | IconLibrary | (string | IconLibrary)[];
 }
 
 /** Available theme preset names */
-export type ThemePresetName = "poetry" | "cosmo" | "opener" | "picasso" | "gusto" | "solar"
+export type ThemePresetName =
+  | "poetry"
+  | "cosmo"
+  | "opener"
+  | "picasso"
+  | "gusto"
+  | "solar";
 
 /** Search bar location options */
-export type SearchType = "side" | "top"
+export type SearchType = "side" | "top";
 
 // ------ END  settings for theme END ------
-
 
 // ------ START  settings for navigation START ------
 /**
  * Navigation configuration interface
  */
 export interface Navigation {
-    /**
-     * Sidebar navigation - main navigation on the left side of the page.
-     */
-    sidebar: SidebarNavigation
+  /**
+   * Sidebar navigation - main navigation on the left side of the page.
+   */
+  sidebar: SidebarNavigation;
 
-    /**
-     * Tabs navigation - navigation through tabs.
-     */
-    tabs?: Tabs
+  /**
+   * Tabs navigation - navigation through tabs.
+   */
+  tabs?: Tabs;
 
-    /**
-     * Sidebar dropdown navigation - navigation through dropdown in the sidebar.
-     */
-    sidebarDropdown?: SidebarDropdown
+  /**
+   * Sidebar dropdown navigation - navigation through dropdown in the sidebar.
+   */
+  sidebarDropdown?: SidebarDropdown;
 
-    /**
-     * Segments navigation - navigation elements visible only on specific routes.
-     */
-    segments?: Segment[]
+  /**
+   * Segments navigation - navigation elements visible only on specific routes.
+   */
+  segments?: Segment[];
 
-    /**
-     * Anchors navigation - fixed navigation, for anchor-like elements.
-     */
-    anchors?: Anchors
+  /**
+   * Anchors navigation - fixed navigation, for anchor-like elements.
+   */
+  anchors?: Anchors;
 
-    /**
-     * Array of version names. Only use this if you want to show different versions of docs
-     * with a dropdown in the navigation bar.
-     */
-    // versions?: string[]
+  /**
+   * Array of version names. Only use this if you want to show different versions of docs
+   * with a dropdown in the navigation bar.
+   */
+  // versions?: string[]
 }
 
-export type SidebarDropdown = NavigationItem[]
+export type SidebarDropdown = NavigationItem[];
 
 /**
  * Tabs configuration
  */
-export type Tabs = NavigationItem[]
+export type Tabs = NavigationItem[];
 
 /**
  * Sidebar navigation type
  */
-export type SidebarNavigation = (SidebarRoute | Sidebar | string)[]
+export type SidebarNavigation = (SidebarRoute | Sidebar | string)[];
 
 /**
  * Sidebar route configuration
  */
 export interface SidebarRoute {
-    /** Route for this sidebar */
-    route: string
+  /** Route for this sidebar */
+  route: string;
 
-    /** The group of the route */
-    group?: string | false
+  /** The group of the route */
+  group?: string | false;
 
-    /** The id of the route */
-    id?: string
+  /** The id of the route */
+  id?: string;
 
-    /** Sidebar pages within this route or sub routes */
-    pages: Sidebar[] | SidebarRoute[]
+  /** Sidebar pages within this route or sub routes */
+  pages: Sidebar[] | SidebarRoute[];
 }
 
 // TODO: rename to NavigationGroup ?
@@ -533,36 +545,32 @@ export interface SidebarRoute {
  * Sidebar configuration
  */
 export interface Sidebar {
-    /** The name of the group */
-    group?: string | false
+  /** The name of the group */
+  group?: string | false;
 
-    /**
-     * The relative paths to the markdown files that will serve as pages.
-     * Note: groups are recursive, so to add a sub-folder add another group object in the page array.
-     */
-    pages?: PageURL[]
+  /**
+   * The relative paths to the markdown files that will serve as pages.
+   * Note: groups are recursive, so to add a sub-folder add another group object in the page array.
+   */
+  pages?: PageURL[];
 
-    /**
-     * The icon of the group.
-     */
-    icon?: string
+  /**
+   * The icon of the group.
+   */
+  icon?: string;
 
-    /**
-     * The order of the group.
-     */
-    order?: Order
+  /**
+   * The order of the group.
+   */
+  order?: Order;
 }
 
-type Order =
-    | 0
-    | -1
-    | { after: string }
-    | { before: string };
+type Order = 0 | -1 | { after: string } | { before: string };
 
 /**
  * Page URL type
  */
-export type PageURL = string | VirtualPage | Sidebar
+export type PageURL = string | VirtualPage | Sidebar;
 
 /**
  * @internal
@@ -581,124 +589,128 @@ export type PageURL = string | VirtualPage | Sidebar
  *
  * above will be rendered as docs/rest/todo.md using composition from xyd's `.content`
  */
-export type VirtualPage = string | {
-    /** The virtual page to use for the page */
-    virtual: string
+export type VirtualPage =
+  | string
+  | {
+      /** The virtual page to use for the page */
+      virtual: string;
 
-    /** The page to use for the page */
-    page: string
+      /** The page to use for the page */
+      page: string;
 
-    /** The template to use for the page */
-    templates?: string | string[]
-}
+      /** The template to use for the page */
+      templates?: string | string[];
+    };
 
 /**
  * Segment configuration
  */
 export interface Segment {
-    /** Route for this segment */
-    route: string
+  /** Route for this segment */
+  route: string;
 
-    /** Title of this segment */
-    title?: string
+  /** Title of this segment */
+  title?: string;
 
-    /** Appearance of this segment. If 'sidebarDropdown' then show this segment as a dropdown in the sidebar if match. */
-    appearance?: "sidebarDropdown"
+  /** Appearance of this segment. If 'sidebarDropdown' then show this segment as a dropdown in the sidebar if match. */
+  appearance?: "sidebarDropdown";
 
-    /** Items within this segment */
-    pages: NavigationItem[]
+  /** Items within this segment */
+  pages: NavigationItem[];
 }
 
 /**
  * Core interface for navigation items
  */
 export interface NavigationItem {
-    /**
-     * The navigation item title
-     */
-    title?: string
+  /**
+   * The navigation item title
+   */
+  title?: string;
 
-    /**
-     * The navigation item description
-     */
-    description?: string
+  /**
+   * The navigation item description
+   */
+  description?: string;
 
-    /**
-     * The navigation page, if set it redirects to the page + matches based on routing
-     */
-    page?: string
+  /**
+   * The navigation page, if set it redirects to the page + matches based on routing
+   */
+  page?: string;
 
-    /**
-     * The navigation href, if set it redirects but does not match based on routing
-     */
-    href?: string
+  /**
+   * The navigation href, if set it redirects but does not match based on routing
+   */
+  href?: string;
 
-    /**
-     * The navigation item icon
-     */
-    icon?: string | React.ReactNode
+  /**
+   * The navigation item icon
+   */
+  icon?: string | React.ReactNode;
 }
 
 export type NavigationItemButton = NavigationItem & {
-    button: "primary" | "secondary"
-}
+  button: "primary" | "secondary";
+};
 
 export type NavigationItemSocial = NavigationItem & {
-    social: Social
-}
-
+  social: Social;
+};
 
 /**
  * Anchor root configuration
  */
 export interface Anchors {
-    /** Header anchors */
-    header?: AnchorHeader[]
+  /** Header anchors */
+  header?: AnchorHeader[];
 
-    /** Sidebar anchors */
-    sidebar?: {
-        top?: NavigationItem[]
+  /** Sidebar anchors */
+  sidebar?: {
+    top?: NavigationItem[];
 
-        bottom?: NavigationItem[]
-    }
+    bottom?: NavigationItem[];
+  };
 }
 
 // TODO: in the future
 type AnchorHeaderGithub = {
-    githubUrl: string
-}
+  githubUrl: string;
+};
 
-export type AnchorHeader = NavigationItem | NavigationItemButton | NavigationItemSocial
+export type AnchorHeader =
+  | NavigationItem
+  | NavigationItemButton
+  | NavigationItemSocial;
 
 // ------ END settings for navigation END ------
-
 
 // ------ START settings for webeditor START ------
 /**
  * WebEditor navigation item configuration
  */
-export type WebEditorNavigationItem = NavigationItem & Partial<JSONComponent> & {
+export type WebEditorNavigationItem = NavigationItem &
+  Partial<JSONComponent> & {
     /**
      * If `true` then the item will be displayed on mobile.
      */
-    mobile?: boolean
+    mobile?: boolean;
 
     /**
      * If `true` then the item will be displayed on desktop.
      */
-    desktop?: boolean
-}
+    desktop?: boolean;
+  };
 
 export interface Components {
-    /**
-     * WebEditor banner configuration
-     */
-    banner?: WebEditorBanner
+  /**
+   * WebEditor banner configuration
+   */
+  banner?: WebEditorBanner;
 
-    /**
-     * WebEditor footer configuration
-     */
-    footer?: WebEditorFooter
+  /**
+   * WebEditor footer configuration
+   */
+  footer?: WebEditorFooter;
 }
 
 // TODO: webeditor appearance?
@@ -706,152 +718,166 @@ export interface Components {
  * WebEditor configuration
  */
 export interface WebEditor {
-    /**
-     * WebEditor header configuration
-     */
-    sidebarTop?: WebEditorNavigationItem[]
+  /**
+   * WebEditor header configuration
+   */
+  sidebarTop?: WebEditorNavigationItem[];
 
-    /**
-     * WebEditor header configuration
-     */
-    header?: WebEditorHeader[]
+  /**
+   * WebEditor header configuration
+   */
+  header?: WebEditorHeader[];
 
-    /**
-     * WebEditor header configuration
-     */
-    subheader?: WebEditorSubHeader
+  /**
+   * WebEditor header configuration
+   */
+  subheader?: WebEditorSubHeader;
 }
 
-export type Social = "x" | "facebook" | "youtube" | "discord" | "slack" | "github" | "linkedin" | "instagram" | "hackernews" | "medium" | "telegram" | "bluesky" | "reddit"
+export type Social =
+  | "x"
+  | "facebook"
+  | "youtube"
+  | "discord"
+  | "slack"
+  | "github"
+  | "linkedin"
+  | "instagram"
+  | "hackernews"
+  | "medium"
+  | "telegram"
+  | "bluesky"
+  | "reddit";
 
 export interface WebEditorFooter {
-    kind?: "minimal"
+  kind?: "minimal";
 
-    logo?: boolean | ComponentLike
+  logo?: boolean | ComponentLike;
 
-    /** Footer socials */
-    social?: {
-        [K in Social]?: string
-    }
-    /** Footer links  */
-    links?: WebEditorFooterLinks
+  /** Footer socials */
+  social?: {
+    [K in Social]?: string;
+  };
+  /** Footer links  */
+  links?: WebEditorFooterLinks;
 
-    /** Footer footnote */
-    footnote?: ComponentLike
+  /** Footer footnote */
+  footnote?: ComponentLike;
 }
 
-export type WebEditorFooterLinks = WebEditorFooterLink[] | WebEditorFooterLinkItem[]
+export type WebEditorFooterLinks =
+  | WebEditorFooterLink[]
+  | WebEditorFooterLinkItem[];
 
 export interface WebEditorFooterLink {
-    header: string
-    items: WebEditorFooterLinkItem[]
+  header: string;
+  items: WebEditorFooterLinkItem[];
 }
 
 export type WebEditorFooterLinkItem = {
-    label: string
-    href: string
-}
+  label: string;
+  href: string;
+};
 
 export interface WebEditorBanner {
-    /**
-     * Banner content.
-     */
-    content: ComponentLike
+  /**
+   * Banner content.
+   */
+  content: ComponentLike;
 
-    /**
-     * Banner label.
-     */
-    label?: string
+  /**
+   * Banner label.
+   */
+  label?: string;
 
-    /**
-     * Banner kind.
-     */
-    kind?: "secondary"
+  /**
+   * Banner kind.
+   */
+  kind?: "secondary";
 
-    /**
-     * Banner href.
-     */
-    href?: string
+  /**
+   * Banner href.
+   */
+  href?: string;
 
-    /**
-     * Banner icon.
-     */
-    icon?: string
+  /**
+   * Banner icon.
+   */
+  icon?: string;
 
-    // /**
-    //  * Banner store. TODO: in the future
-    //  */
-    // store?: number
+  // /**
+  //  * Banner store. TODO: in the future
+  //  */
+  // store?: number
 }
 
 /**
  * WebEditor header configuration
  */
 export type WebEditorHeader = WebEditorNavigationItem & {
-    /** Float the header to the right */
-    float?: "right" | "center"
-}
+  /** Float the header to the right */
+  float?: "right" | "center";
+};
 
 /**
  * WebEditorSubHeader header configuration
  */
 export interface WebEditorSubHeader {
-    /** Items of this subheader */
-    items: WebEditorNavigationItem[]
+  /** Items of this subheader */
+  items: WebEditorNavigationItem[];
 
-    /** Title of this segment */
-    title?: string
+  /** Title of this segment */
+  title?: string;
 }
 
 // ------ END settings for webeditor END ------
-
 
 // ------ START settings for API START ------
 /**
  * API Docs configuration interface
  */
 export interface API {
-    /**
-     * OpenAPI configuration
-     */
-    openapi?: APIFile
+  /**
+   * OpenAPI configuration
+   */
+  openapi?: APIFile;
 
-    /**
-     * GraphQL configuration
-     */
-    graphql?: APIFile
+  /**
+   * GraphQL configuration
+   */
+  graphql?: APIFile;
 
-    /**
-     * Sources configuration
-     */
-    sources?: APIFile
+  /**
+   * Sources configuration
+   */
+  sources?: APIFile;
 }
 
 /**
  * API file configuration. Can be a path, an array of paths, a map of paths, or an advanced configuration
  */
-export type APIFile = string | string[] | APIFileMap | APIFileAdvanced
+export type APIFile = string | string[] | APIFileMap | APIFileAdvanced;
 
 /**
  * API file map type
  */
 export type APIFileMap = {
-    [name: string]: string | APIFileAdvanced
-}
+  [name: string]: string | APIFileAdvanced;
+};
 
 /**
  * API file advanced type
  */
 export type APIFileAdvanced = {
-    /** Source configuration */
-    source: string
+  /** Source configuration */
+  source: string;
 
-    /** Route configuration */
-    route?: string
+  /** Route configuration */
+  route?: string;
 
-    /** API information configuration */
-    info?: APIInfo
-}
+  /** API information configuration */
+  info?: APIInfo;
+};
 
 /**
  * API file type - can be a string, array of strings, or a map of strings
@@ -861,115 +887,114 @@ export type APIFileAdvanced = {
  * API information configuration
  */
 export interface APIInfo {
-    /**
-     * The base url for all API endpoints. If baseUrl is an array, it will enable
-     * for multiple base url options that the user can toggle.
-     */
-    baseUrl?: string
+  /**
+   * The base url for all API endpoints. If baseUrl is an array, it will enable
+   * for multiple base url options that the user can toggle.
+   */
+  baseUrl?: string;
 
-    /** Authentication information */
-    auth?: APIAuth
+  /** Authentication information */
+  auth?: APIAuth;
 
-    /**
-     * The name of the authentication parameter used in the API playground.
-     * If method is basic, the format should be [usernameName]:[passwordName]
-     */
-    name?: string
+  /**
+   * The name of the authentication parameter used in the API playground.
+   * If method is basic, the format should be [usernameName]:[passwordName]
+   */
+  name?: string;
 
-    /**
-     * The default value that's designed to be a prefisx for the authentication input field.
-     * E.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.
-     */
-    inputPrefix?: string
+  /**
+   * The default value that's designed to be a prefisx for the authentication input field.
+   * E.g. If an inputPrefix of AuthKey would inherit the default input result of the authentication field as AuthKey.
+   */
+  inputPrefix?: string;
 
-    /** Request configuration */
-    request?: APIInfoRequest
+  /** Request configuration */
+  request?: APIInfoRequest;
 }
 
 /**
  * API authentication configuration
  */
 export interface APIAuth {
-    /** The authentication strategy used for all API endpoints */
-    method: "bearer" | "basic" | "key"
+  /** The authentication strategy used for all API endpoints */
+  method: "bearer" | "basic" | "key";
 }
 
 /**
  * API request configuration
  */
 export interface APIInfoRequest {
-    /** Configurations for the auto-generated API request examples */
-    example?: {
-        /**
-         * An array of strings that determine the order of the languages of the auto-generated request examples.
-         * You can either define custom languages utilizing x-codeSamples or use our default languages which include
-         * bash, python, javascript, php, go, java
-         */
-        languages?: string[]
-    }
+  /** Configurations for the auto-generated API request examples */
+  example?: {
+    /**
+     * An array of strings that determine the order of the languages of the auto-generated request examples.
+     * You can either define custom languages utilizing x-codeSamples or use our default languages which include
+     * bash, python, javascript, php, go, java
+     */
+    languages?: string[];
+  };
 }
 
 // ------ END  settings for API END ------
-
 
 // ------ START  settings for integrations START ------
 /**
  * Integrations configuration
  */
 export interface Integrations {
-    /**
-     * Configurations to add third-party analytics integrations.
-     * See full list of supported analytics here.
-     */
-    analytics?: IntegrationAnalytics
+  /**
+   * Configurations to add third-party analytics integrations.
+   * See full list of supported analytics here.
+   */
+  analytics?: IntegrationAnalytics;
 
-    /**
-     * Configurations to add third-party support integrations.
-     */
-    support?: IntegrationSupport
+  /**
+   * Configurations to add third-party support integrations.
+   */
+  support?: IntegrationSupport;
 
-    /**
-     * Configurations to add third-party search integrations.
-     * See full list of supported search here.
-     */
-    search?: IntegrationSearch
+  /**
+   * Configurations to add third-party search integrations.
+   * See full list of supported search here.
+   */
+  search?: IntegrationSearch;
 
-    /**
-     * A/B testing configuration
-     */
-    abtesting?: IntegrationABTesting
+  /**
+   * A/B testing configuration
+   */
+  abtesting?: IntegrationABTesting;
 
-    /**
-     * Diagrams configuration
-     */
-    diagrams?: boolean
+  /**
+   * Diagrams configuration
+   */
+  diagrams?: boolean;
 
-    /**
-     * Edit link configuration
-     */
-    editLink?: EditLink
+  /**
+   * Edit link configuration
+   */
+  editLink?: EditLink;
 
-    /**
-     * Custom apps directory.
-     */
-    [".apps"]?: AppsDirectory
+  /**
+   * Custom apps directory.
+   */
+  [".apps"]?: AppsDirectory;
 }
 
 export interface EditLink {
-    /**
-     * The base URL for the edit link
-     */
-    baseUrl: string
+  /**
+   * The base URL for the edit link
+   */
+  baseUrl: string;
 
-    /**
-     * The title for the edit link
-     */
-    title?: string
+  /**
+   * The title for the edit link
+   */
+  title?: string;
 
-    /**
-     * The icon for the edit link
-     */
-    icon?: string
+  /**
+   * The icon for the edit link
+   */
+  icon?: string;
 }
 
 // #region IntegrationAnalytics
@@ -977,16 +1002,16 @@ export interface EditLink {
  * Analytics configuration
  */
 export interface IntegrationAnalytics {
-    /** LiveSession analytics configuration */
-    livesession?: IntegrationAnalyticsLiveSession
+  /** LiveSession analytics configuration */
+  livesession?: IntegrationAnalyticsLiveSession;
 }
 
 /**
  * LiveSession analytics configuration
-*/
+ */
 export interface IntegrationAnalyticsLiveSession {
-    /** LiveSession's TrackID */
-    trackId: string
+  /** LiveSession's TrackID */
+  trackId: string;
 }
 // #endregion IntegrationAnalytics
 
@@ -994,176 +1019,178 @@ export interface IntegrationAnalyticsLiveSession {
  * Support configuration
  */
 export interface IntegrationSupport {
-    /** Chatwoot support configuration */
-    chatwoot?: IntegrationSupportChatwoot
+  /** Chatwoot support configuration */
+  chatwoot?: IntegrationSupportChatwoot;
 
-    /** Intercom support configuration */
-    intercom?: IntegrationSupportIntercom
+  /** Intercom support configuration */
+  intercom?: IntegrationSupportIntercom;
 
-    /** Livechat support configuration */
-    livechat?: IntegrationSupportLivechat
+  /** Livechat support configuration */
+  livechat?: IntegrationSupportLivechat;
 }
 
 /**
  * Chatwoot support configuration
  */
 export interface IntegrationSupportChatwoot {
-    /** Chatwoot website token */
-    websiteToken: string
+  /** Chatwoot website token */
+  websiteToken: string;
 
-    /** Chatwoot base URL */
-    baseURL?: string
+  /** Chatwoot base URL */
+  baseURL?: string;
 
-    /** Chatwoot settings */
-    chatwootSettings?: JSON
+  /** Chatwoot settings */
+  chatwootSettings?: JSON;
 }
 
 /**
  * Intercom support configuration
  */
 export interface IntegrationSupportIntercom {
-    /** Intercom app ID */
-    appId: string
+  /** Intercom app ID */
+  appId: string;
 
-    /** Intercom API base */
-    apiBase?: string
+  /** Intercom API base */
+  apiBase?: string;
 }
 
 export interface IntegrationSupportLivechat {
-    /** Livechat license ID */
-    licenseId: string
+  /** Livechat license ID */
+  licenseId: string;
 }
 
 /**
  * Search configuration
  */
 export interface IntegrationSearch {
-    /** Algolia search configuration */
-    algolia?: {
-        /** Algolia application ID */
-        appId: string
+  /** Algolia search configuration */
+  algolia?: {
+    /** Algolia application ID */
+    appId: string;
 
-        /** Algolia API key */
-        apiKey: string
-    }
+    /** Algolia API key */
+    apiKey: string;
+  };
 
-    orama?: {
+  orama?:
+    | {
         /** Orama endpoint */
-        endpoint: string
+        endpoint: string;
 
         /** Orama API key */
-        apiKey: string
+        apiKey: string;
 
         /** Orama suggestions */
-        suggestions?: string[]
-    } | boolean
+        suggestions?: string[];
+      }
+    | boolean;
 }
 
 /**
  * A/B testing configuration
  */
 export interface IntegrationABTesting {
-    /**
-     * Context max age in milliseconds
-     */
-    contextMaxAge?: number
+  /**
+   * Context max age in milliseconds
+   */
+  contextMaxAge?: number;
 
-    /**
-     * Context storage key used to store the context in the browser storage
-     */
-    contextStorageKey?: string
+  /**
+   * Context storage key used to store the context in the browser storage
+   */
+  contextStorageKey?: string;
 
-    /**
-     * Providers configuration
-     */
-    providers?: IntegrationABTestingProviders
+  /**
+   * Providers configuration
+   */
+  providers?: IntegrationABTestingProviders;
 }
 
 export interface IntegrationABTestingProviders {
-    /**
-     * GrowthBook configuration
-     */
-    growthbook?: IntegrationABTestingGrowthBook
+  /**
+   * GrowthBook configuration
+   */
+  growthbook?: IntegrationABTestingGrowthBook;
 
-    /**
-     * LaunchDarkly configuration
-     */
-    launchdarkly?: IntegrationABTestingLaunchDarkly
+  /**
+   * LaunchDarkly configuration
+   */
+  launchdarkly?: IntegrationABTestingLaunchDarkly;
 }
 
 export interface IntegrationABTestingGrowthBook {
-    /**
-     * GrowthBook API host
-     */
-    apiHost: string
+  /**
+   * GrowthBook API host
+   */
+  apiHost: string;
 
-    /**
-     * GrowthBook client key
-     */
-    clientKey: string
+  /**
+   * GrowthBook client key
+   */
+  clientKey: string;
 }
 
 export interface IntegrationABTestingLaunchDarkly {
-    /**
-     * LaunchDarkly environment key
-     */
-    env: string
+  /**
+   * LaunchDarkly environment key
+   */
+  env: string;
 }
 
 export interface AppsDirectory {
-    /**
-     * Github star app configuration.
-     */
-    githubStar?: IntegrationAppGithubStar
+  /**
+   * Github star app configuration.
+   */
+  githubStar?: IntegrationAppGithubStar;
 
-    /**
-     * Supademo app configuration.
-     */
-    supademo?: IntegrationAppSupademo
+  /**
+   * Supademo app configuration.
+   */
+  supademo?: IntegrationAppSupademo;
 }
 
 export interface IntegrationAppGithubStar {
-    /**
-     * The title of the Github button
-     */
-    title: string
+  /**
+   * The title of the Github button
+   */
+  title: string;
 
-    /**
-     * The label of the Github Button
-     */
-    label?: string
+  /**
+   * The label of the Github Button
+   */
+  label?: string;
 
-    /**
-     * The href of the Github project
-     */
-    href: string
+  /**
+   * The href of the Github project
+   */
+  href: string;
 
-    /**
-     * The data-show-count of the Github project
-     */
-    dataShowCount?: boolean
+  /**
+   * The data-show-count of the Github project
+   */
+  dataShowCount?: boolean;
 
-    /**
-     * The data-icon of the Github button
-     */
-    dataIcon?: string
+  /**
+   * The data-icon of the Github button
+   */
+  dataIcon?: string;
 
-    /**
-     * The data-size of the Github button
-     */
-    dataSize?: string
+  /**
+   * The data-size of the Github button
+   */
+  dataSize?: string;
 
-    /**
-     * The aria-label of the Github button
-     */
-    ariaLabel?: string
+  /**
+   * The aria-label of the Github button
+   */
+  ariaLabel?: string;
 }
 
 export interface IntegrationAppSupademo {
-    /**
-     * The Supademo API key
-     */
-    apiKey: string
+  /**
+   * The Supademo API key
+   */
+  apiKey: string;
 }
 
 // ------ END  settings for integrations END ------
@@ -1205,13 +1232,12 @@ export interface IntegrationAppSupademo {
  *    }
  * ]
  */
-export type Plugins = (string | PluginConfig)[]
+export type Plugins = (string | PluginConfig)[];
 
 export type PluginConfig<
-    PluginName extends string = string,
-    PluginArgs extends unknown[] = unknown[]
-> = [PluginName, ...PluginArgs]
-
+  PluginName extends string = string,
+  PluginArgs extends unknown[] = unknown[],
+> = [PluginName, ...PluginArgs];
 
 // ------ END  settings for plugins END ------
 
@@ -1220,36 +1246,123 @@ export type PluginConfig<
  * Redirects configuration
  */
 export interface Redirects {
-    /** Source path to redirect from */
-    source: string
+  /** Source path to redirect from */
+  source: string;
 
-    /** Destination path to redirect to */
-    destination: string
+  /** Destination path to redirect to */
+  destination: string;
 }
 
 /**
  * SEO configuration
  */
 export interface SEO {
+  /**
+   * Domain name
+   */
+  domain?: string;
+
+  /**
+   * Meta tags
+   */
+  metatags?: { [tag: string]: string }; // TODO: in the future type-safe
+}
+
+/**
+ * AI configuration
+ */
+export interface AI {
+  /**
+   * LLMs txt configuration
+   *
+   *
+   * @example
+   * ```json
+   * {
+   *   "title": "LLMs txt",
+   *   "domain": "https://www.example.com",
+   *   "summary": "Summary of the LLMs txt",
+   *   "sections": { "section1": { "title": "Section 1", "url": "https://www.example.com", "description": "Description of section 1" } }
+   * }
+   * ```
+   *
+   * or
+   * @example
+   * ```json
+   * "llmsTxt": "llms.txt"
+   * ```
+   *
+   * or
+   * @example
+   * ```json
+   * "llmsTxt": "# LLMs txt \n ## Section 1 \n ## Section 2 \n ### Section 2"
+   * ```
+   *
+   */
+  llmsTxt?: false | LLMsTxt | llmsTxtString;
+}
+
+/**
+ * LLMs txt as a path to a file or a llms.txt content
+ */
+export type llmsTxtString = string;
+
+// #region LLMsTxt
+/**
+ * LLMs txt configuration
+ */
+export interface LLMsTxt {
+  /**
+   * Title of the LLMs txt
+   * @example "LLMs txt"
+   */
+  title: string;
+
+  /**
+   * Base URL of the LLMs txt
+   */
+  baseUrl: string;
+
+  /**
+   * Description of the LLMs txt
+   */
+  summary?: string;
+
+  /**
+   * Sections of the LLMs txt
+   */
+  sections?: LLMsTxtSectionMap;
+}
+// #endregion LLMsTxt
+
+export type LLMsTxtSectionMap = { [section: string]: {
     /**
-     * Domain name
+     * Title of the section
+     * @example "Section 1"
      */
-    domain?: string
+    title: string;
 
     /**
-     * Meta tags
+     * URL of the section
+     * @example "https://www.example.com"
      */
-    metatags?: { [tag: string]: string } // TODO: in the future type-safe
-}
+    url: string;
+
+    /**
+     * Description of the section
+     * @example "Description of section 1"
+     */
+    description: string;
+} };
 
 /**
  * Advanced configuration
  */
 export interface Advanced {
-    /**
-     * basename
-     */
-    basename?: string
+  /**
+   * basename
+   */
+  basename?: string;
 }
 
 // ------ END  settings for redirects END ------
@@ -1259,46 +1372,46 @@ export interface Advanced {
  * Engine configuration
  */
 export interface Engine {
-    /**
-     * Path aliases for imports. Avoid long relative paths by creating shortcuts.
-     *
-     * @example
-     * ```json
-     * {
-     *   "paths": {
-     *     "@my-package/*": ["../my-package/src/*"],
-     *     "@livesession-go/*": ["https://github.com/livesession/livesession-go/*"]
-     *   }
-     * }
-     * ```
-     *
-     * Usage:
-     * ```typescript
-     * // Instead of
-     * @importCode("../../../my-package/src/components/Badge.tsx")
-     *
-     * // Use
-     * @importCode("@my-package/src/components/Badge.tsx")
-     * ```
-     */
-    paths?: EnginePaths
+  /**
+   * Path aliases for imports. Avoid long relative paths by creating shortcuts.
+   *
+   * @example
+   * ```json
+   * {
+   *   "paths": {
+   *     "@my-package/*": ["../my-package/src/*"],
+   *     "@livesession-go/*": ["https://github.com/livesession/livesession-go/*"]
+   *   }
+   * }
+   * ```
+   *
+   * Usage:
+   * ```typescript
+   * // Instead of
+   * @importCode("../../../my-package/src/components/Badge.tsx")
+   *
+   * // Use
+   * @importCode("@my-package/src/components/Badge.tsx")
+   * ```
+   */
+  paths?: EnginePaths;
 
-    /**
-     *
-     * Uniform configuration
-     *
-     */
-    uniform?: EngineUniform
+  /**
+   *
+   * Uniform configuration
+   *
+   */
+  uniform?: EngineUniform;
 }
 
-export type EnginePaths = { [key: string]: string[] }
+export type EnginePaths = { [key: string]: string[] };
 
 export type EngineUniform = {
-    /**
-     * If `true` then virtual pages will not created and generated content will be stored on disk
-     */
-    store?: boolean
-}
+  /**
+   * If `true` then virtual pages will not created and generated content will be stored on disk
+   */
+  store?: boolean;
+};
 
 // ------ END  settings for config END ------
 
@@ -1306,77 +1419,77 @@ export type EngineUniform = {
  * JSON representation of a component.
  */
 export interface JSONComponent {
-    /**
-     * The component type, e.g. "Button", "Card", etc.
-     */
-    component: string
+  /**
+   * The component type, e.g. "Button", "Card", etc.
+   */
+  component: string;
 
-    /**
-     * The component's children, which can be a string, an array of strings, or an array of JSONComponent objects.
-     */
-    props?: Record<string, any>
+  /**
+   * The component's children, which can be a string, an array of strings, or an array of JSONComponent objects.
+   */
+  props?: Record<string, any>;
 }
 
 /**
  * A type that can be used to represent a component-like structure.
  */
-export type ComponentLike = React.JSX.Element | JSONComponent | string
+export type ComponentLike = React.JSX.Element | JSONComponent | string;
 
 export interface ThemeColors {
-    colorScheme: string;
-    foreground: string;
+  colorScheme: string;
+  foreground: string;
+  background: string;
+  lighter: {
+    inlineBackground: string;
+  };
+  editor: {
     background: string;
-    lighter: {
-        inlineBackground: string;
-    };
-    editor: {
-        background: string;
-        foreground: string;
-        lineHighlightBackground: string;
-        rangeHighlightBackground: string;
-        infoForeground: string;
-        selectionBackground: string;
-    };
-    focusBorder: string;
-    tab: {
-        activeBackground: string;
-        activeForeground: string;
-        inactiveBackground: string;
-        inactiveForeground: string;
-        border: string;
-        activeBorder: string;
-        activeBorderTop: string;
-    };
-    editorGroup: {
-        border: string;
-    };
-    editorGroupHeader: {
-        tabsBackground: string;
-    };
-    editorLineNumber: {
-        foreground: string;
-    };
-    input: {
-        background: string;
-        foreground: string;
-        border: string;
-    };
-    icon: {
-        foreground: string;
-    };
-    sideBar: {
-        background: string;
-        foreground: string;
-        border: string;
-    };
-    list: {
-        activeSelectionBackground: string;
-        activeSelectionForeground: string;
-        hoverBackground: string;
-        hoverForeground: string;
-    };
+    foreground: string;
+    lineHighlightBackground: string;
+    rangeHighlightBackground: string;
+    infoForeground: string;
+    selectionBackground: string;
+  };
+  focusBorder: string;
+  tab: {
+    activeBackground: string;
+    activeForeground: string;
+    inactiveBackground: string;
+    inactiveForeground: string;
+    border: string;
+    activeBorder: string;
+    activeBorderTop: string;
+  };
+  editorGroup: {
+    border: string;
+  };
+  editorGroupHeader: {
+    tabsBackground: string;
+  };
+  editorLineNumber: {
+    foreground: string;
+  };
+  input: {
+    background: string;
+    foreground: string;
+    border: string;
+  };
+  icon: {
+    foreground: string;
+  };
+  sideBar: {
+    background: string;
+    foreground: string;
+    border: string;
+  };
+  list: {
+    activeSelectionBackground: string;
+    activeSelectionForeground: string;
+    hoverBackground: string;
+    hoverForeground: string;
+  };
 }
 
 export interface UserPreferences {
-    themeColors?: ThemeColors
+  themeColors?: ThemeColors;
 }

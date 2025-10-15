@@ -1,63 +1,68 @@
 {
-    "theme": {
-        "name": "picasso",
-        "logo": {
-            "light": "/public/assets/logo.svg",
-            "dark": "/public/assets/logo-dark.svg"
-        },
-        "favicon": "/public/assets/logo.svg",
-        "banner": {
-            "content": "**xyd 0.1.0** - Docs platform for future dev.",
-            "label": "Coming Soon",
-            "icon": "sparkles"
-        }
+  "theme": {
+    "name": "picasso",
+    "logo": {
+      "light": "/public/assets/logo.svg",
+      "dark": "/public/assets/logo-dark.svg"
     },
-    "navigation": {
-        "tabs": [
-            {
-                "title": "Guides",
-                "page": "",
-                "href": "introduction"
-            },
-            {
-                "title": "API Reference",
-                "page": "api-reference"
-            }
-        ],
-        "sidebar": [
-            {
-                "group": "Get Started",
-                "pages": [
-                    "introduction",
-                    "pages-and-routing"
-                ]
-            },
-            {
-                "group": "Writing",
-                "pages": [
-                    "markdown",
-                    "developer-content"
-                ]
-            },
-            {
-                "group": "Customization",
-                "pages": [
-                    "make-docs-yours",
-                    "icons"
-                ]
-            }
-        ]
-    },
-    "api": {
-        "openapi": {
-            "source": "openapi.json",
-            "route": "api-reference"
+    "favicon": "/public/assets/logo.svg",
+    "banner": {
+      "content": "**xyd 0.1.0** - Docs platform for future dev.",
+      "label": "Coming Soon",
+      "icon": "sparkles"
+    }
+  },
+  "ai": {
+    "llmsTxt": {
+      "title": "LLMs txt",
+      "baseUrl": "https://www.example.com",
+      "summary": "Summary of the LLMs txt",
+      "sections": {
+        "section1": {
+          "title": "Section 1",
+          "url": "https://www.example.com",
+          "description": "Description of section 1"
         }
-    },
-    "redirects": [
-        {
-            "source": "index",
-            "destination": "introduction"
-        }
+      }
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Guides",
+        "page": "",
+        "href": "introduction"
+      },
+      {
+        "title": "API Reference",
+        "page": "api-reference"
+      }
+    ],
+    "sidebar": [
+      {
+        "group": "Get Started",
+        "pages": ["introduction", "pages-and-routing"]
+      },
+      {
+        "group": "Writing",
+        "pages": ["markdown", "developer-content"]
+      },
+      {
+        "group": "Customization",
+        "pages": ["make-docs-yours", "icons"]
+      }
     ]
+  },
+  "api": {
+    "openapi": {
+      "source": "openapi.json",
+      "route": "api-reference"
+    }
+  },
+  "redirects": [
+    {
+      "source": "index",
+      "destination": "introduction"
+    }
+  ]
 }
