@@ -20,6 +20,13 @@
         "appearance": {},
         "head": []
     },
+    "ai": {
+        "llmsTxt": {
+            "title": "xyd docs",
+            "summary": "Open Souce docs framework for future dev.",
+            "baseUrl": "https://xyd.dev"
+        }
+    },
     "integrations": {
         "editLink": {
             "baseUrl": "https://github.com/livesession/xyd/edit/master/apps/docs",
@@ -50,7 +57,7 @@
     },
     "components": {
         "banner": {
-            "content": "**xyd 0.1.0-alpha** - Coming Soon",
+            "content": "**xyd 0.1.0-beta** - Coming Soon",
             "icon": "sparkles"
         },
         "footer": {
