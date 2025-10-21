@@ -58,3 +58,7 @@ pnpm test:e2e:ui
 ```
 
 More developer guides checkout [DEVELOPMENT.md](./DEVELOPMENT.md)
+
+## Contributor Recognition
+
+All contributors will be recognized in our README using [contrib.rocks](https://contrib.rocks). If you'd prefer not to be featured in the contributors list, please let us know by opening an issue or contacting the maintainers.

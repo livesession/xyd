@@ -116,12 +116,9 @@ You can [read the story behind it here](https://blog.livesession.dev/why-another
 First of all, great to hear that! We have a [migration tool](https://xyd.dev/docs/resources/migration-tool) for a bunch of docs frameworks.
 
 ## Contributing
-### [Development](./DEVELOPMENT.md)
-Development guide with setup instructions, available scripts, and contribution guidelines.
+We welcome community contributions. For guidelines, refer to our [CONTRIBUTING.md](/CONTRIBUTING.md) and [DEVELOPMENT.md](./DEVELOPMENT.md)
 
----
-
-<img src="https://api.basely.dev/github/download/releases/livesession/xyd?asset=node-support-baseline.png"/>
+![xyd Contributors](https://contrib.rocks/image?repo=livesession/xyd)
 
 ---
 
