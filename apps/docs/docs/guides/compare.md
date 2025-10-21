@@ -166,24 +166,23 @@ Compare with other popular docs frameworks
 | Open Source | ✔ | ✔ | True open source
 | A/B Testing | ✖ | ✔ | Built-in A/B testing support
 | Docs Analytics | ✖ | ✔ | Built-in analytics integration
-| Plug & Play Dev Server | ✖ | ✔ | Zero-config development server
+| Plug & Play Dev Server | ✔ | ✔ | Zero-config development server
 | Plugins | ✔ | [coming soon](https://github.com/orgs/livesession/projects/4) | Rich plugin ecosystem
-| Design System | ✖ | ✔ | Reusable components and design patterns
+| Design System | ✔ | ✔ | Reusable components and design patterns
 | OpenAPI Integration | ✔ (natively supported) | ✔ (natively supported) | OpenAPI docs support
 | GraphQL Integration | ✖ | ✔ (natively supported) | GraphQL docs support
 | TypeScript Docs Generation | ✔ (natively supported) | ✔ (natively supported) | TypeScript docs support
 | React Docs Generation | ✖ | ✔ (natively supported) | React docs support
 | Python Docs Generation | ✔ (natively supported) | [coming soon](https://github.com/orgs/livesession/projects/4) | Python docs support
 | CLI Docs Generation | ✖ | [coming soon](https://github.com/orgs/livesession/projects/4) | CLI docs
-| Robust Themes | ✖ | ✔ | Multiple beautiful built-in themes
+| Robust Themes | ✔ | ✔ | Multiple beautiful built-in themes
 | SDK Generation | ✖ | [coming soon](https://github.com/orgs/livesession/projects/4) | Automatic SDK generation
 | Web/Desktop App | ✖ | [coming soon](https://github.com/orgs/livesession/projects/4) | Installable WYSIWYG application
 
 ### Key differences
 - **Developer Experience**: xyd focuses on zero-config setup and developer experience, while Nextra requires Next ecosystem knowledge
-- **API Documentation**: Fuma docs does not support GraphQL
+- **API Documentation**: Fumadocs does not support GraphQL
 - **Features**: xyd includes enterprise features like analytics and A/B testing
-- **Themes**: xyd offers multiple themes, Fumadocs has limited theming
 
 ### What people like about Fumadocs
 - Built on Next.js for good performance
@@ -193,7 +192,6 @@ Compare with other popular docs frameworks
 
 ### What people dislike about Fumadocs
 - No native analytics or A/B testing
-- Limited theme options
 - Requires too much technical knowledge
 
 ## Mintlify
