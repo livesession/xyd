@@ -5,16 +5,18 @@ import { loadSetting } from "./src/utils";
 
 loadSetting()
   .then((settings) => {
-    if (!settings.mcp?.url) {
-      throw new Error("MCP_SOURCE is not set");
+    const openApiSource = settings.sources?.openapi || "";
+    const llmsTxtSource = settings.sources?.llmsTxt || "";
+
+    if (!llmsTxtSource && !openApiSource) {
+      console.warn("llms txt or open api source is not set");
     }
 
-    const openApiSource = settings.mcp?.sources?.openapi || "";
-    if (!openApiSource) {
-      console.warn("Open API source is not set");
-    }
-
-    const mcpServer = new MCPServer(openApiSource);
+    const mcpServer = new MCPServer({
+      uniformSources: openApiSource,
+      llmsSources: llmsTxtSource,
+      openAIApiKey: process.env.OPENAI_API_KEY || "", // TODO: configurable
+    });
 
     return startServer(settings, mcpServer);
   })

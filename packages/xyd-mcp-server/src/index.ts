@@ -2,7 +2,15 @@ import express from "express";
 
 import { MCPServer } from "./mcp";
 
-const mcp = new MCPServer();
+// Support both uniform sources and llms.txt sources
+const uniformSources = process.argv[2];
+const llmsSources = process.argv[3];
+
+const mcp = new MCPServer({
+    uniformSources,
+    llmsSources,
+    openAIApiKey: process.env.OPENAI_API_KEY || "", // TODO: configurable
+});
 const app = express();
 
 app.use(express.json());

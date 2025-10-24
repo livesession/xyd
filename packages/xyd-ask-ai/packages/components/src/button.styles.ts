@@ -13,6 +13,15 @@ export default css`
       var(--ask-ai-blue60) 20%,
       transparent
     );
+
+    transition:
+      transform 0.5s,
+      opacity 0.2s,
+      left 0.2s,
+      width 0.4s;
+
+    transform: translateY(0);
+    opacity: 1;
   }
 
   /* Dark mode support */
@@ -45,13 +54,6 @@ export default css`
     z-index: 10;
     width: 100%;
     max-width: 320px;
-    transition:
-      transform 0.5s,
-      opacity 0.2s,
-      left 0.2s,
-      width 0.4s;
-    transform: translateY(0);
-    opacity: 1;
   }
 
   @media (min-width: 640px) {
@@ -60,16 +62,16 @@ export default css`
     }
   }
 
-  form:hover {
+  :host(:hover) {
     transform: scale(1);
   }
 
-  :host([variant="secondary"]) form:hover {
+  :host([variant="secondary"]:hover) {
     transform: none;
   }
 
   @media (min-width: 640px) {
-    form:hover {
+    :host(:hover) {
       transform: scale(1.05);
     }
   }
@@ -179,7 +181,7 @@ export default css`
       animation: none !important;
     }
 
-    form:hover {
+    :host(:hover) {
       transform: none;
     }
   }

@@ -11,6 +11,9 @@ import styles from "./index.styles";
 @customElement("ask-ai")
 export class AskAI extends LitElement {
   @property({ type: String })
+  value = "";
+
+  @property({ type: String })
   placeholder = "Ask a question...";
 
   @property({ type: Boolean })
@@ -52,11 +55,25 @@ export class AskAI extends LitElement {
     this.drawerEl.scrollToBottom(options || { behavior: "smooth" });
   }
 
+  public submitForm() {
+    if (!this.value.trim()) return;
+    
+    // Dispatch submit event for React to handle via @lit/react events mapping
+    this.dispatchEvent(
+      new CustomEvent("submit", {
+        detail: { message: this.value },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
   render() {
     return html`
       ${this.renderDockInput()}
 
       <ask-ai-drawer
+        part="drawer"
         ?open="${this.drawerOpen}"
         @drawer-close="${this.handleDrawerClose}"
       >
@@ -70,7 +87,9 @@ export class AskAI extends LitElement {
           <slot @slotchange="${this.handleSlotchange}"></slot>
           <footer>
             <ask-ai-button
+              part="button"
               variant="secondary"
+              .inputValue="${this.value}"
               .placeholder="${this.placeholder}"
               .disabled="${this.disabled}"
               .showKeyboardShortcut="${false}"
@@ -108,6 +127,8 @@ export class AskAI extends LitElement {
 
     return html`
       <ask-ai-button
+        part="button"
+        .inputValue="${this.value}"
         .placeholder="${this.placeholder}"
         .disabled="${this.disabled}"
         .showKeyboardShortcut="${true}"

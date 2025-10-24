@@ -45,7 +45,7 @@ export class AskAIButton extends LitElement {
             type="text"
             placeholder="${this.placeholder}"
             aria-label="${this.placeholder}"
-            .value="${this.inputValue}"
+            .value="${this.inputValue}" 
             ?disabled="${this.disabled}"
             @input="${this.handleInput}"
             @focus="${this.handleFocus}"
@@ -60,6 +60,7 @@ export class AskAIButton extends LitElement {
           ` : ''}
 
           <button
+            part="submit"
             type="submit"
             aria-label="Send message"
             ?disabled="${this.isButtonDisabled()}"

@@ -61,12 +61,12 @@ export interface Sources {
    * @example "http://localhost:3000/openapi.yaml"
    * @example ["http://localhost:3000/openapi.yaml", "./openapi.yaml"]
    */
-  openapi: string | string[];
+  openapi?: string | string[];
 
   /**
-   * The LLMs sources to use
+   * The LLMs txt sources to use
    * @example "http://localhost:3000/llms.tx"
    * @example ["http://localhost:3000/llms.txt", "./llms.txt"]
    */
-  llms: string | string[];
+  llmsTxt?: string | string[];
 }

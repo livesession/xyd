@@ -6,7 +6,7 @@ import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { mcpUniformResources, mcpUniformTools } from "@xyd-js/mcp";
+import { mcpUniformResources, mcpUniformTools, mcpLLMsResources, mcpLLMsTools } from "@xyd-js/mcp";
 
 // Extend Express Request type to include pendingToken
 declare global {
@@ -17,6 +17,12 @@ declare global {
   }
 }
 
+interface MCPServerOptions {
+  uniformSources: string | string[]
+  llmsSources: string | string[]
+  openAIApiKey: string // TODO: support other LLMS embeddings
+}
+
 export class MCPServer {
   private transports: { [sessionId: string]: StreamableHTTPServerTransport } =
     {};
@@ -25,8 +31,11 @@ export class MCPServer {
   private sessionTokens: { [sessionId: string]: string } = {};
 
   private uniformSources: string[] = []
+  private llmsSources: string[] = []
 
-  constructor(uniformSources: string | string[] = process.argv[2]) {
+  constructor(protected options: MCPServerOptions) {
+    const { uniformSources, llmsSources } = options;
+
     this.connect = this.connect.bind(this);
     this.handleConnectionRequest = this.handleConnectionRequest.bind(this);
     this.handleSessionRequest = this.handleSessionRequest.bind(this);
@@ -35,6 +44,13 @@ export class MCPServer {
       this.uniformSources.push(uniformSources);
     } else if (uniformSources && Array.isArray(uniformSources)) {
       this.uniformSources.push(...uniformSources);
+    }
+
+    // Handle llms.txt sources
+    if (llmsSources && typeof llmsSources === "string") {
+      this.llmsSources.push(llmsSources);
+    } else if (llmsSources && Array.isArray(llmsSources)) {
+      this.llmsSources.push(...llmsSources);
     }
   }
 
@@ -134,6 +150,12 @@ export class MCPServer {
     
     await mcpUniformTools(server, source || "", token || "");
 
+    // Add llms.txt resources and tools
+    if (this.llmsSources.length > 0) {
+      // await mcpLLMsResources(server, this.llmsSources);
+      await mcpLLMsTools(server, this.llmsSources, this.options.openAIApiKey);
+    }
+
     // Add simple token tool
     this.addSimpleTokenTool(server);
 
@@ -220,4 +242,5 @@ export class MCPServer {
     this.transports = {};
     this.sessionTokens = {};
   }
+
 }
