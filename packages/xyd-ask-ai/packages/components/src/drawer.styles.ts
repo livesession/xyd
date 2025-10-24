@@ -26,7 +26,7 @@ export default css`
     }
   }
 
-  aside {
+  :host {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -41,8 +41,7 @@ export default css`
     flex-direction: column;
     backdrop-filter: blur(12px);
   }
-
-  :host([open]) aside {
+  :host([open]) {
     right: 0;
   }
 

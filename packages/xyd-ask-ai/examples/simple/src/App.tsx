@@ -90,5 +90,5 @@ export default function App() {
 }
 
 function _Message({ message }: { message: string }) {
-  return <ProseMd content={message} />;
+  return <ProseMd languges={['javascript', 'jsx', 'tsx', 'ts', 'txt', 'md', 'mdx', 'bash']} content={message} />;
 }

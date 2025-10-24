@@ -13,7 +13,7 @@ export default css`
     --ask-ai-msg-user-bg: var(--ask-ai-light40);
     --ask-ai-msg-user-text-color: var(--ask-ai-msg-text-color);
 
-    --ask-ai-msg-border-radius: 18px 18px 4px 18px;
+    --ask-ai-msg-border-radius: 18px 4px 18px 18px;
   }
 
   @media (prefers-color-scheme: dark) {

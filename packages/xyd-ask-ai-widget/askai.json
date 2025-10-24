@@ -8,6 +8,7 @@
     "url": "$MCP_SOURCE"
   },
   "sources": {
-    "openapi": "$OPENAPI_SOURCE"
+    "openapi": "$OPENAPI_SOURCE",
+    "llmsTxt": "$LLMS_TXT_SOURCE"
   }
 }

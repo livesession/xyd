@@ -6,6 +6,7 @@ import { AskAI, useAskAI } from "@xyd-js/ask-ai/react";
 
 interface WidgetConfig {
   endpointURL?: string;
+  dockInput: boolean;
 }
 
 interface AskWidgetProps {
@@ -50,6 +51,7 @@ export function AskWidget({ config = {} }: AskWidgetProps) {
       onSubmit={submit as any}
       disabled={disabled}
       placeholder={getPlaceholder()}
+      dockInput={config?.dockInput || undefined}
       ref={ref}
     >
       <div slot="title">
@@ -80,5 +82,5 @@ export function AskWidget({ config = {} }: AskWidgetProps) {
 }
 
 function _Message({ message }: { message: string }) {
-  return <ProseMd content={message} />;
+  return <ProseMd languges={['javascript', 'jsx', 'tsx', 'ts', 'txt', 'md', 'mdx', 'bash']} content={message} />;
 }

@@ -33,6 +33,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.23",
     "@ai-sdk/openai": "^2.0.42",
+    "@langchain/community": "^1.0.0",
     "@lit/react": "^1.0.8",
     "@modelcontextprotocol/sdk": "^1.18.1",
     "ai": "^5.0.59",

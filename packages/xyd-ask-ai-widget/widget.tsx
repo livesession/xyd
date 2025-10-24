@@ -9,7 +9,12 @@ import { AskWidget } from "./src/Widget";
   // Extract data attributes
   const config = {
     askAiServer: resolveServerUrl(currentScript),
+    dockInput: true,
   };
+
+  if (currentScript?.dataset["dockInput"] === "false") {
+    config.dockInput = false;
+  }
 
   // Create a container div and append it to body
   const container = document.createElement("div");
@@ -22,6 +27,7 @@ import { AskWidget } from "./src/Widget";
     <AskWidget
       config={{
         endpointURL: `${config.askAiServer}/ask`,
+        dockInput: config.dockInput,
       }}
     />
   );

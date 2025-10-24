@@ -14,13 +14,8 @@ export class AskAIDrawer extends LitElement {
 
   render() {
     return html`
-      <aside
-        role="dialog"
-        aria-labelledby="drawer-title"
-        aria-hidden="${!this.open}"
-      >
         <header>
-          <h2 id="drawer-title">
+          <h2>
             <slot name="title"></slot>
           </h2>
           <ask-ai-button-icon
@@ -37,7 +32,6 @@ export class AskAIDrawer extends LitElement {
             <slot name="messages"></slot>
           </section>
         </main>
-      </aside>
     `;
   }
 

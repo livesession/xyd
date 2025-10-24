@@ -21,6 +21,11 @@
     "clean": "rimraf build"
   },
   "dependencies": {
+    "@langchain/classic": "^1.0.0",
+    "@langchain/community": "^1.0.0",
+    "@langchain/openai": "^1.0.0",
+    "@langchain/textsplitters": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.18.1",
     "@xyd-js/atlas": "workspace:*",
     "@xyd-js/components": "workspace:*",
     "@xyd-js/core": "workspace:*",
@@ -29,8 +34,8 @@
     "@xyd-js/openapi": "workspace:*",
     "@xyd-js/plugins": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.18.1",
     "json-schema-to-zod": "^2.6.1",
+    "langchain": "^1.0.1",
     "openux-js": "^0.0.0-pre.0",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",
@@ -43,7 +48,7 @@
   "devDependencies": {
     "@types/node": "^20.9.0",
     "@types/turndown": "^5.0.5",
-    "typescript": "^5.6.2",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "typescript": "^5.6.2"
   }
 }

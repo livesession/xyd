@@ -3,7 +3,6 @@ import { join, dirname } from "node:path";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 
-import { Router } from 'express';
 import express from "express";
 
 import { handler as askAiHandler } from "@xyd-js/ask-ai/node";
@@ -66,7 +65,8 @@ export async function startServer(
         body: body,
       });
 
-      let mcpUrl = settings.mcp?.url || "";
+      // TODO: check if it works
+      let mcpUrl = settings.mcp?.url || request.url + "/mcp";
       if (Array.isArray(mcpUrl)) {
         console.warn("MCP as array is not supported, using the first one");
         mcpUrl = mcpUrl[0];

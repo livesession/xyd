@@ -61,7 +61,7 @@ function ensureSettings(settings: Settings) {
   if (!settings.sources) {
     settings.sources = {
       openapi: "",
-      llms: "",
+      llmsTxt: "",
     };
   }
 
@@ -70,9 +70,9 @@ function ensureSettings(settings: Settings) {
     console.log("(env settings): using OPENAPI_SOURCE");
   }
 
-  if (process.env.LLMS_SOURCE) {
-    settings.sources.llms = process.env.LLMS_SOURCE;
-    console.log("(env settings): using LLMS_SOURCE");
+  if (process.env.LLMS_TXT_SOURCE) {
+    settings.sources.llmsTxt = process.env.LLMS_TXT_SOURCE;
+    console.log("(env settings): using LLMS_TXT_SOURCE");
   }
 
   if (process.env.MCP_URL) {

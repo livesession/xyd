@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@xyd-js/ask-ai": "workspace:*",
-    "@prose-sdk/components": "^0.1.0",
-    "@prose-sdk/react": "^0.1.0",
+    "@prose-sdk/components": "^0.6.14",
+    "@prose-sdk/react": "^0.3.14",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
