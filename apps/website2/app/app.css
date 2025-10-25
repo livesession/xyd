@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@import "./bento.css";
+@import "./header.css";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+html,
+body {
+  padding-inline: 5px;
+  background: rgb(249 243 233);
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
+
