@@ -1,0 +1,57 @@
+.slide-footer-root {
+    --scrollbar-width: 100px;
+    --background: #ffffff;
+    --pattern: #cbcdd2;
+    --spacing-vw: calc(1vw - var(--scrollbar-width) / 100);
+
+    overflow: hidden;
+    text-align: center;
+    user-select: none;
+    background-color: var(--background);
+    clip-path: border-box;
+    font-weight: 500;
+    letter-spacing: -.04em;
+    border-radius: 0.25rem;
+}
+
+.slide-footer-root {
+    @media (width >=800px) {
+        white-space: nowrap;
+        font-size: calc(21 * var(--spacing-vw));
+        line-height: .8;
+        height: 1lh;
+    }
+}
+
+.slide-footer-inner {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    right: 0;
+    bottom: 30px;
+}
+
+.slide-footer-background {
+    position: fixed;
+    inset: 0;
+    height: calc(100dvh + 144px);
+    animation: slide-footer-move 3s linear infinite;
+    --step: 32px;
+    background-image: 
+        linear-gradient(135deg, transparent 46%, var(--pattern) 46%, var(--pattern) 48%, transparent 48%);
+    background-size: var(--step) var(--step);
+    background-position: 0 0;
+}
+
+/*! CSS Used keyframes */
+@keyframes slide-footer-move {
+    0% {
+        translate: 0 0;
+    }
+
+    to {
+        translate: 0 calc(var(--step) * 2);
+    }
+}

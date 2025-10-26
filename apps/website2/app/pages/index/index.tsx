@@ -1,7 +1,19 @@
 import { Hero } from "./Hero";
+import { Navbar } from "../../components/Navbar";
+import { FeaturesSection } from "../../components/FeaturesSection";
+import { StatementSection } from "../../components/StatementSection";
+import { BentoSection } from "../../components/BentoSection";
+import { SlideFooter } from "../../components/SlideFooter";
+import { Pacman } from "../../components/Pacman";
 
 export function PageIndex() {
     return <>
-    <Hero />
+      <Pacman />
+      <Navbar />
+      <Hero />
+      <FeaturesSection />
+      <StatementSection />
+      <BentoSection />
+      <SlideFooter />
     </>
 }

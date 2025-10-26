@@ -109,7 +109,7 @@
     .home-bento__item-inner {
         position: relative;
         overflow: hidden;
-        background: #e4ecf4;
+        @apply bg-gray-100;
 
         @media (min-width: 940px) {
             padding-block-end: 80%;

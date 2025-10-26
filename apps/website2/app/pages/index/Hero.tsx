@@ -1,11 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HeroSVG } from "./HeroSVG";
-import { Navbar } from "../../components/Navbar";
-import { FeaturesSection } from "../../components/FeaturesSection";
-import { BentoSection } from "../../components/BentoSection";
 
 export function Hero() {
-  const [activeTab, setActiveTab] = useState(3);
+  const [activeTab, setActiveTab] = useState(0);
+  const [os, setOs] = useState<string>("Mac");
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    if (userAgent.includes('win')) {
+      setOs('Windows');
+    } else if (userAgent.includes('linux')) {
+      setOs('Linux');
+    } else if (userAgent.includes('mac')) {
+      setOs('Mac');
+    } else {
+      setOs('Mac'); // Default fallback
+    }
+  }, []);
 
   const tabs = [
     { name: "Build features" },
@@ -16,16 +29,15 @@ export function Hero() {
 
   // Different background images for each tab
   const tabImages = [
-    "https://framerusercontent.com/images/xXngDcniCg8lk0urG3eUnn7DM.png?width=1024&height=1024",
-    "https://framerusercontent.com/images/RMqKY0X6mt3bcUoHUnlZxTRa4E0.png?width=1024&height=1024",
-    "https://framerusercontent.com/images/xXngDcniCg8lk0urG3eUnn7DM.png?width=1024&height=1024",
-    "https://framerusercontent.com/images/RMqKY0X6mt3bcUoHUnlZxTRa4E0.png?width=1024&height=1024",
+    "/bg1.jpeg",
+    "/bg2.jpeg",
+    "/bg3.png",
+    "/bg4.png",
   ];
 
   return (
     <>
-      <Navbar />
-      <section data-theme="dark" className="relative min-h-screen bg-[#0a2540] text-white overflow-hidden rounded-t-3xl">
+      <section data-theme="dark" className="relative min-h-screen bg-[#0a2540] text-white overflow-hidden">
         {/* Noise texture overlay */}
       <div 
         className="absolute inset-0 opacity-[0.15] pointer-events-none"
@@ -56,8 +68,9 @@ export function Hero() {
           </p>
           
           <div className="mt-10 flex items-center gap-x-6">
-            <button className="rounded-xs bg-white px-6 py-3 text-base font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors flex items-center gap-2">
-              Download for Mac
+            <button disabled className="rounded-xs bg-white px-6 py-3 text-base font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors flex items-center gap-2">
+              Download for {os}
+              (soon)
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
@@ -77,7 +90,7 @@ export function Hero() {
             <div className="relative rounded-2xl overflow-hidden shadow-2xl min-w-[800px] p-4">
               {/* Background scenic image - changes with tabs */}
               <div 
-                className="w-full h-[550px] bg-cover bg-center transition-all duration-700 rounded-2xl"
+                className="w-full h-[550px] bg-cover bg-center transition-all duration-700 rounded-2xl blur-2xl"
                 style={{
                   backgroundImage: `url(${tabImages[activeTab]})`,
                   backgroundPosition: 'center',
@@ -110,10 +123,13 @@ export function Hero() {
           </div>
         </div>
       </div>
-    
+      <div className="relative flex mx-auto flex-col items-center justify-center flex-row gap-2">
+      <div className="h-[6px] w-[6px] bg-blue-500"></div>
+      <p className="text-gray-100 text-sm font-extralight tracking-wide">
+        The most powerful documentation framework, built to scale with your ambition.
+        </p>
+        </div>
       </section>
-      <FeaturesSection />
-      <BentoSection />
     </>
   );
 }

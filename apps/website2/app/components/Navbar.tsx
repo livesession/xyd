@@ -44,7 +44,7 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 w-[1600px] mx-auto my-8 flex items-center justify-center rounded-lg bg-[#0a2540]/80-X backdrop-blur-md-X">
       <div id="site-header__nav-bg"></div>
       <div className="px-6 lg:px-8 w-full">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-12 items-center justify-between">
           {/* Logo */}
           {/* <div className="flex items-center">
             <a href="/" className="flex items-center gap-2">
@@ -104,8 +104,8 @@ export function Navbar() {
             <button className={contactButtonClass}>
               Contact sales
             </button>
-            <button className="rounded-md bg-white px-4 py-2 text-md font-semibold text-gray-900 shadow-sm hover:bg-gray-100 transition-colors">
-              Download for Mac
+            <button className="rounded-md bg-white px-4 py-1 text-md font-normal text-gray-900 shadow-sm hover:bg-gray-100 transition-colors">
+              Download (soon)
             </button>
           </div>
 

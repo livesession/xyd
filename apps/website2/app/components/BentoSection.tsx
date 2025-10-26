@@ -1,6 +1,7 @@
+// bg-cover bg-center bg-no-repeat bg-[url('/gradient1.png')]
 export function BentoSection() {
   return (
-    <section className="relative bg-white text-gray-900 py-24 bg-cover bg-center bg-no-repeat bg-[url('/gradient1.png')]">
+    <section className="relative bg-white text-gray-900 py-24 mt-12 rounded mb-12">
       <div className="relative mx-auto max-w-[1600px] px-6 lg:px-8">
         {/* Header */}
         <div className="mb-16">

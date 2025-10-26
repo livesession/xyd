@@ -1,16 +1,41 @@
 @import "tailwindcss";
 @import "./bento.css";
 @import "./header.css";
+@import "./slide-footer.css";
 
 @theme {
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+@keyframes chomp {
+  0% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(0.7);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
 html,
 body {
-  padding-inline: 5px;
-  background: rgb(249 243 233);
+  margin-inline: 30px;
+  background: rgb(242, 245, 250);
+  --dot-color: #6e6e6e88;
+  --dot-size: 1.2px;
+  --dot-step: 22px;
+  --device-pixel-ratio: 2;
+  --dot-stop: calc(var(--dot-size) - min(.5px, 1px / var(--device-pixel-ratio)));
+  background-size: var(--dot-step) var(--dot-step);
+  background-position: calc(50% + var(--dot-step) / 2) 0;
+  background-image: radial-gradient(var(--dot-step) circle, var(--dot-color) var(--dot-stop), transparent var(--dot-size));
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;

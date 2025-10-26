@@ -1,6 +1,6 @@
 export function FeaturesSection() {
   return (
-    <section data-theme="dark" className="relative bg-[#0a2540] text-white py-24">
+    <section data-theme="dark" className="relative bg-[#0a2540] text-white py-24 rounded-b">
       {/* Gradient background accent - Right */}
       <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-bl from-purple-500/20 via-blue-500/20 to-transparent blur-[200px]" />
       
@@ -10,8 +10,8 @@ export function FeaturesSection() {
       <div className="relative mx-auto max-w-[1600px] px-6 lg:px-8">
         {/* Top section */}
         <div className="text-center mb-16">
-          <p className="text-purple-400 text-sm font-medium mb-6 tracking-wider uppercase">
-            [Explore the features]
+          <p className="text-purple-400 text-sm font-medium mb-6 tracking-widest uppercase">
+            [ Explore the features ]
           </p>
           <h2 className="text-6xl lg:text-7xl font-normal mb-8" style={{ letterSpacing: '1px' }}>
             Cascade

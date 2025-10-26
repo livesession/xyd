@@ -19,7 +19,6 @@
     content: "";
     position: absolute;
     inset: 0;
-    border: 1px solid rgba(211, 211, 211, .03);
     border-radius: 18px;
     background: linear-gradient(180deg, #def4ff0a, #abbcc50d, #5d676d1a);
 }
