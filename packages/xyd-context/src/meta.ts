@@ -18,14 +18,22 @@ interface MetaComponent {
     transform: TransformFn
 }
 
-const registry = new Map<string, MetaComponent>()
+// TODO: in the future fix package resolution instead of globalThis
+
+declare global {
+    var __xydCtxMetaRegistry: Map<string, MetaComponent>
+}
+
+if (typeof globalThis.__xydCtxMetaRegistry === 'undefined') {
+    globalThis.__xydCtxMetaRegistry = new Map<string, MetaComponent>()
+}
 
 export function registerMetaComponent(
     name: string,
     componentName: string,
     transform: TransformFn
 ) {
-    registry.set(name, {
+    globalThis.__xydCtxMetaRegistry.set(name, {
         name,
         componentName,
         transform
@@ -33,5 +41,5 @@ export function registerMetaComponent(
 }
 
 export function getMetaComponent(name: string) {
-    return registry.get(name)
+    return globalThis.__xydCtxMetaRegistry.get(name)
 }
