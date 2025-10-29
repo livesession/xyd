@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { HeroSVG } from "./HeroSVG";
 
 export function Hero() {
   const [activeTab, setActiveTab] = useState(0);
   const [os, setOs] = useState<string>("Mac");
+  const [isHovering, setIsHovering] = useState(false);
+  const isHoveringRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -21,10 +23,38 @@ export function Hero() {
   }, []);
 
   const tabs = [
-    { name: "Build features" },
-    { name: "Fix bugs" },
-    { name: "Debug prod" },
-    { name: "Understand your codebase" },
+    { 
+      name: "CLI",
+      icon: (
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      )
+    },
+    { 
+      name: "HMR",
+      icon: (
+        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+        </svg>
+      )
+    },
+    { 
+      name: "Plugins",
+      icon: (
+        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z" />
+        </svg>
+      )
+    },
+    { 
+      name: "Deploy",
+      icon: (
+        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+        </svg>
+      )
+    },
   ];
 
   // Different background images for each tab
@@ -33,6 +63,14 @@ export function Hero() {
     "/bg2.jpeg",
     "/bg3.png",
     "/bg4.png",
+  ];
+
+  // Different videos for each tab
+  const tabVideos = [
+    "/xyd-cli.mp4", // CLI
+    "/xyd-hmr.mp4", // HMR
+    "/xyd-plugins.mp4", // Plugins
+    "/xyd-deploy.mp4", // Deploy
   ];
 
   return (
@@ -55,16 +93,20 @@ export function Hero() {
         <HeroSVG className="w-full h-full object-cover" />
       </div>
       
-      <div className="relative mx-auto max-w-[1600px] px-6 pt-[200px] pb-24 sm:pb-32 lg:flex lg:px-8 lg:pb-40">
+      <div className="relative mx-auto max-w-[1600px] px-6 pt-[150px] pb-32 sm:pb-32 lg:flex lg:px-8 lg:pb-52 gap-x-2">
         {/* Left content */}
         <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-lg">
-          <h1 className="text-6xl font-light text-white sm:text-7xl lg:text-8xl" style={{ letterSpacing: '2px' }}>
+        <span className="text-6xl font-light text-white sm:text-7xl lg:text-8xl" style={{ letterSpacing: '2px' }}>
+          </span>
+          <h1 className="relative text-6xl font-light text-white sm:text-7xl lg:text-8xl" style={{ letterSpacing: '2px' }}>
             Docs
             <br />
-            for tommorow
+            for future 
+            <br />
+            dev.
           </h1>
-          <p className="mt-8 text-xl leading-8 text-gray-200 max-w-lg">
-            Open source documentation framework for future dev.
+          <p className="mt-8 text-xl leading-8 text-gray-300 max-w-lg">
+            Open Source documentation framework to build docs at scale.
           </p>
           
           <div className="mt-10 flex items-center gap-x-6">
@@ -87,16 +129,47 @@ export function Hero() {
         <div className="mx-auto mt-16 flex max-w-3xl sm:mt-24 lg:ml-20 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
           <div className="relative max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
             {/* Image container with tabs inside */}
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl min-w-[800px] p-4">
+            <div 
+              className="relative rounded-2xl overflow-hidden shadow-2xl min-w-[800px] p-4"
+              onMouseEnter={() => {
+                isHoveringRef.current = true;
+                setIsHovering(true);
+              }}
+              onMouseLeave={() => {
+                isHoveringRef.current = false;
+                setIsHovering(false);
+              }}
+            >
               {/* Background scenic image - changes with tabs */}
               <div 
                 className="w-full h-[550px] bg-cover bg-center transition-all duration-700 rounded-2xl blur-2xl"
                 style={{
                   backgroundImage: `url(${tabImages[activeTab]})`,
                   backgroundPosition: 'center',
+                  clipPath: 'border-box',
                 }}
-              />
-
+              >
+                {/* Video inside background */}
+              
+              </div>
+               <div
+                className="absolute top-0 left-0 w-full h-full rounded-lg p-12 cursor-auto"
+               >
+              <video 
+                  key={tabVideos[activeTab]}
+                  className="w-full h-auto rounded-md"
+                  src={tabVideos[activeTab]}
+                  autoPlay
+                  loop={isHovering}
+                  muted
+                  playsInline
+                  onEnded={() => {
+                    if (!isHoveringRef.current) {
+                      setActiveTab((prev) => (prev + 1) % tabs.length);
+                    }
+                  }}
+                />
+                </div>
               {/* Action buttons INSIDE the image at the bottom */}
               <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                 {tabs.map((tab, index) => (
@@ -110,11 +183,7 @@ export function Hero() {
                         : "bg-white/10 text-white hover:bg-white/20 border border-white/10 rounded-full"
                     }`}
                   >
-                    {activeTab === index && (
-                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    )}
+                    {activeTab === index && tab.icon}
                     <span className="whitespace-nowrap">{tab.name}</span>
                   </button>
                 ))}
@@ -126,7 +195,7 @@ export function Hero() {
       <div className="relative flex mx-auto flex-col items-center justify-center flex-row gap-2">
       <div className="h-[6px] w-[6px] bg-blue-500"></div>
       <p className="text-gray-100 text-sm font-extralight tracking-wide">
-        The most powerful documentation framework, built to scale with your ambition.
+        We built xyd to make documentation easier and more accessible for everyone.
         </p>
         </div>
       </section>

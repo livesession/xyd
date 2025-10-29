@@ -26,11 +26,11 @@
 
 html,
 body {
-  margin-inline: 30px;
+  margin-inline: 13px;
   background: rgb(242, 245, 250);
   --dot-color: #6e6e6e88;
   --dot-size: 1.2px;
-  --dot-step: 22px;
+  --dot-step: 12px;
   --device-pixel-ratio: 2;
   --dot-stop: calc(var(--dot-size) - min(.5px, 1px / var(--device-pixel-ratio)));
   background-size: var(--dot-step) var(--dot-step);

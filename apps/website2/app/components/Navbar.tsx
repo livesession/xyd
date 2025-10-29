@@ -36,15 +36,11 @@ export function Navbar() {
     ? "text-md text-white hover:text-purple-400 transition-colors duration-500" 
     : "text-md text-gray-900 hover:text-purple-600 transition-colors duration-500";
 
-  const contactButtonClass = isDarkSection
-    ? "text-md text-white hover:text-white transition-colors duration-500"
-    : "text-md text-gray-900 hover:text-gray-900 transition-colors duration-500";
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 w-[1600px] mx-auto my-8 flex items-center justify-center rounded-lg bg-[#0a2540]/80-X backdrop-blur-md-X">
       <div id="site-header__nav-bg"></div>
       <div className="px-6 lg:px-8 w-full">
-        <div className="flex h-12 items-center justify-between">
+        <div className="flex h-14 items-center justify-between">
           {/* Logo */}
           {/* <div className="flex items-center">
             <a href="/" className="flex items-center gap-2">
@@ -82,28 +78,28 @@ export function Navbar() {
     </defs>
   </svg>
             </a>
-            <a href="#features" className={linkClass}>
-              Features
+            <a href="https://docs.xyd.dev/" target="_blank" rel="noopener noreferrer" className={linkClass}>
+              Documentation
             </a>
-            <a href="#resources" className={linkClass}>
-              Resources
+            <a href="https://xyd.dev/docs/resources/showcase" target="_blank" rel="noopener noreferrer" className={linkClass}>
+              Showcase
             </a>
-            <a href="#pricing" className={linkClass}>
-              Pricing
+            <a href="https://github.com/xyd-js/examples" target="_blank" rel="noopener noreferrer" className={linkClass}>
+              Examples
             </a>
-            <a href="#careers" className={linkClass}>
-              Careers
+            <a href="https://github.com/orgs/livesession/projects/4" target="_blank" rel="noopener noreferrer" className={linkClass}>
+              Roadmap
             </a>
-            <a href="#enterprise" className={linkClass}>
-              Enterprise
+            <a href="https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A" target="_blank" rel="noopener noreferrer" className={linkClass}>
+              Community
             </a>
           </div>
 
           {/* Right side buttons */}
           <div className="flex items-center gap-4">
-            <button className={contactButtonClass}>
-              Contact sales
-            </button>
+            <a href="https://github.com/livesession/xyd" target="_blank" rel="noopener noreferrer" className={linkClass}>
+              GitHub
+            </a>
             <button className="rounded-md bg-white px-4 py-1 text-md font-normal text-gray-900 shadow-sm hover:bg-gray-100 transition-colors">
               Download (soon)
             </button>

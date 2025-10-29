@@ -112,7 +112,7 @@
         @apply bg-gray-100;
 
         @media (min-width: 940px) {
-            padding-block-end: 80%;
+            padding-block-end: 90%;
         }
     }
 
@@ -159,24 +159,36 @@
     }
 
     .home-bento__item-title {
-        font-size: calc(var(--h4) * 1.1);
+        font-size: 2rem;
         line-height: 1.25;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
 
         & br {
             @media (max-width: 939.98px) {
                 display: none;
             }
         }
+
+        @media (min-width: 768px) {
+            font-size: 2.5rem;
+        }
     }
 
     .home-bento__item-subtitle {
-        font-size: calc(var(--body2) * 1.1);
-        margin-block-start: 1.25em;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-block-start: 0.5em;
+        color: #6b7280;
 
         & br {
             @media (max-width: 939.98px) {
                 display: none;
             }
+        }
+
+        @media (min-width: 768px) {
+            font-size: 1.125rem;
         }
     }
 
@@ -215,6 +227,8 @@
             inset-block-end: 0;
             inset-inline-end: 0;
             inline-size: 90%;
+            /* right: -10px; */
+            bottom: -30px;
         }
 
         & .home-bento__item-image-main-wrapper-mobile {
@@ -226,11 +240,12 @@
             }
         }
 
-        & .home-bento__item-title {
+        & .home-bento__item-text {
             @media (min-width: 940px) {
                 position: absolute;
-                inset-block-start: 11%;
+                inset-block-start: 10%;
                 inset-inline-start: 10%;
+                max-inline-size: 80%;
             }
         }
     }
@@ -412,7 +427,9 @@
             position: absolute;
             inset-block-end: 0;
             inset-inline-end: 0;
-            inline-size: 40%;
+            inline-size: 90%;
+            /* right: -10px; */
+            bottom: -30px;
         }
 
         & .home-bento__item-image-main-wrapper-mobile {
@@ -430,8 +447,9 @@
         & .home-bento__item-text {
             @media (min-width: 940px) {
                 position: absolute;
-                inset-block-start: 37%;
+                inset-block-start: 10%;
                 inset-inline-start: 10%;
+                max-inline-size: 80%;
             }
         }
     }
@@ -470,6 +488,8 @@
             inset-block-end: 0;
             inset-inline-end: 0;
             inline-size: 90%;
+            /* right: -10px; */
+            bottom: -30px;
         }
 
         & #home-bento__item-03-hover {
@@ -539,6 +559,7 @@
                 position: absolute;
                 inset-block-start: 10%;
                 inset-inline-start: 10%;
+                max-inline-size: 80%;
             }
         }
     }
