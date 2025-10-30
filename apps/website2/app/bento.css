@@ -6,6 +6,33 @@
         --gutter: 1vw;
         --space-3xl: clamp(5rem, 4.8214rem + 0.8929vi, 6.25rem);
     }
+
+    /* Shimmer animation for gradient text */
+    @keyframes shimmer {
+        0% {
+            background-position: 200% center;
+        }
+        100% {
+            background-position: -200% center;
+        }
+    }
+
+    @keyframes shimmer-reverse {
+        0% {
+            background-position: -200% center;
+        }
+        100% {
+            background-position: 200% center;
+        }
+    }
+
+    .animate-shimmer {
+        animation: shimmer 8s ease-in-out infinite;
+    }
+
+    .animate-shimmer-reverse {
+        animation: shimmer-reverse 8s ease-in-out infinite;
+    }
 }
 
 @layer components {
@@ -40,6 +67,12 @@
     /* Bento Item */
     .home-bento__item {
         --column-span: 12;
+        --radius: 25px;
+
+        @media (min-width: 940px) {
+            --radius: 50px;
+        }
+
         @apply relative;
 
         & .home-bento__item-inner {
@@ -47,6 +80,61 @@
 
             @media (max-width: 1439.98px) {
                 @apply rounded-lg;
+            }
+        }
+    }
+
+    /* Shared circle decoration for bento items */
+    #home-bento__item-01::before,
+    #home-bento__item-02::before,
+    #home-bento__item-03::before {
+        content: '';
+        @apply absolute;
+        top: 20px;
+        width: 24px;
+        height: 24px;
+        background: var(--color-white);
+        border-radius: 50%;
+        z-index: 10;
+        
+        /* Mobile: all circles on right */
+        right: 20px;
+    }
+
+    /* All items: top-left clip-path for mobile, specific for desktop */
+    #home-bento__item-01,
+    #home-bento__item-02,
+    #home-bento__item-03 {
+        /* Mobile: all have top-left corner clipped */
+        clip-path: polygon(
+            var(--radius) 0, 100% 0, 100% 100%, 0 100%, 0 var(--radius)
+        );
+    }
+
+    /* Desktop-specific clip-paths and circle positions */
+    @media (min-width: 940px) {
+        #home-bento__item-01 {
+            /* Desktop: keep top-left corner clipped */
+            clip-path: polygon(
+                var(--radius) 0, 100% 0, 100% 100%, 0 100%, 0 var(--radius)
+            );
+
+            /* Desktop: circle on top-right */
+            &::before {
+                right: 20px;
+            }
+        }
+
+        #home-bento__item-02,
+        #home-bento__item-03 {
+            /* Desktop: top-right corner clipped */
+            clip-path: polygon(
+                0 0, calc(100% - var(--radius)) 0, 100% var(--radius), 100% 100%, 0 100%
+            );
+
+            /* Desktop: circle on top-left */
+            &::before {
+                left: 20px;
             }
         }
     }
@@ -61,7 +149,7 @@
         }
 
         @media (min-width: 940px) {
-            @apply flex flex-col gap-6 justify-start;
+            @apply flex flex-col gap-6 justify-start items-start;
         }
 
         &>div:first-child {
@@ -92,7 +180,7 @@
     }
 
     .home-bento__item-subtitle {
-        @apply text-sm leading-relaxed m-0 text-gray-500;
+        @apply relative text-sm leading-relaxed m-0 text-gray-500;
 
         & br {
             @media (max-width: 939.98px) {
@@ -101,7 +189,7 @@
         }
 
         @media (min-width: 768px) {
-            @apply text-base;
+            @apply text-lg;
         }
     }
 

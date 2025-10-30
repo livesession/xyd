@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { ClientOnly } from "./ClientOnly";
 
-export function Pacman() {
+function PacmanInner() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [direction, setDirection] = useState<'right' | 'left' | 'down' | 'up'>('right');
   const [isVisible, setIsVisible] = useState(true);
@@ -179,11 +180,6 @@ export function Pacman() {
     }
   };
 
-  // Don't render on server
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
   // Calculate opacity based on active state
   const opacity = isActive && isInitialized && isVisible ? 1 : 0;
 
@@ -244,6 +240,14 @@ export function Pacman() {
         ))}
       </div> */}
     </div>
+  );
+}
+
+export function Pacman() {
+  return (
+    <ClientOnly>
+      <PacmanInner />
+    </ClientOnly>
   );
 }
 

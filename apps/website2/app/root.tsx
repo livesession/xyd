@@ -8,19 +8,20 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+// Self-hosted font - bundled with the app, no external requests!
+import "@fontsource-variable/dm-sans";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap",
-  },
+  { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+  
+  // Preload critical hero background images (WebP for modern browsers)
+  { rel: "preload", href: "/hero--bg1.webp", as: "image", type: "image/webp" },
+  
+  // Prefetch non-critical videos (browser fetches when idle)
+  { rel: "prefetch", href: "/hero--hmr.mp4", as: "video" },
+  { rel: "prefetch", href: "/hero--plugins.mp4", as: "video" },
+  { rel: "prefetch", href: "/hero--deploy.mp4", as: "video" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {

@@ -1,7 +1,7 @@
 .slide-footer-root {
     --scrollbar-width: 100px;
-    --background: #ffffff;
-    --pattern: #cbcdd2;
+    --background: var(--color-white);
+    --pattern: var(--color-gray-200);
     --spacing-vw: calc(1vw - var(--scrollbar-width) / 100);
 
     overflow: hidden;
@@ -15,12 +15,10 @@
 }
 
 .slide-footer-root {
-    @media (width >=800px) {
-        white-space: nowrap;
-        font-size: calc(21 * var(--spacing-vw));
-        line-height: .8;
-        height: 1lh;
-    }
+    white-space: nowrap;
+    font-size: calc(21 * var(--spacing-vw));
+    line-height: .8;
+    height: 1lh;
 }
 
 .slide-footer-inner {
