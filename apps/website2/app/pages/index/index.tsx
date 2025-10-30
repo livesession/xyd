@@ -4,6 +4,7 @@ import { FeaturesSection } from "../../components/FeaturesSection";
 import { StatementSection } from "../../components/StatementSection";
 import { BentoSection } from "../../components/BentoSection";
 import { SlideFooter } from "../../components/SlideFooter";
+import { Footer } from "../../components/Footer";
 import { Pacman } from "../../components/Pacman";
 
 export function PageIndex() {
@@ -15,5 +16,6 @@ export function PageIndex() {
       <StatementSection />
       <BentoSection />
       <SlideFooter />
+      <Footer />
     </>
 }

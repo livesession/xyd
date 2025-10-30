@@ -89,28 +89,28 @@ export function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a2540]/50 to-[#0a2540]" />
       
       {/* Background SVG */}
-      <div className="absolute inset-0 w-full h-full opacity-90 top-40">
+      <div className="absolute inset-0 w-full h-full -top-[10%] lg:top-40">
         <HeroSVG className="w-full h-full object-cover" />
       </div>
       
-      <div className="relative mx-auto max-w-[1600px] px-6 pt-[150px] pb-32 sm:pb-32 lg:flex lg:px-8 lg:pb-52 gap-x-2">
+      <div className="relative mx-auto max-w-[1600px] px-4 sm:px-6 pt-[150px] pb-32 sm:pb-32 lg:flex lg:items-start lg:gap-8 lg:px-8 lg:pb-52 xl:gap-12">
         {/* Left content */}
-        <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-lg">
+        <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-lg lg:w-[45%]">
         <span className="text-6xl font-light text-white sm:text-7xl lg:text-8xl" style={{ letterSpacing: '2px' }}>
           </span>
-          <h1 className="relative text-6xl font-light text-white sm:text-7xl lg:text-8xl" style={{ letterSpacing: '2px' }}>
+          <h1 className="relative text-5xl sm:text-6xl font-light text-white lg:text-7xl xl:text-8xl" style={{ letterSpacing: '2px' }}>
             Docs
             <br />
             for future 
             <br />
             dev.
           </h1>
-          <p className="mt-8 text-xl leading-8 text-gray-300 max-w-lg">
+          <p className="mt-6 sm:mt-8 text-lg sm:text-xl leading-7 sm:leading-8 text-gray-300 max-w-lg">
             Open Source documentation framework to build docs at scale.
           </p>
           
-          <div className="mt-10 flex items-center gap-x-6">
-            <button disabled className="rounded-xs bg-white px-6 py-3 text-base font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors flex items-center gap-2">
+          <div className="mt-8 sm:mt-10 flex items-center gap-x-4 sm:gap-x-6">
+            <button disabled className="rounded-xs bg-white px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors flex items-center gap-2">
               Download for {os}
               (soon)
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,18 +119,18 @@ export function Hero() {
             </button>
           </div>
 
-          <div className="mt-8 flex items-center gap-3 px-4 py-3 bg-gray-900/50 backdrop-blur-sm rounded-lg border border-gray-800 w-fit">
-            <span className="text-gray-500">$</span>
-            <code className="text-gray-300 font-mono text-sm">bun add -g xyd-js</code>
+          <div className="mt-6 sm:mt-8 flex items-center gap-3 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-900/50 backdrop-blur-sm rounded-lg border border-gray-800 w-fit max-w-full overflow-x-auto">
+            <span className="text-gray-500 flex-shrink-0">$</span>
+            <code className="text-gray-300 font-mono text-xs sm:text-sm whitespace-nowrap">bun add -g xyd-js</code>
           </div>
         </div>
 
         {/* Right content - Image with Tabs */}
-        <div className="mx-auto mt-16 flex max-w-3xl sm:mt-24 lg:ml-20 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
-          <div className="relative max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
+        <div className="mx-auto mt-12 sm:mt-16 flex w-full max-w-3xl sm:mt-24 lg:mt-0 lg:flex-1 lg:w-[55%] lg:min-w-0">
+          <div className="relative w-full flex-none">
             {/* Image container with tabs inside */}
             <div 
-              className="relative rounded-2xl overflow-hidden shadow-2xl min-w-[800px] p-4"
+              className="relative rounded-2xl overflow-hidden shadow-2xl w-full p-2 sm:p-4"
               onMouseEnter={() => {
                 isHoveringRef.current = true;
                 setIsHovering(true);
@@ -142,7 +142,7 @@ export function Hero() {
             >
               {/* Background scenic image - changes with tabs */}
               <div 
-                className="w-full h-[550px] bg-cover bg-center transition-all duration-700 rounded-2xl blur-2xl"
+                className="w-full h-[250px] sm:h-[550px] md:h-[550px] lg:h-[450px] xl:h-[550px] bg-cover bg-center transition-all duration-700 rounded-2xl blur-2xl"
                 style={{
                   backgroundImage: `url(${tabImages[activeTab]})`,
                   backgroundPosition: 'center',
@@ -153,11 +153,11 @@ export function Hero() {
               
               </div>
                <div
-                className="absolute top-0 left-0 w-full h-full rounded-lg p-12 cursor-auto"
+                className="absolute top-0 left-0 w-full h-full rounded-lg p-3 sm:p-6 md:p-8 lg:p-10 xl:p-12 cursor-auto"
                >
               <video 
                   key={tabVideos[activeTab]}
-                  className="w-full h-auto rounded-md"
+                  className="w-full h-auto rounded-md shadow-lg"
                   src={tabVideos[activeTab]}
                   autoPlay
                   loop={isHovering}
@@ -171,15 +171,15 @@ export function Hero() {
                 />
                 </div>
               {/* Action buttons INSIDE the image at the bottom */}
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+              <div className="absolute bottom-3 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 z-10 flex-wrap justify-center max-w-[95%] sm:max-w-[90%]">
                 {tabs.map((tab, index) => (
                   <button
                     key={index}
                     onClick={() => setActiveTab(index)}
                     onMouseEnter={() => setActiveTab(index)}
-                    className={`px-5 py-2.5 text-sm font-medium transition-all duration-300 backdrop-blur-md cursor-pointer ${
+                    className={`px-2.5 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 text-xs sm:text-sm font-medium transition-all duration-300 backdrop-blur-md cursor-pointer ${
                       activeTab === index
-                        ? "bg-white text-gray-900 shadow-lg rounded-full flex items-center gap-2"
+                        ? "bg-white text-gray-900 shadow-lg rounded-full flex items-center gap-1.5 sm:gap-2"
                         : "bg-white/10 text-white hover:bg-white/20 border border-white/10 rounded-full"
                     }`}
                   >

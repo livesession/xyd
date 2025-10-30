@@ -31,6 +31,7 @@
     left: 0;
     right: 0;
     bottom: 30px;
+    transition: bottom 0.1s ease-out;
 }
 
 .slide-footer-background {
