@@ -139,7 +139,7 @@ export function FeaturesSection() {
         </div>
 
         {/* Video Section */}
-        <div className="relative rounded-2xl overflow-hidden shadow-2xl p-2 sm:p-4 max-w-7xl mx-auto">
+        <div className="relative rounded-2xl overflow-hidden p-2 sm:p-4 max-w-7xl mx-auto">
           <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20">
             {/* Video Element */}
             <video

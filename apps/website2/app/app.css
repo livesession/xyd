@@ -2,6 +2,7 @@
 @import "./bento.css";
 @import "./header.css";
 @import "./slide-footer.css";
+@import "./deploy-widget-button.css";
 
 /* Optimize font loading with font-display: swap for better performance */
 @font-face {
@@ -44,7 +45,7 @@
 
 html,
 body {
-  margin-inline: 13px;
+  margin-inline: 0;
   background: rgb(242, 245, 250);
   --dot-color: #6e6e6e88;
   --dot-size: 1.2px;
@@ -54,9 +55,26 @@ body {
   background-size: var(--dot-step) var(--dot-step);
   background-position: calc(50% + var(--dot-step) / 2) 0;
   background-image: radial-gradient(var(--dot-step) circle, var(--dot-color) var(--dot-stop), transparent var(--dot-size));
+  transition: margin-inline 0.3s ease-in-out;
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+}
+
+body.scrolled {
+  margin-inline: 25px;
+}
+
+.clip-rounded-top {
+  --radius: 50px;
+  clip-path: polygon(
+    var(--radius) 0, 
+    calc(100% - var(--radius)) 0, 
+    100% var(--radius), 
+    100% 100%, 
+    0 100%, 
+    0 var(--radius)
+  );
 }
 

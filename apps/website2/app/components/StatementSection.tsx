@@ -12,9 +12,6 @@ export function StatementSection() {
             It's also a time for a new era of documentation.
             <br />
             Built from ground up to build docs breezing.
-            <sup className="text-purple-600 ml-2 transition-colors font-medium uppercase text-xs tracking-wider select-none">
-              [MIT LICENSE]
-            </sup>
             <hr className="my-4 border-gray-300" />
           </h2>
           <h2 className="text-xl lg:text-3xl font-light tracking-wide leading-relaxed mb-6 text-gray-900 flex items-center justify-center gap-2">
@@ -22,9 +19,9 @@ export function StatementSection() {
             <a
               href="https://livesession.io"
               target="_blank"
-              className="text-purple-600 hover:text-purple-700 transition-colors font-medium uppercase text-sm tracking-wider"
+              className="text-purple-400 hover:text-purple-700 transition-colors font-medium uppercase text-sm tracking-wider"
             >
-              LiveSession
+              LiveSession ↗
             </a>
           </h2>
         </div>
