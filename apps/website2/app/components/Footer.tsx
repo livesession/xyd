@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 py-8">
-      <div className="relative mx-auto px-6 lg:px-8">
+      <div className="relative mx-auto px-6 lg:px-16">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Left side - Links */}
           <div className="flex items-center gap-8">
