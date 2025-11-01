@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
+    "build:full": "react-router build && cd ../docs && bunx xyd-js build && cd ../website2 && cp -r ../docs/.xyd/build/client/assets/* build/client/assets/ && cp -r ../docs/.xyd/build/client/docs build/client/ && rm -rf build/client/public && mkdir -p build/client/public && cp -r ../docs/.xyd/build/client/docs/public/* build/client/public/",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",

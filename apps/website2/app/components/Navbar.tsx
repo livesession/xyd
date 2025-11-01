@@ -89,17 +89,13 @@ export function Navbar() {
               {/* Navigation Links */}
               <div className="hidden lg:flex items-center gap-4 xl:gap-6 text-sm xl:text-base">
                 <a
-                  href="https://docs.xyd.dev/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/docs/guides/introduction"
                   className={linkClass}
                 >
                   Documentation
                 </a>
                 <a
-                  href="https://xyd.dev/docs/resources/showcase"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/docs/resources/showcase"
                   className={linkClass}
                 >
                   Showcase
@@ -196,7 +192,7 @@ export function Navbar() {
               <div className="lg:hidden py-4 border-t border-gray-700/20 mt-2">
                 <div className="flex flex-col gap-4 text-sm">
                   <a
-                    href="https://docs.xyd.dev/"
+                    href="/docs/guides/introduction"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={linkClass}
@@ -205,7 +201,7 @@ export function Navbar() {
                     Documentation
                   </a>
                   <a
-                    href="https://xyd.dev/docs/resources/showcase"
+                    href="/docs/resources/showcase"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={linkClass}
