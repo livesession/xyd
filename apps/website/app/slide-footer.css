@@ -1,0 +1,114 @@
+/* .slide-footer-root {
+    --scrollbar-width: 100px;
+    --background: var(--color-white);
+    --pattern: var(--color-gray-200);
+    --spacing-vw: calc(1vw - var(--scrollbar-width) / 100);
+
+    overflow: hidden;
+    text-align: center;
+    user-select: none;
+    background-color: var(--background);
+    clip-path: border-box;
+    font-weight: 500;
+    letter-spacing: -.04em;
+    border-radius: 0.25rem;
+}
+
+.slide-footer-root {
+    white-space: nowrap;
+    font-size: calc(21 * var(--spacing-vw));
+    line-height: .8;
+    height: 1lh;
+}
+
+.slide-footer-inner {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    right: 0;
+    bottom: 30px;
+    transition: bottom 0.1s ease-out;
+}
+
+.slide-footer-background {
+    position: fixed;
+    inset: 0;
+    height: calc(100dvh + 144px);
+    animation: slide-footer-move 3s linear infinite;
+    --step: 32px;
+    background-image: 
+        linear-gradient(135deg, transparent 46%, var(--pattern) 46%, var(--pattern) 48%, transparent 48%);
+    background-size: var(--step) var(--step);
+    background-position: 0 0;
+}
+
+@keyframes slide-footer-move {
+    0% {
+        translate: 0 0;
+    }
+
+    to {
+        translate: 0 calc(var(--step) * 2);
+    }
+} */
+
+.slide-footer-root {
+    --scrollbar-width: 100px;
+    --background: var(--color-white);
+    --pattern: var(--color-gray-200);
+    --spacing-vw: calc(1vw - var(--scrollbar-width) / 100);
+
+    /* position: relative; */
+    overflow: hidden;
+    text-align: center;
+    user-select: none;
+    background-color: var(--background);
+    clip-path: border-box;
+    font-weight: 500;
+    letter-spacing: -.04em;
+    border-radius: 0.25rem;
+}
+
+.slide-footer-root {
+    white-space: nowrap;
+    font-size: calc(21 * var(--spacing-vw));
+    line-height: .8;
+    height: 1lh;
+}
+
+.slide-footer-inner {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    right: 0;
+    bottom: 110px;
+    transition: bottom 0.1s ease-out;
+}
+
+.slide-footer-background {
+    position: fixed;
+    inset: 0;
+    opacity: 0.15;
+    height: calc(100dvh + 144px);
+    animation: slide-footer-move 3s linear infinite;
+    --step: 32px;
+    background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
+        linear-gradient(135deg, transparent 46%, var(--color-black) 46%, var(--color-black) 48%, transparent 48%);
+    background-size: 200px 200px, var(--step) var(--step);
+    background-position: 0 0, 0 0;
+}
+
+@keyframes slide-footer-move {
+    0% {
+        translate: 0 0;
+    }
+
+    to {
+        translate: 0 calc(var(--step) * 2);
+    }
+}

@@ -1,0 +1,44 @@
+[build]
+  command = """
+  curl -fsSL https://bun.com/install | bash -s "bun-v1.2.20"
+  export BUN_INSTALL="$HOME/.bun"
+  export PATH="$BUN_INSTALL/bin:$PATH"
+  bun --version
+  npm install && npm run build:full
+  """
+
+  publish = "build/client"
+
+[build.environment]
+  BUN_VERSION = "1.1.20"
+
+[[redirects]]
+  from = "/docs/guides"
+  to = "/docs/guides/introduction/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/guides.html"
+  to = "/docs/guides/introduction/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/guides"
+  to = "/docs/guides/introduction"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs"
+  to = "/docs/guides/introduction"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/reference/core"
+  to = "/docs/reference/core/overview"
+  status = 301
+  force = true
+

@@ -1,41 +1,35 @@
 {
   "name": "@xyd-js/website",
-  "version": "0.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build2": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "build": "react-router build",
+    "build:full": "react-router build && cd ../docs && bunx xyd-js build && cd ../website && cp -r ../docs/.xyd/build/client/assets/* build/client/assets/ && cp -r ../docs/.xyd/build/client/docs build/client/ && rm -rf build/client/public && mkdir -p build/client/public && cp -r ../docs/.xyd/build/client/docs/public/* build/client/public/",
+    "dev": "react-router dev",
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc",
+    "resize-hero-images": "node resize-hero-images.mjs"
   },
   "dependencies": {
-    "@code-hike/lighter": "^1.0.0",
-    "@cosmocss/land": "0.0.0-alpha.0",
-    "@mdx-js/loader": "^3.1.0",
-    "@mdx-js/react": "^3.1.0",
-    "@next/mdx": "15.1.7",
-    "@primer/octicons-react": "^19.15.1",
-    "@primer/react-brand": "0.49.0",
-    "@xyd-js/components": "^0.1.0-xyd.3",
-    "codehike": "^1.0.4",
-    "framer-motion": "^12.6.3",
-    "gsap": "^3.12.4",
-    "jotai": "^2.12.2",
-    "jotai-scope": "^0.7.3",
-    "next": "15.1.7",
-    "react": "^19.1.0",
-    "react": "^19.1.0",
-    "zod": "^3.24.2"
+    "@fontsource-variable/dm-sans": "^5.2.8",
+    "@react-router/node": "^7.9.2",
+    "@react-router/serve": "^7.9.2",
+    "isbot": "^5.1.31",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router": "^7.9.2"
   },
   "devDependencies": {
-    "@eslint/js": "^8.56.0",
-    "@types/gsap": "^3.0.0",
-    "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.0",
-    "eslint": "^8.56.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
-    "globals": "^15.15.0",
-    "typescript": "~5.3.3",
-    "typescript-eslint": "^7.0.1"
+    "@react-router/dev": "^7.9.2",
+    "@tailwindcss/vite": "^4.1.13",
+    "@types/node": "^22",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "rollup-plugin-critical": "^1.0.15",
+    "sharp": "^0.34.4",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

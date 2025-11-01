@@ -1,478 +1,418 @@
 {
-    "$schema": "./public/docs.json",
-    "theme": {
-        "name": "opener",
-        "logo": {
-            "light": "/public/assets/logo.svg",
-            "dark": "/public/assets/logo-dark.svg",
-            "page": "/docs/guides/introduction"
-        },
-        "favicon": "/public/assets/logo.svg",
-        "icons": {
-            "library": [
-                {
-                    "name": "lucide",
-                    "default": true
-                },
-                "./icons/iconify.json"
-            ]
-        },
-        "appearance": {},
-        "head": []
+  "$schema": "./public/docs.json",
+  "theme": {
+    "name": "opener",
+    "logo": {
+      "light": "/public/assets/logo.svg",
+      "dark": "/public/assets/logo-dark.svg",
+      "page": "/docs/guides/introduction",
+      "href": "https://xyd.dev"
     },
-    "ai": {
-        "llmsTxt": {
-            "title": "xyd docs",
-            "summary": "Open Souce docs framework for future dev.",
-            "baseUrl": "https://xyd.dev"
-        }
-    },
-    "integrations": {
-        "editLink": {
-            "baseUrl": "https://github.com/livesession/xyd/edit/master/apps/docs",
-            "title": "Edit page",
-            "icon": "docs:github"
+    "favicon": "/public/assets/logo.svg",
+    "icons": {
+      "library": [
+        {
+          "name": "lucide",
+          "default": true
         },
-        "diagrams": true,
-        "search": {
-            "orama": true
-        },
-        ".apps": {
-            "githubStar": {
-                "title": "Star",
-                "label": "Show your support! Star us on GitHub ⭐️",
-                "href": "https://github.com/livesession/xyd",
-                "dataIcon": "octicon-star",
-                "dataSize": "large",
-                "dataShowCount": true,
-                "ariaLabel": "Star livesession/xyd on GitHub"
-            },
-            "supademo": {
-                "apiKey": "$SUPADEMO_API_KEY"
-            }
-        }
+        "./icons/iconify.json"
+      ]
     },
-    "seo": {
-        "domain": "https://xyd.dev"
-    },
-    "components": {
-        "banner": {
-            "content": "**xyd 0.1.0-beta** - Coming Soon",
-            "icon": "sparkles"
-        },
-        "footer": {
-            "kind": "minimal",
-            "social": {
-                "github": "https://github.com/livesession/xyd",
-                "slack": "https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A"
-            },
-            "links2": [
-                {
-                    "header": "Resources",
-                    "items": [
-                        {
-                            "label": "Examples",
-                            "href": "https://github.com/xyd-js/examples"
-                        },
-                        {
-                            "label": "API Docs Demo",
-                            "href": "https://apidocs-demo.xyd.dev"
-                        },
-                        {
-                            "label": "Live Preview",
-                            "href": "https://preview.xyd.dev"
-                        },
-                        {
-                            "label": "CodeSandbox",
-                            "href": "https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox"
-                        },
-                        {
-                            "label": "Storybook",
-                            "href": "http://sb.xyd.dev"
-                        }
-                    ]
-                },
-                {
-                    "header": "Company",
-                    "items": [
-                        {
-                            "label": "Careers",
-                            "href": "https://livesession.io/careers"
-                        },
-                        {
-                            "label": "Blog",
-                            "href": "https://xyd.dev/blog"
-                        },
-                        {
-                            "label": "Feature Requests",
-                            "href": "https://github.com/livesession/xyd/discussions/categories/feature-requests"
-                        }
-                    ]
-                },
-                {
-                    "header": "Legal",
-                    "items": [
-                        {
-                            "label": "Privacy Policy",
-                            "href": "https://livesession.io/privacy-policy"
-                        },
-                        {
-                            "label": "Terms of Service",
-                            "href": "https://livesession.io/terms-of-service"
-                        }
-                    ]
-                }
-            ],
-            "links": [
-                {
-                    "label": "LiveSession OpenSource ®",
-                    "href": "https://github.com/livesession"
-                },
-                {
-                    "label": "Examples",
-                    "href": "https://github.com/xyd-js/examples"
-                },
-                {
-                    "label": "API Docs Demo",
-                    "href": "https://apidocs-demo.xyd.dev"
-                },
-                {
-                    "label": "CodeSandbox",
-                    "href": "https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox"
-                },
-                {
-                    "label": "Storybook",
-                    "href": "http://components.xyd.dev"
-                }
-            ],
-            "footnote": {
-                "component": "a",
-                "props": {
-                    "href": "https://livesession.io",
-                    "target": "_blank",
-                    "children": "Powered by LiveSession"
-                }
-            }
-        }
-    },
-    "navigation": {
-        "anchors": {
-            "header": [
-                {
-                    "title": "Examples",
-                    "href": "https://github.com/xyd-js/examples"
-                },
-                {
-                    "title": "API Docs Demo",
-                    "href": "https://apidocs-demo.xyd.dev"
-                },
-                {
-                    "title": "Feedback",
-                    "href": "https://github.com/livesession/xyd/discussions",
-                    "button": "primary"
-                },
-                {
-                    "title": "Github",
-                    "href": "https://github.com/livesession/xyd",
-                    "icon": "docs:github"
-                },
-                {
-                    "title": "Slack",
-                    "href": "https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A",
-                    "social": "slack"
-                }
-            ],
-            "sidebar": {
-                "bottom": [
-                    {
-                        "href": "https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A",
-                        "icon": "docs:slack",
-                        "title": "Slack"
-                    },
-                    {
-                        "href": "https://github.com/xyd-js/examples",
-                        "icon": "code",
-                        "title": "Example Projects"
-                    }
-                ]
-            }
-        },
-        "tabs": [
-            {
-                "title": "Guides",
-                "page": "docs",
-                "icon": "book"
-            },
-            {
-                "title": "Components",
-                "page": "docs/components",
-                "icon": "component"
-            },
-            {
-                "title": "Reference",
-                "page": "docs/reference",
-                "href": "docs/reference/core",
-                "icon": "brackets"
-            }
-        ],
-        "segments": [
-            {
-                "route": "docs/reference",
-                "appearance": "sidebarDropdown",
-                "pages": [
-                    {
-                        "title": "Core",
-                        "page": "docs/reference/core",
-                        "icon": "asterisk"
-                    },
-                    {
-                        "title": "Functions",
-                        "page": "docs/reference/functions",
-                        "icon": "parentheses"
-                    },
-                    {
-                        "title": "Composer",
-                        "page": "docs/reference/composer",
-                        "icon": "docs:atom-2-line"
-                    },
-                    {
-                        "title": "CLI",
-                        "page": "docs/reference/cli",
-                        "icon": "square-terminal"
-                    }
-                ]
-            }
-        ],
-        "sidebar": [
-            {
-                "route": "docs",
-                "pages": [
-                    {
-                        "group": "Get Started",
-                        "pages": [
-                            "docs/guides/introduction",
-                            "docs/guides/quickstart",
-                            "docs/guides/deploy",
-                            "docs/guides/compare"
-                        ]
-                    },
-                    {
-                        "group": "Core concepts",
-                        "pages": [
-                            "docs/guides/settings",
-                            "docs/guides/themes",
-                            "docs/guides/pages",
-                            "docs/guides/navigation",
-                            "docs/guides/special-symbols"
-                        ]
-                    },
-                    {
-                        "group": "Writing Content",
-                        "pages": [
-                            "docs/guides/writing-quickstart",
-                            "docs/guides/developer-content",
-                            "docs/guides/seo",
-                            "docs/guides/react-components",
-                            "docs/guides/compose-content"
-                        ]
-                    },
-                    {
-                        "group": "Customization",
-                        "pages": [
-                            "docs/guides/customization-quickstart",
-                            "docs/guides/appearance",
-                            "docs/guides/components",
-                            "docs/guides/icons",
-                            "docs/guides/fonts",
-                            "docs/guides/custom-scripts",
-                            "docs/guides/plugins",
-                            "docs/guides/theme-api",
-                            "docs/guides/custom-theme"
-                        ]
-                    },
-                    {
-                        "group": "API Pages",
-                        "pages": [
-                            "docs/guides/openapi",
-                            "docs/guides/graphql",
-                            "docs/guides/components-api",
-                            {
-                                "group": "Source Code",
-                                "icon": "square-code",
-                                "pages": [
-                                    "docs/guides/typescript",
-                                    "docs/guides/python",
-                                    "docs/guides/golang"
-                                ]
-                            },
-                            "docs/guides/asyncapi",
-                            "docs/guides/apitoolchain"
-                        ]
-                    },
-                    {
-                        "group": "AI",
-                        "pages": [
-                            "docs/guides/llms-txt"
-                        ]
-                    },
-                    {
-                        "group": "Integrations",
-                        "pages": [
-                            {
-                                "group": "Analytics",
-                                "page": "docs/guides/integrations",
-                                "icon": "chart-line",
-                                "pages": [
-                                    "docs/guides/integrations/analytics/analytics-integrations",
-                                    "docs/guides/integrations/analytics/livesession"
-                                ]
-                            },
-                            {
-                                "group": "Search",
-                                "icon": "text-search",
-                                "pages": [
-                                    "docs/guides/integrations/search/search-integrations",
-                                    "docs/guides/integrations/search/orama",
-                                    "docs/guides/integrations/search/algolia"
-                                ]
-                            },
-                            {
-                                "group": "Support",
-                                "icon": "message-square",
-                                "pages": [
-                                    "docs/guides/integrations/support/support-integrations",
-                                    "docs/guides/integrations/support/chatwoot",
-                                    "docs/guides/integrations/support/intercom",
-                                    "docs/guides/integrations/support/livechat"
-                                ]
-                            },
-                            {
-                                "group": "AB Testing",
-                                "icon": "flask-conical",
-                                "pages": [
-                                    "docs/guides/integrations/abtesting/abtesting-integrations",
-                                    "docs/guides/integrations/abtesting/growthbook",
-                                    "docs/guides/integrations/abtesting/launchdarkly"
-                                ]
-                            },
-                            {
-                                "group": "Other apps",
-                                "icon": "layout-grid",
-                                "pages": [
-                                    "docs/guides/integrations/apps/github-star",
-                                    "docs/guides/integrations/apps/supademo",
-                                    "docs/guides/integrations/apps/edit-link"
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "group": "SDK Generation",
-                        "pages": [
-                            "docs/guides/sdk-quickstart",
-                            "docs/guides/opensdk"
-                        ]
-                    },
-                    {
-                        "group": "Development",
-                        "pages": [
-                            "docs/development/roadmap",
-                            "docs/development/contributing",
-                            "docs/development/changelog"
-                        ]
-                    },
-                    {
-                        "group": "Resources",
-                        "pages": [
-                            "docs/resources/examples",
-                            "docs/resources/showcase",
-                            "docs/resources/migration-tool"
-                        ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/components",
-                "pages": [
-                    {
-                        "group": "Components",
-                        "pages": [
-                            "docs/components/callouts",
-                            "docs/components/details",
-                            "docs/components/guide-card",
-                            "docs/components/tables",
-                            "docs/components/steps",
-                            "docs/components/tabs",
-                            "docs/components/grid"
-                        ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/reference/core",
-                "pages": [
-                    {
-                        "group": "Reference",
-                        "pages": [
-                            "docs/reference/core/overview",
-                            "docs/reference/core/settings",
-                            "docs/reference/core/sidebar",
-                            "docs/reference/core/theme",
-                            "docs/reference/core/pagemeta",
-                            "docs/reference/core/navigationitem"
-                        ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/reference/functions",
-                "pages": [
-                    {
-                        "group": "Reference",
-                        "pages": [
-                            "docs/reference/functions/overview",
-                            "docs/reference/functions/importCode",
-                            "docs/reference/functions/include",
-                            "docs/reference/functions/uniform",
-                            "docs/reference/functions/changelog",
-                            "docs/reference/functions/let",
-                            "docs/reference/functions/out"
-                        ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/reference/composer",
-                "pages": [
-                    {
-                        "group": "Reference",
-                        "pages": [
-                            "docs/reference/composer/overview"
-                        ]
-                    }
-                ]
-            },
-            {
-                "route": "docs/reference/cli",
-                "pages": [
-                    {
-                        "group": "Reference",
-                        "pages": [
-                            "docs/reference/cli/overview"
-                        ]
-                    }
-                ]
-            }
-        ]
-    },
-    "engine": {
-        "paths": {
-            "@components/*": [
-                "../../packages/xyd-components/src/*"
-            ],
-            "@core/*": [
-                "../../packages/xyd-core/src/*"
-            ]
-        }
+    "appearance": {},
+    "head": []
+  },
+  "advanced": {
+    "basename": "/docs"
+  },
+  "ai": {
+    "llmsTxt": {
+      "title": "xyd docs",
+      "summary": "Open Souce docs framework for future dev.",
+      "baseUrl": "https://xyd.dev"
     }
+  },
+  "integrations": {
+    "editLink": {
+      "baseUrl": "https://github.com/livesession/xyd/edit/master/apps/docs",
+      "title": "Edit page",
+      "icon": "docs:github"
+    },
+    "diagrams": true,
+    "search": {
+      "orama": true
+    },
+    ".apps": {
+      "githubStar": {
+        "title": "Star",
+        "label": "Show your support! Star us on GitHub ⭐️",
+        "href": "https://github.com/livesession/xyd",
+        "dataIcon": "octicon-star",
+        "dataSize": "large",
+        "dataShowCount": true,
+        "ariaLabel": "Star livesession/xyd on GitHub"
+      },
+      "supademo": {
+        "apiKey": "$SUPADEMO_API_KEY"
+      }
+    }
+  },
+  "seo": {
+    "domain": "https://xyd.dev"
+  },
+  "components": {
+    "banner": {
+      "content": "**xyd 0.1.0-beta** - Coming Soon",
+      "icon": "sparkles"
+    },
+    "footer": {
+      "kind": "minimal",
+      "social": {
+        "github": "https://github.com/livesession/xyd",
+        "slack": "https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A"
+      },
+      "links": [
+        {
+          "label": "LiveSession OpenSource ®",
+          "href": "https://github.com/livesession"
+        },
+        {
+          "label": "Examples",
+          "href": "https://github.com/xyd-js/examples"
+        },
+        {
+          "label": "API Docs Demo",
+          "href": "https://apidocs-demo.xyd.dev"
+        },
+        {
+          "label": "CodeSandbox",
+          "href": "https://codesandbox.io/p/github/xyd-js/deploy-samples-codesandbox"
+        },
+        {
+          "label": "Storybook",
+          "href": "http://components.xyd.dev"
+        }
+      ],
+      "footnote": {
+        "component": "a",
+        "props": {
+          "href": "https://livesession.io",
+          "target": "_blank",
+          "children": "Powered by LiveSession"
+        }
+      }
+    }
+  },
+  "navigation": {
+    "anchors": {
+      "header": [
+        {
+          "title": "Examples",
+          "href": "https://github.com/xyd-js/examples"
+        },
+        {
+          "title": "API Docs Demo",
+          "href": "https://apidocs-demo.xyd.dev"
+        },
+        {
+          "title": "Feedback",
+          "href": "https://github.com/livesession/xyd/discussions",
+          "button": "primary"
+        },
+        {
+          "title": "Github",
+          "href": "https://github.com/livesession/xyd",
+          "icon": "docs:github"
+        },
+        {
+          "title": "Slack",
+          "href": "https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A",
+          "social": "slack"
+        }
+      ],
+      "sidebar": {
+        "bottom": [
+          {
+            "href": "https://join.slack.com/t/xyd-docs/shared_invite/zt-3brqammx1-qVPwQ8~gYFgocioExxHA2A",
+            "icon": "docs:slack",
+            "title": "Slack"
+          },
+          {
+            "href": "https://github.com/xyd-js/examples",
+            "icon": "code",
+            "title": "Example Projects"
+          }
+        ]
+      }
+    },
+    "tabs": [
+      {
+        "title": "Guides",
+        "page": "guides",
+        "icon": "book"
+      },
+      {
+        "title": "Development",
+        "page": "development",
+        "icon": "code"
+      },
+      {
+        "title": "Resources",
+        "page": "resources",
+        "icon": "book"
+      },
+      {
+        "title": "Components",
+        "page": "components",
+        "icon": "component"
+      },
+      {
+        "title": "Reference",
+        "page": "reference",
+        "href": "reference/core",
+        "icon": "brackets"
+      }
+    ],
+    "segments": [
+      {
+        "route": "reference",
+        "appearance": "sidebarDropdown",
+        "pages": [
+          {
+            "title": "Core",
+            "page": "reference/core",
+            "icon": "asterisk"
+          },
+          {
+            "title": "Functions",
+            "page": "reference/functions",
+            "icon": "parentheses"
+          },
+          {
+            "title": "Composer",
+            "page": "reference/composer",
+            "icon": "docs:atom-2-line"
+          },
+          {
+            "title": "CLI",
+            "page": "reference/cli",
+            "icon": "square-terminal"
+          }
+        ]
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "guides",
+        "pages": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "guides/introduction",
+              "guides/quickstart",
+              "guides/deploy",
+              "guides/compare"
+            ]
+          },
+          {
+            "group": "Core concepts",
+            "pages": [
+              "guides/settings",
+              "guides/themes",
+              "guides/pages",
+              "guides/navigation",
+              "guides/special-symbols"
+            ]
+          },
+          {
+            "group": "Writing Content",
+            "pages": [
+              "guides/writing-quickstart",
+              "guides/developer-content",
+              "guides/seo",
+              "guides/react-components",
+              "guides/compose-content"
+            ]
+          },
+          {
+            "group": "Customization",
+            "pages": [
+              "guides/customization-quickstart",
+              "guides/appearance",
+              "guides/components",
+              "guides/icons",
+              "guides/fonts",
+              "guides/custom-scripts",
+              "guides/plugins",
+              "guides/theme-api",
+              "guides/custom-theme"
+            ]
+          },
+          {
+            "group": "API Pages",
+            "pages": [
+              "guides/openapi",
+              "guides/graphql",
+              "guides/components-api",
+              {
+                "group": "Source Code",
+                "icon": "square-code",
+                "pages": ["guides/typescript", "guides/python", "guides/golang"]
+              },
+              "guides/asyncapi",
+              "guides/apitoolchain"
+            ]
+          },
+          {
+            "group": "AI",
+            "pages": ["guides/llms-txt"]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              {
+                "group": "Analytics",
+                "page": "guides/integrations",
+                "icon": "chart-line",
+                "pages": [
+                  "guides/integrations/analytics/analytics-integrations",
+                  "guides/integrations/analytics/livesession"
+                ]
+              },
+              {
+                "group": "Search",
+                "icon": "text-search",
+                "pages": [
+                  "guides/integrations/search/search-integrations",
+                  "guides/integrations/search/orama",
+                  "guides/integrations/search/algolia"
+                ]
+              },
+              {
+                "group": "Support",
+                "icon": "message-square",
+                "pages": [
+                  "guides/integrations/support/support-integrations",
+                  "guides/integrations/support/chatwoot",
+                  "guides/integrations/support/intercom",
+                  "guides/integrations/support/livechat"
+                ]
+              },
+              {
+                "group": "AB Testing",
+                "icon": "flask-conical",
+                "pages": [
+                  "guides/integrations/abtesting/abtesting-integrations",
+                  "guides/integrations/abtesting/growthbook",
+                  "guides/integrations/abtesting/launchdarkly"
+                ]
+              },
+              {
+                "group": "Other apps",
+                "icon": "layout-grid",
+                "pages": [
+                  "guides/integrations/apps/github-star",
+                  "guides/integrations/apps/supademo",
+                  "guides/integrations/apps/edit-link"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "SDK Generation",
+            "pages": ["guides/sdk-quickstart", "guides/opensdk"]
+          }
+        ]
+      },
+      {
+        "route": "development",
+        "pages": [
+          "development/roadmap",
+          "development/contributing",
+          "development/changelog"
+        ]
+      },
+      {
+        "route": "resources",
+        "pages": [
+          "resources/examples",
+          "resources/showcase",
+          "resources/migration-tool"
+        ]
+      },
+      {
+        "route": "components",
+        "pages": [
+          {
+            "group": "Components",
+            "pages": [
+              "components/callouts",
+              "components/details",
+              "components/guide-card",
+              "components/tables",
+              "components/steps",
+              "components/tabs",
+              "components/grid"
+            ]
+          }
+        ]
+      },
+      {
+        "route": "reference/core",
+        "pages": [
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/core/overview",
+              "reference/core/settings",
+              "reference/core/sidebar",
+              "reference/core/theme",
+              "reference/core/pagemeta",
+              "reference/core/navigationitem"
+            ]
+          }
+        ]
+      },
+      {
+        "route": "reference/functions",
+        "pages": [
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/functions/overview",
+              "reference/functions/importCode",
+              "reference/functions/include",
+              "reference/functions/uniform",
+              "reference/functions/changelog",
+              "reference/functions/let",
+              "reference/functions/out"
+            ]
+          }
+        ]
+      },
+      {
+        "route": "reference/composer",
+        "pages": [
+          {
+            "group": "Reference",
+            "pages": ["reference/composer/overview"]
+          }
+        ]
+      },
+      {
+        "route": "reference/cli",
+        "pages": [
+          {
+            "group": "Reference",
+            "pages": ["reference/cli/overview"]
+          }
+        ]
+      }
+    ]
+  },
+  "engine": {
+    "paths": {
+      "@components/*": ["../../packages/xyd-components/src/*"],
+      "@core/*": ["../../packages/xyd-core/src/*"]
+    }
+  }
 }

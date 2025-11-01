@@ -1,0 +1,59 @@
+.deploy-widget-button {
+    box-shadow: 0px 0px 6px 0px color-mix(in srgb, var(--color-black) 10%, transparent);
+    position: relative;
+}
+
+.deploy-widget-button-scrolled {
+    animation: pulse-button 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-button {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.deploy-widget-button::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(
+        45deg,
+        var(--color-purple-600),
+        var(--color-purple-400),
+        var(--color-blue-400),
+        var(--color-emerald-400),
+        var(--color-amber-400),
+        var(--color-pink-400),
+        var(--color-purple-600)
+    );
+    background-size: 300% 300%;
+    -webkit-mask: linear-gradient(var(--color-white) 0 0) content-box, linear-gradient(var(--color-white) 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: rotate-gradient 3s linear infinite;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.deploy-widget-button-scrolled::before {
+    opacity: 1;
+}
+
+@keyframes rotate-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}

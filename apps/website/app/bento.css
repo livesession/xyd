@@ -1,0 +1,292 @@
+/* CSS Layers for better organization */
+@layer base, components, utilities;
+
+@layer base {
+    :root {
+        --gutter: 1vw;
+        --space-3xl: clamp(5rem, 4.8214rem + 0.8929vi, 6.25rem);
+    }
+
+    /* Shimmer animation for gradient text */
+    @keyframes shimmer {
+        0% {
+            background-position: 200% center;
+        }
+        100% {
+            background-position: -200% center;
+        }
+    }
+
+    @keyframes shimmer-reverse {
+        0% {
+            background-position: -200% center;
+        }
+        100% {
+            background-position: 200% center;
+        }
+    }
+
+    .animate-shimmer {
+        animation: shimmer 8s ease-in-out infinite;
+    }
+
+    .animate-shimmer-reverse {
+        animation: shimmer-reverse 8s ease-in-out infinite;
+    }
+}
+
+@layer components {
+
+    /* Grid System */
+    .o-grid {
+        display: grid;
+        gap: var(--gutter-y, 0) var(--gutter-x, var(--gutter));
+        grid-template-columns: repeat(var(--columns, 12), 1fr);
+        grid-template-rows: repeat(var(--rows, 1), 1fr);
+
+        &>* {
+            grid-column: auto / span var(--column-span, 12);
+            grid-column-start: var(--column-start, auto);
+        }
+    }
+
+    /* Home Bento Grid */
+    #home-bento__wrapper {
+        margin-block-start: var(--space-2xl);
+
+        @media (max-width: 939.98px) {
+            @apply gap-6;
+        }
+
+        @media (min-width: 940px) {
+            --gutter-y: var(--gutter);
+            margin-block-start: calc(var(--space-3xl) * -1);
+        }
+    }
+
+    /* Bento Item */
+    .home-bento__item {
+        --column-span: 12;
+        --radius: 25px;
+
+        @media (min-width: 940px) {
+            --radius: 50px;
+        }
+
+        @apply relative;
+
+        & .home-bento__item-inner {
+            @apply rounded-2xl;
+
+            @media (max-width: 1439.98px) {
+                @apply rounded-lg;
+            }
+        }
+    }
+
+    /* Shared circle decoration for bento items */
+    #home-bento__item-01::before,
+    #home-bento__item-02::before,
+    #home-bento__item-03::before {
+        content: '';
+        @apply absolute;
+        top: 20px;
+        width: 24px;
+        height: 24px;
+        background: var(--color-white);
+        border-radius: 50%;
+        z-index: 10;
+        
+        /* Mobile: all circles on right */
+        right: 20px;
+    }
+
+    /* All items: top-left clip-path for mobile, specific for desktop */
+    #home-bento__item-01,
+    #home-bento__item-02,
+    #home-bento__item-03 {
+        /* Mobile: all have top-left corner clipped */
+        clip-path: polygon(
+            var(--radius) 0, 100% 0, 100% 100%, 0 100%, 0 var(--radius)
+        );
+    }
+
+    /* Desktop-specific clip-paths and circle positions */
+    @media (min-width: 940px) {
+        #home-bento__item-01 {
+            /* Desktop: keep top-left corner clipped */
+            clip-path: polygon(
+                var(--radius) 0, 100% 0, 100% 100%, 0 100%, 0 var(--radius)
+            );
+
+            /* Desktop: circle on top-right */
+            &::before {
+                right: 20px;
+            }
+        }
+
+        #home-bento__item-02,
+        #home-bento__item-03 {
+            /* Desktop: top-right corner clipped */
+            clip-path: polygon(
+                0 0, calc(100% - var(--radius)) 0, 100% var(--radius), 100% 100%, 0 100%
+            );
+
+            /* Desktop: circle on top-left */
+            &::before {
+                left: 20px;
+            }
+        }
+    }
+
+    .home-bento__item-inner {
+        @apply relative overflow-hidden bg-gray-50;
+    }
+
+    .home-bento__item-text {
+        @media (max-width: 939.98px) {
+            padding: calc(var(--gutter) * 3.5);
+        }
+
+        @media (min-width: 940px) {
+            @apply flex flex-col gap-6 justify-start items-start;
+        }
+
+        &>div:first-child {
+            @media (min-width: 940px) {
+                @apply flex-shrink-0;
+            }
+        }
+
+        &>a {
+            @media (min-width: 940px) {
+                @apply mt-auto;
+            }
+        }
+    }
+
+    .home-bento__item-title {
+        @apply text-3xl leading-tight font-medium mb-2;
+
+        & br {
+            @media (max-width: 939.98px) {
+                display: none;
+            }
+        }
+
+        @media (min-width: 768px) {
+            @apply text-4xl;
+        }
+    }
+
+    .home-bento__item-subtitle {
+        @apply relative text-sm leading-relaxed m-0 text-gray-500;
+
+        & br {
+            @media (max-width: 939.98px) {
+                display: none;
+            }
+        }
+
+        @media (min-width: 768px) {
+            @apply text-lg;
+        }
+    }
+
+    .home-bento__item-image-main-wrapper {
+        @apply relative -right-20 -bottom-1;
+
+        @media (max-width: 939.98px) {
+            @apply hidden;
+        }
+    }
+
+    .home-bento__item-text--desktop {
+        @media (min-width: 940px) {
+            @apply relative p-20;
+        }
+    }
+
+    /* Item 01 Specific Styles */
+    #home-bento__item-01 {
+        @media (min-width: 940px) {
+            --column-span: 6;
+            --column-start: 1;
+            transform: translateY(50%);
+        }
+
+        @media (min-width: 1440px) {
+            --column-span: 5;
+            --column-start: 2;
+        }
+
+        & .home-bento__item-image-line-wrapper {
+            inset-inline-end: 0;
+        }
+    }
+
+    /* Mobile Image Wrapper */
+    .home-bento__item-image-main-wrapper-mobile {
+        @apply relative -right-10 -bottom-1;
+
+        @media (min-width: 940px) {
+            @apply hidden;
+        }
+
+        & img {
+            @apply w-full h-auto object-contain;
+        }
+    }
+
+    /* Item 02 Specific Styles */
+    #home-bento__item-02 {
+        @media (min-width: 940px) {
+            --column-span: 6;
+            transform: translateY(0);
+        }
+
+        @media (min-width: 1440px) {
+            --column-span: 5;
+        }
+    }
+
+    /* Item 03 Specific Styles */
+    #home-bento__item-03 {
+        @media (min-width: 940px) {
+            --column-span: 6;
+            --column-start: 7;
+            transform: translateY(0);
+        }
+
+        @media (min-width: 1440px) {
+            --column-span: 5;
+        }
+    }
+}
+
+/* Animations */
+@layer utilities {
+    @keyframes home-bento__item-image-dot-pulse {
+        from {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        to {
+            opacity: 0;
+            transform: scale(3);
+        }
+    }
+
+    @keyframes home-bento__item-01-visual-button-pulse {
+        from {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        to {
+            opacity: 0;
+            transform: scale(1.75);
+        }
+    }
+}
