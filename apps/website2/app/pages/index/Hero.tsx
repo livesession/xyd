@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { HeroSVG } from "./HeroSVG";
+import { IconMac } from "~/icons/Mac";
+import { IconWindows } from "~/icons/Windows";
+import { IconLinux } from "~/icons/Linux";
 
 export function Hero() {
   const [activeTab, setActiveTab] = useState(0);
@@ -215,9 +218,9 @@ export function Hero() {
           <HeroSVG className="w-full h-full object-cover" />
         </div>
 
-        <div className="relative mx-auto max-w-[1600px] px-4 sm:px-6 pt-54 pb-24 sm:pb-24 lg:flex lg:items-start lg:gap-8 lg:px-8 lg:pb-40 xl:gap-12">
+        <div className="relative mx-auto max-w-[1600px] px-4 sm:px-6 pt-24 lg:pt-54 pb-24 sm:pb-24 lg:flex lg:items-start lg:gap-8 lg:px-8 lg:pb-40 xl:gap-12">
           {/* Left content */}
-          <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-lg lg:w-[45%]">
+          <div className="mx-auto mt-12 sm:mt-16 w-full max-w-3xl sm:mt-24 lg:mt-0 lg:flex-1 lg:w-[55%] lg:min-w-0">
             <span
               className="text-6xl font-light text-white sm:text-7xl lg:text-8xl"
               style={{ letterSpacing: "2px" }}
@@ -415,6 +418,9 @@ export function Hero() {
                 rel="noopener noreferrer"
                 className="rounded-xs bg-white px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors flex items-center gap-2"
               >
+                {os === "Mac" && <IconMac className="w-4 h-4 relative -top-0.5" />}
+                {os === "Windows" && <IconWindows className="w-4 h-4 relative -top-0.5" fill="currentColor" />}
+                {os === "Linux" && <IconLinux className="w-4 h-4 relative -top-0.5" fill="currentColor" />}
                 Download for {os}
                 (soon)
                 <svg

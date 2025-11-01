@@ -6,7 +6,7 @@ export function BentoSection() {
         {/* Header */}
         <div className="mb-16">
           <h2
-            className="text-6xl lg:text-7xl font-normal mb-6 text-gray-900"
+            className="text-5xl lg:text-7xl font-normal mb-6 text-gray-900"
             style={{ letterSpacing: "1px" }}
           >
             [superpowered
@@ -116,7 +116,7 @@ export function BentoSection() {
                   </span>
                   <h3 className="relative home-bento__item-title bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-shimmer-reverse bg-[length:200%_100%]">
                     OpenAPI, GraphQL & <br />
-                    SDK generation SDK generation++
+                    SDK generation++
                   </h3>
                 </span>
                 <p className="home-bento__item-subtitle">

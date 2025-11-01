@@ -1,8 +1,27 @@
 import { useEffect, useState, useRef } from "react";
+import { IconMac } from "~/icons/Mac";
+import { IconWindows } from "~/icons/Windows";
+import { IconLinux } from "~/icons/Linux";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [os, setOs] = useState<string>("Mac");
   const navRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    if (userAgent.includes("win")) {
+      setOs("Windows");
+    } else if (userAgent.includes("linux")) {
+      setOs("Linux");
+    } else if (userAgent.includes("mac")) {
+      setOs("Mac");
+    } else {
+      setOs("Mac"); // Default fallback
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -125,8 +144,11 @@ export function Navbar() {
                   href="https://github.com/livesession/xyd/pull/63" 
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-xs bg-gray-800 px-3 xl:px-4 py-2 text-sm xl:text-base font-normal text-gray-100 shadow-sm hover:bg-gray-700 transition-colors whitespace-nowrap inline-block"
+                  className="rounded-xs bg-gray-800 px-3 xl:px-4 py-2 text-sm xl:text-base font-normal text-gray-100 shadow-sm hover:bg-gray-700 transition-colors whitespace-nowrap inline-flex items-center gap-2"
                 >
+                  {os === "Mac" && <IconMac className="w-4 h-4 relative -top-0.5" fill="var(--color-gray-100)" />}
+                  {os === "Windows" && <IconWindows className="w-4 h-4 relative -top-0.5" fill="var(--color-gray-100)" />}
+                  {os === "Linux" && <IconLinux className="w-4 h-4 relative -top-0.5" fill="var(--color-gray-100)" />}
                   Download (soon)
                 </a>
               </div>
@@ -231,8 +253,11 @@ export function Navbar() {
                     href="https://github.com/livesession/xyd/pull/63" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-xs bg-gray-800 px-4 py-2 text-md font-normal text-gray-100 shadow-sm hover:bg-gray-700 transition-colors text-left inline-block w-full"
+                    className="rounded-xs bg-gray-800 px-4 py-2 text-md font-normal text-gray-100 shadow-sm hover:bg-gray-700 transition-colors text-left inline-flex items-center gap-2 w-full"
                   >
+                    {os === "Mac" && <IconMac className="w-4 h-4 relative -top-0.5" fill="white" />}
+                    {os === "Windows" && <IconWindows className="w-4 h-4 relative -top-0.5" fill="white" />}
+                    {os === "Linux" && <IconLinux className="w-4 h-4 relative -top-0.5" fill="white" />}
                     Download (soon)
                   </a>
                 </div>

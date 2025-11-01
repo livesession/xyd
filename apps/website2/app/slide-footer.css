@@ -85,34 +85,11 @@
     justify-content: center;
     left: 0;
     right: 0;
-    bottom: 30px;
+    bottom: 110px;
     transition: bottom 0.1s ease-out;
 }
 
 .slide-footer-background {
-    /* position: fixed;
-    inset: 0;
-    height: calc(100dvh + 144px);
-    opacity: 0.15;
-    pointer-events: none;
-    animation: slide-footer-move 3s linear infinite;
-    --step: 32px;
-    background-image: 
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
-        linear-gradient(135deg, transparent 46%, var(--pattern) 46%, var(--pattern) 48%, transparent 48%);
-    background-size: 200px 200px, var(--step) var(--step);
-    background-position: 0 0, 0 0; */
-
-    /* position: fixed;
-    inset: 0;
-    height: calc(100dvh + 144px);
-    animation: slide-footer-move 3s linear infinite;
-    --step: 32px;
-    background-image: 
-        linear-gradient(135deg, transparent 46%, var(--pattern) 46%, var(--pattern) 48%, transparent 48%);
-    background-size: var(--step) var(--step);
-    background-position: 0 0; */
-
     position: fixed;
     inset: 0;
     opacity: 0.15;
@@ -124,20 +101,6 @@
         linear-gradient(135deg, transparent 46%, var(--color-black) 46%, var(--color-black) 48%, transparent 48%);
     background-size: 200px 200px, var(--step) var(--step);
     background-position: 0 0, 0 0;
-
-
-    /* inset: 0;
-    height: calc(100dvh + 144px);
-    animation: slide-footer-move 3s linear infinite;
-    --step: 32px;
-    --size: 24px;
-    --stroke: 1px;
-    --ri: calc(var(--size) / 2);
-    --ro: calc(100% / sqrt(2));
-    --offset-x: -8px;
-    background-image: radial-gradient(circle, #0000 var(--ri), var(--background) var(--ri) var(--ro), #0000 var(--ro)), radial-gradient(circle, #0000 var(--ri), var(--background) var(--ri) var(--ro), #0000 var(--ro)), linear-gradient(var(--pattern) var(--stroke), #0000 var(--stroke)), linear-gradient(90deg, var(--pattern) var(--stroke), #0000 var(--stroke));
-    background-position: calc(50% + var(--offset-x) + var(--step) * .5) calc(50% + var(--step) * .5), calc(50% + var(--offset-x) + var(--step) * 1.5) calc(50% + var(--step) * 1.5), calc(50% + var(--offset-x)) 50%, calc(50% + var(--offset-x)) 50%;
-    background-size: calc(var(--step) * 2) calc(var(--step) * 2), calc(var(--step) * 2) calc(var(--step) * 2), var(--step) var(--step), var(--step) var(--step); */
 }
 
 @keyframes slide-footer-move {
