@@ -2,29 +2,41 @@ import { Settings } from "@xyd-js/core";
 
 export * from "./meta"
 
-let settings: Settings | null = null
-let basePath: string | null = null
+// TODO: in the future fix package resolution instead of globalThis
+
+declare global {
+    var __xydCtxSettings: Settings | null
+    var __xydCtxBasePath: string | null
+}
+
+if (typeof globalThis.__xydCtxSettings === 'undefined') {
+    globalThis.__xydCtxSettings = null
+}
+
+if (typeof globalThis.__xydCtxBasePath === 'undefined') {
+    globalThis.__xydCtxBasePath = null
+}
 
 export function contextSettings(): Settings {
-    if (!settings) {
+    if (!globalThis.__xydCtxSettings) {
         throw new Error("Context settings not found")
     }
 
-    return settings
+    return globalThis.__xydCtxSettings
 }
 
 export function setContextSettings(s: Settings) {
-    settings = s
+    globalThis.__xydCtxSettings = s
 }
 
 export function contextBasePath(): string {
-    if (!basePath) {
+    if (!globalThis.__xydCtxBasePath) {
         throw new Error("Context base path not found")
     }
 
-    return basePath
+    return globalThis.__xydCtxBasePath
 }
 
 export function setContextBasePath(p: string) {
-    basePath = p
+    globalThis.__xydCtxBasePath = p
 }
