@@ -1,3 +1,0 @@
-export {
-    useActiveSection
-} from "./useActiveSection"
