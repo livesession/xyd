@@ -104,7 +104,9 @@ export async function thirdPartyRehypePlugins(settings?: Settings) {
   ]
 
   if (settings?.integrations?.diagrams) {
-    plugins.push(await getMermaidPlugin())
+    const options = typeof settings.integrations.diagrams === 'object' ? settings.integrations.diagrams : {};
+
+    plugins.push([await getMermaidPlugin(), options])
   }
 
   return plugins

@@ -3,6 +3,7 @@ import {createRequire} from "module";
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
+import babel from '@rollup/plugin-babel';
 import dts from 'rollup-plugin-dts';
 import postcss from 'rollup-plugin-postcss';
 import postcssImport from 'postcss-import';
@@ -60,6 +61,15 @@ export default function (importPath: string) {
                 commonjs(),
                 typescript({
                     tsconfig: './tsconfig.json',
+                    outDir: 'dist',
+                }),
+                babel({
+                    babelHelpers: 'bundled',
+                    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+                    presets: [
+                        '@babel/preset-env',
+                        '@babel/preset-react'
+                    ],
                 }),
                 postcss({
                     extensions: ['.css'],

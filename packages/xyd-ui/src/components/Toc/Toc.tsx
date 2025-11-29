@@ -210,7 +210,7 @@ Toc.Item = function TocItem({ children, id, className, depth }: TocItemProps) {
 
   useEffect(() => {
     if (active && itemRef.current) {
-      registerActiveItem(itemRef, id)
+      registerActiveItem(itemRef as React.RefObject<HTMLLIElement>, id)
     }
     return () => unregisterActiveItem(id)
   }, [active, id, registerActiveItem, unregisterActiveItem])

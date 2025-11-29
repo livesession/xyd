@@ -1,9 +1,15 @@
 import {
-  experimental_createMCPClient as createMCPClient,
+
   streamText,
   stepCountIs,
 } from "ai";
-import type { LanguageModel, experimental_MCPClient as MCPClient, ToolSet } from "ai";
+import type { LanguageModel, ToolSet } from "ai";
+import {
+  experimental_createMCPClient as createMCPClient,
+} from "@ai-sdk/mcp";
+import type {
+  experimental_MCPClient as MCPClient,
+} from "@ai-sdk/mcp";
 
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { createAnthropic } from "@ai-sdk/anthropic";
@@ -50,7 +56,7 @@ export async function askPrompt(
     }
 
     if (!tools) {
-      tools = await client.tools();
+      tools = await client.tools() as ToolSet;
     }
 
     const response = await streamText({

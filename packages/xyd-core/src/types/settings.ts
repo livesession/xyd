@@ -967,7 +967,7 @@ export interface Integrations {
   /**
    * Diagrams configuration
    */
-  diagrams?: boolean;
+  diagrams?: boolean | { strategy?: 'img-png' | 'img-svg' | 'inline-svg' | 'pre-mermaid' };
 
   /**
    * Edit link configuration
