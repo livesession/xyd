@@ -86,6 +86,7 @@ export default [
             commonjs(),
             typescript({
                 tsconfig: './tsconfig.json',
+                outDir: 'dist',
             }),
             babel({
                 babelHelpers: 'bundled',

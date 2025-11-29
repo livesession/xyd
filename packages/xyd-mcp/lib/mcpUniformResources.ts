@@ -117,7 +117,7 @@ export async function mcpUniformResources(
       uri,
       {
         title: reference.title,
-        description: reference.description,
+        description: reference.description as string,
         mimeType,
       },
       async () => ({

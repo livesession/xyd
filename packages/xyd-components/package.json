@@ -52,8 +52,8 @@
     "rollup-plugin-string": "^3.0.0"
   },
   "peerDependencies": {
-    "@xyd-js/core": "workspace:*",
     "@code-hike/lighter": "^1.0.3",
+    "@xyd-js/core": "workspace:*",
     "openux-js": "0.0.0-pre.1",
     "react": "^19.1.0"
   },
@@ -63,6 +63,7 @@
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-swc": "^0.4.0",
     "@rollup/plugin-typescript": "^12.1.1",
     "@rollup/plugin-url": "^8.0.2",
     "@types/react": "^19.1.0",
