@@ -24,7 +24,9 @@ const config: Options = {
         // options.external = ['node:fs/promises']; // Mark 'node:fs/promises' as external
         // options.loader = { '.js': 'jsx' }; // Ensure proper handling of .js files
         options.external = [
-            'rehype-mermaid'
+            "rehype-mermaid",
+            "rehype-graphviz",
+            "@hpcc-js/wasm",
         ]
     },
 };

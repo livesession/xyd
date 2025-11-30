@@ -32,6 +32,7 @@ import type { IconLibrary, WebEditorNavigationItem } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
 
+// import { readSettings } from "./settings";
 import pluginDemoVersion from "../../xyd-plugin-supademo/package.json";
 import pluginChatwootVersion from "../../xyd-plugin-chatwoot/package.json";
 import pluginIntercomVersion from "../../xyd-plugin-intercom/package.json";
@@ -1222,7 +1223,7 @@ export async function postWorkspaceSetup(settings: Settings) {
 
     // TODO: rename to plugins:["diagrams"]
     if (settings.integrations?.diagrams) {
-      const componentDeps = componentDependencies("diagrams", true);
+      const componentDeps = componentDependencies(settings, "diagrams", true);
 
       if (componentDeps) {
         packageJson.dependencies = {

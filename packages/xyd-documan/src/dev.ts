@@ -3,7 +3,6 @@ import fs from "node:fs";
 
 import { createServer, searchForWorkspaceRoot, ViteDevServer, Plugin as VitePlugin, PluginOption } from "vite";
 
-import { readSettings } from "@xyd-js/plugin-docs";
 import { API, APIFile, Navigation, Settings, SidebarNavigation, } from "@xyd-js/core";
 
 import { appInit, calculateFolderChecksum, commonPostInstallVitePlugins, commonVitePlugins, getAppRoot, getDocsPluginBasePath, getHostPath, getPublicPath, pluginLLMMarkdown, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
@@ -135,8 +134,8 @@ export async function dev(options?: DevOptions) {
 
     // Determine conditional externals based on settings
     const enableMermaid = !!respPluginDocs?.settings?.integrations?.diagrams
-    const externalPackages = enableMermaid ? [] : ["rehype-mermaid"]
-    const optimizeDepsExclude = enableMermaid ? [] : ["rehype-mermaid"]
+    const externalPackages = enableMermaid ? [] : ["rehype-mermaid", "rehype-graphviz", "@hpcc-js/wasm"]
+    const optimizeDepsExclude = enableMermaid ? [] : ["rehype-mermaid", "rehype-graphviz", "@hpcc-js/wasm"]
 
     // Store initial settings for comparison
     let initialSettings = respPluginDocs.settings || {};
@@ -192,7 +191,11 @@ export async function dev(options?: DevOptions) {
             alias: {
                 process: 'process/browser',
                 // When rehype-mermaid is externalized, resolve it from CLI's node_modules
-                ...(enableMermaid ? {} : { 'rehype-mermaid': path.resolve(getHostPath(), './node_modules/rehype-mermaid') })
+                ...(enableMermaid ? {} : { 
+                    "rehype-mermaid": path.resolve(getHostPath(), "./node_modules/rehype-mermaid"),
+                    "rehype-graphviz": path.resolve(getHostPath(), "./node_modules/rehype-graphviz"),
+                    "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
+                })
             },
             // preserveSymlinks: true
         },

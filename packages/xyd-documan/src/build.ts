@@ -48,7 +48,7 @@ export async function build() {
 
     // Determine conditional externals based on settings
     const enableMermaid = !!respPluginDocs?.settings?.integrations?.diagrams
-    const externalPackages = enableMermaid ? [] : ["rehype-mermaid"]
+    const externalPackages = enableMermaid ? [] : ["rehype-mermaid", "rehype-graphviz", "@hpcc-js/wasm"]
 
     try {
         // Build the client-side bundle
@@ -71,7 +71,11 @@ export async function build() {
                 alias: {
                     process: 'process/browser',
                     // When rehype-mermaid is externalized, resolve it from CLI's node_modules
-                    ...(enableMermaid ? {} : { 'rehype-mermaid': path.resolve(getHostPath(), './node_modules/rehype-mermaid') })
+                    ...(enableMermaid ? {} : { 
+                        "rehype-mermaid": path.resolve(getHostPath(), "./node_modules/rehype-mermaid"),
+                        "rehype-graphviz": path.resolve(getHostPath(), "./node_modules/rehype-graphviz"),
+                        "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
+                    }),
                 }
             },
             build: {
@@ -125,9 +129,11 @@ export async function build() {
                 alias: {
                     process: 'process/browser',
                     // When rehype-mermaid is externalized, resolve it from CLI's node_modules
-                    ...(enableMermaid ? {} : { 'rehype-mermaid': path.resolve(getHostPath(), './node_modules/rehype-mermaid') })
-                    // react: path.resolve(workspaceNodeModulesPath, "react"),
-                    // "react-dom": path.resolve(workspaceNodeModulesPath, "react-dom")
+                    ...(enableMermaid ? {} : { 
+                        "rehype-mermaid": path.resolve(getHostPath(), "./node_modules/rehype-mermaid"),
+                        "rehype-graphviz": path.resolve(getHostPath(), "./node_modules/rehype-graphviz"),
+                        "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
+                    }),
                 }
             },
             ssr: {

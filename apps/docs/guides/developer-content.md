@@ -298,7 +298,95 @@ graph TD;
     D --> E;
 ```
 
-### Latex
+### Graphviz {label="Beta"}
+Visualize complex concepts and workflows using [Graphviz](https://graphviz.org) diagrams directly in your Markdown. Graphviz is a powerful graph visualization software that supports various layout engines (dot, neato, fdp, sfdp, circo, twopi) for creating directed graphs, undirected graphs, hierarchies, and more. 
+
+**Note:** Currently, only `dot` [engine](https://graphviz.org/docs/layouts) is supported.
+
+:::callout{kind="warning"}
+Before you start writing a Graphviz diagrams make sure you enabled `diagrams` integration: 
+
+```json docs.json
+{
+  ...
+  "integrations": {
+    "diagrams": ["graphviz"]
+  }
+}
+```
+
+:::
+
+Simply wrap your diagram syntax in a `dot` code block:
+~~~
+```dot
+digraph G {
+	fontname="Helvetica,Arial,sans-serif"
+	node [fontname="Helvetica,Arial,sans-serif"]
+	edge [fontname="Helvetica,Arial,sans-serif"]
+
+	subgraph cluster_0 {
+		style=filled;
+		color=lightgrey;
+		node [style=filled,color=white];
+		a0 -> a1 -> a2 -> a3;
+		label = "process #1";
+	}
+
+	subgraph cluster_1 {
+		node [style=filled];
+		b0 -> b1 -> b2 -> b3;
+		label = "process #2";
+		color=blue
+	}
+	start -> a0;
+	start -> b0;
+	a1 -> b3;
+	b2 -> a3;
+	a3 -> a0;
+	a3 -> end;
+	b3 -> end;
+
+	start [shape=Mdiamond];
+	end [shape=Msquare];
+}
+```
+~~~
+
+```dot
+digraph G {
+	fontname="Helvetica,Arial,sans-serif"
+	node [fontname="Helvetica,Arial,sans-serif"]
+	edge [fontname="Helvetica,Arial,sans-serif"]
+
+	subgraph cluster_0 {
+		style=filled;
+		color=lightgrey;
+		node [style=filled,color=white];
+		a0 -> a1 -> a2 -> a3;
+		label = "process #1";
+	}
+
+	subgraph cluster_1 {
+		node [style=filled];
+		b0 -> b1 -> b2 -> b3;
+		label = "process #2";
+		color=blue
+	}
+	start -> a0;
+	start -> b0;
+	a1 -> b3;
+	b2 -> a3;
+	a3 -> a0;
+	a3 -> end;
+	b3 -> end;
+
+	start [shape=Mdiamond];
+	end [shape=Msquare];
+}
+```
+
+## Latex
 Supports [LaTeX](https://www.latex-project.org/) for math equations. To use LaTeX, wrap your inline math equations in `$`. For example, `$(a^2 + b^2 = c^2)$` will render $a^2 + b^2 = c^2$.
 
 For display math equations, wrap the equation in `$$`:

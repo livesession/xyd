@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 
 import { preWorkspaceSetup, postWorkspaceSetup, getHostPath } from './utils';
+// import { readSettings } from './settings';
 import { readSettings } from '@xyd-js/plugin-docs';
-
 
 export async function install() {
     const settings = await readSettings() // TODO: in the future better solution - currently we load settings twice (pluginDocs and here)

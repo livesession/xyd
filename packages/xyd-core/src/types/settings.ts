@@ -966,8 +966,11 @@ export interface Integrations {
 
   /**
    * Diagrams configuration
+   * - `true`: Enable all diagram types with default settings
+   * - `['mermaid', 'graphviz']`: Enable specific diagram types with defaults
+   * - `{ mermaid: { strategy: 'img-svg' }, graphviz: true }`: Per-type configuration
    */
-  diagrams?: boolean | { strategy?: 'img-png' | 'img-svg' | 'inline-svg' | 'pre-mermaid' };
+  diagrams?: boolean | DiagramType[] | DiagramsConfig;
 
   /**
    * Edit link configuration
@@ -1135,6 +1138,56 @@ export interface IntegrationABTestingLaunchDarkly {
    * LaunchDarkly environment key
    */
   env: string;
+}
+
+/**
+ * Supported diagram types
+ */
+export type DiagramType = 'mermaid' | 'graphviz';
+
+/**
+ * Mermaid diagram rendering strategy
+ */
+export type MermaidStrategy = 'img-png' | 'img-svg' | 'inline-svg' | 'pre-mermaid';
+
+/**
+ * Mermaid diagram configuration
+ */
+export interface DiagramMermaidConfig {
+  /**
+   * Rendering strategy for Mermaid diagrams
+   * - `img-png`: Render as PNG image
+   * - `img-svg`: Render as SVG image
+   * - `inline-svg`: Inline SVG in HTML
+   * - `pre-mermaid`: Keep as pre-formatted Mermaid code
+   */
+  strategy?: MermaidStrategy;
+}
+
+/**
+ * Graphviz diagram configuration
+ */
+export interface DiagramGraphvizConfig {
+
+}
+
+/**
+ * Diagrams configuration object
+ */
+export interface DiagramsConfig {
+  /**
+   * Mermaid diagram configuration
+   * - `true`: Enable with default settings
+   * - `{ strategy: 'img-svg' }`: Enable with custom settings
+   */
+  mermaid?: boolean | DiagramMermaidConfig;
+
+  /**
+   * Graphviz diagram configuration
+   * - `true`: Enable with default settings
+   * - `{ engine: 'neato' }`: Enable with custom settings
+   */
+  graphviz?: boolean | DiagramGraphvizConfig;
 }
 
 export interface AppsDirectory {
