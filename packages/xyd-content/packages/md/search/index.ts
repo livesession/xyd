@@ -18,10 +18,14 @@ import { mdParameters } from '../plugins/utils/mdParameters'
 
 export async function mapSettingsToDocSections(xydSettings: Settings) {
     const pages = flatPages(xydSettings.navigation?.sidebar || [], {})
-        .map(page => ({
-            name: page,
-            path: path.join(process.cwd(), page)
-        }))
+        .map(page => {
+            let baseName = xydSettings.advanced?.basename || ""
+            
+            return {
+                name: path.join(baseName, page),
+                path: path.join(process.cwd(), page),
+            }
+        })
 
     return await processSections(pages, xydSettings)
 }
@@ -76,8 +80,9 @@ export async function mapContentToDocSections(
                                 console.error("Multiple h1 found")
                             }
 
+                            const pageUrl = route.startsWith("/") ? route : `/${route}`;
                             rootSection.pageId = slug
-                            rootSection.pageUrl = `/${route}`
+                            rootSection.pageUrl = pageUrl
                             rootSection.pageTitle = heading
                             rootSection.headingLevel = 1
                             rootSection.headingTitle = heading

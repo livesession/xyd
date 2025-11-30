@@ -115,6 +115,8 @@ export default [
       commonjs(),
       typescript({
         tsconfig: "./tsconfig.json",
+        outDir: "dist",
+        declarationDir: "dist",
       }),
       babel({
         babelHelpers: "bundled",

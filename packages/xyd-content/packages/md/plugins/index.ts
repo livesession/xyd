@@ -90,9 +90,73 @@ export function remarkFunctionPlugins(settings?: Settings): Plugin[] {
 let rehypeMermaid
 async function getMermaidPlugin() {
   if (!rehypeMermaid) {
-    rehypeMermaid = (await import('rehype-mermaid')).default
+    rehypeMermaid = (await import("rehype-mermaid")).default
   }
   return rehypeMermaid
+}
+
+let rehypeGraphviz
+let graphviz
+
+async function getGraphvizPlugin() {
+  if (!rehypeGraphviz) {
+    const graphizMod = (await import("@hpcc-js/wasm")).Graphviz
+    graphviz = await graphizMod.load()
+
+    rehypeGraphviz = (await import("rehype-graphviz")).default
+  }
+
+  return [
+    rehypeGraphviz,
+    {
+      graphviz
+    }
+  ]
+}
+
+/**
+ * Check if a specific diagram type is enabled in settings
+ */
+function isDiagramTypeEnabled(settings: Settings | undefined, diagramType: 'mermaid' | 'graphviz'): boolean {
+  const diagrams = settings?.integrations?.diagrams;
+
+  if (!diagrams) {
+    return false;
+  }
+
+  // If diagrams is just true, all types are enabled
+  if (diagrams === true) {
+    return true;
+  }
+
+  // If diagrams is an array, check if the type is included
+  if (Array.isArray(diagrams) && diagrams.includes(diagramType)) {
+    return true;
+  }
+
+  // If diagrams is an object, check if the type is configured
+  if (typeof diagrams === 'object' && !Array.isArray(diagrams)) {
+    if (diagramType in diagrams) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Get options for a specific diagram type from settings
+ */
+function getDiagramOptions(settings: Settings | undefined, diagramType: 'mermaid' | 'graphviz') {
+  const diagrams = settings?.integrations?.diagrams;
+
+  if (!diagrams || typeof diagrams !== 'object' || Array.isArray(diagrams)) {
+    return {};
+  }
+
+  return diagrams[diagramType] && typeof diagrams[diagramType] === 'object'
+    ? diagrams[diagramType]
+    : {};
 }
 
 export async function thirdPartyRehypePlugins(settings?: Settings) {
@@ -103,10 +167,16 @@ export async function thirdPartyRehypePlugins(settings?: Settings) {
     rehypeKatex,
   ]
 
-  if (settings?.integrations?.diagrams) {
-    const options = typeof settings.integrations.diagrams === 'object' ? settings.integrations.diagrams : {};
+  // Add mermaid plugin if enabled
+  if (isDiagramTypeEnabled(settings, 'mermaid')) {
+    const mermaidOptions = getDiagramOptions(settings, 'mermaid');
+    plugins.push([await getMermaidPlugin(), mermaidOptions])
+  }
 
-    plugins.push([await getMermaidPlugin(), options])
+  // Add graphviz plugin if enabled
+  if (isDiagramTypeEnabled(settings, 'graphviz')) {
+    const graphvizPlugin = await getGraphvizPlugin()
+    plugins.push(graphvizPlugin)
   }
 
   return plugins

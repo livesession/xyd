@@ -37,7 +37,7 @@
       "title": "Edit page",
       "icon": "docs:github"
     },
-    "diagrams": true,
+    "diagrams": ["mermaid", "graphviz"],
     "search": {
       "orama": true
     },

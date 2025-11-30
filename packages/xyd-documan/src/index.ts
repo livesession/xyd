@@ -7,3 +7,5 @@ export { install } from "./install"
 export { nodeInstallPackages, pmInstall, getHostPath, getCLIComponentsJsonPath } from "./utils"
 
 export { componentsInstall } from "./componentsInstall"
+
+// export { readSettings } from "./settings"
