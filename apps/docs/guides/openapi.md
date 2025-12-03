@@ -25,7 +25,7 @@ Your document must follow OpenAPI specification 3.0+.
 :::
 
 ## Configuration Quickstart
-The fastest way to get started with OpenAPI is to add an `openapi` field to `api` in the [`settings`](/docs/guides/settings) file. 
+The fastest way to get started with OpenAPI is to add an `openapi` field to `api` in the [`settings`](/guides/settings) file. 
 This field can contain either the relative path to an OpenAPI document in your docs or the URL of a hosted OpenAPI document.
 
 :::tabs{kind="secondary"}
@@ -58,7 +58,7 @@ This field can contain either the relative path to an OpenAPI document in your d
         }
       ```
 
-    2. then define `route` in [`x-docs`](/docs/guides/openapi#x-docs-extension) extension: 
+    2. then define `route` in [`x-docs`](/guides/openapi#x-docs-extension) extension: 
 
     ```yaml
     x-docs:
@@ -115,7 +115,7 @@ Creating multi API specs for more advanced use cases is also possible:
       }
       ```
 
-    2. then define `route` in [`x-docs`](/docs/guides/openapi#x-docs-extension) extension for each OpenAPI file: 
+    2. then define `route` in [`x-docs`](/guides/openapi#x-docs-extension) extension for each OpenAPI file: 
       :::code-group
         ```yaml api/rest/openapi.yaml
         x-docs:
@@ -171,7 +171,7 @@ Thanks to this configuration, you'll have two routes: `docs/api/rest/*` and `doc
 - Links response schemas to their corresponding endpoints
 
 :::callout
-All defaults can be overridden using the [`x-docs`](/docs/guides/openapi#x-docs-extension) extension
+All defaults can be overridden using the [`x-docs`](/guides/openapi#x-docs-extension) extension
 :::
 
 ## X-Docs Extension[maxTocDepth=3]

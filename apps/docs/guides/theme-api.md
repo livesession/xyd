@@ -8,7 +8,7 @@ icon: pen-tool
 Learn how to use Theme API
 :::
 
-While [theme settings](/docs/reference/core/theme) provide a quick way to customize your documentation,
+While [theme settings](/reference/core/theme) provide a quick way to customize your documentation,
 using the Theme API gives you more flexibility and programmable control. 
  
 This approach allows you to build upon the existing design while adding your own customizations, all while maintaining the core functionality of the default theme.
@@ -155,7 +155,7 @@ or you can use a MDX syntax too:
 ```
 
 :::callout
-If you not set name in [`customComponents`](/docs/reference/source/BaseTheme#registerComponent) function, it will 
+If you not set name in [`customComponents`](/reference/source/BaseTheme#registerComponent) function, it will 
 convert PascalCase to kebab-case for markdown syntax.
 :::
 

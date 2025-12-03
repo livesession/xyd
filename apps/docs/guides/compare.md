@@ -275,4 +275,4 @@ For us, it's not only a docs framework, it's something more. We are on the road 
 [Read a story](https://blog.livesession.dev/why-another-yet-docs-framework) about that.
 
 ## Migration tool
-Check our [migration tool](/docs/resources/migration-tool) or start with our [starter template](https://github.com/xyd-js/starter).
+Check our [migration tool](/resources/migration-tool) or start with our [starter template](https://github.com/xyd-js/starter).

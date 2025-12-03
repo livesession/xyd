@@ -25,7 +25,7 @@ Your document must follow [GraphQL specification](https://spec.graphql.org/Octob
 :::
 
 ## Configuration Quickstart
-The fastest way to get started with GraphQL is to add a `graphql` field to `api` in the [`settings`](/docs/guides/settings) file. 
+The fastest way to get started with GraphQL is to add a `graphql` field to `api` in the [`settings`](/guides/settings) file. 
 This field can contain either the path to a GraphQL schema file in your docs repo, or the URL of a hosted GraphQL schema:
 
 :::tabs{kind="secondary"}
@@ -141,7 +141,7 @@ Thanks to this configuration, you'll have two routes: `docs/api/graphql/*` and `
 - Links related types and operations together
 
 :::callout
-All defaults can be overridden using the optional [docs directives](/docs/guides/graphql#docs-directives)
+All defaults can be overridden using the optional [docs directives](/guides/graphql#docs-directives)
 :::
 
 ## Docs Directives [maxTocDepth=3]

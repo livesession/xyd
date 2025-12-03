@@ -11,7 +11,7 @@ Customize the appearance of your documentation
 Choose from our pre-built themes to match your brand's unique style.
 
 ## Setup
-You can configure the theme in the [`settings`](/docs/guides/settings) file:
+You can configure the theme in the [`settings`](/guides/settings) file:
 
 ```json
 {
@@ -46,6 +46,6 @@ You can configure the theme in the [`settings`](/docs/guides/settings) file:
 
 ## Customizing The Theme
 
-You can also [customize the theme](/docs/guides/customization-quickstart) or
-use [Theme API](/docs/guides/theme-api).
+You can also [customize the theme](/guides/customization-quickstart) or
+use [Theme API](/guides/theme-api).
 

@@ -12,8 +12,8 @@ The settings file is the central configuration hub for your documentation.
 It's available at root of your project inside the `docs.json` file.
 
 
-This configuration file controls the look and feel of your documentation, including [navigation](/docs/guides/navigation), 
-[themes](/docs/guides/themes), [integrations](/docs/guides/integrations/analytics/analytics-integrations) and other.
+This configuration file controls the look and feel of your documentation, including [navigation](/guides/navigation), 
+[themes](/guides/themes), [integrations](/guides/integrations/analytics/analytics-integrations) and other.
 
 :::callout
 Source code of `settings` is available [here](https://github.com/livesession/xyd/blob/master/packages/xyd-core/src/types/settings.ts).
@@ -36,7 +36,7 @@ Load environment variables from `.env` files to keep sensitive values out of you
 LS_TRACK_ID=YOUR_TRACK_ID
 ```
 
-```json [descHead="Tip" desc="Install analytics integrations to measure important [insights](/docs/guides/integrations/analytics/analytics-integrations)."]
+```json [descHead="Tip" desc="Install analytics integrations to measure important [insights](/guides/integrations/analytics/analytics-integrations)."]
 // docs.json
 {
     ...

@@ -14,7 +14,7 @@ Roadmap details you can find [here](https://github.com/orgs/livesession/projects
 
 This roadmap outlines the key features and improvements we're working on for xyd. While we have a clear vision,
 our plans may evolve as we gather feedback and insights from the community. 
-For recent updates, check out our **[changelog](/docs/development/changelog)**.
+For recent updates, check out our **[changelog](/development/changelog)**.
 
 :::callout
 These plans represent our current vision and priorities. We're committed to building the best documentation tool possible,

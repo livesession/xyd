@@ -21,12 +21,12 @@ We use [OpenFeature](https://openfeature.dev) specification for feature flag man
 :::grid
 - 
   - 
-    :::guide-card{kind="secondary" title="GrowthBook" icon="docs:growthbook" href="/docs/guides/integrations/abtesting/growthbook"}
+    :::guide-card{kind="secondary" title="GrowthBook" icon="docs:growthbook" href="/guides/integrations/abtesting/growthbook"}
     Learn how to integrate GrowthBook for A/B testing and feature flags
     :::
 
   - 
-    :::guide-card{kind="secondary" title="LaunchDarkly" icon="docs:launchdarkly" href="/docs/guides/integrations/abtesting/launchdarkly"}
+    :::guide-card{kind="secondary" title="LaunchDarkly" icon="docs:launchdarkly" href="/guides/integrations/abtesting/launchdarkly"}
     Learn how to integrate LaunchDarkly for A/B testing and feature flags
     :::
 
@@ -76,7 +76,7 @@ Technically we did some improvements to avoid clunky render effect during featur
 Thanks to that the end-user experience should be close to server-side evalutation although it's running on client side only.
 
 :::callout
-By default feature context is saved in local storage for 7 days, if you'd to change this, please look at [reference](/docs/guides/integrations/abtesting/overview#reference).
+By default feature context is saved in local storage for 7 days, if you'd to change this, please look at [reference](/guides/integrations/abtesting/overview#reference).
 :::
 
 ## Server-side Evaluation
@@ -104,7 +104,7 @@ You can also use feature flags directly in your markdown content using the `feat
 :::
 ```
 ## Analytics Integration {label="Coming Soon"}
-Track [user behavior](https://livesession.io) and engagement with your A/B testing experiments. Send [analytics events](/docs/guides/integrations/analytics/analytics-integrations) to measure which content versions perform better and optimize your documentation based on real user data. 
+Track [user behavior](https://livesession.io) and engagement with your A/B testing experiments. Send [analytics events](/guides/integrations/analytics/analytics-integrations) to measure which content versions perform better and optimize your documentation based on real user data. 
 
 ## AB Testing Samples
 Learn [how to setup AB tests](https://github.com/xyd-js/examples/tree/master/abtesting).

@@ -19,15 +19,15 @@ Navigation is one of the core concepts in xyd to understand as it determines how
 
 ## Overview
 
-You can customize the navigation by adding a routes in [`docs.json`](/docs/guides/settings) file to your project.
+You can customize the navigation by adding a routes in [`docs.json`](/guides/settings) file to your project.
 
 The `navigation` property controls the hierarchy of your documentation. It's grouped into multiple properties:
 
-* [`sidebar`](/docs/guides/navigation#sidebar) - Main navigation, usually displayed on the left side where all pages are rendered.
-* [`tabs`](/docs/guides/navigation#tabs) - Navigate through tabs, the most in header area.
-* [`sidebarDropdown`](/docs/guides/navigation#tabs) - Navigate through sidebar dropdown.
-* [`anchors`](/docs/guides/navigation#anchors) - Fixed navigation, helpful for displaying a static navigation/links.
-* [`segments`](/docs/guides/navigation#segments) - Smaller navigational structures based on specific `route`.
+* [`sidebar`](/guides/navigation#sidebar) - Main navigation, usually displayed on the left side where all pages are rendered.
+* [`tabs`](/guides/navigation#tabs) - Navigate through tabs, the most in header area.
+* [`sidebarDropdown`](/guides/navigation#tabs) - Navigate through sidebar dropdown.
+* [`anchors`](/guides/navigation#anchors) - Fixed navigation, helpful for displaying a static navigation/links.
+* [`segments`](/guides/navigation#segments) - Smaller navigational structures based on specific `route`.
 
 :::callout
 Dividing a `navigation` into multiple properties helps you to organize your documentation better.
@@ -77,7 +77,7 @@ If you need more advanced structures, define sidebar as object:
 ### Nested Groups
 You can also define nested groups:
 
-```json [!scroll descHead="Reference" desc="Check the reference of [Sidebar](/docs/reference/core/sidebar)."]
+```json [!scroll descHead="Reference" desc="Check the reference of [Sidebar](/reference/core/sidebar)."]
 {
   "sidebar": [
     {
@@ -102,7 +102,7 @@ You can also define nested groups:
 
 ### Group Page {label="Coming Soon"}
 If you want to have a clickable group as a page, define `page` instead of `group`:
-```json [!scroll descHead="Tip" desc="The sidebar title comes from a [Page Meta](/docs/guides/pages)."]
+```json [!scroll descHead="Tip" desc="The sidebar title comes from a [Page Meta](/guides/pages)."]
 {
   "sidebar": [
     {
@@ -166,7 +166,7 @@ You can also do more advanced routing in the sidebar, like matching based on the
 ```
 
 ### Order
-Thanks to `order` you are able to set a custom order of docs groups. It's the most useful with auto-generatated docs - for [OpenAPI](/docs/guides/openapi)/[GraphQL](/docs/guides/graphql) integration for example. There are a few options how to change an order:
+Thanks to `order` you are able to set a custom order of docs groups. It's the most useful with auto-generatated docs - for [OpenAPI](/guides/openapi)/[GraphQL](/guides/graphql) integration for example. There are a few options how to change an order:
 
 :::tabs{kind="secondary"}
 1. [Top](order=top)
@@ -277,7 +277,7 @@ Thanks to `order` you are able to set a custom order of docs groups. It's the mo
 
 ![Tabs](/public/assets/Tabs.png)
 
-[Navigation Item](/docs/reference/core/navigationitem) structure displayed in tabs-like style:
+[Navigation Item](/reference/core/navigationitem) structure displayed in tabs-like style:
 
 ```json [!scroll]
 {
@@ -311,7 +311,7 @@ Thanks to `order` you are able to set a custom order of docs groups. It's the mo
 
 ![Sidebar Dropdown](/public/assets/SidebarDropdown.png)
 
-[Navigation Item](/docs/reference/core/navigationitem) structure displayed in dropdown-like style inside sidebar:
+[Navigation Item](/reference/core/navigationitem) structure displayed in dropdown-like style inside sidebar:
 
 ```json [!scroll]
 {
@@ -427,8 +427,8 @@ Anchors provide a way to add fixed navigation elements. They're useful for displ
 
 ![asset](/public/assets/Segments.png)
 
-Segments allows you to create smaller navigational structures based on specific [`route`](/docs/guides/navigation#routing).
-Thanks to that you can create for example a subheader that will shown only on specific [`route`](/docs/guides/navigation#routing): 
+Segments allows you to create smaller navigational structures based on specific [`route`](/guides/navigation#routing).
+Thanks to that you can create for example a subheader that will shown only on specific [`route`](/guides/navigation#routing): 
 
 ```json [!scroll descHead="Tip" desc="Check out how to create a subheader using segments [here](https://github.com/xyd-js/navigation-samples/tree/master/subheader)."]
 {

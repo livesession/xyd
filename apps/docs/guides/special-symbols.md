@@ -12,7 +12,7 @@ Learn how to use special symbols to make your content more powerful
 Learn how to use them below.
 
 ## `Component Directive`
-Component Directive (`:::<component>`) is used to render UI [components](/docs/components) directly in your markdown:
+Component Directive (`:::<component>`) is used to render UI [components](/components) directly in your markdown:
 
 ```mdx
 :::callout
@@ -58,7 +58,7 @@ if nested components, parent must use extra `:`:
 ```
 
 ## `Function Calling`
-Function Calling (`@<function>`) is used to execute [functions](/docs/reference/functions) within your markdown content:
+Function Calling (`@<function>`) is used to execute [functions](/reference/functions) within your markdown content:
 
 ```mdx
 @import "~/snippets/Hello.ts"
@@ -68,7 +68,7 @@ Function Calling (`@<function>`) is used to execute [functions](/docs/reference/
 :::
 
 ## `Output Variable` {label="Coming Soon"}
-[Output Variable](/docs/reference/functions/out) (`@out(<name>=<expression>)`) is used to pass output variables from content files, useful for [composing](/docs/guides/compose-content) documentation content:
+[Output Variable](/reference/functions/out) (`@out(<name>=<expression>)`) is used to pass output variables from content files, useful for [composing](/guides/compose-content) documentation content:
 
 ~~~md
 @out(examples=(
@@ -145,7 +145,7 @@ Some built-in tags has abilities to pass attributes (`<tag|expression>[<attribut
 ```
 
 :::callout
-Learn more about toc attributes [here](/docs/guides/writing-quickstart#toc-anchors).
+Learn more about toc attributes [here](/guides/writing-quickstart#toc-anchors).
 :::
 
 ## Full Example

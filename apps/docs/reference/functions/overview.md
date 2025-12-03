@@ -19,6 +19,6 @@ In `xyd` markdown files, you can use special functions to reference code, genera
 
 ## Next Steps
 
-- Learn about [theme customization](/docs/guides/customization-introduction)
-- Explore [component documentation](/docs/components)
-- Read about [API reference generation](/docs/guides/api-reference)
+- Learn about [theme customization](/guides/customization-introduction)
+- Explore [component documentation](/components)
+- Read about [API reference generation](/guides/api-reference)

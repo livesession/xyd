@@ -21,7 +21,7 @@ Follow the instructions below to learn how to run, deploy, update and supercharg
 
 ## Installation
 
-::::steps
+:::::steps
 1. Install the <code>xyd</code> CLI:
 :::code-group{title="xyd installation"}
 ```bash bun
@@ -51,7 +51,7 @@ cd starter
 ```bash [descHead="Info" desc="Above command runs a dev server"]
 xyd
 ```
-::::
+:::::
 
 ## CLI versioning
 Please note that each CLI release is associated with a specific version of <code>xyd</code>.
@@ -80,7 +80,7 @@ rm -rf .xyd
 ## Publishing
 Publishing changes depends on your preferences, the simplest way is to
 use the one of infrastructure providers like Netlify or Vercel.
-Learn more about [deploy](/docs/guides/deploy).
+Learn more about [deploy](/guides/deploy).
 
 ## Starter
 Use our [starter kit](https://github.com/xyd-js/starter) to get up and running quickly.

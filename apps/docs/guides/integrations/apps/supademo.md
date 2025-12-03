@@ -61,7 +61,7 @@ View Demo
 </span>
 
 :::callout{kind="tip"}
-Alternatively you can use [<code>Supademo()</code>](https://docs.supademo.com/sharing/in-app-product-tours#trigger-a-supademo-or-showcase-programmatically-via-event) API inside [MDX Components](/docs/guides/react-components).
+Alternatively you can use [<code>Supademo()</code>](https://docs.supademo.com/sharing/in-app-product-tours#trigger-a-supademo-or-showcase-programmatically-via-event) API inside [MDX Components](/guides/react-components).
 :::
 
 ## Reference
@@ -69,7 +69,7 @@ Alternatively you can use [<code>Supademo()</code>](https://docs.supademo.com/sh
 
 ## Analytics
 
-Track how users interact with your demos through automatic [analytics events](/docs/guides/integrations/analytics/analytics-integrations).
+Track how users interact with your demos through automatic [analytics events](/guides/integrations/analytics/analytics-integrations).
 
 | Event name           | Custom properties                                                                 | Description               |
 |----------------------|------------------------------------------------------------------------------------|---------------------------|

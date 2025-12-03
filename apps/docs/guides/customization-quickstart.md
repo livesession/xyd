@@ -16,12 +16,12 @@ Learn the fundamentals of documentation customization
 Customizing your documentation allows you to create a unique and branded experience for your users.
 There are three main approaches for customization:
 
-1. Customization via [settings file](/docs/guides/settings) - choose from a variety of [pre-built themes](/docs/guides/themes) 
-and tweak using available [theme settings](/docs/reference/core/theme)
+1. Customization via [settings file](/guides/settings) - choose from a variety of [pre-built themes](/guides/themes) 
+and tweak using available [theme settings](/reference/core/theme)
 
-2. [Extending the default theme](/docs/guides/theme-api) - build upon the existing design while adding your own enhancements via code
+2. [Extending the default theme](/guides/theme-api) - build upon the existing design while adding your own enhancements via code
 
-3. [Creating a new theme](/docs/guides/custom-theme) - develop a completely new theme from scratch via code
+3. [Creating a new theme](/guides/custom-theme) - develop a completely new theme from scratch via code
 
 ## Customization via Settings File
 This is the simplest way to customize your documentation.
@@ -37,7 +37,7 @@ This is the simplest way to customize your documentation.
     }
 }
 ```
-For more details on the theme settings, see the [reference](/docs/guides/customization-quickstart#theme-reference) guide.
+For more details on the theme settings, see the [reference](/guides/customization-quickstart#theme-reference) guide.
 
 ## Customization via Code [maxTocDepth=3]
 To customize your documentation via code, you'll need to work with a `.docs/theme` directory inside your project root:
@@ -78,8 +78,8 @@ However, if you only want to customize styles, you can simply use `index.css` wi
 
 
 :::callout
-Learn more about [extending the default theme](/docs/guides/theme-api)
-or [creating a custom theme](/docs/guides/custom-theme) via code.
+Learn more about [extending the default theme](/guides/theme-api)
+or [creating a custom theme](/guides/custom-theme) via code.
 :::
 
 ## Theme Reference
@@ -89,5 +89,5 @@ Theme settings are defined as an object with the following reference:
 ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Theme'})"}
 
 :::callout
-Full settings reference you can read [here](/docs/reference/core/settings).
+Full settings reference you can read [here](/reference/core/settings).
 :::

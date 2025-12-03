@@ -75,12 +75,12 @@ It's visible on the page too.
 ```
 
 :::callout
-Learn more about Page Meta options for TOC [here](/docs/guides/pages#toc). 
+Learn more about Page Meta options for TOC [here](/guides/pages#toc). 
 :::
 
 ## Content [maxTocDepth=3]
 To write a content for your page, you can use the [MDX](https://mdxjs.com/) or [Markdown](https://www.markdownguide.org/) syntax.
-You can also leverage built in [components](/docs/components) or [special symbols](/docs/guides/special-symbols) to enhance your content:
+You can also leverage built in [components](/components) or [special symbols](/guides/special-symbols) to enhance your content:
 
 ::::code-group
 
@@ -106,7 +106,7 @@ Tip: You can use the React `<Callout>` component to render a callout too
 ::::
 
 :::callout
-While MDX is powerful, xyd makes writing docs much easier using markdown [special symbols](/docs/guides/special-symbols).
+While MDX is powerful, xyd makes writing docs much easier using markdown [special symbols](/guides/special-symbols).
 
 But you can still use pure MDX or both if you want.
 :::
@@ -141,18 +141,18 @@ Hello World, **Bold**, _Italic_, ~~Hidden~~
 ```
 
 ### Component Directives [maxTocDepth=4]
-Use markdown directives (`:::`) to render components in markdown syntax. The full list of components you can find [here](/docs/components).
+Use markdown directives (`:::`) to render components in markdown syntax. The full list of components you can find [here](/components).
 
 For example you would render components like this:
 
 ```mdx
 :::callout
-You can also use MDX version of the same [component](/docs/components).
+You can also use MDX version of the same [component](/components).
 :::
 ```
 
 :::callout
-You can also use MDX version of the same [component](/docs/components).
+You can also use MDX version of the same [component](/components).
 :::
 
 #### Steps
@@ -201,8 +201,8 @@ You can still use [GFM](https://github.github.com/gfm/#tables-extension-) versio
 :::
 
 ## Including Content
-You can use [@include](/docs/reference/functions/include) function to include another content files in current content:
-```md [descHead="Tip" desc="You can include <code>.mdx</code> files too, check out [React Components](/docs/guides/react-components) guide."]
+You can use [@include](/reference/functions/include) function to include another content files in current content:
+```md [descHead="Tip" desc="You can include <code>.mdx</code> files too, check out [React Components](/guides/react-components) guide."]
 @include "./relative-to-current-file.md"
 ```
 

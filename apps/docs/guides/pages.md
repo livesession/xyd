@@ -9,7 +9,7 @@ Learn how to create and structure pages in your documentation
 :::
 
 :::callout
-Full API Reference you can find [here](/docs/reference/core/pagemeta).
+Full API Reference you can find [here](/reference/core/pagemeta).
 :::
 
 Each page is a `md`/`mdx` file that should follow [frontmatter](https://jekyllrb.com/docs/front-matter/) specification:
@@ -32,7 +32,7 @@ inside you docs project like follow:
 ```
 
 :::callout
-Writing page meta is required for [navigation](/docs/guides/navigation) and optionaly for other page meta features like [SEO](/docs/guides/seo).
+Writing page meta is required for [navigation](/guides/navigation) and optionaly for other page meta features like [SEO](/guides/seo).
 :::
 
 ## Title
@@ -55,7 +55,7 @@ sidebarTitlte:  Quickstart # visible in sidebar
 ## Description
 The description field is used for SEO purposes and will be displayed in search engine results. It should be a concise summary of the page content.
 
-```md [descHead="Tip" desc="More SEO page meta you can find [here](/docs/guides/seo)."]
+```md [descHead="Tip" desc="More SEO page meta you can find [here](/guides/seo)."]
 ---
 title: My title
 description: A brief summary of what this page is about
@@ -73,7 +73,7 @@ sidebarTitle: My sidebar title
 ```
 
 ## Sidebar Icons
-You can customize the sidebar [icons](/docs/guides/icons) for each page by specifying an icon name. The icon will be displayed next to the page title in the navigation.
+You can customize the sidebar [icons](/guides/icons) for each page by specifying an icon name. The icon will be displayed next to the page title in the navigation.
 
 ```md
 ---
@@ -116,7 +116,7 @@ layout: page
 ```
 
 ### Reader
-In Reader mode sidebar and ToC are hidden. All page margins and paddings are applied in the opposite of [Page mode](/docs/guides/pages#page). 
+In Reader mode sidebar and ToC are hidden. All page margins and paddings are applied in the opposite of [Page mode](/guides/pages#page). 
 Use reader mode in blogs or other content focused pages.
 ```md
 ---
@@ -141,7 +141,7 @@ The Table of Contents (TOC) is automatically generated based on the headings in 
 
 ### Depth
 You can customize the depth level of TOCs per page:
-```md [descHead="Tip" desc="If you want to change the depth level globally, please check out [settings](/docs/guides/settings#reference)."]
+```md [descHead="Tip" desc="If you want to change the depth level globally, please check out [settings](/guides/settings#reference)."]
 ---
 maxTocDepth: 2
 ---
@@ -161,12 +161,12 @@ tocCard:
 ```
 
 :::callout
-If you want to learn more about toc anchors, check out [here](/docs/guides/writing-quickstart#toc-anchors).
+If you want to learn more about toc anchors, check out [here](/guides/writing-quickstart#toc-anchors).
 :::
 
 ## Uniform {label="Experimental"}
 
-`uniform` meta allows to load [`uniform function`](/docs/reference/functions/uniform) for entire page, learn more [here](/docs/guides/compose-content).
+`uniform` meta allows to load [`uniform function`](/reference/functions/uniform) for entire page, learn more [here](/guides/compose-content).
 
 ```md
 ---

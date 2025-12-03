@@ -31,11 +31,11 @@ const MyComponent = () => {
 ```
 
 :::callout
-You can also customize syntax highlighting. Please see [theme settings](/docs/guides/customization-quickstart#theme-reference) for more details.
+You can also customize syntax highlighting. Please see [theme settings](/guides/customization-quickstart#theme-reference) for more details.
 :::
 
 ## Syntax Highlighting 
-Default syntax highlighting depends on used theme but you can override it via [`docs.json`](/docs/guides/settings):
+Default syntax highlighting depends on used theme but you can override it via [`docs.json`](/guides/settings):
 ```json [descHead="Tip" desc="Check out syntax highlighting [example](https://github.com/xyd-js/examples/tree/master/syntaxhighlight)."]
 {
   "theme": {
@@ -229,10 +229,10 @@ npm i -g xyd-js
 ```
 
 :::callout
-Currently `desc` supports a basic markdown syntax like `**`, `*` or `~~` but **DOES NOT** support more [advanced writing](/docs/guides/special-symbols) features.
+Currently `desc` supports a basic markdown syntax like `**`, `*` or `~~` but **DOES NOT** support more [advanced writing](/guides/special-symbols) features.
 :::
 
-you can also use custom [icon](/docs/guides/icons):
+you can also use custom [icon](/guides/icons):
 ~~~
 ```bash [descIcon="folder-code"]
 npm i -g xyd-js
@@ -246,15 +246,15 @@ npm i -g xyd-js
 
 ## Import Code
 
-You can import code from a file using the [`@importCode`](/docs/reference/functions/importCode) function:
+You can import code from a file using the [`@importCode`](/reference/functions/importCode) function:
 ```md
 @importCode "./relative-to-current-file.tsx"
 ```
 
 ## Include
 
-You can use [@include](/docs/reference/functions/include) function to include another content files in current content:
-```md [descHead="Tip" desc="You can include <code>.mdx</code> files too, check out [React Components](/docs/guides/react-components) guide."]
+You can use [@include](/reference/functions/include) function to include another content files in current content:
+```md [descHead="Tip" desc="You can include <code>.mdx</code> files too, check out [React Components](/guides/react-components) guide."]
 @include "./relative-to-current-file.md"
 ```
 
@@ -403,7 +403,7 @@ $$
 
 ## Changelog
 
-You can also render changelog page using the [`@changelog`](/docs/reference/functions/changelog) function:
+You can also render changelog page using the [`@changelog`](/reference/functions/changelog) function:
 ```md
 @changelog "~/CHANGELOG.md"
 ```
