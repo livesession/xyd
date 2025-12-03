@@ -23,7 +23,7 @@ or using a home path:
 @include "~/path/to/file.md"
 ```
 
-or using [path aliases](/docs/reference/functions/include#path-aliases):
+or using [path aliases](/reference/functions/include#path-aliases):
 ```md
 @include "@snippets/file.md"
 ```

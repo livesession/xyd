@@ -9,7 +9,7 @@ icon: search
 Enhance your documentation's search engine visibility with custom meta tags
 :::
 
-Our documentation platform provides automatic meta tag generation, but you have a full control to customize them through the [`docs.json`](/docs/guides/settings) configuration or individual [page](/docs/guides/pages) meta.
+Our documentation platform provides automatic meta tag generation, but you have a full control to customize them through the [`docs.json`](/guides/settings) configuration or individual [page](/guides/pages) meta.
 
 ## Global Meta Tags
 
@@ -28,7 +28,7 @@ Set default meta tags for your entire documentation by adding the `seo.metatags`
 
 ## Page-specific Meta Tags
 
-Customize meta tags for individual pages using [page](/docs/guides/pages) meta:
+Customize meta tags for individual pages using [page](/guides/pages) meta:
 
 ```md
 ---
@@ -49,7 +49,7 @@ Your documentation automatically includes:
 - A `robots.txt` file
 
 :::callout
-For good `sitemap.xml` generation make sure you filled [`seo.domain`](/docs/guides/settings).
+For good `sitemap.xml` generation make sure you filled [`seo.domain`](/guides/settings).
 :::
 
 ### Controlling Indexing

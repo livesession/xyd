@@ -32,7 +32,7 @@ Currently, only [React](https://react.dev) components are supported.
 ## Setup Component Configuration
 
 :::steps
-1. To create an API documentation page for a component, specify its path in the meta using [`uniform`](/docs/reference/core/pagemeta):
+1. To create an API documentation page for a component, specify its path in the meta using [`uniform`](/reference/core/pagemeta):
 
 ```yaml
 ---
@@ -121,7 +121,7 @@ Please make sure you mentioned `@category Component` or `@component` in TypeDoc 
 
 ## Composition {label="Coming Soon"}
 
-You can use [composition](/docs/guides/compose-content) to make your component API page more custom:
+You can use [composition](/guides/compose-content) to make your component API page more custom:
 
 ~~~md
 ---

@@ -18,6 +18,6 @@ Core API provides the essential objects and references for configuring your docu
 
 ## Next Steps
 
-- [Settings](/docs/reference/core/settings)
-- [Theme](/docs/reference/core/theme)
-- [Page Meta](/docs/reference/core/pagemeta)
+- [Settings](/reference/core/settings)
+- [Theme](/reference/core/theme)
+- [Page Meta](/reference/core/pagemeta)

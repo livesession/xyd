@@ -57,7 +57,7 @@ You can include code examples in your documentation using TypeDoc comments:
 
 ### Region Selection
 
-Like [`@importCode`](/docs/reference/functions/importCode), you can select specific regions of code:
+Like [`@importCode`](/reference/functions/importCode), you can select specific regions of code:
 
 ```md
 @uniform "./file.ts#regionName"

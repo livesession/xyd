@@ -13,7 +13,7 @@ Learn how to migrate from your existing docs framework
 :::grid
 - 
   - 
-    :::guide-card{title="Mintlify (experimental)" icon="docs:mintlify" kind="secondary" href="/docs/resources/migration-tool#mintlify"}
+    :::guide-card{title="Mintlify (experimental)" icon="docs:mintlify" kind="secondary" href="/resources/migration-tool#mintlify"}
     Migrate from Mintlify documentation framework.
     :::
     

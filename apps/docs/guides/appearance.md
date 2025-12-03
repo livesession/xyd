@@ -9,7 +9,7 @@ maxTocDepth: 3
 The appearance configuration allows you to customize the visual aspects of your documentation site, including colors, layout, and component behavior.
 
 :::callout
-By default each [Theme](/docs/guides/themes) use different appearance settings. 
+By default each [Theme](/guides/themes) use different appearance settings. 
 You can always overwrite that.
 :::
 

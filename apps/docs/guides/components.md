@@ -123,7 +123,7 @@ componentProps:
         image: "/public/assets/logo.svg"
         button: 
             title: "Get Started"
-            href: "/docs/guides/introduction"
+            href: "/guides/introduction"
     sections:
         - 
             title: Explore the docs
@@ -133,7 +133,7 @@ componentProps:
                     children: Start using xyd in minutes.
                     kind: secondary
                     icon: rocket
-                    href: "/docs/guides/quickstart"
+                    href: "/guides/quickstart"
         - 
             title:  Resources
             cards:

@@ -37,7 +37,6 @@ export function MyAPIDocsPage({uniform}: {uniform: Uniform}) {
     />
 }
 ```
-above component will render an API Docs Page similar to [this](#).
 
 ## Usage in Other Libs
 

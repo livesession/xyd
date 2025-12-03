@@ -55,7 +55,7 @@ Icons(:icon{name="image" size=16}) can be configured in your settings file:
 Icons can be loaded in three places:
 ::::steps 
 
-1. [Page meta](/docs/guides/pages):
+1. [Page meta](/guides/pages):
 ```md my-page.md [descHead="Info" desc="This allows to add icon into sidebar page item."]
 ---
 icon: <icon_prefix>:<icon_name>
@@ -65,7 +65,7 @@ icon: <icon_name>
 ---
 ```
 
-2. [Sidebar group](/docs/guides/navigation#groups):
+2. [Sidebar group](/guides/navigation#groups):
 ```json [descHead="Info" desc="This allows to add icon into specified sidebar group. "]
 {
   "group": "Integrations",
@@ -82,7 +82,7 @@ icon: <icon_name>
 }
 ```
 
-3. [Page content](/docs/guides/writing-quickstart):
+3. [Page content](/guides/writing-quickstart):
 
 :::code-group
 ```md

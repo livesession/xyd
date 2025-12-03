@@ -8,7 +8,7 @@ icon: docs:atom-2-line
 Learn how to streamline content experience
 :::
 
-`xyd` combines generated and manual content into composition to create powerful documentation. Use composition along with [uniform](/docs/guides/apitoolchain), [components](/docs/components) or [functions](/docs/reference/functions/overview) to build rich, interactive documentation.
+`xyd` combines generated and manual content into composition to create powerful documentation. Use composition along with [uniform](/guides/apitoolchain), [components](/components) or [functions](/reference/functions/overview) to build rich, interactive documentation.
 
 ## Supported uniform extensions
 Uniform translates code automatically based on supported extensions:

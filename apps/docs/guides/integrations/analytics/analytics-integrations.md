@@ -13,7 +13,7 @@ Automatically send [analytics data](https://livesession.io) about your documenta
 :::grid
 - 
   - 
-    :::guide-card{kind="secondary" title="LiveSession" icon="docs:livesession" href="/docs/guides/integrations/analytics/livesession"}
+    :::guide-card{kind="secondary" title="LiveSession" icon="docs:livesession" href="/guides/integrations/analytics/livesession"}
     Learn how to add send analytics events to LiveSession
     :::
 
@@ -37,7 +37,7 @@ Set your analytics keys in `docs.json` under the `integrations.analytics` sectio
 @include "./.components/Demo.mdx"
 
 ## Analytics API {label="Experimental"}
-You can use `analytics` API in your [custom MDX components](/docs/guides/react-components):
+You can use `analytics` API in your [custom MDX components](/guides/react-components):
 ```mdx [!scroll descHead="Info" desc="Note that <code>analytics</code> refers to a global variable."]
 export function MyComponent() {
     function handleClick() {
@@ -66,7 +66,7 @@ export function MyComponent() {
 ```
 
 ## Analytics Events
-We send the following events to your [analytics provider](/docs/guides/integrations/analytics/livesession).
+We send the following events to your [analytics provider](/guides/integrations/analytics/livesession).
 
 | Event name           | Custom properties                                                                 | Description               |
 |----------------------|------------------------------------------------------------------------------------|---------------------------|
