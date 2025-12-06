@@ -50,6 +50,10 @@ export interface PluginConfig {
     uniform?: Uniform<any>[] // TODO: fix any
     components?: PluginComponents
     head?: HeadConfig[]
+    markdown?: {
+        remark: any[],
+        rehype: any[],
+    }
 }
 
 export type Plugin = (settings: Readonly<Settings>) => PluginConfig

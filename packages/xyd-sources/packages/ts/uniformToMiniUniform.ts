@@ -350,7 +350,7 @@ function handleUnionTypes(
             canonical: "", // TODO: support canonical in the future
         }
     }
-    const symbolIds = Array.isArray(property.symbolDef?.id) ? property.symbolDef.id : [];
+    const symbolIds = Array.isArray(property.symbolDef?.id) ? property?.symbolDef?.id || [] : [];
     const typeString = property.type
 
     const properties: DefinitionProperty[] = [];

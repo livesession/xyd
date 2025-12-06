@@ -138,7 +138,25 @@ export async function loader({ request }: { request: any }) {
     const mdPlugins = await markdownPlugins({
         maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
-    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)
+
+    const remarkPlugins = [
+        ...mdPlugins.remarkPlugins,
+    ]
+    const rehypePlugins = [
+        ...mdPlugins.rehypePlugins
+    ]
+
+    if (globalThis.__xydUserMarkdownPlugins?.remark?.length) {
+        remarkPlugins.push(
+            globalThis.__xydUserMarkdownPlugins?.remark
+        )
+    }
+    if (globalThis.__xydUserMarkdownPlugins?.rehype?.length) {
+        rehypePlugins.push(
+            globalThis.__xydUserMarkdownPlugins?.rehype
+        )
+    }
+    const contentFs = new ContentFS(settings, remarkPlugins, rehypePlugins, mdPlugins.recmaPlugins)
 
     if (settings?.components?.banner?.content && typeof settings?.components?.banner?.content === "string") {
         bannerContentCode = await contentFs.compileContent(

@@ -16,6 +16,7 @@ import { UXNode } from "openux-js";
 
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
+import "virtual:xyd-scripts";
 // @ts-ignore
 const { settings } = virtualSettings as Settings
 
@@ -142,7 +143,25 @@ export async function loader({ request }: { request: any }) {
         maxDepth: metadata?.maxTocDepth || settings?.theme?.writer?.maxTocDepth || 2,
     }, settings)
 
-    const contentFs = new ContentFS(settings, mdPlugins.remarkPlugins, mdPlugins.rehypePlugins, mdPlugins.recmaPlugins)
+    const remarkPlugins = [
+        ...mdPlugins.remarkPlugins,
+    ]
+    const rehypePlugins = [
+        ...mdPlugins.rehypePlugins
+    ]
+
+    if (globalThis.__xydUserMarkdownPlugins?.remark?.length) {
+        remarkPlugins.push(
+            globalThis.__xydUserMarkdownPlugins?.remark
+        )
+    }
+    if (globalThis.__xydUserMarkdownPlugins?.rehype?.length) {
+        rehypePlugins.push(
+            globalThis.__xydUserMarkdownPlugins?.rehype
+        )
+    }
+
+    const contentFs = new ContentFS(settings, remarkPlugins, rehypePlugins, mdPlugins.recmaPlugins)
 
     let pagePath = globalThis.__xydPagePathMapping[slug]
     if (pagePath) {
@@ -406,7 +425,6 @@ export function MemoMDXComponent(codeComponent: any) {
 
 export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     const location = useLocation()
-    const navigation = useNavigation()
 
     const analytics = useAnalytics()
 
