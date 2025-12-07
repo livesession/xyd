@@ -1181,6 +1181,13 @@ export interface DiagramsConfig {
    * - `{ engine: 'neato' }`: Enable with custom settings
    */
   graphviz?: boolean | DiagramGraphvizConfig;
+
+  /**
+   * Detailed diagram config, useful for e.g setting diagram's interactive.
+   */
+  [".config"]?: {
+    interactive?: boolean
+  }
 }
 
 export interface AppsDirectory {

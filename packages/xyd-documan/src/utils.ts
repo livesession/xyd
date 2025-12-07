@@ -33,10 +33,12 @@ import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
 
 // import { readSettings } from "./settings";
+// TODO: in the future better system to load local plugins
 import pluginDemoVersion from "../../xyd-plugin-supademo/package.json";
 import pluginChatwootVersion from "../../xyd-plugin-chatwoot/package.json";
 import pluginIntercomVersion from "../../xyd-plugin-intercom/package.json";
 import pluginLivechatVersion from "../../xyd-plugin-livechat/package.json";
+import pluginExtraDiagram from "../../xyd-plugin-extra-diagram/package.json";
 
 import {
   BUILD_FOLDER_PATH,
@@ -220,6 +222,7 @@ const EXTERNAL_XYD_PLUGINS = {
   "@xyd-js/plugin-chatwoot": pluginChatwootVersion.version,
   "@xyd-js/plugin-intercom": pluginIntercomVersion.version,
   "@xyd-js/plugin-livechat": pluginLivechatVersion.version,
+  "@xyd-js/plugin-extra-diagram": pluginExtraDiagram.version,
 };
 
 function isLLMsTxtPath(settings: Settings) {
@@ -1091,6 +1094,14 @@ function integrationsToPlugins(integrations: Integrations) {
 
   if (integrations?.support?.livechat) {
     plugins.push(["@xyd-js/plugin-livechat", integrations.support.livechat]);
+  }
+
+  if (integrations?.diagrams && typeof integrations?.diagrams === "object" && ".config" in integrations?.diagrams) {
+    const diagramCfg = integrations?.diagrams[".config"]
+
+    if (diagramCfg?.interactive) {
+      plugins.push(["@xyd-js/plugin-extra-diagram", {}]);
+    }
   }
 
   return plugins;
