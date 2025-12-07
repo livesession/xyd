@@ -415,7 +415,7 @@ export interface AppearanceBanner {
 
 /**
  * Configuration type for head elements that can be added to the HTML head.
- * Format: [tagName, attributes]
+ * Format: [tagName, attributes, content]
  *
  * @example: ['script', { src: 'https://example.com/script.js', defer: true }]
  */
@@ -966,9 +966,6 @@ export interface Integrations {
 
   /**
    * Diagrams configuration
-   * - `true`: Enable all diagram types with default settings
-   * - `['mermaid', 'graphviz']`: Enable specific diagram types with defaults
-   * - `{ mermaid: { strategy: 'img-svg' }, graphviz: true }`: Per-type configuration
    */
   diagrams?: boolean | DiagramType[] | DiagramsConfig;
 
@@ -1156,10 +1153,6 @@ export type MermaidStrategy = 'img-png' | 'img-svg' | 'inline-svg' | 'pre-mermai
 export interface DiagramMermaidConfig {
   /**
    * Rendering strategy for Mermaid diagrams
-   * - `img-png`: Render as PNG image
-   * - `img-svg`: Render as SVG image
-   * - `inline-svg`: Inline SVG in HTML
-   * - `pre-mermaid`: Keep as pre-formatted Mermaid code
    */
   strategy?: MermaidStrategy;
 }
@@ -1188,6 +1181,13 @@ export interface DiagramsConfig {
    * - `{ engine: 'neato' }`: Enable with custom settings
    */
   graphviz?: boolean | DiagramGraphvizConfig;
+
+  /**
+   * Detailed diagram config, useful for e.g setting diagram's interactive.
+   */
+  [".config"]?: {
+    interactive?: boolean
+  }
 }
 
 export interface AppsDirectory {

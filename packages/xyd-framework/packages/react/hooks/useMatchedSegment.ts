@@ -12,9 +12,15 @@ export function useMatchedSegment(): Segment | null {
     const lastMatchId = matches[matches.length - 1]?.id
 
     const matchedSegment = settings.navigation?.segments
-        ?.find(item => item.pages?.find(page => {
-            return sanitizeUrl(page.page || "") === sanitizeUrl(lastMatchId)
-        }))
+        ?.find?.(item => {
+            if (matches?.find(m => sanitizeUrl(m.id) === sanitizeUrl(item.route))) {
+                return true
+            }
+
+            return item.pages?.find?.(page => {
+                return sanitizeUrl(page.page || "") === sanitizeUrl(lastMatchId)
+            })
+        })
 
 
     return matchedSegment || null

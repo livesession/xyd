@@ -19,7 +19,7 @@ export function useActivePage(match: boolean = false) {
 
     const isIndex = lastMatch?.pathname === "/"
 
-    let active = navigationItems.find(item => {
+    let active = navigationItems?.find?.(item => {
         if (isIndex) {
             return item.page === "index"
         }

@@ -14,9 +14,9 @@ export function useActivePageRoute(match: boolean = false) {
     const lastMatch = matches[matches.length - 1]
 
     // Extract SidebarRoute items from sidebar structure
-    const sidebarRoutes = extractSidebarRoutes(settings?.navigation?.sidebar || []);
+    const sidebarRoutes = extractSidebarRoutes(settings?.navigation?.sidebar || []) || []
     
-    let active = sidebarRoutes.find(item => {
+    let active = sidebarRoutes?.find?.(item => {
         if (matchedSubnav) {
             const routeMatch = pageLink(item.route || "") === pageLink(matchedSubnav?.route)
 

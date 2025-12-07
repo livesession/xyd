@@ -1,0 +1,102 @@
+.extra-diagram {
+    position: relative;
+}
+
+.extra-diagram>svg {
+    position: relative;
+    cursor: pointer;
+    overflow-x: auto;
+    border-radius: 6px;
+    background-color: var(--dark8);
+    padding: 16px;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.extra-diagram-modal .extra-diagram>svg {
+    max-height: 100%;
+}
+
+.extra-diagram>svg:hover {
+    background-color: var(--dark16);
+}
+
+/* Fullscreen button */
+.extra-diagram-fullscreen-button {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    border-radius: 2px;
+    padding: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Modal overlay */
+.extra-diagram-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+}
+
+/* Modal content */
+.extra-diagram-modal {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 90vw;
+    max-height: 90vh;
+    background-color: var(--dark8);
+    border-radius: 8px;
+    padding: 16px;
+    overflow: hidden;
+}
+
+/* Modal close button */
+.extra-diagram-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: var(--dark80);
+    border: none;
+    border-radius: 4px;
+    padding: 8px;
+    cursor: pointer;
+    z-index: 10;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--black) 15%, transparent);
+
+    svg {
+        cursor: pointer;
+    }
+}
+
+/* Modal SVG */
+.extra-diagram-modal>svg {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+/* SVG states */
+.extra-diagram>svg.is-grabbing,
+.extra-diagram-modal svg.is-grabbing {
+    cursor: grabbing;
+}

@@ -33,10 +33,12 @@ import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
 
 // import { readSettings } from "./settings";
+// TODO: in the future better system to load local plugins
 import pluginDemoVersion from "../../xyd-plugin-supademo/package.json";
 import pluginChatwootVersion from "../../xyd-plugin-chatwoot/package.json";
 import pluginIntercomVersion from "../../xyd-plugin-intercom/package.json";
 import pluginLivechatVersion from "../../xyd-plugin-livechat/package.json";
+import pluginExtraDiagram from "../../xyd-plugin-extra-diagram/package.json";
 
 import {
   BUILD_FOLDER_PATH,
@@ -72,11 +74,16 @@ async function parseFrontmatterAndCreateAST(
     }
 
     const rawPath = filePath.replace(/^\/+/, "/"); // Ensure single leading slash
-    const aiBaseUrl = typeof settings?.ai?.llmsTxt !== 'string' ? settings?.ai?.llmsTxt?.baseUrl : ''
-    const isAbsolute = /^https?:\/\//i.test(rawPath)
+    const aiBaseUrl =
+      typeof settings?.ai?.llmsTxt !== "string"
+        ? settings?.ai?.llmsTxt?.baseUrl
+        : "";
+    const isAbsolute = /^https?:\/\//i.test(rawPath);
     const url = isAbsolute
       ? rawPath
-      : (aiBaseUrl ? aiBaseUrl.replace(/\/$/, '') + rawPath : rawPath)
+      : aiBaseUrl
+        ? aiBaseUrl.replace(/\/$/, "") + rawPath
+        : rawPath;
     // Create AST nodes using unist-builder
     const linkNode = u("link", { url }, [u("text", title)]);
 
@@ -215,6 +222,7 @@ const EXTERNAL_XYD_PLUGINS = {
   "@xyd-js/plugin-chatwoot": pluginChatwootVersion.version,
   "@xyd-js/plugin-intercom": pluginIntercomVersion.version,
   "@xyd-js/plugin-livechat": pluginLivechatVersion.version,
+  "@xyd-js/plugin-extra-diagram": pluginExtraDiagram.version,
 };
 
 function isLLMsTxtPath(settings: Settings) {
@@ -268,6 +276,10 @@ export async function appInit(options?: PluginDocsOptions) {
   {
     resolvedPlugins = (await loadPlugins(preloadSettings, options)) || [];
     const userUniformVitePlugins: UniformPlugin<any>[] = [];
+    const userMarkdownPlugins = {
+      rehype: [] as any,
+      remark: [] as any
+    }
     const componentPlugins: any[] = []; // TODO: fix any
 
     resolvedPlugins?.forEach((p: LoadedPlugin) => {
@@ -328,9 +340,23 @@ export async function appInit(options?: PluginDocsOptions) {
       if (head?.length && preloadSettings?.theme?.head) {
         preloadSettings.theme.head.push(...head);
       }
+
+      if (p.markdown?.rehype) {
+        userMarkdownPlugins.rehype.push(
+          ...p.markdown?.rehype || []
+        )
+      }
+
+      if (p.markdown?.remark) {
+        userMarkdownPlugins.rehype.push(
+          ...p.markdown?.remark || []
+        )
+      }
+
     });
 
     globalThis.__xydUserUniformVitePlugins = userUniformVitePlugins;
+    globalThis.__xydUserMarkdownPlugins = userMarkdownPlugins;
     globalThis.__xydUserComponents = componentPlugins;
   }
 
@@ -477,6 +503,37 @@ export function virtualProvidersPlugin(settings: Settings): VitePlugin {
   };
 }
 
+export function virtualScriptsPlugin(settings: Settings): VitePlugin {
+  return {
+    name: "xyd-plugin-virtual-scripts",
+    enforce: "pre",
+    resolveId(id) {
+      if (id === "virtual:xyd-scripts") {
+        return id;
+      }
+    },
+    async load(id) {
+      if (id === "virtual:xyd-scripts") {
+        const scripts = settings?.theme?.scripts || [];
+
+        if (scripts.length === 0) {
+          return `// No scripts configured`;
+        }
+
+        // Generate imports for all scripts (side effects only)
+        const imports = scripts
+          .map((script) => `import '${script}';`)
+          .join("\n");
+
+        return `
+// Auto-generated imports from settings.theme.scripts
+${imports}
+        `;
+      }
+    },
+  };
+}
+
 export async function commonVitePlugins(
   respPluginDocs: PluginOutput,
   resolvedPlugins: PluginConfig[]
@@ -496,6 +553,7 @@ export async function commonVitePlugins(
 
     virtualComponentsPlugin(),
     virtualProvidersPlugin(respPluginDocs.settings),
+    virtualScriptsPlugin(respPluginDocs.settings),
     pluginIconSet(respPluginDocs.settings),
     ...userVitePlugins,
   ];
@@ -546,13 +604,13 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
       if (!exists) {
         continue;
       }
-  
+
       const llmContent = fs.readFileSync(pth, "utf8");
       rawRouteFiles["/llms.txt"] = llmContent;
       foundUserLLMsTxt = true;
       break;
     }
-  
+
     if (
       !foundUserLLMsTxt &&
       (llmsItems.length > 0 || respPluginDocs.settings?.ai?.llmsTxt)
@@ -562,7 +620,7 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
         rawRouteFiles,
         llmsItems
       );
-  
+
       rawRouteFiles["/llms.txt"] = llmsContent;
     }
   }
@@ -887,6 +945,10 @@ export function getBuildRoot() {
   return path.join(process.cwd(), XYD_FOLDER_PATH);
 }
 
+export function getStartPath() {
+  return process.cwd();
+}
+
 export function getDocsPluginBasePath() {
   return path.join(getHostPath(), "./plugins/xyd-plugin-docs");
 }
@@ -922,22 +984,38 @@ async function loadPlugins(settings: Settings, options?: PluginDocsOptions) {
     }
 
     let mod: any; // TODO: fix type
-    try {
-      mod = await import(pluginName);
-    } catch (e) {
-      pluginName = path.join(
-        process.cwd(),
-        ".xyd/host/node_modules",
-        pluginName
-      );
 
-      // TODO: find better solution? use this every time?
-      const pluginPreview = await createServer({
-        optimizeDeps: {
-          include: [],
-        },
-      });
-      mod = await pluginPreview.ssrLoadModule(pluginName);
+    // if local plugin
+    if (pluginName?.startsWith("./")) {
+      try {
+        pluginName = path.join(process.cwd(), pluginName);
+
+        // TODO: find better solution? use this every time?
+        const pluginPreview = await createServer({
+          optimizeDeps: {
+            include: [],
+          },
+        });
+        mod = await pluginPreview.ssrLoadModule(pluginName);
+      } catch (e) {}
+    } else {
+      try {
+        mod = await import(pluginName);
+      } catch (e) {
+        pluginName = path.join(
+          process.cwd(),
+          ".xyd/host/node_modules",
+          pluginName
+        );
+
+        // TODO: find better solution? use this every time?
+        const pluginPreview = await createServer({
+          optimizeDeps: {
+            include: [],
+          },
+        });
+        mod = await pluginPreview.ssrLoadModule(pluginName);
+      }
     }
 
     if (!mod.default) {
@@ -1016,6 +1094,14 @@ function integrationsToPlugins(integrations: Integrations) {
 
   if (integrations?.support?.livechat) {
     plugins.push(["@xyd-js/plugin-livechat", integrations.support.livechat]);
+  }
+
+  if (integrations?.diagrams && typeof integrations?.diagrams === "object" && ".config" in integrations?.diagrams) {
+    const diagramCfg = integrations?.diagrams[".config"]
+
+    if (diagramCfg?.interactive) {
+      plugins.push(["@xyd-js/plugin-extra-diagram", {}]);
+    }
   }
 
   return plugins;

@@ -8,6 +8,7 @@
   "workspaces": [
     "apps/apidocs-demo",
     "packages/*",
+    "packages/xyd-ask-ai/examples/*",
     "!packages/xyd-js",
     ".xyd/host"
   ],
