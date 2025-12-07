@@ -86,9 +86,6 @@ importers:
       '@xyd-js/plugin-orama':
         specifier: workspace:*
         version: link:../../packages/xyd-plugin-orama
-      '@xyd-js/plugin-supademo':
-        specifier: 0.1.0-build.29
-        version: 0.1.0-build.29
       '@xyd-js/theme-cosmo':
         specifier: workspace:*
         version: link:../../packages/xyd-theme-cosmo
@@ -1679,6 +1676,28 @@ importers:
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.8.3)(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(sugarss@5.0.1(postcss@8.5.6))(terser@5.44.1)(yaml@2.8.2))
+
+  packages/xyd-plugin-extra-diagram:
+    dependencies:
+      unist-util-visit:
+        specifier: ^5.0.0
+        version: 5.0.0
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^1.6.1
+        version: 1.6.1(vitest@1.6.1(@types/node@24.10.1)(happy-dom@15.11.7)(lightningcss@1.30.2)(sugarss@5.0.1(postcss@8.5.6))(terser@5.44.1))
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.4.0
+        version: 8.5.1(@swc/core@1.15.3)(jiti@2.6.1)(postcss@8.5.6)(typescript@5.8.3)(yaml@2.8.2)
+      vite:
+        specifier: ^7.0.0
+        version: 7.2.4(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(sugarss@5.0.1(postcss@8.5.6))(terser@5.44.1)(yaml@2.8.2)
+      vitest:
+        specifier: ^1.6.1
+        version: 1.6.1(@types/node@24.10.1)(happy-dom@15.11.7)(lightningcss@1.30.2)(sugarss@5.0.1(postcss@8.5.6))(terser@5.44.1)
 
   packages/xyd-plugin-intercom:
     devDependencies:
@@ -8193,9 +8212,6 @@ packages:
   '@xhmikosr/downloader@13.0.1':
     resolution: {integrity: sha512-mBvWew1kZJHfNQVVfVllMjUDwCGN9apPa0t4/z1zaUJ9MzpXjRL3w8fsfJKB8gHN/h4rik9HneKfDbh2fErN+w==}
     engines: {node: ^14.14.0 || >=16.0.0}
-
-  '@xyd-js/plugin-supademo@0.1.0-build.29':
-    resolution: {integrity: sha512-EKIM2PoTR8g5UapzQ2sup3fuyCkvJfm3fqGh4Xk5uJ1wcALhI/ta4XOgcz+Xgy8dIaWtO2Y/d6yWt1Hk791kOg==}
 
   '@yarnpkg/lockfile@1.1.0':
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
@@ -23141,8 +23157,6 @@ snapshots:
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
-
-  '@xyd-js/plugin-supademo@0.1.0-build.29': {}
 
   '@yarnpkg/lockfile@1.1.0': {}
 
