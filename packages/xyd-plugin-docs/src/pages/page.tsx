@@ -18,7 +18,7 @@ import { UXNode } from "openux-js";
 import virtualSettings from "virtual:xyd-settings";
 import "virtual:xyd-scripts";
 // @ts-ignore
-const { settings } = virtualSettings as Settings
+const { settings, userHooks } = virtualSettings as Settings
 
 import { PageContext } from "./context";
 import { SUPPORTED_META_TAGS } from "./metatags";
@@ -51,6 +51,7 @@ interface loaderData {
     rawPage: string // TODO: in the future routing like /docs/quickstart.md but some issues with react-router like *.md in `route` config
     navlinks?: INavLinks,
     editLink?: string,
+    canPassComponents?: boolean
 }
 
 class timedebugLoader {
@@ -197,6 +198,28 @@ export async function loader({ request }: { request: any }) {
         `${baseUrl}${pagePath}` :
         undefined
 
+
+    let canPassComponents = true
+
+    const applyComponentsHooks = globalThis.__xydUserHooks?.applyComponents 
+
+    if (Array.isArray(applyComponentsHooks)) {
+        for (const hook of applyComponentsHooks) {
+            if (typeof hook !== "function") {
+                continue
+            }
+
+            const can = hook({
+                metadata: metadata
+            })
+
+            if (!can) {
+                canPassComponents = false
+                break
+            }
+        }
+    }
+
     return {
         sidebarGroups,
         breadcrumbs,
@@ -206,6 +229,7 @@ export async function loader({ request }: { request: any }) {
         metadata,
         rawPage,
         editLink,
+        canPassComponents
     } as loaderData
 }
 
@@ -406,13 +430,13 @@ function mdxContent(code: string, themeContentComponents: any, themeFileComponen
     if (content?.frontmatter && layout) {
         content.frontmatter.layout = layout
     }
-
+  
     return {
         component: content?.default,
         toc: content?.toc,
         metadata: content?.frontmatter,
         themeSettings: content?.themeSettings || {},
-        page: content?.page || false,
+        page: content?.page || false
     }
 }
 
@@ -462,6 +486,16 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
 
     const { Page } = theme
 
+    let userComponents = {} 
+
+    if (loaderData.canPassComponents) {
+        userComponents = (globalThis.__xydUserComponents || []).reduce((acc, component) => {
+            acc[component.name] = component.component;
+            return acc;
+        }, {});
+    }
+
+
     return <>
         <UXNode
             name="Framework"
@@ -483,7 +517,7 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
                 <Page>
                     <ContentOriginal components={{
                         ...themeContentComponents,
-                        wrapper: (props) => {
+                        wrapper: (props) => { // TODO: in the future support composition wrapper
                             // TODO: in the future delete uxnod
                             return <UXNode
                                 name=".ContentPage"
@@ -491,7 +525,8 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
                             >
                                 {props.children}
                             </UXNode>
-                        }
+                        },
+                        ...userComponents,
                     }} />
                     <ScrollRestoration />
                 </Page>

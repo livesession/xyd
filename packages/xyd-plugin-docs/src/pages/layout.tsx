@@ -28,7 +28,7 @@ import { iconSet } from 'virtual:xyd-icon-set';
 // @ts-ignore
 import virtualSettings from "virtual:xyd-settings";
 // @ts-ignore
-const { settings: getSettings, settingsClone, userPreferences } = virtualSettings
+const { settings: getSettings, settingsClone, userPreferences, userHooks } = virtualSettings
 
 // const settings = globalThis.__xydSettings
 import Theme from "virtual:xyd-theme";
@@ -56,6 +56,7 @@ globalThis.__xydSettings = getSettings
 globalThis.__xydSettingsClone = settingsClone
 globalThis.__xydUserComponents = userComponents // Add user components to global scope TODO: problematic
 globalThis.__xydUserPreferences = userPreferences
+globalThis.__xydUserHooks = userHooks
 
 const settings = globalThis.__xydSettings as Settings
 
@@ -215,6 +216,7 @@ export default function Layout() {
         }
     }
 
+    // TODO: !!! IT SHOULD BE globalThis.__xydCustomUserComponents !!!
     const userComponents = (globalThis.__xydUserComponents || []).reduce((acc, component) => {
         acc[component.name] = component.component;
         return acc;

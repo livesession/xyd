@@ -86,6 +86,11 @@ function vitePluginSettings(options: docsPluginOptions) {
                 currentUserPreferences = {}
             }
 
+            let currentUserHooks = globalThis.__xydUserHooks
+            if (!currentUserHooks) {
+                currentUserHooks = {}
+            }
+
             let firstInit = false
 
             if (options.onUpdate) {
@@ -93,6 +98,7 @@ function vitePluginSettings(options: docsPluginOptions) {
                     currentSettings = settings
                     settingsClone = JSON.parse(JSON.stringify(currentSettings))
                     currentUserPreferences = globalThis.__xydUserPreferences
+                    currentUserHooks = globalThis.__xydUserHooks
                 })
             }
 
@@ -114,6 +120,7 @@ function vitePluginSettings(options: docsPluginOptions) {
                             currentSettings = globalThis.__xydSettings
                             settingsClone = JSON.parse(JSON.stringify(currentSettings))
                             currentUserPreferences = globalThis.__xydUserPreferences
+                            currentUserHooks = globalThis.__xydUserHooks
                         }
                         firstInit = true
 
@@ -127,6 +134,10 @@ function vitePluginSettings(options: docsPluginOptions) {
                             return globalThis.__xydUserPreferences || ${typeof currentUserPreferences === "string" ? currentUserPreferences : JSON.stringify(currentUserPreferences)}
                         }
                         
+                        const getCurrentUserHooks = () => {
+                            return globalThis.__xydUserHooks || ${typeof currentUserHooks === "string" ? currentUserHooks : JSON.stringify(currentUserHooks)}
+                        }
+
                         export default {
                             get settings() {
                                 return getCurrentSettings();
@@ -136,6 +147,9 @@ function vitePluginSettings(options: docsPluginOptions) {
                             },
                             get userPreferences() {
                                 return getCurrentUserPreferences()
+                            },
+                            get userHooks() {
+                                return getCurrentUserHooks()
                             }
                         }
                         `

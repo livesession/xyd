@@ -50,6 +50,9 @@ export function injectCodeMeta(node: any, metaString?: string) {
     if (attributes?.title === "false") {
         props.title = "";
     }
+    if (attributes) {
+        props.attributes = JSON.stringify(attributes)
+    }
 
     node.data.hProperties = {
         ...(node.data.hProperties || {}),
