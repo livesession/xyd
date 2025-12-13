@@ -348,6 +348,7 @@ export async function appInit(options?: PluginDocsOptions) {
         const userMarkdownPlugins = {
             rehype: [] as any,
             remark: [] as any,
+            remarkRehypeHandlers: {}
         };
         const componentPlugins: any[] = []; // TODO: fix any
         const userHooks = {}
@@ -446,7 +447,14 @@ export async function appInit(options?: PluginDocsOptions) {
             }
 
             if (p.markdown?.remark) {
-                userMarkdownPlugins.rehype.push(...(p.markdown?.remark || []));
+                userMarkdownPlugins.remark.push(...(p.markdown?.remark || []));
+            }
+
+            if (p.markdown?.remarkRehypeHandlers) {
+              userMarkdownPlugins.remarkRehypeHandlers = {
+                ...userMarkdownPlugins.remarkRehypeHandlers,
+                ...(p.markdown?.remarkRehypeHandlers || {})
+              }
             }
         });
 

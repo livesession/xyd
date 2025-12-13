@@ -1,4 +1,6 @@
-import type { Plugin, PluginComponents } from "@xyd-js/plugins";
+import { remarkDefinitionList, defListHastHandlers } from "remark-definition-list";
+
+import type { Plugin, PluginComponents, PluginConfig } from "@xyd-js/plugins";
 
 import styles from "./styles/index.css";
 
@@ -17,15 +19,29 @@ export default function XspecPlugin(): Plugin {
     const head: [string, Record<string, any>, string?][] = [
       ["style", {}, styles],
     ];
+    // Align with the host's unified types; the plugin dependency ships its own copy.
+    const remarkPlugins =
+      [remarkDefinitionList] as unknown as NonNullable<
+        PluginConfig["markdown"]
+      >["remark"];
 
     return {
       name: "plugin-xspec",
       vite: [],
       head,
       components,
-      hooks: { // TODO: hooks should not override entire SYSTEM IT SHOULD ONLY EXCLUDE COMPONENTS FOR THIS !!! PLUGIN !!! 
+      markdown: {
+        remark: remarkPlugins,
+        remarkRehypeHandlers: {
+          ...defListHastHandlers,
+        }
+      },
+      hooks: {
+        // TODO: hooks should not override entire SYSTEM IT SHOULD ONLY EXCLUDE COMPONENTS FOR THIS !!! PLUGIN !!!
         applyComponents(cfg) {
-          if (cfg?.metadata?.component === "xspec") {
+          const component = cfg?.metadata?.component as string
+
+          if (component === "xspec") {
             return true;
           }
 

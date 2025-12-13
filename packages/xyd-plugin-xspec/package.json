@@ -38,7 +38,8 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "codehike": "^1.0.7"
+    "codehike": "^1.0.7",
+    "remark-definition-list": "^2.0.0"
   },
   "peerDependencies": {
     "@xyd-js/plugins": "workspace:*",

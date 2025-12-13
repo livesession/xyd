@@ -157,7 +157,14 @@ export async function loader({ request }: { request: any }) {
             globalThis.__xydUserMarkdownPlugins?.rehype
         )
     }
-    const contentFs = new ContentFS(settings, remarkPlugins, rehypePlugins, mdPlugins.recmaPlugins)
+
+    const contentFs = new ContentFS(
+        settings,
+        remarkPlugins,
+        rehypePlugins,
+        mdPlugins.recmaPlugins,
+        globalThis?.__xydUserMarkdownPlugins?.remarkRehypeHandlers || {}
+    )
 
     if (settings?.components?.banner?.content && typeof settings?.components?.banner?.content === "string") {
         bannerContentCode = await contentFs.compileContent(

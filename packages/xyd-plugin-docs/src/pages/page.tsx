@@ -162,7 +162,13 @@ export async function loader({ request }: { request: any }) {
         )
     }
 
-    const contentFs = new ContentFS(settings, remarkPlugins, rehypePlugins, mdPlugins.recmaPlugins)
+    const contentFs = new ContentFS(
+        settings,
+        remarkPlugins,
+        rehypePlugins,
+        mdPlugins.recmaPlugins,
+        globalThis?.__xydUserMarkdownPlugins?.remarkRehypeHandlers || {}
+    )
 
     let pagePath = globalThis.__xydPagePathMapping[slug]
     if (pagePath) {

@@ -3,7 +3,7 @@ import type { PluginComponents } from "@xyd-js/plugins";
 import XSpecPre from "./components/XSpecPre";
 import XSpec from "./components/XSpec";
 import XSpecWrapper from "./components/XSpecWrapper";
-import Section from "./components/XSpecSection"
+import Section from "./components/XSpecSection";
 
 export const components: PluginComponents = {
   XSpec,
@@ -19,7 +19,13 @@ export const components: PluginComponents = {
 
   a: ({ children, ...props }) => <a {...props}>{children}</a>,
 
-  dt: ({ children, ...props }) => <dt {...props}>{children}</dt>,
+  dt: ({ children, ...props }) => (
+    <dfn>
+      <dt {...props}>
+        <dfn>{children}</dfn>
+      </dt>
+    </dfn>
+  ),
   dl: ({ children, ...props }) => <dl {...props}>{children}</dl>,
   dd: ({ children, ...props }) => <dd {...props}>{children}</dd>,
   dfn: ({ children, ...props }) => <dfn {...props}>{children}</dfn>,
@@ -43,4 +49,3 @@ export const components: PluginComponents = {
   wrapper: XSpecWrapper,
   Callout: XSpec.Box,
 } as const;
-
