@@ -17,7 +17,7 @@ export default function ExtraDiagram(
       vite: [],
       head: headScripts,
       markdown: {
-        remark: [exampleMermaidExtra],
+        rehype: [exampleMermaidExtra],
       },
     };
   };

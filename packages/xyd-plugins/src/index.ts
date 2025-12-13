@@ -1,8 +1,9 @@
 import type {Plugin as Vite} from "vite"
 import React from "react"
+import { Plugin as MarkdownPlugin } from 'unified';
 
 import {type UniformPlugin as Uniform} from "@xyd-js/uniform"
-import {HeadConfig, Settings} from "@xyd-js/core"
+import {HeadConfig, Settings, Metadata} from "@xyd-js/core"
 import type {SurfaceTarget} from "@xyd-js/framework"
 
 // // TODO: share with theme-api ?
@@ -15,8 +16,13 @@ export type PluginComponents = {
     component: React.ComponentType<any>,
     name?: string,
     dist?: string // TODO: fix in the future
+    isInline?: boolean // true if component should be inlined instead of imported
 }[] | {
     [component: string]: React.ComponentType<any>
+}
+
+export interface HookCallbackArgs {
+    metadata: Metadata<any>
 }
 
 /**
@@ -25,18 +31,35 @@ export type PluginComponents = {
  * @example
  * ```ts
  * function myPlugin(): Plugin {
- *     return {
- *         name: "my-plugin",
- *         vite: [
- *             {
- *                 name: "my-vite-plugin",
- *             }
- *         ],
- *         uniform: [
- *             pluginOpenAIMeta,
- *         ],
- *         atlas: {
- *             components: {
+ *     return (settings) => {
+ *         return {
+ *             name: "my-plugin",
+ *             vite: [
+ *                 {
+ *                     name: "my-vite-plugin",
+ *                 }
+ *             ],
+ *             uniform: [
+ *                 pluginOpenAIMeta,
+ *             ],
+ *             components: [
+ *                 {
+ *                     component: MyComponent,
+ *                     name: "MyComponent",
+ *                     dist: "./dist/MyComponent.js"
+ *                 }
+ *             ],
+ *             head: [
+ *                 ["style", {}, "body { margin: 0; }"]
+ *             ],
+ *             markdown: {
+ *                 remark: [remarkPlugin],
+ *                 rehype: [rehypePlugin],
+ *             },
+ *             hooks: {
+ *                 applyComponents(cfg) {
+ *                     return cfg?.metadata?.component === "my-plugin";
+ *                 }
  *             }
  *         }
  *     }
@@ -51,8 +74,16 @@ export interface PluginConfig {
     components?: PluginComponents
     head?: HeadConfig[]
     markdown?: {
-        remark: any[],
-        rehype: any[],
+        remark?: MarkdownPlugin[],
+        rehype?: MarkdownPlugin[],
+        remarkRehypeHandlers?: any // TODO: fix any
+    },
+    hooks?: {
+        //  TODO: types
+        applyComponents?: (cfg: HookCallbackArgs) => boolean
+
+        // TODO: finish
+        // applyHeads?: (cfg: any) => boolean
     }
 }
 

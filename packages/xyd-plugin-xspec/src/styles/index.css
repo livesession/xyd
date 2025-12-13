@@ -1,0 +1,1226 @@
+xyd-layout-primary {
+  @media (min-width: 1024px) {
+      &:not([data-layout="page"]):not([data-layout="wide"]):has(.xspec) {
+          [part=page-article] {
+            --xyd-layout-width-small: 900px;
+          }
+      }
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .xspec {
+    --color-foreground: #333333;
+    --color-background: #var(--white);
+
+    --color-light-grey: #ccc;
+    --color-grey: #666666;
+    --color-white: #var(--white);
+    --color-link: #3b5998;
+
+    --color-subsection-link: var(--color-foreground);
+    --color-toc-link: var(--color-foreground);
+    --color-toc-id: var(--color-link);
+    --color-toggle-border: #bbc;
+
+    --color-sidebar-background: #f0f0f0;
+    --color-sidebar-viewing-link: #8b9;
+    --color-sidebar-toggle-button: rgba(0, 0, 0, 0.7);
+    --color-sidebar-shadow-inset: rgba(0, 0, 0, 0.05);
+    --color-sidebar-shadow: rgba(0, 0, 0, 0.04);
+    --color-sidebar-large-shadow: rgba(0, 0, 0, 0.08);
+
+    --color-pre-background: #fafafa;
+    --color-pre-border: #e9e9e9;
+    --color-code-background: rgba(0, 0, 0, 0.03);
+
+    --color-spec-todo: var(--color-grey);
+    --color-spec-example: #fafaff;
+    --color-spec-example-border: #bbbbff;
+    --color-spec-counter-example: #var(--white)afa;
+    --color-spec-counter-border: #ffbbbb;
+    --color-spec-counter-example-link: #98593b;
+    --color-spec-added-border: #396;
+    --color-spec-removed-border: #933;
+    --color-spec-prose: var(--color-grey);
+    --color-spec-quantifier-list: var(--color-link);
+    --color-spec-quantifier-optional: #83238e;
+    --color-spec-condition: #1c7758;
+    --color-spec-param: var(--color-grey);
+    --color-spec-rx: var(--color-foreground);
+    --color-spec-note-border: #f4e925;
+    --color-spec-note-background: #fefef3;
+    --color-spec-note-first-link: #6c6613;
+
+    --color-source-link: var(--color-light-grey);
+
+    --color-table-header: #f9f9f9;
+    --color-table-header-border: #d0d0d0;
+
+    --color-token-inserted: hsla(241, 71%, 34%, 0.69);
+    --color-token-deleted: hsla(324, 92%, 33%, 0.74);
+
+    --color-inserts-background: rgba(0, 200, 30, 0.08);
+    --color-deletions-background: rgba(200, 0, 0, 0.08);
+
+    --selection-background-color: #cacee0;
+    --selection-background-color-link: #f0babe;
+  }
+
+  .xspec .selection-link:hover {
+    --selection-background-color: #3b5998;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .xspec {
+    --color-foreground: #b6b6b6;
+    --color-background: #262626;
+
+    --color-light-grey: #373737;
+    --color-grey: #828282;
+    --color-white: rgb(29, 29, 29);
+    --color-link: #89b7da;
+
+    --color-subsection-link: var(--color-foreground);
+    --color-toc-link: var(--color-foreground);
+    --color-toc-id: var(--color-link);
+    --color-toggle-border: #bbc;
+
+    --color-sidebar-background: #323232;
+    --color-sidebar-viewing-link: #8b9;
+    --color-sidebar-toggle-button: rgba(220, 220, 220, 0.7);
+    --color-sidebar-shadow-inset: rgba(0, 0, 0, 0.05);
+    --color-sidebar-shadow: rgba(0, 0, 0, 0.04);
+    --color-sidebar-large-shadow: rgba(0, 0, 0, 0.08);
+
+    --color-pre-background: #2e2e2e;
+    --color-pre-border: #3a3a3a;
+    --color-code-background: rgba(41, 41, 41, 0.03);
+
+    --color-spec-todo: var(--color-grey);
+    --color-spec-example: #2b2b35;
+    --color-spec-example-border: #4d4d6d;
+    --color-spec-counter-example: #322828;
+    --color-spec-counter-border: #664040;
+    --color-spec-counter-example-link: #ff702d;
+    --color-spec-added-border: #396;
+    --color-spec-removed-border: #933;
+    --color-spec-prose: var(--color-grey);
+    --color-spec-quantifier-list: var(--color-link);
+    --color-spec-quantifier-optional: #c689ce;
+    --color-spec-condition: #6fa889;
+    --color-spec-param: var(--color-grey);
+    --color-spec-rx: var(--color-foreground);
+    --color-spec-note-border: #605e39;
+    --color-spec-note-background: #303028;
+    --color-spec-note-first-link: #f0e330;
+
+    --color-source-link: var(--color-grey);
+
+    --color-table-header: #373737;
+    --color-table-header-border: #525252;
+
+    --color-token-inserted: hsla(241, 63%, 70%, 0.69);
+    --color-token-deleted: hsla(325, 64%, 67%, 0.74);
+
+    --color-inserts-background: rgba(0, 200, 30, 0.08);
+    --color-deletions-background: rgba(200, 0, 0, 0.08);
+
+    --selection-background-color: #656565;
+    --selection-background-color-link: #f0babe;
+  }
+
+  .xspec .selection-link:hover {
+    --selection-background-color: #829edb;
+  }
+}
+
+.xspec {
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+  font-family: var(--font-family);
+  font-size: 15px;
+  line-height: 1.5;
+  
+  --mono-font-size: 13px;
+  --indent: 1rem;
+  --list-indent: 1.5rem;
+  --dfn-indent: 0rem;
+
+  --font-family: Cambria, "Palatino Linotype", Palatino, "Liberation Serif",
+    serif;
+  --font-family-monospace: Consolas, Monaco, "Andale Mono", "Ubuntu Mono",
+    monospace;
+
+    border: 1px solid #6c575757;
+    padding-inline: 50px;
+    border-radius: 5px;
+    border-color: var(--dark32);
+    --dot-color: #6e6e6e88;
+    --dot-size: 1px;
+    --dot-step: 58px;
+    --device-pixel-ratio: 2;
+    --dot-stop: calc(var(--dot-size) - min(.5px, 1px / var(--device-pixel-ratio)));
+    /* background: #f2f5fa; */
+    background-size: var(--dot-step) var(--dot-step);
+    background-position: calc(50% + var(--dot-step) / 2) 0;
+    background-image: radial-gradient(var(--dot-step) circle, var(--dot-color) var(--dot-stop), transparent var(--dot-size));
+}
+
+@media (min-width: 720px) {
+  .xspec {
+    font-size: 17px;
+    --mono-font-size: 15px;
+    --indent: 2rem;
+    --list-indent: 2rem;
+    --dfn-indent: 2rem;
+  }
+}
+
+.xspec body {
+  margin: 3rem 0 3rem;
+}
+
+.xspec article {
+  margin: 0 1rem;
+}
+
+/* @media (min-width: 720px) {
+  body {
+    margin: 6rem auto 3rem;
+    max-width: 800px;
+    padding-left: 75px;
+    padding-right: clamp(0px, calc((100vw - 800px) * 0.25), 75px);
+  }
+} */
+
+.xspec
+/* Source Links */
+
+.source-link {
+  display: none;
+}
+
+@media screen and (min-width: 720px) {
+  .source-link {
+    display: block;
+    position: absolute;
+    width: 18px;
+    fill: var(--color-source-link);
+    opacity: 0.3;
+  }
+
+  .xspec .source-link:hover {
+    opacity: 1;
+  }
+}
+
+.xspec
+/* Selections */
+
+.outdated-selection-link,
+.xspec .selection-link {
+  position: absolute;
+  display: block;
+  color: var(--color-white);
+  background: var(--selection-background-color);
+  border-radius: 4px;
+  font-size: 36px;
+  height: 23px;
+  line-height: 48px;
+  text-align: center;
+  text-decoration: none;
+  width: 25px;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.xspec .outdated-selection-link:hover,
+.xspec .selection-link:hover {
+  text-decoration: none;
+}
+
+.xspec .outdated-selection-link:before,
+.xspec .selection-link:before {
+  border: 5px solid transparent;
+  content: "";
+  height: 0;
+  margin-top: -5px;
+  margin-right: -5px;
+  position: absolute;
+  right: 1px;
+  top: 50%;
+  width: 0;
+}
+
+@media (max-width: 719px) {
+
+  .outdated-selection-link:before,
+  .selection-link:before {
+    border-bottom-color: var(--selection-background-color);
+    border-top: 0;
+    right: 50%;
+    top: 1px;
+  }
+}
+
+@media (min-width: 720px) {
+
+  .outdated-selection-link:before,
+  .selection-link:before {
+    border-left-color: var(--selection-background-color);
+    border-right: 0;
+    right: 1px;
+    top: 50%;
+  }
+}
+
+.xspec .outdated-selection-link {
+  background: var(--selection-background-color-link);
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 27px;
+}
+
+.xspec .outdated-selection-link:hover:after {
+  content: "This selection content has changed since this link was created.";
+  font: 9pt/11pt var(--font-family);
+  position: absolute;
+  display: block;
+  white-space: nowrap;
+  padding: 2px 5px 1px;
+  top: -20px;
+  background: black;
+  color: var(--color-white);
+}
+
+.xspec
+/* Links */
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.xspec a:hover {
+  text-decoration: underline;
+}
+
+.xspec
+/* Images */
+
+img {
+  max-width: 100%;
+}
+
+.xspec
+/* Definitions */
+
+dl {
+  margin: 1rem 0 1rem var(--dfn-indent);
+}
+
+.xspec dd {
+  margin: 0.25em 0 0.5em var(--indent);
+}
+
+.xspec dd+dd {
+  margin-top: 1rem;
+}
+
+.xspec dfn,
+.xspec .spec-ref {
+  font-style: italic;
+}
+
+.xspec dfn>a,
+.xspec .spec-ref>a {
+  color: inherit;
+}
+
+.xspec
+/* Section headers */
+
+h1,
+.xspec h2,
+.xspec h3,
+.xspec h4,
+.xspec h5,
+.xspec h6 {
+  font-weight: bold;
+  margin: 3em 0 1em;
+  position: relative;
+}
+
+@media (min-width: 720px) {
+  header>h1 {
+    margin: 6em 0 3em;
+  }
+}
+
+.xspec h1 {
+  font-size: 1.5em;
+  margin-top: 5em;
+}
+
+.xspec h2,
+.xspec h3 {
+  font-size: 1.25em;
+}
+
+.xspec h4,
+.xspec h5,
+.xspec h6 {
+  font-size: 1em;
+}
+
+.xspec section {
+  padding-top: 1rem;
+  margin-top: -1rem;
+}
+
+.xspec section.subsec>h6 {
+  margin-top: 2em;
+}
+
+.xspec section.subsec>h6>a {
+  color: var(--color-subsection-link);
+}
+
+.xspec section .spec-secid {
+  margin-right: 1ex;
+}
+
+@media (min-width: 720px) {
+  section .spec-secid {
+    position: absolute;
+    right: 100%;
+    text-align: right;
+    white-space: nowrap;
+  }
+}
+
+.xspec footer {
+  font-size: 75%;
+  opacity: 0.5;
+  text-align: center;
+  margin-top: 12rem;
+}
+
+.xspec
+/* Table of contents */
+
+.spec-toc {
+  margin: 1rem 0 3rem;
+}
+
+.xspec .spec-toc .title {
+  content: "Contents";
+  display: block;
+  font-weight: bold;
+  margin: 5em 0 1em;
+}
+
+.xspec .spec-toc .spec-secid {
+  margin-right: 1ex;
+}
+
+.xspec .spec-toc ol {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xspec .spec-toc ol ol {
+  list-style: none;
+  padding-left: 2ex;
+  margin-bottom: 0.25em;
+}
+
+.xspec .spec-toc li {
+  position: relative;
+  padding: 5px 0 0 30px;
+  margin: -5px 0 0 -30px;
+}
+
+.xspec .spec-toc a {
+  color: var(--color-toc-link);
+}
+
+.xspec .spec-toc a:hover {
+  text-decoration: none;
+}
+
+.xspec .spec-toc a .spec-secid {
+  color: var(--color-toc-id);
+}
+
+.xspec .spec-toc a:hover .spec-secid {
+  text-decoration: underline;
+}
+
+.xspec .spec-toc .toggle {
+  display: none;
+}
+
+.xspec .spec-toc .toggle+label {
+  cursor: pointer;
+  left: 6px;
+  opacity: 1;
+  padding: 5px 6px 5px 7px;
+  position: absolute;
+  top: 6px;
+  transform: rotate(0deg);
+  transition: all 0.18s ease-in-out;
+}
+
+.xspec .spec-toc .toggle+label:after {
+  border-color: transparent transparent transparent var(--color-toggle-border);
+  border-style: solid;
+  border-width: 6px 0 6px 7px;
+  content: " ";
+  display: block;
+  height: 0;
+  width: 0;
+}
+
+@media (pointer: fine) {
+  .spec-toc .toggle+label {
+    left: 10px;
+    padding: 3px 5px 3px 6px;
+    top: 8px;
+  }
+}
+
+.xspec .spec-toc .toggle:checked+label {
+  transform: rotate(90deg);
+}
+
+@media (hover: hover) {
+  .spec-toc li:not(:hover)>.toggle:checked+label {
+    opacity: 0;
+  }
+}
+
+.xspec .spec-toc .toggle:not(:checked)~ol {
+  max-height: 0;
+  overflow: hidden;
+  margin: 0;
+}
+
+.xspec
+/* Sidebar */
+
+.spec-sidebar-toggle {
+  display: none;
+}
+
+.xspec .spec-sidebar-toggle+label>.spec-sidebar-button {
+  position: fixed;
+  right: 0;
+  top: 0;
+  padding: 10px 15px;
+  font-size: 30px;
+  color: var(--color-sidebar-toggle-button);
+  z-index: 2;
+  cursor: pointer;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.xspec .spec-sidebar-toggle:checked+label:after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+}
+
+.xspec .spec-sidebar {
+  display: none;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: min(320px, calc(100vw - 48px));
+  font-size: 14px;
+  line-height: 1.75;
+  overflow-y: scroll;
+  height: 100%;
+  padding: 0 0 5rem 30px;
+  box-sizing: border-box;
+  background: var(--color-sidebar-background);
+  box-shadow: inset 1px 0 var(--color-sidebar-shadow-inset),
+    -4px 0 8px -2px var(--color-sidebar-shadow);
+  overscroll-behavior: contain;
+}
+
+.xspec .spec-sidebar {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.xspec .spec-sidebar-toggle:checked~.spec-sidebar {
+  display: block;
+}
+
+.xspec .spec-sidebar .viewing>a:after {
+  color: var(--color-sidebar-viewing-link);
+  content: "\2022";
+  margin-left: 1ex;
+}
+
+@media (min-width: 1220px) {
+  .spec-sidebar-toggle+label {
+    display: none;
+  }
+
+  .xspec .spec-sidebar {
+    display: block;
+    box-shadow: inset 1px 0 var(--color-sidebar-shadow-inset),
+      inset 4px 0 8px -2px var(--color-sidebar-large-shadow) !important;
+  }
+
+  .xspec body {
+    padding-right: 345px;
+  }
+}
+
+.xspec
+/* Notes */
+
+.spec-note {
+  background: var(--color-spec-note-background);
+  border-left: solid 4px var(--color-spec-note-border);
+  margin: 1rem -1rem;
+  /* min-width: 70vw; */
+  min-width: 100%;
+  padding: 8px 1rem 12px calc(1rem - 4px);
+  width: -moz-fit-content;
+  width: -webkit-fit-content;
+  width: fit-content;
+}
+
+@media (min-width: 720px) {
+  .spec-note {
+    min-width: 416px;
+  }
+}
+
+.xspec .spec-note>a:first-child {
+  color: var(--color-spec-note-first-link);
+  display: block;
+  font: italic 11pt/18pt var(--font-family);
+  opacity: 0.6;
+  user-select: none;
+}
+
+.xspec
+/* Todos */
+
+.spec-todo {
+  color: var(--color-spec-todo);
+  margin: 1em 0 1em 5em;
+  min-height: 1em;
+}
+
+.xspec .spec-todo::before {
+  content: "todo";
+  display: block;
+  float: left;
+  margin-left: -5em;
+  text-transform: uppercase;
+}
+
+.xspec
+/* Index table */
+
+.spec-index ol {
+  list-style-type: none;
+  margin: 0 0 0 var(--indent);
+  padding: 0;
+  column-width: 210px;
+  column-gap: var(--indent);
+}
+
+.xspec .spec-index ol li {
+  width: min-content;
+  white-space: nowrap;
+}
+
+.xspec
+/* Code */
+
+pre,
+.xspec code {
+  font-family: var(--font-family-monospace);
+  font-size: var(--mono-font-size);
+  font-weight: inherit;
+}
+
+.xspec code {
+  background: var(--color-code-background);
+  margin: -2px -1px;
+  padding: 3px 3px;
+  white-space: pre-wrap;
+}
+
+.xspec pre>code {
+  background: none;
+  font-weight: inherit;
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+}
+
+.xspec pre {
+  background: var(--color-pre-background);
+  border-left: solid 4px var(--color-pre-border);
+  margin: 1rem -1rem;
+  /* min-width: 70vw; */
+  min-width: 100%;
+  padding: 12px 1rem 12px calc(1rem - 4px);
+  width: -moz-fit-content;
+  width: -webkit-fit-content;
+  width: fit-content;
+  max-width: calc(100vw - 2rem);
+  overflow-y: auto;
+}
+
+@media (min-width: 720px) {
+  pre {
+    min-width: 40ch;
+  }
+}
+
+.xspec .spec-example {
+  background: var(--color-spec-example);
+  border-left: solid 4px var(--color-spec-example-border);
+  padding-top: 8px;
+}
+
+.xspec .spec-counter-example {
+  background: var(--color-spec-counter-example);
+  border-left: solid 4px var(--color-spec-counter-border);
+  padding-top: 8px;
+}
+
+.xspec .spec-example>a,
+.xspec .spec-counter-example>a {
+  display: block;
+  font: italic 11pt/18pt var(--font-family);
+  opacity: 0.6;
+  user-select: none;
+}
+
+.xspec .spec-counter-example>a {
+  color: var(--color-spec-counter-example-link);
+}
+
+.xspec
+/* Tables */
+
+table {
+  border-collapse: collapse;
+}
+
+.xspec th {
+  background-color: var(--color-table-header);
+}
+
+.xspec td,
+.xspec th {
+  border: 1px solid var(--color-table-header-border);
+  padding: 0.4em;
+  vertical-align: baseline;
+}
+
+.xspec
+/* Lists */
+
+ol,
+.xspec ul {
+  padding-left: var(--list-indent);
+}
+
+.xspec li>ol,
+.xspec li>ul {
+  margin-top: 0.25em;
+  margin-bottom: 0.5em;
+}
+
+.xspec li+li {
+  margin-top: 0.25em;
+}
+
+.xspec li.task {
+  list-style-type: none;
+  position: relative;
+}
+
+.xspec li.task>input:first-child {
+  margin-left: 0;
+  position: absolute;
+  transform: translateX(calc(-100% - 1ch));
+}
+
+.xspec
+/* Edits */
+
+ins {
+  background-color: var(--color-inserts-background);
+  text-decoration: none;
+}
+
+.xspec del {
+  background-color: var(--color-deletions-background);
+}
+
+.xspec .spec-added,
+.xspec .spec-removed {
+  border-left: 4px solid;
+  margin-left: -18px;
+  padding-left: 14px;
+}
+
+.xspec .spec-added {
+  border-color: var(--color-spec-added-border);
+}
+
+.xspec .spec-removed {
+  border-color: var(--color-spec-removed-border);
+  text-decoration: line-through;
+}
+
+.xspec
+/* Values */
+
+.spec-keyword {
+  font-weight: bold;
+}
+
+.xspec .spec-string {
+  font-family: var(--font-family-monospace);
+  font-size: 85%;
+  white-space: pre;
+}
+
+.xspec var {
+  font-style: italic;
+}
+
+.xspec *[data-name] {
+  transition: 0.15s background ease-out;
+  border-radius: 2px;
+  padding: 0 3px;
+  margin: 0 -3px;
+}
+
+.xspec
+/* Grammar semantics, .xspec algorithms and calls */
+
+.spec-semantic,
+.xspec .spec-algo {
+  margin: 1rem 0 1rem var(--dfn-indent);
+}
+
+.xspec .spec-semantic>.spec-nt::after,
+.xspec .spec-algo>.spec-call:first-child::after {
+  content: ":";
+  font-style: normal;
+  font-weight: bold;
+  margin-left: 1ex;
+}
+
+.xspec .spec-semantic ol,
+.xspec .spec-semantic ol ol ol ol,
+.xspec .spec-algo ol,
+.xspec .spec-algo ol ol ol ol {
+  list-style-type: decimal;
+}
+
+.xspec .spec-semantic ol ol,
+.xspec .spec-semantic ol ol ol ol ol,
+.xspec .spec-algo ol ol,
+.xspec .spec-algo ol ol ol ol ol {
+  list-style-type: lower-alpha;
+}
+
+.xspec .spec-semantic ol ol ol,
+.xspec .spec-semantic ol ol ol ol ol ol,
+.xspec .spec-algo ol ol ol,
+.xspec .spec-algo ol ol ol ol ol ol {
+  list-style-type: lower-roman;
+}
+
+.xspec .spec-call>a {
+  color: inherit;
+}
+
+.xspec
+/* Grammar productions */
+
+.spec-production {
+  margin: 1rem 0 1rem var(--dfn-indent);
+}
+
+.xspec .spec-production>.spec-nt::after {
+  content: ":";
+  font-style: normal;
+  font-weight: bold;
+  margin: 0 1ex;
+}
+
+.xspec .spec-semantic.d2>.spec-nt::after,
+.xspec .spec-production.d2>.spec-nt::after {
+  content: "::";
+}
+
+.xspec .spec-semantic.d3>.spec-nt::after,
+.xspec .spec-production.d3>.spec-nt::after {
+  content: ":::";
+}
+
+.xspec .spec-production>.spec-rhs {
+  line-height: 1.1;
+  margin: 0.25em 0 0.5em calc(2 * var(--indent));
+  text-indent: calc(-1 * var(--indent));
+}
+
+.xspec .spec-semantic>.spec-rhs {
+  display: inline-block;
+  text-indent: calc(-1 * var(--indent));
+  margin-left: calc(1ex + var(--indent));
+}
+
+.xspec .spec-rhs>* {
+  text-indent: 0;
+}
+
+.xspec .spec-oneof {
+  display: inline;
+}
+
+.xspec .spec-oneof::before {
+  content: "one of";
+  font-style: normal;
+  font-weight: bold;
+}
+
+.xspec .spec-oneof-grid {
+  max-width: calc(100vw - 2rem);
+  overflow: auto;
+  margin: -1ex -1rem;
+  padding: 1ex 1rem;
+}
+
+.xspec .spec-oneof-grid>table {
+  margin-left: var(--indent);
+}
+
+.xspec .spec-oneof .spec-rhs {
+  border: none;
+  margin: 0;
+  padding: 0 0 0 1rem;
+  vertical-align: baseline;
+  white-space: pre;
+}
+
+.xspec .spec-oneof .spec-rhs:first-child {
+  padding: 0;
+}
+
+.xspec .spec-rhs .spec-constrained:not(:first-child),
+.xspec .spec-rhs .spec-quantified:not(:first-child),
+.xspec .spec-rhs .spec-nt:not(:first-child),
+.xspec .spec-rhs .spec-t:not(:first-child),
+.xspec .spec-rhs .spec-rx:not(:first-child),
+.xspec .spec-rhs .spec-prose:not(:first-child),
+.xspec .spec-rhs .spec-empty:not(:first-child),
+.xspec .spec-rhs .spec-lookahead:not(:first-child) {
+  margin-left: 1ex;
+  display: inline-block;
+}
+
+.xspec .spec-condition {
+  font-size: 85%;
+}
+
+.xspec .spec-condition::before {
+  content: "[if ";
+}
+
+.xspec .spec-condition.not::before {
+  content: "[if not ";
+}
+
+.xspec .spec-condition::after {
+  content: "]";
+}
+
+.xspec .spec-empty,
+.xspec .spec-prose {
+  color: var(--color-spec-prose);
+}
+
+.xspec .spec-nt {
+  font-style: italic;
+}
+
+.xspec .spec-nt>a {
+  color: inherit;
+}
+
+.xspec .spec-quantifiers,
+.xspec .spec-params {
+  font-size: 65%;
+  font-style: normal;
+  vertical-align: sub;
+}
+
+.xspec .spec-quantifier.list {
+  color: var(--color-spec-quantifier-list);
+}
+
+.xspec .spec-quantifier.optional {
+  color: var(--color-spec-quantifier-optional);
+}
+
+.xspec .spec-params,
+.xspec .spec-condition {
+  color: var(--color-spec-condition);
+}
+
+.xspec .spec-params::before {
+  content: "[";
+}
+
+.xspec .spec-params::after {
+  content: "]";
+}
+
+.xspec .spec-quantifier:not(:last-child)::after,
+.xspec .spec-param:not(:last-child)::after {
+  color: var(--color-spec-param);
+  content: ", ";
+}
+
+.xspec .spec-param.conditional::before {
+  content: "?";
+}
+
+.xspec .spec-param.negated::before {
+  content: "!";
+}
+
+.xspec .spec-t,
+.xspec .spec-rx {
+  color: var(--color-spec-rx);
+  font-family: var(--font-family-monospace);
+  font-weight: bold;
+}
+
+.xspec .spec-butnot::before {
+  color: var(--color-grey);
+  content: "but not";
+  font-family: var(--font-family);
+  font-weight: normal;
+  margin-right: 1ex;
+}
+
+.xspec .spec-butnot>*:not(:first-child)::before {
+  color: var(--color-grey);
+  content: "or";
+  font-family: var(--font-family);
+  font-weight: normal;
+  margin-right: 1ex;
+}
+
+.xspec .spec-rhs .spec-oneof::before,
+.xspec .spec-rhs .spec-butnot::before {
+  margin-left: 1ex;
+}
+
+.xspec .spec-lookahead>* {
+  margin: 0 !important;
+}
+
+.xspec .spec-lookahead>*:not(:first-child)::before {
+  color: var(--color-grey);
+  content: ", ";
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: normal;
+}
+
+.xspec .spec-lookahead::before {
+  color: var(--color-grey);
+  content: "[lookahead = ";
+  font-family: var(--font-family);
+  font-style: normal;
+  font-weight: normal;
+}
+
+.xspec .spec-lookahead.not::before {
+  content: "[lookahead \2260  ";
+}
+
+.xspec .spec-lookahead.set::before {
+  content: "[lookahead \2208  {";
+  margin-right: 0;
+}
+
+.xspec .spec-lookahead.set.not::before {
+  content: "[lookahead \2209  {";
+}
+
+.xspec .spec-lookahead.ntset::before {
+  content: "[lookahead \2208  ";
+  margin-right: 0;
+}
+
+.xspec .spec-lookahead.ntset.not::before {
+  content: "[lookahead \2209  ";
+}
+
+.xspec .spec-lookahead::after {
+  color: var(--color-grey);
+  content: "]";
+}
+
+.xspec .spec-lookahead.set::after {
+  content: "}]";
+}
+
+.xspec
+/* Prism color scheme */
+
+code[class*="language-"],
+.xspec pre[class*="language-"] {
+  color: var(--color-prism-foreground);
+  background: none;
+  text-shadow: 0 1px var(--color-prism-text-shadow);
+  font-family: var(--font-family-monospace);
+  font-size: 1em;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+.xspec pre[class*="language-"]::-moz-selection,
+.xspec pre[class*="language-"] ::-moz-selection,
+.xspec code[class*="language-"]::-moz-selection,
+.xspec code[class*="language-"] ::-moz-selection {
+  text-shadow: none;
+  background: var(--color-prism-background);
+}
+
+.xspec pre[class*="language-"]::selection,
+.xspec pre[class*="language-"] ::selection,
+.xspec code[class*="language-"]::selection,
+.xspec code[class*="language-"] ::selection {
+  text-shadow: none;
+  background: var(--color-prism-background);
+}
+
+@media print {
+
+  code[class*="language-"],
+  pre[class*="language-"] {
+    text-shadow: none;
+  }
+}
+
+.xspec
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: 1em;
+  margin: 0.5em 0;
+  overflow: auto;
+}
+
+.xspec :not(pre)>code[class*="language-"],
+.xspec pre[class*="language-"] {
+  background: var(--color-prism-block-background);
+}
+
+.xspec
+
+/* Inline code */
+:not(pre)>code[class*="language-"] {
+  padding: 0.1em;
+  border-radius: 0.3em;
+  white-space: normal;
+}
+
+.xspec .token.atrule,
+.xspec .token.attr-value,
+.xspec .token.keyword,
+.xspec .token.property,
+.xspec .token.selector,
+.xspec .token.attr-name,
+.xspec .token.builtin,
+.xspec .token.entity,
+.xspec .token.url,
+.xspec .token.inserted {
+  color: var(--color-token-inserted);
+  background: none;
+}
+
+.xspec .token.tag,
+.xspec .token.boolean,
+.xspec .token.number,
+.xspec .token.string,
+.xspec .token.char,
+.xspec .token.constant,
+.xspec .token.symbol,
+.xspec .token.regex,
+.xspec .token.important,
+.xspec .token.variable,
+.xspec .token.function,
+.xspec .token.class-name,
+.xspec .token.deleted {
+  color: var(--color-token-deleted);
+}
+
+.xspec .token.comment,
+.xspec .token.prolog,
+.xspec .token.doctype,
+.xspec .token.cdata,
+.xspec .token.description {
+  color: inherit;
+  opacity: 0.3;
+}
+
+.xspec .token.punctuation {
+  color: inherit;
+  opacity: 0.5;
+}
+
+.xspec .token.operator,
+.xspec .token.namespace {
+  color: inherit;
+  opacity: 0.7;
+}

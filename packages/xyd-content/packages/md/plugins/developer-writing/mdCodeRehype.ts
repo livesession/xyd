@@ -33,6 +33,7 @@ export function mdCodeRehype(settings?: Settings) {
                     const descriptionHead = node.children?.[0]?.properties?.descriptionHead
                     const descriptionContent = node.children?.[0]?.properties?.descriptionContent
                     const descriptionIcon = node.children?.[0]?.properties?.descriptionIcon
+                    let attributes = node.children?.[0]?.properties?.attributes
                     const meta = node.children?.[0]?.properties?.meta
                     const title = node.children?.[0]?.properties?.title
 
@@ -66,7 +67,8 @@ export function mdCodeRehype(settings?: Settings) {
                             size,
                             descriptionHead,
                             descriptionContent: descriptionContentCode,
-                            descriptionIcon
+                            descriptionIcon,
+                            attributes
                         };
                     })()
 

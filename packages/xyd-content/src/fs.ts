@@ -17,6 +17,7 @@ export class ContentFS {
         private readonly remarkPlugins: PluggableList,
         private readonly rehypePlugins: PluggableList,
         private readonly recmaPlugins: PluggableList,
+        private readonly remarkRehypeHandlers?: any
     ) { }
 
     public async compile(filePath: string): Promise<string> {
@@ -41,6 +42,11 @@ export class ContentFS {
             development: false,
             outputFormat: 'function-body',
             jsx: false,
+            remarkRehypeOptions: {
+                handlers: {
+                    ...(this.remarkRehypeHandlers || {}),
+                }
+            }
             // jsx: false,
             // outputFormat: "program", // needed for import/export
         });
@@ -63,6 +69,11 @@ export class ContentFS {
             development: false,
             jsx: true,
             outputFormat: "program", // needed for import/export
+            remarkRehypeOptions: {
+                handlers: {
+                    ...(this.remarkRehypeHandlers || {}),
+                }
+            }
         });
 
         const tempPath = join(tmpdir(), `mdx-${Date.now()}.mjs`);
