@@ -120,6 +120,11 @@ We welcome community contributions. For guidelines, refer to our [CONTRIBUTING.m
 
 ![xyd Contributors](https://contrib.rocks/image?repo=livesession/xyd)
 
+> [!TIP]
+> You can understand or ask questions to codebase powered by Devin:
+>
+> [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/livesession/xyd)
+
 ---
 
 <div style="display: flex;">
