@@ -1,0 +1,4 @@
+# Project Rules
+
+1.  **Legacy Code Usage**: The `webapp_old` directory is strictly for **inspiration only**. You may read files from it to understand logic or implementation details, but you **MUST NOT** modify any files within `webapp_old`.
+2.  **Styling**: Any code or components inspired by or ported from `webapp_old` **MUST** be adapted to use **Tailwind CSS**. Do not copy legacy CSS or non-Tailwind styling approaches.
