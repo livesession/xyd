@@ -1,8 +1,9 @@
 {
-  "name": "@xyd-js/desktop-app",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "my-new-app-2",
+  "productName": "my-new-app-2",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": ".vite/build/main.js",
   "scripts": {
     "dev": "electron-forge start",
     "package": "electron-forge package",
@@ -10,6 +11,13 @@
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
+  "keywords": [],
+  "author": {
+    "name": "Patryk Zdunowski",
+    "email": "zdunekhere@gmail.com"
+  },
+  "license": "MIT",
+  "packageManager": "bun@1.1.42",
   "devDependencies": {
     "@electron-forge/cli": "^7.10.2",
     "@electron-forge/maker-deb": "^7.10.2",

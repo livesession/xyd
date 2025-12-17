@@ -3,78 +3,13 @@ import { EditorSidebar } from '../components/editor/EditorSidebar';
 import { Globe, PenTool, Code2, Sparkles, FileText } from 'lucide-react';
 import { CodeWorkbench } from '../components/editor/CodeWorkbench';
 import { VisualEditor } from '../components/editor/VisualEditor';
-
-const MOCK_FILES: Record<string, string> = {
-  'introduction': `# Introduction
-
-\`Welcome\`
-## Heading2 
-- list item
-
-Welcome to the documentation!
-
-This is a sample markdown file to demonstrate the editor capabilities.
-You can edit this content and see the changes reflected in real-time.
-
-## Features
-
-- **Monaco Editor**: Powerful code editing experience.
-- **Tailwind CSS**: Beautiful and consistent styling.
-- **Files Mode**: Navigate through your project files.
-
-:::callout
-Example callout
-:::
-`,
-  'quickstart': `# Quickstart
-
-Get started in minutes.
-
-\`\`\`bash
-npm install @documentation-ai/core
-\`\`\`
-`,
-  'changelog': `# Changelog
-
-All notable changes to this project will be documented in this file.
-
-## [1.0.0] - 2024-01-01
-
-- Initial release
-`,
-  'configuration': `# Configuration
-
-Configure your documentation site.
-
-\`\`\`json
-{
-  "title": "My Docs",
-  "theme": "light"
-}
-\`\`\`
-`,
-  'documentation.json': `{
-  "name": "My Documentation",
-  "version": "1.0.0",
-  "private": true
-}
-`,
-  'openapi.yaml': `openapi: 3.0.0
-info:
-  title: Sample API
-  version: 0.1.9
-`,
-  'organizing-documentation': `# Organizing Documentation
-
-Learn how to structure your docs.
-`
-};
+import { FILE_CONTENTS, getFileLanguage } from '../data/editorData';
 
 export function Editor() {
   const [mode, setMode] = useState<'navigation' | 'files'>('navigation');
   const [viewMode, setViewMode] = useState<'editor' | 'code'>('code');
   const [currentFile, setCurrentFile] = useState<string>('introduction');
-  const [files, setFiles] = useState<Record<string, string>>(MOCK_FILES);
+  const [files, setFiles] = useState<Record<string, string>>(FILE_CONTENTS);
 
   const handleFileSelect = (fileName: string) => {
     setCurrentFile(fileName);
@@ -84,13 +19,6 @@ export function Editor() {
     if (val !== undefined) {
       setFiles(prev => ({ ...prev, [currentFile]: val }));
     }
-  };
-
-  const getLanguage = (fileName: string) => {
-    if (fileName.endsWith('.json')) return 'json';
-    if (fileName.endsWith('.yaml') || fileName.endsWith('.yml')) return 'yaml';
-    if (fileName.endsWith('.js') || fileName.endsWith('.ts') || fileName.endsWith('.tsx')) return 'typescript';
-    return 'markdown';
   };
 
   return (
@@ -152,7 +80,7 @@ export function Editor() {
             <CodeWorkbench
               code={files[currentFile] || ''}
               onChange={handleContentChange}
-              language={getLanguage(currentFile)}
+              language={getFileLanguage(currentFile)}
             />
           ) : (
             <VisualEditor
@@ -162,12 +90,12 @@ export function Editor() {
           )}
 
           {/* AI Agent Button */}
-          <div className="absolute bottom-6 right-6 z-10">
+          {/* <div className="absolute bottom-6 right-6 z-10">
             <button className="bg-[#1f1f1f] hover:bg-black text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-sm font-medium transition-colors">
               <Sparkles className="w-4 h-4" />
               AI Agent
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

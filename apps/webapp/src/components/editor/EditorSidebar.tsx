@@ -9,11 +9,11 @@ interface EditorSidebarProps {
 
 export function EditorSidebar({ mode, onFileSelect, activeFile }: EditorSidebarProps) {
   return (
-    <div className="w-[300px] border-r border-gray-200 bg-white h-full flex flex-col">
+    <div className="w-[300px] flex-shrink-0 border-r border-gray-200 bg-white h-full flex flex-col">
       {mode === 'navigation' ? (
-        <NavigationPanel onFileSelect={onFileSelect} activeFile={activeFile} /> 
+        <NavigationPanel onFileSelect={onFileSelect} activeFile={activeFile} />
       ) : (
-        <FilesPanel onFileSelect={onFileSelect} />
+        <FilesPanel onFileSelect={onFileSelect} activeFile={activeFile} />
       )}
     </div>
   );

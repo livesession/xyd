@@ -12,7 +12,7 @@ import ListItem from '@tiptap/extension-list-item';
 import { Bold, Italic, Strikethrough, Code, List, ListOrdered, Quote, Heading1, Heading2, Heading3, Undo, Redo } from 'lucide-react';
 import { marked } from 'marked';
 import TurndownService from 'turndown';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { HeadingNode, ParagraphNode, ListNode, ListItemNode } from './EditorNodes';
 import { ScopedEditorContent } from './ScopedEditorContent';
 import { customMarkdownToBlocks } from '../../utils/markdownParser';
@@ -128,7 +128,7 @@ export const createCallout = createReactBlockSpec(
       textAlignment: defaultProps.textAlignment,
       textColor: defaultProps.textColor,
     },
-    content: "none",
+    content: "inline",
   },
   {
     render: (props) => {
@@ -147,8 +147,8 @@ export function VisualEditor({ content, onChange, readOnly = false }: VisualEdit
   const schema = BlockNoteSchema.create({
     blockSpecs: {
       ...defaultBlockSpecs,
-      alert: createAlert(),
-      callout: createCallout(),
+      // alert: createAlert(),
+      // callout: createCallout(),
     },
   });
 
@@ -215,21 +215,52 @@ export function VisualEditor({ content, onChange, readOnly = false }: VisualEdit
     }
   });
 
+  const lastEmittedContent = useRef<string | null>(null);
+
   async function updateContent() {
+    const pmSchema2 = (editor as any)._tiptapEditor?.schema;
+    const blocksFromMarkdown2 = await customMarkdownToBlocks(content, pmSchema2);
+    console.log(1111, blocksFromMarkdown2)
     // content is null or undefined check?
     if (!content) return;
+
+    // // Check if the new content is what we just emitted.
+    // // If so, ignore it to prevent loop/re-render flicker.
+    if (content === lastEmittedContent.current) return;
+
+    console.log(2222)
+
     // Access underlying Tiptap/ProseMirror schema. 
     // We cast to any because _tiptapEditor is internal/private in strict types but accessible at runtime.
     const pmSchema = (editor as any)._tiptapEditor?.schema;
     if (!pmSchema) return;
 
+    console.log(3333)
     const blocksFromMarkdown = await customMarkdownToBlocks(content, pmSchema);
     editor.replaceBlocks(editor.document, blocksFromMarkdown as any);
+
+    console.log("blocksFromMarkdown", blocksFromMarkdown)
   }
 
+  // Handle incoming content changes
   useEffect(() => {
     updateContent()
   }, [editor, content]);
+
+  // Handle outgoing content changes
+  useEffect(() => {
+    if (editor && onChange) {
+      // Debounce or immediate? Immediate is fine for local.
+      const cleanup = editor.onEditorContentChange(async () => {
+        const markdown = await editor.blocksToMarkdownLossy(editor.document);
+        if (markdown !== lastEmittedContent.current) {
+          lastEmittedContent.current = markdown;
+          onChange(markdown);
+        }
+      });
+      return cleanup;
+    }
+  }, [editor, onChange]);
   // Sync content when it changes externally (e.g. file switch)
   // useEffect(() => {
   //   if (editor && content) {

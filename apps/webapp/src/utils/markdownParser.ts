@@ -186,6 +186,7 @@ export async function customMarkdownToBlocks(
     if (block.type === 'paragraph' && 
         block.content?.[0]?.type === 'text' && 
         block.content[0].text?.startsWith('__CUSTOM_COMPONENT_')) {
+          continue
       
       const markerId = block.content[0].text;
       const component = componentData.get(markerId);

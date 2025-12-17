@@ -49,7 +49,7 @@ export const ScopedEditorContent: React.FC<ScopedEditorContentProps> = ({ editor
             `}}></style> */}
           <style>{interCSS}</style>
           <style>{mantineCSS}</style>
-          <style>{xydTheme}</style>
+          {/* <style>{xydTheme}</style> */}
 
           <div className="scoped-editor-wrapper h-full">
             <ContentDecorator>

@@ -1,45 +1,88 @@
-import { FileText, Folder, Copy, RefreshCw } from 'lucide-react';
-
-const files = [
-  { name: 'changelog', type: 'folder' },
-  { name: 'configuration', type: 'folder' },
-  { name: 'documentation.json', type: 'json' },
-  { name: 'introduction', type: 'folder' },
-  { name: 'openapi.yaml', type: 'yaml' },
-  { name: 'organizing-documentation', type: 'folder' },
-  { name: 'quickstart', type: 'folder' },
-];
+import { useState } from 'react';
+import { FileText, Folder, Copy, RefreshCw, ChevronRight, ChevronDown } from 'lucide-react';
+import { FILE_TREE, type FileNode } from '../../data/editorData';
 
 interface FilesPanelProps {
   onFileSelect?: (fileName: string) => void;
+  activeFile?: string;
 }
 
-export function FilesPanel({ onFileSelect }: FilesPanelProps) {
+export function FilesPanel({ onFileSelect, activeFile }: FilesPanelProps) {
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['guides']));
+
+  const toggleFolder = (folderId: string) => {
+    setExpandedFolders(prev => {
+      const next = new Set(prev);
+      if (next.has(folderId)) {
+        next.delete(folderId);
+      } else {
+        next.add(folderId);
+      }
+      return next;
+    });
+  };
+
+  const renderFileNode = (node: FileNode, depth: number = 0) => {
+    const isExpanded = expandedFolders.has(node.id);
+    const isActive = node.name === activeFile;
+    const paddingLeft = depth * 12 + 8;
+
+    if (node.type === 'folder') {
+      return (
+        <div key={node.id}>
+          <div
+            onClick={() => toggleFolder(node.id)}
+            className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm cursor-pointer transition-colors hover:bg-gray-50 text-gray-700"
+            style={{ paddingLeft: `${paddingLeft}px` }}
+          >
+            {isExpanded ? (
+              <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            )}
+            <Folder className="w-4 h-4 text-orange-400 flex-shrink-0" />
+            <span>{node.displayName}</span>
+          </div>
+          {isExpanded && node.children && (
+            <div>
+              {node.children.map(child => renderFileNode(child, depth + 1))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div
+        key={node.id}
+        onClick={() => onFileSelect?.(node.name)}
+        className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-sm cursor-pointer transition-colors ${isActive ? 'bg-gray-100 font-medium text-gray-900' : 'hover:bg-gray-50 text-gray-700'
+          }`}
+        style={{ paddingLeft: `${paddingLeft + 20}px` }}
+      >
+        {node.fileType === 'json' && <span className="text-yellow-600 font-mono text-[10px] w-4 text-center flex-shrink-0">{'{}'}</span>}
+        {node.fileType === 'yaml' && <FileText className="w-4 h-4 text-orange-600 flex-shrink-0" />}
+        {node.fileType === 'markdown' && <FileText className="w-4 h-4 text-blue-500 flex-shrink-0" />}
+        {node.fileType === 'typescript' && <FileText className="w-4 h-4 text-blue-600 flex-shrink-0" />}
+        <span>{node.displayName}</span>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-          <span className="text-sm font-semibold text-gray-900">Files</span>
-          <div className="flex items-center gap-1">
-              <button className="p-1 hover:bg-gray-100 rounded text-gray-500"><Copy className="w-4 h-4" /></button>
-              <button className="p-1 hover:bg-gray-100 rounded text-gray-500"><RefreshCw className="w-4 h-4" /></button>
-          </div>
+        <span className="text-sm font-semibold text-gray-900">Files</span>
+        <div className="flex items-center gap-1">
+          <button className="p-1 hover:bg-gray-100 rounded text-gray-500"><Copy className="w-4 h-4" /></button>
+          <button className="p-1 hover:bg-gray-100 rounded text-gray-500"><RefreshCw className="w-4 h-4" /></button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-2">
-          <div className="space-y-0.5">
-              {files.map((file, idx) => (
-                  <div 
-                    key={idx} 
-                    onClick={() => onFileSelect?.(file.name)}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-sm cursor-pointer transition-colors ${file.name === 'introduction' ? 'bg-gray-100 font-medium text-gray-900' : 'hover:bg-gray-50 text-gray-700'}`}
-                  >
-                      {file.type === 'folder' && <Folder className="w-4 h-4 text-orange-400" />}
-                      {file.type === 'json' && <span className="text-yellow-600 font-mono text-[10px] w-4 text-center">{'{}'}</span>}
-                      {file.type === 'yaml' && <FileText className="w-4 h-4 text-orange-600" />}
-                      <span>{file.name}</span>
-                  </div>
-              ))}
-          </div>
+        <div className="space-y-0.5">
+          {FILE_TREE.map(node => renderFileNode(node))}
+        </div>
       </div>
     </div>
   );
