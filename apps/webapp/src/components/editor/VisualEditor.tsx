@@ -17,7 +17,7 @@ import { HeadingNode, ParagraphNode, ListNode, ListItemNode } from './EditorNode
 import { ScopedEditorContent } from './ScopedEditorContent';
 import { customMarkdownToBlocks } from '../../utils/markdownParser';
 import { createParagraphBlockSpec } from './paragraph.tsx';
-import { Callout } from "@xyd-js/components/writer"
+// import { Callout } from "@xyd-js/components/writer"
 
 interface VisualEditorProps {
   content: string; // Markdown content
@@ -95,6 +95,10 @@ export const createAlert = createReactBlockSpec(
     },
   },
 );
+
+function Callout({children}) {
+  return null
+}
 
 export const createCallout2 = createReactBlockSpec(
   {

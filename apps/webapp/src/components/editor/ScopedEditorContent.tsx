@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { EditorContent, useEditor } from '@tiptap/react';
 import { BlockNoteView } from "@blocknote/mantine";
-import { ContentDecorator } from '@xyd-js/components/content';
+// import { ContentDecorator } from '@xyd-js/components/content'; TODO:
 import interCSS from "@blocknote/core/fonts/inter.css?inline";
 import mantineCSS from "@blocknote/mantine/style.css?inline";
 
@@ -52,9 +52,9 @@ export const ScopedEditorContent: React.FC<ScopedEditorContentProps> = ({ editor
           {/* <style>{xydTheme}</style> */}
 
           <div className="scoped-editor-wrapper h-full">
-            <ContentDecorator>
+            {/* <ContentDecorator> */}
               <BlockNoteView editor={editor} className="h-full" />
-            </ContentDecorator>
+            {/* </ContentDecorator> */}
           </div>
         </>,
         shadowRoot as unknown as Element

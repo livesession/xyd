@@ -2,7 +2,7 @@
   "name": "@xyd-js/desktop-app",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "main": ".vite/build/main.js",
   "scripts": {
     "dev": "electron-forge start",
     "package": "electron-forge package",
