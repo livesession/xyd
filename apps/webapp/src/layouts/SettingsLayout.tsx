@@ -75,7 +75,7 @@ export function SettingsLayout() {
 
       {/* Settings Content */}
       <div className="flex-1 py-10 px-12 overflow-auto">
-        <div className="max-w-4xl">
+        <div className="max-w-full">
            <Outlet />
         </div>
       </div>

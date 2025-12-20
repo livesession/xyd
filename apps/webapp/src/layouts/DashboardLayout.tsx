@@ -145,7 +145,7 @@ export function DashboardLayout() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto bg-white">
-        <div className={location.pathname.startsWith('/editor') ? "h-full" : "max-w-5xl mx-auto px-10 py-8"}>
+        <div className={location.pathname.startsWith('/editor') ? "h-full" : "h-full mx-auto px-10 py-8"}>
           <Outlet />
         </div>
       </main>

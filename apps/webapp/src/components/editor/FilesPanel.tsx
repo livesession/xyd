@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { FileText, Folder, Copy, RefreshCw, ChevronRight, ChevronDown } from 'lucide-react';
-import { FILE_TREE, type FileNode } from '../../data/editorData';
+import { FileText, Folder, Copy, RefreshCw, ChevronRight, ChevronDown, Loader2 } from 'lucide-react';
+import { type FileNode } from '../../data/editorData';
+import { useProject } from '../../contexts/ProjectContext';
 
 interface FilesPanelProps {
   onFileSelect?: (fileName: string) => void;
@@ -8,7 +9,8 @@ interface FilesPanelProps {
 }
 
 export function FilesPanel({ onFileSelect, activeFile }: FilesPanelProps) {
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['guides']));
+  const { fileTree, loading, refreshRepository } = useProject();
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
 
   const toggleFolder = (folderId: string) => {
     setExpandedFolders(prev => {
@@ -75,14 +77,30 @@ export function FilesPanel({ onFileSelect, activeFile }: FilesPanelProps) {
         <span className="text-sm font-semibold text-gray-900">Files</span>
         <div className="flex items-center gap-1">
           <button className="p-1 hover:bg-gray-100 rounded text-gray-500"><Copy className="w-4 h-4" /></button>
-          <button className="p-1 hover:bg-gray-100 rounded text-gray-500"><RefreshCw className="w-4 h-4" /></button>
+          <button
+            onClick={refreshRepository}
+            disabled={loading}
+            className="p-1 hover:bg-gray-100 rounded text-gray-500 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-2">
-        <div className="space-y-0.5">
-          {FILE_TREE.map(node => renderFileNode(node))}
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center h-32 text-gray-400">
+            <Loader2 className="w-5 h-5 animate-spin" />
+          </div>
+        ) : fileTree.length === 0 ? (
+          <div className="flex items-center justify-center h-32 text-gray-400 text-sm">
+            No files found
+          </div>
+        ) : (
+          <div className="space-y-0.5">
+            {fileTree.map(node => renderFileNode(node))}
+          </div>
+        )}
       </div>
     </div>
   );

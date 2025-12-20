@@ -1,25 +1,81 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { EditorSidebar } from '../components/editor/EditorSidebar';
-import { Globe, PenTool, Code2, Sparkles, FileText } from 'lucide-react';
+import { Globe, PenTool, Code2, FileText, Loader2, ChevronDown, FolderTree } from 'lucide-react';
 import { CodeWorkbench } from '../components/editor/CodeWorkbench';
 import { VisualEditor } from '../components/editor/VisualEditor';
-import { FILE_CONTENTS, getFileLanguage } from '../data/editorData';
+import { useProject } from '../contexts/ProjectContext';
+import { getFileLanguage } from '../utils/githubTreeUtils';
+import { parseFrontmatter } from '../utils/frontmatterUtils';
 
 export function Editor() {
-  const [mode, setMode] = useState<'navigation' | 'files'>('navigation');
+  const { currentRepository, setCurrentRepository, fileTree, fileContents, setFileContent, loadFileContent, loading } = useProject();
+  const [mode, setMode] = useState<'navigation' | 'files'>('files');
   const [viewMode, setViewMode] = useState<'editor' | 'code'>('code');
-  const [currentFile, setCurrentFile] = useState<string>('introduction');
-  const [files, setFiles] = useState<Record<string, string>>(FILE_CONTENTS);
+  const [currentFile, setCurrentFile] = useState<string | null>(null);
+  const [fileLoading, setFileLoading] = useState(false);
+  const [connectedRepos, setConnectedRepos] = useState<GitHubRepository[]>([]);
+  const [showRepoDropdown, setShowRepoDropdown] = useState(false);
 
-  const handleFileSelect = (fileName: string) => {
+  const handleFileSelect = async (fileName: string) => {
     setCurrentFile(fileName);
+
+    // Load file content if not already loaded
+    if (!fileContents[fileName]) {
+      setFileLoading(true);
+      await loadFileContent(fileName);
+      setFileLoading(false);
+    }
   };
 
   const handleContentChange = (val: string | undefined) => {
-    if (val !== undefined) {
-      setFiles(prev => ({ ...prev, [currentFile]: val }));
+    if (val !== undefined && currentFile) {
+      setFileContent(currentFile, val);
     }
   };
+
+  // Parse frontmatter from current file content
+  const parsedContent = useMemo(() => {
+    if (!currentFile || !fileContents[currentFile]) {
+      return { frontmatter: '', content: '', hasFrontmatter: false };
+    }
+    return parseFrontmatter(fileContents[currentFile]);
+  }, [currentFile, fileContents]);
+
+  // Load connected repositories
+  useEffect(() => {
+    const loadConnectedRepos = async () => {
+      try {
+        const result = await window.electronAPI.repositories.getConnected();
+        if (result.success && result.repositories) {
+          setConnectedRepos(result.repositories);
+        }
+      } catch (error) {
+        console.error('Failed to load connected repositories:', error);
+      }
+    };
+    loadConnectedRepos();
+  }, []);
+
+  // Auto-select first file when tree loads
+  useEffect(() => {
+    if (fileTree.length > 0 && !currentFile) {
+      const firstFile = findFirstFile(fileTree);
+      if (firstFile) {
+        handleFileSelect(firstFile.name);
+      }
+    }
+  }, [fileTree]);
+
+  function findFirstFile(nodes: any[]): any {
+    for (const node of nodes) {
+      if (node.type === 'file') return node;
+      if (node.children) {
+        const found = findFirstFile(node.children);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -39,19 +95,72 @@ export function Editor() {
             onClick={() => setMode('files')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${mode === 'files' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
           >
-            <span className="w-4 h-4 flex items-center justify-center border border-current rounded-[4px]">tG</span>
+            <FolderTree className="w-4 h-4" />
             Files/URL Paths
           </button>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200 text-xs text-gray-600">
-            <span>/{currentFile}</span>
-            <button><FileText className="w-3 h-3" /></button>
-          </div>
+          {currentRepository && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200 text-xs text-gray-600">
+              <span className="font-semibold">{currentRepository.name}</span>
+              {currentFile && (
+                <>
+                  <span>/</span>
+                  <span>{currentFile}</span>
+                  <button><FileText className="w-3 h-3" /></button>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Repository Selector */}
+          {connectedRepos.length > 0 && (
+            <div className="relative">
+              <button
+                onClick={() => setShowRepoDropdown(!showRepoDropdown)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium transition-colors"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                </svg>
+                <span className="truncate max-w-[120px]">
+                  {currentRepository?.name || 'Select repo'}
+                </span>
+                <ChevronDown className="w-3 h-3" />
+              </button>
+
+              {showRepoDropdown && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setShowRepoDropdown(false)}
+                  />
+                  <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-[200px] max-h-[300px] overflow-y-auto">
+                    {connectedRepos.map(repo => (
+                      <button
+                        key={repo.id}
+                        onClick={() => {
+                          setCurrentRepository(repo);
+                          setCurrentFile(null);
+                          setShowRepoDropdown(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-50 transition-colors ${
+                          currentRepository?.id === repo.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                        }`}
+                      >
+                        <div className="font-medium truncate">{repo.name}</div>
+                        <div className="text-gray-500 truncate text-[10px]">{repo.full_name}</div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
           <div className="flex items-center p-1 bg-gray-100 rounded-lg">
             <button
               onClick={() => setViewMode('editor')}
@@ -73,29 +182,39 @@ export function Editor() {
       </div>
 
       <div className="flex-1 flex overflow-hidden">
-        <EditorSidebar mode={mode} onFileSelect={handleFileSelect} activeFile={currentFile} />
+        <EditorSidebar mode={mode} onFileSelect={handleFileSelect} activeFile={currentFile || undefined} />
 
         <div className="flex-1 bg-[#FAFAFA] relative p-4">
-          {viewMode === 'code' ? (
+          {!currentRepository ? (
+            <div className="flex items-center justify-center h-full text-gray-500">
+              <p>No repository connected. Please connect a repository in settings.</p>
+            </div>
+          ) : loading ? (
+            <div className="flex items-center justify-center h-full text-gray-500">
+              <Loader2 className="w-6 h-6 animate-spin" />
+            </div>
+          ) : !currentFile ? (
+            <div className="flex items-center justify-center h-full text-gray-500">
+              <p>Select a file to start editing</p>
+            </div>
+          ) : fileLoading ? (
+            <div className="flex items-center justify-center h-full text-gray-500">
+              <Loader2 className="w-6 h-6 animate-spin" />
+            </div>
+          ) : viewMode === 'code' ? (
             <CodeWorkbench
-              code={files[currentFile] || ''}
+              code={fileContents[currentFile] || ''}
               onChange={handleContentChange}
               language={getFileLanguage(currentFile)}
             />
           ) : (
             <VisualEditor
-              content={files[currentFile] || ''}
+              content={parsedContent.content}
+              fileName={currentFile}
+              frontmatter={parsedContent.frontmatter}
               onChange={handleContentChange}
             />
           )}
-
-          {/* AI Agent Button */}
-          {/* <div className="absolute bottom-6 right-6 z-10">
-            <button className="bg-[#1f1f1f] hover:bg-black text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-sm font-medium transition-colors">
-              <Sparkles className="w-4 h-4" />
-              AI Agent
-            </button>
-          </div> */}
         </div>
       </div>
     </div>
