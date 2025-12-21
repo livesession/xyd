@@ -39,6 +39,7 @@ export const ScopedEditorContent: React.FC<ScopedEditorContentProps> = ({
     }
   }, []);
 
+  console.log("contentElements", contentElements)
   return (
     <div ref={onRefChange} className={`${className} h-full p-8`}>
       {shadowRoot &&
@@ -50,6 +51,7 @@ export const ScopedEditorContent: React.FC<ScopedEditorContentProps> = ({
               <>
                 <style>{interCSS}</style>
                 <style>{mantineCSS}</style>
+                <style>{xydTheme}</style>
               </>
             )}
 
@@ -61,7 +63,6 @@ export const ScopedEditorContent: React.FC<ScopedEditorContentProps> = ({
               ) : (
                 <BlockNoteView editor={editor} className="h-full" />
               )}
-              {/* </ContentDecorator> */}
             </div>
           </>,
           shadowRoot as unknown as Element

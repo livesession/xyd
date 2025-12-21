@@ -6,6 +6,7 @@ import fs from "node:fs";
 import {ReactContent, stdContent} from "@xyd-js/components/content"
 import {Heading} from "@xyd-js/components/writer"
 import {CodeSample} from "@xyd-js/components/coder"
+import { spawn, ChildProcess } from "node:child_process";
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -22,12 +23,29 @@ if (started) {
 
 const contentComponents = stdContent.call(new ReactContent());
 
+// XYD dev server management
+let xydServerProcess: ChildProcess | null = null;
+let xydServerPort: number | null = null;
+
 // Path to store encrypted token and connected repositories
 const TOKEN_FILE_PATH = path.join(app.getPath("userData"), "github-token.enc");
 const REPOSITORIES_FILE_PATH = path.join(
   app.getPath("userData"),
   "connected-repositories.json"
 );
+
+// Function to get synced repository path for a given repository
+function getSyncedRepoPath(owner: string, repoName: string): string {
+  const reposDir = path.join(app.getPath("userData"), "synced-repos");
+  const repoPath = path.join(reposDir, owner, repoName);
+
+  // Ensure directory exists
+  if (!fs.existsSync(repoPath)) {
+    fs.mkdirSync(repoPath, { recursive: true });
+  }
+
+  return repoPath;
+}
 
 // IPC handlers for GitHub token management
 ipcMain.handle("github-token:save", async (_event, token: string) => {
@@ -209,8 +227,17 @@ ipcMain.handle(
 
 ipcMain.handle(
   "github:get-file",
-  async (_event, owner: string, repo: string, path: string) => {
+  async (_event, owner: string, repo: string, filePath: string) => {
     try {
+      // First check if file exists in synced local storage
+      const syncedRepoPath = getSyncedRepoPath(owner, repo);
+      const localFilePath = path.join(syncedRepoPath, filePath);
+
+      if (fs.existsSync(localFilePath)) {
+        const content = fs.readFileSync(localFilePath, "utf-8");
+        return { success: true, content, fromLocal: true };
+      }
+
       // Get the stored token
       if (!fs.existsSync(TOKEN_FILE_PATH)) {
         return { success: false, error: "No GitHub token configured" };
@@ -229,7 +256,7 @@ ipcMain.handle(
       return new Promise((resolve) => {
         const options = {
           hostname: "api.github.com",
-          path: `/repos/${owner}/${repo}/contents/${path}`,
+          path: `/repos/${owner}/${repo}/contents/${filePath}`,
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -252,7 +279,15 @@ ipcMain.handle(
               const content = Buffer.from(fileData.content, "base64").toString(
                 "utf-8"
               );
-              resolve({ success: true, content });
+
+              // Save to local synced storage
+              const dir = path.dirname(localFilePath);
+              if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+              }
+              fs.writeFileSync(localFilePath, content, "utf-8");
+
+              resolve({ success: true, content, fromLocal: false });
             } else {
               resolve({
                 success: false,
@@ -270,6 +305,180 @@ ipcMain.handle(
       });
     } catch (error) {
       console.error("Failed to fetch file:", error);
+      return { success: false, error: (error as Error).message };
+    }
+  }
+);
+
+// IPC handler for saving file to local synced storage
+ipcMain.handle(
+  "github:save-file",
+  async (_event, owner: string, repo: string, filePath: string, content: string) => {
+    try {
+      const syncedRepoPath = getSyncedRepoPath(owner, repo);
+      const localFilePath = path.join(syncedRepoPath, filePath);
+
+      // Ensure directory exists
+      const dir = path.dirname(localFilePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+
+      // Write file
+      fs.writeFileSync(localFilePath, content, "utf-8");
+
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to save file:", error);
+      return { success: false, error: (error as Error).message };
+    }
+  }
+);
+
+// IPC handler for getting synced repository path
+ipcMain.handle(
+  "github:get-synced-repo-path",
+  async (_event, owner: string, repo: string) => {
+    try {
+      const repoPath = getSyncedRepoPath(owner, repo);
+      return { success: true, path: repoPath };
+    } catch (error) {
+      console.error("Failed to get synced repo path:", error);
+      return { success: false, error: (error as Error).message };
+    }
+  }
+);
+
+// IPC handler for syncing entire repository
+ipcMain.handle(
+  "github:sync-repository",
+  async (_event, owner: string, repo: string, branch: string) => {
+    try {
+      // Get the stored token
+      if (!fs.existsSync(TOKEN_FILE_PATH)) {
+        return { success: false, error: "No GitHub token configured" };
+      }
+
+      if (!safeStorage.isEncryptionAvailable()) {
+        return { success: false, error: "Encryption is not available" };
+      }
+
+      const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
+      const token = safeStorage.decryptString(encryptedToken);
+
+      const https = await import("https");
+
+      // First, get the repository tree
+      const treeData: any = await new Promise((resolve, reject) => {
+        const options = {
+          hostname: "api.github.com",
+          path: `/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github.v3+json",
+            "User-Agent": "Electron-App",
+          },
+        };
+
+        const req = https.request(options, (res) => {
+          let data = "";
+
+          res.on("data", (chunk) => {
+            data += chunk;
+          });
+
+          res.on("end", () => {
+            if (res.statusCode === 200) {
+              resolve(JSON.parse(data));
+            } else {
+              reject(new Error(`GitHub API error: ${res.statusCode}`));
+            }
+          });
+        });
+
+        req.on("error", (error) => {
+          reject(error);
+        });
+
+        req.end();
+      });
+
+      // Filter for blob (file) entries only
+      const files = treeData.tree.filter((item: any) => item.type === "blob");
+      const syncedRepoPath = getSyncedRepoPath(owner, repo);
+
+      let syncedCount = 0;
+      let failedCount = 0;
+
+      // Download each file
+      for (const file of files) {
+        try {
+          // Fetch file content
+          const fileContent: any = await new Promise((resolve, reject) => {
+            const options = {
+              hostname: "api.github.com",
+              path: `/repos/${owner}/${repo}/contents/${file.path}`,
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/vnd.github.v3+json",
+                "User-Agent": "Electron-App",
+              },
+            };
+
+            const req = https.request(options, (res) => {
+              let data = "";
+
+              res.on("data", (chunk) => {
+                data += chunk;
+              });
+
+              res.on("end", () => {
+                if (res.statusCode === 200) {
+                  resolve(JSON.parse(data));
+                } else {
+                  reject(new Error(`Failed to fetch ${file.path}: ${res.statusCode}`));
+                }
+              });
+            });
+
+            req.on("error", (error) => {
+              reject(error);
+            });
+
+            req.end();
+          });
+
+          // Decode and save file
+          const content = Buffer.from(fileContent.content, "base64").toString("utf-8");
+          const localFilePath = path.join(syncedRepoPath, file.path);
+
+          // Ensure directory exists
+          const dir = path.dirname(localFilePath);
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+
+          // Write file
+          fs.writeFileSync(localFilePath, content, "utf-8");
+          syncedCount++;
+
+          console.log(`Synced: ${file.path} (${syncedCount}/${files.length})`);
+        } catch (error) {
+          console.error(`Failed to sync ${file.path}:`, error);
+          failedCount++;
+        }
+      }
+
+      return {
+        success: true,
+        syncedCount,
+        failedCount,
+        totalFiles: files.length,
+      };
+    } catch (error) {
+      console.error("Failed to sync repository:", error);
       return { success: false, error: (error as Error).message };
     }
   }
@@ -447,6 +656,139 @@ ipcMain.handle(
     });
   }
 );
+
+// IPC handler for starting xyd dev server
+ipcMain.handle(
+  "xyd:start-server",
+  async (_event, owner: string, repo: string) => {
+    return new Promise((resolve) => {
+      try {
+        // Stop existing server if running
+        if (xydServerProcess) {
+          xydServerProcess.kill();
+          xydServerProcess = null;
+          xydServerPort = null;
+        }
+
+        // Get the synced repository path
+        const repositoryPath = getSyncedRepoPath(owner, repo);
+
+        console.log("repositoryPath", repositoryPath)
+        // Start xyd dev server
+        // Using bunx to ensure xyd-js is available
+        xydServerProcess = spawn("bunx", ["xyd-js"], {
+          cwd: repositoryPath,
+          shell: true,
+          env: { ...process.env },
+          stdio: 'pipe'
+        });
+
+        let serverStarted = false;
+        const timeout = setTimeout(() => {
+          if (!serverStarted) {
+            resolve({
+              success: false,
+              error: "Server startup timeout",
+            });
+          }
+        }, 30000); // 30 second timeout
+
+        const outputListener = (data: Buffer) => {
+          const rawOutput = data.toString();
+          console.log("XYD Server Output:", rawOutput);
+
+          // Strip ANSI escape codes
+          const output = rawOutput.replace(/\u001b\[[0-9;]*m/g, "");
+
+          // Look for port in output (e.g. "Local: http://localhost:5175/")
+          const portMatch = output.match(/localhost:(\d+)/i) || output.match(/port (\d+)/i);
+          
+          if (portMatch && !serverStarted) {
+            xydServerPort = parseInt(portMatch[1], 10);
+            serverStarted = true;
+            clearTimeout(timeout);
+            resolve({
+              success: true,
+              port: xydServerPort,
+              url: `http://localhost:${xydServerPort}`,
+            });
+          } else if (
+            (output.includes("ready") || output.includes("started")) && 
+            !output.includes("instance") && 
+            !serverStarted
+          ) {
+            // Fallback: assume default port if we can't parse it but see it's ready
+            // Ignore "instance is ready" as it refers to a local tool instance, not the server
+            xydServerPort = 3000;
+            serverStarted = true;
+            clearTimeout(timeout);
+            resolve({
+              success: true,
+              port: xydServerPort,
+              url: `http://localhost:${xydServerPort}`,
+            });
+          }
+        };
+
+        // Capture stdout and stderr to detect when server is ready
+        xydServerProcess.stdout?.on("data", outputListener);
+        xydServerProcess.stderr?.on("data", (data) => {
+          console.error("XYD Server Error Stream:", data.toString());
+          outputListener(data);
+        });
+
+        xydServerProcess.on("error", (error) => {
+          console.error("Failed to start XYD server:", error);
+          clearTimeout(timeout);
+          if (!serverStarted) {
+            resolve({
+              success: false,
+              error: error.message,
+            });
+          }
+        });
+
+        xydServerProcess.on("exit", (code) => {
+          console.log("XYD server exited with code:", code);
+          xydServerProcess = null;
+          xydServerPort = null;
+        });
+      } catch (error) {
+        console.error("Failed to start XYD server:", error);
+        resolve({
+          success: false,
+          error: (error as Error).message,
+        });
+      }
+    });
+  }
+);
+
+// IPC handler for stopping xyd dev server
+ipcMain.handle("xyd:stop-server", async () => {
+  try {
+    if (xydServerProcess) {
+      xydServerProcess.kill();
+      xydServerProcess = null;
+      xydServerPort = null;
+      return { success: true };
+    }
+    return { success: true, message: "No server running" };
+  } catch (error) {
+    console.error("Failed to stop XYD server:", error);
+    return { success: false, error: (error as Error).message };
+  }
+});
+
+// IPC handler for getting server status
+ipcMain.handle("xyd:get-server-status", async () => {
+  return {
+    success: true,
+    running: xydServerProcess !== null,
+    port: xydServerPort,
+    url: xydServerPort ? `http://localhost:${xydServerPort}` : null,
+  };
+});
 
 
 const createElementWithKeys = (type: any, props: any) => {

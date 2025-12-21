@@ -1,12 +1,14 @@
-import { createReactBlockSpec, useCreateBlockNote } from "@blocknote/react";
+import { createReactBlockSpec, createReactInlineContentSpec, useCreateBlockNote } from "@blocknote/react";
 import {
   BlockNoteSchema,
   defaultBlockSpecs,
   defaultProps,
+  defaultInlineContentSpecs
 } from "@blocknote/core";
 import { ScopedEditorContent } from "./ScopedEditorContent";
 import { customMarkdownToBlocks } from "../../utils/markdownParser";
 import { useEffect, useRef, useState } from "react";
+import { Callout } from "@xyd-js/components/writer";
 
 interface VisualEditorProps {
   content: string; // Markdown content (body only, no frontmatter)
@@ -37,6 +39,37 @@ export const createAlert = createReactBlockSpec(
   }
 );
 
+export const Mention = createReactInlineContentSpec(
+  {
+    type: "mention",
+    propSchema: {
+     
+    },
+    content: "none",
+  },
+  {
+    render: (props) => {
+      return <div>Alert</div>;
+    },
+  }
+);
+
+export const Mention2 = createReactBlockSpec(
+  {
+    type: "mention2",
+    propSchema: {
+     
+    },
+    content: "inline",
+  },
+  {
+    render: (props) => {
+      console.log("props", props)
+      return <Callout ref={props.contentRef}></Callout>
+    },
+  }
+);
+
 export function VisualEditor({
   content,
   fileName,
@@ -48,7 +81,12 @@ export function VisualEditor({
   const schema = BlockNoteSchema.create({
     blockSpecs: {
       ...defaultBlockSpecs,
+      mention2: Mention2(),
     },
+    inlineContentSpecs: {
+      ...defaultInlineContentSpecs,
+      mention: Mention,
+    }
   });
 
   const editor = useCreateBlockNote({
@@ -79,11 +117,12 @@ export function VisualEditor({
     if (!pmSchema) return;
 
     console.log(3333);
-    const [blocksFromMarkdown, reactElements] = await customMarkdownToBlocks(content, fileName, pmSchema);
-    // editor.replaceBlocks(editor.document, blocksFromMarkdown as any);
-
+    const [blocksFromMarkdown, reactElements] = await customMarkdownToBlocks(editor, content, fileName, pmSchema);
+    
     if (reactElements) {
       setContentElements(reactElements)
+    } else {
+      editor.replaceBlocks(editor.document, blocksFromMarkdown as any);
     }
     console.log("blocksFromMarkdown", blocksFromMarkdown);
   }

@@ -20,11 +20,25 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.invoke('github:get-tree', owner, repo, branch),
     getFile: (owner: string, repo: string, path: string) =>
       ipcRenderer.invoke('github:get-file', owner, repo, path),
+    saveFile: (owner: string, repo: string, path: string, content: string) =>
+      ipcRenderer.invoke('github:save-file', owner, repo, path, content),
+    getSyncedRepoPath: (owner: string, repo: string) =>
+      ipcRenderer.invoke('github:get-synced-repo-path', owner, repo),
+    syncRepository: (owner: string, repo: string, branch: string) =>
+      ipcRenderer.invoke('github:sync-repository', owner, repo, branch),
     getCommits: (owner: string, repo: string, limit?: number) =>
       ipcRenderer.invoke('github:get-commits', owner, repo, limit),
   },
   editor: {
     compileMarkdown: (markdown: string, fileName: string) =>
       ipcRenderer.invoke('editor:compile-markdown', markdown, fileName),
+  },
+  xyd: {
+    startServer: (owner: string, repo: string) =>
+      ipcRenderer.invoke('xyd:start-server', owner, repo),
+    stopServer: () =>
+      ipcRenderer.invoke('xyd:stop-server'),
+    getServerStatus: () =>
+      ipcRenderer.invoke('xyd:get-server-status'),
   },
 });

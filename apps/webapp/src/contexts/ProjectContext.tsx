@@ -11,7 +11,10 @@ interface ProjectContextType {
   setFileContent: (path: string, content: string) => void;
   loading: boolean;
   error: string | null;
+  syncing: boolean;
+  syncProgress: string | null;
   refreshRepository: () => Promise<void>;
+  syncRepository: () => Promise<void>;
   loadFileContent: (path: string) => Promise<string | null>;
 }
 
@@ -23,6 +26,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [fileContents, setFileContents] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncProgress, setSyncProgress] = useState<string | null>(null);
 
   const refreshRepository = async () => {
     if (!currentRepository) return;
@@ -31,6 +36,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
+      // Then load the tree
       const result = await window.electronAPI.github.getTree(
         currentRepository.owner.login,
         currentRepository.name,
@@ -47,6 +53,33 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const syncRepository = async () => {
+    if (!currentRepository) return;
+
+    try {
+      setSyncing(true);
+      setSyncProgress('Syncing repository files...');
+
+      const syncResult = await window.electronAPI.github.syncRepository(
+        currentRepository.owner.login,
+        currentRepository.name,
+        currentRepository.default_branch
+      );
+
+      if (syncResult.success) {
+        setSyncProgress(`Synced ${syncResult.syncedCount}/${syncResult.totalFiles} files`);
+      } else {
+        console.error('Failed to sync repository:', syncResult.error);
+        setError(syncResult.error || 'Failed to sync repository');
+      }
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setSyncing(false);
+      setSyncProgress(null);
     }
   };
 
@@ -80,6 +113,18 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
   const setFileContent = (path: string, content: string) => {
     setFileContents(prev => ({ ...prev, [path]: content }));
+
+    // Save to local synced storage
+    if (currentRepository) {
+      window.electronAPI.github.saveFile(
+        currentRepository.owner.login,
+        currentRepository.name,
+        path,
+        content
+      ).catch(err => {
+        console.error('Failed to save file to local storage:', err);
+      });
+    }
   };
 
   useEffect(() => {
@@ -117,7 +162,10 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         setFileContent,
         loading,
         error,
+        syncing,
+        syncProgress,
         refreshRepository,
+        syncRepository,
         loadFileContent,
       }}
     >

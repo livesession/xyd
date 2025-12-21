@@ -45,6 +45,7 @@ const analytics = {
 };
 
 export async function customMarkdownToBlocks(
+  editor: any,
   markdown: string,
   fileName: string,
   pmSchema: Schema
@@ -180,13 +181,13 @@ export async function customMarkdownToBlocks(
   const finalBlocks: any[] = [];
 
   for (const block of blocks) {
-
     finalBlocks.push(block);
   }
 
   console.log("htmlString", htmlString)
   console.log("result", result);
   console.log("Final blocks:", finalBlocks);
+
   return [finalBlocks, reactTree];
 }
 
