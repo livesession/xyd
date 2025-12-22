@@ -183,11 +183,7 @@ export async function customMarkdownToBlocks(
   for (const block of blocks) {
     finalBlocks.push(block);
   }
-
-  console.log("htmlString", htmlString)
-  console.log("result", result);
-  console.log("Final blocks:", finalBlocks);
-
+  
   return [finalBlocks, reactTree];
 }
 

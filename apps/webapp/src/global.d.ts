@@ -44,12 +44,15 @@ interface GitHubCommit {
 }
 
 interface GitHubAPI {
+  getBranches(owner: string, repo: string): Promise<{ success: boolean; branches?: string[]; error?: string }>;
   getTree: (owner: string, repo: string, branch: string) => Promise<{ success: boolean; data?: any; error?: string }>;
   getFile: (owner: string, repo: string, path: string) => Promise<{ success: boolean; content?: string; fromLocal?: boolean; error?: string }>;
+  getBaseFile: (owner: string, repo: string, path: string, branch: string) => Promise<{ success: boolean; content?: string; error?: string }>;
   saveFile: (owner: string, repo: string, path: string, content: string) => Promise<{ success: boolean; error?: string }>;
   getSyncedRepoPath: (owner: string, repo: string) => Promise<{ success: boolean; path?: string; error?: string }>;
   syncRepository: (owner: string, repo: string, branch: string) => Promise<{ success: boolean; syncedCount?: number; failedCount?: number; totalFiles?: number; error?: string }>;
   getCommits: (owner: string, repo: string, limit?: number) => Promise<{ success: boolean; commits?: GitHubCommit[]; error?: string }>;
+  getModifiedFiles: (owner: string, repo: string, branch: string) => Promise<{ success: boolean; modifiedFiles?: string[]; error?: string }>;
 }
 
 interface EditorAPI {

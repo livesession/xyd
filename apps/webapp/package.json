@@ -45,6 +45,11 @@
   "dependencies": {
     "@blocknote/mantine": "^0.44.2",
     "@blocknote/react": "^0.44.2",
+    "@git-diff-view/core": "^0.0.35",
+    "@git-diff-view/file": "^0.0.35",
+    "@git-diff-view/lowlight": "^0.0.35",
+    "@git-diff-view/react": "^0.0.35",
+    "@git-diff-view/shiki": "^0.0.35",
     "@mantine/core": "^8.3.10",
     "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/vite": "^4.1.18",

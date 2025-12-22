@@ -47,6 +47,18 @@ function getSyncedRepoPath(owner: string, repoName: string): string {
   return repoPath;
 }
 
+// Function to get "base" (remote) repository path for diffing
+function getSyncedRepoBaseContentPath(owner: string, repo: string): string {
+  const baseDir = path.join(app.getPath("userData"), "synced-repos-base");
+  const baseRepoPath = path.join(baseDir, owner, repo);
+
+  if (!fs.existsSync(baseRepoPath)) {
+    fs.mkdirSync(baseRepoPath, { recursive: true });
+  }
+
+  return baseRepoPath;
+}
+
 // IPC handlers for GitHub token management
 ipcMain.handle("github-token:save", async (_event, token: string) => {
   try {
@@ -162,6 +174,57 @@ ipcMain.handle(
 );
 
 // IPC handlers for GitHub API operations
+ipcMain.handle(
+  "github:get-branches",
+  async (_event, owner: string, repo: string) => {
+    try {
+      if (!fs.existsSync(TOKEN_FILE_PATH)) {
+        return { success: false, error: "No GitHub token configured" };
+      }
+      const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
+      const token = safeStorage.decryptString(encryptedToken);
+
+      const https = await import("https");
+      return new Promise((resolve) => {
+        const options = {
+          hostname: "api.github.com",
+          path: `/repos/${owner}/${repo}/branches`,
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github.v3+json",
+            "User-Agent": "Electron-App",
+          },
+        };
+
+        const req = https.request(options, (res) => {
+          let data = "";
+          res.on("data", (chunk) => { data += chunk; });
+          res.on("end", () => {
+            try {
+              if (res.statusCode === 200) {
+                const branches = JSON.parse(data);
+                resolve({ success: true, branches: branches.map((b: any) => b.name) });
+              } else {
+                resolve({ success: false, error: JSON.parse(data).message || "Failed to fetch branches" });
+              }
+            } catch (e) {
+              resolve({ success: false, error: "Failed to parse branches response" });
+            }
+          });
+        });
+
+        req.on("error", (error) => {
+          resolve({ success: false, error: error.message });
+        });
+        req.end();
+      });
+    } catch (error) {
+      return { success: false, error: (error as Error).message };
+    }
+  }
+);
+
 ipcMain.handle(
   "github:get-tree",
   async (_event, owner: string, repo: string, branch: string) => {
@@ -310,6 +373,140 @@ ipcMain.handle(
   }
 );
 
+// IPC handler for getting the "base" (remote) version of a file
+ipcMain.handle(
+  "github:get-base-file",
+  async (_event, owner: string, repo: string, filePath: string, branch: string) => {
+    try {
+      if (!owner || !repo || !filePath || !branch) {
+        console.error("Missing required arguments for get-base-file:", { owner, repo, filePath, branch });
+        return { success: false, error: "Missing required arguments" };
+      }
+
+      const baseRepoPath = getSyncedRepoBaseContentPath(owner, repo);
+      // We store base files in a branch-specific subfolder to allow switching branches
+      const baseFilePath = path.join(baseRepoPath, branch, filePath);
+
+      // If we have it cached locally in the base path, return it
+      if (fs.existsSync(baseFilePath)) {
+        const content = fs.readFileSync(baseFilePath, "utf-8");
+        return { success: true, content };
+      }
+
+      // Otherwise, fetch from GitHub API
+      if (!fs.existsSync(TOKEN_FILE_PATH)) {
+        return { success: false, error: "No GitHub token configured" };
+      }
+
+      const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
+      const token = safeStorage.decryptString(encryptedToken);
+
+      const https = await import("https");
+
+      return new Promise((resolve) => {
+        const options = {
+          hostname: "api.github.com",
+          path: `/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`,
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github.v3+json",
+            "User-Agent": "Electron-App",
+          },
+        };
+
+        const req = https.request(options, (res) => {
+          let data = "";
+          res.on("data", (chunk) => { data += chunk; });
+          res.on("end", () => {
+            if (res.statusCode === 200) {
+              const fileData = JSON.parse(data);
+              const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+
+              // Cache in the base path
+              const dir = path.dirname(baseFilePath);
+              if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+              }
+              fs.writeFileSync(baseFilePath, content, "utf-8");
+
+              resolve({ success: true, content });
+            } else {
+              resolve({ success: false, error: `GitHub API error: ${res.statusCode}` });
+            }
+          });
+        });
+
+        req.on("error", (error) => { resolve({ success: false, error: error.message }); });
+        req.end();
+      });
+    } catch (error) {
+      console.error("Failed to fetch base file:", error);
+      return { success: false, error: (error as Error).message };
+    }
+  }
+);
+
+// IPC handler for getting all modified files compared to base
+ipcMain.handle(
+  "github:get-modified-files",
+  async (_event, owner: string, repo: string, branch: string) => {
+    try {
+      if (!owner || !repo || !branch) {
+        return { success: false, error: "Missing required arguments" };
+      }
+
+      const syncedRepoPath = getSyncedRepoPath(owner, repo);
+      const baseRepoPath = path.join(getSyncedRepoBaseContentPath(owner, repo), branch);
+
+      if (!fs.existsSync(syncedRepoPath) || !fs.existsSync(baseRepoPath)) {
+        return { success: true, modifiedFiles: [] };
+      }
+
+      const modifiedFiles: string[] = [];
+
+      const scanDirectory = (currentDir: string, relativePath: string = "") => {
+        const items = fs.readdirSync(currentDir);
+
+        for (const item of items) {
+          // Skip .git and node_modules
+          if (item === ".git" || item === "node_modules") continue;
+
+          const fullPath = path.join(currentDir, item);
+          const itemRelativePath = path.join(relativePath, item);
+          const normalizedRelativePath = itemRelativePath.split(path.sep).join("/");
+          const baseFilePath = path.join(baseRepoPath, itemRelativePath);
+
+          const stats = fs.statSync(fullPath);
+
+          if (stats.isDirectory()) {
+            scanDirectory(fullPath, itemRelativePath);
+          } else if (stats.isFile()) {
+            // If file exists in base, compare them
+            if (fs.existsSync(baseFilePath)) {
+              const currentContent = fs.readFileSync(fullPath, "utf-8").replace(/\r\n/g, "\n");
+              const baseContent = fs.readFileSync(baseFilePath, "utf-8").replace(/\r\n/g, "\n");
+
+              if (currentContent !== baseContent) {
+                modifiedFiles.push(normalizedRelativePath);
+              }
+            } else {
+              // If it's a new file not in the base tree, it's modified (added)
+              modifiedFiles.push(normalizedRelativePath);
+            }
+          }
+        }
+      };
+
+      scanDirectory(syncedRepoPath);
+      return { success: true, modifiedFiles };
+    } catch (error) {
+      console.error("Failed to get modified files:", error);
+      return { success: false, error: (error as Error).message };
+    }
+  }
+);
+
 // IPC handler for saving file to local synced storage
 ipcMain.handle(
   "github:save-file",
@@ -453,15 +650,38 @@ ipcMain.handle(
           // Decode and save file
           const content = Buffer.from(fileContent.content, "base64").toString("utf-8");
           const localFilePath = path.join(syncedRepoPath, file.path);
+          const baseRepoPath = path.join(getSyncedRepoBaseContentPath(owner, repo), branch);
+          const baseFilePath = path.join(baseRepoPath, file.path);
 
-          // Ensure directory exists
-          const dir = path.dirname(localFilePath);
-          if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
+          // Ensure directories exist
+          [path.dirname(localFilePath), path.dirname(baseFilePath)].forEach(dir => {
+            if (!fs.existsSync(dir)) {
+              fs.mkdirSync(dir, { recursive: true });
+            }
+          });
+
+          // SAFE OVERWRITE LOGIC:
+          // Check if we should overwrite the local working copy.
+          // We only overwrite if:
+          // 1. Local file doesn't exist.
+          // 2. Local file exists AND it matches our CURRENT base version (i.e. it's pristine).
+          let shouldOverwriteLocal = !fs.existsSync(localFilePath);
+          
+          if (!shouldOverwriteLocal && fs.existsSync(baseFilePath)) {
+            const currentLocalContent = fs.readFileSync(localFilePath, "utf-8").replace(/\r\n/g, "\n");
+            const currentBaseContent = fs.readFileSync(baseFilePath, "utf-8").replace(/\r\n/g, "\n");
+            
+            if (currentLocalContent === currentBaseContent) {
+              shouldOverwriteLocal = true;
+            }
           }
 
-          // Write file
-          fs.writeFileSync(localFilePath, content, "utf-8");
+          if (shouldOverwriteLocal) {
+            fs.writeFileSync(localFilePath, content, "utf-8");
+          }
+          
+          // ALWAYS update the base copy so diffs reflect remote HEAD
+          fs.writeFileSync(baseFilePath, content, "utf-8");
           syncedCount++;
 
           console.log(`Synced: ${file.path} (${syncedCount}/${files.length})`);

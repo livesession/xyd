@@ -16,10 +16,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
     disconnect: (repositoryId: number) => ipcRenderer.invoke('repositories:disconnect', repositoryId),
   },
   github: {
+    getBranches: (owner: string, repo: string) =>
+      ipcRenderer.invoke('github:get-branches', owner, repo),
     getTree: (owner: string, repo: string, branch: string) =>
       ipcRenderer.invoke('github:get-tree', owner, repo, branch),
     getFile: (owner: string, repo: string, path: string) =>
       ipcRenderer.invoke('github:get-file', owner, repo, path),
+    getBaseFile: (owner: string, repo: string, path: string, branch: string) =>
+      ipcRenderer.invoke('github:get-base-file', owner, repo, path, branch),
     saveFile: (owner: string, repo: string, path: string, content: string) =>
       ipcRenderer.invoke('github:save-file', owner, repo, path, content),
     getSyncedRepoPath: (owner: string, repo: string) =>
@@ -28,6 +32,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.invoke('github:sync-repository', owner, repo, branch),
     getCommits: (owner: string, repo: string, limit?: number) =>
       ipcRenderer.invoke('github:get-commits', owner, repo, limit),
+    getModifiedFiles: (owner: string, repo: string, branch: string) =>
+      ipcRenderer.invoke('github:get-modified-files', owner, repo, branch),
   },
   editor: {
     compileMarkdown: (markdown: string, fileName: string) =>

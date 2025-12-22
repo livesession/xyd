@@ -13,6 +13,7 @@ import { Editor as PlaceholderEditor } from "./pages/Placeholder"; // Temporary
 import { McpServer } from "./pages/McpServer";
 import { Integrations } from "./pages/Integrations";
 import { Editor } from "./pages/Editor";
+import { Analytics } from "./pages/Analytics";
 
 // Settings Pages
 import { GeneralSettings } from "./pages/settings/GeneralSettings";
@@ -26,7 +27,7 @@ import { ManageOrganizations } from "./pages/settings/ManageOrganizations";
 import { MyAccount } from "./pages/settings/MyAccount";
 
 const analytics = {
-  track() {},
+  track() { },
 };
 
 createRoot(document.getElementById("root")!).render(
@@ -41,14 +42,14 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="/editor" element={<Editor />} />
                 <Route
                   path="/analytics"
-                  element={<PlaceholderEditor name="Analytics" />}
+                  element={<Analytics />}
                 />
                 <Route path="/integrations" element={<Integrations />} />
                 <Route path="/mcp" element={<McpServer />} />
                 <Route path="/settings" element={<SettingsLayout />}>
                   <Route
                     index
-                    element={<Navigate to="/settings/general" replace />}
+                    element={<Navigate to="/settings/github-app" replace />}
                   />
                   <Route path="general" element={<GeneralSettings />} />
                   <Route path="domains" element={<DomainSettings />} />

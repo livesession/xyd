@@ -1,29 +1,59 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { EditorSidebar } from '../components/editor/EditorSidebar';
-import { Globe, PenTool, Code2, FileText, Loader2, ChevronDown, FolderTree, Eye, AlertCircle, Play, Square, Chrome } from 'lucide-react';
+import { Globe, PenTool, Code2, FileText, Loader2, ChevronDown, FolderTree, Square, Navigation, Eye, Play, Chrome } from 'lucide-react';
 import { CodeWorkbench } from '../components/editor/CodeWorkbench';
 import { VisualEditor } from '../components/editor/VisualEditor';
+import { DiffView } from '../components/editor/DiffView';
+import { BrowserPreview } from '../components/editor/BrowserPreview';
 import { useProject } from '../contexts/ProjectContext';
 import { getFileLanguage } from '../utils/githubTreeUtils';
 import { parseFrontmatter } from '../utils/frontmatterUtils';
 
 export function Editor() {
-  const { currentRepository, setCurrentRepository, fileTree, fileContents, setFileContent, loadFileContent, loading, syncing, syncProgress, syncRepository } = useProject();
+  const { currentRepository, setCurrentRepository, fileTree, fileContents, setFileContent, loadFileContent, loading, syncing, syncProgress, syncRepository, modifiedFiles } = useProject();
   const [mode, setMode] = useState<'navigation' | 'files'>('files');
-  const [viewMode, setViewMode] = useState<'editor' | 'code' | 'preview' | 'site'>('code');
-  const [showUpsellModal, setShowUpsellModal] = useState(false);
+  const [viewMode, setViewMode] = useState<'editor' | 'code' | 'render' | 'site' | 'diff'>('code');
+  const [upsellType, setUpsellType] = useState<'editor' | 'navigation' | null>(null);
   const [currentFile, setCurrentFile] = useState<string | null>(null);
   const [fileLoading, setFileLoading] = useState(false);
   const [connectedRepos, setConnectedRepos] = useState<GitHubRepository[]>([]);
   const [showRepoDropdown, setShowRepoDropdown] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [renderUrl, setRenderUrl] = useState<string | null>(null);
+  const [renderLoading, setRenderLoading] = useState(false);
+  const [renderError, setRenderError] = useState<string | null>(null);
   const [serverRunning, setServerRunning] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const handleFileSelect = async (fileName: string) => {
+  // Auto-select first modified file when entering diff mode
+  useEffect(() => {
+    if (viewMode === 'diff' && modifiedFiles.length > 0) {
+      // If no file selected or current file is not modified, pick first modified
+      if (!currentFile || !modifiedFiles.includes(currentFile)) {
+        handleFileSelect(modifiedFiles[0], true);
+      }
+    }
+  }, [viewMode, modifiedFiles]);
+
+  const isMarkdown = useMemo(() => {
+    if (!currentFile) return false;
+    return currentFile.endsWith('.md') || currentFile.endsWith('.mdx');
+  }, [currentFile]);
+
+  const handleFileSelect = async (fileName: string, isAutoSelect: boolean = false) => {
     setCurrentFile(fileName);
+    const isMd = fileName.endsWith('.md') || fileName.endsWith('.mdx');
+
+    if (!isAutoSelect) {
+      // Explicit user selection should take them out of Site view
+      if (viewMode === 'site' || (viewMode === 'render' && !isMd)) {
+        setViewMode('code');
+      }
+    } else {
+      // Background auto-selection should NOT interrupt Site view
+      if (viewMode === 'render' && !isMd) {
+        setViewMode('code');
+      }
+    }
 
     // Load file content if not already loaded
     if (!fileContents[fileName]) {
@@ -67,12 +97,12 @@ export function Editor() {
     if (fileTree.length > 0 && !currentFile) {
       const firstFile = findFirstFile(fileTree);
       if (firstFile) {
-        handleFileSelect(firstFile.name);
+        handleFileSelect(firstFile.name, true);
       }
     }
   }, [fileTree]);
 
-  // Handle preview mode - sync status
+  // Handle render mode - sync status
   useEffect(() => {
     const checkServerStatus = async () => {
       try {
@@ -80,7 +110,7 @@ export function Editor() {
         if (result.success) {
           setServerRunning(result.running);
           if (result.running && result.url) {
-            setPreviewUrl(result.url);
+            setRenderUrl(result.url);
           }
         }
       } catch (error) {
@@ -94,14 +124,14 @@ export function Editor() {
     return () => clearInterval(interval);
   }, []);
 
-  const startPreviewServer = async () => {
+  const startRenderServer = async () => {
     if (!currentRepository) {
-      setPreviewError('No repository selected');
+      setRenderError('No repository selected');
       return false;
     }
 
-    setPreviewLoading(true);
-    setPreviewError(null);
+    setRenderLoading(true);
+    setRenderError(null);
 
     try {
       // Start xyd server with the synced repository
@@ -111,44 +141,45 @@ export function Editor() {
       );
 
       if (result.success && result.url) {
-        setPreviewUrl(result.url);
-        setPreviewError(null);
+        setRenderUrl(result.url);
+        setRenderError(null);
         setServerRunning(true);
         return true;
       } else {
-        setPreviewError(result.error || 'Failed to start preview server');
+        setRenderError(result.error || 'Failed to start render server');
         setServerRunning(false);
         return false;
       }
     } catch (error) {
-      setPreviewError((error as Error).message);
+      setRenderError((error as Error).message);
       setServerRunning(false);
       return false;
     } finally {
-      setPreviewLoading(false);
+      setRenderLoading(false);
     }
   };
 
-  const stopPreviewServer = async () => {
+  const stopRenderServer = async () => {
     try {
       await window.electronAPI.xyd.stopServer();
-      setPreviewUrl(null);
+      setRenderUrl(null);
       setServerRunning(false);
     } catch (error) {
-      console.error('Failed to stop preview server:', error);
+      console.error('Failed to stop render server:', error);
     }
   };
 
   const handleRunToggle = async () => {
     if (serverRunning) {
-      stopPreviewServer();
-      setViewMode('preview');
+      stopRenderServer();
+      setViewMode('render');
     } else {
       // Switch to site view immediately to show status
+      setCurrentFile(null);
       setViewMode('site');
       // First, ensure files are synced from GitHub to local path
       await syncRepository();
-      await startPreviewServer();
+      await startRenderServer();
     }
   };
 
@@ -169,7 +200,7 @@ export function Editor() {
       <div className="h-14 border-b border-gray-200 flex items-center justify-between px-4 bg-white flex-shrink-0 z-10">
         <div className="flex items-center p-1 bg-gray-100 rounded-lg">
           <button
-            onClick={() => setMode('navigation')}
+            onClick={() => setUpsellType('navigation')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${mode === 'navigation' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
           >
             <span className="w-4 h-4 flex items-center justify-center border border-current rounded-[4px]">
@@ -248,7 +279,7 @@ export function Editor() {
 
           <div className="flex items-center p-1 bg-gray-100 rounded-lg">
             <button
-              onClick={() => setShowUpsellModal(true)}
+              onClick={() => setUpsellType('editor')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === 'editor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
             >
               <PenTool className="w-3 h-3" /> Editor
@@ -260,16 +291,26 @@ export function Editor() {
               <Code2 className="w-3 h-3" /> Code
             </button>
             <button
-              onClick={() => setViewMode('preview')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === 'preview' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+              onClick={() => setViewMode('render')}
+              disabled={!isMarkdown}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === 'render'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : isMarkdown
+                  ? 'text-gray-500 hover:text-gray-900'
+                  : 'text-gray-300 cursor-not-allowed'
+                }`}
+              title={!isMarkdown ? "Render mode is only available for Markdown (.md, .mdx) files" : ""}
             >
-              <Eye className="w-3 h-3" /> Preview
+              <Eye className="w-3 h-3" /> Render
             </button>
           </div>
-          {serverRunning && !previewLoading ? (
+          {serverRunning && !renderLoading && !syncing ? (
             <div className="flex items-center p-1 bg-gray-100 rounded-lg">
               <button
-                onClick={() => setViewMode('site')}
+                onClick={() => {
+                  setCurrentFile(null);
+                  setViewMode('site');
+                }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === 'site' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
               >
                 <Chrome className="w-3 h-3" /> Preview
@@ -284,18 +325,18 @@ export function Editor() {
           ) : (
             <button
               onClick={handleRunToggle}
-              disabled={previewLoading}
+              disabled={renderLoading || syncing}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${serverRunning
                 ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                : 'bg-green-600 text-white hover:bg-green-700'
+                : (renderLoading || syncing) ? 'bg-gray-100 text-gray-400' : 'bg-green-600 text-white hover:bg-green-700'
                 }`}
             >
-              {previewLoading ? (
+              {(renderLoading || syncing) ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
               ) : (
                 <Play className="w-3 h-3 fill-current" />
               )}
-              {previewLoading ? (serverRunning ? 'Stopping...' : 'Starting...') : 'Run'}
+              {syncing ? 'Syncing...' : (renderLoading ? (serverRunning ? 'Running...' : 'Starting...') : 'Run')}
             </button>
           )}
           <button className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
@@ -305,7 +346,13 @@ export function Editor() {
       </div>
 
       <div className="flex-1 flex overflow-hidden">
-        <EditorSidebar mode={mode} onFileSelect={handleFileSelect} activeFile={currentFile || undefined} />
+        <EditorSidebar
+          mode={mode}
+          onFileSelect={handleFileSelect}
+          activeFile={currentFile || undefined}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+        />
 
         <div className="flex-1 bg-[#FAFAFA] relative p-4">
           {!currentRepository ? (
@@ -324,6 +371,19 @@ export function Editor() {
             <div className="flex items-center justify-center h-full text-gray-500">
               <Loader2 className="w-6 h-6 animate-spin" />
             </div>
+          ) : viewMode === 'site' ? (
+            <BrowserPreview
+              renderUrl={renderUrl}
+              renderLoading={renderLoading}
+              renderError={renderError}
+              onStartServer={handleRunToggle}
+              onRefresh={() => {
+                if (iframeRef.current) {
+                  iframeRef.current.src = iframeRef.current.src;
+                }
+              }}
+              iframeRef={iframeRef}
+            />
           ) : !currentFile ? (
             <div className="flex items-center justify-center h-full text-gray-500">
               <p>Select a file to start editing</p>
@@ -338,90 +398,47 @@ export function Editor() {
               onChange={handleContentChange}
               language={getFileLanguage(currentFile)}
             />
-          ) : viewMode === 'preview' ? (
+          ) : viewMode === 'render' ? (
             <VisualEditor
               content={parsedContent.content}
               fileName={currentFile}
               frontmatter={parsedContent.frontmatter}
               onChange={handleContentChange}
             />
+          ) : viewMode === 'diff' ? (
+            <DiffView fileName={currentFile} />
           ) : (
-            <div className="h-full w-full border border-gray-200 rounded-lg overflow-hidden bg-white flex flex-col">
-              {previewLoading ? (
-                <div className="flex items-center justify-center h-full">
-                  <div className="text-center">
-                    <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-                    <p className="text-sm text-gray-600">Starting xyd preview server...</p>
-                  </div>
-                </div>
-              ) : previewError ? (
-                <div className="flex items-center justify-center h-full">
-                  <div className="text-center max-w-md px-4">
-                    <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
-                    <h3 className="text-lg font-semibold mb-2 text-gray-900">Preview Error</h3>
-                    <p className="text-sm text-gray-600 mb-4">{previewError}</p>
-                    <button
-                      onClick={startPreviewServer}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
-                    >
-                      Retry
-                    </button>
-                  </div>
-                </div>
-              ) : previewUrl ? (
-                <iframe
-                  ref={iframeRef}
-                  src={previewUrl}
-                  className="w-full h-full border-0"
-                  title="XYD Preview"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <div className="text-center max-w-md px-4">
-                    <Play className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                    <h3 className="text-lg font-semibold mb-2 text-gray-900">Server Not Running</h3>
-                    <p className="text-sm text-gray-600 mb-4">Click the "Run" button in the top bar to start the xyd server and view the local site.</p>
-                    <button
-                      onClick={handleRunToggle}
-                      disabled={previewLoading}
-                      className="px-6 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex items-center gap-2 mx-auto"
-                    >
-                      {previewLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
-                      Start Server
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+            null
           )}
         </div>
       </div>
 
       {/* Upsell Modal */}
-      {showUpsellModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden border border-gray-100">
+      {upsellType && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setUpsellType(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden border border-gray-100"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-8 text-center">
               <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6 text-blue-600">
-                <PenTool className="w-8 h-8" />
+                {upsellType === 'editor' ? <PenTool className="w-8 h-8" /> : <Navigation className="w-8 h-8" />}
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Editor Mode is Coming Soon!</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Feature Coming Soon!</h3>
               <p className="text-gray-600 mb-8">
-                We're building an advanced AI-powered editor that will revolutionize how you work with your files.
-                Want to be the first to know when it's ready?
+                {upsellType === 'editor'
+                  ? "We're building an advanced AI-powered editor that will revolutionize how you work with your files."
+                  : "We're working on a visual navigation builder to help you organize your documentation structure with ease."}
               </p>
               <div className="space-y-3">
                 <button
-                  onClick={() => setShowUpsellModal(false)}
+                  onClick={() => setUpsellType(null)}
                   className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
                 >
-                  Join the Waitlist
-                </button>
-                <button
-                  onClick={() => setShowUpsellModal(false)}
-                  className="w-full py-3 bg-gray-50 text-gray-600 rounded-xl font-medium hover:bg-gray-100 transition-colors"
-                >
-                  Maybe Later
+                  Close
                 </button>
               </div>
             </div>

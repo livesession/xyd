@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LayoutDashboard, FileEdit, BarChart2, Plug, Server, Settings, HelpCircle, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, FileEdit, BarChart2, Plug, Server, Settings, HelpCircle, MessageSquare } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const navItems = [
@@ -24,7 +24,7 @@ export function DashboardLayout() {
       >
         <div>
           {/* Logo/Header */}
-          <div className={`flex items-center gap-3 mb-8 ${isCollapsed ? 'justify-center px-0' : 'px-3'}`}>
+          <div className={`hidden flex items-center gap-3 mb-8 ${isCollapsed ? 'justify-center px-0' : 'px-3'}`}>
             {!isCollapsed ? (
               <>
                 <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center text-white font-bold text-xs">
@@ -49,7 +49,9 @@ export function DashboardLayout() {
           {/* Navigation */}
           <nav className="space-y-0.5">
             {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
+              const isActive = item.path === '/'
+                ? location.pathname === '/'
+                : location.pathname.startsWith(item.path);
               return (
                 <Link
                   key={item.path}
@@ -70,7 +72,7 @@ export function DashboardLayout() {
         </div>
 
         {/* Bottom Section */}
-        <div className="space-y-4">
+        <div className="space-y-4 hidden">
           {!isCollapsed ? (
             <>
               <div className="space-y-0.5">

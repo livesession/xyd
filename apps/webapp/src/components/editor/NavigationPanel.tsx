@@ -13,7 +13,7 @@ const iconMap = {
 };
 
 interface NavigationPanelProps {
-    onFileSelect?: (fileName: string) => void;
+    onFileSelect?: (fileName: string, isAutoSelect?: boolean) => void;
     activeFile?: string;
 }
 
