@@ -21,6 +21,8 @@ interface ProjectContextType {
   refreshRepository: () => Promise<void>;
   syncRepository: () => Promise<void>;
   loadFileContent: (path: string) => Promise<string | null>;
+  isPublishing: boolean;
+  publishChanges: (message: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -37,6 +39,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [syncing, setSyncing] = useState(false);
   const [syncProgress, setSyncProgress] = useState<string | null>(null);
   const [remoteModifiedFiles, setRemoteModifiedFiles] = useState<string[]>([]);
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const modifiedFiles = useMemo(() => {
     const allModifiedPaths = new Set<string>(remoteModifiedFiles);
@@ -173,7 +176,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       );
 
       // Fetch base content for diffing (persistent git diff)
-      if (!originalContents[path]) {
+      if (originalContents[path] === undefined) {
         window.electronAPI.github.getBaseFile(
           currentRepository.owner.login,
           currentRepository.name,
@@ -183,11 +186,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
           if (baseResult.success && baseResult.content !== undefined) {
             setOriginalContents(prev => ({ ...prev, [path]: baseResult.content! }));
           } else {
-            // CRITICAL: If metadata fetch fails, assume no changes instead of empty file
-            // This prevents the "entire file added" bug
-            if (result.success && result.content !== undefined) {
-              setOriginalContents(prev => ({ ...prev, [path]: result.content! }));
-            }
+            // If getBaseFile fails, it's likely a NEW file.
+            // We should treat its original content as empty so it shows as an addition.
+            setOriginalContents(prev => ({ ...prev, [path]: '' }));
           }
         });
       }
@@ -222,8 +223,40 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const publishChanges = async (message: string) => {
+    if (!currentRepository || !currentBranch) return { success: false, error: 'No repository selected' };
+
+    setIsPublishing(true);
+    try {
+      const result = await window.electronAPI.github.publishChanges(
+        currentRepository.owner.login,
+        currentRepository.name,
+        currentBranch,
+        message
+      );
+
+      if (result.success) {
+        // Sync to update base files and clear modified state
+        await syncRepository();
+        return { success: true };
+      } else {
+        return { success: false, error: result.error };
+      }
+    } catch (err) {
+      return { success: false, error: (err as Error).message };
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
   useEffect(() => {
     if (currentRepository) {
+      // Reset caches when switching repositories to avoid showing stale files/settings
+      setFileTree([]);
+      setFileContents({});
+      setOriginalContents({});
+      setRemoteModifiedFiles([]);
+      setBranches([]);
       setCurrentBranch(currentRepository.default_branch);
       fetchBranches();
     } else {
@@ -277,6 +310,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         refreshRepository,
         syncRepository,
         loadFileContent,
+        isPublishing,
+        publishChanges,
       }}
     >
       {children}

@@ -9,14 +9,16 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 
 const config: ForgeConfig = {
   packagerConfig: {
+    name: "xyd",
     asar: true,
+    icon: 'assets/logo', // Electron Forge will resolve to .icns for macOS and .ico for Windows if available
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({}, ['win32']),
     new MakerZIP({}, ['darwin']),
-    new MakerRpm({}),
-    new MakerDeb({}),
+    new MakerRpm({}, ['linux']),
+    new MakerDeb({}, ['linux']),
   ],
   plugins: [
     new VitePlugin({

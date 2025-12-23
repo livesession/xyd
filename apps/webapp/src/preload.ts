@@ -34,6 +34,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.invoke('github:get-commits', owner, repo, limit),
     getModifiedFiles: (owner: string, repo: string, branch: string) =>
       ipcRenderer.invoke('github:get-modified-files', owner, repo, branch),
+    publishChanges: (owner: string, repo: string, branch: string, message: string) =>
+      ipcRenderer.invoke('github:publish-changes', owner, repo, branch, message),
   },
   editor: {
     compileMarkdown: (markdown: string, fileName: string) =>

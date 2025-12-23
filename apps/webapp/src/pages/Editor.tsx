@@ -10,7 +10,7 @@ import { getFileLanguage } from '../utils/githubTreeUtils';
 import { parseFrontmatter } from '../utils/frontmatterUtils';
 
 export function Editor() {
-  const { currentRepository, setCurrentRepository, fileTree, fileContents, setFileContent, loadFileContent, loading, syncing, syncProgress, syncRepository, modifiedFiles } = useProject();
+  const { currentRepository, setCurrentRepository, fileTree, fileContents, setFileContent, loadFileContent, loading, syncing, syncProgress, syncRepository, modifiedFiles, isPublishing, publishChanges } = useProject();
   const [mode, setMode] = useState<'navigation' | 'files'>('files');
   const [viewMode, setViewMode] = useState<'editor' | 'code' | 'render' | 'site' | 'diff'>('code');
   const [upsellType, setUpsellType] = useState<'editor' | 'navigation' | null>(null);
@@ -22,6 +22,8 @@ export function Editor() {
   const [renderLoading, setRenderLoading] = useState(false);
   const [renderError, setRenderError] = useState<string | null>(null);
   const [serverRunning, setServerRunning] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [commitMessage, setCommitMessage] = useState("Update content via XYD Editor");
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Auto-select first modified file when entering diff mode
@@ -106,23 +108,32 @@ export function Editor() {
   useEffect(() => {
     const checkServerStatus = async () => {
       try {
-        const result = await window.electronAPI.xyd.getServerStatus();
-        if (result.success) {
-          setServerRunning(result.running);
-          if (result.running && result.url) {
-            setRenderUrl(result.url);
-          }
+      const result = await window.electronAPI.xyd.getServerStatus();
+      if (result.success) {
+        const matchesCurrent =
+          result.owner &&
+          result.repo &&
+          currentRepository &&
+          result.owner === currentRepository.owner.login &&
+          result.repo === currentRepository.name;
+        const runningForCurrent = result.running && matchesCurrent;
+        setServerRunning(runningForCurrent);
+        if (runningForCurrent && result.url) {
+          setRenderUrl(result.url);
+        } else if (!runningForCurrent) {
+          setRenderUrl(null);
         }
-      } catch (error) {
-        console.error('Failed to check server status:', error);
       }
-    };
-    checkServerStatus();
+    } catch (error) {
+      console.error('Failed to check server status:', error);
+    }
+  };
+  checkServerStatus();
 
     // Poll status occasionally? Or just trust the toggle.
     const interval = setInterval(checkServerStatus, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [currentRepository]);
 
   const startRenderServer = async () => {
     if (!currentRepository) {
@@ -180,6 +191,26 @@ export function Editor() {
       // First, ensure files are synced from GitHub to local path
       await syncRepository();
       await startRenderServer();
+    }
+  };
+
+  const handlePublishClick = () => {
+    setShowPublishModal(true);
+  };
+
+  const confirmPublish = async () => {
+    if (!commitMessage.trim()) return;
+
+    // Close modal immediately to show loading state on button
+    setShowPublishModal(false);
+
+    const result = await publishChanges(commitMessage);
+    if (result.success) {
+      // Optional: Toast logic here? For now, we rely on the button state returning to normal
+      // or we can add a temporary success banner.
+      console.log("Published successfully");
+    } else {
+      alert(`Failed to publish: ${result.error}`);
     }
   };
 
@@ -339,8 +370,16 @@ export function Editor() {
               {syncing ? 'Syncing...' : (renderLoading ? (serverRunning ? 'Running...' : 'Starting...') : 'Run')}
             </button>
           )}
-          <button className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-            <Globe className="w-3 h-3" /> Publish
+          <button
+            onClick={handlePublishClick}
+            disabled={isPublishing || modifiedFiles.length === 0}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${isPublishing || modifiedFiles.length === 0
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-black hover:bg-gray-800 text-white'
+              }`}
+          >
+            {isPublishing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Globe className="w-3 h-3" />}
+            {isPublishing ? 'Publishing...' : 'Publish'}
           </button>
         </div>
       </div>
@@ -441,6 +480,52 @@ export function Editor() {
                   Close
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Publish Modal */}
+      {showPublishModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setShowPublishModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden border border-gray-100 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Globe className="w-5 h-5" /> Publish to GitHub
+            </h3>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Commit Message
+              </label>
+              <textarea
+                value={commitMessage}
+                onChange={(e) => setCommitMessage(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[80px] text-sm"
+                placeholder="Describe your changes..."
+                autoFocus
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowPublishModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmPublish}
+                disabled={!commitMessage.trim()}
+                className="px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                Publish Changes
+              </button>
             </div>
           </div>
         </div>

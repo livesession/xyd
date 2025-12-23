@@ -1,0 +1,72 @@
+name: Build Electron App
+
+on:
+  push:
+    branches:
+      - master
+      - feat/webapp2
+    paths:
+      - 'apps/webapp/**'
+      - '.github/workflows/electron-build.yml'
+  pull_request:
+    paths:
+      - 'apps/webapp/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        working-directory: apps/webapp
+        run: bun install --frozen-lockfile
+
+      - name: Build Electron app
+        working-directory: apps/webapp
+        run: bun run make
+        env:
+          NODE_ENV: production
+
+      - name: Upload artifacts (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xyd-macos
+          path: |
+            apps/webapp/out/make/**/*.dmg
+            apps/webapp/out/make/**/*.zip
+          if-no-files-found: warn
+
+      - name: Upload artifacts (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xyd-linux
+          path: |
+            apps/webapp/out/make/**/*.deb
+            apps/webapp/out/make/**/*.rpm
+          if-no-files-found: warn
+
+      - name: Upload artifacts (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xyd-windows
+          path: |
+            apps/webapp/out/make/**/*.exe
+            apps/webapp/out/make/**/*.msi
+          if-no-files-found: warn

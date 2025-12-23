@@ -1,7 +1,7 @@
 {
   "name": "@xyd-js/desktop-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.0-prealpha.1",
   "type": "module",
   "main": ".vite/build/main.js",
   "scripts": {
@@ -68,6 +68,8 @@
     "@xyd-js/components": "0.0.0-build-8a0317f-20251214165542",
     "@xyd-js/themes": "0.0.0-build-8a0317f-20251214165542",
     "electron-squirrel-startup": "^1.0.1",
+    "fix-path": "^5.0.0",
+    "ignore": "^7.0.5",
     "lucide-react": "^0.561.0",
     "marked": "^17.0.1",
     "openux-js": "0.0.0-pre.1",

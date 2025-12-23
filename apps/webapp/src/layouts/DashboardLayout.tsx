@@ -19,7 +19,7 @@ export function DashboardLayout() {
     <div className="flex h-screen bg-white font-sans text-gray-900">
       {/* Sidebar */}
       <aside
-        className={`border-r border-gray-100 flex flex-col justify-between py-6 bg-[#fbfbfb]/50 relative transition-all duration-300 ${isCollapsed ? 'w-15 px-2' : 'w-64 px-4'
+        className={`border-r border-gray-100 flex flex-col justify-between py-12 bg-[#fbfbfb]/50 relative transition-all duration-300 ${isCollapsed ? 'w-15 px-2' : 'w-64 px-4'
           }`}
       >
         <div>

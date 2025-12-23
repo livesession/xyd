@@ -1,38 +1,73 @@
 import { app, screen, BrowserWindow, ipcMain, safeStorage } from "electron";
-import path, { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import started from "electron-squirrel-startup";
+import path from "node:path";
 import fs from "node:fs";
-import {ReactContent, stdContent} from "@xyd-js/components/content"
-import {Heading} from "@xyd-js/components/writer"
-import {CodeSample} from "@xyd-js/components/coder"
+import crypto from "node:crypto";
 import { spawn, ChildProcess } from "node:child_process";
+import ignore from "ignore";
+import fixPath from "fix-path";
 
 // ES module equivalent of __dirname
+import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { markdownPlugins } from "@xyd-js/content/md";
 import { ContentFS } from "@xyd-js/content";
-import React from "react";
-import ReactDOMServer from "react-dom/server";
+import type { Ignore } from "ignore";
+
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
+import started from "electron-squirrel-startup";
 if (started) {
   app.quit();
 }
 
-const contentComponents = stdContent.call(new ReactContent());
+// Fix the PATH for production builds on macOS to find 'bun' and other tools
+fixPath();
 
 // XYD dev server management
 let xydServerProcess: ChildProcess | null = null;
 let xydServerPort: number | null = null;
+let xydServerRepo: { owner: string; repo: string } | null = null;
 
 // Path to store encrypted token and connected repositories
 const TOKEN_FILE_PATH = path.join(app.getPath("userData"), "github-token.enc");
+const FALLBACK_TOKEN_FILE_PATH = path.join(app.getPath("userData"), "github-token.aes");
+const FALLBACK_KEY_FILE_PATH = path.join(app.getPath("userData"), "xyd.key");
 const REPOSITORIES_FILE_PATH = path.join(
   app.getPath("userData"),
   "connected-repositories.json"
 );
+const IGNORE_NAMES = [".git", "node_modules", ".DS_Store", ".xyd", ".vite", ".next", ".cache", "__pycache__"];
+
+// Helper to get or create a persistent encryption key for fallback
+function getFallbackKey(): Buffer {
+  if (!fs.existsSync(FALLBACK_KEY_FILE_PATH)) {
+    const key = crypto.randomBytes(32);
+    fs.writeFileSync(FALLBACK_KEY_FILE_PATH, key);
+    return key;
+  }
+  return fs.readFileSync(FALLBACK_KEY_FILE_PATH);
+}
+
+function encryptFallback(text: string): Buffer {
+  const key = getFallbackKey();
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
+  const encrypted = Buffer.concat([cipher.update(text, "utf8"), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  // Return IV + TAG + DATA
+  return Buffer.concat([iv, tag, encrypted]);
+}
+
+function decryptFallback(buffer: Buffer): string {
+  const key = getFallbackKey();
+  const iv = buffer.subarray(0, 12);
+  const tag = buffer.subarray(12, 28);
+  const data = buffer.subarray(28);
+  const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
+  decipher.setAuthTag(tag);
+  return decipher.update(data) + decipher.final("utf8");
+}
 
 // Function to get synced repository path for a given repository
 function getSyncedRepoPath(owner: string, repoName: string): string {
@@ -59,15 +94,69 @@ function getSyncedRepoBaseContentPath(owner: string, repo: string): string {
   return baseRepoPath;
 }
 
+// Shared ignore builder (local names + .gitignore)
+function buildIgnoreMatcher(root: string): Ignore {
+  const ig = ignore();
+  const gitignorePath = path.join(root, ".gitignore");
+  if (fs.existsSync(gitignorePath)) {
+    try {
+      ig.add(fs.readFileSync(gitignorePath, "utf-8"));
+    } catch (e) {
+      console.error("Failed to parse .gitignore:", e);
+    }
+  }
+  // Ensure always ignoring base names
+  ig.add(IGNORE_NAMES.map((name) => name + "/**"));
+  return ig;
+}
+
+function isIgnoredPath(relativePath: string, ig: Ignore): boolean {
+  const normalized = relativePath.split(path.sep).join("/");
+  if (IGNORE_NAMES.some((name) => normalized === name || normalized.startsWith(name + "/"))) return true;
+  if (normalized.split("/").some((part) => IGNORE_NAMES.includes(part))) return true;
+  return ig.ignores(normalized);
+}
+
+// ...
+
+// IPC handlers for GitHub token management
+// Helper to get the GitHub token, trying safeStorage first, then fallback.
+function getGitHubToken(): string | null {
+  try {
+    // Check safeStorage first
+    if (fs.existsSync(TOKEN_FILE_PATH)) {
+      if (safeStorage.isEncryptionAvailable()) {
+        const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
+        return safeStorage.decryptString(encryptedToken);
+      }
+    }
+
+    // Check fallback next
+    if (fs.existsSync(FALLBACK_TOKEN_FILE_PATH)) {
+      const encrypted = fs.readFileSync(FALLBACK_TOKEN_FILE_PATH);
+      return decryptFallback(encrypted);
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error retrieving GitHub token:", error);
+    return null;
+  }
+}
+
 // IPC handlers for GitHub token management
 ipcMain.handle("github-token:save", async (_event, token: string) => {
   try {
-    if (!safeStorage.isEncryptionAvailable()) {
-      throw new Error("Encryption is not available on this system");
+    if (safeStorage.isEncryptionAvailable()) {
+      const encryptedToken = safeStorage.encryptString(token);
+      fs.writeFileSync(TOKEN_FILE_PATH, encryptedToken);
+      if (fs.existsSync(FALLBACK_TOKEN_FILE_PATH)) fs.unlinkSync(FALLBACK_TOKEN_FILE_PATH);
+    } else {
+      console.warn("safeStorage not available, using AES fallback");
+      const encrypted = encryptFallback(token);
+      fs.writeFileSync(FALLBACK_TOKEN_FILE_PATH, encrypted);
+      if (fs.existsSync(TOKEN_FILE_PATH)) fs.unlinkSync(TOKEN_FILE_PATH);
     }
-
-    const encryptedToken = safeStorage.encryptString(token);
-    fs.writeFileSync(TOKEN_FILE_PATH, encryptedToken);
     return { success: true };
   } catch (error) {
     console.error("Failed to save GitHub token:", error);
@@ -76,29 +165,14 @@ ipcMain.handle("github-token:save", async (_event, token: string) => {
 });
 
 ipcMain.handle("github-token:get", async () => {
-  try {
-    if (!fs.existsSync(TOKEN_FILE_PATH)) {
-      return { success: true, token: null };
-    }
-
-    if (!safeStorage.isEncryptionAvailable()) {
-      throw new Error("Encryption is not available on this system");
-    }
-
-    const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
-    const token = safeStorage.decryptString(encryptedToken);
-    return { success: true, token };
-  } catch (error) {
-    console.error("Failed to retrieve GitHub token:", error);
-    return { success: false, error: (error as Error).message };
-  }
+  const token = getGitHubToken();
+  return { success: true, token };
 });
 
 ipcMain.handle("github-token:delete", async () => {
   try {
-    if (fs.existsSync(TOKEN_FILE_PATH)) {
-      fs.unlinkSync(TOKEN_FILE_PATH);
-    }
+    if (fs.existsSync(TOKEN_FILE_PATH)) fs.unlinkSync(TOKEN_FILE_PATH);
+    if (fs.existsSync(FALLBACK_TOKEN_FILE_PATH)) fs.unlinkSync(FALLBACK_TOKEN_FILE_PATH);
     return { success: true };
   } catch (error) {
     console.error("Failed to delete GitHub token:", error);
@@ -173,53 +247,67 @@ ipcMain.handle(
   }
 );
 
+/**
+ * Generalized GitHub API request helper.
+ */
+async function githubRequest(options: {
+  path: string;
+  method?: string;
+  body?: any;
+}): Promise<any> {
+  const token = getGitHubToken();
+  if (!token) {
+    throw new Error("No GitHub token configured");
+  }
+
+  const https = await import("https");
+  return new Promise((resolve, reject) => {
+    const requestOptions = {
+      hostname: "api.github.com",
+      path: options.path,
+      method: options.method || "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github.v3+json",
+        "User-Agent": "Electron-App",
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+      },
+    };
+
+    const req = https.request(requestOptions, (res) => {
+      let data = "";
+      res.on("data", (chunk) => { data += chunk; });
+      res.on("end", () => {
+        try {
+          if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(data ? JSON.parse(data) : { success: true });
+          } else {
+            const error = data ? JSON.parse(data).message : `HTTP ${res.statusCode}`;
+            reject(new Error(error));
+          }
+        } catch (e) {
+          reject(new Error("Failed to parse GitHub API response"));
+        }
+      });
+    });
+
+    req.on("error", (error) => reject(error));
+    if (options.body) req.write(JSON.stringify(options.body));
+    req.end();
+  });
+}
+
 // IPC handlers for GitHub API operations
 ipcMain.handle(
   "github:get-branches",
   async (_event, owner: string, repo: string) => {
     try {
-      if (!fs.existsSync(TOKEN_FILE_PATH)) {
-        return { success: false, error: "No GitHub token configured" };
-      }
-      const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
-      const token = safeStorage.decryptString(encryptedToken);
-
-      const https = await import("https");
-      return new Promise((resolve) => {
-        const options = {
-          hostname: "api.github.com",
-          path: `/repos/${owner}/${repo}/branches`,
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/vnd.github.v3+json",
-            "User-Agent": "Electron-App",
-          },
-        };
-
-        const req = https.request(options, (res) => {
-          let data = "";
-          res.on("data", (chunk) => { data += chunk; });
-          res.on("end", () => {
-            try {
-              if (res.statusCode === 200) {
-                const branches = JSON.parse(data);
-                resolve({ success: true, branches: branches.map((b: any) => b.name) });
-              } else {
-                resolve({ success: false, error: JSON.parse(data).message || "Failed to fetch branches" });
-              }
-            } catch (e) {
-              resolve({ success: false, error: "Failed to parse branches response" });
-            }
-          });
-        });
-
-        req.on("error", (error) => {
-          resolve({ success: false, error: error.message });
-        });
-        req.end();
+      const branches: any[] = await githubRequest({
+        path: `/repos/${owner}/${repo}/branches`,
       });
+      return { success: true, branches: branches.map((b: any) => b.name) };
     } catch (error) {
+      console.error("Failed to fetch branches:", error);
       return { success: false, error: (error as Error).message };
     }
   }
@@ -229,58 +317,10 @@ ipcMain.handle(
   "github:get-tree",
   async (_event, owner: string, repo: string, branch: string) => {
     try {
-      // Get the stored token
-      if (!fs.existsSync(TOKEN_FILE_PATH)) {
-        return { success: false, error: "No GitHub token configured" };
-      }
-
-      if (!safeStorage.isEncryptionAvailable()) {
-        return { success: false, error: "Encryption is not available" };
-      }
-
-      const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
-      const token = safeStorage.decryptString(encryptedToken);
-
-      // Fetch repository tree from GitHub API
-      const https = await import("https");
-
-      return new Promise((resolve) => {
-        const options = {
-          hostname: "api.github.com",
-          path: `/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/vnd.github.v3+json",
-            "User-Agent": "Electron-App",
-          },
-        };
-
-        const req = https.request(options, (res) => {
-          let data = "";
-
-          res.on("data", (chunk) => {
-            data += chunk;
-          });
-
-          res.on("end", () => {
-            if (res.statusCode === 200) {
-              resolve({ success: true, data: JSON.parse(data) });
-            } else {
-              resolve({
-                success: false,
-                error: `GitHub API error: ${res.statusCode}`,
-              });
-            }
-          });
-        });
-
-        req.on("error", (error) => {
-          resolve({ success: false, error: error.message });
-        });
-
-        req.end();
+      const data = await githubRequest({
+        path: `/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
       });
+      return { success: true, data };
     } catch (error) {
       console.error("Failed to fetch repository tree:", error);
       return { success: false, error: (error as Error).message };
@@ -301,71 +341,22 @@ ipcMain.handle(
         return { success: true, content, fromLocal: true };
       }
 
-      // Get the stored token
-      if (!fs.existsSync(TOKEN_FILE_PATH)) {
-        return { success: false, error: "No GitHub token configured" };
-      }
-
-      if (!safeStorage.isEncryptionAvailable()) {
-        return { success: false, error: "Encryption is not available" };
-      }
-
-      const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
-      const token = safeStorage.decryptString(encryptedToken);
-
       // Fetch file content from GitHub API
-      const https = await import("https");
-
-      return new Promise((resolve) => {
-        const options = {
-          hostname: "api.github.com",
-          path: `/repos/${owner}/${repo}/contents/${filePath}`,
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/vnd.github.v3+json",
-            "User-Agent": "Electron-App",
-          },
-        };
-
-        const req = https.request(options, (res) => {
-          let data = "";
-
-          res.on("data", (chunk) => {
-            data += chunk;
-          });
-
-          res.on("end", () => {
-            if (res.statusCode === 200) {
-              const fileData = JSON.parse(data);
-              // Decode base64 content
-              const content = Buffer.from(fileData.content, "base64").toString(
-                "utf-8"
-              );
-
-              // Save to local synced storage
-              const dir = path.dirname(localFilePath);
-              if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
-              }
-              fs.writeFileSync(localFilePath, content, "utf-8");
-
-              resolve({ success: true, content, fromLocal: false });
-            } else {
-              resolve({
-                success: false,
-                error: `GitHub API error: ${res.statusCode}`,
-              });
-            }
-          });
-        });
-
-        req.on("error", (error) => {
-          resolve({ success: false, error: error.message });
-        });
-
-        req.end();
+      const fileData: any = await githubRequest({
+        path: `/repos/${owner}/${repo}/contents/${filePath}`,
       });
+
+      // Decode base64 content
+      const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+
+      // Save to local synced storage
+      const dir = path.dirname(localFilePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(localFilePath, content, "utf-8");
+
+      return { success: true, content, fromLocal: false };
     } catch (error) {
       console.error("Failed to fetch file:", error);
       return { success: false, error: (error as Error).message };
@@ -379,12 +370,10 @@ ipcMain.handle(
   async (_event, owner: string, repo: string, filePath: string, branch: string) => {
     try {
       if (!owner || !repo || !filePath || !branch) {
-        console.error("Missing required arguments for get-base-file:", { owner, repo, filePath, branch });
         return { success: false, error: "Missing required arguments" };
       }
 
       const baseRepoPath = getSyncedRepoBaseContentPath(owner, repo);
-      // We store base files in a branch-specific subfolder to allow switching branches
       const baseFilePath = path.join(baseRepoPath, branch, filePath);
 
       // If we have it cached locally in the base path, return it
@@ -394,52 +383,20 @@ ipcMain.handle(
       }
 
       // Otherwise, fetch from GitHub API
-      if (!fs.existsSync(TOKEN_FILE_PATH)) {
-        return { success: false, error: "No GitHub token configured" };
-      }
-
-      const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
-      const token = safeStorage.decryptString(encryptedToken);
-
-      const https = await import("https");
-
-      return new Promise((resolve) => {
-        const options = {
-          hostname: "api.github.com",
-          path: `/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`,
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/vnd.github.v3+json",
-            "User-Agent": "Electron-App",
-          },
-        };
-
-        const req = https.request(options, (res) => {
-          let data = "";
-          res.on("data", (chunk) => { data += chunk; });
-          res.on("end", () => {
-            if (res.statusCode === 200) {
-              const fileData = JSON.parse(data);
-              const content = Buffer.from(fileData.content, "base64").toString("utf-8");
-
-              // Cache in the base path
-              const dir = path.dirname(baseFilePath);
-              if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
-              }
-              fs.writeFileSync(baseFilePath, content, "utf-8");
-
-              resolve({ success: true, content });
-            } else {
-              resolve({ success: false, error: `GitHub API error: ${res.statusCode}` });
-            }
-          });
-        });
-
-        req.on("error", (error) => { resolve({ success: false, error: error.message }); });
-        req.end();
+      const fileData: any = await githubRequest({
+        path: `/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`,
       });
+
+      const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+
+      // Cache in the base path
+      const dir = path.dirname(baseFilePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(baseFilePath, content, "utf-8");
+
+      return { success: true, content };
     } catch (error) {
       console.error("Failed to fetch base file:", error);
       return { success: false, error: (error as Error).message };
@@ -464,13 +421,13 @@ ipcMain.handle(
       }
 
       const modifiedFiles: string[] = [];
+      const ig = buildIgnoreMatcher(syncedRepoPath);
 
       const scanDirectory = (currentDir: string, relativePath: string = "") => {
         const items = fs.readdirSync(currentDir);
 
         for (const item of items) {
-          // Skip .git and node_modules
-          if (item === ".git" || item === "node_modules") continue;
+          if (isIgnoredPath(itemRelativePath, ig)) continue;
 
           const fullPath = path.join(currentDir, item);
           const itemRelativePath = path.join(relativePath, item);
@@ -484,6 +441,11 @@ ipcMain.handle(
           } else if (stats.isFile()) {
             // If file exists in base, compare them
             if (fs.existsSync(baseFilePath)) {
+              // Only compare if they are likely text files to avoid binary diff issues
+              const ext = path.extname(item).toLowerCase();
+              const binaryExts = ['.png', '.jpg', '.jpeg', '.gif', '.ico', '.pdf', '.zip', '.exe', '.dll', '.so', '.dylib'];
+              if (binaryExts.includes(ext)) continue;
+
               const currentContent = fs.readFileSync(fullPath, "utf-8").replace(/\r\n/g, "\n");
               const baseContent = fs.readFileSync(baseFilePath, "utf-8").replace(/\r\n/g, "\n");
 
@@ -492,7 +454,10 @@ ipcMain.handle(
               }
             } else {
               // If it's a new file not in the base tree, it's modified (added)
-              modifiedFiles.push(normalizedRelativePath);
+              // But only if it's not a common system/hidden file we missed
+              if (!item.startsWith('.')) {
+                modifiedFiles.push(normalizedRelativePath);
+              }
             }
           }
         }
@@ -502,6 +467,154 @@ ipcMain.handle(
       return { success: true, modifiedFiles };
     } catch (error) {
       console.error("Failed to get modified files:", error);
+      return { success: false, error: (error as Error).message };
+    }
+  }
+);
+
+// IPC handler for publishing changes (commit & push)
+ipcMain.handle(
+  "github:publish-changes",
+  async (_event, owner: string, repo: string, branch: string, message: string) => {
+    try {
+      if (!owner || !repo || !branch || !message) {
+        return { success: false, error: "Missing required arguments" };
+      }
+
+      const syncedRepoPath = getSyncedRepoPath(owner, repo);
+      const ig = buildIgnoreMatcher(syncedRepoPath);
+
+      // 1. Identify modified files
+      // We'll reimplement a simplified scan here to get the actual file paths and content references
+      const modifiedFiles: { path: string; fullPath: string }[] = [];
+      const baseRepoPath = path.join(getSyncedRepoBaseContentPath(owner, repo), branch);
+
+      const scanDirectory = (currentDir: string, relativePath: string = "") => {
+        const items = fs.readdirSync(currentDir);
+
+        for (const item of items) {
+          const itemRelativePath = path.join(relativePath, item);
+          const normalizedRelativePath = itemRelativePath.split(path.sep).join("/");
+          if (isIgnoredPath(normalizedRelativePath, ig)) continue;
+
+          const fullPath = path.join(currentDir, item);
+          const stats = fs.statSync(fullPath);
+
+          if (stats.isDirectory()) {
+            scanDirectory(fullPath, itemRelativePath);
+          } else if (stats.isFile()) {
+            const baseFilePath = path.join(baseRepoPath, itemRelativePath);
+            
+            // Check if modified
+            if (fs.existsSync(baseFilePath)) {
+              // Binary check
+              const ext = path.extname(item).toLowerCase();
+              const binaryExts = ['.png', '.jpg', '.jpeg', '.gif', '.ico', '.pdf', '.zip', '.exe', '.dll', '.so', '.dylib'];
+              if (binaryExts.includes(ext)) {
+                continue; 
+              }
+
+              const currentContent = fs.readFileSync(fullPath, "utf-8").replace(/\r\n/g, "\n");
+              const baseContent = fs.readFileSync(baseFilePath, "utf-8").replace(/\r\n/g, "\n");
+              if (currentContent !== baseContent) {
+                modifiedFiles.push({ path: normalizedRelativePath, fullPath });
+              }
+            } else {
+              // New file
+              if (!item.startsWith('.')) {
+                modifiedFiles.push({ path: normalizedRelativePath, fullPath });
+              }
+            }
+          }
+        }
+      };
+
+      if (fs.existsSync(syncedRepoPath)) {
+          scanDirectory(syncedRepoPath);
+      }
+
+      if (modifiedFiles.length === 0) {
+        return { success: true, message: "No changes to publish" };
+      }
+
+      // 2. Get latest commit SHA
+      const refData: any = await githubRequest({
+        path: `/repos/${owner}/${repo}/git/ref/heads/${branch}`,
+      });
+      const latestCommitSha = refData.object.sha;
+
+      // 3. Get base tree SHA
+      const commitData: any = await githubRequest({
+        path: `/repos/${owner}/${repo}/git/commits/${latestCommitSha}`,
+      });
+      const baseTreeSha = commitData.tree.sha;
+
+      // 4. Create blobs for each modified file
+      const treeItems = [];
+      for (const file of modifiedFiles) {
+        const content = fs.readFileSync(file.fullPath, "utf-8");
+        const blobData: any = await githubRequest({
+          method: "POST",
+          path: `/repos/${owner}/${repo}/git/blobs`,
+          body: {
+            content: content,
+            encoding: "utf-8",
+          },
+        });
+        
+        treeItems.push({
+          path: file.path,
+          mode: "100644",
+          type: "blob",
+          sha: blobData.sha,
+        });
+      }
+
+      // 5. Create new tree
+      const newTreeData: any = await githubRequest({
+        method: "POST",
+        path: `/repos/${owner}/${repo}/git/trees`,
+        body: {
+          base_tree: baseTreeSha,
+          tree: treeItems,
+        },
+      });
+      const newTreeSha = newTreeData.sha;
+
+      // 6. Create commit
+      const newCommitData: any = await githubRequest({
+        method: "POST",
+        path: `/repos/${owner}/${repo}/git/commits`,
+        body: {
+          message: message,
+          tree: newTreeSha,
+          parents: [latestCommitSha],
+        },
+      });
+      const newCommitSha = newCommitData.sha;
+
+      // 7. Update ref
+      await githubRequest({
+        method: "PATCH",
+        path: `/repos/${owner}/${repo}/git/refs/heads/${branch}`,
+        body: {
+          sha: newCommitSha,
+        },
+      });
+
+      // Update the base files to match the new state so diffs are cleared
+       for (const file of modifiedFiles) {
+          const content = fs.readFileSync(file.fullPath, "utf-8"); // Raw read (no CRLF logic needed for copy)
+          const baseFilePath = path.join(baseRepoPath, file.path);
+          // Ensure dir
+          const dir = path.dirname(baseFilePath);
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+          fs.writeFileSync(baseFilePath, content, "utf-8");
+       }
+
+      return { success: true, commitSha: newCommitSha };
+    } catch (error) {
+      console.error("Failed to publish changes:", error);
       return { success: false, error: (error as Error).message };
     }
   }
@@ -551,59 +664,15 @@ ipcMain.handle(
   "github:sync-repository",
   async (_event, owner: string, repo: string, branch: string) => {
     try {
-      // Get the stored token
-      if (!fs.existsSync(TOKEN_FILE_PATH)) {
-        return { success: false, error: "No GitHub token configured" };
-      }
-
-      if (!safeStorage.isEncryptionAvailable()) {
-        return { success: false, error: "Encryption is not available" };
-      }
-
-      const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
-      const token = safeStorage.decryptString(encryptedToken);
-
-      const https = await import("https");
-
       // First, get the repository tree
-      const treeData: any = await new Promise((resolve, reject) => {
-        const options = {
-          hostname: "api.github.com",
-          path: `/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/vnd.github.v3+json",
-            "User-Agent": "Electron-App",
-          },
-        };
-
-        const req = https.request(options, (res) => {
-          let data = "";
-
-          res.on("data", (chunk) => {
-            data += chunk;
-          });
-
-          res.on("end", () => {
-            if (res.statusCode === 200) {
-              resolve(JSON.parse(data));
-            } else {
-              reject(new Error(`GitHub API error: ${res.statusCode}`));
-            }
-          });
-        });
-
-        req.on("error", (error) => {
-          reject(error);
-        });
-
-        req.end();
+      const treeData: any = await githubRequest({
+        path: `/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`,
       });
 
       // Filter for blob (file) entries only
       const files = treeData.tree.filter((item: any) => item.type === "blob");
       const syncedRepoPath = getSyncedRepoPath(owner, repo);
+      const ig = buildIgnoreMatcher(syncedRepoPath);
 
       let syncedCount = 0;
       let failedCount = 0;
@@ -611,40 +680,11 @@ ipcMain.handle(
       // Download each file
       for (const file of files) {
         try {
-          // Fetch file content
-          const fileContent: any = await new Promise((resolve, reject) => {
-            const options = {
-              hostname: "api.github.com",
-              path: `/repos/${owner}/${repo}/contents/${file.path}`,
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/vnd.github.v3+json",
-                "User-Agent": "Electron-App",
-              },
-            };
+          if (isIgnoredPath(file.path, ig)) continue;
 
-            const req = https.request(options, (res) => {
-              let data = "";
-
-              res.on("data", (chunk) => {
-                data += chunk;
-              });
-
-              res.on("end", () => {
-                if (res.statusCode === 200) {
-                  resolve(JSON.parse(data));
-                } else {
-                  reject(new Error(`Failed to fetch ${file.path}: ${res.statusCode}`));
-                }
-              });
-            });
-
-            req.on("error", (error) => {
-              reject(error);
-            });
-
-            req.end();
+          // Fetch file content using our helper (this also handles the token/encryption fallback)
+          const fileContent: any = await githubRequest({
+            path: `/repos/${owner}/${repo}/contents/${file.path}?ref=${branch}`,
           });
 
           // Decode and save file
@@ -662,9 +702,6 @@ ipcMain.handle(
 
           // SAFE OVERWRITE LOGIC:
           // Check if we should overwrite the local working copy.
-          // We only overwrite if:
-          // 1. Local file doesn't exist.
-          // 2. Local file exists AND it matches our CURRENT base version (i.e. it's pristine).
           let shouldOverwriteLocal = !fs.existsSync(localFilePath);
           
           if (!shouldOverwriteLocal && fs.existsSync(baseFilePath)) {
@@ -683,8 +720,6 @@ ipcMain.handle(
           // ALWAYS update the base copy so diffs reflect remote HEAD
           fs.writeFileSync(baseFilePath, content, "utf-8");
           syncedCount++;
-
-          console.log(`Synced: ${file.path} (${syncedCount}/${files.length})`);
         } catch (error) {
           console.error(`Failed to sync ${file.path}:`, error);
           failedCount++;
@@ -711,8 +746,10 @@ const createWindow = async () => {
   const mainWindow = new BrowserWindow({
     width,
     height,
-    fullscreen: true,
+    titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 10, y: 10 },
     show: true, // Don't show until ready
+    icon: path.join(__dirname, "../../assets/logo.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
@@ -777,58 +814,10 @@ ipcMain.handle(
   "github:get-commits",
   async (_event, owner: string, repo: string, limit: number = 5) => {
     try {
-      // Get the stored token
-      if (!fs.existsSync(TOKEN_FILE_PATH)) {
-        return { success: false, error: "No GitHub token configured" };
-      }
-
-      if (!safeStorage.isEncryptionAvailable()) {
-        return { success: false, error: "Encryption is not available" };
-      }
-
-      const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
-      const token = safeStorage.decryptString(encryptedToken);
-
-      // Fetch commits from GitHub API
-      const https = await import("https");
-
-      return new Promise((resolve) => {
-        const options = {
-          hostname: "api.github.com",
-          path: `/repos/${owner}/${repo}/commits?per_page=${limit}`,
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/vnd.github.v3+json",
-            "User-Agent": "Electron-App",
-          },
-        };
-
-        const req = https.request(options, (res) => {
-          let data = "";
-
-          res.on("data", (chunk) => {
-            data += chunk;
-          });
-
-          res.on("end", () => {
-            if (res.statusCode === 200) {
-              resolve({ success: true, commits: JSON.parse(data) });
-            } else {
-              resolve({
-                success: false,
-                error: `GitHub API error: ${res.statusCode}`,
-              });
-            }
-          });
-        });
-
-        req.on("error", (error) => {
-          resolve({ success: false, error: error.message });
-        });
-
-        req.end();
+      const commits = await githubRequest({
+        path: `/repos/${owner}/${repo}/commits?per_page=${limit}`,
       });
+      return { success: true, commits };
     } catch (error) {
       console.error("Failed to fetch commits:", error);
       return { success: false, error: (error as Error).message };
@@ -883,17 +872,21 @@ ipcMain.handle(
   async (_event, owner: string, repo: string) => {
     return new Promise((resolve) => {
       try {
-        // Stop existing server if running
+        // Stop existing server if running for a different repo
         if (xydServerProcess) {
           xydServerProcess.kill();
           xydServerProcess = null;
           xydServerPort = null;
+          xydServerRepo = null;
         }
 
         // Get the synced repository path
         const repositoryPath = getSyncedRepoPath(owner, repo);
 
-        console.log("repositoryPath", repositoryPath)
+        console.log("Starting XYD server...");
+        console.log("Repository Path:", repositoryPath);
+        console.log("Current PATH:", process.env.PATH);
+        
         // Start xyd dev server
         // Using bunx to ensure xyd-js is available
         xydServerProcess = spawn("bunx", ["xyd-js"], {
@@ -931,6 +924,8 @@ ipcMain.handle(
               success: true,
               port: xydServerPort,
               url: `http://localhost:${xydServerPort}`,
+              owner,
+              repo,
             });
           } else if (
             (output.includes("ready") || output.includes("started")) && 
@@ -946,6 +941,8 @@ ipcMain.handle(
               success: true,
               port: xydServerPort,
               url: `http://localhost:${xydServerPort}`,
+              owner,
+              repo,
             });
           }
         };
@@ -972,7 +969,10 @@ ipcMain.handle(
           console.log("XYD server exited with code:", code);
           xydServerProcess = null;
           xydServerPort = null;
+          xydServerRepo = null;
         });
+
+        xydServerRepo = { owner, repo };
       } catch (error) {
         console.error("Failed to start XYD server:", error);
         resolve({
@@ -991,6 +991,7 @@ ipcMain.handle("xyd:stop-server", async () => {
       xydServerProcess.kill();
       xydServerProcess = null;
       xydServerPort = null;
+      xydServerRepo = null;
       return { success: true };
     }
     return { success: true, message: "No server running" };
@@ -1007,64 +1008,13 @@ ipcMain.handle("xyd:get-server-status", async () => {
     running: xydServerProcess !== null,
     port: xydServerPort,
     url: xydServerPort ? `http://localhost:${xydServerPort}` : null,
+    owner: xydServerRepo?.owner ?? null,
+    repo: xydServerRepo?.repo ?? null,
   };
 });
 
 
-const createElementWithKeys = (type: any, props: any) => {
-  // Process children to add keys to all elements
-  const processChildren = (childrenArray: any[]): any[] => {
-      return childrenArray.map((child, index) => {
-          // If the child is a React element and doesn't have a key, add one
-          if (React.isValidElement(child) && !child.key) {
-              return React.cloneElement(child, { key: `mdx-${index}` });
-          }
-          // If the child is an array, process it recursively
-          if (Array.isArray(child)) {
-              return processChildren(child);
-          }
-          return child;
-      });
-  };
 
-  // Handle both cases: children as separate args or as props.children
-  let processedChildren;
-
-  if (props && props.children) {
-      if (Array.isArray(props.children)) {
-          processedChildren = processChildren(props.children);
-      } else if (React.isValidElement(props.children) && !props.children.key) {
-          // Single child without key
-          processedChildren = React.cloneElement(props.children, { key: 'mdx-child' });
-      } else {
-          // Single child with key or non-React element
-          processedChildren = props.children;
-      }
-  } else {
-      processedChildren = [];
-  }
-
-  // Create the element with processed children
-  return React.createElement(type, {
-      ...props,
-      children: processedChildren
-  });
-};
-
-
-// TODO: move to content?
-function mdxExport(code: string) {
-  // Create a wrapper around React.createElement that adds keys to elements in lists
-  const scope = {
-      Fragment: React.Fragment,
-      jsxs: createElementWithKeys,
-      jsx: createElementWithKeys,
-      jsxDEV: createElementWithKeys,
-  }
-  const fn = new Function(...Object.keys(scope), code)
-
-  return fn(scope)
-}
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.

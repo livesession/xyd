@@ -53,6 +53,7 @@ interface GitHubAPI {
   syncRepository: (owner: string, repo: string, branch: string) => Promise<{ success: boolean; syncedCount?: number; failedCount?: number; totalFiles?: number; error?: string }>;
   getCommits: (owner: string, repo: string, limit?: number) => Promise<{ success: boolean; commits?: GitHubCommit[]; error?: string }>;
   getModifiedFiles: (owner: string, repo: string, branch: string) => Promise<{ success: boolean; modifiedFiles?: string[]; error?: string }>;
+  publishChanges: (owner: string, repo: string, branch: string, message: string) => Promise<{ success: boolean; commitSha?: string; error?: string }>;
 }
 
 interface EditorAPI {
@@ -60,9 +61,9 @@ interface EditorAPI {
 }
 
 interface XydAPI {
-  startServer: (owner: string, repo: string) => Promise<{ success: boolean; port?: number; url?: string; error?: string }>;
+  startServer: (owner: string, repo: string) => Promise<{ success: boolean; port?: number; url?: string; owner?: string; repo?: string; error?: string }>;
   stopServer: () => Promise<{ success: boolean; message?: string; error?: string }>;
-  getServerStatus: () => Promise<{ success: boolean; running: boolean; port?: number | null; url?: string | null }>;
+  getServerStatus: () => Promise<{ success: boolean; running: boolean; port?: number | null; url?: string | null; owner?: string | null; repo?: string | null }>;
 }
 
 interface ElectronAPI {

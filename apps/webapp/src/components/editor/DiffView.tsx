@@ -17,33 +17,38 @@ export function DiffView({ fileName }: DiffViewProps) {
     const diffFile = useMemo(() => {
         if (!fileName) return null;
 
-        // If we know it's modified but the original content is still loading, 
-        // return a sentinel value to show the loading screen.
-        if (modifiedFiles.includes(fileName) && originalContents[fileName] === undefined) {
-            return 'loading_content';
+        try {
+            // If we know it's modified but the original content is still loading, 
+            // return a sentinel value to show the loading screen.
+            if (modifiedFiles.includes(fileName) && originalContents[fileName] === undefined) {
+                return 'loading_content';
+            }
+
+            const oldContent = (originalContents[fileName] || '').replace(/\r\n/g, '\n');
+            const newContent = (fileContents[fileName] || '').replace(/\r\n/g, '\n');
+
+            // Handle identical contents to prevent library crash (Expected hunk header error)
+            if (oldContent === newContent) {
+                return 'no_changes';
+            }
+
+            const file = generateDiffFile(
+                fileName,
+                oldContent,
+                fileName,
+                newContent,
+                fileName.split('.').pop() || 'markdown',
+                fileName.split('.').pop() || 'markdown'
+            );
+
+            file.initRaw();
+            file.initSyntax();
+
+            return file;
+        } catch (error) {
+            console.error('[DiffView] Failed to generate diff:', error);
+            return 'error_diff';
         }
-
-        const oldContent = (originalContents[fileName] || '').replace(/\r\n/g, '\n');
-        const newContent = (fileContents[fileName] || '').replace(/\r\n/g, '\n');
-
-        // Handle identical contents to prevent library crash (Expected hunk header error)
-        if (oldContent === newContent) {
-            return 'no_changes';
-        }
-
-        const file = generateDiffFile(
-            fileName,
-            oldContent,
-            fileName,
-            newContent,
-            fileName.split('.').pop() || 'markdown',
-            fileName.split('.').pop() || 'markdown'
-        );
-
-        file.initRaw();
-        file.initSyntax();
-
-        return file;
     }, [fileName, fileContents, originalContents, modifiedFiles]);
 
     if (loading || diffFile === 'loading_content') {
@@ -73,6 +78,16 @@ export function DiffView({ fileName }: DiffViewProps) {
                 </div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-900">No changes detected</h3>
                 <p className="text-sm text-gray-500 max-w-xs">The current version matches the repository HEAD. No modifications found.</p>
+            </div>
+        );
+    }
+
+    if (diffFile === 'error_diff') {
+        return (
+            <div className="flex flex-col items-center justify-center h-full text-red-500 p-8 text-center bg-white rounded-xl border border-red-100 shadow-sm">
+                <AlertCircle className="w-12 h-12 mb-4 text-red-300" />
+                <h3 className="text-lg font-medium text-red-900 mb-1">Failed to load diff</h3>
+                <p className="text-sm max-w-xs text-red-500">There was an error generating the diff for this file. It might be a binary file or have an unsupported format.</p>
             </div>
         );
     }

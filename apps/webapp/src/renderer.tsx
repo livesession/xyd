@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { UXNode, UXAnalytics } from "openux-js";
 
 import "./index.css";
@@ -12,6 +12,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { Editor as PlaceholderEditor } from "./pages/Placeholder"; // Temporary
 import { McpServer } from "./pages/McpServer";
 import { Integrations } from "./pages/Integrations";
+import { IntegrationDetail } from "./pages/IntegrationDetail";
 import { Editor } from "./pages/Editor";
 import { Analytics } from "./pages/Analytics";
 
@@ -35,7 +36,7 @@ createRoot(document.getElementById("root")!).render(
     <UXAnalytics analytics={analytics}>
       <StrictMode>
         <ProjectProvider>
-          <BrowserRouter>
+          <HashRouter>
             <Routes>
               <Route element={<DashboardLayout />}>
                 <Route path="/" element={<Dashboard />} />
@@ -45,6 +46,7 @@ createRoot(document.getElementById("root")!).render(
                   element={<Analytics />}
                 />
                 <Route path="/integrations" element={<Integrations />} />
+                <Route path="/integrations/:slug" element={<IntegrationDetail />} />
                 <Route path="/mcp" element={<McpServer />} />
                 <Route path="/settings" element={<SettingsLayout />}>
                   <Route
@@ -85,7 +87,7 @@ createRoot(document.getElementById("root")!).render(
                 />
               </Route>
             </Routes>
-          </BrowserRouter>
+          </HashRouter>
         </ProjectProvider>
       </StrictMode>
     </UXAnalytics>

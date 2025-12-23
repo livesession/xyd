@@ -1,111 +1,207 @@
-import { MessageSquare, BarChart, Check, Plug, Search, MessageCircle, Signal, Rocket, Monitor } from 'lucide-react';
+import {
+    Search,
+    Sparkles,
+    Grid2x2,
+    Bot,
+    BarChart3,
+    MessageCircle,
+    Megaphone,
+    CheckSquare,
+    FileText,
+    Code2,
+    Zap,
+    ShieldCheck,
+    BadgeCheck,
+    Flame,
+    Leaf,
+    ExternalLink,
+} from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { integrationCatalog } from "../data/integrations";
 
-const integrations = [
-    {
-        name: 'LiveSession',
-        icon: Monitor,
-        color: 'text-indigo-600',
-        features: ['Session replay integration', 'Track user friction in docs']
-    },
-    {
-        name: 'Orama',
-        icon: Search,
-        color: 'text-orange-500',
-        features: ['Next-gen semantic search', 'Instant indexing of docs']
-    },
-    {
-        name: 'Algolia',
-        icon: Search,
-        color: 'text-blue-600',
-        features: ['Pro-grade search engine', 'Advanced filtering and facets']
-    },
-    {
-        name: 'Chatwoot',
-        icon: MessageCircle,
-        color: 'text-teal-500',
-        features: ['Open-source customer support', 'Live chat integration']
-    },
-    {
-        name: 'LiveChat',
-        icon: MessageSquare,
-        color: 'text-yellow-500',
-        features: ['Premium messaging support', 'Real-time visitor monitoring']
-    },
-    {
-        name: 'Intercom',
-        icon: MessageSquare,
-        color: 'text-blue-500',
-        features: ['AI-powered customer service', 'Help center synchronization']
-    },
-    {
-        name: 'GrowthBook',
-        icon: BarChart,
-        color: 'text-pink-600',
-        features: ['Feature flagging for docs', 'A/B testing documentation']
-    },
-    {
-        name: 'LaunchDarkly',
-        icon: Rocket,
-        color: 'text-gray-900',
-        features: ['Enterprise feature management', 'Gradual rollout systems']
-    },
-    {
-        name: 'SupaDemo',
-        icon: Signal,
-        color: 'text-orange-600',
-        features: ['Interactive product demos', 'Embed auto-playing guides']
-    }
+const categories = [
+    { id: "all", label: "All", icon: Grid2x2 },
+    { id: "ai", label: "AI", icon: Sparkles },
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
+    { id: "automation", label: "Automation", icon: Bot },
+    { id: "support", label: "Customer Support", icon: MessageCircle },
+    { id: "marketing", label: "Marketing", icon: Megaphone },
+    { id: "productivity", label: "Productivity", icon: CheckSquare },
+    { id: "content", label: "Content", icon: FileText },
+    { id: "dev", label: "Development", icon: Code2 },
+];
+
+const floatingTiles = [
+    { label: "Zapier", accent: "bg-[#ff4f00]", text: "text-white", top: "22%", left: "62%" },
+    { label: "Stripe", accent: "bg-[#635bff]", text: "text-white", top: "10%", left: "72%" },
+    { label: "HubSpot", accent: "bg-white border border-orange-100 text-orange-500", text: "text-orange-500", top: "48%", left: "70%" },
+    { label: "Notion", accent: "bg-[#050505]", text: "text-white", top: "40%", left: "54%" },
+    { label: "Linear", accent: "bg-gradient-to-br from-indigo-400 to-blue-600", text: "text-white", top: "18%", left: "50%" },
+    { label: "Base", accent: "bg-[#e3f5ff]", text: "text-sky-700", top: "52%", left: "46%" },
 ];
 
 export function Integrations() {
-    return (
-        <div className="relative min-h-full">
-            {/* Main Content (Blurred) */}
-            <div className="space-y-8 blur-[4px] pointer-events-none select-none opacity-40">
-                <div>
-                    <h1 className="text-xl font-semibold text-gray-900">Integrations</h1>
-                    <p className="text-sm text-gray-500 mt-1">Automatically keep your help center up to date using changes on external platforms.</p>
-                </div>
+    const [activeCategory, setActiveCategory] = useState<string>("all");
+    const [query, setQuery] = useState<string>("");
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {integrations.map((integration, idx) => (
-                        <div key={idx} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col h-full">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className={`w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center ${integration.color} border border-gray-100`}>
-                                    <integration.icon className="w-5 h-5" />
-                                </div>
-                                <div className="font-semibold text-gray-900 text-sm">{integration.name}</div>
+    const filteredIntegrations = useMemo(() => {
+        const term = query.toLowerCase();
+        return integrationCatalog.filter((integration) => {
+            const matchesCategory = activeCategory === "all" || integration.category === activeCategory;
+            const matchesQuery =
+                integration.name.toLowerCase().includes(term) ||
+                integration.description.toLowerCase().includes(term);
+
+            return matchesCategory && matchesQuery;
+        });
+    }, [activeCategory, query]);
+
+    return (
+        <div className="min-h-screen bg-white text-gray-900">
+            <div className="mx-auto px-22 py-10 space-y-10">
+                <div className="bg-[#f1f4ff] rounded-3xl px-8 md:px-12 py-12 relative overflow-hidden border border-[#e4e8ff]">
+                    <div className="grid md:grid-cols-2 gap-10 items-center">
+                        <div className="space-y-6 relative z-10">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white text-sm rounded-full shadow-sm text-indigo-700 border border-indigo-100">
+                                <Sparkles className="w-4 h-4" />
+                                <span>Integrations</span>
+                            </div>
+                            <div className="space-y-3">
+                                <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1]">
+                                    Supercharge your docs with apps
+                                </h1>
+                                <p className="text-lg text-gray-600">
+                                    Connect powerful tools to keep your help center in sync and automate content workflows.
+                                </p>
                             </div>
 
-                            <ul className="space-y-3 flex-1 mb-6">
-                                {integration.features.map((feature, i) => (
-                                    <li key={i} className="flex gap-2 items-start text-xs text-gray-600 leading-relaxed">
-                                        <Check className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
-                                        <span>{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <div className="w-full bg-gray-50 border border-gray-100 text-gray-400 text-xs font-medium py-2 rounded-lg text-center">
-                                Coming Soon
+                            <div className="relative">
+                                <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                                <input
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    placeholder="Search apps by name or use case"
+                                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-300 transition"
+                                />
                             </div>
                         </div>
-                    ))}
-                </div>
-            </div>
 
-            {/* Coming Soon Overlay */}
-            <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-auto">
-                <div className="bg-white/80 backdrop-blur-md px-10 py-12 rounded-3xl border border-gray-100 shadow-2xl text-center max-w-sm mx-auto transform translate-y-[-20px]">
-                    <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-blue-600 rotate-3 shadow-inner">
-                        <Plug className="w-10 h-10" />
+                        <div className="relative h-[260px] md:h-[320px]">
+                            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/60 via-white/40 to-indigo-100 blur-2xl" />
+                            <div className="relative h-full">
+                                {floatingTiles.map((tile, index) => (
+                                    <div
+                                        key={tile.label}
+                                        className={`absolute px-4 py-3 rounded-2xl font-semibold text-sm shadow-lg shadow-indigo-100 ${tile.accent} ${tile.text}`}
+                                        style={{
+                                            top: tile.top,
+                                            left: tile.left,
+                                            transform: index % 2 === 0 ? "rotate(-6deg)" : "rotate(4deg)",
+                                        }}
+                                    >
+                                        {tile.label}
+                                    </div>
+                                ))}
+                                <div className="absolute -bottom-8 -right-6 w-44 h-44 bg-indigo-200 rounded-full mix-blend-multiply opacity-60 blur-3xl" />
+                                <div className="absolute -top-10 -left-6 w-48 h-48 bg-amber-100 rounded-full mix-blend-multiply opacity-70 blur-3xl" />
+                            </div>
+                        </div>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">Integrations</h2>
-                    <p className="text-gray-500 text-sm mb-8 leading-relaxed">
-                        Connect your favorite tools to automate your documentation workflow. We're currently building our integration ecosystem.
-                    </p>
-                    <div className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-blue-200">
-                        Coming Soon
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8 items-start">
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 sticky top-4">
+                        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">
+                            Categories
+                        </div>
+                        <div className="space-y-2">
+                            {categories.map((category) => (
+                                <button
+                                    key={category.id}
+                                    onClick={() => setActiveCategory(category.id)}
+                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition ${
+                                        activeCategory === category.id
+                                            ? "bg-indigo-50 text-indigo-700 border border-indigo-100"
+                                            : "text-gray-700 hover:bg-gray-50"
+                                    }`}
+                                >
+                                    <category.icon className="w-4 h-4" />
+                                    <span className="flex-1 text-left">{category.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-xs font-semibold uppercase text-gray-500 tracking-wide">
+                                    New & Noteworthy
+                                </p>
+                                <h2 className="text-2xl font-semibold text-gray-900 mt-1">Integrations</h2>
+                            </div>
+                            <div className="text-sm text-gray-500">
+                                Showing <span className="font-semibold text-gray-900">{filteredIntegrations.length}</span> apps
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {filteredIntegrations.map((integration) => (
+                                <Link
+                                    to={`/integrations/${integration.slug}`}
+                                    key={integration.slug}
+                                    className="flex gap-4 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition"
+                                >
+                                    <div
+                                        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${integration.accent} ${integration.text} flex items-center justify-center font-semibold text-base shadow-inner`}
+                                    >
+                                        {integration.initials}
+                                    </div>
+                                    <div className="flex-1 space-y-2">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <p className="font-semibold text-gray-900">{integration.name}</p>
+                                                    {integration.badge === "New" && (
+                                                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                                            <Sparkles className="w-3 h-3" />
+                                                            New
+                                                        </span>
+                                                    )}
+                                                    {integration.badge === "Trending" && (
+                                                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-orange-50 text-orange-700 border border-orange-100">
+                                                            <Flame className="w-3 h-3" />
+                                                            Trending
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                                    {integration.plan && (
+                                                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+                                                            <ShieldCheck className="w-3 h-3" />
+                                                            {integration.plan}
+                                                        </span>
+                                                    )}
+                                                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-50 text-gray-600 border border-gray-200">
+                                                        <Zap className="w-3 h-3" />
+                                                        {integration.installs}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <ExternalLink className="w-4 h-4 text-gray-400" />
+                                        </div>
+                                        <p className="text-sm text-gray-600 leading-relaxed">{integration.description}</p>
+                                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                                            <BadgeCheck className="w-4 h-4 text-gray-400" />
+                                            Works with your workspace
+                                            <Leaf className="w-4 h-4 text-emerald-500" />
+                                            Auto-sync ready
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
