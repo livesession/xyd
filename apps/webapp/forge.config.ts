@@ -21,7 +21,9 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}, ['win32']),
+    new MakerSquirrel({
+      name: 'xyd',
+    }, ['win32']),
     new MakerZIP({}, ['darwin']),
     new MakerRpm({
       options: {
