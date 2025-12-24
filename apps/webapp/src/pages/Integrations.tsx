@@ -15,10 +15,12 @@ import {
     Flame,
     Leaf,
     ExternalLink,
+    Loader2,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { integrationCatalog } from "../data/integrations";
+import { pluginManager } from "../services/pluginManager";
+import type { UnifiedPlugin } from "../services/pluginSources";
 
 const categories = [
     { id: "all", label: "All", icon: Grid2x2 },
@@ -42,20 +44,105 @@ const floatingTiles = [
 ];
 
 export function Integrations() {
+    // Check if we're in development mode
+    const isDev = import.meta.env.DEV;
+
     const [activeCategory, setActiveCategory] = useState<string>("all");
     const [query, setQuery] = useState<string>("");
+    const [plugins, setPlugins] = useState<UnifiedPlugin[]>([]);
+    const [totalCount, setTotalCount] = useState<number>(0);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const filteredIntegrations = useMemo(() => {
-        const term = query.toLowerCase();
-        return integrationCatalog.filter((integration) => {
-            const matchesCategory = activeCategory === "all" || integration.category === activeCategory;
-            const matchesQuery =
-                integration.name.toLowerCase().includes(term) ||
-                integration.description.toLowerCase().includes(term);
+    // Only enable OpenVSX in development mode
+    const [enabledSources, setEnabledSources] = useState<('custom' | 'openvsx')[]>(
+        isDev ? ['custom', 'openvsx'] : ['custom']
+    );
 
-            return matchesCategory && matchesQuery;
-        });
-    }, [activeCategory, query]);
+    // Fetch plugins when filters change
+    useEffect(() => {
+        const fetchPlugins = async () => {
+            setIsLoading(true);
+            console.log('Fetching plugins with:', { activeCategory, query, enabledSources });
+
+            try {
+                const [results, count] = await Promise.all([
+                    pluginManager.search({
+                        query: query || undefined,
+                        category: activeCategory,
+                        size: 100,
+                        sources: enabledSources,
+                    }),
+                    pluginManager.getCount({
+                        query: query || undefined,
+                        category: activeCategory,
+                        sources: enabledSources,
+                    }),
+                ]);
+
+                console.log('Fetched plugins:', results.length, 'Count:', count);
+                setPlugins(results);
+                setTotalCount(count);
+            } catch (error) {
+                console.error('Error fetching plugins:', error);
+                setPlugins([]);
+                setTotalCount(0);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchPlugins();
+    }, [activeCategory, query, enabledSources]);
+
+    const filteredIntegrations = plugins;
+
+    // If not in dev mode, show upsell placeholder for entire integrations page
+    if (!isDev) {
+        return (
+            <div className="min-h-screen bg-white text-gray-900">
+                <div className="mx-auto px-22 py-10 space-y-10">
+                    <div className="bg-[#f1f4ff] rounded-3xl px-8 md:px-12 py-12 relative overflow-hidden border border-[#e4e8ff]">
+                        <div className="max-w-3xl mx-auto text-center space-y-6">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white text-sm rounded-full shadow-sm text-indigo-700 border border-indigo-100">
+                                <Sparkles className="w-4 h-4" />
+                                <span>Integrations Marketplace</span>
+                            </div>
+                            <div className="w-24 h-24 mx-auto rounded-full bg-indigo-100 flex items-center justify-center">
+                                <Sparkles className="w-12 h-12 text-indigo-600" />
+                            </div>
+                            <div className="space-y-3">
+                                <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1]">
+                                    Integrations Coming Soon
+                                </h1>
+                                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                                    Connect your favorite tools and supercharge your documentation workflow. We're building a powerful marketplace with hundreds of integrations.
+                                </p>
+                            </div>
+                            <div className="pt-4">
+                                <button className="px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg">
+                                    Get Early Access
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-4xl mx-auto">
+                        <h2 className="text-2xl font-semibold text-gray-900 mb-6 text-center">Coming Soon</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            {floatingTiles.map((tile) => (
+                                <div
+                                    key={tile.label}
+                                    className={`flex items-center justify-center px-6 py-4 rounded-2xl font-semibold text-sm shadow-lg ${tile.accent} ${tile.text} opacity-60`}
+                                >
+                                    {tile.label}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-white text-gray-900">
@@ -141,8 +228,53 @@ export function Integrations() {
                                 </p>
                                 <h2 className="text-2xl font-semibold text-gray-900 mt-1">Integrations</h2>
                             </div>
-                            <div className="text-sm text-gray-500">
-                                Showing <span className="font-semibold text-gray-900">{filteredIntegrations.length}</span> apps
+                            <div className="flex items-center gap-4">
+                                {isDev && (
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={enabledSources.includes('custom')}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setEnabledSources([...enabledSources, 'custom']);
+                                                    } else {
+                                                        setEnabledSources(enabledSources.filter(s => s !== 'custom'));
+                                                    }
+                                                }}
+                                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            />
+                                            <span className="text-gray-700">Custom</span>
+                                        </label>
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={enabledSources.includes('openvsx')}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setEnabledSources([...enabledSources, 'openvsx']);
+                                                    } else {
+                                                        setEnabledSources(enabledSources.filter(s => s !== 'openvsx'));
+                                                    }
+                                                }}
+                                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            />
+                                            <span className="text-gray-700">OpenVSX</span>
+                                        </label>
+                                    </div>
+                                )}
+                                <div className="text-sm text-gray-500">
+                                    {isLoading ? (
+                                        <div className="flex items-center gap-2">
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            <span>Loading...</span>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            Showing <span className="font-semibold text-gray-900">{filteredIntegrations.length}</span> apps
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -150,19 +282,42 @@ export function Integrations() {
                             {filteredIntegrations.map((integration) => (
                                 <Link
                                     to={`/integrations/${integration.slug}`}
-                                    key={integration.slug}
+                                    key={integration.id}
                                     className="flex gap-4 bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition"
                                 >
-                                    <div
-                                        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${integration.accent} ${integration.text} flex items-center justify-center font-semibold text-base shadow-inner`}
-                                    >
-                                        {integration.initials}
+                                    <div className="w-12 h-12 rounded-xl flex-shrink-0 overflow-hidden shadow-inner">
+                                        {integration.iconUrl ? (
+                                            <img
+                                                src={integration.iconUrl}
+                                                alt={`${integration.name} icon`}
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                    // Fallback to gradient background with initials if image fails to load
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.style.display = 'none';
+                                                    const parent = target.parentElement;
+                                                    if (parent) {
+                                                        parent.className = `w-12 h-12 rounded-xl bg-gradient-to-br ${integration.accent} ${integration.text} flex items-center justify-center font-semibold text-base shadow-inner`;
+                                                        parent.textContent = integration.initials;
+                                                    }
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className={`w-full h-full bg-gradient-to-br ${integration.accent} ${integration.text} flex items-center justify-center font-semibold text-base`}>
+                                                {integration.initials}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="flex-1 space-y-2">
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="space-y-1">
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2 flex-wrap">
                                                     <p className="font-semibold text-gray-900">{integration.name}</p>
+                                                    {integration.source === 'openvsx' && (
+                                                        <span className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+                                                            OpenVSX
+                                                        </span>
+                                                    )}
                                                     {integration.badge === "New" && (
                                                         <span className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
                                                             <Sparkles className="w-3 h-3" />

@@ -1106,7 +1106,7 @@ interface LoadedPlugin extends PluginConfig {
     _pluginPkg: string;
 }
 
-async function loadPlugins(settings: Settings, options?: PluginDocsOptions) {
+async function loadPlugins(settings, options) {
     const resolvedPlugins: LoadedPlugin[] = [];
 
     if (settings.plugins?.length && !options?.doNotInstallPluginDependencies) {
@@ -1119,81 +1119,99 @@ async function loadPlugins(settings: Settings, options?: PluginDocsOptions) {
         let pluginName: string;
         let pluginArgs: any[] = [];
 
-        if (typeof plugin === "string") {
-            pluginName = plugin;
-            pluginArgs = [];
-        } else if (Array.isArray(plugin)) {
-            pluginName = plugin[0];
-            pluginArgs = plugin.slice(1);
-        } else {
-            console.error(
-                `Currently only string and array plugins are supported, got: ${plugin}`
-            );
-            return [];
-        }
-
-        let mod: any; // TODO: fix type
-
-        // if local plugin
-        if (pluginName?.startsWith("./")) {
-            try {
-                pluginName = path.join(process.cwd(), pluginName);
-
-                // TODO: find better solution? use this every time?
-                const pluginPreview = await createServer({
-                    optimizeDeps: {
-                        include: [],
-                    },
-                });
-                mod = await pluginPreview.ssrLoadModule(pluginName);
-            } catch (e) {}
-        } else {
-            try {
-                mod = await import(pluginName);
-            } catch (e) {
-                pluginName = path.join(
-                    process.cwd(),
-                    ".xyd/host/node_modules",
-                    pluginName
-                );
-
-                // TODO: find better solution? use this every time?
-                const pluginPreview = await createServer({
-                    optimizeDeps: {
-                        include: [],
-                    },
-                });
-                mod = await pluginPreview.ssrLoadModule(pluginName);
+      if (typeof plugin === "string") {
+        pluginName = plugin;
+        pluginArgs = [];
+      } else if (Array.isArray(plugin)) {
+        pluginName = plugin[0];
+        pluginArgs = plugin.slice(1);
+      } else {
+        console.error(
+          `Currently only string and array plugins are supported, got: ${plugin}`
+        );
+        return [];
+      }
+      
+      let mod: any;
+      
+      let local = false
+      if (pluginName.startsWith(".") || pluginName.startsWith("/")) {
+        pluginName = path.join(process.cwd(), pluginName);
+        local = true
+      }
+  
+      try {
+        // For local files, use Vite's SSR loader
+        if (local) {
+          const pluginServer = await createServer({
+            root: process.cwd(),
+            server: { middlewareMode: true },
+            appType: 'custom',
+            optimizeDeps: {
+              include: []
+            },
+            ssr: {
+              noExternal: true // Process all files through Vite
             }
+          });
+          
+          mod = await pluginServer.ssrLoadModule(pluginName);
+          await pluginServer.close();
+        } else {
+          mod = await import(pluginName);
         }
-
-        if (!mod.default) {
-            console.error(`Plugin ${plugin} has no default export`);
-            continue;
+      } catch (e) {
+        // Fallback: try from host node_modules
+        try {
+          pluginName = path.join(
+            process.cwd(),
+            ".xyd/host/node_modules",
+            pluginName
+          );
+          
+          const pluginPreview = await createServer({
+            root: process.cwd(),
+            optimizeDeps: {
+              include: []
+            },
+            ssr: {
+              noExternal: true
+            }
+          });
+          
+          mod = await pluginPreview.ssrLoadModule(pluginName);
+          await pluginPreview.close();
+        } catch (fallbackError) {
+          console.error("Fallback also failed:", fallbackError);
+          continue;
         }
-
-        let pluginInstance = mod.default(...pluginArgs) as PluginConfig | Plugin;
-        if (typeof pluginInstance === "function") {
-            const plug = pluginInstance(pluginSettingsFreeze);
-
-            resolvedPlugins.push({
-                ...plug,
-                _pluginPkg: pluginName,
-            });
-
-            continue;
-        }
-
+      }
+      
+      if (!mod.default) {
+        console.error(`Plugin ${plugin} has no default export`);
+        continue;
+      }
+      
+      let pluginInstance = mod.default(...pluginArgs);
+      if (typeof pluginInstance === "function") {
+        const plug = pluginInstance(pluginSettingsFreeze);
         resolvedPlugins.push({
-            ...pluginInstance,
-            _pluginPkg: pluginName,
+          ...plug,
+          _pluginPkg: pluginName
         });
+        continue;
+      }
+      
+      resolvedPlugins.push({
+        ...pluginInstance,
+        _pluginPkg: pluginName
+      });
     }
-
+    
     return resolvedPlugins;
-}
+  }
 
-function deepCloneAndFreeze(obj) {
+  function deepCloneAndFreeze(obj) {
     if (obj === null || typeof obj !== "object") return obj;
 
     const clone = Array.isArray(obj) ? [] : {};

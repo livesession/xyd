@@ -43,6 +43,7 @@
     "typescript-eslint": "^8.46.4"
   },
   "dependencies": {
+    "xyd-js": "0.1.0-alpha.5",
     "@blocknote/mantine": "^0.44.2",
     "@blocknote/react": "^0.44.2",
     "@git-diff-view/core": "^0.0.35",

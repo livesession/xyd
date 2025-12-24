@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - feat/webapp2
     paths:
       - 'apps/webapp/**'
       - '.github/workflows/electron-build.yml'

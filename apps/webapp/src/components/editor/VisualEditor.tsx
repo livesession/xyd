@@ -109,14 +109,11 @@ export function VisualEditor({
     // // If so, ignore it to prevent loop/re-render flicker.
     if (content === lastEmittedContent.current) return;
 
-    console.log(2222);
-
     // Access underlying Tiptap/ProseMirror schema.
     // We cast to any because _tiptapEditor is internal/private in strict types but accessible at runtime.
     const pmSchema = (editor as any)._tiptapEditor?.schema;
     if (!pmSchema) return;
 
-    console.log(3333);
     const [blocksFromMarkdown, reactElements] = await customMarkdownToBlocks(editor, content, fileName, pmSchema);
     
     if (reactElements) {

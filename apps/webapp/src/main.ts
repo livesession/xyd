@@ -24,29 +24,86 @@ if (started) {
 // Fix the PATH for production builds on macOS to find 'bun' and other tools
 fixPath();
 
+// Set up error logging to help debug initialization issues
+const logError = (message: string, error?: any) => {
+  const logMessage = `[${new Date().toISOString()}] ${message}`;
+  console.error(logMessage);
+  if (error) {
+    console.error(error);
+    if (error.stack) console.error('Stack:', error.stack);
+  }
+
+  // Write to log file after app is ready
+  if (app.isReady()) {
+    try {
+      const logDir = app.getPath('userData');
+      const logFile = path.join(logDir, 'error.log');
+      const fullMessage = error ? `${logMessage}\n${JSON.stringify(error, null, 2)}\n${error.stack || ''}\n\n` : `${logMessage}\n\n`;
+      fs.appendFileSync(logFile, fullMessage);
+    } catch (e) {
+      console.error('Failed to write to log file:', e);
+    }
+  }
+};
+
+process.on('uncaughtException', (error) => {
+  logError('Uncaught Exception', error);
+});
+
+process.on('unhandledRejection', (reason) => {
+  logError('Unhandled Rejection', reason);
+});
+
+// Log when app is ready
+app.on('ready', () => {
+  console.log('App is ready');
+  console.log('User data path:', app.getPath('userData'));
+  const logFile = path.join(app.getPath('userData'), 'error.log');
+  console.log('Error log file:', logFile);
+});
+
 // XYD dev server management
 let xydServerProcess: ChildProcess | null = null;
 let xydServerPort: number | null = null;
 let xydServerRepo: { owner: string; repo: string } | null = null;
 
 // Path to store encrypted token and connected repositories
-const TOKEN_FILE_PATH = path.join(app.getPath("userData"), "github-token.enc");
-const FALLBACK_TOKEN_FILE_PATH = path.join(app.getPath("userData"), "github-token.aes");
-const FALLBACK_KEY_FILE_PATH = path.join(app.getPath("userData"), "xyd.key");
-const REPOSITORIES_FILE_PATH = path.join(
-  app.getPath("userData"),
-  "connected-repositories.json"
-);
-const IGNORE_NAMES = [".git", "node_modules", ".DS_Store", ".xyd", ".vite", ".next", ".cache", "__pycache__"];
+// Note: These are functions to ensure app.getPath() is called after app is ready
+const getTokenFilePath = () => {
+  if (!app.isReady()) {
+    throw new Error('Cannot get token file path: app is not ready yet');
+  }
+  return path.join(app.getPath("userData"), "github-token.enc");
+};
+const getFallbackTokenFilePath = () => {
+  if (!app.isReady()) {
+    throw new Error('Cannot get fallback token file path: app is not ready yet');
+  }
+  return path.join(app.getPath("userData"), "github-token.aes");
+};
+const getFallbackKeyFilePath = () => {
+  if (!app.isReady()) {
+    throw new Error('Cannot get fallback key file path: app is not ready yet');
+  }
+  return path.join(app.getPath("userData"), "xyd.key");
+};
+const getRepositoriesFilePath = () => {
+  if (!app.isReady()) {
+    throw new Error('Cannot get repositories file path: app is not ready yet');
+  }
+  return path.join(app.getPath("userData"), "connected-repositories.json");
+};
+const IGNORE_NAMES = [".git", "node_modules", ".DS_Store", ".xyd", ".vite", ".next", ".cache", "__pycache__", "dist"];
 
 // Helper to get or create a persistent encryption key for fallback
 function getFallbackKey(): Buffer {
-  if (!fs.existsSync(FALLBACK_KEY_FILE_PATH)) {
+  const fallbackKeyPath = getFallbackKeyFilePath();
+  if (!fs.existsSync(fallbackKeyPath)) {
     const key = crypto.randomBytes(32);
-    fs.writeFileSync(FALLBACK_KEY_FILE_PATH, key);
+    fs.writeFileSync(fallbackKeyPath, key);
     return key;
   }
-  return fs.readFileSync(FALLBACK_KEY_FILE_PATH);
+  return fs.readFileSync(fallbackKeyPath);
 }
 
 function encryptFallback(text: string): Buffer {
@@ -123,17 +180,20 @@ function isIgnoredPath(relativePath: string, ig: Ignore): boolean {
 // Helper to get the GitHub token, trying safeStorage first, then fallback.
 function getGitHubToken(): string | null {
   try {
+    const tokenPath = getTokenFilePath();
+    const fallbackTokenPath = getFallbackTokenFilePath();
+
     // Check safeStorage first
-    if (fs.existsSync(TOKEN_FILE_PATH)) {
+    if (fs.existsSync(tokenPath)) {
       if (safeStorage.isEncryptionAvailable()) {
-        const encryptedToken = fs.readFileSync(TOKEN_FILE_PATH);
+        const encryptedToken = fs.readFileSync(tokenPath);
         return safeStorage.decryptString(encryptedToken);
       }
     }
 
     // Check fallback next
-    if (fs.existsSync(FALLBACK_TOKEN_FILE_PATH)) {
-      const encrypted = fs.readFileSync(FALLBACK_TOKEN_FILE_PATH);
+    if (fs.existsSync(fallbackTokenPath)) {
+      const encrypted = fs.readFileSync(fallbackTokenPath);
       return decryptFallback(encrypted);
     }
 
@@ -147,15 +207,18 @@ function getGitHubToken(): string | null {
 // IPC handlers for GitHub token management
 ipcMain.handle("github-token:save", async (_event, token: string) => {
   try {
+    const tokenPath = getTokenFilePath();
+    const fallbackTokenPath = getFallbackTokenFilePath();
+
     if (safeStorage.isEncryptionAvailable()) {
       const encryptedToken = safeStorage.encryptString(token);
-      fs.writeFileSync(TOKEN_FILE_PATH, encryptedToken);
-      if (fs.existsSync(FALLBACK_TOKEN_FILE_PATH)) fs.unlinkSync(FALLBACK_TOKEN_FILE_PATH);
+      fs.writeFileSync(tokenPath, encryptedToken);
+      if (fs.existsSync(fallbackTokenPath)) fs.unlinkSync(fallbackTokenPath);
     } else {
       console.warn("safeStorage not available, using AES fallback");
       const encrypted = encryptFallback(token);
-      fs.writeFileSync(FALLBACK_TOKEN_FILE_PATH, encrypted);
-      if (fs.existsSync(TOKEN_FILE_PATH)) fs.unlinkSync(TOKEN_FILE_PATH);
+      fs.writeFileSync(fallbackTokenPath, encrypted);
+      if (fs.existsSync(tokenPath)) fs.unlinkSync(tokenPath);
     }
     return { success: true };
   } catch (error) {
@@ -171,8 +234,11 @@ ipcMain.handle("github-token:get", async () => {
 
 ipcMain.handle("github-token:delete", async () => {
   try {
-    if (fs.existsSync(TOKEN_FILE_PATH)) fs.unlinkSync(TOKEN_FILE_PATH);
-    if (fs.existsSync(FALLBACK_TOKEN_FILE_PATH)) fs.unlinkSync(FALLBACK_TOKEN_FILE_PATH);
+    const tokenPath = getTokenFilePath();
+    const fallbackTokenPath = getFallbackTokenFilePath();
+
+    if (fs.existsSync(tokenPath)) fs.unlinkSync(tokenPath);
+    if (fs.existsSync(fallbackTokenPath)) fs.unlinkSync(fallbackTokenPath);
     return { success: true };
   } catch (error) {
     console.error("Failed to delete GitHub token:", error);
@@ -183,11 +249,12 @@ ipcMain.handle("github-token:delete", async () => {
 // IPC handlers for repository management
 ipcMain.handle("repositories:get-connected", async () => {
   try {
-    if (!fs.existsSync(REPOSITORIES_FILE_PATH)) {
+    const reposFilePath = getRepositoriesFilePath();
+    if (!fs.existsSync(reposFilePath)) {
       return { success: true, repositories: [] };
     }
 
-    const data = fs.readFileSync(REPOSITORIES_FILE_PATH, "utf-8");
+    const data = fs.readFileSync(reposFilePath, "utf-8");
     const repositories = JSON.parse(data);
     return { success: true, repositories };
   } catch (error) {
@@ -198,10 +265,11 @@ ipcMain.handle("repositories:get-connected", async () => {
 
 ipcMain.handle("repositories:connect", async (_event, repository) => {
   try {
+    const reposFilePath = getRepositoriesFilePath();
     let repositories = [];
 
-    if (fs.existsSync(REPOSITORIES_FILE_PATH)) {
-      const data = fs.readFileSync(REPOSITORIES_FILE_PATH, "utf-8");
+    if (fs.existsSync(reposFilePath)) {
+      const data = fs.readFileSync(reposFilePath, "utf-8");
       repositories = JSON.parse(data);
     }
 
@@ -210,7 +278,7 @@ ipcMain.handle("repositories:connect", async (_event, repository) => {
     if (!exists) {
       repositories.push(repository);
       fs.writeFileSync(
-        REPOSITORIES_FILE_PATH,
+        reposFilePath,
         JSON.stringify(repositories, null, 2)
       );
     }
@@ -226,16 +294,17 @@ ipcMain.handle(
   "repositories:disconnect",
   async (_event, repositoryId: number) => {
     try {
-      if (!fs.existsSync(REPOSITORIES_FILE_PATH)) {
+      const reposFilePath = getRepositoriesFilePath();
+      if (!fs.existsSync(reposFilePath)) {
         return { success: true, repositories: [] };
       }
 
-      const data = fs.readFileSync(REPOSITORIES_FILE_PATH, "utf-8");
+      const data = fs.readFileSync(reposFilePath, "utf-8");
       let repositories = JSON.parse(data);
 
       repositories = repositories.filter((r: any) => r.id !== repositoryId);
       fs.writeFileSync(
-        REPOSITORIES_FILE_PATH,
+        reposFilePath,
         JSON.stringify(repositories, null, 2)
       );
 
@@ -275,10 +344,11 @@ async function githubRequest(options: {
     };
 
     const req = https.request(requestOptions, (res) => {
-      let data = "";
-      res.on("data", (chunk) => { data += chunk; });
+      const chunks: Buffer[] = [];
+      res.on("data", (chunk) => { chunks.push(Buffer.from(chunk)); });
       res.on("end", () => {
         try {
+          const data = Buffer.concat(chunks).toString("utf-8");
           if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
             resolve(data ? JSON.parse(data) : { success: true });
           } else {
@@ -346,8 +416,17 @@ ipcMain.handle(
         path: `/repos/${owner}/${repo}/contents/${filePath}`,
       });
 
-      // Decode base64 content
-      const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+      // For large files, use blob API
+      let content: string;
+      if (fileData.size > 1000000 || !fileData.content) {
+        const blobData: any = await githubRequest({
+          path: `/repos/${owner}/${repo}/git/blobs/${fileData.sha}`,
+        });
+        content = Buffer.from(blobData.content, "base64").toString("utf-8");
+      } else {
+        // Decode base64 content
+        content = Buffer.from(fileData.content, "base64").toString("utf-8");
+      }
 
       // Save to local synced storage
       const dir = path.dirname(localFilePath);
@@ -387,7 +466,16 @@ ipcMain.handle(
         path: `/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`,
       });
 
-      const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+      // Handle large files
+      let content: string;
+      if (fileData.size > 1000000 || !fileData.content) {
+        const blobData: any = await githubRequest({
+          path: `/repos/${owner}/${repo}/git/blobs/${fileData.sha}`,
+        });
+        content = Buffer.from(blobData.content, "base64").toString("utf-8");
+      } else {
+        content = Buffer.from(fileData.content, "base64").toString("utf-8");
+      }
 
       // Cache in the base path
       const dir = path.dirname(baseFilePath);
@@ -427,10 +515,10 @@ ipcMain.handle(
         const items = fs.readdirSync(currentDir);
 
         for (const item of items) {
+          const itemRelativePath = path.join(relativePath, item);
           if (isIgnoredPath(itemRelativePath, ig)) continue;
 
           const fullPath = path.join(currentDir, item);
-          const itemRelativePath = path.join(relativePath, item);
           const normalizedRelativePath = itemRelativePath.split(path.sep).join("/");
           const baseFilePath = path.join(baseRepoPath, itemRelativePath);
 
@@ -682,13 +770,29 @@ ipcMain.handle(
         try {
           if (isIgnoredPath(file.path, ig)) continue;
 
-          // Fetch file content using our helper (this also handles the token/encryption fallback)
-          const fileContent: any = await githubRequest({
-            path: `/repos/${owner}/${repo}/contents/${file.path}?ref=${branch}`,
-          });
+          // For large files (>1MB), GitHub Contents API doesn't include content
+          // We need to use the blob API directly with the SHA
+          let content: string;
 
-          // Decode and save file
-          const content = Buffer.from(fileContent.content, "base64").toString("utf-8");
+          if (file.size > 1000000) {
+            // Use Git Blob API for large files
+            const blobData: any = await githubRequest({
+              path: `/repos/${owner}/${repo}/git/blobs/${file.sha}`,
+            });
+            content = Buffer.from(blobData.content, "base64").toString("utf-8");
+          } else {
+            // Use Contents API for smaller files
+            const fileContent: any = await githubRequest({
+              path: `/repos/${owner}/${repo}/contents/${file.path}?ref=${branch}`,
+            });
+
+            if (!fileContent.content) {
+              console.warn(`No content for ${file.path}, skipping...`);
+              continue;
+            }
+
+            content = Buffer.from(fileContent.content, "base64").toString("utf-8");
+          }
           const localFilePath = path.join(syncedRepoPath, file.path);
           const baseRepoPath = path.join(getSyncedRepoBaseContentPath(owner, repo), branch);
           const baseFilePath = path.join(baseRepoPath, file.path);
@@ -746,6 +850,7 @@ const createWindow = async () => {
   const mainWindow = new BrowserWindow({
     width,
     height,
+    fullscreen: true,
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: 10, y: 10 },
     show: true, // Don't show until ready
@@ -887,12 +992,73 @@ ipcMain.handle(
         console.log("Repository Path:", repositoryPath);
         console.log("Current PATH:", process.env.PATH);
         
-        // Start xyd dev server
-        // Using bunx to ensure xyd-js is available
-        xydServerProcess = spawn("bunx", ["xyd-js"], {
+        // In your app's resources, include xyd as a dependency
+        // const xydPath = path.join(process.resourcesPath, 'node_modules', 'xyd-js', 'index.js');
+        // // // Start xyd dev server
+
+        // xydServerProcess = spawn("node", [xydPath], {
+        //   cwd: repositoryPath,
+        //   shell: true,
+        //   env: { ...process.env },
+        //   stdio: 'pipe'
+        // });
+
+        const isDev = !app.isPackaged;
+
+        let xydPath: string;
+        let nodeExecutable: string;
+        let nodeArgs: string[];
+        let spawnEnv: NodeJS.ProcessEnv;
+
+        if (isDev) {
+          // Development: path relative to app directory
+          const appPath = app.getAppPath();
+          xydPath = path.join(appPath, 'node_modules', 'xyd-js', 'index.js');
+
+          // Use system node in development too
+          nodeExecutable = 'node';
+          nodeArgs = [xydPath];
+          spawnEnv = { ...process.env };
+        } else {
+          // Production: Check multiple possible locations for xyd-js
+          const resourcesPath = process.resourcesPath;
+
+          const possiblePaths = [
+            // extraResource location (most likely with our config)
+            path.join(resourcesPath, 'xyd-js', 'index.js'),
+          ];
+
+          // Find the first path that exists
+          xydPath = possiblePaths.find(p => {
+            try {
+              const exists = fs.existsSync(p);
+              return exists;
+            } catch (error) {
+              console.error(`Error checking path ${p}:`, error);
+              return false;
+            }
+          }) || '';
+
+          if (!xydPath) {
+            console.error('Could not find xyd-js in any expected location. Tried:', possiblePaths);
+            resolve({
+              success: false,
+              error: 'xyd-js not found in packaged app. Please ensure it is properly bundled.',
+            });
+            return;
+          }
+
+          nodeExecutable = 'node';
+          nodeArgs = [xydPath];
+          spawnEnv = { ...process.env };
+        }
+
+        console.log('Starting xyd server with:', { nodeExecutable, nodeArgs, xydPath, isDev });
+
+        xydServerProcess = spawn(nodeExecutable, nodeArgs, {
           cwd: repositoryPath,
           shell: true,
-          env: { ...process.env },
+          env: spawnEnv,
           stdio: 'pipe'
         });
 
@@ -1015,6 +1181,110 @@ ipcMain.handle("xyd:get-server-status", async () => {
 
 
 
+
+// IPC handler for OpenVSX API proxy (to avoid CORS)
+ipcMain.handle("openvsx:fetch", async (_event, url: string) => {
+  try {
+    console.log("Fetching from OpenVSX:", url);
+    const response = await fetch(url);
+
+    console.log("OpenVSX response status:", response.status, response.statusText);
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.error("OpenVSX error response:", text.substring(0, 200));
+      return {
+        success: false,
+        status: response.status,
+        statusText: response.statusText,
+        error: `HTTP ${response.status}: ${response.statusText}`,
+      };
+    }
+
+    const contentType = response.headers.get("content-type");
+
+    // Check if response is actually JSON
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await response.text();
+      console.error("OpenVSX returned non-JSON response:", text.substring(0, 200));
+      return {
+        success: false,
+        status: response.status,
+        error: "Response is not JSON",
+      };
+    }
+
+    const data = await response.json();
+
+    return {
+      success: true,
+      status: response.status,
+      data,
+    };
+  } catch (error) {
+    console.error("OpenVSX fetch error:", error);
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
+  }
+});
+
+// IPC handler for fetching and compiling OpenVSX README
+ipcMain.handle(
+  "openvsx:fetch-and-compile-readme",
+  async (_event, namespace: string, extensionName: string, version: string) => {
+    try {
+      // Construct the README URL
+      const readmeUrl = `https://open-vsx.org/api/${namespace}/${extensionName}/${version}/file/README.md`;
+      console.log("Fetching OpenVSX README:", readmeUrl);
+
+      // Fetch the README markdown
+      const response = await fetch(readmeUrl);
+
+      if (!response.ok) {
+        console.error("Failed to fetch README:", response.status, response.statusText);
+        return {
+          success: false,
+          error: `Failed to fetch README: HTTP ${response.status}`,
+        };
+      }
+
+      const markdown = await response.text();
+
+      // Compile the markdown using the same logic as editor:compile-markdown
+      const mdPlugins = await markdownPlugins(
+        {
+          maxDepth: 2,
+        },
+        {}
+      );
+
+      const contentFs = new ContentFS(
+        {},
+        mdPlugins.remarkPlugins,
+        mdPlugins.rehypePlugins,
+        mdPlugins.recmaPlugins
+      );
+
+      const compiledContent = await contentFs.compileContent(
+        markdown,
+        "README.md"
+      );
+
+      return {
+        success: true,
+        compiledContent,
+      };
+    } catch (error) {
+      console.error("Failed to fetch and compile README:", error);
+      return {
+        success: false,
+        error: (error as Error).message,
+      };
+    }
+  }
+);
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.

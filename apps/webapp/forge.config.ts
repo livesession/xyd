@@ -10,8 +10,13 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 const config: ForgeConfig = {
   packagerConfig: {
     name: "xyd",
-    asar: true,
+    asar: {
+      unpack: '**/node_modules/xyd-js/**/*',
+    },
     icon: 'assets/logo', // Electron Forge will resolve to .icns for macOS and .ico for Windows if available
+    extraResource: [
+      './node_modules/xyd-js'
+    ],
   },
   rebuildConfig: {},
   makers: [

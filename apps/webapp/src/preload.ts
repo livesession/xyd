@@ -49,4 +49,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getServerStatus: () =>
       ipcRenderer.invoke('xyd:get-server-status'),
   },
+  openvsx: {
+    fetch: (url: string) =>
+      ipcRenderer.invoke('openvsx:fetch', url),
+    fetchAndCompileReadme: (namespace: string, extensionName: string, version: string) =>
+      ipcRenderer.invoke('openvsx:fetch-and-compile-readme', namespace, extensionName, version),
+  },
 });

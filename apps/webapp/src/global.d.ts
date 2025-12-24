@@ -66,12 +66,18 @@ interface XydAPI {
   getServerStatus: () => Promise<{ success: boolean; running: boolean; port?: number | null; url?: string | null; owner?: string | null; repo?: string | null }>;
 }
 
+interface OpenVSXAPI {
+  fetch: (url: string) => Promise<{ success: boolean; status?: number; statusText?: string; data?: any; error?: string }>;
+  fetchAndCompileReadme: (namespace: string, extensionName: string, version: string) => Promise<{ success: boolean; compiledContent?: string; error?: string }>;
+}
+
 interface ElectronAPI {
   githubToken: GitHubTokenAPI;
   repositories: RepositoriesAPI;
   github: GitHubAPI;
   editor: EditorAPI;
   xyd: XydAPI;
+  openvsx: OpenVSXAPI;
 }
 
 interface Window {
