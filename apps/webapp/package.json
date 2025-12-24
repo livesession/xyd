@@ -1,5 +1,6 @@
 {
   "name": "@xyd-js/desktop-app",
+  "productName": "xyd",
   "private": false,
   "description": "xyd desktop app",
   "version": "0.0.0-prealpha.1",
