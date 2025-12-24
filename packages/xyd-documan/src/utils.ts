@@ -1106,7 +1106,7 @@ interface LoadedPlugin extends PluginConfig {
     _pluginPkg: string;
 }
 
-async function loadPlugins(settings, options) {
+async function loadPlugins(settings: Settings, options?: PluginDocsOptions) {
     const resolvedPlugins: LoadedPlugin[] = [];
 
     if (settings.plugins?.length && !options?.doNotInstallPluginDependencies) {

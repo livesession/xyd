@@ -1,6 +1,7 @@
 {
   "name": "@xyd-js/desktop-app",
-  "private": true,
+  "private": false,
+  "description": "xyd desktop app",
   "version": "0.0.0-prealpha.1",
   "type": "module",
   "main": ".vite/build/main.js",
