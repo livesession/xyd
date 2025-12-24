@@ -55,7 +55,6 @@
     "@git-diff-view/shiki": "^0.0.35",
     "@mantine/core": "^8.3.10",
     "@monaco-editor/react": "^4.7.0",
-    "@tailwindcss/vite": "^4.1.18",
     "@tiptap/extension-bullet-list": "^3.13.0",
     "@tiptap/extension-heading": "^3.13.0",
     "@tiptap/extension-link": "^3.13.0",
@@ -85,7 +84,6 @@
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
-    "tailwindcss": "^4.1.18",
     "tippy.js": "^6.3.7",
     "turndown": "^7.2.2",
     "unified": "^11.0.5"
