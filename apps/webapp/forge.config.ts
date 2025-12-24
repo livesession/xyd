@@ -23,8 +23,20 @@ const config: ForgeConfig = {
   makers: [
     new MakerSquirrel({}, ['win32']),
     new MakerZIP({}, ['darwin']),
-    new MakerRpm({}, ['linux']),
-    new MakerDeb({}, ['linux']),
+    new MakerRpm({
+      options: {
+        name: 'xyd',
+        productName: 'xyd',
+        bin: 'xyd',
+      },
+    }, ['linux']),
+    new MakerDeb({
+      options: {
+        name: 'xyd',
+        productName: 'xyd',
+        bin: 'xyd',
+      },
+    }, ['linux']),
   ],
   plugins: [
     new VitePlugin({
