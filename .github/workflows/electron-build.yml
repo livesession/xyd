@@ -1,0 +1,90 @@
+name: Build Electron App
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'apps/webapp/**'
+      - '.github/workflows/electron-build.yml'
+  pull_request:
+    paths:
+      - 'apps/webapp/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        working-directory: apps/webapp
+        run: bun install --frozen-lockfile
+
+      - name: Build Electron app
+        working-directory: apps/webapp
+        run: bun run make
+        env:
+          NODE_ENV: production
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APP_BUNDLE_ID: ${{ secrets.APP_BUNDLE_ID }}
+
+      # - name: Import Apple cert
+      #   if: matrix.os == 'macos-latest'
+      #   run: |
+      #     echo "$APPLE_CERT_P12" | base64 --decode > /tmp/cert.p12
+      #     security create-keychain -p "$KEYCHAIN_PASS" build.keychain
+      #     security default-keychain -s build.keychain
+      #     security unlock-keychain -p "$KEYCHAIN_PASS" build.keychain
+      #     security import /tmp/cert.p12 -k build.keychain -P "$APPLE_CERT_PASSWORD" -T /usr/bin/codesign
+      #     security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASS" build.keychain
+      #   env:
+      #     APPLE_CERT_P12: ${{ secrets.APPLE_CERT_P12 }}
+      #     APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+      #     KEYCHAIN_PASS: ${{ secrets.APPLE_CERT_PASSWORD }}
+
+      - name: Upload artifacts (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xyd-macos
+          path: |
+            apps/webapp/out/make/**/*.dmg
+            apps/webapp/out/make/**/*.zip
+          if-no-files-found: warn
+
+      - name: Upload artifacts (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xyd-linux
+          path: |
+            apps/webapp/out/make/**/*.deb
+            apps/webapp/out/make/**/*.rpm
+          if-no-files-found: warn
+
+      - name: Upload artifacts (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xyd-windows
+          path: |
+            apps/webapp/out/make/**/*.exe
+            apps/webapp/out/make/**/*.msi
+          if-no-files-found: warn
