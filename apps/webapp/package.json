@@ -68,6 +68,7 @@
     "@tiptap/suggestion": "^3.13.0",
     "@types/marked": "^5.0.2",
     "@types/turndown": "^5.0.6",
+    "@xyd-js/content": "0.0.0-build-8a0317f-20251214165542",
     "@xyd-js/components": "0.0.0-build-8a0317f-20251214165542",
     "@xyd-js/themes": "0.0.0-build-8a0317f-20251214165542",
     "electron-squirrel-startup": "^1.0.1",

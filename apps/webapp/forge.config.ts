@@ -11,6 +11,7 @@ const config: ForgeConfig = {
   packagerConfig: {
     name: "xyd",
     executableName: "xyd",
+    appBundleId: process.env.APP_BUNDLE_ID || 'com.xyd.app',
     asar: {
       unpack: '**/node_modules/xyd-js/**/*',
     },
@@ -18,11 +19,23 @@ const config: ForgeConfig = {
     extraResource: [
       './node_modules/xyd-js'
     ],
+    // osxSign: {
+    //   identity: process.env.APPLE_SIGNING_IDENTITY,
+    //   hardenedRuntime: true,
+    //   entitlements: 'assets/entitlements.plist',
+    //   entitlementsInherit: 'assets/entitlements.plist',
+    // },
+    // osxNotarize: {
+    //   appleId: process.env.APPLE_ID || "",
+    //   appleIdPassword: process.env.APPLE_APP_SPECIFIC_PASSWORD || "",
+    //   teamId: process.env.APPLE_TEAM_ID || "",
+    // },
   },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({
       name: 'xyd',
+      authors: 'xyd',
     }, ['win32']),
     new MakerZIP({}, ['darwin']),
     new MakerRpm({
