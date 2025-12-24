@@ -28,6 +28,7 @@ const config: ForgeConfig = {
         name: 'xyd',
         productName: 'xyd',
         bin: 'xyd',
+        license: 'MIT',
       },
     }, ['linux']),
     new MakerDeb({
