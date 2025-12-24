@@ -45,19 +45,19 @@ jobs:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APP_BUNDLE_ID: ${{ secrets.APP_BUNDLE_ID }}
 
-      - name: Import Apple cert
-        if: matrix.os == 'macos-latest'
-        run: |
-          echo "$APPLE_CERT_P12" | base64 --decode > /tmp/cert.p12
-          security create-keychain -p "$KEYCHAIN_PASS" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "$KEYCHAIN_PASS" build.keychain
-          security import /tmp/cert.p12 -k build.keychain -P "$APPLE_CERT_PASSWORD" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASS" build.keychain
-        env:
-          APPLE_CERT_P12: ${{ secrets.APPLE_CERT_P12 }}
-          APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
-          KEYCHAIN_PASS: ${{ secrets.APPLE_CERT_PASSWORD }}
+      # - name: Import Apple cert
+      #   if: matrix.os == 'macos-latest'
+      #   run: |
+      #     echo "$APPLE_CERT_P12" | base64 --decode > /tmp/cert.p12
+      #     security create-keychain -p "$KEYCHAIN_PASS" build.keychain
+      #     security default-keychain -s build.keychain
+      #     security unlock-keychain -p "$KEYCHAIN_PASS" build.keychain
+      #     security import /tmp/cert.p12 -k build.keychain -P "$APPLE_CERT_PASSWORD" -T /usr/bin/codesign
+      #     security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASS" build.keychain
+      #   env:
+      #     APPLE_CERT_P12: ${{ secrets.APPLE_CERT_P12 }}
+      #     APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+      #     KEYCHAIN_PASS: ${{ secrets.APPLE_CERT_PASSWORD }}
 
       - name: Upload artifacts (macOS)
         if: matrix.os == 'macos-latest'
