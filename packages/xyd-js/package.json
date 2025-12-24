@@ -1,6 +1,6 @@
 {
     "name": "xyd-js",
-    "version": "0.1.0-alpha.4",
+    "version": "0.1.0-alpha.5",
     "description": "The xyd CLI",
     "engines": {
         "node": ">=22.12.0"
@@ -28,7 +28,7 @@
         "clean:all": "rimraf node_modules"
     },
     "dependencies": {
-        "@xyd-js/cli": "0.0.0-build-11974d8-20251130234931"
+        "@xyd-js/cli": "0.0.0-build-8a0317f-20251214165542"
     },
     "devDependencies": {
         "rimraf": "^5.0.1"
