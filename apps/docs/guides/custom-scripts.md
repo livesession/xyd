@@ -1,6 +1,11 @@
 ---
 title: Custom Scripts
 icon: braces
+tocCard: 
+    link: https://github.com/xyd-js/examples/tree/master/custom-js
+    title: Custom JS
+    description: Learn how to write custom JS scripts
+    icon: docs:github
 ---
 
 # Custom Scripts
@@ -23,7 +28,7 @@ Add custom tags to the `<head>` of your xyd site. Can be useful for adding analy
 }
 ```
 
-## Custom JS {label="Coming Soon"}
+## Custom JS {label="Beta"}
 Custom JS lets you write JavaScript in separate files that are automatically injected across your documentation site. Use it to implement global features or integrate third-party services:
 ```json
 {
@@ -43,3 +48,5 @@ import ls from "@livesession/browser";
 // init a script, trackID is required
 ls.init("YOUR TRACKID", options, sdkOptions);
 ```
+
+More examples [here](https://github.com/xyd-js/examples/tree/master/custom-js).
