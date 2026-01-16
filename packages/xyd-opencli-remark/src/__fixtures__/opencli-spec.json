@@ -1,0 +1,81 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "spice",
+    "version": "1.0.0",
+    "description": "A CLI tool"
+  },
+  "options": [
+    {
+      "name": "verbose",
+      "aliases": ["v"],
+      "description": "Enable verbose output",
+      "required": false
+    },
+    {
+      "name": "config",
+      "description": "Path to config file",
+      "required": true,
+      "arguments": [
+        {
+          "name": "path",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "name": "package",
+      "required": true,
+      "description": "Package name to install"
+    }
+  ],
+  "commands": [
+    {
+      "name": "install",
+      "description": "Install a package",
+      "aliases": ["i"],
+      "options": [
+        {
+          "name": "global",
+          "aliases": ["g"],
+          "description": "Install globally",
+          "required": false
+        },
+        {
+          "name": "save",
+          "description": "Save to package.json",
+          "required": false,
+          "hidden": true
+        }
+      ],
+      "arguments": [
+        {
+          "name": "package",
+          "required": true,
+          "description": "Package name"
+        }
+      ],
+      "commands": [
+        {
+          "name": "dev",
+          "description": "Install as dev dependency",
+          "options": [
+            {
+              "name": "optional",
+              "description": "Make it optional",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "remove",
+      "description": "Remove a package",
+      "hidden": false
+    }
+  ],
+  "examples": ["spice install react", "spice remove lodash"]
+}

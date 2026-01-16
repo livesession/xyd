@@ -1,0 +1,35 @@
+{
+  "name": "@xyd-js/opencli-remark",
+  "version": "0.1.0-build.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf build",
+    "prebuild": "pnpm clean",
+    "build": "tsup",
+    "test": "vitest",
+    "ci:test": "vitest run",
+    "generate:types": "json2ts -i opencli-spec.json -o src/types.ts"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "mdast": "^3.0.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0",
+    "vfile": "^6.0.3",
+    "vfile-matter": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "json-schema-to-typescript": "^14.0.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.2",
+    "unist-util-visit": "^5.0.0",
+    "vitest": "^2.1.1"
+  }
+}

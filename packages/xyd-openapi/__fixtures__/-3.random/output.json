@@ -11,7 +11,7 @@
       "group": [
         "Sessions"
       ],
-      "fullPath": "https:/api.livesession.io/v1/sessions",
+      "fullPath": "https://api.livesession.io/v1/sessions",
       "servers": [
         "https://api.livesession.io/v1"
       ],
@@ -877,7 +877,7 @@
       "group": [
         "Alerts"
       ],
-      "fullPath": "https:/api.livesession.io/v1/alerts",
+      "fullPath": "https://api.livesession.io/v1/alerts",
       "servers": [
         "https://api.livesession.io/v1"
       ],
@@ -1228,7 +1228,7 @@
       "group": [
         "Alerts"
       ],
-      "fullPath": "https:/api.livesession.io/v1/alerts",
+      "fullPath": "https://api.livesession.io/v1/alerts",
       "servers": [
         "https://api.livesession.io/v1"
       ],
@@ -1698,7 +1698,7 @@
       "group": [
         "Alerts"
       ],
-      "fullPath": "https:/api.livesession.io/v1/alerts/{id}",
+      "fullPath": "https://api.livesession.io/v1/alerts/{id}",
       "servers": [
         "https://api.livesession.io/v1"
       ],
@@ -2162,7 +2162,7 @@
       "group": [
         "Alerts"
       ],
-      "fullPath": "https:/api.livesession.io/v1/alerts/{id}",
+      "fullPath": "https://api.livesession.io/v1/alerts/{id}",
       "servers": [
         "https://api.livesession.io/v1"
       ],
@@ -2445,7 +2445,7 @@
       "group": [
         "Webhooks"
       ],
-      "fullPath": "https:/api.livesession.io/v1/webhooks",
+      "fullPath": "https://api.livesession.io/v1/webhooks",
       "servers": [
         "https://api.livesession.io/v1"
       ],
@@ -2751,7 +2751,7 @@
       "group": [
         "Webhooks"
       ],
-      "fullPath": "https:/api.livesession.io/v1/webhooks",
+      "fullPath": "https://api.livesession.io/v1/webhooks",
       "servers": [
         "https://api.livesession.io/v1"
       ],
@@ -3115,7 +3115,7 @@
       "group": [
         "Webhooks"
       ],
-      "fullPath": "https:/api.livesession.io/v1/webhooks/{id}",
+      "fullPath": "https://api.livesession.io/v1/webhooks/{id}",
       "servers": [
         "https://api.livesession.io/v1"
       ],
@@ -3541,7 +3541,7 @@
       "group": [
         "Webhooks"
       ],
-      "fullPath": "https:/api.livesession.io/v1/webhooks/{id}",
+      "fullPath": "https://api.livesession.io/v1/webhooks/{id}",
       "servers": [
         "https://api.livesession.io/v1"
       ],
@@ -3835,7 +3835,7 @@
       "group": [
         "Websites"
       ],
-      "fullPath": "https:/api.livesession.io/v1/websites",
+      "fullPath": "https://api.livesession.io/v1/websites",
       "servers": [
         "https://api.livesession.io/v1"
       ],
@@ -4105,7 +4105,7 @@
       "group": [
         "Websites"
       ],
-      "fullPath": "https:/api.livesession.io/v1/websites",
+      "fullPath": "https://api.livesession.io/v1/websites",
       "servers": [
         "https://api.livesession.io/v1"
       ],
