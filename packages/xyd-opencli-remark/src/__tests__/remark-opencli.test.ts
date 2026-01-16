@@ -1,6 +1,7 @@
-import { describe, it } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import path from 'path';
 
-import { testFixture } from './testHelpers';
+import { testFixture, createTestServer, processMarkdown, readFixture } from './testHelpers';
 
 const tests = [
   {
@@ -53,6 +54,47 @@ describe('remarkOpencliDocs', () => {
   tests.forEach((test) => {
     it(`[${test.name}]: ${test.description}`, async () => {
       await testFixture(test.name);
+    });
+  });
+
+  describe('URL source loading', () => {
+    let testServer: Awaited<ReturnType<typeof createTestServer>>;
+    const specPath = path.join(__dirname, '../__fixtures__/opencli-spec.json');
+
+    beforeAll(async () => {
+      testServer = await createTestServer(specPath);
+    });
+
+    afterAll(async () => {
+      await testServer.close();
+    });
+
+    it('should load OpenCLI spec from HTTP URL', async () => {
+      // Use the first fixture as input and expected output
+      const input = readFixture('1.code-block-format/input.md');
+      const expectedOutput = readFixture('1.code-block-format/output.md');
+
+      const result = await processMarkdown(input, { spice: { source: testServer.url } });
+      const output = String(result);
+      
+      expect(output.trim()).toEqual(expectedOutput.trim());
+    });
+
+    it('should handle HTTP errors gracefully', async () => {
+      const input = `---
+xyd.opencli.spice: "install"
+---
+
+Usage: {opencli.current.usage}`;
+
+      // Use a URL that will 404
+      const invalidUrl = testServer.url.replace('/opencli-spec.json', '/nonexistent.json');
+
+      const result = await processMarkdown(input, { spice: { source: invalidUrl } });
+      const output = String(result);
+      
+      // Should leave placeholder unchanged when spec fails to load
+      expect(output).toContain('{opencli.current.usage}');
     });
   });
 });

@@ -14,8 +14,8 @@ import { remark } from 'remark';
 remark()
   .use(remarkFrontmatter)
   .use(remarkOpencliDocs, {
-    spice: { source: './spice-spec.json' },
-    npm: { source: './npm-spec.json' },
+    xyd: { source: './xyd-cli.json' },
+    npm: { source: './npm-cli.json' },
     // Add more CLIs as needed
   })
   .use(remarkStringify)
@@ -37,8 +37,8 @@ The plugin accepts an object where each key represents a CLI identifier, and the
 **Example:**
 ```typescript
 remarkOpencliDocs({
-  spice: { source: './spice-spec.json' },
-  npm: { source: 'https://example.com/npm-spec.json' }
+  xyd: { source: './xyd-cli.json' },
+  npm: { source: 'https://example.com/npm-cli.json' }
 })
 ```
 
@@ -48,32 +48,32 @@ In your markdown frontmatter, specify which CLI to use and the command path:
 
 ```yaml
 ---
-xyd.opencli.spice: "install"
+xyd.opencli.xyd: "dev"
 ---
 ```
 
-The CLI key (e.g., `spice`) must match a key in your plugin configuration. The command path is **relative to the CLI root** (no CLI name prefix needed).
+The CLI key (e.g., `xyd`) must match a key in your plugin configuration. The command path is **relative to the CLI root** (no CLI name prefix needed).
 
 ### Command Path Examples
 
 - **Root command**: Use an empty string `""`
   ```yaml
-  xyd.opencli.spice: ""
+  xyd.opencli.xyd: ""
   ```
 
 - **Top-level command**: Just the command name
   ```yaml
-  xyd.opencli.spice: "install"
+  xyd.opencli.xyd: "dev"
   ```
 
 - **Nested command**: Space-separated path
   ```yaml
-  xyd.opencli.spice: "install dev"
+  xyd.opencli.xyd: "components install"
   ```
 
 - **Using aliases**: You can use command aliases
   ```yaml
-  xyd.opencli.spice: "i"  # if "i" is an alias for "install"
+  xyd.opencli.xyd: "d"  # if "d" is an alias for "dev"
   ```
 
 ### Indent Style Configuration
@@ -82,8 +82,8 @@ You can configure the output format for arguments and options:
 
 ```yaml
 ---
-xyd.opencli.spice:
-  command: "install"
+xyd.opencli.xyd:
+  command: "dev"
   indent: list  # or "code" (default)
 ---
 ```
@@ -93,35 +93,12 @@ xyd.opencli.spice:
 
 ## Example Markdown
 
-### Basic Example
-
-```markdown
----
-title: "Install Command"
-xyd.opencli.spice: "install"
----
-
-### Usage
-{opencli.current.usage}
-
-### Description
-{opencli.current.description}
-
-### Arguments
-{opencli.current.arguments}
-
-### Options
-{opencli.current.options}
-
-### Available Commands
-{opencli.current.commands}
-```
-
 ### Code Block Format (default)
 
+**Input:**
 ```markdown
 ---
-xyd.opencli.spice: "install"
+xyd.opencli.xyd: "dev"
 ---
 
 ```sh
@@ -135,14 +112,32 @@ Arguments:
 Options:
 {opencli.current.options}
 ```
-```
 
-#### List Format
-
+**Output:**
 ```markdown
 ---
-xyd.opencli.spice:
-  command: "install"
+xyd.opencli.xyd: "dev"
+---
+
+```sh
+Usage: xyd dev [flags]
+
+Run your docs locally in development mode
+
+Options:
+	-p, --port <number>            Port to run the dev server on
+	-l, --logLevel <string>        Set logging level (e.g. info, debug)
+	--verbose                      Enable verbose output
+	--debug                        Enable debug output
+```
+
+### List Format
+
+**Input:**
+```markdown
+---
+xyd.opencli.xyd:
+  command: "dev"
   indent: list
 ---
 
@@ -158,13 +153,37 @@ xyd.opencli.spice:
 {opencli.current.options}
 ```
 
+**Output:**
+```markdown
+---
+xyd.opencli.xyd:
+  command: "dev"
+  indent: list
+---
+
+## Usage
+
+`xyd dev [flags]`
+
+Run your docs locally in development mode
+
+## Arguments
+
+## Options
+
+- `-p`, `--port <number>`  Port to run the dev server on
+- `-l`, `--logLevel <string>`  Set logging level (e.g. info, debug)
+- `--verbose`  Enable verbose output
+- `--debug`  Enable debug output
+```
+
 ## Variables
 
 The following Variables are supported:
 
 | Variable | Description | Format Support |
 |------------|-------------|----------------|
-| `{opencli.current.usage}` | Generates usage line (e.g., `spice install [options] <package>`) | All formats |
+| `{opencli.current.usage}` | Generates usage line (e.g., `xyd dev [flags]`) | All formats |
 | `{opencli.current.description}` | Command description | All formats |
 | `{opencli.current.commands}` | List of available subcommands | All formats |
 | `{opencli.current.arguments}` | Command arguments documentation | Code blocks, text (code style), or list nodes (list style) |
@@ -182,18 +201,18 @@ You can configure and use multiple CLI specs in the same project:
 
 ```typescript
 remarkOpencliDocs({
-  spice: { source: './spice-spec.json' },
-  npm: { source: './npm-spec.json' },
-  git: { source: './git-spec.json' }
+  xyd: { source: './xyd-cli.json' },
+  npm: { source: './npm-cli.json' },
+  git: { source: './git-cli.json' }
 })
 ```
 
 Then in different markdown files, reference the appropriate CLI:
 
 ```yaml
-# File 1: spice-install.md
+# File 1: xyd-dev.md
 ---
-xyd.opencli.spice: "install"
+xyd.opencli.xyd: "dev"
 ---
 
 # File 2: npm-install.md
