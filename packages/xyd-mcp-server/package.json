@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@xyd-js/mcp": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.18.1",
+    "@modelcontextprotocol/sdk": "^1.25.2",
     "express": "^5.1.0"
   },
   "devDependencies": {

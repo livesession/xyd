@@ -12,15 +12,15 @@
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.2.8",
-    "@react-router/node": "^7.9.2",
-    "@react-router/serve": "^7.9.2",
+    "@react-router/node": "^7.5.2",
+    "@react-router/serve": "^7.5.2",
     "isbot": "^5.1.31",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router": "^7.9.2"
+    "react-router": "^7.5.2"
   },
   "devDependencies": {
-    "@react-router/dev": "^7.9.2",
+    "@react-router/dev": "^7.5.2",
     "@tailwindcss/vite": "^4.1.13",
     "@types/node": "^22",
     "@types/react": "^19.1.13",
