@@ -162,11 +162,18 @@ function getDiagramOptions(settings: Settings | undefined, diagramType: 'mermaid
 export async function thirdPartyRehypePlugins(settings?: Settings) {
   const plugins = [
     [rehypeRaw, {
-      passThrough: ['mdxjsEsm', 'mdxJsxFlowElement', 'mdxJsxTextElement'],
+      // Ensure MDX expression nodes are passed through so `rehype-raw` doesn't try
+      // to compile them into HAST — this prevents the "Cannot compile `mdxFlowExpression` node" error.
+      passThrough: [
+        'mdxjsEsm',
+        'mdxJsxFlowElement',
+        'mdxJsxTextElement',
+        'mdxFlowExpression',
+        'mdxTextExpression',
+      ],
     }] as any,
     rehypeKatex,
   ]
-
   // Add mermaid plugin if enabled
   if (isDiagramTypeEnabled(settings, 'mermaid')) {
     const mermaidOptions = getDiagramOptions(settings, 'mermaid');
@@ -178,7 +185,6 @@ export async function thirdPartyRehypePlugins(settings?: Settings) {
     const graphvizPlugin = await getGraphvizPlugin()
     plugins.push(graphvizPlugin)
   }
-
   return plugins
 }
 
