@@ -221,25 +221,20 @@ XYD_DEV_MODE=1 - Enable dev mode
 
 For developing documentation locally without building the CLI package:
 
-1. First, build the documan package in development mode:
+1. First, build project:
    ```bash
-   XYD_DEV_MODE=1 pnpm run --filter "./packages/xyd-documan" build
+   pnpm run build
    ```
 
-2. Start the style development server (for HMR support):
+2. Run the development server directly:
    ```bash
-   pnpm dev:styles
-   ```
-
-3. Run the development server directly:
-   ```bash
-   node packages/xyd-documan/dist/dev.js
+   node packages/xyd-cli/dist/index.js
    ```
 
 > **Important**: The working directory (CWD) when running the development server must be the directory where your documentation files are located. For example, if your docs are in `docs/`, you should run the command from that directory:
 > ```bash
 > cd docs
-> node ../packages/xyd-documan/dist/dev.js
+> node packages/xyd-cli/dist/index.js
 > ```
 
 This approach is equivalent to running `xyd dev` but allows for better integration with the development environment, especially for Hot Module Replacement (HMR) when making changes to styles or components.
@@ -249,13 +244,6 @@ This approach is equivalent to running `xyd dev` but allows for better integrati
 When developing documents, you can use the following environment flags:
 
 - `XYD_DEV_MODE=1`: Enables development mode
+- `XYD_VERBOSE=1`: Enables verbose output and debug logging
+- `XYD_NODE_PM=pnpm|bun|npm`: Specifies which package manager to use (auto-detects if not set) 
 
-Example with flags:
-```bash
-XYD_DEV_MODE=1 pnpm run --filter "./packages/xyd-documan" build
-```
-
-Note: This is the recommended approach during development as it:
-- Avoids rebuilding the CLI package every time you make changes to the documents
-- Enables proper HMR functionality for styles and components
-- Provides faster development cycles
