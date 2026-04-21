@@ -1,0 +1,6 @@
+{
+  "name": "xyd-fixture-3-todo-app",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js"
+}

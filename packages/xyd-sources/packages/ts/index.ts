@@ -18,9 +18,34 @@ const importedFiles = new Set<string>();
 
 // TODO: SUPPORT GET FROM URL + VIRTUAL FS (OR NO FS JUST SET NEEDED OPTIONS VIA CODE)
 // TODO: in the future typedoc options?
+export interface SourcesToUniformV2Options {
+    cwd?: string;
+    tsconfig?: string;
+}
+
 export async function sourcesToUniformV2(
     root: string,
-    entryPoints: string[]
+    entryPoints: string[],
+    extraOptions?: SourcesToUniformV2Options,
+): Promise<{
+    references: Reference<ReferenceContext>[];
+    projectJson: TypeDoc.JSONOutput.ProjectReflection;
+} | undefined> {
+    const cwd = extraOptions?.cwd ?? root;
+    const originalCwd = process.cwd();
+    process.chdir(cwd);
+
+    try {
+        return await _sourcesToUniformV2(root, entryPoints, extraOptions);
+    } finally {
+        process.chdir(originalCwd);
+    }
+}
+
+async function _sourcesToUniformV2(
+    root: string,
+    entryPoints: string[],
+    extraOptions?: SourcesToUniformV2Options,
 ): Promise<{
     references: Reference<ReferenceContext>[];
     projectJson: TypeDoc.JSONOutput.ProjectReflection;
@@ -74,6 +99,10 @@ export async function sourcesToUniformV2(
         }
     }
 
+    if (extraOptions?.tsconfig) {
+        options.tsconfig = extraOptions.tsconfig;
+    }
+
     // TOOD: if react will not work then add []
     const app = await TypeDoc.Application.bootstrapWithPlugins(options);
     const project = await app.convert()
@@ -90,7 +119,14 @@ export async function sourcesToUniformV2(
         return
     }
 
-    const references = typedocToUniform(root, projectJson)
+    // Build a map of all reflections (including non-exported interfaces/types)
+    // from the full project before serialization. This allows resolving
+    // type arguments that reference non-exported types (e.g. createContext<T>).
+    // Build a map of ALL type declarations (including non-exported) using TS compiler
+    const allReflections = buildAllReflectionsFromTS(
+        options.entryPoints?.map(ep => typeof ep === 'string' ? ep : '') || [],
+    )
+    const references = typedocToUniform(root, projectJson, {allReflections})
     if (!references) {
         console.error('Failed to generate documentation.');
         return
@@ -99,6 +135,55 @@ export async function sourcesToUniformV2(
         references,
         projectJson
     }
+}
+
+/**
+ * Uses the TypeScript compiler to extract all interface/type declarations
+ * (including non-exported) from source files. Returns a map of
+ * typeName → [{name, type, comment, flags}] for each member.
+ */
+function buildAllReflectionsFromTS(filePaths: string[]): Record<string, any[]> {
+    const map: Record<string, any[]> = {}
+
+    for (const filePath of filePaths) {
+        const content = ts.sys.readFile(filePath)
+        if (!content) continue
+
+        const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true)
+
+        ts.forEachChild(sourceFile, (node) => {
+            if (ts.isInterfaceDeclaration(node)) {
+                const members: any[] = []
+                for (const member of node.members) {
+                    if (ts.isPropertySignature(member) && member.name) {
+                        const name = member.name.getText(sourceFile)
+                        const type = member.type ? member.type.getText(sourceFile) : ''
+                        const isOptional = !!member.questionToken
+                        const jsDoc = ts.getJSDocCommentsAndTags(member)
+                        let comment = ''
+                        for (const doc of jsDoc) {
+                            if (ts.isJSDoc(doc) && doc.comment) {
+                                comment = typeof doc.comment === 'string' ? doc.comment : doc.comment.map((c: any) => c.text || '').join('')
+                            }
+                        }
+                        members.push({name, type, comment, flags: {isOptional}})
+                    }
+                    if (ts.isMethodSignature(member) && member.name) {
+                        const name = member.name.getText(sourceFile)
+                        const returnType = member.type ? member.type.getText(sourceFile) : 'void'
+                        const params = member.parameters?.map(p => p.getText(sourceFile)).join(', ') || ''
+                        const isOptional = !!member.questionToken
+                        members.push({name, type: `(${params}) => ${returnType}`, comment: '', flags: {isOptional}})
+                    }
+                }
+                if (members.length) {
+                    map[node.name.text] = members
+                }
+            }
+        })
+    }
+
+    return map
 }
 
 // TODO: nested strategy

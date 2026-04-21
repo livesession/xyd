@@ -1,7 +1,8 @@
 # Dev Docs
 
-> Below docs sections describes how xyd works under the hood: concepts, architecture or conventions. 
+> Below docs sections describes how xyd works under the hood: concepts, architecture and conventions. 
 
+- @docs/DEVELOPMENT.md (**IMPORTANT**)
 - @docs/Overview.md
 - @docs/GettingStarted.md
 - @docs/InstallationAndCli.md
