@@ -1,0 +1,6 @@
+{
+  "name": "xyd-fixture-1-user-card",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js"
+}

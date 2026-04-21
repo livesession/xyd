@@ -17,11 +17,21 @@ const TXT = {
     Component: "Component",
 }
 
+export interface UniformToReactUniformOptions {
+    /**
+     * When true, treat all exported functions as components
+     * without requiring `@category Component` JSDoc tag.
+     */
+    autoDetect?: boolean;
+}
+
 export function uniformToReactUniform(
     references: Reference<TypeDocReferenceContext>[],
-    projectJson: TypeDoc.JSONOutput.ProjectReflection // TODO: in the future unimap
+    projectJson: TypeDoc.JSONOutput.ProjectReflection, // TODO: in the future unimap
+    options?: UniformToReactUniformOptions,
 ): Reference[] {
     const output: Reference[] = []
+    const autoDetect = options?.autoDetect ?? false
 
     let refBySymbolId: { [symbolId: string]: Reference } = {}
 
@@ -37,8 +47,13 @@ export function uniformToReactUniform(
     for (const reference of references) {
         const ctx = reference.context
 
-        if (ctx?.category !== "Component") {
+        if (!autoDetect && ctx?.category !== "Component") {
             console.warn(`skipping non-component: ${ctx?.symbolName}`)
+            continue
+        }
+
+        // In autoDetect mode, keep functions (components) and variables (contexts, etc.)
+        if (autoDetect && ctx?.symbolKind !== ReflectionKind.Function && ctx?.symbolKind !== ReflectionKind.Variable) {
             continue
         }
 
@@ -54,6 +69,13 @@ export function uniformToReactUniform(
         }
 
         for (const def of reference.definitions) {
+            // In autoDetect mode for variables, pass all definitions through
+            const isVariable = ctx?.symbolKind === ReflectionKind.Variable
+            if (autoDetect && isVariable) {
+                reactRef.definitions.push({...def, title: def.title || 'Type'})
+                continue
+            }
+
             if (!def.meta) {
                 continue
             }

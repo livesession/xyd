@@ -99,12 +99,15 @@ class TypeDocSignatureTextLoader extends MultiSignatureLoader {
 class Transformer {
     public packagePathMap: { [id: number]: string } = {};
     public signatureTextLoader!: TypeDocSignatureTextLoader;
+    public allReflections: Record<string, any[]>;
 
     constructor(
         private rootPath: string,
         protected project: JSONOutput.ProjectReflection,
-        protected references: Reference[] = []
+        protected references: Reference[] = [],
+        allReflections?: Record<string, any[]>,
     ) {
+        this.allReflections = allReflections || {};
         const packagePathMap = this.createPackagePathMap()
         if (packagePathMap) {
             this.packagePathMap = packagePathMap
@@ -164,15 +167,22 @@ class Transformer {
     }
 }
 
+export interface TypedocToUniformOptions {
+    /** Map of type name → property info for non-exported types (e.g. interfaces used in createContext<T>) */
+    allReflections?: Record<string, any[]>;
+}
+
 export function typedocToUniform(
     rootPath: string,
-    project: JSONOutput.ProjectReflection
+    project: JSONOutput.ProjectReflection,
+    options?: TypedocToUniformOptions,
 ): Reference[] {
     const references: Reference[] = []
     const transformer = new Transformer(
         rootPath,
         project,
-        references
+        references,
+        options?.allReflections,
     )
     const signatureTextLoader = new TypeDocSignatureTextLoader(
         project,
@@ -281,6 +291,30 @@ export function typedocToUniform(
                 }
 
                 const ref = jsEnumToUniformRef.call(
+                    transformer,
+                    child as DeclarationReflection
+                )
+
+                if (!ref) {
+                    break
+                }
+
+                ref.context = {
+                    ...ref.context,
+                    packageName: project.name,
+                } as TypeDocReferenceContext;
+
+                references.push(ref)
+
+                break
+            }
+
+            case ReflectionKind.Variable: {
+                if (!('kind' in child) || child.kind !== ReflectionKind.Variable) {
+                    break
+                }
+
+                const ref = jsVariableToUniformRef.call(
                     transformer,
                     child as DeclarationReflection
                 )
@@ -1014,6 +1048,129 @@ function jsEnumToUniformRef(
             }
 
             definitions.push(membersDef)
+        }
+    }
+
+    return ref
+}
+
+/**
+ * Resolves a type argument (e.g. from createContext<T>) into DefinitionProperty[].
+ * Handles references (looks up interface/type by symbol ID), unions (recurses
+ * into each member, skipping null/undefined), and inline reflections.
+ */
+function resolveTypeArgToProperties(
+    this: Transformer,
+    someType: SomeType,
+): DefinitionProperty[] {
+    if (someType.type === "union" && "types" in someType) {
+        // For unions like `AuthContextValue | null`, resolve each non-null member
+        const props: DefinitionProperty[] = []
+        for (const member of (someType as any).types) {
+            if (member.type === "intrinsic" && (member.name === "null" || member.name === "undefined")) {
+                continue
+            }
+            props.push(...resolveTypeArgToProperties.call(this, member as SomeType))
+        }
+        return props
+    }
+
+    if (someType.type === "reference" && "target" in someType) {
+        const targetName = (someType as any).name as string | undefined
+
+        // Look up the referenced interface/type in the project children
+        for (const child of this.project?.children || []) {
+            // Match by numeric ID (local reference)
+            if (typeof someType.target === "number" && child.id === someType.target && child.children?.length) {
+                return uniformProperties.call(this, child as unknown as DeclarationReflection)
+            }
+            // Match by name (cross-file / external reference)
+            if (targetName && child.name === targetName && child.children?.length) {
+                return uniformProperties.call(this, child as unknown as DeclarationReflection)
+            }
+        }
+
+        // Fallback: resolve from allReflections (includes non-exported types)
+        if (targetName && this.allReflections[targetName]?.length) {
+            const members = this.allReflections[targetName]
+            return members.map(m => ({
+                name: m.name,
+                type: m.type || '',
+                description: m.comment || '',
+                meta: m.flags?.isOptional ? [] : [{name: 'required' as const, value: 'true'}],
+            }))
+        }
+    }
+
+    if (someType.type === "reflection" && "declaration" in someType) {
+        return uniformProperties.call(this, (someType as any).declaration as DeclarationReflection)
+    }
+
+    return []
+}
+
+function jsVariableToUniformRef(
+    this: Transformer,
+    dec: DeclarationReflection
+) {
+    const definitions: Definition[] = []
+
+    const ref: Reference = {
+        title: dec.name,
+        canonical: "",
+        description: '',
+        context: undefined,
+        examples: {
+            groups: []
+        },
+        definitions
+    }
+
+    const declarationCtx = declarationUniformContext.call(this, dec)
+    if (declarationCtx) {
+        ref.context = {
+            ...ref.context,
+            ...declarationCtx
+        }
+    }
+    ref.canonical = uniformCanonical(dec, declarationCtx)
+
+    if (dec.comment) {
+        const description = commentToUniformDescription(dec.comment)
+        const group = uniformGroup(declarationCtx)
+
+        if (ref.context) {
+            ref.context.group = [
+                ...group,
+                "Variables"
+            ]
+        }
+
+        ref.description = description
+    }
+
+    // Extract type arguments from the variable type (e.g. createContext<T>)
+    if (dec.name === "AuthContext") {
+        fs.writeFileSync('/tmp/xyd-debug-authctx.json', JSON.stringify(dec.type, null, 2))
+    }
+    if (dec.type && typeof dec.type === 'object' && 'typeArguments' in dec.type) {
+        const typeArgs = (dec.type as any).typeArguments
+        if (typeArgs?.length) {
+            const typeDef: Definition = {
+                title: 'Type',
+                properties: []
+            }
+
+            for (const typeArg of typeArgs) {
+                const resolved = resolveTypeArgToProperties.call(this, typeArg as SomeType)
+                if (resolved.length) {
+                    typeDef.properties.push(...resolved)
+                }
+            }
+
+            if (typeDef.properties.length) {
+                definitions.push(typeDef)
+            }
         }
     }
 
