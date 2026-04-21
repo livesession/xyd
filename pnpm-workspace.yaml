@@ -1,5 +1,6 @@
 packages:
   - 'apps/apidocs-demo'
+  - 'apps/studio'
   - 'packages/*'
   - packages/xyd-ask-ai/examples/*
   - '!packages/xyd-js'
