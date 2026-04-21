@@ -15,7 +15,7 @@ import getFilesServiceOverride, {
   registerFileSystemOverlay,
 } from '@codingame/monaco-vscode-files-service-override'
 import getSearchServiceOverride from '@codingame/monaco-vscode-search-service-override'
-import getViewsServiceOverride from '@codingame/monaco-vscode-views-service-override'
+import getWorkbenchServiceOverride from '@codingame/monaco-vscode-workbench-service-override'
 import getExtensionsServiceOverride from '@codingame/monaco-vscode-extensions-service-override'
 import getExplorerServiceOverride from '@codingame/monaco-vscode-explorer-service-override'
 import getExtensionGalleryServiceOverride from '@codingame/monaco-vscode-extension-gallery-service-override'
@@ -162,7 +162,7 @@ export async function preInitialize() {
 let servicesReady = false
 let servicesPromise: Promise<void> | null = null
 
-export async function ensureServicesInitialized(): Promise<void> {
+export async function ensureServicesInitialized(container: HTMLElement): Promise<void> {
   if (servicesReady) return
   if (servicesPromise) return servicesPromise
 
@@ -189,8 +189,11 @@ export async function ensureServicesInitialized(): Promise<void> {
           ...getKeybindingsServiceOverride(),
           ...getLifecycleServiceOverride(),
           ...getSnippetsServiceOverride(),
-          ...getQuickaccessServiceOverride(),
-          ...getViewsServiceOverride(),
+          ...getQuickaccessServiceOverride({
+            isKeybindingConfigurationVisible: () => true,
+            shouldUseGlobalPicker: () => true,
+          }),
+          ...getWorkbenchServiceOverride(),
           ...getFilesServiceOverride(),
           ...getSearchServiceOverride(),
           ...getExtensionsServiceOverride(),
@@ -229,7 +232,7 @@ export async function ensureServicesInitialized(): Promise<void> {
             availableLanguages: [],
           }),
         },
-        document.body,
+        container,
         {
           workspaceProvider: {
             trusted: true,
@@ -250,6 +253,14 @@ export async function ensureServicesInitialized(): Promise<void> {
               nlsBaseUrl: '',
               publisherUrl: '',
             } as any,
+          },
+          defaultLayout: {
+            editors: [
+              {
+                uri: monaco.Uri.file('/workspace/docs.json'),
+                viewColumn: 1,
+              },
+            ],
           },
         }
       )
