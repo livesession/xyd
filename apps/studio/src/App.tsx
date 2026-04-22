@@ -1,24 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { ensureServicesInitialized } from './setup'
 import { registerAiChat } from './features/ai'
+import { registerPreview } from './features/preview'
+import { registerGitCommands } from './features/git'
 
-// Theme defaults
-import '@codingame/monaco-vscode-theme-defaults-default-extension'
+// Bundled + VSIX extensions (static imports)
+import './extensions'
 
-// Language extensions
-import '@codingame/monaco-vscode-javascript-default-extension'
-import '@codingame/monaco-vscode-typescript-basics-default-extension'
-import '@codingame/monaco-vscode-json-default-extension'
-import '@codingame/monaco-vscode-css-default-extension'
-import '@codingame/monaco-vscode-html-default-extension'
-import '@codingame/monaco-vscode-markdown-basics-default-extension'
-import '@codingame/monaco-vscode-yaml-default-extension'
-
-// Standalone language features
-import '@codingame/monaco-vscode-standalone-typescript-language-features'
-import '@codingame/monaco-vscode-standalone-json-language-features'
-import '@codingame/monaco-vscode-standalone-css-language-features'
-import '@codingame/monaco-vscode-standalone-html-language-features'
+import {
+  waitForVsixExtensions,
+  installMarketplaceExtensions,
+  applyDefaultExtensionSettings,
+} from './extensions'
 
 export function App() {
   const [error, setError] = useState<string | null>(null)
@@ -33,7 +26,19 @@ export function App() {
       try {
         await ensureServicesInitialized(container)
         if (disposed) return
+
+        // Wait for VSIX extensions (Symbols icons)
+        await waitForVsixExtensions()
+
         await registerAiChat()
+        await registerPreview()
+        await registerGitCommands()
+
+        // Install marketplace extensions (GitHub Theme) + apply settings
+        const vscodeApi = await import('vscode')
+        await installMarketplaceExtensions(vscodeApi)
+        await applyDefaultExtensionSettings(vscodeApi)
+
         console.log('[xyd studio] initialized')
       } catch (e: any) {
         console.error('[xyd studio] init failed:', e)

@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import nodepod from '@scelar/nodepod/vite'
+import vsixPlugin from '@codingame/monaco-vscode-rollup-vsix-plugin'
 import type { Plugin } from 'vite'
 
 // VSCode CSS imports need to be loaded as strings to prevent style conflicts
@@ -29,7 +31,7 @@ function loadVscodeCssAsString(): Plugin {
   }
 }
 
-// Enable SharedArrayBuffer support (needed for some language features)
+// Enable SharedArrayBuffer support (needed for Nodepod + some language features)
 function configureResponseHeaders(): Plugin {
   return {
     name: 'configure-response-headers',
@@ -44,7 +46,7 @@ function configureResponseHeaders(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), loadVscodeCssAsString(), configureResponseHeaders()],
+  plugins: [react(), nodepod(), vsixPlugin(), loadVscodeCssAsString(), configureResponseHeaders()],
   build: {
     target: 'esnext',
   },

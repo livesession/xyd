@@ -9,11 +9,7 @@ import getLanguagesServiceOverride from '@codingame/monaco-vscode-languages-serv
 import getModelServiceOverride from '@codingame/monaco-vscode-model-service-override'
 import getTextmateServiceOverride from '@codingame/monaco-vscode-textmate-service-override'
 import getThemeServiceOverride from '@codingame/monaco-vscode-theme-service-override'
-import getFilesServiceOverride, {
-  RegisteredMemoryFile,
-  RegisteredFileSystemProvider,
-  registerFileSystemOverlay,
-} from '@codingame/monaco-vscode-files-service-override'
+import getFilesServiceOverride from '@codingame/monaco-vscode-files-service-override'
 import getSearchServiceOverride from '@codingame/monaco-vscode-search-service-override'
 import getWorkbenchServiceOverride from '@codingame/monaco-vscode-workbench-service-override'
 import getExtensionsServiceOverride from '@codingame/monaco-vscode-extensions-service-override'
@@ -27,18 +23,24 @@ import getQuickaccessServiceOverride from '@codingame/monaco-vscode-quickaccess-
 import getNotificationsServiceOverride from '@codingame/monaco-vscode-notifications-service-override'
 import getDialogsServiceOverride from '@codingame/monaco-vscode-dialogs-service-override'
 import getOutputServiceOverride from '@codingame/monaco-vscode-output-service-override'
+import getPreferencesServiceOverride from '@codingame/monaco-vscode-preferences-service-override'
 import getMarkersServiceOverride from '@codingame/monaco-vscode-markers-service-override'
 import getLogServiceOverride from '@codingame/monaco-vscode-log-service-override'
 import getEnvironmentServiceOverride from '@codingame/monaco-vscode-environment-service-override'
 import getTerminalServiceOverride from '@codingame/monaco-vscode-terminal-service-override'
+import { terminalBackend } from './features/terminal'
 import getStatusBarServiceOverride from '@codingame/monaco-vscode-view-status-bar-service-override'
 import getTitleBarServiceOverride from '@codingame/monaco-vscode-view-title-bar-service-override'
 import getBannerServiceOverride from '@codingame/monaco-vscode-view-banner-service-override'
+import getScmServiceOverride from '@codingame/monaco-vscode-scm-service-override'
 import getChatServiceOverride from '@codingame/monaco-vscode-chat-service-override'
 import getAiServiceOverride from '@codingame/monaco-vscode-ai-service-override'
 import getLocalizationServiceOverride from '@codingame/monaco-vscode-localization-service-override'
 import * as monaco from 'monaco-editor'
 import * as vscode from 'vscode'
+
+import { getNodepod } from './features/nodepod'
+import { registerNodepodFileSystem } from './features/nodepod-fs-provider'
 
 // --- Workers ---
 if (typeof window !== 'undefined') {
@@ -66,83 +68,10 @@ if (typeof window !== 'undefined') {
   }
 }
 
-// --- Filesystem ---
-const fileSystemProvider = new RegisteredFileSystemProvider(false)
-
-fileSystemProvider.registerFile(
-  new RegisteredMemoryFile(
-    vscode.Uri.file('/workspace/docs.json'),
-    JSON.stringify(
-      {
-        $schema: 'https://xyd.dev/schema.json',
-        theme: { name: 'poetry' },
-        navigation: {
-          sidebar: [
-            {
-              route: '/docs',
-              pages: [{ title: 'Introduction', href: '/docs/introduction' }],
-            },
-          ],
-        },
-      },
-      null,
-      2
-    )
-  )
-)
-
-fileSystemProvider.registerFile(
-  new RegisteredMemoryFile(
-    vscode.Uri.file('/workspace/content/introduction.md'),
-    `---
-title: Introduction
-description: Welcome to xyd documentation
----
-
-# Welcome to xyd
-
-This is your first documentation page. Edit this file to get started.
-
-## Features
-
-- **Markdown/MDX** support
-- **OpenAPI** documentation
-- **GraphQL** documentation
-- **Themes** and customization
-- **Plugin** system
-
-\`\`\`typescript
-import { Settings } from '@xyd-js/core';
-
-const settings: Settings = {
-  theme: { name: 'poetry' },
-};
-
-export default settings;
-\`\`\`
-`
-  )
-)
-
-fileSystemProvider.registerFile(
-  new RegisteredMemoryFile(
-    vscode.Uri.file('/workspace/package.json'),
-    JSON.stringify(
-      {
-        name: 'my-docs',
-        private: true,
-        scripts: { dev: 'xyd', build: 'xyd build' },
-        dependencies: { 'xyd-js': 'latest' },
-      },
-      null,
-      2
-    )
-  )
-)
-
 // --- Pre-initialization ---
 const defaultConfiguration = JSON.stringify({
-  'workbench.colorTheme': 'Default Dark Modern',
+  'workbench.colorTheme': 'GitHub Light Default',
+  'workbench.iconTheme': 'symbols',
   'workbench.activityBar.location': 'default',
   'editor.fontSize': 14,
   'editor.minimap.enabled': false,
@@ -151,7 +80,7 @@ const defaultConfiguration = JSON.stringify({
 
 const defaultKeybindings = JSON.stringify([])
 
-export async function preInitialize() {
+async function preInitialize() {
   await Promise.all([
     initUserConfiguration(defaultConfiguration),
     initUserKeybindings(defaultKeybindings),
@@ -167,8 +96,9 @@ export async function ensureServicesInitialized(container: HTMLElement): Promise
   if (servicesPromise) return servicesPromise
 
   servicesPromise = (async () => {
-    // Register filesystem BEFORE init
-    registerFileSystemOverlay(1, fileSystemProvider)
+    // Boot Nodepod and register its filesystem as VS Code's filesystem
+    const pod = await getNodepod()
+    registerNodepodFileSystem(pod)
 
     await preInitialize()
 
@@ -199,10 +129,11 @@ export async function ensureServicesInitialized(container: HTMLElement): Promise
           ...getExtensionsServiceOverride(),
           ...getExtensionGalleryServiceOverride({ webOnly: false }),
           ...getExplorerServiceOverride(),
-          ...getTerminalServiceOverride(),
+          ...getTerminalServiceOverride(terminalBackend),
           ...getStatusBarServiceOverride(),
           ...getTitleBarServiceOverride(),
           ...getBannerServiceOverride(),
+          ...getScmServiceOverride(),
           ...getChatServiceOverride({
             defaultAccount: {
               entitlementsData: {
@@ -225,6 +156,7 @@ export async function ensureServicesInitialized(container: HTMLElement): Promise
           }),
           ...getAiServiceOverride(),
           ...getOutputServiceOverride(),
+          ...getPreferencesServiceOverride(),
           ...getMarkersServiceOverride(),
           ...getLocalizationServiceOverride({
             async setLocale() {},
