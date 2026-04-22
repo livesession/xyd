@@ -1,0 +1,3 @@
+[submodule "third-party/nodepod"]
+	path = third-party/nodepod
+	url = https://github.com/livesession/Nodepod
