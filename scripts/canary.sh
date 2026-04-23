@@ -28,20 +28,23 @@ pnpm run build
 echo "📦 Publishing @xyd-js/* packages..."
 node ./release.js --prod --snapshot "${CANARY_VERSION}"
 
-# Step 3: Find the published canary version of @xyd-js/cli
-echo "🔍 Finding published @xyd-js/cli canary version..."
-CANARY_CLI_VERSION=$(npm view @xyd-js/cli versions --json | node -e "
-  const versions = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
-  const canary = versions.filter(v => v.includes('${CANARY_VERSION}'));
-  console.log(canary[canary.length - 1]);
-")
-
-echo "   Found: @xyd-js/cli@${CANARY_CLI_VERSION}"
+# Step 3: Read the canary version of @xyd-js/cli from local package.json
+# (already versioned by changeset in the previous step)
+CANARY_CLI_VERSION=$(node -p "require('./packages/xyd-cli/package.json').version")
+echo "   @xyd-js/cli version: ${CANARY_CLI_VERSION}"
 
 # Step 4: Update xyd-js package and publish with canary tag
 echo "📦 Publishing xyd-js canary..."
 cd packages/xyd-js
-npm install "@xyd-js/cli@${CANARY_CLI_VERSION}" --save-exact
+
+# Write dependency directly (avoids npm install resolving full dep tree)
+node -e "
+  const fs = require('fs');
+  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  pkg.dependencies['@xyd-js/cli'] = '${CANARY_CLI_VERSION}';
+  fs.writeFileSync('package.json', JSON.stringify(pkg, null, 4) + '\n');
+"
+
 npm version "0.0.0-${CANARY_VERSION}" --no-git-tag-version
 npm publish --tag canary
 cd ../..
