@@ -30,7 +30,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -106,8 +105,6 @@ jobs:
 
           echo "📦 Publishing xyd-js@0.0.0-${{ steps.version.outputs.CANARY_VERSION }} with canary tag"
           npm publish --tag canary
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: ✅ Success
         run: |
