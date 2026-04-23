@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-5-rollup-user-card",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs"
+  }
+}

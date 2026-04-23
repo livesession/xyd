@@ -6,6 +6,9 @@ export {
 
     oapResponseOperationToUniformDefinition,
 
+    schemaObjectToUniformDefinitionProperties,
+    schemaObjectToUniformDefinitionProperty,
+
     getXDocs,
     uniformPluginXDocsSidebar
 } from "./src";
