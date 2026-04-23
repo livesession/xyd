@@ -48,6 +48,7 @@ xyd/
 │   ├── xyd-ui/                     # Primitives: Radix UI wrappers
 │   ├── xyd-atlas/                  # Design tokens: tokens.css
 │   ├── xyd-theme-*/                # 6 themes: poetry, cosmo, etc.
+│   ├── xyd-source-react-runtime/    # Build plugin: typia → uniform for React components
 │   ├── xyd-plugin-*/               # Plugins: docs, orama, algolia
 │   ├── xyd-ask-ai/                 # AI: LitElement + React wrapper
 │   └── xyd-storybook/              # Component documentation
@@ -93,6 +94,7 @@ The workspace explicitly excludes:
 | `@xyd-js/openapi` | `.` | `oapSchemaToReferences()` | OpenAPI spec → Uniform conversion |
 | `@xyd-js/gql` | `.` | GraphQL SDL parsing | GraphQL schema → Uniform conversion |
 | `@xyd-js/sources` | `.` | `uniformToMiniUniform()` | TypeDoc integration, type resolution |
+| `@xyd-js/source-react-runtime` | `.`, `./esbuild` | `xydSourceReactRuntime()` | Build plugin: auto-detects React components, uses typia for type resolution, converts to uniform via openapi |
 
 ### UI and Theming Packages
 
@@ -210,10 +212,26 @@ The project uses Biome for linting and formatting with Husky integration for pre
 
 ## Package Versioning
 
-All packages use consistent versioning with snapshot builds following the pattern `0.1.0-build.XXX`.
+There are two versioning strategies depending on the package:
+
+### Scoped packages (`@xyd-js/*`)
+
+All `@xyd-js/*` packages currently use snapshot builds that are auto-published on every push to master. The version format is `0.1.0-build.XXX` where `XXX` is an incrementing build number. Semver versioning for these packages is still work in progress.
 
 Examples:
 - `@xyd-js/cli`: `0.1.0-build.342`
 - `@xyd-js/documan`: `0.1.0-build.201`
 - `@xyd-js/components`: `0.1.0-build.180`
 - `@xyd-js/atlas`: `0.1.0-build.185`
+
+### CLI package (`xyd-js`)
+
+The global CLI package `xyd-js` (published separately to npm) uses semver with pre-release tags:
+
+| Version Type | Format | Example | When |
+|-------------|--------|---------|------|
+| Stable | `v*.*.*` | `v0.1.0` | Tag push triggers full release pipeline |
+| Alpha | `v*.*.*-alpha.*` | `v0.1.0-alpha.6` | Pre-release for early testing |
+| Beta | `v*.*.*-beta.*` | `v0.2.0-beta.1` | Pre-release for wider testing |
+
+Stable releases go through the full test suite (unit, E2E, Node support matrix) before npm publish. Pre-releases are published with a simplified pipeline. Snapshot builds can be promoted to stable releases via the manual `cli-release-publish` workflow.

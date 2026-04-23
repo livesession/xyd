@@ -1,6 +1,6 @@
 # @xyd-js/source-react-runtime
 
-Build plugin that auto-detects React components and injects runtime type metadata (`__xydUniform`) using [typia](https://typia.io/) for TypeScript type resolution and [@xyd-js/openapi](../xyd-openapi) for JSON Schema → xyd uniform conversion.
+Build plugin that auto-detects React components and injects runtime type metadata (`__xydUniform` by default) using [typia](https://typia.io/) for TypeScript type resolution and [@xyd-js/openapi](../xyd-openapi) for JSON Schema → xyd uniform conversion.
 
 No manual annotations needed — just add the plugin to your build config.
 
@@ -21,13 +21,12 @@ No manual annotations needed — just add the plugin to your build config.
 ```ts
 // vite.config.ts
 import { defineConfig } from "vite";
-import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { xydSourceReactRuntime } from "@xyd-js/source-react-runtime";
 
 export default defineConfig({
   plugins: [
-    xydSourceReactRuntime({ tsconfig: resolve(__dirname, "tsconfig.json") }),
+    xydSourceReactRuntime(),
     react(),
   ],
 });
@@ -37,18 +36,14 @@ export default defineConfig({
 
 ```js
 // rollup.config.mjs
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import typescript from "@rollup/plugin-typescript";
 import { xydSourceReactRuntime } from "@xyd-js/source-react-runtime";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default {
   input: "src/index.ts",
   plugins: [
-    xydSourceReactRuntime({ tsconfig: resolve(__dirname, "tsconfig.json") }),
-    typescript({ tsconfig: resolve(__dirname, "tsconfig.json") }),
+    xydSourceReactRuntime(),
+    typescript(),
   ],
 };
 ```
@@ -57,12 +52,8 @@ export default {
 
 ```js
 // esbuild.config.mjs
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import * as esbuild from "esbuild";
 import { xydSourceReactRuntimeEsbuild } from "@xyd-js/source-react-runtime/esbuild";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 await esbuild.build({
   entryPoints: ["src/index.ts"],
@@ -70,16 +61,18 @@ await esbuild.build({
   bundle: true,
   format: "esm",
   plugins: [
-    xydSourceReactRuntimeEsbuild({ tsconfig: resolve(__dirname, "tsconfig.json") }),
+    xydSourceReactRuntimeEsbuild(),
   ],
 });
 ```
 
 ## Options
 
+All options are optional.
+
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `tsconfig` | `string` | `./tsconfig.json` | Path to `tsconfig.json` |
+| `tsconfig` | `string` | `./tsconfig.json` | Path to `tsconfig.json`. Configurable for monorepos or custom locations. |
 | `propertyName` | `string` | `__xydUniform` | Property name for the injected metadata |
 
 ```ts
