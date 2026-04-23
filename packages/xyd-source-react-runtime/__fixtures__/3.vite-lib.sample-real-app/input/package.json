@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-3-vite-lib-sample-real-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  }
+}

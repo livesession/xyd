@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-8-tanstack-router",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  }
+}
