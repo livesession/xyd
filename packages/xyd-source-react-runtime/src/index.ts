@@ -8,6 +8,8 @@ export {jsonSchemaToUniformReference} from './json-schema-to-uniform';
 export interface XydSourceReactRuntimeOptions {
     /** Path to tsconfig.json. Required for typia's TypeScript transform. */
     tsconfig?: string;
+    /** Property name for the injected uniform data. Defaults to `__xydUniform`. */
+    propertyName?: string;
 }
 
 interface ComponentInfo {
@@ -42,6 +44,7 @@ interface ComponentInfo {
 export function xydSourceReactRuntime(options?: XydSourceReactRuntimeOptions): Plugin {
     // Map of fileName → typia-transformed output with __xydSchema injected
     let transformedFiles: Map<string, string> = new Map();
+    const propName = options?.propertyName || '__xydUniform';
 
     return {
         name: 'xyd-source-react-runtime',
@@ -59,7 +62,7 @@ export function xydSourceReactRuntime(options?: XydSourceReactRuntimeOptions): P
             const transformed = transformedFiles.get(path.resolve(id));
             if (!transformed) return null;
 
-            return convertSchemaToUniform(transformed);
+            return convertSchemaToUniform(transformed, propName);
         },
 
         // Rollup path: load hook returns our compiled JS before Rollup's parser
@@ -69,7 +72,7 @@ export function xydSourceReactRuntime(options?: XydSourceReactRuntimeOptions): P
             const transformed = transformedFiles.get(path.resolve(id));
             if (!transformed) return null;
 
-            return convertSchemaToUniform(transformed);
+            return convertSchemaToUniform(transformed, propName);
         },
     };
 }
@@ -404,7 +407,7 @@ function extractPropsTypeFromParams(
 /**
  * Finds __xydSchema assignments and converts JSON Schema → xyd uniform format.
  */
-function convertSchemaToUniform(code: string): {code: string; map: null} | null {
+function convertSchemaToUniform(code: string, propertyName: string = '__xydUniform'): {code: string; map: null} | null {
     const schemaRegex = /(\w+)\.__xydSchema\s*=\s*(\{[\s\S]*?\n\});/g;
     let modified = code;
     let hasChanges = false;
@@ -421,7 +424,7 @@ function convertSchemaToUniform(code: string): {code: string; map: null} | null 
 
             modified = modified.replace(
                 match[0],
-                `${componentName}.__xydUniform = JSON.parse('${jsonStr}');`,
+                `${componentName}.${propertyName} = JSON.parse('${jsonStr}');`,
             );
             hasChanges = true;
         } catch (e) {

@@ -31,7 +31,7 @@ function findJsFiles(dir: string): string[] {
  * Concatenates all JS files from the build output into a single string,
  * with file separators so you can see the full transformed code.
  */
-function collectBuildOutput(buildDir: string, inputRoot: string): string {
+function collectBuildOutput(buildDir: string, inputRoot: string, propertyName: string = '__xydUniform'): string {
     const jsFiles = findJsFiles(buildDir);
     const parts: string[] = [];
 
@@ -39,8 +39,7 @@ function collectBuildOutput(buildDir: string, inputRoot: string): string {
         const relativePath = path.relative(buildDir, file);
         const code = fs.readFileSync(file, 'utf-8');
 
-        // Only include files that have __xydUniform
-        if (!code.includes('__xydUniform')) continue;
+        if (!code.includes(propertyName)) continue;
 
         parts.push(`// === ${relativePath} ===`);
         parts.push(code);
@@ -61,7 +60,7 @@ function collectBuildOutput(buildDir: string, inputRoot: string): string {
  *
  * Each fixture is a real app with its own framework config and build command.
  */
-export async function testSourceReactRuntime(fixtureName: string) {
+export async function testSourceReactRuntime(fixtureName: string, propertyName: string = '__xydUniform') {
     const inputRoot = fullFixturePath(`${fixtureName}/input`);
 
     // Clean previous build outputs
@@ -80,10 +79,10 @@ export async function testSourceReactRuntime(fixtureName: string) {
     }
 
     // Collect full build output code
-    const result = collectBuildOutput(buildDir, inputRoot);
+    const result = collectBuildOutput(buildDir, inputRoot, propertyName);
 
     // Verify at least one component was injected
-    expect(result).toContain('__xydUniform');
+    expect(result).toContain(propertyName);
 
     // Save snapshot
     const snapshotPath = fullFixturePath(`${fixtureName}/output.js`);

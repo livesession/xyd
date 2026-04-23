@@ -1,7 +1,7 @@
 {
   "name": "@xyd-js/source-react-runtime",
   "version": "0.1.0-build.1",
-  "description": "Vite plugin that uses typia to generate JSON Schema from React component props and converts to xyd uniform format at build time",
+  "description": "Build plugin (Vite, Rollup, esbuild) that auto-detects React components and injects runtime type metadata using typia and xyd uniform format",
   "main": "./dist/index.js",
   "type": "module",
   "exports": {

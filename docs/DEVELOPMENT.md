@@ -38,9 +38,11 @@ Every fixture contains an **input** and an expected **output**. The format depen
 | `xyd-gql` | `input.graphql` | `output.json` |
 | `xyd-openapi` | `input.yaml` | `output.json` |
 | `xyd-opencli-remark` | `input.md` | `output.md` |
-| `xyd-source-react-babel-runtime` | `input/` (folder with `src/`, `package.json`, `tsconfig.json`) | `output.js` |
+| `xyd-source-react-runtime` | `input/` (self-contained app with `src/`, `package.json`, build config) | `output.js` |
 
-For simple converters (OpenAPI, GraphQL, remark), input and output are single files. For more complex scenarios (Vite builds, multi-file projects), `input/` is a folder containing the full project source.
+For simple converters (OpenAPI, GraphQL, remark), input and output are single files. For build plugins like `xyd-source-react-runtime`, each fixture is a self-contained app with its own bundler config (`vite.config.ts`, `rollup.config.mjs`, `esbuild.config.mjs`) and a `build` script in `package.json`. The test runs `pnpm build` and snapshots the output.
+
+Fixture naming can also encode the build environment: `1.vite-lib.user-card`, `5.rollup.user-card`, `7.react-router.app`.
 
 ### Test structure
 

@@ -5,7 +5,14 @@ import {testSourceReactRuntime} from './utils';
 const tests: {
     name: string;
     description: string;
+    propertyName?: string;
 }[] = [
+    // advanced/optional
+    {
+        name: '-1.vite-lib.custom-property',
+        description: 'custom propertyName: injects __docs instead of __xydUniform',
+        propertyName: '__docs',
+    },
     // vite-lib
     {
         name: '1.vite-lib.user-card',
@@ -48,7 +55,7 @@ const tests: {
 describe('xyd-source-react-runtime', () => {
     for (const t of tests) {
         it(t.description, async () => {
-            await testSourceReactRuntime(t.name);
+            await testSourceReactRuntime(t.name, t.propertyName);
         }, 60_000);
     }
 });
