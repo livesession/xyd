@@ -11,6 +11,8 @@ const noPublish = process.argv.includes('--no-publish');
 // const snapshot = process.argv.includes('--snapshot');
 const snapshotIndex = process.argv.indexOf('--snapshot');
 const snapshot = snapshotIndex !== -1 ? process.argv[snapshotIndex + 1] : false;
+const tagIndex = process.argv.indexOf('--tag');
+const tag = tagIndex !== -1 ? process.argv[tagIndex + 1] : false;
 
 // Helper function to run commands
 function runCommand(command, description) {
@@ -114,9 +116,10 @@ async function main() {
 
         // Step 5: Publish all CLI dependencies packages
         if (!noPublish) {
+            const tagFlag = tag ? ` --tag ${tag}` : '';
             const publishCommand = isProduction
-                ? 'pnpm changeset publish'
-                : 'npm_config_registry=http://localhost:4873 pnpm changeset publish';
+                ? `pnpm changeset publish${tagFlag}`
+                : `npm_config_registry=http://localhost:4873 pnpm changeset publish${tagFlag}`;
             runCommand(publishCommand, 'Publishing packages');
         }
     }

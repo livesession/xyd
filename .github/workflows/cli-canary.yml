@@ -81,9 +81,11 @@ jobs:
           echo "🔑 Commit: ${SHORT_SHA}"
 
       - name: 🐤 Publish canary packages
-        run: node ./release.js --prod --snapshot ${{ steps.version.outputs.CANARY_VERSION }}
+        run: node ./release.js --prod --tag canary --snapshot ${{ steps.version.outputs.CANARY_VERSION }}
 
       - name: 📦 Publish xyd-js canary
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           # Read the canary version of @xyd-js/cli from its local package.json
           # (already versioned by changeset in the previous step)
