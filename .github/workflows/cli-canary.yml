@@ -1,0 +1,114 @@
+name: 🐤 CLI Canary Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build canary from (default: current branch)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  canary-release:
+    name: 🐤 Canary Release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 22.12.0 ]
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.10.0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 'latest'
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install the packages
+        run: pnpm i
+
+      - name: 🏗 Build packages
+        run: pnpm run build
+
+      - name: 🔐 Setup npm auth
+        run: |
+          echo "registry=https://registry.npmjs.org" >> ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 🕵️ Determine canary version
+        id: version
+        run: |
+          SHA=$(git rev-parse HEAD)
+          SHORT_SHA=${SHA::7}
+          BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          CANARY_VERSION="canary-${SHORT_SHA}"
+          echo "CANARY_VERSION=${CANARY_VERSION}" >> $GITHUB_OUTPUT
+          echo "📦 Canary version: ${CANARY_VERSION}"
+          echo "🌿 Branch: ${BRANCH}"
+          echo "🔑 Commit: ${SHORT_SHA}"
+
+      - name: 🐤 Publish canary packages
+        run: node ./release.js --prod --snapshot ${{ steps.version.outputs.CANARY_VERSION }}
+
+      - name: 📦 Publish xyd-js canary
+        run: |
+          cd packages/xyd-js
+
+          # Find the canary version of @xyd-js/cli that was just published
+          CANARY_CLI_VERSION=$(npm view @xyd-js/cli versions --json | node -e "
+            const versions = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+            const canary = versions.filter(v => v.includes('${{ steps.version.outputs.CANARY_VERSION }}'));
+            console.log(canary[canary.length - 1]);
+          ")
+
+          echo "📦 Installing @xyd-js/cli@${CANARY_CLI_VERSION}"
+          npm install @xyd-js/cli@${CANARY_CLI_VERSION} --save-exact
+
+          # Set canary version on xyd-js package
+          npm version 0.0.0-${{ steps.version.outputs.CANARY_VERSION }} --no-git-tag-version
+
+          echo "📦 Publishing xyd-js@0.0.0-${{ steps.version.outputs.CANARY_VERSION }} with canary tag"
+          npm publish --tag canary
+
+      - name: ✅ Success
+        run: |
+          echo "✅ Canary release published!"
+          echo ""
+          echo "Install with:"
+          echo "  bun add -g xyd-js@canary"
+          echo "  npm i -g xyd-js@canary"
+          echo ""
+          echo "Version: 0.0.0-${{ steps.version.outputs.CANARY_VERSION }}"
