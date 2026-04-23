@@ -1,5 +1,5 @@
-// === client/assets/home-D72tcYOU.js ===
-import { p as jsxRuntimeExports, t as Link, w as withComponentProps, a as reactExports } from "./chunk-EVOBXE3Y-BCX1EVmr.js";
+// === client/assets/home-HASH.js ===
+import { p as jsxRuntimeExports, t as Link, w as withComponentProps, a as reactExports } from "./chunk-EVOBXE3Y-HASH.js";
 function ProductCard({ product, onAddToCart, layout = "grid" }) {
   return jsxRuntimeExports.jsxs("div", { className: `product-card product-card--${layout}`, children: [jsxRuntimeExports.jsx(Link, { to: `/products/${product.id}`, children: jsxRuntimeExports.jsx("h3", { children: product.name }) }), jsxRuntimeExports.jsxs("span", { children: ["$", product.price] }), jsxRuntimeExports.jsx("button", { type: "button", disabled: !product.inStock, onClick: () => onAddToCart(product.id), children: product.inStock ? "Add to Cart" : "Out of Stock" })] });
 }

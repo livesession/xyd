@@ -47,7 +47,12 @@ function collectBuildOutput(buildDir: string, inputRoot: string): string {
         parts.push('');
     }
 
-    return parts.join('\n').split(inputRoot).join('<ROOT>');
+    return parts.join('\n')
+        .split(inputRoot).join('<ROOT>')
+        .replace(/[-_\w]+-[A-Za-z0-9_-]{6,10}\.(js|css)/g, (match) => {
+            // Normalize content hashes in filenames: home-BpHCO2Vo.js → home-HASH.js
+            return match.replace(/-[A-Za-z0-9_-]{6,10}\./, '-HASH.');
+        });
 }
 
 /**
@@ -82,7 +87,7 @@ export async function testSourceReactRuntime(fixtureName: string) {
 
     // Save snapshot
     const snapshotPath = fullFixturePath(`${fixtureName}/output.js`);
-    // fs.writeFileSync(snapshotPath, result);
+    fs.writeFileSync(snapshotPath, result);
 
     // Compare
     const expected = fs.readFileSync(snapshotPath, 'utf8');
