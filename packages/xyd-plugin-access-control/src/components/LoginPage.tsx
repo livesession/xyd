@@ -22,16 +22,42 @@ export default function LoginPage() {
   const description = config?.login?.description || "";
   const logo = config?.login?.logo || "";
 
+  // Determine the external auth URL based on provider type
   const loginUrl = config?.provider?.loginUrl || "";
-  const isSelfHostedLogin = !loginUrl || loginUrl === "/login";
+  const authorizationUrl = config?.provider?.authorizationUrl || "";
+  const hasExternalAuth = providerType === "oauth"
+    ? !!authorizationUrl
+    : !!loginUrl && loginUrl !== "/login";
 
   const handleRedirectLogin = () => {
-    if (isSelfHostedLogin) return;
-
     const params = new URLSearchParams(window.location.search);
     const redirect = params.get("redirect") || "/";
-    const sep = loginUrl.includes("?") ? "&" : "?";
-    window.location.href = `${loginUrl}${sep}redirect=${encodeURIComponent(redirect)}`;
+
+    if (providerType === "oauth" && authorizationUrl) {
+      // OAuth: redirect to authorization URL with proper OAuth params
+      const callbackPath = config?.provider?.callbackPath || "/auth/callback";
+      const redirectUri = window.location.origin + callbackPath;
+      const scopes = config?.provider?.scopes || [];
+      const clientId = config?.provider?.clientId || "";
+
+      const oauthParams = new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        response_type: "code",
+        scope: scopes.join(" "),
+        state: redirect,
+      });
+
+      window.location.href = `${authorizationUrl}?${oauthParams.toString()}`;
+      return;
+    }
+
+    if (loginUrl && loginUrl !== "/login") {
+      // JWT: redirect to external login URL
+      const sep = loginUrl.includes("?") ? "&" : "?";
+      window.location.href = `${loginUrl}${sep}redirect=${encodeURIComponent(redirect)}`;
+      return;
+    }
   };
 
   const handleTestLogin = (groups: string[]) => {
@@ -108,7 +134,11 @@ export default function LoginPage() {
           />
           <button type="submit" style={btnStyle}>Continue</button>
         </form>
-      ) : isSelfHostedLogin ? (
+      ) : hasExternalAuth ? (
+        <button onClick={handleRedirectLogin} style={btnStyle}>
+          Sign in
+        </button>
+      ) : (
         <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 8 }}>
           <button onClick={() => handleTestLogin([])} style={btnStyle}>
             Sign in as User
@@ -117,10 +147,6 @@ export default function LoginPage() {
             Sign in as Admin
           </button>
         </div>
-      ) : (
-        <button onClick={handleRedirectLogin} style={btnStyle}>
-          Sign in
-        </button>
       )}
     </div>
   );
