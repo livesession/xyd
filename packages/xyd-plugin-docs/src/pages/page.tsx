@@ -2,7 +2,7 @@ import path from "node:path";
 
 import * as React from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
-import { useMemo, useContext, ReactElement, SVGProps, useEffect } from "react";
+import { useMemo, useContext, useState, ReactElement, SVGProps, useEffect } from "react";
 import { redirect, ScrollRestoration, useLocation, useNavigation } from "react-router";
 
 import { MetadataMap, Metadata, Settings } from "@xyd-js/core"
@@ -41,6 +41,12 @@ function getPathname(url: string, basename?: string) {
     return pathname.replace(/^\//, '');
 }
 
+declare global {
+    interface Window {
+        __xydAuthState?: { authenticated: boolean; groups: string[]; token: string | null };
+    }
+}
+
 interface loaderData {
     sidebarGroups: FwSidebarItemProps[]
     breadcrumbs: IBreadcrumb[],
@@ -52,6 +58,10 @@ interface loaderData {
     navlinks?: INavLinks,
     editLink?: string,
     canPassComponents?: boolean
+    /** When true, this page is protected and content was excluded from SSR */
+    shellOnly?: boolean
+    /** File path for dynamic content loading after auth */
+    protectedPagePath?: string
 }
 
 class timedebugLoader {
@@ -171,12 +181,41 @@ export async function loader({ request }: { request: any }) {
     )
 
     let pagePath = globalThis.__xydPagePathMapping[slug]
-    if (pagePath) {
+
+    // SSR page exclusion: skip content compilation for protected pages.
+    // Uses globalThis.__xydAccessMap directly (set by the access control plugin)
+    // instead of the virtual module, because the loader runs server-side during SSR.
+    let shellOnly = false
+    let protectedPagePath: string | undefined
+
+    const accessMap: Record<string, string> | undefined = (globalThis as any).__xydAccessMap
+
+
+
+    if (pagePath && accessMap) {
+        const pageAccess = accessMap["/" + slug] || accessMap[slug]
+        if (pageAccess && pageAccess !== "public") {
+            // Check if user is authenticated via cookie
+            const cookieName = (globalThis as any).__xydSettings?.accessControl?.session?.cookieName || "xyd-auth-token"
+            const cookieHeader = request?.headers?.get?.("cookie") || ""
+            const hasAuthCookie = cookieHeader.includes(`${cookieName}=`)
+            const isBypassed = process.env.XYD_AUTH_BYPASS === "1" || process.env.XYD_AUTH_BYPASS === "true"
+
+            if (!hasAuthCookie && !isBypassed) {
+                // Not authenticated: render shell only, no content in HTML
+                shellOnly = true
+                protectedPagePath = pagePath
+            }
+            // Authenticated: compile content normally
+        }
+    }
+
+    if (pagePath && !shellOnly) {
         timedebug.compile
         code = await contentFs.compile(pagePath)
         rawPage = await contentFs.readRaw(pagePath)
         timedebug.compileEnd
-    } else {
+    } else if (!pagePath) {
         const resp = redirectFallback()
         if (resp) {
             timedebug.totalEnd
@@ -226,16 +265,33 @@ export async function loader({ request }: { request: any }) {
         }
     }
 
+    // Access control: filter navlinks so prev/next don't link to protected pages
+    let filteredNavlinks = navlinks
+    if (accessMap && navlinks) {
+        const isLinkProtected = (link: any) => {
+            if (!link?.href) return false
+            const href = link.href.startsWith("/") ? link.href : `/${link.href}`
+            const access = accessMap[href] || accessMap[link.href]
+            return access && access !== "public"
+        }
+        filteredNavlinks = {
+            prev: navlinks.prev && !isLinkProtected(navlinks.prev) ? navlinks.prev : undefined,
+            next: navlinks.next && !isLinkProtected(navlinks.next) ? navlinks.next : undefined,
+        } as any
+    }
+
     return {
         sidebarGroups,
         breadcrumbs,
-        navlinks,
+        navlinks: filteredNavlinks,
         slug,
         code,
         metadata,
         rawPage,
         editLink,
-        canPassComponents
+        canPassComponents,
+        shellOnly,
+        protectedPagePath,
     } as loaderData
 }
 
@@ -456,6 +512,11 @@ export function MemoMDXComponent(codeComponent: any) {
 export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     const location = useLocation()
 
+    // Protected page with no layout: render empty div (client JS will redirect to login)
+    if (loaderData.shellOnly) {
+        return <div />
+    }
+
     const analytics = useAnalytics()
 
     const { theme } = useContext(PageContext)
@@ -492,7 +553,7 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
 
     const { Page } = theme
 
-    let userComponents = {} 
+    let userComponents = {}
 
     if (loaderData.canPassComponents) {
         userComponents = (globalThis.__xydUserComponents || []).reduce((acc, component) => {
@@ -534,6 +595,166 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
                         },
                         ...userComponents,
                     }} />
+                    <ScrollRestoration />
+                </Page>
+            </FrameworkPage>
+        </UXNode>
+    </>
+}
+
+/**
+ * Protected page shell: renders the page layout without content during SSR.
+ * After React hydrates and auth succeeds, content is loaded dynamically.
+ */
+function ProtectedPageShell({
+    loaderData,
+    theme,
+    analytics,
+}: {
+    loaderData: loaderData
+    theme: any
+    analytics: any
+}) {
+    const location = useLocation()
+    const [contentCode, setContentCode] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
+
+    // Check auth state and load content dynamically after auth
+    useEffect(() => {
+        if (typeof window === "undefined") return
+
+        const authState = window.__xydAuthState
+        if (!authState?.authenticated) {
+            setIsLoading(false)
+            return
+        }
+
+        // Dynamically compile and load the protected page content
+        // The content is fetched from a code-split chunk generated at build time
+        async function loadProtectedContent() {
+            try {
+                // Use the virtual module to load content for this page
+                const pagePath = loaderData.protectedPagePath
+                if (!pagePath) {
+                    setIsLoading(false)
+                    return
+                }
+
+                // Fetch the page content from the content API endpoint
+                // In the build, protected content is bundled into a separate chunk
+                const response = await fetch(
+                    `/__xyd_protected_content/${encodeURIComponent(loaderData.slug)}.js`
+                )
+
+                if (response.ok) {
+                    const code = await response.text()
+                    setContentCode(code)
+                }
+            } catch (e) {
+                console.error("[xyd:access-control] Failed to load protected content:", e)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        loadProtectedContent()
+    }, [loaderData.slug, loaderData.protectedPagePath])
+
+    const { Page } = theme
+
+    // If content loaded successfully, render it
+    if (contentCode) {
+        const themeContentComponents = theme.reactContentComponents()
+        const themeFileComponents = theme.reactFileComponents()
+        const globalAPI = { analytics }
+
+        const content = mdxContent(contentCode, themeContentComponents, themeFileComponents, globalAPI)
+        const Content = MemoMDXComponent(content.component)
+        const contentOriginal = mdxContent(contentCode, themeContentComponents, undefined, globalAPI)
+        const ContentOriginal = MemoMDXComponent(contentOriginal.component)
+
+        let userComponents = {}
+        if (loaderData.canPassComponents) {
+            userComponents = (globalThis.__xydUserComponents || []).reduce((acc, component) => {
+                acc[component.name] = component.component
+                return acc
+            }, {})
+        }
+
+        return <>
+            <UXNode
+                name="Framework"
+                props={{ location: location.pathname + location.search + location.hash }}
+            >
+                <FrameworkPage
+                    key={location.pathname}
+                    metadata={content.metadata}
+                    breadcrumbs={loaderData.breadcrumbs}
+                    rawPage=""
+                    toc={content.toc || []}
+                    navlinks={loaderData.navlinks}
+                    ContentComponent={Content}
+                    ContentOriginal={ContentOriginal}
+                    editLink={loaderData.editLink}
+                >
+                    <Page>
+                        <ContentOriginal components={{
+                            ...themeContentComponents,
+                            wrapper: (props) => (
+                                <UXNode name=".ContentPage" props={{}}>
+                                    {props.children}
+                                </UXNode>
+                            ),
+                            ...userComponents,
+                        }} />
+                        <ScrollRestoration />
+                    </Page>
+                </FrameworkPage>
+            </UXNode>
+        </>
+    }
+
+    // Shell: render page layout without content
+    return <>
+        <UXNode
+            name="Framework"
+            props={{ location: location.pathname + location.search + location.hash }}
+        >
+            <FrameworkPage
+                key={location.pathname}
+                metadata={loaderData.metadata}
+                breadcrumbs={loaderData.breadcrumbs}
+                rawPage=""
+                toc={[]}
+                navlinks={loaderData.navlinks}
+                ContentComponent={null}
+                ContentOriginal={null}
+                editLink={loaderData.editLink}
+            >
+                <Page>
+                    <div data-auth-protected>
+                        {isLoading ? (
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                padding: "48px 0",
+                                color: "var(--dark48, #6e6e80)",
+                                fontSize: "var(--xyd-font-size-small, 14px)",
+                            }}>
+                                Loading...
+                            </div>
+                        ) : (
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                padding: "48px 0",
+                                color: "var(--dark48, #6e6e80)",
+                                fontSize: "var(--xyd-font-size-small, 14px)",
+                            }}>
+                                Authentication required to view this content.
+                            </div>
+                        )}
+                    </div>
                     <ScrollRestoration />
                 </Page>
             </FrameworkPage>

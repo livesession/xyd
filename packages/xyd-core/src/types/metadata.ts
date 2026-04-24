@@ -80,6 +80,18 @@ export interface Metadata<P = void> {
     hidden?: boolean
 
     /**
+     * Access control: if true, this page is public even when defaultAccess is "protected".
+     * If false, this page requires authentication even when defaultAccess is "public".
+     */
+    public?: boolean
+
+    /**
+     * Access control: groups/roles that can access this page.
+     * Users must belong to at least one listed group. Only applies when the page is protected.
+     */
+    accessGroups?: string[]
+
+    /**
      * Optional 'tocCard' for custom cards in the table of contents
      * 
      * @example

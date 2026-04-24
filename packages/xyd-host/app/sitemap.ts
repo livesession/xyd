@@ -2,6 +2,8 @@ import {docPaths} from "./docPaths";
 
 const navigation = __xydSettings?.navigation || {sidebar: []};
 
+// Access control: get access map to filter protected pages from sitemap
+const accessMap: Record<string, string> = (globalThis as any).__xydAccessMap || {};
 
 // TODO: support lastmod and other advanced features
 
@@ -15,7 +17,17 @@ export async function loader({request}: { request: Request }) {
         });
     }
 
-    const routes: string[] = docPaths(navigation);
+    let routes: string[] = docPaths(navigation);
+
+    // Filter out protected pages from sitemap
+    if (Object.keys(accessMap).length > 0) {
+        routes = routes.filter(route => {
+            const normalizedRoute = route.startsWith("/") ? route : `/${route}`;
+            const access = accessMap[normalizedRoute] || accessMap[route.replace(/^\//, "")];
+            return !access || access === "public";
+        });
+    }
+
     const baseUrl = __xydSettings?.seo?.domain || new URL(request.url).origin;
 
     // Generate XML sitemap

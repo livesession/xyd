@@ -57,6 +57,14 @@ export interface Settings {
    * Redirects configuration
    */
   redirects?: Redirects[];
+
+  /**
+   * Access control configuration.
+   * Enables page-level access control on documentation sites.
+   * Protected page content is never included in HTML source --
+   * it is code-split into separate JS chunks loaded only after authentication.
+   */
+  accessControl?: AccessControl;
 }
 
 // ------ START settings for theme START ------
@@ -1546,3 +1554,125 @@ export interface ThemeColors {
 export interface UserPreferences {
   themeColors?: ThemeColors;
 }
+
+// ------ START settings for access control START ------
+// #region AccessControl
+
+/**
+ * Access control configuration for protecting documentation pages.
+ * Protected page content is excluded from HTML (SSR) output and loaded
+ * as separate JS chunks only after authentication succeeds.
+ */
+export interface AccessControl {
+  /** Authentication provider configuration */
+  provider: AccessControlProviderOAuth | AccessControlProviderJWT | AccessControlProviderPassword | AccessControlProviderCustom;
+
+  /**
+   * Default access level for all pages.
+   * "protected" = all pages require auth unless marked public.
+   * "public" = all pages are public unless marked protected.
+   * @default "public"
+   */
+  defaultAccess?: "public" | "protected";
+
+  /** Pattern-based access rules, evaluated in order. First match wins. */
+  rules?: AccessControlRule[];
+
+  /** Login page configuration */
+  login?: AccessControlLoginConfig;
+
+  /**
+   * Behavior when user is unauthorized.
+   * "redirect" sends to login page.
+   * "404" shows not-found page (hides existence of protected page).
+   * @default "redirect"
+   */
+  unauthorizedBehavior?: "redirect" | "404";
+
+  /** Edge middleware adapter for server-side content protection */
+  edge?: AccessControlEdgeConfig;
+
+  /** Session/token configuration */
+  session?: AccessControlSessionConfig;
+}
+
+export interface AccessControlProviderJWT {
+  type: "jwt";
+  /** URL to redirect unauthenticated users for login */
+  loginUrl: string;
+  /** Callback path where JWT is delivered via hash fragment. @default "/auth/jwt-callback" */
+  callbackPath?: string;
+  /** JWT signing algorithm. @default "HS256" */
+  algorithm?: "EdDSA" | "RS256" | "HS256";
+  /** JWKS URL for key verification (EdDSA/RS256) */
+  jwksUrl?: string;
+  /** Shared secret for HS256 verification. Use $ENV_VAR syntax. */
+  secret?: string;
+  /** JWT claim name containing user groups/roles */
+  groupsClaim?: string;
+}
+
+export interface AccessControlProviderOAuth {
+  type: "oauth";
+  /** OAuth 2.0 authorization URL */
+  authorizationUrl: string;
+  /** OAuth 2.0 token endpoint URL */
+  tokenUrl: string;
+  /** OAuth 2.0 client ID. Use $ENV_VAR syntax for secrets. */
+  clientId: string;
+  /** OAuth 2.0 scopes to request */
+  scopes?: string[];
+  /** Callback path for OAuth redirect. @default "/auth/callback" */
+  callbackPath?: string;
+  /** URL to fetch user info after auth (provides groups) */
+  userInfoUrl?: string;
+  /** Field in user info response containing groups/roles */
+  groupsClaim?: string;
+}
+
+export interface AccessControlProviderPassword {
+  type: "password";
+  /** Password or bcrypt hash. Use $ENV_VAR syntax for secrets. */
+  password: string;
+}
+
+export interface AccessControlProviderCustom {
+  type: "custom";
+  /** Path to custom auth handler module */
+  handler: string;
+}
+
+export interface AccessControlRule {
+  /** Glob pattern matching page paths */
+  match: string;
+  /** Access level for matched pages */
+  access: "public" | "protected";
+  /** Groups allowed access (only for "protected" access) */
+  groups?: string[];
+}
+
+export interface AccessControlLoginConfig {
+  /** Custom login page (path to mdx file) */
+  page?: string;
+  /** Logo to display on the default login page */
+  logo?: string;
+  /** Title text on the login page */
+  title?: string;
+  /** Description text on the login page */
+  description?: string;
+}
+
+export interface AccessControlEdgeConfig {
+  /** Target platform for generated edge middleware */
+  platform: "netlify" | "vercel" | "cloudflare";
+}
+
+export interface AccessControlSessionConfig {
+  /** Session duration in seconds. @default 86400 (24h) */
+  maxAge?: number;
+  /** Cookie/storage key name. @default "xyd-auth-token" */
+  cookieName?: string;
+}
+
+// #endregion
+// ------ END settings for access control END ------
