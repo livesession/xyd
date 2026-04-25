@@ -198,11 +198,43 @@ export async function loader({ request }: { request: any }) {
         metadata.layout = layout
     }
 
-    // Access control: filter sidebar in the LOADER (server-side) so protected
-    // page titles never appear in HTML or React Router serialized data.
+    // Access control: filter sidebar based on auth state and user groups
     const accessMap: Record<string, string> | undefined = (globalThis as any).__xydAccessMap
     let filteredSidebarGroups = sidebarGroups
+    let protectedPage = false
+
     if (accessMap) {
+        const cookieName = settings?.accessControl?.session?.cookieName || "xyd-auth-token"
+        const groupsClaim = (settings?.accessControl?.provider as any)?.groupsClaim || "groups"
+        const cookieHeader = request?.headers?.get?.("cookie") || ""
+        const isBypassed = process.env.XYD_AUTH_BYPASS === "1" || process.env.XYD_AUTH_BYPASS === "true"
+
+        // Extract auth token from cookie and decode user groups
+        let isAuthenticated = false
+        let userGroups: string[] = []
+
+        if (isBypassed) {
+            isAuthenticated = true
+            userGroups = ["*"] // bypass = access all
+        } else {
+            const cookieMatch = cookieHeader.match(new RegExp(`${cookieName}=([^;]+)`))
+            if (cookieMatch) {
+                isAuthenticated = true
+                try {
+                    const payload = JSON.parse(atob(cookieMatch[1].split(".")[1]))
+                    userGroups = payload[groupsClaim] || []
+                } catch {}
+            }
+        }
+
+        // Check if current page is protected and user is not authenticated
+        const slugWithSlash = slug.startsWith("/") ? slug : `/${slug}`
+        const pageAccess = accessMap[slugWithSlash] || accessMap[slug]
+        if (pageAccess && pageAccess !== "public" && !isAuthenticated) {
+            protectedPage = true
+        }
+
+        // Filter sidebar: show items the user has access to
         filteredSidebarGroups = sidebarGroups
             .map(group => ({
                 ...group,
@@ -210,31 +242,15 @@ export async function loader({ request }: { request: any }) {
                     if (!item.href) return true
                     const href = item.href.startsWith("/") ? item.href : `/${item.href}`
                     const access = accessMap[href] || accessMap[item.href]
-                    return !access || access === "public"
+                    if (!access || access === "public") return true
+                    if (!isAuthenticated) return false
+                    if (access === "authenticated") return true
+                    if (userGroups.includes("*")) return true // bypass
+                    const requiredGroups = access.split(",")
+                    return requiredGroups.some(g => userGroups.includes(g))
                 })
             }))
             .filter(group => group.items.length > 0)
-    }
-
-    // Check if this page is protected AND user is not authenticated
-    let protectedPage = false
-    if (accessMap) {
-        const slugWithSlash = slug.startsWith("/") ? slug : `/${slug}`
-        const pageAccess = accessMap[slugWithSlash] || accessMap[slug]
-        if (pageAccess && pageAccess !== "public") {
-            const cookieName = settings?.accessControl?.session?.cookieName || "xyd-auth-token"
-            const cookieHeader = request?.headers?.get?.("cookie") || ""
-            const hasAuthCookie = cookieHeader.includes(`${cookieName}=`)
-            const isBypassed = process.env.XYD_AUTH_BYPASS === "1" || process.env.XYD_AUTH_BYPASS === "true"
-            if (!hasAuthCookie && !isBypassed) {
-                protectedPage = true
-            }
-        }
-    }
-
-    // When authenticated, show sidebar with protected pages visible
-    if (accessMap && !protectedPage) {
-        filteredSidebarGroups = sidebarGroups // show all pages for authenticated users
     }
 
     return {

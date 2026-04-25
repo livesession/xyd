@@ -265,18 +265,41 @@ export async function loader({ request }: { request: any }) {
         }
     }
 
-    // Access control: filter navlinks so prev/next don't link to protected pages
+    // Access control: filter navlinks based on user's auth state and groups
     let filteredNavlinks = navlinks
     if (accessMap && navlinks) {
-        const isLinkProtected = (link: any) => {
-            if (!link?.href) return false
+        // Extract user groups from cookie
+        const acCookieName = (globalThis as any).__xydSettings?.accessControl?.session?.cookieName || "xyd-auth-token"
+        const acGroupsClaim = ((globalThis as any).__xydSettings?.accessControl?.provider as any)?.groupsClaim || "groups"
+        const acCookieHeader = request?.headers?.get?.("cookie") || ""
+        const acIsBypassed = process.env.XYD_AUTH_BYPASS === "1" || process.env.XYD_AUTH_BYPASS === "true"
+
+        let acUserGroups: string[] = []
+        let acIsAuth = false
+        if (acIsBypassed) {
+            acIsAuth = true
+            acUserGroups = ["*"]
+        } else {
+            const acMatch = acCookieHeader.match(new RegExp(`${acCookieName}=([^;]+)`))
+            if (acMatch) {
+                acIsAuth = true
+                try { acUserGroups = JSON.parse(atob(acMatch[1].split(".")[1]))[acGroupsClaim] || [] } catch {}
+            }
+        }
+
+        const canAccessLink = (link: any) => {
+            if (!link?.href) return true
             const href = link.href.startsWith("/") ? link.href : `/${link.href}`
             const access = accessMap[href] || accessMap[link.href]
-            return access && access !== "public"
+            if (!access || access === "public") return true
+            if (!acIsAuth) return false
+            if (access === "authenticated") return true
+            if (acUserGroups.includes("*")) return true
+            return access.split(",").some(g => acUserGroups.includes(g))
         }
         filteredNavlinks = {
-            prev: navlinks.prev && !isLinkProtected(navlinks.prev) ? navlinks.prev : undefined,
-            next: navlinks.next && !isLinkProtected(navlinks.next) ? navlinks.next : undefined,
+            prev: navlinks.prev && canAccessLink(navlinks.prev) ? navlinks.prev : undefined,
+            next: navlinks.next && canAccessLink(navlinks.next) ? navlinks.next : undefined,
         } as any
     }
 

@@ -3,6 +3,7 @@ import type {Plugin as VitePlugin, ResolvedConfig} from 'vite'
 import type {Settings} from '@xyd-js/core'
 import type {Plugin} from '@xyd-js/plugins'
 import {mapSettingsToDocSections, type DocSectionSchema} from '@xyd-js/content/md'
+import {createSearchDataModule} from '@xyd-js/content/search'
 
 import {DEFAULT_SUGGESTIONS} from './const'
 import type {OramaPluginOptions, OramaCloudConfig, OramaSectionSchema} from './types'
@@ -71,15 +72,12 @@ function vitePlugin(
                 }
             }
 
-            const sections = (await mapSettingsToDocSections(settings)).map(mapDocSectionsToOrama)
+            const sections = await mapSettingsToDocSections(settings)
 
-            return `
-                const docs = ${JSON.stringify(sections)};
-                const cloudConfig = ${JSON.stringify(cloudConfig)};
-                const suggestions = ${JSON.stringify(pluginOptions.suggestions || DEFAULT_SUGGESTIONS)};
-
-                export default { docs, cloudConfig, suggestions };
-            `
+            return createSearchDataModule(sections, mapDocSectionsToOrama, {
+                cloudConfig,
+                suggestions: pluginOptions.suggestions || DEFAULT_SUGGESTIONS,
+            })
         }
     }
 }
@@ -100,4 +98,3 @@ function mapDocSectionsToOrama(doc: DocSectionSchema): OramaSectionSchema {
         // version: string
     }
 }
-

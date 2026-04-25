@@ -8,7 +8,8 @@
     "./package.json": "./package.json",
     ".": "./dist/index.js",
     "./vite": "./dist/vite.js",
-    "./md": "./dist/md.js"
+    "./md": "./dist/md.js",
+    "./search": "./dist/search.js"
   },
   "scripts": {
     "clean": "rimraf build",
