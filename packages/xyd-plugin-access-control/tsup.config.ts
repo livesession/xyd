@@ -18,6 +18,9 @@ const config: Options = {
   splitting: false,
   sourcemap: true,
   clean: true,
+  loader: {
+    ".css": "text",
+  },
   external: [
     "@xyd-js/content",
     "@xyd-js/content/md",

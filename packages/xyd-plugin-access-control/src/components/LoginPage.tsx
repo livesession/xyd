@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 
 /**
- * Self-contained login page. Reads config from the virtual module
- * and handles redirect/password flows without needing props.
+ * Self-contained login page. Uses xyd design tokens via CSS custom properties.
+ * Styles are in styles/login.css, injected via the plugin's `head` config.
+ * Uses `part` attributes for CSS targeting — same pattern as xyd-ui/xyd-components.
  */
 export default function LoginPage() {
   const [config, setConfig] = useState<any>(null);
@@ -10,8 +11,12 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Import config from virtual module at runtime
-    // @ts-ignore - virtual module resolved by Vite at runtime
+    const globalConfig = (window as any).__xydAccessControlSettings?.accessControlConfig;
+    if (globalConfig) {
+      setConfig(globalConfig);
+      return;
+    }
+    // @ts-ignore
     import("virtual:xyd-access-control-settings")
       .then((mod: any) => setConfig(mod.accessControlConfig))
       .catch(() => {});
@@ -21,8 +26,8 @@ export default function LoginPage() {
   const title = config?.login?.title || "Sign in to access documentation";
   const description = config?.login?.description || "";
   const logo = config?.login?.logo || "";
+  const backgroundImage = config?.login?.backgroundImage;
 
-  // Determine the external auth URL based on provider type
   const loginUrl = config?.provider?.loginUrl || "";
   const authorizationUrl = config?.provider?.authorizationUrl || "";
   const hasExternalAuth = providerType === "oauth"
@@ -34,7 +39,6 @@ export default function LoginPage() {
     const redirect = params.get("redirect") || "/";
 
     if (providerType === "oauth" && authorizationUrl) {
-      // OAuth: redirect to authorization URL with proper OAuth params
       const callbackPath = config?.provider?.callbackPath || "/auth/callback";
       const redirectUri = window.location.origin + callbackPath;
       const scopes = config?.provider?.scopes || [];
@@ -53,7 +57,6 @@ export default function LoginPage() {
     }
 
     if (loginUrl && loginUrl !== "/login") {
-      // JWT: redirect to external login URL
       const sep = loginUrl.includes("?") ? "&" : "?";
       window.location.href = `${loginUrl}${sep}redirect=${encodeURIComponent(redirect)}`;
       return;
@@ -66,13 +69,11 @@ export default function LoginPage() {
     const hasEdge = !!config?.edge;
 
     if (hasEdge) {
-      // Edge server: use /auth/test-login endpoint which generates properly signed tokens
       const groupsParam = groups.length ? `&groups=${groups.join(",")}` : "";
       window.location.href = `/auth/test-login?redirect=${encodeURIComponent(redirect)}${groupsParam}`;
       return;
     }
 
-    // Dev server (no edge): generate client-side token
     const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
     const payload = btoa(JSON.stringify({
       sub: "test-user",
@@ -93,82 +94,46 @@ export default function LoginPage() {
     setError("Invalid password");
   };
 
+  const bgOverride = backgroundImage
+    ? { backgroundImage: `url(${backgroundImage})`, backgroundSize: "cover" as const, backgroundPosition: "center", background: "none" }
+    : undefined;
+
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "64px 24px",
-      minHeight: "100vh",
-      maxWidth: 420,
-      margin: "0 auto",
-    }}>
-      {logo && (
-        <img src={logo} alt="" style={{ maxWidth: 80, marginBottom: 24 }} />
-      )}
+    <div className="xyd-login-page" style={bgOverride}>
+      <div part="card">
+        {logo && <img part="logo" src={logo} alt="" />}
 
-      <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 8, textAlign: "center" }}>
-        {title}
-      </h1>
+        <h1 part="title">{title}</h1>
 
-      {description && (
-        <p style={{ color: "#6e6e80", fontSize: 14, marginBottom: 32, textAlign: "center" }}>
-          {description}
-        </p>
-      )}
+        {description && <p part="description">{description}</p>}
 
-      {error && (
-        <p style={{ color: "#ef4444", fontSize: 13, marginBottom: 12 }}>{error}</p>
-      )}
+        {error && <p part="error">{error}</p>}
 
-      {providerType === "password" ? (
-        <form onSubmit={handlePasswordSubmit} style={{ width: "100%" }}>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter password"
-            autoComplete="current-password"
-            style={{
-              width: "100%",
-              padding: "10px 12px",
-              fontSize: 14,
-              border: "1px solid #ececf1",
-              borderRadius: 6,
-              marginBottom: 12,
-              boxSizing: "border-box",
-              outline: "none",
-            }}
-          />
-          <button type="submit" style={btnStyle}>Continue</button>
-        </form>
-      ) : hasExternalAuth ? (
-        <button onClick={handleRedirectLogin} style={btnStyle}>
-          Sign in
-        </button>
-      ) : (
-        <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 8 }}>
-          <button onClick={() => handleTestLogin([])} style={btnStyle}>
-            Sign in as User
-          </button>
-          <button onClick={() => handleTestLogin(["admin"])} style={{ ...btnStyle, backgroundColor: "#7c3aed" }}>
-            Sign in as Admin
-          </button>
-        </div>
-      )}
+        {providerType === "password" ? (
+          <form part="form" onSubmit={handlePasswordSubmit}>
+            <input
+              part="input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter password"
+              autoComplete="current-password"
+            />
+            <button part="button" type="submit">Continue</button>
+          </form>
+        ) : hasExternalAuth ? (
+          <button part="button" onClick={handleRedirectLogin}>Sign in</button>
+        ) : (
+          <div part="actions">
+            <button part="button" onClick={() => handleTestLogin([])}>
+              Sign in as User
+            </button>
+            <button part="button" data-kind="secondary" onClick={() => handleTestLogin(["admin"])}>
+              Sign in as Admin
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-
-const btnStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "10px 20px",
-  fontSize: 14,
-  fontWeight: 500,
-  backgroundColor: "#2563eb",
-  color: "#fff",
-  border: "none",
-  borderRadius: 6,
-  cursor: "pointer",
-};

@@ -15,6 +15,11 @@ import AuthGuard from "./components/AuthGuard";
 import LoginPage from "./components/LoginPage";
 import AuthCallbackPage from "./components/AuthCallbackPage";
 
+// @ts-ignore - loaded as text by tsup
+import loginStyles from "./styles/login.css";
+// @ts-ignore
+import callbackStyles from "./styles/callback.css";
+
 export { evaluateAccess, resolvePageAccess, buildAccessMap } from "./access";
 export type { AccessMap, AccessLevel, AccessEvaluation } from "./access";
 export { default as AuthGuard, useAuth } from "./components/AuthGuard";
@@ -103,8 +108,8 @@ export default function AccessControlPlugin(
         ? (config.provider as any).groupsClaim || "groups"
         : "groups";
 
-    // CSS to hide protected content before auth check
-    const authCss = `[data-auth="anonymous"] [data-auth-protected]{display:none!important}`;
+    // CSS: auth guard hiding + login page + callback page styles
+    const authCss = `[data-auth="anonymous"] [data-auth-protected]{display:none!important}\n${loginStyles}\n${callbackStyles}`;
 
     const prehydrationScript = generateAuthPrehydrationScript(
       cookieName,

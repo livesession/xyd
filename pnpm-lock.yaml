@@ -1569,6 +1569,9 @@ importers:
 
   packages/xyd-plugin-access-control:
     dependencies:
+      '@linaria/core':
+        specifier: ^6.0.0
+        version: 6.3.0
       '@xyd-js/core':
         specifier: workspace:*
         version: link:../xyd-core

@@ -1,20 +1,17 @@
-import React from "react";
 import { Outlet } from "react-router";
 
+// Inherit theme CSS — gives plugin pages access to all xyd design tokens
+// (--xyd-border-radius-*, --xyd-font-size-*, --color-primary, etc.)
+// @ts-ignore
+import "virtual:xyd-theme/index.css";
+// @ts-ignore
+import "virtual:xyd-theme-override/index.css";
+
 /**
- * Minimal layout for plugin pages (login, callback, etc.).
- * No sidebar, no docs navigation — just the page content
- * with basic theme styling applied.
+ * Layout for plugin custom pages (layout: "custom").
+ * Inherits theme CSS by default so design tokens resolve.
+ * No sidebar, no header — just the page rendered as a top-layer child of body.
  */
 export default function PluginPageLayout() {
-    return (
-        <div style={{
-            minHeight: "100vh",
-            background: "var(--xyd-page-body-bgcolor, #fff)",
-            color: "var(--xyd-page-body-color, #111)",
-            fontFamily: "var(--font-body-family, system-ui, sans-serif)",
-        }}>
-            <Outlet />
-        </div>
-    );
+    return <Outlet />;
 }

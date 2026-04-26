@@ -40,12 +40,20 @@ if (globalThis.__xydRawRouteFiles) {
     })
 }
 
-// Plugin pages: custom React component pages with minimal layout (no docs sidebar)
-if ((globalThis as any).__xydPluginPageRoutes) {
-    for (const pageRoute of (globalThis as any).__xydPluginPageRoutes) {
+// Plugin pages: custom React component pages (layout: "custom")
+if ((globalThis as any).__xydPluginPages) {
+    const pluginPages: any[] = (globalThis as any).__xydPluginPages;
+    for (const page of pluginPages) {
+        const pageRoute = page.route.startsWith("/") ? page.route : `/${page.route}`;
+        // layoutCss: true (default) → inherit theme CSS tokens
+        // layoutCss: false → bare layout, no theme CSS
+        const layoutFile = page.layoutCss === false
+            ? "./pluginPageLayoutBare.tsx"
+            : "./pluginPageLayout.tsx";
+
         routes.push(
             layout(
-                "./pluginPageLayout.tsx",
+                layoutFile,
                 { id: `layout:plugin-page:${pageRoute}` },
                 [
                     route(pageRoute, "./pluginPage.tsx", { id: `plugin-page:${pageRoute}` })

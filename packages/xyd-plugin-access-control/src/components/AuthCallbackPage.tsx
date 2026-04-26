@@ -157,45 +157,23 @@ export default function AuthCallbackPage() {
 
   if (error) {
     return (
-      <div style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "64px 24px",
-        minHeight: "100vh",
-      }}>
-        <h2 style={{ color: "#ef4444", marginBottom: 8 }}>Authentication Error</h2>
-        <p style={{ color: "#6e6e80", fontSize: 14 }}>{error}</p>
-        <button
-          onClick={() => (window.location.href = "/")}
-          style={{
-            marginTop: 16,
-            padding: "8px 16px",
-            fontSize: 14,
-            background: "#2563eb",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-          }}
-        >
-          Go to homepage
-        </button>
+      <div className="xyd-callback-page">
+        <div part="card">
+          <h2 part="title" data-error="">Authentication Error</h2>
+          <p part="message">{error}</p>
+          <button part="button" onClick={() => (window.location.href = "/")}>
+            Go to homepage
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "64px 24px",
-      minHeight: "100vh",
-      color: "#6e6e80",
-    }}>
-      Authenticating...
+    <div className="xyd-callback-page">
+      <div part="card">
+        <p part="message">Authenticating...</p>
+      </div>
     </div>
   );
 }

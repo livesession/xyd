@@ -81,6 +81,13 @@ export interface PluginPage {
     metadata?: Partial<Metadata<any>>
     /** If true, page is public even when access control defaultAccess is "protected" */
     public?: boolean
+    /**
+     * Whether to inherit the theme's CSS (design tokens, fonts, etc.).
+     * When true (default), the page has access to all xyd CSS variables.
+     * Set to false for fully standalone pages with no theme dependency.
+     * @default true
+     */
+    layoutCss?: boolean
 }
 
 export interface PluginConfig {

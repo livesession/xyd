@@ -536,12 +536,7 @@ export async function appInit(options?: PluginDocsOptions) {
         }
     }
 
-    // Register plugin page routes for React Router
-    if ((globalThis as any).__xydPluginPages?.length) {
-        (globalThis as any).__xydPluginPageRoutes = (globalThis as any).__xydPluginPages.map(
-            (p: any) => p.route.startsWith("/") ? p.route : `/${p.route}`
-        );
-    }
+    // __xydPluginPages is read directly by routes.ts and react-router.config.ts
 
     // appearanceWebEditor(respPluginDocs.settings)
 

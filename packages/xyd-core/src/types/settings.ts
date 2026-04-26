@@ -1660,6 +1660,8 @@ export interface AccessControlLoginConfig {
   title?: string;
   /** Description text on the login page */
   description?: string;
+  /** Background image URL for the login page */
+  backgroundImage?: string;
 }
 
 export interface AccessControlEdgeConfig {
