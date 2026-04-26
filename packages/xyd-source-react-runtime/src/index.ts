@@ -137,7 +137,99 @@ async function buildTypiaSchemas(tsconfigPath: string): Promise<Map<string, stri
         modifiedSources.set(fileName, modified);
     }
 
-    // Step 3: Create a TS program with modified sources for typia transform
+    // Step 3: Try emitting all components at once; on failure, retry per-component
+    const emitResult = emitWithTypia(ts, parsedConfig, modifiedSources, typiaTransformModule, componentsByFile);
+
+    for (const [fileName, output] of emitResult) {
+        result.set(fileName, output);
+    }
+
+    // Step 4: For files that failed, retry each component individually
+    // Lazily create a clean program (no typia) for type-checker fallback
+    let cleanProgram: import('typescript').Program | null = null;
+
+    for (const [fileName, components] of componentsByFile) {
+        if (result.has(path.resolve(fileName))) continue;
+
+        const supported = components.filter(c => !c.propsType.includes('React.'));
+        if (supported.length === 0) continue;
+
+        const original = ts.sys.readFile(fileName)!;
+        let mergedOutput = '';
+
+        for (const comp of supported) {
+            const singleModified = new Map(modifiedSources);
+            // Replace this file's modified source with one that only has this component's typia call
+            const singleSource = `import typia from "typia";\n${original}\n${comp.name}.__xydSchema = typia.json.schemas<[${comp.propsType}]>();`;
+            singleModified.set(fileName, singleSource);
+
+            const singleResult = emitWithTypia(ts, parsedConfig, singleModified, typiaTransformModule, new Map([[fileName, [comp]]]));
+            const singleOutput = singleResult.get(path.resolve(fileName));
+
+            if (singleOutput) {
+                // Extract the __xydSchema assignment line from successful output
+                const schemaMatch = singleOutput.match(new RegExp(`${comp.name}\\.__xydSchema\\s*=\\s*\\{[\\s\\S]*?\\n\\};`));
+                if (schemaMatch) {
+                    if (!mergedOutput) {
+                        // Use the first successful output as the base (it has the full compiled file)
+                        mergedOutput = singleOutput;
+                    } else {
+                        // Append the schema assignment to the base output
+                        mergedOutput += `\n${schemaMatch[0]}`;
+                    }
+                }
+            } else {
+                // Typia can't handle this component's props (e.g. React types) —
+                // fall back to TS type checker to extract the schema manually
+                if (!cleanProgram) {
+                    cleanProgram = ts.createProgram({
+                        rootNames: parsedConfig.fileNames,
+                        options: {...parsedConfig.options, noEmit: false, declaration: false, sourceMap: false},
+                    });
+                }
+
+                // Get base compiled output if we don't have one yet
+                if (!mergedOutput) {
+                    const sf = cleanProgram.getSourceFile(fileName);
+                    if (sf) {
+                        cleanProgram.emit(sf, (_name, text) => {
+                            if (!_name.endsWith('.d.ts')) mergedOutput = text;
+                        });
+                    }
+                }
+
+                const schema = fallbackExtractSchema(ts, cleanProgram, fileName, comp);
+                if (schema) {
+                    const schemaStr = JSON.stringify(schema, null, 2);
+                    mergedOutput += `\n${comp.name}.__xydSchema = ${schemaStr};`;
+                } else {
+                    console.warn(`[xyd-source-react-runtime] could not extract schema for ${comp.name} in ${fileName}, skipping component`);
+                }
+            }
+        }
+
+        if (mergedOutput) {
+            result.set(path.resolve(fileName), mergedOutput);
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Creates a TS program with modified sources and emits typia-transformed output.
+ * Returns a map of resolved file paths to their transformed output.
+ * Files that fail during transform are silently skipped (returns empty map for them).
+ */
+function emitWithTypia(
+    ts: typeof import('typescript'),
+    parsedConfig: import('typescript').ParsedCommandLine,
+    modifiedSources: Map<string, string>,
+    typiaTransformModule: any,
+    componentsByFile: Map<string, ComponentInfo[]>,
+): Map<string, string> {
+    const result = new Map<string, string>();
+
     const compilerHost = ts.createCompilerHost(parsedConfig.options);
     const origGetSourceFile = compilerHost.getSourceFile;
     const origFileExists = compilerHost.fileExists;
@@ -174,7 +266,6 @@ async function buildTypiaSchemas(tsconfigPath: string): Promise<Map<string, stri
 
     const factory = (typiaTransformModule.default || typiaTransformModule)(program);
 
-    // Step 4: Emit typia-transformed output for each file with components
     for (const fileName of componentsByFile.keys()) {
         const sourceFile = program.getSourceFile(fileName);
         if (!sourceFile) continue;
@@ -196,14 +287,136 @@ async function buildTypiaSchemas(tsconfigPath: string): Promise<Map<string, stri
             if (output) {
                 result.set(path.resolve(fileName), output);
             }
-        } catch (e) {
-            // typia transform can fail on files with unresolvable types (e.g. React.ReactNode)
-            // Skip these files — their components won't get __xydUniform
-            console.warn(`[xyd-source-react-runtime] typia transform failed for ${fileName}, skipping`);
+        } catch {
+            // Transform failed for this file — caller will handle retry
         }
     }
 
     return result;
+}
+
+/**
+ * Fallback: uses the TS type checker to extract a JSON Schema from a component's
+ * props type when typia can't handle it (e.g. props containing React.ReactNode).
+ */
+function fallbackExtractSchema(
+    ts: typeof import('typescript'),
+    program: import('typescript').Program,
+    fileName: string,
+    comp: ComponentInfo,
+): Record<string, any> | null {
+    const checker = program.getTypeChecker();
+    const sourceFile = program.getSourceFile(fileName);
+    if (!sourceFile) return null;
+
+    let propsType: import('typescript').Type | undefined;
+
+    const findPropsInNode = (node: import('typescript').Node) => {
+        if (propsType) return;
+
+        if (ts.isFunctionDeclaration(node) && node.name?.text === comp.name) {
+            const param = node.parameters[0];
+            if (param?.type) propsType = checker.getTypeAtLocation(param.type);
+        }
+
+        if (ts.isVariableStatement(node)) {
+            for (const decl of node.declarationList.declarations) {
+                if (!ts.isIdentifier(decl.name) || decl.name.text !== comp.name) continue;
+                if (decl.initializer && (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer))) {
+                    const param = decl.initializer.parameters[0];
+                    if (param?.type) propsType = checker.getTypeAtLocation(param.type);
+                }
+            }
+        }
+    };
+
+    ts.forEachChild(sourceFile, findPropsInNode);
+    if (!propsType) return null;
+
+    const properties: Record<string, any> = {};
+    const required: string[] = [];
+
+    for (const symbol of checker.getPropertiesOfType(propsType)) {
+        const name = symbol.getName();
+        const memberType = checker.getTypeOfSymbolAtLocation(symbol, sourceFile);
+        const description = ts.displayPartsToString(symbol.getDocumentationComment(checker));
+        const isOptional = (symbol.flags & ts.SymbolFlags.Optional) !== 0;
+
+        const schema = tsTypeToJsonSchema(ts, checker, memberType, sourceFile);
+        if (description) schema.description = description;
+
+        properties[name] = schema;
+        if (!isOptional) required.push(name);
+    }
+
+    const rootSchema: any = { type: 'object', properties };
+    if (required.length > 0) rootSchema.required = required;
+
+    return {
+        version: '3.1',
+        components: { schemas: { [comp.propsType]: rootSchema } },
+        schemas: [{ $ref: `#/components/schemas/${comp.propsType}` }],
+    };
+}
+
+/**
+ * Converts a TS type to a JSON Schema object using the type checker.
+ * Handles primitives, string literal unions, arrays, and falls back to
+ * { type: "object", description } for complex types (React, DOM, etc.).
+ */
+function tsTypeToJsonSchema(
+    ts: typeof import('typescript'),
+    checker: import('typescript').TypeChecker,
+    type: import('typescript').Type,
+    location: import('typescript').Node,
+): any {
+    const typeStr = checker.typeToString(type);
+
+    if (type.flags & ts.TypeFlags.String) return {type: 'string'};
+    if (type.flags & ts.TypeFlags.Number) return {type: 'number'};
+    if (type.flags & (ts.TypeFlags.Boolean | ts.TypeFlags.BooleanLiteral)) return {type: 'boolean'};
+    if (type.flags & ts.TypeFlags.Null) return {type: 'null'};
+    if (type.flags & (ts.TypeFlags.Undefined | ts.TypeFlags.Void)) return {};
+    if (type.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) return {};
+
+    if (type.isStringLiteral()) return {type: 'string', const: type.value};
+    if (type.isNumberLiteral()) return {type: 'number', const: type.value};
+
+    if (type.isUnion()) {
+        const types = type.types.filter(t => !(t.flags & ts.TypeFlags.Undefined));
+        // boolean is internally `true | false` — detect and collapse it
+        if (types.length <= 2 && types.every(t => !!(t.flags & ts.TypeFlags.BooleanLiteral))) {
+            return {type: 'boolean'};
+        }
+        if (types.every(t => t.isStringLiteral())) {
+            return {
+                oneOf: types.map(t => ({type: 'string', const: (t as import('typescript').StringLiteralType).value})),
+            };
+        }
+        // Simple unions with only primitives/literals
+        if (types.length <= 4 && types.every(t =>
+            (t.flags & (ts.TypeFlags.String | ts.TypeFlags.Number | ts.TypeFlags.Boolean |
+                ts.TypeFlags.BooleanLiteral | ts.TypeFlags.Null)) !== 0 ||
+            t.isStringLiteral() || t.isNumberLiteral()
+        )) {
+            if (types.length === 1) return tsTypeToJsonSchema(ts, checker, types[0], location);
+            return {oneOf: types.map(t => tsTypeToJsonSchema(ts, checker, t, location))};
+        }
+        return {type: typeStr};
+    }
+
+    // Simple array types
+    if (typeStr === 'string[]') return {type: 'array', items: {type: 'string'}};
+    if (typeStr === 'number[]') return {type: 'array', items: {type: 'number'}};
+    if (typeStr === 'boolean[]') return {type: 'array', items: {type: 'boolean'}};
+    if (typeStr.endsWith('[]') || typeStr.startsWith('Array<')) return {type: 'array'};
+
+    // Function types — use the signature as the type
+    const signatures = checker.getSignaturesOfType(type, ts.SignatureKind.Call);
+    if (signatures.length > 0) return {type: typeStr};
+
+    // Everything else — React types, DOM, Map, Set, Date, Record, etc.
+    return {type: typeStr};
 }
 
 /**

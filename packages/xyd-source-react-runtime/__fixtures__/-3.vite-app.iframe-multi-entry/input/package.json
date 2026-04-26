@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-neg3-vite-app-iframe-multi-entry",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  }
+}
