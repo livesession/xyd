@@ -8,6 +8,7 @@ import { generateAuthPrehydrationScript } from "./scripts/authPrehydration";
 import { generateNetlifyEdge } from "./middleware/netlify";
 import { generateVercelMiddleware } from "./middleware/vercel";
 import { generateCloudflareMiddleware } from "./middleware/cloudflare";
+import { generateNodeServer } from "./middleware/node";
 import { protectedContentPlugin } from "./content";
 
 import AuthGuard from "./components/AuthGuard";
@@ -33,7 +34,7 @@ function edgeMiddlewarePlugin(config: AccessControl): VitePlugin {
       if (!config.edge) return;
 
       const outputDir = (globalThis as any).__xydBuildOutputDir
-        || ".xyd/build/client";
+        || (process.cwd() + "/.xyd/build/client");
 
       switch (config.edge.platform) {
         case "netlify":
@@ -44,6 +45,9 @@ function edgeMiddlewarePlugin(config: AccessControl): VitePlugin {
           break;
         case "cloudflare":
           generateCloudflareMiddleware(config, outputDir);
+          break;
+        case "node":
+          generateNodeServer(config, outputDir);
           break;
       }
     },

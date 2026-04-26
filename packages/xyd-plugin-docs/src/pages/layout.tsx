@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     Outlet,
     useLoaderData,
@@ -227,15 +227,21 @@ export async function loader({ request }: { request: any }) {
             }
         }
 
-        // Check if current page is protected and user is not authenticated
-        const slugWithSlash = slug.startsWith("/") ? slug : `/${slug}`
-        const pageAccess = accessMap[slugWithSlash] || accessMap[slug]
-        if (pageAccess && pageAccess !== "public" && !isAuthenticated) {
-            protectedPage = true
+        // Check if current page is protected and user is not authenticated.
+        // Skip when edge middleware is configured — edge handles protection,
+        // so the full layout should always render.
+        const hasEdge = !!settings?.accessControl?.edge
+        if (!hasEdge) {
+            const slugWithSlash = slug.startsWith("/") ? slug : `/${slug}`
+            const pageAccess = accessMap[slugWithSlash] || accessMap[slug]
+            if (pageAccess && pageAccess !== "public" && !isAuthenticated) {
+                protectedPage = true
+            }
         }
 
-        // Filter sidebar: show items the user has access to
-        filteredSidebarGroups = sidebarGroups
+        // Filter sidebar: when edge is configured, show all items (edge controls access).
+        // Otherwise, filter based on user's auth state and groups.
+        filteredSidebarGroups = hasEdge ? sidebarGroups : sidebarGroups
             .map(group => ({
                 ...group,
                 items: (group.items || []).filter(item => {
@@ -267,9 +273,16 @@ export async function loader({ request }: { request: any }) {
 export default function Layout() {
     const loaderData = useLoaderData<LoaderData>()
 
-    // Protected page: render minimal shell with no layout chrome (sidebar, search, header).
-    // Just enough for the client-side AuthGuard to redirect to login.
-    if (loaderData.protectedPage) {
+    // Protected page: render minimal shell during SSR/pre-render.
+    // After hydration, if the user is authenticated, re-render with full layout.
+    const [clientAuth, setClientAuth] = useState(false)
+    useEffect(() => {
+        if (loaderData.protectedPage && (window as any).__xydAuthState?.authenticated) {
+            setClientAuth(true)
+        }
+    }, [loaderData.protectedPage])
+
+    if (loaderData.protectedPage && !clientAuth) {
         return <Outlet />
     }
 

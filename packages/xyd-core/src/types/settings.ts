@@ -1664,7 +1664,7 @@ export interface AccessControlLoginConfig {
 
 export interface AccessControlEdgeConfig {
   /** Target platform for generated edge middleware */
-  platform: "netlify" | "vercel" | "cloudflare";
+  platform: "netlify" | "vercel" | "cloudflare" | "node";
 }
 
 export interface AccessControlSessionConfig {

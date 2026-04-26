@@ -192,21 +192,22 @@ export async function loader({ request }: { request: any }) {
 
 
 
-    if (pagePath && accessMap) {
+    // When edge middleware is configured, skip shellOnly — the edge server
+    // handles protection, so pre-rendered HTML can include full content.
+    const hasEdge = !!(globalThis as any).__xydSettings?.accessControl?.edge
+
+    if (pagePath && accessMap && !hasEdge) {
         const pageAccess = accessMap["/" + slug] || accessMap[slug]
         if (pageAccess && pageAccess !== "public") {
-            // Check if user is authenticated via cookie
             const cookieName = (globalThis as any).__xydSettings?.accessControl?.session?.cookieName || "xyd-auth-token"
             const cookieHeader = request?.headers?.get?.("cookie") || ""
             const hasAuthCookie = cookieHeader.includes(`${cookieName}=`)
             const isBypassed = process.env.XYD_AUTH_BYPASS === "1" || process.env.XYD_AUTH_BYPASS === "true"
 
             if (!hasAuthCookie && !isBypassed) {
-                // Not authenticated: render shell only, no content in HTML
                 shellOnly = true
                 protectedPagePath = pagePath
             }
-            // Authenticated: compile content normally
         }
     }
 
@@ -535,10 +536,20 @@ export function MemoMDXComponent(codeComponent: any) {
 export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     const location = useLocation()
 
-    // Protected page with no layout: render empty div (client JS will redirect to login)
+    // Protected page shell: hooks must always run (React rules of hooks).
+    // Start with empty shell (matches server), switch after hydration if authenticated.
+    const [shellReady, setShellReady] = useState(false)
+    useEffect(() => {
+        if (loaderData.shellOnly && window.__xydAuthState?.authenticated) {
+            setShellReady(true)
+        }
+    }, [loaderData.shellOnly])
+
     if (loaderData.shellOnly) {
-        return <div />
+        if (!shellReady) return <div />
+        return <ProtectedPageShell loaderData={loaderData} />
     }
+    // NOTE: all hooks above this line always run regardless of shellOnly
 
     const analytics = useAnalytics()
 
@@ -626,52 +637,26 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
 }
 
 /**
- * Protected page shell: renders the page layout without content during SSR.
- * After React hydrates and auth succeeds, content is loaded dynamically.
+  * Protected page shell: loads content dynamically after auth.
+ * Used when the page was pre-rendered as shellOnly (no content in HTML).
  */
-function ProtectedPageShell({
-    loaderData,
-    theme,
-    analytics,
-}: {
-    loaderData: loaderData
-    theme: any
-    analytics: any
-}) {
+function ProtectedPageShell({ loaderData }: { loaderData: loaderData }) {
     const location = useLocation()
     const [contentCode, setContentCode] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
-    // Check auth state and load content dynamically after auth
+    const analytics = useAnalytics()
+    const pageCtx = useContext(PageContext)
+    const theme = pageCtx?.theme
+
     useEffect(() => {
-        if (typeof window === "undefined") return
-
-        const authState = window.__xydAuthState
-        if (!authState?.authenticated) {
-            setIsLoading(false)
-            return
-        }
-
-        // Dynamically compile and load the protected page content
-        // The content is fetched from a code-split chunk generated at build time
         async function loadProtectedContent() {
             try {
-                // Use the virtual module to load content for this page
-                const pagePath = loaderData.protectedPagePath
-                if (!pagePath) {
-                    setIsLoading(false)
-                    return
-                }
-
-                // Fetch the page content from the content API endpoint
-                // In the build, protected content is bundled into a separate chunk
                 const response = await fetch(
                     `/__xyd_protected_content/${encodeURIComponent(loaderData.slug)}.js`
                 )
-
                 if (response.ok) {
-                    const code = await response.text()
-                    setContentCode(code)
+                    setContentCode(await response.text())
                 }
             } catch (e) {
                 console.error("[xyd:access-control] Failed to load protected content:", e)
@@ -679,9 +664,14 @@ function ProtectedPageShell({
                 setIsLoading(false)
             }
         }
-
         loadProtectedContent()
-    }, [loaderData.slug, loaderData.protectedPagePath])
+    }, [loaderData.slug])
+
+    if (!theme) {
+        return <div style={{ padding: "48px 24px", textAlign: "center", color: "#6e6e80" }}>
+            {isLoading ? "Loading..." : "Authentication required."}
+        </div>
+    }
 
     const { Page } = theme
 

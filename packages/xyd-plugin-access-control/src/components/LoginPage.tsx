@@ -61,7 +61,18 @@ export default function LoginPage() {
   };
 
   const handleTestLogin = (groups: string[]) => {
-    // Generate a test JWT and store it
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get("redirect") || "/";
+    const hasEdge = !!config?.edge;
+
+    if (hasEdge) {
+      // Edge server: use /auth/test-login endpoint which generates properly signed tokens
+      const groupsParam = groups.length ? `&groups=${groups.join(",")}` : "";
+      window.location.href = `/auth/test-login?redirect=${encodeURIComponent(redirect)}${groupsParam}`;
+      return;
+    }
+
+    // Dev server (no edge): generate client-side token
     const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
     const payload = btoa(JSON.stringify({
       sub: "test-user",
@@ -73,10 +84,8 @@ export default function LoginPage() {
     const cookieName = config?.session?.cookieName || "xyd-auth-token";
 
     localStorage.setItem(cookieName, token);
-    // Also set as cookie so the server middleware can validate
     document.cookie = `${cookieName}=${token}; path=/; max-age=86400; SameSite=Lax`;
-    const params = new URLSearchParams(window.location.search);
-    window.location.href = params.get("redirect") || "/";
+    window.location.href = redirect;
   };
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
