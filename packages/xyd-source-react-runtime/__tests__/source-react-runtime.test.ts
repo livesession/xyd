@@ -50,6 +50,10 @@ const tests: {
         name: '8.tanstack-router.app',
         description: 'tanstack router: file-based routing with createFileRoute, Link, useNavigate',
     },
+    {
+        name: '-2.vite-lib.react-types-resilience',
+        description: 'vite lib: components with React types in props do not break sibling components',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {
