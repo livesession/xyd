@@ -86,7 +86,7 @@ export async function testSourceReactRuntime(fixtureName: string, propertyName: 
 
     // Save snapshot
     const snapshotPath = fullFixturePath(`${fixtureName}/output.js`);
-    fs.writeFileSync(snapshotPath, result);
+    // fs.writeFileSync(snapshotPath, result);
 
     // Compare
     const expected = fs.readFileSync(snapshotPath, 'utf8');
