@@ -54,6 +54,10 @@ const tests: {
         name: '-2.vite-lib.react-types-resilience',
         description: 'vite lib: components with React types in props do not break sibling components',
     },
+    {
+        name: '-3.vite-app.iframe-multi-entry',
+        description: 'vite app: multi-entry with iframe loading separate React app',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {
