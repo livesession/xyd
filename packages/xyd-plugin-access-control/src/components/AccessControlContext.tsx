@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { isDevEnvironment as isDevEnv } from "../devOnly";
 
 export interface AccessControlActions {
   /** Current auth config from docs.json */
@@ -140,10 +141,17 @@ export function AccessControlProvider({ children }: { children: React.ReactNode 
   }, [loginUrl, redirectUrl]);
 
   const signInWithGroups = useCallback((groups: string[]) => {
-    const hasEdge = !!config?.deploy;
-    if (hasEdge) {
+    // Production with deploy config: use /auth/test-login (server-signed)
+    const hasDeploy = !!config?.deploy;
+    if (hasDeploy) {
       const groupsParam = groups.length ? `&groups=${groups.join(",")}` : "";
       window.location.href = `/auth/test-login?redirect=${encodeURIComponent(redirectUrl)}${groupsParam}`;
+      return;
+    }
+
+    // Dev only: generate unsigned client-side token
+    if (!isDevEnv()) {
+      setError("Test login is only available in development mode.");
       return;
     }
     const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));

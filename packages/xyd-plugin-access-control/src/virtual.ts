@@ -1,6 +1,7 @@
 import type { Plugin as VitePlugin } from "vite";
 import type { AccessControl } from "@xyd-js/core";
 import type { AccessMap } from "./access";
+import { isAuthBypassed } from "./devOnly";
 
 const VIRTUAL_SETTINGS_ID = "virtual:xyd-access-control-settings";
 const RESOLVED_SETTINGS_ID = "\0" + VIRTUAL_SETTINGS_ID;
@@ -41,8 +42,7 @@ export function virtualAccessControlSettingsPlugin(
     },
     load(id) {
       if (id === RESOLVED_SETTINGS_ID) {
-        // Dev bypass: when XYD_AUTH_BYPASS is set, make all pages public
-        const isBypassed = process.env.XYD_AUTH_BYPASS === "1" || process.env.XYD_AUTH_BYPASS === "true";
+        const isBypassed = isAuthBypassed();
 
         // Sanitize config - remove secrets before bundling
         const safeConfig = sanitizeConfig(config);

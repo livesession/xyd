@@ -1,6 +1,7 @@
 import type { Plugin as VitePlugin } from "vite";
 import type { AccessControl } from "@xyd-js/core";
 import type { AccessMap } from "./access";
+import { isAuthBypassed } from "./devOnly";
 
 type AccessMapBuilder = (config: AccessControl) => AccessMap;
 
@@ -62,17 +63,11 @@ export function protectedContentPlugin(
         const cookieName = config.session?.cookieName || "xyd-auth-token";
         const hasToken = cookieHeader.includes(`${cookieName}=`);
 
-        // Dev bypass
-        const isBypassed =
-          process.env.XYD_AUTH_BYPASS === "1" ||
-          process.env.XYD_AUTH_BYPASS === "true";
+        const isBypassed = isAuthBypassed();
 
         if (!hasToken && !isBypassed) {
-          const loginUrl = "loginUrl" in config.provider
-            ? (config.provider as any).loginUrl || "/login"
-            : "/login";
-          const redirect = loginUrl + (loginUrl.includes("?") ? "&" : "?") +
-            "redirect=" + encodeURIComponent(req.url || "/");
+          // Always redirect to /login (xyd login page), not the external auth URL.
+          const redirect = "/login?redirect=" + encodeURIComponent(req.url || "/");
           res.writeHead(302, { Location: redirect });
           res.end();
           return;
@@ -103,10 +98,7 @@ export function protectedContentPlugin(
         const cookieHeader = req.headers.cookie || "";
         const hasAuthToken = cookieHeader.includes("xyd-auth-token=");
 
-        // In dev mode with XYD_AUTH_BYPASS, allow all requests
-        const isBypassed =
-          process.env.XYD_AUTH_BYPASS === "1" ||
-          process.env.XYD_AUTH_BYPASS === "true";
+        const isBypassed = isAuthBypassed();
 
         if (!hasAuthToken && !isBypassed) {
           res.statusCode = 401;
