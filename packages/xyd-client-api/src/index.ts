@@ -42,3 +42,7 @@ export { useAnalytics } from "@xyd-js/analytics";
 
 // ─── Search ───
 export { filterSearchDocs } from "@xyd-js/content/search";
+
+// ─── Types ───
+export type { PageApi } from "@xyd-js/core";
+export type { MetaTags } from "@xyd-js/core";

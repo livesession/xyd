@@ -74,8 +74,8 @@ export const accessMap = ${JSON.stringify(accessMap)};
         pluginPages.forEach((page: any, i: number) => {
           const dist = page.dist || page._pluginPkg;
           if (dist) {
-            imports.push(`import Page${i} from "${dist}";`);
-            entries.push(`  "${page.route}": Page${i}`);
+            imports.push(`import Page${i}, * as PageMod${i} from "${dist}";`);
+            entries.push(`  "${page.route}": { component: Page${i}, seoTags: PageMod${i}.seoTags, shadowCss: PageMod${i}.shadowCss }`);
           }
         });
 
