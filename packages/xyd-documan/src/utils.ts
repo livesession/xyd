@@ -515,7 +515,7 @@ export async function appInit(options?: PluginDocsOptions) {
 
     // Access control: eagerly build access map and register virtual pages.
     if (preloadSettings.accessControl) {
-        const { resolvePageAccess } = await import("@xyd-js/plugin-access-control");
+        const { resolvePageAccess } = await import("@xyd-js/plugin-access-control/plugin");
         const ac = preloadSettings.accessControl;
 
         // Build access map
@@ -1333,7 +1333,7 @@ function accessControlToPlugins(accessControl?: AccessControl) {
     const plugins: Plugins = [];
 
     if (accessControl) {
-        plugins.push(["@xyd-js/plugin-access-control", accessControl]);
+        plugins.push(["@xyd-js/plugin-access-control/plugin", accessControl]);
     }
 
     return plugins;

@@ -4,11 +4,14 @@
   "author": "",
   "description": "Access control plugin for xyd documentation sites",
   "license": "MIT",
-  "main": "./dist/index.js",
+  "main": "./dist/client.js",
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
     ".": {
+      "import": "./dist/client.js"
+    },
+    "./plugin": {
       "import": "./dist/index.js"
     },
     "./AuthGuard": {

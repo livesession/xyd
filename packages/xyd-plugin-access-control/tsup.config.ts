@@ -3,6 +3,7 @@ import { defineConfig, type Options } from "tsup";
 const config: Options = {
   entry: {
     index: "src/index.ts",
+    client: "src/client.ts",
     AuthGuard: "src/components/AuthGuard.tsx",
     LoginPage: "src/components/LoginPage.tsx",
     AuthCallbackPage: "src/components/AuthCallbackPage.tsx",
@@ -11,6 +12,7 @@ const config: Options = {
   dts: {
     entry: {
       index: "src/index.ts",
+      client: "src/client.ts",
     },
   },
   format: ["esm"],
