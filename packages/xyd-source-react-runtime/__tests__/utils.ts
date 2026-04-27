@@ -51,7 +51,9 @@ function collectBuildOutput(buildDir: string, inputRoot: string, propertyName: s
         .replace(/[-_\w]+-[A-Za-z0-9_-]{6,10}\.(js|css)/g, (match) => {
             // Normalize content hashes in filenames: home-BpHCO2Vo.js → home-HASH.js
             return match.replace(/-[A-Za-z0-9_-]{6,10}\./, '-HASH.');
-        });
+        })
+        // Normalize chunk ID hashes: chunk-QFMPRPBF-HASH.js → chunk-HASH.js
+        .replace(/chunk-[A-Za-z0-9_-]{6,10}-HASH\.(js|css)/g, 'chunk-HASH.$1');
 }
 
 /**

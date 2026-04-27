@@ -1,5 +1,5 @@
 // === client/assets/home-HASH.js ===
-import { p as jsxRuntimeExports, t as Link, w as withComponentProps, a as reactExports } from "./chunk-QFMPRPBF-HASH.js";
+import { p as jsxRuntimeExports, t as Link, w as withComponentProps, a as reactExports } from "./chunk-HASH.js";
 function ProductCard({ product, onAddToCart, layout = "grid" }) {
   return jsxRuntimeExports.jsxs("div", { className: `product-card product-card--${layout}`, children: [jsxRuntimeExports.jsx(Link, { to: `/products/${product.id}`, children: jsxRuntimeExports.jsx("h3", { children: product.name }) }), jsxRuntimeExports.jsxs("span", { children: ["$", product.price] }), jsxRuntimeExports.jsx("button", { type: "button", disabled: !product.inStock, onClick: () => onAddToCart(product.id), children: product.inStock ? "Add to Cart" : "Out of Stock" })] });
 }
@@ -44,7 +44,7 @@ export {
 
 
 // === client/assets/root-HASH.js ===
-import { w as withComponentProps, p as jsxRuntimeExports, M as Meta, L as Links, S as ScrollRestoration, q as Scripts, O as Outlet } from "./chunk-QFMPRPBF-HASH.js";
+import { w as withComponentProps, p as jsxRuntimeExports, M as Meta, L as Links, S as ScrollRestoration, q as Scripts, O as Outlet } from "./chunk-HASH.js";
 function Layout({
   children
 }) {
