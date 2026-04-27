@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-9-vite-lib-react-types-resilience",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  }
+}

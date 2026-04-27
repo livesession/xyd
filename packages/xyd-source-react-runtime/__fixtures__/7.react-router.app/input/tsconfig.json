@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2020",
+    "strict": true,
+    "rootDirs": [".", "./.react-router/types"]
+  },
+  "include": ["app/**/*.ts", "app/**/*.tsx"]
+}

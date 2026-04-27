@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-4-vite-app-user-card",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-6-esbuild-user-card",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node esbuild.config.mjs"
+  }
+}

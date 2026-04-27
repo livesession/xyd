@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-7-react-router",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build"
+  }
+}
