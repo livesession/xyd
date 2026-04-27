@@ -25,6 +25,8 @@ export type { AccessMap, AccessLevel, AccessEvaluation } from "./access";
 export { default as AuthGuard, useAuth } from "./components/AuthGuard";
 export { default as LoginPage } from "./components/LoginPage";
 export { default as AuthCallbackPage } from "./components/AuthCallbackPage";
+export { AccessControlProvider, useAccessControl } from "./components/AccessControlContext";
+export type { AccessControlActions } from "./components/AccessControlContext";
 export { filterSidebarGroups, filterProtectedPaths } from "./navigation";
 
 /**
@@ -33,26 +35,26 @@ export { filterSidebarGroups, filterProtectedPaths } from "./navigation";
  */
 function edgeMiddlewarePlugin(config: AccessControl): VitePlugin {
   return {
-    name: "xyd-plugin-access-control-edge",
+    name: "xyd-plugin-access-control-deploy",
     apply: "build",
-    closeBundle() {
-      if (!config.edge) return;
+    async closeBundle() {
+      if (!config.deploy) return;
 
       const outputDir = (globalThis as any).__xydBuildOutputDir
         || (process.cwd() + "/.xyd/build/client");
 
-      switch (config.edge.platform) {
-        case "netlify":
-          generateNetlifyEdge(config, outputDir);
+      switch (config.deploy.platform) {
+        case "netlify-edge":
+          await generateNetlifyEdge(config, outputDir);
           break;
-        case "vercel":
-          generateVercelMiddleware(config, outputDir);
+        case "vercel-edge":
+          await generateVercelMiddleware(config, outputDir);
           break;
-        case "cloudflare":
-          generateCloudflareMiddleware(config, outputDir);
+        case "cloudflare-edge":
+          await generateCloudflareMiddleware(config, outputDir);
           break;
-        case "node":
-          generateNodeServer(config, outputDir);
+        case "node-edge":
+          await generateNodeServer(config, outputDir);
           break;
       }
     },
@@ -126,7 +128,7 @@ export default function AccessControlPlugin(
       protectedContentPlugin(config, buildAccessMapFromGlobals),
     ];
 
-    if (config.edge) {
+    if (config.deploy) {
       vitePlugins.push(edgeMiddlewarePlugin(config));
     }
 
@@ -136,6 +138,10 @@ export default function AccessControlPlugin(
         ? (config.provider as any).callbackPath || "/auth/jwt-callback"
         : "/auth/jwt-callback";
 
+    // login: string → custom component path, object → default with config
+    const isCustomLogin = typeof config.login === "string";
+    const loginConfig = isCustomLogin ? {} as any : (config.login || {}) as any;
+
     return {
       name: "plugin-access-control",
       vite: vitePlugins,
@@ -144,11 +150,11 @@ export default function AccessControlPlugin(
       pages: [
         {
           route: "/login",
-          component: LoginPage,
-          dist: "@xyd-js/plugin-access-control/LoginPage",
+          component: isCustomLogin ? LoginPage : LoginPage, // component is resolved at runtime
+          dist: isCustomLogin ? config.login as string : "@xyd-js/plugin-access-control/LoginPage",
           metadata: {
-            title: config.login?.title || "Sign in",
-            description: config.login?.description,
+            title: loginConfig.title || "Sign in",
+            description: loginConfig.description,
           },
           public: true,
         },

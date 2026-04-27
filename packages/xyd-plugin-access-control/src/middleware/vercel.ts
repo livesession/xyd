@@ -1,5 +1,3 @@
-import { writeFileSync } from "node:fs";
-import { join } from "node:path";
 import type { AccessControl } from "@xyd-js/core";
 import type { AccessMap } from "../access";
 import { generateMiddlewareCore } from "./shared";
@@ -8,10 +6,12 @@ import { generateMiddlewareCore } from "./shared";
  * Generates Vercel Routing Middleware for access control.
  * Creates middleware.js at project root.
  */
-export function generateVercelMiddleware(
+export async function generateVercelMiddleware(
   config: AccessControl,
   outputDir: string
 ): void {
+  const { writeFileSync } = await import("node:fs");
+  const { join } = await import("node:path");
   const projectRoot = join(outputDir, "../..");
   const accessMap: AccessMap = (globalThis as any).__xydAccessMap || {};
 

@@ -1578,8 +1578,20 @@ export interface AccessControl {
   /** Pattern-based access rules, evaluated in order. First match wins. */
   rules?: AccessControlRule[];
 
-  /** Login page configuration */
-  login?: AccessControlLoginConfig;
+  /**
+   * Login page configuration.
+   * - String: path to a custom component (e.g., "./my-login.tsx").
+   *   The component receives useAccessControl() context automatically.
+   * - Object: configuration for the built-in login page.
+   *
+   * @example
+   * // Custom component
+   * "login": "./custom-login.tsx"
+   *
+   * // Built-in with config
+   * "login": { "title": "Sign in", "logo": "/logo.svg" }
+   */
+  login?: string | AccessControlLoginConfig;
 
   /**
    * Behavior when user is unauthorized.
@@ -1589,8 +1601,8 @@ export interface AccessControl {
    */
   unauthorizedBehavior?: "redirect" | "404";
 
-  /** Edge middleware adapter for server-side content protection */
-  edge?: AccessControlEdgeConfig;
+  /** Deployment platform for server-side content protection */
+  deploy?: AccessControlDeployConfig;
 
   /** Session/token configuration */
   session?: AccessControlSessionConfig;
@@ -1664,9 +1676,9 @@ export interface AccessControlLoginConfig {
   backgroundImage?: string;
 }
 
-export interface AccessControlEdgeConfig {
-  /** Target platform for generated edge middleware */
-  platform: "netlify" | "vercel" | "cloudflare" | "node";
+export interface AccessControlDeployConfig {
+  /** Target deployment platform */
+  platform: "netlify-edge" | "vercel-edge" | "cloudflare-edge" | "node-edge";
 }
 
 export interface AccessControlSessionConfig {

@@ -19,6 +19,9 @@
     },
     "./AuthCallbackPage": {
       "import": "./dist/AuthCallbackPage.js"
+    },
+    "./AccessControlContext": {
+      "import": "./dist/AccessControlContext.js"
     }
   },
   "files": [

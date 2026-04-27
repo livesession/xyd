@@ -1,5 +1,3 @@
-import { writeFileSync, mkdirSync } from "node:fs";
-import { join } from "node:path";
 import type { Plugin as VitePlugin } from "vite";
 import type { AccessControl } from "@xyd-js/core";
 import type { AccessMap } from "./access";
@@ -166,6 +164,8 @@ export function protectedContentPlugin(
     },
 
     async closeBundle() {
+      const { writeFileSync, mkdirSync } = await import("node:fs");
+      const { join } = await import("node:path");
       // Build time: compile all protected pages into separate files
       const outputDir = join(
         process.cwd(),

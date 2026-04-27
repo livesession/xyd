@@ -192,11 +192,11 @@ export async function loader({ request }: { request: any }) {
 
 
 
-    // When edge middleware is configured, skip shellOnly — the edge server
+    // When deploy platform is configured, skip shellOnly — the server
     // handles protection, so pre-rendered HTML can include full content.
-    const hasEdge = !!(globalThis as any).__xydSettings?.accessControl?.edge
+    const hasDeploy = !!(globalThis as any).__xydSettings?.accessControl?.deploy
 
-    if (pagePath && accessMap && !hasEdge) {
+    if (pagePath && accessMap && !hasDeploy) {
         const pageAccess = accessMap["/" + slug] || accessMap[slug]
         if (pageAccess && pageAccess !== "public") {
             const cookieName = (globalThis as any).__xydSettings?.accessControl?.session?.cookieName || "xyd-auth-token"

@@ -1,5 +1,3 @@
-import { writeFileSync, mkdirSync, readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
 import type { AccessControl } from "@xyd-js/core";
 import type { AccessMap } from "../access";
 import { generateMiddlewareCore } from "./shared";
@@ -8,10 +6,12 @@ import { generateMiddlewareCore } from "./shared";
  * Generates Netlify Edge Function for access control.
  * Creates netlify/edge-functions/access-control.ts and updates netlify.toml.
  */
-export function generateNetlifyEdge(
+export async function generateNetlifyEdge(
   config: AccessControl,
   outputDir: string
 ): void {
+  const { writeFileSync, mkdirSync, readFileSync, existsSync } = await import("node:fs");
+  const { join } = await import("node:path");
   const projectRoot = join(outputDir, "../..");
   const edgeFnDir = join(projectRoot, "netlify/edge-functions");
   mkdirSync(edgeFnDir, { recursive: true });

@@ -228,10 +228,10 @@ export async function loader({ request }: { request: any }) {
         }
 
         // Check if current page is protected and user is not authenticated.
-        // Skip when edge middleware is configured — edge handles protection,
+        // Skip when deploy platform is configured — server handles protection,
         // so the full layout should always render.
-        const hasEdge = !!settings?.accessControl?.edge
-        if (!hasEdge) {
+        const hasDeploy = !!settings?.accessControl?.deploy
+        if (!hasDeploy) {
             const slugWithSlash = slug.startsWith("/") ? slug : `/${slug}`
             const pageAccess = accessMap[slugWithSlash] || accessMap[slug]
             if (pageAccess && pageAccess !== "public" && !isAuthenticated) {
@@ -239,9 +239,9 @@ export async function loader({ request }: { request: any }) {
             }
         }
 
-        // Filter sidebar: when edge is configured, show all items (edge controls access).
+        // Filter sidebar: when deploy platform is configured, show all items (server controls access).
         // Otherwise, filter based on user's auth state and groups.
-        filteredSidebarGroups = hasEdge ? sidebarGroups : sidebarGroups
+        filteredSidebarGroups = hasDeploy ? sidebarGroups : sidebarGroups
             .map(group => ({
                 ...group,
                 items: (group.items || []).filter(item => {

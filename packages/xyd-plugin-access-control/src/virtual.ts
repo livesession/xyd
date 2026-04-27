@@ -60,7 +60,10 @@ export const accessMap = ${JSON.stringify(accessMap)};
 `;
       }
       if (id === RESOLVED_GUARD_ID) {
-        return `export { default as AuthGuard, useAuth } from "@xyd-js/plugin-access-control/AuthGuard";`;
+        return [
+          `export { default as AuthGuard, useAuth } from "@xyd-js/plugin-access-control/AuthGuard";`,
+          `export { AccessControlProvider, useAccessControl } from "@xyd-js/plugin-access-control/AccessControlContext";`,
+        ].join("\n");
       }
       if (id === RESOLVED_PAGES_ID) {
         // Generate imports for all plugin pages from their dist paths
@@ -78,6 +81,7 @@ export const accessMap = ${JSON.stringify(accessMap)};
 
         return [
           ...imports,
+          `export { AccessControlProvider } from "@xyd-js/plugin-access-control/AccessControlContext";`,
           `export const pluginPages = {`,
           entries.join(",\n"),
           `};`,

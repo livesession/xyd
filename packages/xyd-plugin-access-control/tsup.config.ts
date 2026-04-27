@@ -6,6 +6,7 @@ const config: Options = {
     AuthGuard: "src/components/AuthGuard.tsx",
     LoginPage: "src/components/LoginPage.tsx",
     AuthCallbackPage: "src/components/AuthCallbackPage.tsx",
+    AccessControlContext: "src/components/AccessControlContext.tsx",
   },
   dts: {
     entry: {
@@ -30,6 +31,11 @@ const config: Options = {
     "react",
     "react/jsx-runtime",
     "vite",
+    "node:path",
+    "node:fs",
+    "node:http",
+    "node:crypto",
+    "dotenv",
   ],
 };
 

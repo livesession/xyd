@@ -1,5 +1,3 @@
-import { writeFileSync, mkdirSync } from "node:fs";
-import { join } from "node:path";
 import type { AccessControl } from "@xyd-js/core";
 import type { AccessMap } from "../access";
 import { generateMiddlewareCore } from "./shared";
@@ -8,10 +6,12 @@ import { generateMiddlewareCore } from "./shared";
  * Generates Cloudflare Pages Function middleware for access control.
  * Creates functions/_middleware.js alongside the static output.
  */
-export function generateCloudflareMiddleware(
+export async function generateCloudflareMiddleware(
   config: AccessControl,
   outputDir: string
 ): void {
+  const { writeFileSync, mkdirSync } = await import("node:fs");
+  const { join } = await import("node:path");
   const functionsDir = join(outputDir, "functions");
   mkdirSync(functionsDir, { recursive: true });
 
