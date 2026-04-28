@@ -11,6 +11,12 @@ const tests: Test[] = [
         mode: {type: "miniUniform", root: "Settings"},
     },
     {
+        name: "-1.typescript.react",
+        description: "TypeScript: React component (TestBasic)",
+        entryPoints: ["src/TestBasic.tsx"],
+        mode: {type: "react"},
+    },
+    {
         name: "-2.react.file-connect-interface",
         description: "React: file-scoped type alias in props",
         entryPoints: ["src/GuideCard.tsx"],

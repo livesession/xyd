@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "2.0",
+  "id": 4,
+  "name": "@xyd-sources-examples/package-a",
+  "variant": "project",
+  "kind": 1,
+  "flags": {},
+  "children": [
+    {
+      "id": 5,
+      "name": "MetaTags",
+      "variant": "declaration",
+      "kind": 256,
+      "flags": {},
+      "comment": {
+        "summary": [
+          {
+            "kind": "text",
+            "text": "Meta tags for the page"
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": 6,
+          "name": "charset",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Character encoding for the document"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"UTF-8\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 19,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        },
+        {
+          "id": 7,
+          "name": "robots",
+          "variant": "declaration",
+          "kind": 1024,
+          "flags": {},
+          "comment": {
+            "summary": [
+              {
+                "kind": "text",
+                "text": "Standard meta tag for controlling search engine crawling and indexing"
+              }
+            ],
+            "blockTags": [
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"index, follow\"\n```"
+                  }
+                ]
+              },
+              {
+                "tag": "@example",
+                "content": [
+                  {
+                    "kind": "code",
+                    "text": "```ts\n\"noindex, nofollow\"\n```"
+                  }
+                ]
+              }
+            ]
+          },
+          "sources": [
+            {
+              "fileName": "index.ts",
+              "line": 14,
+              "character": 4
+            }
+          ],
+          "type": {
+            "type": "intrinsic",
+            "name": "string"
+          }
+        }
+      ],
+      "groups": [
+        {
+          "title": "Properties",
+          "children": [
+            6,
+            7
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "fileName": "index.ts",
+          "line": 5,
+          "character": 17
+        }
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "title": "Interfaces",
+      "children": [
+        5
+      ]
+    }
+  ],
+  "packageName": "@xyd-js/sources",
+  "readme": [
+    {
+      "kind": "text",
+      "text": "# @xyd-js/sources\n\nAutomatic documentation from code sources, for xyd."
+    }
+  ],
+  "symbolIdMap": {
+    "4": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": ""
+    },
+    "5": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags"
+    },
+    "6": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.charset"
+    },
+    "7": {
+      "packageName": "@xyd-sources-examples/package-a",
+      "packagePath": "src/index.ts",
+      "qualifiedName": "MetaTags.robots"
+    }
+  },
+  "files": {
+    "entries": {
+      "1": "package-a/src/index.ts"
+    },
+    "reflections": {
+      "1": 4
+    }
+  }
+}
