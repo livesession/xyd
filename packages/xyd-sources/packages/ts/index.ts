@@ -33,6 +33,9 @@ export async function sourcesToUniformV2(
 } | undefined> {
     const cwd = extraOptions?.cwd ?? root;
     const originalCwd = process.cwd();
+    // TODO: process.chdir is unsafe — it mutates global state and causes race conditions
+    // with concurrent Vite plugins (e.g. pluginIconSet resolving relative paths via process.cwd()).
+    // Should be refactored to pass cwd explicitly to TypeDoc instead of changing global state.
     process.chdir(cwd);
 
     try {
