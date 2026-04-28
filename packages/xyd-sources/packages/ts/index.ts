@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 import {resolve} from "path";
+import {accessSync} from "node:fs";
 import ts from "typescript";
 
 import * as TypeDoc from 'typedoc';
@@ -31,15 +32,13 @@ export async function sourcesToUniformV2(
     references: Reference<ReferenceContext>[];
     projectJson: TypeDoc.JSONOutput.ProjectReflection;
 } | undefined> {
-    const cwd = extraOptions?.cwd ?? root;
-    return await _sourcesToUniformV2(root, entryPoints, extraOptions, cwd);
+    return await _sourcesToUniformV2(root, entryPoints, extraOptions);
 }
 
 async function _sourcesToUniformV2(
     root: string,
     entryPoints: string[],
     extraOptions?: SourcesToUniformV2Options,
-    cwd?: string,
 ): Promise<{
     references: Reference<ReferenceContext>[];
     projectJson: TypeDoc.JSONOutput.ProjectReflection;
@@ -93,24 +92,19 @@ async function _sourcesToUniformV2(
         }
     }
 
+    // Resolve tsconfig explicitly so TypeDoc doesn't rely on process.cwd()
     if (extraOptions?.tsconfig) {
         options.tsconfig = extraOptions.tsconfig;
+    } else {
+        const tsConfigPath = path.resolve(root, 'tsconfig.json');
+        try {
+            accessSync(tsConfigPath);
+            options.tsconfig = tsConfigPath;
+        } catch {}
     }
 
-    // TypeDoc uses process.cwd() internally for tsconfig/path resolution.
-    // We chdir only during bootstrap+convert (which need it), then restore immediately
-    // to avoid corrupting cwd for concurrent async Vite plugins.
-    const originalCwd = process.cwd();
-    if (cwd) process.chdir(cwd);
-
-    let app: TypeDoc.Application;
-    let project: TypeDoc.ProjectReflection | undefined;
-    try {
-        app = await TypeDoc.Application.bootstrapWithPlugins(options);
-        project = await app.convert();
-    } finally {
-        process.chdir(originalCwd);
-    }
+    const app = await TypeDoc.Application.bootstrapWithPlugins(options);
+    const project = await app.convert();
     if (!project) {
         console.error('Failed to generate documentation.');
         return
