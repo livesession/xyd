@@ -60,10 +60,12 @@ export default function AuthCallbackPage() {
       return;
     }
 
-    // JWT flow: token in hash fragment
-    if (hash) {
+    // JWT flow: token in query param (?token=...) or hash fragment (#eyJ...)
+    const token = params.get("token") || hash;
+    const redirect = params.get("redirect") || state;
+    if (token) {
       try {
-        handleJWTCallback(hash, state, cookieName, groupsClaim);
+        handleJWTCallback(token, redirect, cookieName, groupsClaim);
       } catch (e) {
         setError(e instanceof Error ? e.message : "JWT authentication failed");
       }
