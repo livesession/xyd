@@ -1,0 +1,349 @@
+[
+  {
+    "title": "EventSystemConfig",
+    "canonical": "",
+    "description": "Configuration for an event system with various callback patterns.\n\nDemonstrates how uniform handles functions as properties,\nfrom simple no-arg callbacks to complex generic signatures.\n",
+    "context": {
+      "symbolId": "158",
+      "symbolName": "EventSystemConfig",
+      "symbolKind": 256,
+      "packageName": "@xyd-js/sources",
+      "fileName": "functions.ts",
+      "fileFullPath": "src/functions.ts",
+      "line": 60,
+      "col": 17,
+      "signatureText": {
+        "code": "export interface EventSystemConfig {\n}",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export interface EventSystemConfig {\n    // ---- Simple callbacks ----\n\n    /** Called when the system initializes (no arguments) */\n    onInit: () => void;\n\n    /** Called when the system is destroyed, returns cleanup success */\n    onDestroy: () => boolean;\n\n    /** Optional callback when system is ready */\n    onReady?: () => void;\n\n    // ---- Primitive argument callbacks ----\n\n    /** Called when a text value changes */\n    onTextChange: (value: string) => void;\n\n    /** Called on numeric input with min/max boundaries */\n    onRangeChange: (value: number, min: number, max: number) => void;\n\n    /** Called when a toggle state changes */\n    onToggle: (enabled: boolean) => void;\n\n    /** Called on status transition */\n    onStatusChange: (previous: RequestStatus, current: RequestStatus) => void;\n\n    // ---- Object argument callbacks ----\n\n    /** Called when a user is selected */\n    onUserSelect: (user: User) => void;\n\n    /** Called when pagination changes */\n    onPageChange: (pagination: PaginationInfo) => void;\n\n    /** Called when multiple filters are applied */\n    onFilter: (filters: FilterCriteria[]) => void;\n\n    // ---- Callbacks with return values ----\n\n    /** Validates input, returns error message or null */\n    validate: (input: string) => string | null;\n\n    /** Transforms data before saving */\n    transform: (data: Record<string, unknown>) => Record<string, unknown>;\n\n    /** Async data fetcher */\n    fetchData: (url: string, options?: { timeout?: number }) => Promise<AsyncResult<unknown>>;\n\n    // ---- Complex / advanced patterns ----\n\n    /** Comparator for custom sorting */\n    comparator: (a: User, b: User) => number;\n\n    /** Reducer-style callback */\n    reducer: (state: Record<string, unknown>, action: { type: string; payload?: unknown }) => Record<string, unknown>;\n\n    /** Event handler with optional prevent-default */\n    onEvent: (eventName: string, data: unknown, preventDefault?: () => void) => void;\n\n    /** Callback that receives another callback (nested function) */\n    onSubscribe: (unsubscribe: () => void) => void;\n\n    /** Iterator/visitor pattern */\n    forEach: (item: User, index: number, array: User[]) => void;\n\n    /** Optional error handler */\n    onError?: (error: Error, context?: { retryCount: number; timestamp: number }) => void;\n\n    /** Predicate function */\n    filter: (item: User) => boolean;\n\n    /** Map/projection function */\n    mapUser: (user: User) => { label: string; value: string };\n}",
+        "lang": "ts"
+      },
+      "meta": [],
+      "group": [
+        "@xyd-js",
+        "sources",
+        "Interfaces"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Properties",
+        "properties": [
+          {
+            "name": "onInit",
+            "type": "",
+            "description": "Called when the system initializes (no arguments)\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onDestroy",
+            "type": "",
+            "description": "Called when the system is destroyed, returns cleanup success\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onReady",
+            "type": "",
+            "description": "Optional callback when system is ready\n",
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onTextChange",
+            "type": "",
+            "description": "Called when a text value changes\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onRangeChange",
+            "type": "",
+            "description": "Called on numeric input with min/max boundaries\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onToggle",
+            "type": "",
+            "description": "Called when a toggle state changes\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onStatusChange",
+            "type": "",
+            "description": "Called on status transition\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onUserSelect",
+            "type": "",
+            "description": "Called when a user is selected\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onPageChange",
+            "type": "",
+            "description": "Called when pagination changes\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onFilter",
+            "type": "",
+            "description": "Called when multiple filters are applied\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "validate",
+            "type": "",
+            "description": "Validates input, returns error message or null\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "transform",
+            "type": "",
+            "description": "Transforms data before saving\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "fetchData",
+            "type": "",
+            "description": "Async data fetcher\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "comparator",
+            "type": "",
+            "description": "Comparator for custom sorting\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "reducer",
+            "type": "",
+            "description": "Reducer-style callback\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onEvent",
+            "type": "",
+            "description": "Event handler with optional prevent-default\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onSubscribe",
+            "type": "",
+            "description": "Callback that receives another callback (nested function)\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "forEach",
+            "type": "",
+            "description": "Iterator/visitor pattern\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onError",
+            "type": "",
+            "description": "Optional error handler\n",
+            "properties": [],
+            "meta": [],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "filter",
+            "type": "",
+            "description": "Predicate function\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "mapUser",
+            "type": "",
+            "description": "Map/projection function\n",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          }
+        ],
+        "symbolDef": {
+          "canonical": ""
+        }
+      }
+    ]
+  }
+]

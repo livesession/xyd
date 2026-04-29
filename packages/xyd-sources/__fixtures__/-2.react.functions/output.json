@@ -1,0 +1,215 @@
+[
+  {
+    "title": "DataGrid",
+    "canonical": "@xyd-js/sources/components/DataGrid",
+    "description": "A data grid component with rich callback support for sorting,\nfiltering, pagination, cell editing, and row selection.\n",
+    "context": {
+      "symbolId": "284",
+      "symbolName": "DataGrid",
+      "symbolKind": 64,
+      "packageName": "@xyd-js/sources",
+      "fileName": "DataGrid.tsx",
+      "fileFullPath": "src/DataGrid.tsx",
+      "line": 142,
+      "col": 16,
+      "signatureText": {
+        "code": "export function DataGrid(props: DataGridProps);",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function DataGrid(props: DataGridProps) {\n    return <div>{props.rows.length} rows</div>;\n}",
+        "lang": "ts"
+      },
+      "meta": [],
+      "category": "Component",
+      "group": [
+        "@xyd-js",
+        "sources",
+        "Component"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Props",
+        "properties": [
+          {
+            "name": "rows",
+            "type": "$$array",
+            "description": "Grid data rows\n",
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "RowData",
+              "properties": [],
+              "symbolDef": {
+                "id": "287"
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "onReady",
+            "type": "",
+            "description": "Called when the grid finishes rendering\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onDestroy",
+            "type": "",
+            "description": "Called when the grid is unmounted\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onSearch",
+            "type": "",
+            "description": "Called when search input changes\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onPageChange",
+            "type": "",
+            "description": "Called when page number changes\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onSelectAll",
+            "type": "",
+            "description": "Called when \"select all\" checkbox is toggled\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onRowClick",
+            "type": "",
+            "description": "Called when a row is clicked\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onSort",
+            "type": "",
+            "description": "Called when sort configuration changes\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onSelectionChange",
+            "type": "",
+            "description": "Called when selection state changes\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onCellEdit",
+            "type": "",
+            "description": "Called when a cell is edited\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onRowReorder",
+            "type": "",
+            "description": "Called when a row is dropped during drag-and-drop reorder\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onCellDoubleClick",
+            "type": "",
+            "description": "Called on cell double-click with row and column context\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "formatCell",
+            "type": "",
+            "description": "Custom cell renderer, returns string representation\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "rowClassName",
+            "type": "",
+            "description": "Row class name resolver\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "validateEdit",
+            "type": "",
+            "description": "Validates a cell edit, returns error message or null to accept\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "loadData",
+            "type": "",
+            "description": "Async data loader for server-side pagination\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "sortComparator",
+            "type": "",
+            "description": "Custom comparator for sorting\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "isRowSelectable",
+            "type": "",
+            "description": "Predicate to determine if a row is selectable\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "filterRow",
+            "type": "",
+            "description": "Row filter predicate\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onSubscribe",
+            "type": "",
+            "description": "Provides an unsubscribe function for external data updates\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "onError",
+            "type": "",
+            "description": "Error handler with retry context\n",
+            "properties": [],
+            "meta": []
+          },
+          {
+            "name": "transformRow",
+            "type": "",
+            "description": "Transform row data before display\n",
+            "properties": [],
+            "meta": []
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "parameters"
+          }
+        ]
+      }
+    ]
+  }
+]
