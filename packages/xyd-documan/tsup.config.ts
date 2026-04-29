@@ -21,5 +21,6 @@ export default defineConfig({
     external: [
         // // externalize vite dependency
         "vite",
+        "@xyd-js/plugin-access-control",
     ]
 })

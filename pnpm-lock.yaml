@@ -1054,6 +1054,9 @@ importers:
       '@xyd-js/host':
         specifier: workspace:*
         version: link:../xyd-host
+      '@xyd-js/plugin-access-control':
+        specifier: workspace:*
+        version: link:../xyd-plugin-access-control
       '@xyd-js/plugin-docs':
         specifier: workspace:*
         version: link:../xyd-plugin-docs
@@ -23432,9 +23435,17 @@ snapshots:
       '@fastify/error': 3.4.1
       fastq: 1.20.1
 
-  axios@1.13.2(debug@4.4.3):
+  axios@1.13.2:
     dependencies:
       follow-redirects: 1.15.11(debug@4.3.7)
+      form-data: 4.0.5
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.13.2(debug@4.4.3):
+    dependencies:
+      follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.5
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -25832,6 +25843,10 @@ snapshots:
     optionalDependencies:
       debug: 4.3.7(supports-color@9.4.0)
 
+  follow-redirects@1.15.11(debug@4.4.3):
+    optionalDependencies:
+      debug: 4.4.3(supports-color@10.2.2)
+
   for-each@0.3.5:
     dependencies:
       is-callable: 1.2.7
@@ -26673,7 +26688,7 @@ snapshots:
       isstream: 0.1.2
       jsonwebtoken: 9.0.3
       mime-types: 2.1.35
-      retry-axios: 2.6.0(axios@1.13.2(debug@4.4.3))
+      retry-axios: 2.6.0(axios@1.13.2)
       tough-cookie: 4.1.4
     transitivePeerDependencies:
       - supports-color
@@ -29088,7 +29103,7 @@ snapshots:
       '@yarnpkg/lockfile': 1.1.0
       '@yarnpkg/parsers': 3.0.2
       '@zkochan/js-yaml': 0.0.7
-      axios: 1.13.2(debug@4.4.3)
+      axios: 1.13.2
       chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-spinners: 2.6.1
@@ -30837,9 +30852,9 @@ snapshots:
 
   ret@0.4.3: {}
 
-  retry-axios@2.6.0(axios@1.13.2(debug@4.4.3)):
+  retry-axios@2.6.0(axios@1.13.2):
     dependencies:
-      axios: 1.13.2(debug@4.4.3)
+      axios: 1.13.2
 
   retry@0.12.0: {}
 
@@ -31287,7 +31302,7 @@ snapshots:
 
   slice-ansi@7.1.2:
     dependencies:
-      ansi-styles: 6.2.1
+      ansi-styles: 6.2.3
       is-fullwidth-code-point: 5.1.0
 
   slugify@1.6.6: {}
@@ -33067,7 +33082,7 @@ snapshots:
 
   wrap-ansi@9.0.2:
     dependencies:
-      ansi-styles: 6.2.1
+      ansi-styles: 6.2.3
       string-width: 7.2.0
       strip-ansi: 7.1.2
 
