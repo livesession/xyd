@@ -1565,7 +1565,7 @@ export interface UserPreferences {
  */
 export interface AccessControl {
   /** Authentication provider configuration */
-  provider: AccessControlProviderOAuth | AccessControlProviderJWT | AccessControlProviderPassword | AccessControlProviderCustom;
+  provider: AccessControlProviderOAuth | AccessControlProviderJWT | AccessControlProviderCustom;
 
   /**
    * Default access level for all pages.
@@ -1640,12 +1640,6 @@ export interface AccessControlProviderOAuth {
   userInfoUrl?: string;
   /** Field in user info response containing groups/roles */
   groupsClaim?: string;
-}
-
-export interface AccessControlProviderPassword {
-  type: "password";
-  /** Password or bcrypt hash. Use $ENV_VAR syntax for secrets. */
-  password: string;
 }
 
 export interface AccessControlProviderCustom {

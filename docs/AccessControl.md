@@ -1,6 +1,6 @@
 # Access Control
 
-This document describes the access control system in xyd, which protects documentation pages with JWT, OAuth, or password authentication. It covers configuration, the plugin architecture, SSR page exclusion, deploy adapters, search filtering, and the unified client API.
+This document describes the access control system in xyd, which protects documentation pages with JWT or OAuth authentication. It covers configuration, the plugin architecture, SSR page exclusion, deploy adapters, search filtering, and the unified client API.
 
 ## Overview
 
@@ -57,7 +57,6 @@ All types are defined in `packages/xyd-core/src/types/settings.ts`:
 | `AccessControl` | Root config: provider, rules, login, deploy, session |
 | `AccessControlProviderJWT` | JWT auth: loginUrl, callbackPath, algorithm, secret, groupsClaim |
 | `AccessControlProviderOAuth` | OAuth: authorizationUrl, tokenUrl, clientId, scopes, userInfoUrl |
-| `AccessControlProviderPassword` | Password: password field |
 | `AccessControlProviderCustom` | Custom: handler module path |
 | `AccessControlRule` | Pattern rule: match (glob), access, groups |
 | `AccessControlLoginConfig` | Login page: logo, title, description, backgroundImage |
@@ -252,6 +251,74 @@ Runs synchronously in `<head>` before React hydration (same pattern as color sch
 
 This prevents flash of protected content (FOPC).
 
+## JWT Claims
+
+The auth server signs a JWT with specific claims. xyd reads the `groupsClaim` field (default: `"groups"`) to determine group-based access.
+
+### Required Claims
+
+| Claim | Type | Read By | Purpose |
+|-------|------|---------|---------|
+| `sub` | `string` | Edge server logs | User identifier |
+| `exp` | `number` | Pre-hydration script, edge server, AuthCallbackPage | Token expiration (Unix seconds) |
+| `iat` | `number` | — | Issued-at time |
+| `groups` | `string[]` | Pre-hydration script (`groupsClaim`), edge server (`GROUPS_CLAIM`), AuthCallbackPage | Group membership for access rules |
+
+The claim key for groups is configurable via `provider.groupsClaim`. If set to `"roles"`, xyd reads `payload.roles` instead of `payload.groups`.
+
+### Where Claims Are Read
+
+1. **Pre-hydration script** (`authPrehydration.ts`): Decodes JWT from localStorage/cookie, reads `payload[groupsClaim]` → sets `window.__xydAuthState.groups`
+2. **AuthCallbackPage** (`AuthCallbackPage.tsx`): On callback, decodes `payload[groupsClaim]` → passes to `storeTokenAndRedirect()`
+3. **Edge server** (`server.mjs`): `verifyJWT()` validates signature + `exp`, `checkAccess()` reads `payload[GROUPS_CLAIM]` and compares against `ACCESS_MAP`
+4. **Layout loader** (`layout.tsx`): Decodes JWT from cookie, reads groups for sidebar filtering
+
+### Auth Server JWT Signing Example
+
+```javascript
+import { createHmac } from "node:crypto";
+
+function signJWT(payload) {
+  const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url");
+  const body = Buffer.from(JSON.stringify({
+    ...payload,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 86400,
+  })).toString("base64url");
+  const sig = createHmac("sha256", JWT_SECRET).update(`${header}.${body}`).digest("base64url");
+  return `${header}.${body}.${sig}`;
+}
+
+// After authenticating user:
+const token = signJWT({ sub: "user-123", groups: ["admin"] });
+const callbackUrl = `${DOCS_URL}/auth/jwt-callback?token=${token}&redirect=${redirect}`;
+res.redirect(302, callbackUrl);
+```
+
+## OAuth User Info
+
+For OAuth, groups come from the **userinfo endpoint**, not the JWT. After code exchange, xyd fetches `userInfoUrl` and reads `groupsClaim` from the JSON response.
+
+### UserInfo Response Format
+
+```json
+{
+  "sub": "user-123",
+  "email": "user@example.com",
+  "roles": ["admin", "staff"]
+}
+```
+
+If `groupsClaim` is `"roles"`, xyd reads `response.roles`. Fallback order: `response[groupsClaim]` → `response.roles` → `response.groups`.
+
+### OAuth Groups Flow (in AuthCallbackPage)
+
+1. Exchange `code` for `access_token` (POST to `tokenUrl`)
+2. Fetch `userInfoUrl` with `Authorization: Bearer {access_token}`
+3. Read `response[groupsClaim]` (or fallback to `response.roles` / `response.groups`)
+4. Create a session JWT with groups baked in: `{ sub: "oauth-user", [groupsClaim]: groups, exp, iat }`
+5. Store session JWT in localStorage + cookie
+
 ## Auth Flows
 
 ### JWT Flow
@@ -271,13 +338,6 @@ This prevents flash of protected content (FOPC).
 4. Fetches user info from `userInfoUrl`, extracts groups
 5. Creates session JWT, stores in localStorage + cookie
 
-### Password Flow
-
-1. User visits protected page → redirects to `/login`
-2. LoginPage shows password form
-3. With deploy adapter: form submits to auth server → JWT issued → callback flow
-4. Without deploy adapter: client-side only (password hash in JS bundle — convenience gating only)
-
 ## AccessControlContext
 
 Provides auth actions to any React component:
@@ -289,7 +349,6 @@ export interface AccessControlActions {
   signInAsUser: () => void;       // Dev only
   signInAsAdmin: () => void;      // Dev only
   signInWithGroups: (groups: string[]) => void;  // Dev only
-  submitPassword: (password: string) => void;
 }
 ```
 
@@ -422,5 +481,5 @@ Located in the `examples` submodule:
 |---------|----------|--------|-------------|
 | `access-control-edge-jwt` | JWT | node-edge | External auth server, HS256 verification |
 | `access-control-edge-oauth` | OAuth | node-edge | Mock OAuth server, code exchange |
-| `access-control-edge-password` | JWT (password flow) | node-edge | `defaultAccess: "protected"` |
+| `access-control-edge-password` | JWT | node-edge | `defaultAccess: "protected"`, all pages locked by default |
 | `access-control-edge-custom-page-ui` | JWT | node-edge | Custom login component via `@xyd-js/client-api` |

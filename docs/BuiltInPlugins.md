@@ -7,7 +7,7 @@ This page documents the five core plugins that ship with xyd.
 | Plugin | Package | Purpose |
 |--------|---------|---------|
 | **plugin-docs** | `@xyd-js/plugin-docs` | Core documentation page rendering and MDX compilation |
-| **plugin-access-control** | `@xyd-js/plugin-access-control` | Page-level access control with JWT, OAuth, password auth |
+| **plugin-access-control** | `@xyd-js/plugin-access-control` | Page-level access control with JWT, OAuth auth |
 | **plugin-xspec** | `@xyd-js/plugin-xspec` | Specification document support with definition lists |
 | **plugin-extra-diagram** | `@xyd-js/plugin-extra-diagram` | Enhanced diagram rendering with interactive features |
 | **opencli-remark** | `@xyd-js/opencli-remark` | CLI documentation generation from OpenCLI specifications |
@@ -37,7 +37,7 @@ Supports title, description, custom tags, noindex directive. Tag merging: global
 
 ## plugin-access-control
 
-Page-level access control with JWT, OAuth, or password authentication. Auto-loaded when `accessControl` is configured in `docs.json` — no manual plugin installation needed.
+Page-level access control with JWT or OAuth authentication. Auto-loaded when `accessControl` is configured in `docs.json` — no manual plugin installation needed.
 
 This is a complex feature with its own dedicated documentation. See **@docs/AccessControl.md** for full details on configuration, SSR page exclusion, deploy adapters, search filtering, auth flows, and the unified client API.
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { AccessControlProvider, useAccessControl } from "./AccessControlContext";
 
 /**
@@ -26,10 +26,7 @@ function LoginPageUI() {
     signInWithRedirect,
     signInAsUser,
     signInAsAdmin,
-    submitPassword,
   } = useAccessControl();
-
-  const [password, setPassword] = useState("");
 
   const handleSignIn = () => {
     if (providerType === "oauth") signInWithOAuth();
@@ -51,19 +48,7 @@ function LoginPageUI() {
 
         {error && <p part="error">{error}</p>}
 
-        {providerType === "password" ? (
-          <form part="form" onSubmit={(e) => { e.preventDefault(); submitPassword(password); }}>
-            <input
-              part="input"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-              autoComplete="current-password"
-            />
-            <button part="button" type="submit">Continue</button>
-          </form>
-        ) : hasExternalAuth ? (
+        {hasExternalAuth ? (
           <button part="button" onClick={handleSignIn}>Sign in</button>
         ) : (
           <div part="actions">

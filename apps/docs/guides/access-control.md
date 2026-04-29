@@ -4,95 +4,182 @@ description: Protect documentation pages with authentication and role-based acce
 icon: shield
 ---
 
-# Access Control {label="Beta"}
+# Access Control {label="Alpha"}
 
-Protect your documentation pages with authentication. Control who can see what — from simple password protection to full OAuth with role-based access.
-
-## Overview
-
-xyd access control provides:
-- **Page-level protection** — mark pages as public or protected via frontmatter or pattern rules
-- **Group-based access** — restrict pages to specific roles (admin, premium, etc.)
-- **SSR exclusion** — protected content never appears in HTML source
-- **Edge middleware** — server-side protection for Netlify, Vercel, Cloudflare, or standalone Node.js
-- **Search filtering** — protected pages excluded from search for unauthorized users
-- **Sidebar filtering** — protected nav items hidden from unauthorized users
+Protect your documentation with JWT or OAuth to control who can access pages and API references.
 
 ## Quick Start
 
 Add `accessControl` to your `docs.json`:
 
-```json
-{
-  "accessControl": {
-    "provider": {
-      "type": "jwt",
-      "loginUrl": "https://your-auth-server.com/login",
-      "algorithm": "HS256",
-      "secret": "$AUTH_SECRET",
-      "groupsClaim": "groups"
-    },
-    "defaultAccess": "public",
-    "rules": [
-      { "match": "/api/**", "access": "protected" },
-      { "match": "/admin/**", "access": "protected", "groups": ["admin"] }
-    ]
-  }
-}
-```
+:::tabs{kind="secondary"}
+1. [JWT](provider=jwt)
+    ```json docs.json
+    {
+      "accessControl": {
+        "provider": {
+          "type": "jwt",
+          "loginUrl": "https://your-auth-server.com/login",
+          "callbackPath": "/auth/jwt-callback",
+          "algorithm": "HS256",
+          "secret": "$AUTH_SECRET",
+          "groupsClaim": "groups"
+        },
+        "defaultAccess": "public",
+        "rules": [
+          { "match": "/api/**", "access": "protected" },
+          { "match": "/admin/**", "access": "protected", "groups": ["admin"] }
+        ],
+        "deploy": {
+          "platform": "node-edge"
+        },
+        "session": {
+          "maxAge": 86400,
+          "cookieName": "xyd-auth-token"
+        }
+      }
+    }
+    ```
 
-## Auth Providers
+2. [OAuth](provider=oauth)
+    ```json docs.json
+    {
+      "accessControl": {
+        "provider": {
+          "type": "oauth",
+          "authorizationUrl": "https://accounts.google.com/o/oauth2/auth",
+          "tokenUrl": "https://oauth2.googleapis.com/token",
+          "clientId": "$OAUTH_CLIENT_ID",
+          "scopes": ["openid", "email", "profile"],
+          "callbackPath": "/auth/callback",
+          "userInfoUrl": "https://api.example.com/userinfo",
+          "groupsClaim": "roles"
+        },
+        "defaultAccess": "public",
+        "rules": [
+          { "match": "/api/**", "access": "protected" },
+          { "match": "/admin/**", "access": "protected", "groups": ["admin"] }
+        ],
+        "deploy": {
+          "platform": "node-edge"
+        },
+        "session": {
+          "maxAge": 86400,
+          "cookieName": "xyd-auth-token"
+        }
+      }
+    }
+    ```
+:::
 
-### JWT
+## Provider Configuration
 
-External login server signs a JWT and redirects back to your docs with the token.
+:::tabs{kind="secondary"}
+1. [JWT](provider=jwt)
+    | Field | Type | Required | Description |
+    |-------|------|----------|-------------|
+    | `type` | `"jwt"` | Yes | Provider type |
+    | `loginUrl` | `string` | Yes | URL to redirect unauthenticated users |
+    | `callbackPath` | `string` | No | Callback path (default: `/auth/jwt-callback`) |
+    | `algorithm` | `string` | No | JWT signing algorithm (default: `HS256`) |
+    | `secret` | `string` | Yes | Shared secret for HS256. Use `$ENV_VAR` syntax |
+    | `groupsClaim` | `string` | No | JWT claim name containing groups (default: `groups`) |
 
-```json
-{
-  "provider": {
-    "type": "jwt",
-    "loginUrl": "https://auth.example.com/login",
-    "callbackPath": "/auth/jwt-callback",
-    "algorithm": "HS256",
-    "secret": "$AUTH_SECRET",
-    "groupsClaim": "groups"
-  }
-}
-```
+2. [OAuth](provider=oauth)
+    | Field | Type | Required | Description |
+    |-------|------|----------|-------------|
+    | `type` | `"oauth"` | Yes | Provider type |
+    | `authorizationUrl` | `string` | Yes | OAuth authorization endpoint |
+    | `tokenUrl` | `string` | Yes | OAuth token exchange endpoint |
+    | `clientId` | `string` | Yes | OAuth client ID. Use `$ENV_VAR` syntax |
+    | `scopes` | `string[]` | No | OAuth scopes to request |
+    | `callbackPath` | `string` | No | Callback path (default: `/auth/callback`) |
+    | `userInfoUrl` | `string` | No | URL to fetch user info (provides groups) |
+    | `groupsClaim` | `string` | No | Field in userinfo response containing groups (default: `groups`) |
+:::
 
-### OAuth 2.0
+## Claims and Groups
 
-Redirect to an OAuth provider (Auth0, Google, GitHub, etc.) for authentication.
+xyd uses the `groupsClaim` field to read user groups for access control. How groups are provided depends on the provider type.
 
-```json
-{
-  "provider": {
-    "type": "oauth",
-    "authorizationUrl": "https://accounts.google.com/o/oauth2/auth",
-    "tokenUrl": "https://oauth2.googleapis.com/token",
-    "clientId": "$OAUTH_CLIENT_ID",
-    "scopes": ["openid", "email"],
-    "callbackPath": "/auth/callback",
-    "userInfoUrl": "https://api.example.com/userinfo",
-    "groupsClaim": "roles"
-  }
-}
-```
+:::tabs{kind="secondary"}
+1. [JWT Claims](provider=jwt)
+    Your auth server must include these claims in the signed JWT:
 
-### Password
+    | Claim | Type | Required | Description |
+    |-------|------|----------|-------------|
+    | `sub` | `string` | Yes | User identifier |
+    | `exp` | `number` | Yes | Expiration (Unix timestamp in seconds) |
+    | `iat` | `number` | Yes | Issued-at time |
+    | `groups` | `string[]` | For group access | Groups/roles (key name must match `groupsClaim`) |
 
-Simple shared-password protection with an external password form.
+    **Example JWT payload:**
+    ```json
+    {
+      "sub": "user-123",
+      "groups": ["admin", "staff"],
+      "exp": 1735689600,
+      "iat": 1735603200
+    }
+    ```
 
-```json
-{
-  "provider": {
-    "type": "jwt",
-    "loginUrl": "https://your-password-server.com/login",
-    "algorithm": "HS256",
-    "secret": "$AUTH_SECRET"
-  }
-}
-```
+    **Auth server example (Node.js):**
+    ```javascript
+    import { createHmac } from "node:crypto";
+
+    const JWT_SECRET = process.env.AUTH_SECRET;
+
+    function signJWT(payload) {
+      const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" }))
+        .toString("base64url");
+      const body = Buffer.from(JSON.stringify({
+        ...payload,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 86400,
+      })).toString("base64url");
+      const sig = createHmac("sha256", JWT_SECRET)
+        .update(`${header}.${body}`)
+        .digest("base64url");
+      return `${header}.${body}.${sig}`;
+    }
+
+    // After user authenticates:
+    const token = signJWT({ sub: user.id, groups: user.groups });
+    const callbackUrl = `${DOCS_URL}/auth/jwt-callback?token=${token}&redirect=${redirect}`;
+    res.redirect(302, callbackUrl);
+    ```
+
+    If your JWT uses `"roles"` instead of `"groups"`, set `"groupsClaim": "roles"` in `docs.json`.
+
+2. [OAuth UserInfo](provider=oauth)
+    For OAuth, xyd reads groups from your **userinfo endpoint**. After code exchange, xyd calls `userInfoUrl` with the access token.
+
+    **Your `/userinfo` endpoint must return JSON with groups:**
+    ```json
+    {
+      "sub": "user-123",
+      "email": "user@example.com",
+      "roles": ["admin", "staff"]
+    }
+    ```
+
+    If `groupsClaim` is `"roles"`, xyd reads `response.roles`. Fallback order: `response[groupsClaim]` → `response.roles` → `response.groups`.
+
+    **OAuth flow:**
+
+    1. xyd redirects to `authorizationUrl` with `client_id`, `redirect_uri`, `scope`, `state`
+    2. User authorizes → provider redirects to `/auth/callback?code=XXX&state=/page`
+    3. xyd exchanges `code` for `access_token` (POST to `tokenUrl`)
+    4. xyd fetches `userInfoUrl` with `Authorization: Bearer {access_token}`
+    5. Reads groups from response → stores in session JWT
+:::
+
+## Security Model
+
+| Layer | Protection | Platform |
+|-------|-----------|----------|
+| **Layer 1** (default) | SSR exclusion + client-side auth. Content not in HTML source. | Any static host |
+| **Layer 2** (deploy) | Server-side JWT verification. Content never served to unauthorized. | Node.js, Netlify, Vercel, Cloudflare |
 
 ## Page-Level Access
 
@@ -136,41 +223,71 @@ Rules are evaluated in order — first match wins.
 2. **Pattern rules** — `rules` array in `docs.json`
 3. **Default access** (lowest) — `defaultAccess: "public" | "protected"`
 
-## Edge Middleware
+## Deploy Adapters
 
 For production deployments, enable server-side protection:
 
-```json
-{
-  "accessControl": {
-    "deploy": {
-      "platform": "node-edge"
+:::tabs{kind="secondary"}
+1. [Node.js](platform=node)
+    ```json docs.json
+    {
+      "accessControl": {
+        "deploy": {
+          "platform": "node-edge"
+        }
+      }
     }
-  }
-}
-```
+    ```
 
-| Platform | Description |
-|----------|-------------|
-| `"node-edge"` | Standalone Node.js server (auto-generated by `xyd build`) |
-| `"netlify-edge"` | Netlify Edge Functions |
-| `"vercel-edge"` | Vercel Routing Middleware |
-| `"cloudflare-edge"` | Cloudflare Pages Functions |
+    With `node-edge`, `xyd build` generates a `server.mjs` in your build output:
 
-### Node.js Server
+    ```bash
+    xyd build   # generates .xyd/build/client/server.mjs
+    AUTH_SECRET=your-secret node .xyd/build/client/server.mjs
+    # or: xyd serve
+    ```
 
-With `deploy.platform: "node-edge"`, `xyd build` generates a `server.mjs` in your build output:
+    The server verifies JWT signatures (HS256), checks access rules on every request, and returns 302 for unauthorized users.
 
-```bash
-xyd build   # generates .xyd/build/client/server.mjs
-xyd serve   # starts the server automatically
-```
+2. [Netlify](platform=netlify)
+    ```json docs.json
+    {
+      "accessControl": {
+        "deploy": {
+          "platform": "netlify-edge"
+        }
+      }
+    }
+    ```
 
-The server:
-- Verifies JWT signatures (HS256)
-- Checks access rules on every request
-- Returns 302 redirect for unauthorized users (even for `curl`)
-- Protects content chunks from direct access
+    Generates a Netlify Edge Function at `netlify/edge-functions/auth.ts`.
+
+3. [Vercel](platform=vercel)
+    ```json docs.json
+    {
+      "accessControl": {
+        "deploy": {
+          "platform": "vercel-edge"
+        }
+      }
+    }
+    ```
+
+    Generates `middleware.ts` at your project root.
+
+4. [Cloudflare](platform=cloudflare)
+    ```json docs.json
+    {
+      "accessControl": {
+        "deploy": {
+          "platform": "cloudflare-edge"
+        }
+      }
+    }
+    ```
+
+    Generates `functions/_middleware.js` for Cloudflare Pages.
+:::
 
 ### Environment Variables
 
@@ -194,35 +311,68 @@ The server:
 
 xyd provides a built-in login page at `/login`. Customize it:
 
-```json
-{
-  "login": {
-    "title": "Sign in to access docs",
-    "description": "Enterprise documentation requires authentication.",
-    "logo": "/images/logo.svg"
-  }
-}
-```
+:::tabs{kind="secondary"}
+1. [Built-in](login=builtin)
+    ```json docs.json
+    {
+      "accessControl": {
+        "login": {
+          "title": "Sign in to access docs",
+          "description": "Enterprise documentation requires authentication.",
+          "logo": "/images/logo.svg"
+        }
+      }
+    }
+    ```
 
-## Security Model
+2. [Custom Component](login=custom)
+    ```json docs.json
+    {
+      "accessControl": {
+        "login": "./custom-login.tsx"
+      }
+    }
+    ```
 
-| Layer | Protection | Platform |
-|-------|-----------|----------|
-| **Layer 1** (default) | SSR exclusion + client-side auth. Content not in HTML source. | Any static host |
-| **Layer 2** (deploy) | Server-side JWT verification. Content never served to unauthorized. | Node.js, Netlify, Vercel, Cloudflare |
+    Your custom component uses `useAccessControl()` from `@xyd-js/client-api`:
 
-## CLI Commands
+    ```tsx custom-login.tsx
+    import { useAccessControl } from "@xyd-js/client-api";
 
-| Command | Description |
-|---------|-------------|
-| `xyd build` | Builds static site. With `deploy.platform: "node-edge"`, generates `server.mjs`. |
-| `xyd serve` | Serves the built site in production. Auto-detects deploy mode. |
-| `xyd dev` | Development server with access control middleware. |
+    export default function CustomLogin() {
+      const { signInWithRedirect, title } = useAccessControl();
+
+      return (
+        <div>
+          <h1>{title}</h1>
+          <button onClick={signInWithRedirect}>Sign In</button>
+        </div>
+      );
+    }
+    ```
+:::
+
+## Feature Availability
+
+How xyd features behave depending on your access control setup:
+
+| Feature | Public (no auth) | Fully authenticated | Partially authenticated |
+|---------|-----------------|--------------------|-----------------------|
+| **Search** | Full support | Filtered by auth state | Filtered by auth state |
+| **Sidebar** | Full support | Filtered by groups | Filtered by groups |
+| **Sitemap** | Full support | Protected pages excluded | Protected pages excluded |
+| **llms.txt** | Full support | Protected pages excluded | Protected pages excluded |
+| **Prev/Next links** | Full support | Filtered by access | Filtered by access |
+| **HTML source** | Full content | Empty shell (SSR exclusion) | Protected pages: empty shell |
+| **JS chunks** | All accessible | Blocked by deploy adapter | Protected chunks blocked |
+
+**Fully authenticated** = `defaultAccess: "protected"` (all pages require auth unless marked public)
+
+**Partially authenticated** = `defaultAccess: "public"` with specific `rules` protecting certain pages
 
 ## Examples
 
-- [Edge + JWT](https://github.com/xyd-js/examples/tree/main/access-control-edge-jwt)
-- [Edge + OAuth](https://github.com/xyd-js/examples/tree/main/access-control-edge-oauth)
-- [Edge + Password](https://github.com/xyd-js/examples/tree/main/access-control-edge-password)
-- [Client-side JWT](https://github.com/xyd-js/examples/tree/main/access-control-jwt)
-- [Client-side OAuth](https://github.com/xyd-js/examples/tree/main/access-control-oauth)
+- [Edge + JWT](https://github.com/xyd-js/examples/tree/master/access-control-edge-jwt)
+- [Edge + OAuth](https://github.com/xyd-js/examples/tree/master/access-control-edge-oauth)
+- [Edge + Default Protected](https://github.com/xyd-js/examples/tree/master/access-control-edge-password)
+- [Custom Login Page](https://github.com/xyd-js/examples/tree/master/access-control-edge-custom-page-ui)
