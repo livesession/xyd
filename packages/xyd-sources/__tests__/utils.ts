@@ -28,8 +28,10 @@ function normalize(obj: any): any {
 
     const result: any = {};
     for (const key of Object.keys(obj)) {
+        // Strip symbolId — TypeDoc assigns different IDs across environments
+        if (key === "symbolId") continue;
         let val = obj[key];
-        // Strip symbolDef.id — TypeDoc assigns different IDs across environments
+        // Strip symbolDef.id
         if (key === "symbolDef" && typeof val === "object" && val !== null) {
             const {id, ...rest} = val;
             result[key] = normalize(rest);
