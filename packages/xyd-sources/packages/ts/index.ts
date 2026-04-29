@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 import {resolve} from "path";
+import {accessSync} from "node:fs";
 import ts from "typescript";
 
 import * as TypeDoc from 'typedoc';
@@ -31,15 +32,7 @@ export async function sourcesToUniformV2(
     references: Reference<ReferenceContext>[];
     projectJson: TypeDoc.JSONOutput.ProjectReflection;
 } | undefined> {
-    const cwd = extraOptions?.cwd ?? root;
-    const originalCwd = process.cwd();
-    process.chdir(cwd);
-
-    try {
-        return await _sourcesToUniformV2(root, entryPoints, extraOptions);
-    } finally {
-        process.chdir(originalCwd);
-    }
+    return await _sourcesToUniformV2(root, entryPoints, extraOptions);
 }
 
 async function _sourcesToUniformV2(
@@ -99,13 +92,19 @@ async function _sourcesToUniformV2(
         }
     }
 
+    // Resolve tsconfig explicitly so TypeDoc doesn't rely on process.cwd()
     if (extraOptions?.tsconfig) {
         options.tsconfig = extraOptions.tsconfig;
+    } else {
+        const tsConfigPath = path.resolve(root, 'tsconfig.json');
+        try {
+            accessSync(tsConfigPath);
+            options.tsconfig = tsConfigPath;
+        } catch {}
     }
 
-    // TOOD: if react will not work then add []
     const app = await TypeDoc.Application.bootstrapWithPlugins(options);
-    const project = await app.convert()
+    const project = await app.convert();
     if (!project) {
         console.error('Failed to generate documentation.');
         return

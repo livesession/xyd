@@ -911,6 +911,9 @@ ${mapEntries.join(",\n")}
 
 export function pluginIconSet(settings: Settings): VitePlugin {
     const DEFAULT_ICON_SET = "lucide";
+    // Capture cwd at plugin creation time to avoid race conditions
+    // with sourcesToUniformV2 which temporarily changes process.cwd()
+    const settingsDir = process.cwd();
 
     async function fetchIconSet(
         name: string,
@@ -956,7 +959,7 @@ export function pluginIconSet(settings: Settings): VitePlugin {
         }
 
         if (name.startsWith(".")) {
-            const fullPath = path.join(process.cwd(), name);
+            const fullPath = path.join(settingsDir, name);
             const result = tryReadFile(fullPath);
             if (result) return result;
         }
