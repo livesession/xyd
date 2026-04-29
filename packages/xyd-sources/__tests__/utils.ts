@@ -28,10 +28,14 @@ function normalize(obj: any): any {
 
     const result: any = {};
     for (const key of Object.keys(obj)) {
-        if (key === "symbolId") continue;
         let val = obj[key];
+        // Strip symbolDef.id — TypeDoc assigns different IDs across environments
+        if (key === "symbolDef" && typeof val === "object" && val !== null) {
+            const {id, ...rest} = val;
+            result[key] = normalize(rest);
+            continue;
+        }
         // Normalize React type generics that expand differently across @types/react versions
-        // e.g. "React.ElementType<any, keyof IntrinsicElements>" → "React.ElementType"
         if (key === "type" && typeof val === "string") {
             val = val.replace(/React\.ElementType<[^>]+>/g, "React.ElementType");
         }
