@@ -72,37 +72,12 @@ Add `accessControl` to your `docs.json`:
     ```
 :::
 
-## Provider Configuration
-
-:::tabs{kind="secondary"}
-1. [JWT](provider=jwt)
-    | Field | Type | Required | Description |
-    |-------|------|----------|-------------|
-    | `type` | `"jwt"` | Yes | Provider type |
-    | `loginUrl` | `string` | Yes | URL to redirect unauthenticated users |
-    | `callbackPath` | `string` | No | Callback path (default: `/auth/jwt-callback`) |
-    | `algorithm` | `string` | No | JWT signing algorithm (default: `HS256`) |
-    | `secret` | `string` | Yes | Shared secret for HS256. Use `$ENV_VAR` syntax |
-    | `groupsClaim` | `string` | No | JWT claim name containing groups (default: `groups`) |
-
-2. [OAuth](provider=oauth)
-    | Field | Type | Required | Description |
-    |-------|------|----------|-------------|
-    | `type` | `"oauth"` | Yes | Provider type |
-    | `authorizationUrl` | `string` | Yes | OAuth authorization endpoint |
-    | `tokenUrl` | `string` | Yes | OAuth token exchange endpoint |
-    | `clientId` | `string` | Yes | OAuth client ID. Use `$ENV_VAR` syntax |
-    | `scopes` | `string[]` | No | OAuth scopes to request |
-    | `callbackPath` | `string` | No | Callback path (default: `/auth/callback`) |
-    | `userInfoUrl` | `string` | No | URL to fetch user info (provides groups) |
-    | `groupsClaim` | `string` | No | Field in userinfo response containing groups (default: `groups`) |
-:::
-
 ## Claims and Groups
 
-xyd uses the `groupsClaim` field to read user groups for access control. How groups are provided depends on the provider type.
+Use the `groupsClaim` field to read user groups for access control. How groups are provided depends on the provider type.
 
-:::tabs{kind="secondary"}
+::::tabs{kind="secondary"}
+
 1. [JWT Claims](provider=jwt)
     Your auth server must include these claims in the signed JWT:
 
@@ -124,8 +99,8 @@ xyd uses the `groupsClaim` field to read user groups for access control. How gro
     ```
 
     **Auth server example (Node.js):**
-    ```javascript
-    import { createHmac } from "node:crypto";
+    ```javascript [descHead="Info" desc="If your JWT uses <code>roles</code> instead of <code>groups</code>, set <code>groupsClaim: roles</code> in <code>docs.json</code>."]
+    import { createHmac } from "node:crypto v2";
 
     const JWT_SECRET = process.env.AUTH_SECRET;
 
@@ -148,14 +123,12 @@ xyd uses the `groupsClaim` field to read user groups for access control. How gro
     const callbackUrl = `${DOCS_URL}/auth/jwt-callback?token=${token}&redirect=${redirect}`;
     res.redirect(302, callbackUrl);
     ```
-
-    If your JWT uses `"roles"` instead of `"groups"`, set `"groupsClaim": "roles"` in `docs.json`.
-
+   
 2. [OAuth UserInfo](provider=oauth)
-    For OAuth, xyd reads groups from your **userinfo endpoint**. After code exchange, xyd calls `userInfoUrl` with the access token.
+   For OAuth, xyd reads groups from your **userinfo endpoint**. After code exchange, xyd calls `userInfoUrl` with the access token.
 
-    **Your `/userinfo` endpoint must return JSON with groups:**
-    ```json
+   **Your `/userinfo` endpoint must return JSON with groups:**
+    ```json [descHead="Info" desc="If <code>groupsClaim</code> is <code>roles</code>, xyd reads <code>response.roles</code>. Fallback order: <code>response[groupsClaim]</code> → <code>response.roles</code> → <code>response.groups</code>."]
     {
       "sub": "user-123",
       "email": "user@example.com",
@@ -163,16 +136,19 @@ xyd uses the `groupsClaim` field to read user groups for access control. How gro
     }
     ```
 
-    If `groupsClaim` is `"roles"`, xyd reads `response.roles`. Fallback order: `response[groupsClaim]` → `response.roles` → `response.groups`.
+   **OAuth flow:**
+   :::steps
+   1. xyd redirects to `authorizationUrl` with `client_id`, `redirect_uri`, `scope`, `state`
 
-    **OAuth flow:**
+   2. User authorizes → provider redirects to `/auth/callback?code=XXX&state=/page`
 
-    1. xyd redirects to `authorizationUrl` with `client_id`, `redirect_uri`, `scope`, `state`
-    2. User authorizes → provider redirects to `/auth/callback?code=XXX&state=/page`
-    3. xyd exchanges `code` for `access_token` (POST to `tokenUrl`)
-    4. xyd fetches `userInfoUrl` with `Authorization: Bearer {access_token}`
-    5. Reads groups from response → stores in session JWT
-:::
+   3. xyd exchanges `code` for `access_token` (POST to `tokenUrl`)
+
+   4. xyd fetches `userInfoUrl` with `Authorization: Bearer {access_token}`
+
+   5. Reads groups from response → stores in session JWT
+   :::
+::::
 
 ## Security Model
 
@@ -354,7 +330,8 @@ xyd provides a built-in login page at `/login`. Customize it:
 
 ## Feature Availability
 
-How xyd features behave depending on your access control setup:
+Some features behave differently when you enable authentication. 
+Protected pages are automatically excluded from search results, sidebar navigation, sitemap, and llms.txt for unauthorized users.
 
 | Feature | Public (no auth) | Fully authenticated | Partially authenticated |
 |---------|-----------------|--------------------|-----------------------|
@@ -365,10 +342,6 @@ How xyd features behave depending on your access control setup:
 | **Prev/Next links** | Full support | Filtered by access | Filtered by access |
 | **HTML source** | Full content | Empty shell (SSR exclusion) | Protected pages: empty shell |
 | **JS chunks** | All accessible | Blocked by deploy adapter | Protected chunks blocked |
-
-**Fully authenticated** = `defaultAccess: "protected"` (all pages require auth unless marked public)
-
-**Partially authenticated** = `defaultAccess: "public"` with specific `rules` protecting certain pages
 
 ## Examples
 
