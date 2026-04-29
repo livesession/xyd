@@ -746,7 +746,34 @@ export async function commonVitePlugins(
         virtualScriptsPlugin(respPluginDocs.settings),
         pluginIconSet(respPluginDocs.settings),
         ...userVitePlugins,
+        // Fallback: provide empty access control virtual modules when accessControl is not configured.
+        // This prevents Rollup from failing on imports in layout.tsx and pluginPage.tsx.
+        noopAccessControlPlugin(),
     ];
+}
+
+function noopAccessControlPlugin(): VitePlugin {
+    return {
+        name: "xyd-access-control-noop-fallback",
+        resolveId(id) {
+            if (id === "virtual:xyd-access-control-settings") return "\0virtual:xyd-access-control-settings-noop";
+            if (id === "virtual:xyd-access-control-guard") return "\0virtual:xyd-access-control-guard-noop";
+            if (id === "virtual:xyd-plugin-pages") return "\0virtual:xyd-plugin-pages-noop";
+            return null;
+        },
+        load(id) {
+            if (id === "\0virtual:xyd-access-control-settings-noop") {
+                return `export const accessControlConfig = null;\nexport const accessMap = {};`;
+            }
+            if (id === "\0virtual:xyd-access-control-guard-noop") {
+                return `export const AuthGuard = null;\nexport const useAuth = () => ({});\nexport const AccessControlProvider = null;\nexport const useAccessControl = () => ({});`;
+            }
+            if (id === "\0virtual:xyd-plugin-pages-noop") {
+                return `export const pluginPages = {};\nexport const AccessControlProvider = null;`;
+            }
+            return null;
+        }
+    };
 }
 
 export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
