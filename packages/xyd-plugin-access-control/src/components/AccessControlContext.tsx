@@ -23,12 +23,9 @@ export interface AccessControlActions {
   signInAsAdmin: () => void;
   /** Sign in with specific groups */
   signInWithGroups: (groups: string[]) => void;
-  /** Submit password (for password provider) */
-  submitPassword: (password: string) => void;
-
   // --- Info ---
 
-  /** Provider type: "jwt" | "oauth" | "password" */
+  /** Provider type: "jwt" | "oauth" */
   providerType: string;
   /** Whether an external auth URL is configured */
   hasExternalAuth: boolean;
@@ -167,11 +164,6 @@ export function AccessControlProvider({ children }: { children: React.ReactNode 
   const signInAsUser = useCallback(() => signInWithGroups([]), [signInWithGroups]);
   const signInAsAdmin = useCallback(() => signInWithGroups(["admin"]), [signInWithGroups]);
 
-  const submitPassword = useCallback((password: string) => {
-    // Password flow goes through external server, same as JWT redirect
-    setError("Invalid password");
-  }, []);
-
   const value: AccessControlActions = {
     config,
     ready,
@@ -182,7 +174,6 @@ export function AccessControlProvider({ children }: { children: React.ReactNode 
     signInAsUser,
     signInAsAdmin,
     signInWithGroups,
-    submitPassword,
     providerType,
     hasExternalAuth,
     title,

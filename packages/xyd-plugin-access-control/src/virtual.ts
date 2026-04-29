@@ -108,9 +108,6 @@ function sanitizeConfig(config: AccessControl): AccessControl {
     if ("secret" in provider) {
       provider.secret = undefined;
     }
-    if ("password" in provider) {
-      (provider as any).password = "***";
-    }
 
     safe.provider = provider as any;
   }

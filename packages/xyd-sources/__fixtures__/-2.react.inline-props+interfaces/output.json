@@ -1,0 +1,100 @@
+[
+  {
+    "title": "Text",
+    "canonical": "@xyd-js/sources/components/Text",
+    "description": "A flexible text component that supports different sizes, styles, and weights.\n",
+    "context": {
+      "symbolId": "186",
+      "symbolName": "Text",
+      "symbolKind": 64,
+      "packageName": "@xyd-js/sources",
+      "fileName": "Text.tsx",
+      "fileFullPath": "src/Text.tsx",
+      "line": 47,
+      "col": 16,
+      "signatureText": {
+        "code": "export function Text({ size = \"medium\", kind = \"default\", weight = \"normal\", children, className, id, onClick }: TextProps);",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function Text({\n                         size = \"medium\",\n                         kind = \"default\",\n                         weight = \"normal\",\n                         children,\n                         className,\n                         id,\n                         onClick\n                     }: TextProps) {\n    return (\n        <div>\n            {children}\n        </div>\n    )\n}",
+        "lang": "ts"
+      },
+      "meta": [],
+      "category": "Component",
+      "group": [
+        "@xyd-js",
+        "sources",
+        "Component"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Props",
+        "properties": [
+          {
+            "name": "size",
+            "type": "TextFontSizes",
+            "description": "Font size of the text\n",
+            "symbolDef": {
+              "id": "189"
+            },
+            "meta": []
+          },
+          {
+            "name": "kind",
+            "type": "TextKindTypes",
+            "description": "Visual style/kind of the text\n",
+            "symbolDef": {
+              "id": "190"
+            },
+            "meta": []
+          },
+          {
+            "name": "weight",
+            "type": "TextFontWeights",
+            "description": "Font weight of the text\n",
+            "symbolDef": {
+              "id": "191"
+            },
+            "meta": []
+          },
+          {
+            "name": "children",
+            "type": "React.ReactNode",
+            "description": "Content to be rendered inside the text component\n",
+            "meta": []
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "description": "Additional CSS class name\n",
+            "meta": []
+          },
+          {
+            "name": "id",
+            "type": "string",
+            "description": "HTML id attribute\n",
+            "meta": []
+          },
+          {
+            "name": "onClick",
+            "type": "",
+            "description": "Click event handler\n",
+            "properties": [],
+            "meta": []
+          }
+        ],
+        "meta": [
+          {
+            "name": "type",
+            "value": "parameters"
+          }
+        ]
+      }
+    ]
+  }
+]
