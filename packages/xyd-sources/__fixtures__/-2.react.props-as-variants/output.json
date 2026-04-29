@@ -1,0 +1,47 @@
+[
+  {
+    "title": "Details",
+    "canonical": "@xyd-js/sources/components/Details",
+    "description": "A collapsible details component that supports three variants: primary, secondary, and tertiary.\nEach variant has a different visual style and structure.\n",
+    "context": {
+      "symbolId": "226",
+      "symbolName": "Details",
+      "symbolKind": 64,
+      "packageName": "@xyd-js/sources",
+      "fileName": "Details.tsx",
+      "fileFullPath": "src/Details.tsx",
+      "line": 60,
+      "col": 16,
+      "signatureText": {
+        "code": "export function Details(props: DetailsProps): React.ReactElement;",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export function Details(props: DetailsProps): React.ReactElement {\n    return <div>\n        {props.children}\n    </div>\n}",
+        "lang": "ts"
+      },
+      "meta": [],
+      "category": "Component",
+      "group": [
+        "@xyd-js",
+        "sources",
+        "Component"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Props",
+        "properties": [],
+        "meta": [
+          {
+            "name": "type",
+            "value": "parameters"
+          }
+        ]
+      }
+    ]
+  }
+]
