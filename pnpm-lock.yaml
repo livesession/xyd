@@ -1328,6 +1328,9 @@ importers:
       '@xyd-js/framework':
         specifier: workspace:*
         version: link:../xyd-framework
+      '@xyd-js/plugin-access-control':
+        specifier: workspace:*
+        version: link:../xyd-plugin-access-control
       '@xyd-js/plugin-algolia':
         specifier: workspace:*
         version: link:../xyd-plugin-algolia
