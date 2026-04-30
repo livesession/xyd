@@ -57,149 +57,511 @@
           },
           {
             "name": "onReady",
-            "type": "",
+            "type": "$$function",
             "description": "Called when the grid finishes rendering\n",
             "properties": [],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onDestroy",
-            "type": "",
+            "type": "$$function",
             "description": "Called when the grid is unmounted\n",
             "properties": [],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onSearch",
-            "type": "",
+            "type": "$$function",
             "description": "Called when search input changes\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "query",
+                "type": "string",
+                "description": ""
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onPageChange",
-            "type": "",
+            "type": "$$function",
             "description": "Called when page number changes\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "page",
+                "type": "number",
+                "description": ""
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onSelectAll",
-            "type": "",
+            "type": "$$function",
             "description": "Called when \"select all\" checkbox is toggled\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "selected",
+                "type": "boolean",
+                "description": ""
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onRowClick",
-            "type": "",
+            "type": "$$function",
             "description": "Called when a row is clicked\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "row",
+                "type": "RowData",
+                "description": "",
+                "symbolDef": {
+                  "id": "287"
+                },
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onSort",
-            "type": "",
+            "type": "$$function",
             "description": "Called when sort configuration changes\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "sort",
+                "type": "SortConfig",
+                "description": "",
+                "symbolDef": {
+                  "id": "292"
+                },
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onSelectionChange",
-            "type": "",
+            "type": "$$function",
             "description": "Called when selection state changes\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "selection",
+                "type": "SelectionState",
+                "description": "",
+                "symbolDef": {
+                  "id": "295"
+                },
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onCellEdit",
-            "type": "",
+            "type": "$$function",
             "description": "Called when a cell is edited\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "event",
+                "type": "CellEditEvent",
+                "description": "",
+                "symbolDef": {
+                  "id": "298"
+                },
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onRowReorder",
-            "type": "",
+            "type": "$$function",
             "description": "Called when a row is dropped during drag-and-drop reorder\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "fromIndex",
+                "type": "number",
+                "description": ""
+              },
+              {
+                "name": "toIndex",
+                "type": "number",
+                "description": ""
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onCellDoubleClick",
-            "type": "",
+            "type": "$$function",
             "description": "Called on cell double-click with row and column context\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "row",
+                "type": "RowData",
+                "description": "",
+                "symbolDef": {
+                  "id": "287"
+                },
+                "meta": []
+              },
+              {
+                "name": "column",
+                "type": "string",
+                "description": ""
+              },
+              {
+                "name": "value",
+                "type": "unknown",
+                "description": ""
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "formatCell",
-            "type": "",
+            "type": "$$function",
             "description": "Custom cell renderer, returns string representation\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "value",
+                "type": "unknown",
+                "description": ""
+              },
+              {
+                "name": "column",
+                "type": "string",
+                "description": ""
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "string",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "rowClassName",
-            "type": "",
+            "type": "$$function",
             "description": "Row class name resolver\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "row",
+                "type": "RowData",
+                "description": "",
+                "symbolDef": {
+                  "id": "287"
+                },
+                "meta": []
+              },
+              {
+                "name": "index",
+                "type": "number",
+                "description": ""
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "string",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "validateEdit",
-            "type": "",
+            "type": "$$function",
             "description": "Validates a cell edit, returns error message or null to accept\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "event",
+                "type": "CellEditEvent",
+                "description": "",
+                "symbolDef": {
+                  "id": "298"
+                },
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "string",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "loadData",
-            "type": "",
+            "type": "$$function",
             "description": "Async data loader for server-side pagination\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "page",
+                "type": "number",
+                "description": ""
+              },
+              {
+                "name": "pageSize",
+                "type": "number",
+                "description": ""
+              },
+              {
+                "name": "sort",
+                "type": "SortConfig",
+                "description": "",
+                "symbolDef": {
+                  "id": "292"
+                },
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "Promise<>",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "sortComparator",
-            "type": "",
+            "type": "$$function",
             "description": "Custom comparator for sorting\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "a",
+                "type": "RowData",
+                "description": "",
+                "symbolDef": {
+                  "id": "287"
+                },
+                "meta": []
+              },
+              {
+                "name": "b",
+                "type": "RowData",
+                "description": "",
+                "symbolDef": {
+                  "id": "287"
+                },
+                "meta": []
+              },
+              {
+                "name": "column",
+                "type": "string",
+                "description": ""
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "number",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "isRowSelectable",
-            "type": "",
+            "type": "$$function",
             "description": "Predicate to determine if a row is selectable\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "row",
+                "type": "RowData",
+                "description": "",
+                "symbolDef": {
+                  "id": "287"
+                },
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "boolean",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "filterRow",
-            "type": "",
+            "type": "$$function",
             "description": "Row filter predicate\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "row",
+                "type": "RowData",
+                "description": "",
+                "symbolDef": {
+                  "id": "287"
+                },
+                "meta": []
+              },
+              {
+                "name": "query",
+                "type": "string",
+                "description": ""
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "boolean",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onSubscribe",
-            "type": "",
+            "type": "$$function",
             "description": "Provides an unsubscribe function for external data updates\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "unsubscribe",
+                "type": "$$function",
+                "description": "",
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "void",
+                  "description": ""
+                },
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "onError",
-            "type": "",
+            "type": "$$function",
             "description": "Error handler with retry context\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "error",
+                "type": "Error",
+                "description": ""
+              },
+              {
+                "name": "context",
+                "type": "",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "operation",
+                    "type": "string",
+                    "description": "",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "retryCount",
+                    "type": "number",
+                    "description": "",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                ],
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           },
           {
             "name": "transformRow",
-            "type": "",
+            "type": "$$function",
             "description": "Transform row data before display\n",
-            "properties": [],
+            "properties": [
+              {
+                "name": "row",
+                "type": "RowData",
+                "description": "",
+                "symbolDef": {
+                  "id": "287"
+                },
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "RowData",
+              "description": "",
+              "symbolDef": {
+                "id": "287"
+              },
+              "meta": []
+            },
             "meta": []
           }
         ],

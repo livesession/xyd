@@ -4,7 +4,7 @@
     "canonical": "@xyd-sources-examples/react/components/TestBasicComponent",
     "description": "TestBasicComponent is a React component that uses a basic props type.\n",
     "context": {
-      "symbolId": "140",
+      "symbolId": "267",
       "symbolName": "TestBasicComponent",
       "symbolKind": 64,
       "packageName": "@xyd-sources-examples/react",
