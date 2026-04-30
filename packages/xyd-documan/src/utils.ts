@@ -442,7 +442,13 @@ export async function appInit(options?: PluginDocsOptions) {
             }
 
             const head = p.head;
-            if (head?.length && preloadSettings?.theme?.head) {
+            if (head?.length) {
+                if (!preloadSettings.theme) {
+                    preloadSettings.theme = {} as any;
+                }
+                if (!preloadSettings.theme.head) {
+                    preloadSettings.theme.head = [];
+                }
                 preloadSettings.theme.head.push(...head);
             }
 

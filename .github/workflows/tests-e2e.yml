@@ -6,12 +6,23 @@ on:
     branches: [master]
     types: [completed]
 
+  workflow_dispatch:
+    inputs:
+      xyd_version:
+        description: 'xyd-js version to install (e.g. "canary", "0.1.0-alpha.6", "latest")'
+        required: false
+        default: ''
+      branch:
+        description: 'Branch to checkout tests from'
+        required: false
+        default: ''
+
 jobs:
   test:
     name: 🧪 E2E Tests
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
     strategy:
       matrix:
         node-version: [22.12.0]
@@ -19,6 +30,8 @@ jobs:
     steps:
     - name: 📥 Checkout code
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.branch || github.ref }}
 
     - name: 🟢 Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
@@ -54,40 +67,38 @@ jobs:
     - name: Install Playwright browsers
       run: pnpm exec playwright install
 
-    - name: 🕵️ Get build version from previous workflow
-      id: get-version
+    - name: 🔧 Install xyd-js CLI
       run: |
-        # Get the build version from the previous workflow
-        BUILD_VERSION="${{ github.event.workflow_run.outputs.BUILD_VERSION }}"
-        if [ -z "$BUILD_VERSION" ]; then
-          # Fallback: get latest commit sha
-          SHA=$(git rev-parse HEAD)
-          SHORT_SHA=${SHA::7}
-          BUILD_VERSION=build-${SHORT_SHA}
-        fi
-        # The actual version format is 0.0.0-build-{SHORT_SHA}-{TIMESTAMP}
-        # We need to find the latest version that matches our build pattern
-        echo "BUILD_VERSION=${BUILD_VERSION}" >> $GITHUB_OUTPUT
-        echo "Using build version: ${BUILD_VERSION}"
+        # Check if a custom version was provided via workflow_dispatch
+        CUSTOM_VERSION="${{ github.event.inputs.xyd_version }}"
 
-    - name: 🔧 Install @xyd-js/cli from built version
-      run: |
-        # Install the CLI package from the built version
-        # The actual version format is 0.0.0-build-{SHORT_SHA}-{TIMESTAMP}
-        # We need to find the latest version that matches our build pattern
-        SHORT_SHA="${{ steps.get-version.outputs.BUILD_VERSION }}"
-        SHORT_SHA=${SHORT_SHA#build-}  # Remove 'build-' prefix
-        
-        # Get the latest version that matches our build pattern
-        LATEST_BUILD_VERSION=$(npm view @xyd-js/cli versions --json | jq -r '.[] | select(test("^0\\.0\\.0-build-'${SHORT_SHA}'-[0-9]+$")) | .' | sort -V | tail -n1)
-        
-        if [ -z "$LATEST_BUILD_VERSION" ]; then
-          echo "❌ No build version found for SHA: ${SHORT_SHA}"
-          exit 1
+        if [ -n "$CUSTOM_VERSION" ]; then
+          echo "📦 Installing xyd-js@${CUSTOM_VERSION} (manual)"
+          npm i -g xyd-js@${CUSTOM_VERSION}
+        else
+          # Auto-detect from workflow_run (snapshot build)
+          BUILD_VERSION="${{ github.event.workflow_run.outputs.BUILD_VERSION }}"
+          if [ -z "$BUILD_VERSION" ]; then
+            SHA=$(git rev-parse HEAD)
+            SHORT_SHA=${SHA::7}
+            BUILD_VERSION=build-${SHORT_SHA}
+          fi
+
+          SHORT_SHA=${BUILD_VERSION#build-}
+
+          LATEST_BUILD_VERSION=$(npm view @xyd-js/cli versions --json | jq -r '.[] | select(test("^0\\.0\\.0-build-'${SHORT_SHA}'-[0-9]+$")) | .' | sort -V | tail -n1)
+
+          if [ -z "$LATEST_BUILD_VERSION" ]; then
+            echo "❌ No build version found for SHA: ${SHORT_SHA}"
+            exit 1
+          fi
+
+          echo "📦 Installing @xyd-js/cli@${LATEST_BUILD_VERSION}"
+          pnpm add -g @xyd-js/cli@${LATEST_BUILD_VERSION} --registry=https://registry.npmjs.org
         fi
-        
-        echo "📦 Installing @xyd-js/cli@${LATEST_BUILD_VERSION}"
-        pnpm add -g @xyd-js/cli@${LATEST_BUILD_VERSION} --registry=https://registry.npmjs.org
+
+        echo "✅ Installed version:"
+        xyd --version || echo "(version command not available)"
 
     - name: 🧪 Run E2E tests
       run: pnpm run test:e2e
