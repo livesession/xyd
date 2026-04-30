@@ -122,7 +122,7 @@ function definitionReactPropsPassThrough(
     }
 )  {
     for (const property of defProperties) {
-        if (property.type === DEFINED_DEFINITION_PROPERTY_TYPE.FUNCTION) {
+        if (property.type === "$$function") {
             reactDef.properties.push(property)
             continue
         }
