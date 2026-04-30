@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
 
-import { createServer, searchForWorkspaceRoot, ViteDevServer, Plugin as VitePlugin, PluginOption } from "vite";
+import { createServer, mergeConfig, searchForWorkspaceRoot, ViteDevServer, Plugin as VitePlugin, PluginOption } from "vite";
 
 import { API, APIFile, Navigation, Settings, SidebarNavigation, } from "@xyd-js/core";
 
@@ -170,7 +170,7 @@ export async function dev(options?: DevOptions) {
         }
     }
 
-    const preview = await createServer({    
+    let viteConfig: any = {
         root: appRoot,
         publicDir: '/public',
         server: {
@@ -191,7 +191,7 @@ export async function dev(options?: DevOptions) {
             alias: {
                 process: 'process/browser',
                 // When rehype-mermaid is externalized, resolve it from CLI's node_modules
-                ...(enableMermaid ? {} : { 
+                ...(enableMermaid ? {} : {
                     "rehype-mermaid": path.resolve(getHostPath(), "./node_modules/rehype-mermaid"),
                     "rehype-graphviz": path.resolve(getHostPath(), "./node_modules/rehype-graphviz"),
                     "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
@@ -225,7 +225,13 @@ export async function dev(options?: DevOptions) {
                 }
             }
         ],
-    });
+    };
+
+    if (respPluginDocs.settings?.advanced?.vite) {
+        viteConfig = mergeConfig(viteConfig, respPluginDocs.settings.advanced.vite);
+    }
+
+    const preview = await createServer(viteConfig);
 
 
     // Set up manual file watcher for markdown files TODO: better way? + HMR only for specific components instead or reload a pag

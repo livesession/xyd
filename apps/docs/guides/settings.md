@@ -50,7 +50,6 @@ LS_TRACK_ID=YOUR_TRACK_ID
 }
 ```
 
-
 ## JSON Schema Validation
 The `docs.json` file is validated against a JSON schema to ensure proper configuration. You can reference the schema by including:
 
@@ -59,6 +58,35 @@ The `docs.json` file is validated against a JSON schema to ensure proper configu
     "$schema": "https://xyd.dev/public/docs.json"
 }
 ```
+
+## Custom Vite Configuration {label="Beta"}
+
+You can customize the Vite configuration via `advanced.vite`. This is useful for remote development environments, custom aliases, and other Vite-level settings.
+
+The config is merged with xyd's internal Vite config using Vite's [`mergeConfig`](https://vite.dev/guide/api-javascript#mergeconfig):
+
+```json
+// docs.json
+{
+    "advanced": {
+        "vite": {
+            "server": {
+                "allowedHosts": ["my-remote-env.example.com"]
+            }
+        }
+    }
+}
+```
+
+Common use cases:
+- **`server.allowedHosts`** — allow access from remote dev environments (e.g., code-server, Gitpod)
+- **`server.port`** — override the default dev server port
+- **`resolve.alias`** — add custom import aliases
+- **`define`** — inject compile-time constants
+
+:::callout
+The `vite` option applies to both the dev server and production builds. See the [Vite configuration reference](https://vitejs.dev/config/) for all available options.
+:::
 
 ## Code-Based Settings {label="Coming Soon"}
 If you feel that the JSON configuration is not enough, you can use the TypeScript/React based configuration
@@ -73,4 +101,3 @@ export default {
     // ... your settings configuration here
 } satisfies Settings
 ```
-

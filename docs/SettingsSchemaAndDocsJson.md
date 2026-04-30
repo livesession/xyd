@@ -94,7 +94,27 @@ The `llmsTxt` property can be:
 
 ### Advanced Configuration
 
-The `advanced` property provides low-level configuration options including basename, build paths, and module resolution.
+The `advanced` property provides low-level configuration options including basename and custom Vite configuration.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `basename` | `string` | Base path for routing (e.g., `"/docs"`) |
+| `vite` | `ViteUserConfig` | Custom Vite configuration merged with xyd's internal config via `mergeConfig` |
+
+The `vite` property accepts any valid Vite `UserConfig` and is merged into both the dev server and build configurations. Common use cases include setting `server.allowedHosts` for remote development environments, custom `resolve.alias`, and `define` constants.
+
+```json
+{
+  "advanced": {
+    "basename": "/docs",
+    "vite": {
+      "server": {
+        "allowedHosts": ["my-remote-env.example.com"]
+      }
+    }
+  }
+}
+```
 
 ## Preset Processing
 
