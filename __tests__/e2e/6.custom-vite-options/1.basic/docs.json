@@ -1,0 +1,14 @@
+{
+    "advanced": {
+        "vite": {
+            "server": {
+                "allowedHosts": ["test.example.com"]
+            }
+        }
+    },
+    "navigation": {
+        "sidebar": [
+            "overview"
+        ]
+    }
+}

@@ -18,7 +18,7 @@
     "build": "pnpm run --filter=\"./packages/**/*\" build",
     "build:storybook": "pnpm run build && pnpm run --filter=\"./packages/**/*\" build:storybook",
     "build:apidocs-demo": "pnpm --filter \"./packages/**/*\" --filter \"@xyd-js/apidocs-demo\" build",
-    "schema:docs.json": "cd ./packages/xyd-core && npx ts-json-schema-generator --path ./src/types/settings.ts --type 'Settings' --no-top-ref --out ../../apps/docs/public/docs.json",
+    "schema:docs.json": "node scripts/generate-schema.mjs",
     "clean": "./clear.sh",
     "prepare": "husky",
     "pretest:unit": "pnpm build",
@@ -40,6 +40,7 @@
     "lint-staged": "^15.2.10",
     "nx": "^20.3.2",
     "rimraf": "^3.0.2",
+    "ts-json-schema-generator": "^2.3.0",
     "typescript": "^5.6.2",
     "vitest": "^2.1.8"
   },

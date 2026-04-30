@@ -442,6 +442,258 @@
         "basename": {
           "description": "basename",
           "type": "string"
+        },
+        "vite": {
+          "additionalProperties": false,
+          "description": "Custom Vite configuration overrides. Merged with xyd's internal Vite config.",
+          "properties": {
+            "appType": {
+              "enum": [
+                "spa",
+                "mpa",
+                "custom"
+              ],
+              "type": "string"
+            },
+            "base": {
+              "type": "string"
+            },
+            "build": {
+              "additionalProperties": false,
+              "properties": {
+                "assetsDir": {
+                  "type": "string"
+                },
+                "assetsInlineLimit": {
+                  "type": "number"
+                },
+                "chunkSizeWarningLimit": {
+                  "type": "number"
+                },
+                "cssCodeSplit": {
+                  "type": "boolean"
+                },
+                "emptyOutDir": {
+                  "type": "boolean"
+                },
+                "minify": {
+                  "anyOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "const": "esbuild",
+                      "type": "string"
+                    },
+                    {
+                      "const": "terser",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "outDir": {
+                  "type": "string"
+                },
+                "reportCompressedSize": {
+                  "type": "boolean"
+                },
+                "sourcemap": {
+                  "anyOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "const": "inline",
+                      "type": "string"
+                    },
+                    {
+                      "const": "hidden",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "target": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  ]
+                }
+              },
+              "type": "object"
+            },
+            "cacheDir": {
+              "type": "string"
+            },
+            "clearScreen": {
+              "type": "boolean"
+            },
+            "define": {
+              "type": "object"
+            },
+            "envDir": {
+              "type": "string"
+            },
+            "envPrefix": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ]
+            },
+            "logLevel": {
+              "enum": [
+                "info",
+                "warn",
+                "error",
+                "silent"
+              ],
+              "type": "string"
+            },
+            "mode": {
+              "type": "string"
+            },
+            "preview": {
+              "additionalProperties": false,
+              "properties": {
+                "host": {
+                  "type": [
+                    "string",
+                    "boolean"
+                  ]
+                },
+                "open": {
+                  "type": [
+                    "string",
+                    "boolean"
+                  ]
+                },
+                "port": {
+                  "type": "number"
+                },
+                "strictPort": {
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
+            },
+            "publicDir": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "const": false,
+                  "type": "boolean"
+                }
+              ]
+            },
+            "resolve": {
+              "additionalProperties": false,
+              "properties": {
+                "alias": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "conditions": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "dedupe": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "extensions": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "mainFields": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "preserveSymlinks": {
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
+            },
+            "root": {
+              "type": "string"
+            },
+            "server": {
+              "additionalProperties": false,
+              "properties": {
+                "allowedHosts": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "const": true,
+                      "type": "boolean"
+                    }
+                  ]
+                },
+                "cors": {
+                  "type": "boolean"
+                },
+                "headers": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "host": {
+                  "type": [
+                    "string",
+                    "boolean"
+                  ]
+                },
+                "https": {
+                  "type": "boolean"
+                },
+                "open": {
+                  "type": [
+                    "string",
+                    "boolean"
+                  ]
+                },
+                "port": {
+                  "type": "number"
+                },
+                "strictPort": {
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
         }
       },
       "type": "object"
