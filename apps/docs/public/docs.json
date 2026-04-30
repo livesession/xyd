@@ -166,6 +166,275 @@
       },
       "type": "object"
     },
+    "AccessControl": {
+      "additionalProperties": false,
+      "description": "Access control configuration for protecting documentation pages. Protected page content is excluded from HTML (SSR) output and loaded as separate JS chunks only after authentication succeeds.",
+      "properties": {
+        "defaultAccess": {
+          "default": "public",
+          "description": "Default access level for all pages. \"protected\" = all pages require auth unless marked public. \"public\" = all pages are public unless marked protected.",
+          "enum": [
+            "public",
+            "protected"
+          ],
+          "type": "string"
+        },
+        "deploy": {
+          "$ref": "#/definitions/AccessControlDeployConfig",
+          "description": "Deployment platform for server-side content protection"
+        },
+        "login": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/AccessControlLoginConfig"
+            }
+          ],
+          "description": "Login page configuration.\n- String: path to a custom component (e.g., \"./my-login.tsx\").   The component receives useAccessControl() context automatically.\n- Object: configuration for the built-in login page."
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AccessControlProviderOAuth"
+            },
+            {
+              "$ref": "#/definitions/AccessControlProviderJWT"
+            },
+            {
+              "$ref": "#/definitions/AccessControlProviderCustom"
+            }
+          ],
+          "description": "Authentication provider configuration"
+        },
+        "rules": {
+          "description": "Pattern-based access rules, evaluated in order. First match wins.",
+          "items": {
+            "$ref": "#/definitions/AccessControlRule"
+          },
+          "type": "array"
+        },
+        "session": {
+          "$ref": "#/definitions/AccessControlSessionConfig",
+          "description": "Session/token configuration"
+        },
+        "unauthorizedBehavior": {
+          "default": "redirect",
+          "description": "Behavior when user is unauthorized. \"redirect\" sends to login page. \"404\" shows not-found page (hides existence of protected page).",
+          "enum": [
+            "redirect",
+            "404"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider"
+      ],
+      "type": "object"
+    },
+    "AccessControlDeployConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "platform": {
+          "description": "Target deployment platform",
+          "enum": [
+            "netlify-edge",
+            "vercel-edge",
+            "cloudflare-edge",
+            "node-edge"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "platform"
+      ],
+      "type": "object"
+    },
+    "AccessControlLoginConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "backgroundImage": {
+          "description": "Background image URL for the login page",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description text on the login page",
+          "type": "string"
+        },
+        "logo": {
+          "description": "Logo to display on the default login page",
+          "type": "string"
+        },
+        "page": {
+          "description": "Custom login page (path to mdx file)",
+          "type": "string"
+        },
+        "title": {
+          "description": "Title text on the login page",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "AccessControlProviderCustom": {
+      "additionalProperties": false,
+      "properties": {
+        "handler": {
+          "description": "Path to custom auth handler module",
+          "type": "string"
+        },
+        "type": {
+          "const": "custom",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "handler"
+      ],
+      "type": "object"
+    },
+    "AccessControlProviderJWT": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "default": "HS256",
+          "description": "JWT signing algorithm.",
+          "enum": [
+            "EdDSA",
+            "RS256",
+            "HS256"
+          ],
+          "type": "string"
+        },
+        "callbackPath": {
+          "default": "/auth/jwt-callback",
+          "description": "Callback path where JWT is delivered via hash fragment.",
+          "type": "string"
+        },
+        "groupsClaim": {
+          "description": "JWT claim name containing user groups/roles",
+          "type": "string"
+        },
+        "jwksUrl": {
+          "description": "JWKS URL for key verification (EdDSA/RS256)",
+          "type": "string"
+        },
+        "loginUrl": {
+          "description": "URL to redirect unauthenticated users for login",
+          "type": "string"
+        },
+        "secret": {
+          "description": "Shared secret for HS256 verification. Use $ENV_VAR syntax.",
+          "type": "string"
+        },
+        "type": {
+          "const": "jwt",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "loginUrl"
+      ],
+      "type": "object"
+    },
+    "AccessControlProviderOAuth": {
+      "additionalProperties": false,
+      "properties": {
+        "authorizationUrl": {
+          "description": "OAuth 2.0 authorization URL",
+          "type": "string"
+        },
+        "callbackPath": {
+          "default": "/auth/callback",
+          "description": "Callback path for OAuth redirect.",
+          "type": "string"
+        },
+        "clientId": {
+          "description": "OAuth 2.0 client ID. Use $ENV_VAR syntax for secrets.",
+          "type": "string"
+        },
+        "groupsClaim": {
+          "description": "Field in user info response containing groups/roles",
+          "type": "string"
+        },
+        "scopes": {
+          "description": "OAuth 2.0 scopes to request",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "tokenUrl": {
+          "description": "OAuth 2.0 token endpoint URL",
+          "type": "string"
+        },
+        "type": {
+          "const": "oauth",
+          "type": "string"
+        },
+        "userInfoUrl": {
+          "description": "URL to fetch user info after auth (provides groups)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "authorizationUrl",
+        "tokenUrl",
+        "clientId"
+      ],
+      "type": "object"
+    },
+    "AccessControlRule": {
+      "additionalProperties": false,
+      "properties": {
+        "access": {
+          "description": "Access level for matched pages",
+          "enum": [
+            "public",
+            "protected"
+          ],
+          "type": "string"
+        },
+        "groups": {
+          "description": "Groups allowed access (only for \"protected\" access)",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "match": {
+          "description": "Glob pattern matching page paths",
+          "type": "string"
+        }
+      },
+      "required": [
+        "match",
+        "access"
+      ],
+      "type": "object"
+    },
+    "AccessControlSessionConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "cookieName": {
+          "default": "xyd-auth-token",
+          "description": "Cookie/storage key name.",
+          "type": "string"
+        },
+        "maxAge": {
+          "default": "86400 (24h)",
+          "description": "Session duration in seconds.",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
     "Advanced": {
       "additionalProperties": false,
       "description": "Advanced configuration",
@@ -728,6 +997,69 @@
       },
       "type": "object"
     },
+    "DiagramGraphvizConfig": {
+      "additionalProperties": false,
+      "description": "Graphviz diagram configuration",
+      "type": "object"
+    },
+    "DiagramMermaidConfig": {
+      "additionalProperties": false,
+      "description": "Mermaid diagram configuration",
+      "properties": {
+        "strategy": {
+          "$ref": "#/definitions/MermaidStrategy",
+          "description": "Rendering strategy for Mermaid diagrams"
+        }
+      },
+      "type": "object"
+    },
+    "DiagramType": {
+      "description": "Supported diagram types",
+      "enum": [
+        "mermaid",
+        "graphviz"
+      ],
+      "type": "string"
+    },
+    "DiagramsConfig": {
+      "additionalProperties": false,
+      "description": "Diagrams configuration object",
+      "properties": {
+        ".config": {
+          "additionalProperties": false,
+          "description": "Detailed diagram config, useful for e.g setting diagram's interactive.",
+          "properties": {
+            "interactive": {
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
+        "graphviz": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/DiagramGraphvizConfig"
+            }
+          ],
+          "description": "Graphviz diagram configuration\n- `true`: Enable with default settings\n- `{ engine: 'neato' }`: Enable with custom settings"
+        },
+        "mermaid": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/DiagramMermaidConfig"
+            }
+          ],
+          "description": "Mermaid diagram configuration\n- `true`: Enable with default settings\n- `{ strategy: 'img-svg' }`: Enable with custom settings"
+        }
+      },
+      "type": "object"
+    },
     "EditLink": {
       "additionalProperties": false,
       "properties": {
@@ -811,7 +1143,7 @@
       "type": "object"
     },
     "HeadConfig": {
-      "description": "Configuration type for head elements that can be added to the HTML head. Format: [tagName, attributes]",
+      "description": "Configuration type for head elements that can be added to the HTML head. Format: [tagName, attributes, content]",
       "items": [
         {
           "type": "string"
@@ -1176,8 +1508,21 @@
           "description": "Configurations to add third-party analytics integrations. See full list of supported analytics here."
         },
         "diagrams": {
-          "description": "Diagrams configuration",
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "items": {
+                "$ref": "#/definitions/DiagramType"
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/definitions/DiagramsConfig"
+            }
+          ],
+          "description": "Diagrams configuration"
         },
         "editLink": {
           "$ref": "#/definitions/EditLink",
@@ -1299,6 +1644,16 @@
         }
       },
       "type": "object"
+    },
+    "MermaidStrategy": {
+      "description": "Mermaid diagram rendering strategy",
+      "enum": [
+        "img-png",
+        "img-svg",
+        "inline-svg",
+        "pre-mermaid"
+      ],
+      "type": "string"
     },
     "Navigation": {
       "additionalProperties": false,
@@ -1791,11 +2146,16 @@
       "description": "Sidebar configuration",
       "properties": {
         "group": {
-          "description": "The name of the group",
-          "enum": [
-            false
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "const": false,
+              "type": "boolean"
+            }
           ],
-          "type": "boolean"
+          "description": "The name of the group"
         },
         "icon": {
           "description": "The icon of the group.",
@@ -1876,11 +2236,16 @@
       "description": "Sidebar route configuration",
       "properties": {
         "group": {
-          "description": "The group of the route",
-          "enum": [
-            false
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "const": false,
+              "type": "boolean"
+            }
           ],
-          "type": "boolean"
+          "description": "The group of the route"
         },
         "id": {
           "description": "The id of the route",
@@ -2399,6 +2764,10 @@
   },
   "description": "Main settings interface for the application",
   "properties": {
+    "accessControl": {
+      "$ref": "#/definitions/AccessControl",
+      "description": "Access control configuration. Enables page-level access control on documentation sites. Protected page content is never included in HTML source -- it is code-split into separate JS chunks loaded only after authentication."
+    },
     "advanced": {
       "$ref": "#/definitions/Advanced",
       "description": "Advanced configuration"
