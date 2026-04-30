@@ -27,6 +27,7 @@ The configuration is represented by the `Settings` interface, which defines all 
 | `seo` | Search engine optimization | `domain`, metadata |
 | `ai` | AI-related features | `llmsTxt` configuration |
 | `components` | UI component overrides | `banner`, `footer` |
+| `advanced` | Low-level configuration | `basename`, `vite` |
 | `engine` | Build and processing | `paths`, `uniform` |
 
 ## Configuration Processing Pipeline

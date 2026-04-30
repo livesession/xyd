@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
+import type { UserConfig as ViteUserConfig } from "vite";
 
 /**
  * Main settings interface for the application
@@ -1424,6 +1425,13 @@ export interface Advanced {
    * basename
    */
   basename?: string;
+
+  /**
+   * Custom Vite configuration overrides.
+   * Merged with xyd's internal Vite config.
+   * @see https://vitejs.dev/config/
+   */
+  vite?: ViteUserConfig;
 }
 
 // ------ END  settings for redirects END ------
@@ -1684,3 +1692,60 @@ export interface AccessControlSessionConfig {
 
 // #endregion
 // ------ END settings for access control END ------
+
+// ------ START ViteUserConfigInline (for schema generation) START ------
+/**
+ * Schema-safe subset of Vite's UserConfig.
+ * Used by the schema generator since the real vite types can't be resolved.
+ * @internal
+ */
+export interface ViteUserConfigInline {
+  root?: string;
+  base?: string;
+  mode?: string;
+  publicDir?: string | false;
+  cacheDir?: string;
+  envDir?: string;
+  envPrefix?: string | string[];
+  logLevel?: 'info' | 'warn' | 'error' | 'silent';
+  clearScreen?: boolean;
+  appType?: 'spa' | 'mpa' | 'custom';
+  server?: {
+    host?: string | boolean;
+    port?: number;
+    strictPort?: boolean;
+    https?: boolean;
+    open?: string | boolean;
+    cors?: boolean;
+    headers?: Record<string, string>;
+    allowedHosts?: string[] | true;
+  };
+  preview?: {
+    host?: string | boolean;
+    port?: number;
+    strictPort?: boolean;
+    open?: string | boolean;
+  };
+  build?: {
+    target?: string | string[];
+    outDir?: string;
+    assetsDir?: string;
+    assetsInlineLimit?: number;
+    cssCodeSplit?: boolean;
+    sourcemap?: boolean | 'inline' | 'hidden';
+    minify?: boolean | 'esbuild' | 'terser';
+    emptyOutDir?: boolean;
+    reportCompressedSize?: boolean;
+    chunkSizeWarningLimit?: number;
+  };
+  resolve?: {
+    alias?: Record<string, string>;
+    dedupe?: string[];
+    conditions?: string[];
+    mainFields?: string[];
+    extensions?: string[];
+    preserveSymlinks?: boolean;
+  };
+  define?: Record<string, any>;
+}
+// ------ END ViteUserConfigInline END ------
