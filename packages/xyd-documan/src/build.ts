@@ -2,7 +2,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { build as viteBuild, Plugin as VitePlugin, PluginOption } from 'vite';
+import { build as viteBuild, mergeConfig, Plugin as VitePlugin, PluginOption } from 'vite';
 import tsconfigPaths from "vite-tsconfig-paths";
 
 import {
@@ -50,9 +50,11 @@ export async function build() {
     const enableMermaid = !!respPluginDocs?.settings?.integrations?.diagrams
     const externalPackages = enableMermaid ? [] : ["rehype-mermaid", "rehype-graphviz", "@hpcc-js/wasm"]
 
+    const userViteConfig = respPluginDocs.settings?.advanced?.vite || {};
+
     try {
         // Build the client-side bundle
-        await viteBuild({
+        let clientConfig: any = {
             mode: "production",
             root: appRoot,
             plugins: [
@@ -71,7 +73,7 @@ export async function build() {
                 alias: {
                     process: 'process/browser',
                     // When rehype-mermaid is externalized, resolve it from CLI's node_modules
-                    ...(enableMermaid ? {} : { 
+                    ...(enableMermaid ? {} : {
                         "rehype-mermaid": path.resolve(getHostPath(), "./node_modules/rehype-mermaid"),
                         "rehype-graphviz": path.resolve(getHostPath(), "./node_modules/rehype-graphviz"),
                         "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
@@ -89,10 +91,16 @@ export async function build() {
             // ssr: {
             //     noExternal: ["react", "react-dom", "react-router"]
             // }
-        });
+        };
+
+        if (userViteConfig) {
+            clientConfig = mergeConfig(clientConfig, userViteConfig);
+        }
+
+        await viteBuild(clientConfig);
 
         // Build the SSR bundle
-        await viteBuild({
+        let ssrConfig: any = {
             mode: "production",
             root: appRoot,
             build: {
@@ -129,7 +137,7 @@ export async function build() {
                 alias: {
                     process: 'process/browser',
                     // When rehype-mermaid is externalized, resolve it from CLI's node_modules
-                    ...(enableMermaid ? {} : { 
+                    ...(enableMermaid ? {} : {
                         "rehype-mermaid": path.resolve(getHostPath(), "./node_modules/rehype-mermaid"),
                         "rehype-graphviz": path.resolve(getHostPath(), "./node_modules/rehype-graphviz"),
                         "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
@@ -142,7 +150,13 @@ export async function build() {
             // ssr: {
             //     noExternal: ["react", "react-dom", "react-router"]
             // }
-        });
+        };
+
+        if (userViteConfig) {
+            ssrConfig = mergeConfig(ssrConfig, userViteConfig);
+        }
+
+        await viteBuild(ssrConfig);
     } catch (error) {
         console.error('Build failed:', error);  // TODO: better message
     }
