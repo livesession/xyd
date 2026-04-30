@@ -27,7 +27,7 @@ import {
     PluginOutput,
 } from "@xyd-js/plugin-docs";
 import { vitePlugins as xydContentVitePlugins } from "@xyd-js/content/vite";
-import { HeadConfig, Integrations, Plugins, Settings } from "@xyd-js/core";
+import { AccessControl, HeadConfig, Integrations, Plugins, Settings } from "@xyd-js/core";
 import type { IconLibrary, WebEditorNavigationItem } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
 import { type UniformPlugin } from "@xyd-js/uniform";
@@ -333,7 +333,10 @@ export async function appInit(options?: PluginDocsOptions) {
             };
         }
 
-        const plugins = integrationsToPlugins(preloadSettings.integrations);
+        const plugins = [
+            ...integrationsToPlugins(preloadSettings.integrations),
+            ...accessControlToPlugins(preloadSettings.accessControl),
+        ];
         if (preloadSettings.plugins) {
             preloadSettings.plugins = [...plugins, ...preloadSettings.plugins];
         } else {
@@ -352,6 +355,7 @@ export async function appInit(options?: PluginDocsOptions) {
         };
         const componentPlugins: any[] = []; // TODO: fix any
         const userHooks = {}
+        const pluginPages: any[] = [];
 
         resolvedPlugins?.forEach((p: LoadedPlugin) => {
             if (p.hooks) {
@@ -438,8 +442,15 @@ export async function appInit(options?: PluginDocsOptions) {
             }
 
             const head = p.head;
-            if (head?.length && preloadSettings?.theme?.head) {
-                preloadSettings.theme.head.push(...head);
+            if (head?.length) {
+                if (!preloadSettings.theme) {
+                    preloadSettings.theme = {} as any;
+                }
+                const theme = preloadSettings.theme!;
+                if (!theme.head) {
+                    theme.head = [];
+                }
+                theme.head.push(...head);
             }
 
             if (p.markdown?.rehype) {
@@ -456,12 +467,24 @@ export async function appInit(options?: PluginDocsOptions) {
                 ...(p.markdown?.remarkRehypeHandlers || {})
               }
             }
+
+            // Collect custom pages from plugins
+            if (p.pages && Array.isArray(p.pages)) {
+                for (const page of p.pages) {
+                    if (!page.route || !page.component) continue;
+                    pluginPages.push({
+                        ...page,
+                        _pluginPkg: (p as any)._pluginPkg || "",
+                    });
+                }
+            }
         });
 
         globalThis.__xydUserUniformVitePlugins = userUniformVitePlugins;
         globalThis.__xydUserMarkdownPlugins = userMarkdownPlugins;
         globalThis.__xydUserComponents = componentPlugins;
         globalThis.__xydUserHooks = userHooks;
+        (globalThis as any).__xydPluginPages = pluginPages;
         globalThis.__xydUserComponentsSERVER =
             cloneComponentsPreservingReferences(componentPlugins);
     }
@@ -496,6 +519,31 @@ export async function appInit(options?: PluginDocsOptions) {
         JSON.stringify(respPluginDocs.settings)
     ); // TODO: finish
     globalThis.__xydRawRouteFiles = {};
+
+    // Access control: eagerly build access map and register virtual pages.
+    if (preloadSettings.accessControl) {
+        const { resolvePageAccess } = await import("@xyd-js/plugin-access-control/plugin");
+        const ac = preloadSettings.accessControl;
+
+        // Build access map
+        const accessMap: Record<string, string> = {};
+        for (const pagePath of Object.keys(globalThis.__xydPagePathMapping || {})) {
+            const access = resolvePageAccess(pagePath, {}, ac);
+            accessMap[pagePath] = access;
+            const withSlash = pagePath.startsWith("/") ? pagePath : `/${pagePath}`;
+            accessMap[withSlash] = access;
+        }
+        (globalThis as any).__xydAccessMap = accessMap;
+
+        // Mark plugin page routes as public in the access map
+        for (const page of (globalThis as any).__xydPluginPages || []) {
+            const route = page.route.replace(/^\//, "");
+            accessMap[route] = "public";
+            accessMap["/" + route] = "public";
+        }
+    }
+
+    // __xydPluginPages is read directly by routes.ts and react-router.config.ts
 
     // appearanceWebEditor(respPluginDocs.settings)
 
@@ -705,7 +753,34 @@ export async function commonVitePlugins(
         virtualScriptsPlugin(respPluginDocs.settings),
         pluginIconSet(respPluginDocs.settings),
         ...userVitePlugins,
+        // Fallback: provide empty access control virtual modules when accessControl is not configured.
+        // This prevents Rollup from failing on imports in layout.tsx and pluginPage.tsx.
+        noopAccessControlPlugin(),
     ];
+}
+
+function noopAccessControlPlugin(): VitePlugin {
+    return {
+        name: "xyd-access-control-noop-fallback",
+        resolveId(id) {
+            if (id === "virtual:xyd-access-control-settings") return "\0virtual:xyd-access-control-settings-noop";
+            if (id === "virtual:xyd-access-control-guard") return "\0virtual:xyd-access-control-guard-noop";
+            if (id === "virtual:xyd-plugin-pages") return "\0virtual:xyd-plugin-pages-noop";
+            return null;
+        },
+        load(id) {
+            if (id === "\0virtual:xyd-access-control-settings-noop") {
+                return `export const accessControlConfig = null;\nexport const accessMap = {};`;
+            }
+            if (id === "\0virtual:xyd-access-control-guard-noop") {
+                return `export const AuthGuard = null;\nexport const useAuth = () => ({});\nexport const AccessControlProvider = null;\nexport const useAccessControl = () => ({});`;
+            }
+            if (id === "\0virtual:xyd-plugin-pages-noop") {
+                return `export const pluginPages = {};\nexport const AccessControlProvider = null;`;
+            }
+            return null;
+        }
+    };
 }
 
 export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
@@ -713,7 +788,17 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
     const rawRouteFiles: { [path: string]: string } = {};
     const llmsItems: ListItem[] = [];
 
+    // Access control: get access map to filter protected pages from llms.txt
+    const accessMap: Record<string, string> = (globalThis as any).__xydAccessMap || {};
+
     for (const key of paths) {
+        // Skip protected pages - they must not appear in llms.txt
+        const normalizedKey = key.startsWith("/") ? key : `/${key}`;
+        const pageAccess = accessMap[normalizedKey] || accessMap[key];
+        if (pageAccess && pageAccess !== "public") {
+            continue;
+        }
+
         const mappingPath = globalThis.__xydPagePathMapping[key];
         const savePath = path.join(process.cwd(), mappingPath);
         const savePathExt = path.extname(savePath);
@@ -1276,6 +1361,16 @@ function integrationsToPlugins(integrations: Integrations) {
         if (diagramCfg?.interactive) {
             plugins.push(["@xyd-js/plugin-extra-diagram", {}]);
         }
+    }
+
+    return plugins;
+}
+
+function accessControlToPlugins(accessControl?: AccessControl) {
+    const plugins: Plugins = [];
+
+    if (accessControl) {
+        plugins.push(["@xyd-js/plugin-access-control/plugin", accessControl]);
     }
 
     return plugins;

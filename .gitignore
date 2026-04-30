@@ -73,3 +73,4 @@ storybook-static/
 __tests__/output
 # Local Netlify folder
 .netlify
+.research/

@@ -5,12 +5,14 @@ const config: Options = {
         index: 'src/index.ts',
         vite: 'packages/vite/index.ts',
         md: 'packages/md/index.ts',
+        search: 'packages/md/search/filter.ts',
     },
     dts: {
         entry: {
             index: 'src/index.ts',
             vite: 'packages/vite/index.ts',
-            md: 'packages/md/index.ts'
+            md: 'packages/md/index.ts',
+            search: 'packages/md/search/filter.ts',
         },
         resolve: true, // Resolve external types
     },

@@ -18,6 +18,7 @@
     "@xyd-js/theme-picasso": "workspace:*",
     "@xyd-js/theme-gusto": "workspace:*",
     "@xyd-js/theme-solar": "workspace:*",
+    "@xyd-js/plugin-access-control": "workspace:*",
     "@xyd-js/plugin-orama": "workspace:*",
     "@xyd-js/plugin-algolia": "workspace:*",
     "katex": "^0.16.22",

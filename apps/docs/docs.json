@@ -243,6 +243,7 @@
               "guides/fonts",
               "guides/custom-scripts",
               "guides/plugins",
+              "guides/access-control",
               "guides/theme-api",
               "guides/custom-theme"
             ]

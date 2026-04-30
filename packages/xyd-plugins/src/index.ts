@@ -66,12 +66,38 @@ export interface HookCallbackArgs {
  * }
  * ```
  */
+/**
+ * A custom page registered by a plugin.
+ * Renders a React component inside the xyd theme layout at a given route.
+ */
+export interface PluginPage {
+    /** Route path (e.g., "/login", "/auth/callback") */
+    route: string
+    /** React component to render as the page content */
+    component: React.ComponentType<any>
+    /** Component dist path for bundling (like PluginComponents.dist) */
+    dist?: string
+    /** Page metadata (title, description, etc.) */
+    metadata?: Partial<Metadata<any>>
+    /** If true, page is public even when access control defaultAccess is "protected" */
+    public?: boolean
+    /**
+     * Whether to inherit the theme's CSS (design tokens, fonts, etc.).
+     * When true (default), the page has access to all xyd CSS variables.
+     * Set to false for fully standalone pages with no theme dependency.
+     * @default true
+     */
+    layoutCss?: boolean
+}
+
 export interface PluginConfig {
     name: string
 
     vite?: Vite[]
     uniform?: Uniform<any>[] // TODO: fix any
     components?: PluginComponents
+    /** Custom pages rendered inside the theme layout at specified routes */
+    pages?: PluginPage[]
     head?: HeadConfig[]
     markdown?: {
         remark?: MarkdownPlugin[],

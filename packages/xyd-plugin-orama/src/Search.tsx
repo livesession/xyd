@@ -51,7 +51,7 @@ function $OramaSearchBoxWrapper({ isSearchOpen, onModalClosed }: { isSearchOpen:
         // @ts-ignore
         const oramaDataModule = await import('virtual:xyd-plugin-orama-data')
 
-        const oramaDocs = oramaDataModule.default.docs
+        const oramaDocs = oramaDataModule.default.docs || []
         const oramaCloudConfig = oramaDataModule.default.cloudConfig || null
         const oramaSuggestions = oramaDataModule.default.suggestions || []
 

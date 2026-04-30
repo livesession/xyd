@@ -1,0 +1,50 @@
+{
+  "theme": {
+    "name": "poetry"
+  },
+  "accessControl": {
+    "provider": {
+      "type": "jwt",
+      "loginUrl": "/login",
+      "callbackPath": "/auth/jwt-callback",
+      "algorithm": "HS256",
+      "secret": "e2e-test-secret-key-at-least-32-characters-long",
+      "groupsClaim": "groups"
+    },
+    "defaultAccess": "public",
+    "rules": [
+      { "match": "/protected/**", "access": "protected" },
+      { "match": "/admin/**", "access": "protected", "groups": ["admin"] }
+    ],
+    "login": {
+      "title": "Sign in to access documentation"
+    },
+    "session": {
+      "maxAge": 86400,
+      "cookieName": "xyd-auth-token"
+    }
+  },
+  "navigation": {
+    "sidebar": [
+      {
+        "route": "guides",
+        "pages": [
+          "guides/welcome",
+          "guides/getting-started"
+        ]
+      },
+      {
+        "route": "protected",
+        "pages": [
+          "protected/api-reference"
+        ]
+      },
+      {
+        "route": "admin",
+        "pages": [
+          "admin/dashboard"
+        ]
+      }
+    ]
+  }
+}

@@ -2,7 +2,7 @@ import path from "node:path";
 
 import * as React from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
-import { useMemo, useContext, ReactElement, SVGProps, useEffect } from "react";
+import { useMemo, useContext, useState, ReactElement, SVGProps, useEffect } from "react";
 import { redirect, ScrollRestoration, useLocation, useNavigation } from "react-router";
 
 import { MetadataMap, Metadata, Settings } from "@xyd-js/core"
@@ -41,6 +41,12 @@ function getPathname(url: string, basename?: string) {
     return pathname.replace(/^\//, '');
 }
 
+declare global {
+    interface Window {
+        __xydAuthState?: { authenticated: boolean; groups: string[]; token: string | null };
+    }
+}
+
 interface loaderData {
     sidebarGroups: FwSidebarItemProps[]
     breadcrumbs: IBreadcrumb[],
@@ -52,6 +58,10 @@ interface loaderData {
     navlinks?: INavLinks,
     editLink?: string,
     canPassComponents?: boolean
+    /** When true, this page is protected and content was excluded from SSR */
+    shellOnly?: boolean
+    /** File path for dynamic content loading after auth */
+    protectedPagePath?: string
 }
 
 class timedebugLoader {
@@ -171,12 +181,42 @@ export async function loader({ request }: { request: any }) {
     )
 
     let pagePath = globalThis.__xydPagePathMapping[slug]
-    if (pagePath) {
+
+    // SSR page exclusion: skip content compilation for protected pages.
+    // Uses globalThis.__xydAccessMap directly (set by the access control plugin)
+    // instead of the virtual module, because the loader runs server-side during SSR.
+    let shellOnly = false
+    let protectedPagePath: string | undefined
+
+    const accessMap: Record<string, string> | undefined = (globalThis as any).__xydAccessMap
+
+
+
+    // When deploy platform is configured, skip shellOnly — the server
+    // handles protection, so pre-rendered HTML can include full content.
+    const hasDeploy = !!(globalThis as any).__xydSettings?.accessControl?.deploy
+
+    if (pagePath && accessMap && !hasDeploy) {
+        const pageAccess = accessMap["/" + slug] || accessMap[slug]
+        if (pageAccess && pageAccess !== "public") {
+            const cookieName = (globalThis as any).__xydSettings?.accessControl?.session?.cookieName || "xyd-auth-token"
+            const cookieHeader = request?.headers?.get?.("cookie") || ""
+            const hasAuthCookie = cookieHeader.includes(`${cookieName}=`)
+            const isBypassed = process.env.XYD_AUTH_BYPASS === "1" || process.env.XYD_AUTH_BYPASS === "true"
+
+            if (!hasAuthCookie && !isBypassed) {
+                shellOnly = true
+                protectedPagePath = pagePath
+            }
+        }
+    }
+
+    if (pagePath && !shellOnly) {
         timedebug.compile
         code = await contentFs.compile(pagePath)
         rawPage = await contentFs.readRaw(pagePath)
         timedebug.compileEnd
-    } else {
+    } else if (!pagePath) {
         const resp = redirectFallback()
         if (resp) {
             timedebug.totalEnd
@@ -226,16 +266,56 @@ export async function loader({ request }: { request: any }) {
         }
     }
 
+    // Access control: filter navlinks based on user's auth state and groups
+    let filteredNavlinks = navlinks
+    if (accessMap && navlinks) {
+        // Extract user groups from cookie
+        const acCookieName = (globalThis as any).__xydSettings?.accessControl?.session?.cookieName || "xyd-auth-token"
+        const acGroupsClaim = ((globalThis as any).__xydSettings?.accessControl?.provider as any)?.groupsClaim || "groups"
+        const acCookieHeader = request?.headers?.get?.("cookie") || ""
+        const acIsBypassed = process.env.XYD_AUTH_BYPASS === "1" || process.env.XYD_AUTH_BYPASS === "true"
+
+        let acUserGroups: string[] = []
+        let acIsAuth = false
+        if (acIsBypassed) {
+            acIsAuth = true
+            acUserGroups = ["*"]
+        } else {
+            const acMatch = acCookieHeader.match(new RegExp(`${acCookieName}=([^;]+)`))
+            if (acMatch) {
+                acIsAuth = true
+                try { acUserGroups = JSON.parse(atob(acMatch[1].split(".")[1]))[acGroupsClaim] || [] } catch {}
+            }
+        }
+
+        const canAccessLink = (link: any) => {
+            if (!link?.href) return true
+            const href = link.href.startsWith("/") ? link.href : `/${link.href}`
+            const access = accessMap[href] || accessMap[link.href]
+            if (!access || access === "public") return true
+            if (!acIsAuth) return false
+            if (access === "authenticated") return true
+            if (acUserGroups.includes("*")) return true
+            return access.split(",").some(g => acUserGroups.includes(g))
+        }
+        filteredNavlinks = {
+            prev: navlinks.prev && canAccessLink(navlinks.prev) ? navlinks.prev : undefined,
+            next: navlinks.next && canAccessLink(navlinks.next) ? navlinks.next : undefined,
+        } as any
+    }
+
     return {
         sidebarGroups,
         breadcrumbs,
-        navlinks,
+        navlinks: filteredNavlinks,
         slug,
         code,
         metadata,
         rawPage,
         editLink,
-        canPassComponents
+        canPassComponents,
+        shellOnly,
+        protectedPagePath,
     } as loaderData
 }
 
@@ -456,6 +536,21 @@ export function MemoMDXComponent(codeComponent: any) {
 export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
     const location = useLocation()
 
+    // Protected page shell: hooks must always run (React rules of hooks).
+    // Start with empty shell (matches server), switch after hydration if authenticated.
+    const [shellReady, setShellReady] = useState(false)
+    useEffect(() => {
+        if (loaderData.shellOnly && window.__xydAuthState?.authenticated) {
+            setShellReady(true)
+        }
+    }, [loaderData.shellOnly])
+
+    if (loaderData.shellOnly) {
+        if (!shellReady) return <div />
+        return <ProtectedPageShell loaderData={loaderData} />
+    }
+    // NOTE: all hooks above this line always run regardless of shellOnly
+
     const analytics = useAnalytics()
 
     const { theme } = useContext(PageContext)
@@ -492,7 +587,7 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
 
     const { Page } = theme
 
-    let userComponents = {} 
+    let userComponents = {}
 
     if (loaderData.canPassComponents) {
         userComponents = (globalThis.__xydUserComponents || []).reduce((acc, component) => {
@@ -534,6 +629,145 @@ export default function DocsPage({ loaderData }: { loaderData: loaderData }) {
                         },
                         ...userComponents,
                     }} />
+                    <ScrollRestoration />
+                </Page>
+            </FrameworkPage>
+        </UXNode>
+    </>
+}
+
+/**
+  * Protected page shell: loads content dynamically after auth.
+ * Used when the page was pre-rendered as shellOnly (no content in HTML).
+ */
+function ProtectedPageShell({ loaderData }: { loaderData: loaderData }) {
+    const location = useLocation()
+    const [contentCode, setContentCode] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
+
+    const analytics = useAnalytics()
+    const pageCtx = useContext(PageContext)
+    const theme = pageCtx?.theme
+
+    useEffect(() => {
+        async function loadProtectedContent() {
+            try {
+                const response = await fetch(
+                    `/__xyd_protected_content/${encodeURIComponent(loaderData.slug)}.js`
+                )
+                if (response.ok) {
+                    setContentCode(await response.text())
+                }
+            } catch (e) {
+                console.error("[xyd:access-control] Failed to load protected content:", e)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        loadProtectedContent()
+    }, [loaderData.slug])
+
+    if (!theme) {
+        return <div style={{ padding: "48px 24px", textAlign: "center", color: "#6e6e80" }}>
+            {isLoading ? "Loading..." : "Authentication required."}
+        </div>
+    }
+
+    const { Page } = theme
+
+    // If content loaded successfully, render it
+    if (contentCode) {
+        const themeContentComponents = theme.reactContentComponents()
+        const themeFileComponents = theme.reactFileComponents()
+        const globalAPI = { analytics }
+
+        const content = mdxContent(contentCode, themeContentComponents, themeFileComponents, globalAPI)
+        const Content = MemoMDXComponent(content.component)
+        const contentOriginal = mdxContent(contentCode, themeContentComponents, undefined, globalAPI)
+        const ContentOriginal = MemoMDXComponent(contentOriginal.component)
+
+        let userComponents = {}
+        if (loaderData.canPassComponents) {
+            userComponents = (globalThis.__xydUserComponents || []).reduce((acc, component) => {
+                acc[component.name] = component.component
+                return acc
+            }, {})
+        }
+
+        return <>
+            <UXNode
+                name="Framework"
+                props={{ location: location.pathname + location.search + location.hash }}
+            >
+                <FrameworkPage
+                    key={location.pathname}
+                    metadata={content.metadata}
+                    breadcrumbs={loaderData.breadcrumbs}
+                    rawPage=""
+                    toc={content.toc || []}
+                    navlinks={loaderData.navlinks}
+                    ContentComponent={Content}
+                    ContentOriginal={ContentOriginal}
+                    editLink={loaderData.editLink}
+                >
+                    <Page>
+                        <ContentOriginal components={{
+                            ...themeContentComponents,
+                            wrapper: (props) => (
+                                <UXNode name=".ContentPage" props={{}}>
+                                    {props.children}
+                                </UXNode>
+                            ),
+                            ...userComponents,
+                        }} />
+                        <ScrollRestoration />
+                    </Page>
+                </FrameworkPage>
+            </UXNode>
+        </>
+    }
+
+    // Shell: render page layout without content
+    return <>
+        <UXNode
+            name="Framework"
+            props={{ location: location.pathname + location.search + location.hash }}
+        >
+            <FrameworkPage
+                key={location.pathname}
+                metadata={loaderData.metadata}
+                breadcrumbs={loaderData.breadcrumbs}
+                rawPage=""
+                toc={[]}
+                navlinks={loaderData.navlinks}
+                ContentComponent={null}
+                ContentOriginal={null}
+                editLink={loaderData.editLink}
+            >
+                <Page>
+                    <div data-auth-protected>
+                        {isLoading ? (
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                padding: "48px 0",
+                                color: "var(--dark48, #6e6e80)",
+                                fontSize: "var(--xyd-font-size-small, 14px)",
+                            }}>
+                                Loading...
+                            </div>
+                        ) : (
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                padding: "48px 0",
+                                color: "var(--dark48, #6e6e80)",
+                                fontSize: "var(--xyd-font-size-small, 14px)",
+                            }}>
+                                Authentication required to view this content.
+                            </div>
+                        )}
+                    </div>
                     <ScrollRestoration />
                 </Page>
             </FrameworkPage>

@@ -24,6 +24,7 @@
     "@react-router/serve": "^7.7.1",
     "@xyd-js/content": "workspace:*",
     "@xyd-js/core": "workspace:*",
+    "@xyd-js/plugin-access-control": "workspace:*",
     "@xyd-js/plugin-docs": "workspace:*",
     "@xyd-js/plugins": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
