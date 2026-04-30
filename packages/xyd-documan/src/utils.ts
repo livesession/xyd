@@ -446,10 +446,11 @@ export async function appInit(options?: PluginDocsOptions) {
                 if (!preloadSettings.theme) {
                     preloadSettings.theme = {} as any;
                 }
-                if (!preloadSettings.theme.head) {
-                    preloadSettings.theme.head = [];
+                const theme = preloadSettings.theme!;
+                if (!theme.head) {
+                    theme.head = [];
                 }
-                preloadSettings.theme.head.push(...head);
+                theme.head.push(...head);
             }
 
             if (p.markdown?.rehype) {
