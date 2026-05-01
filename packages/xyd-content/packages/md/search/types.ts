@@ -33,4 +33,11 @@ export interface DocSectionSchema { // TODO: move to @xyd-js/plugins/search ?
      * Content of the section
      */
     content: string
+
+    /**
+     * Access level for the page. Set by the framework when access control is active.
+     * Search data generators should preserve this field so virtual modules can
+     * embed client-side filtering automatically.
+     */
+    access?: string
 }

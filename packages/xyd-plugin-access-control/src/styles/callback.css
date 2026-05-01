@@ -1,0 +1,60 @@
+@layer defaults {
+  .xyd-callback-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    font-family: var(--font-body-family, system-ui, sans-serif);
+    background: radial-gradient(ellipse at 50% 50%, #f9b8d2 0%, #c6dff7 40%, #7ec8f0 100%);
+  }
+
+  .xyd-callback-page [part="card"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 350px;
+    padding: var(--xyd-padding-xxlarge, 44px);
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: var(--xyd-border-radius-large, 16px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(12px);
+  }
+
+  .xyd-callback-page [part="title"] {
+    font-size: var(--xyd-font-size-xlarge, 22px);
+    font-weight: var(--xyd-font-weight-semibold, 600);
+    line-height: var(--xyd-line-height-xlarge, 36px);
+    margin: 0 0 var(--xyd-padding-small, 6px);
+    color: var(--dark100, #000);
+  }
+
+  .xyd-callback-page [part="title"][data-error] {
+    color: var(--xyd-text-color--error, #ef4444);
+  }
+
+  .xyd-callback-page [part="message"] {
+    color: var(--dark48, #6e6e80);
+    font-size: var(--xyd-font-size-small, 14px);
+    line-height: var(--xyd-line-height-small, 20px);
+  }
+
+  .xyd-callback-page [part="button"] {
+    margin-top: var(--xyd-padding-large, 18px);
+    padding: var(--xyd-padding-medium, 10px) var(--xyd-padding-large, 18px);
+    font-size: var(--xyd-font-size-small, 14px);
+    font-weight: var(--xyd-font-weight-medium, 500);
+    font-family: inherit;
+    background-color: var(--xyd-button-primary-bg, var(--color-primary, #111));
+    color: var(--xyd-button-primary-color, #fff);
+    border: 1px solid var(--xyd-button-primary-border, transparent);
+    border-radius: var(--xyd-button-border-radius, 6px);
+    cursor: pointer;
+  }
+
+  .xyd-callback-page [part="button"]:hover {
+    background-color: var(--xyd-button-primary-bg-hover, var(--color-primary--active, #333));
+  }
+}

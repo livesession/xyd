@@ -17,17 +17,36 @@ import { markdownPlugins } from "../"
 import { mdParameters } from '../plugins/utils/mdParameters'
 
 export async function mapSettingsToDocSections(xydSettings: Settings) {
-    const pages = flatPages(xydSettings.navigation?.sidebar || [], {})
-        .map(page => {
-            let baseName = xydSettings.advanced?.basename || ""
-            
-            return {
-                name: path.join(baseName, page),
-                path: path.join(process.cwd(), page),
-            }
-        })
+    const accessMap: Record<string, string> | undefined = (globalThis as any).__xydAccessMap
 
-    return await processSections(pages, xydSettings)
+    const pages = flatPages(xydSettings.navigation?.sidebar || [], {})
+    const pagesWithMeta = pages.map(page => {
+        let baseName = xydSettings.advanced?.basename || ""
+        return {
+            name: path.join(baseName, page),
+            path: path.join(process.cwd(), page),
+            _rawPage: page,
+        }
+    })
+
+    const sections = await processSections(pagesWithMeta, xydSettings)
+
+    // Tag sections with access level. The `load()` hook of search plugins
+    // can detect this and auto-embed client-side filtering in the virtual module.
+    if (accessMap) {
+        const lookup: Record<string, string> = {}
+        for (const p of pagesWithMeta) {
+            const raw = p._rawPage
+            const normalized = raw.startsWith("/") ? raw : `/${raw}`
+            lookup[p.name] = accessMap[normalized] || accessMap[raw] || "public"
+        }
+        for (const section of sections) {
+            const url = (section.pageUrl || "").split("#")[0]
+            section.access = lookup[url.replace(/^\//, "")] || lookup[url] || "public"
+        }
+    }
+
+    return sections
 }
 
 export async function mapContentToDocSections(

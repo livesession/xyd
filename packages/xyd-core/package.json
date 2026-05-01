@@ -19,9 +19,18 @@
     "watch": "tsup --watch"
   },
   "dependencies": {},
+  "peerDependencies": {
+    "vite": "^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "tsup": "^8.3.0",
     "rimraf": "^3.0.2",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "vite": "^7.0.0"
   }
 }

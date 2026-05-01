@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     Outlet,
     useLoaderData,
@@ -51,6 +51,25 @@ import { ContentFS } from "@xyd-js/content";
 import { Icon, IconProvider } from "@xyd-js/components/writer";
 import { CoderProvider } from "@xyd-js/components/coder";
 import { SearchButton } from "@xyd-js/components/system"
+
+// Access control: conditionally import virtual modules
+let accessControlSettings: { accessControlConfig: any; accessMap: Record<string, string> } | null = null;
+let AccessControlGuard: React.ComponentType<any> | null = null;
+try {
+    // @ts-ignore
+    accessControlSettings = await import("virtual:xyd-access-control-settings");
+    // @ts-ignore
+    const guardModule = await import("virtual:xyd-access-control-guard");
+    AccessControlGuard = guardModule.AuthGuard;
+} catch {
+    // Access control not configured - no-op
+}
+
+// Expose access control settings on globalThis so DocsPage can check access
+// synchronously before rendering content (prevents flash of protected content)
+if (accessControlSettings) {
+    (globalThis as any).__xydAccessControlSettings = accessControlSettings
+}
 
 globalThis.__xydSettings = getSettings
 globalThis.__xydSettingsClone = settingsClone
@@ -114,6 +133,7 @@ interface LoaderData {
     metadata: Metadata | null
     navlinks?: INavLinks,
     bannerContentCode?: string
+    protectedPage?: boolean
 }
 
 export async function loader({ request }: { request: any }) {
@@ -178,18 +198,94 @@ export async function loader({ request }: { request: any }) {
         metadata.layout = layout
     }
 
+    // Access control: filter sidebar based on auth state and user groups
+    const accessMap: Record<string, string> | undefined = (globalThis as any).__xydAccessMap
+    let filteredSidebarGroups = sidebarGroups
+    let protectedPage = false
+
+    if (accessMap) {
+        const cookieName = settings?.accessControl?.session?.cookieName || "xyd-auth-token"
+        const groupsClaim = (settings?.accessControl?.provider as any)?.groupsClaim || "groups"
+        const cookieHeader = request?.headers?.get?.("cookie") || ""
+        const isBypassed = process.env.XYD_AUTH_BYPASS === "1" || process.env.XYD_AUTH_BYPASS === "true"
+
+        // Extract auth token from cookie and decode user groups
+        let isAuthenticated = false
+        let userGroups: string[] = []
+
+        if (isBypassed) {
+            isAuthenticated = true
+            userGroups = ["*"] // bypass = access all
+        } else {
+            const cookieMatch = cookieHeader.match(new RegExp(`${cookieName}=([^;]+)`))
+            if (cookieMatch) {
+                isAuthenticated = true
+                try {
+                    const payload = JSON.parse(atob(cookieMatch[1].split(".")[1]))
+                    userGroups = payload[groupsClaim] || []
+                } catch {}
+            }
+        }
+
+        // Check if current page is protected and user is not authenticated.
+        // Skip when deploy platform is configured — server handles protection,
+        // so the full layout should always render.
+        const hasDeploy = !!settings?.accessControl?.deploy
+        if (!hasDeploy) {
+            const slugWithSlash = slug.startsWith("/") ? slug : `/${slug}`
+            const pageAccess = accessMap[slugWithSlash] || accessMap[slug]
+            if (pageAccess && pageAccess !== "public" && !isAuthenticated) {
+                protectedPage = true
+            }
+        }
+
+        // Filter sidebar: when deploy platform is configured, show all items (server controls access).
+        // Otherwise, filter based on user's auth state and groups.
+        filteredSidebarGroups = hasDeploy ? sidebarGroups : sidebarGroups
+            .map(group => ({
+                ...group,
+                items: (group.items || []).filter(item => {
+                    if (!item.href) return true
+                    const href = item.href.startsWith("/") ? item.href : `/${item.href}`
+                    const access = accessMap[href] || accessMap[item.href]
+                    if (!access || access === "public") return true
+                    if (!isAuthenticated) return false
+                    if (access === "authenticated") return true
+                    if (userGroups.includes("*")) return true // bypass
+                    const requiredGroups = access.split(",")
+                    return requiredGroups.some(g => userGroups.includes(g))
+                })
+            }))
+            .filter(group => group.items.length > 0)
+    }
+
     return {
-        sidebarGroups,
+        sidebarGroups: filteredSidebarGroups,
         breadcrumbs,
         navlinks,
         slug,
         metadata,
-        bannerContentCode
+        bannerContentCode,
+        protectedPage,
     } as LoaderData
 }
 
 export default function Layout() {
     const loaderData = useLoaderData<LoaderData>()
+
+    // Protected page: render minimal shell during SSR/pre-render.
+    // After hydration, if the user is authenticated, re-render with full layout.
+    const [clientAuth, setClientAuth] = useState(false)
+    useEffect(() => {
+        if (loaderData.protectedPage && (window as any).__xydAuthState?.authenticated) {
+            setClientAuth(true)
+        }
+    }, [loaderData.protectedPage])
+
+    if (loaderData.protectedPage && !clientAuth) {
+        return <Outlet />
+    }
+
     const matches = useMatches()
 
     let lastMatchId = matches[matches.length - 1]?.id || null
@@ -229,7 +325,7 @@ export default function Layout() {
         return acc;
     }, {});
 
-    return <>
+    const appTree = (
         <Analytics settings={settings} loader={loadProvider}>
             <IconProvider value={{
                 iconSet: iconSet
@@ -276,7 +372,19 @@ export default function Layout() {
 
             </IconProvider>
         </Analytics>
-    </>
+    )
+
+    // Wrap with AuthGuard when access control is configured
+    if (accessControlSettings && AccessControlGuard) {
+        return <AccessControlGuard
+            accessMap={accessControlSettings.accessMap}
+            config={accessControlSettings.accessControlConfig}
+        >
+            {appTree}
+        </AccessControlGuard>
+    }
+
+    return <>{appTree}</>
 }
 
 function PostLayout({ children }: { children: React.ReactNode }) {

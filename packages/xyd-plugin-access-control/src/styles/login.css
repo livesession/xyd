@@ -1,0 +1,113 @@
+@layer defaults {
+  .xyd-login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    font-family: var(--font-body-family, system-ui, sans-serif);
+    background: radial-gradient(ellipse at 50% 50%, #f9b8d2 0%, #c6dff7 40%, #7ec8f0 100%);
+  }
+
+  .xyd-login-page [part="card"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 350px;
+    padding: var(--xyd-padding-xxlarge, 44px);
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: var(--xyd-border-radius-large, 16px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(12px);
+  }
+
+  .xyd-login-page [part="logo"] {
+    max-height: 30px;
+    width: auto;
+    margin-bottom: var(--xyd-padding-xlarge, 30px);
+  }
+
+  .xyd-login-page [part="title"] {
+    font-size: var(--xyd-font-size-2xl, 32px);
+    font-weight: var(--xyd-font-weight-bold, 700);
+    line-height: var(--xyd-line-height-2xl, 48px);
+    margin: 0 0 var(--xyd-padding-small, 6px);
+    text-align: center;
+    color: var(--dark100, #000);
+  }
+
+  .xyd-login-page [part="description"] {
+    color: var(--dark48, #6e6e80);
+    font-size: var(--xyd-font-size-small, 14px);
+    line-height: var(--xyd-line-height-small, 20px);
+    margin: 0 0 var(--xyd-padding-xxlarge, 44px);
+    text-align: center;
+  }
+
+  .xyd-login-page [part="error"] {
+    color: var(--xyd-text-color--error, #ef4444);
+    font-size: var(--xyd-font-size-xsmall, 12px);
+    line-height: var(--xyd-line-height-xsmall, 16px);
+    margin: 0 0 var(--xyd-padding-medium, 10px);
+  }
+
+  .xyd-login-page [part="form"] {
+    width: 100%;
+  }
+
+  .xyd-login-page [part="input"] {
+    width: 100%;
+    padding: var(--xyd-padding-medium, 10px) var(--xyd-padding-small, 6px);
+    font-size: var(--xyd-font-size-small, 14px);
+    line-height: var(--xyd-line-height-small, 20px);
+    font-family: inherit;
+    border: 1px solid var(--dark32, #ececf1);
+    border-radius: var(--xyd-border-radius-small, 4px);
+    margin-bottom: var(--xyd-padding-medium, 10px);
+    box-sizing: border-box;
+    outline: none;
+    background: var(--white, #fff);
+    color: var(--dark80, #111827);
+  }
+
+  .xyd-login-page [part="input"]:focus {
+    border-color: var(--dark48, #6e6e80);
+  }
+
+  .xyd-login-page [part="actions"] {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--xyd-padding-small, 6px);
+  }
+
+  .xyd-login-page [part="button"] {
+    width: 100%;
+    padding: var(--xyd-padding-medium, 10px) var(--xyd-padding-large, 18px);
+    font-size: var(--xyd-font-size-small, 14px);
+    font-weight: var(--xyd-font-weight-medium, 500);
+    font-family: inherit;
+    background-color: var(--xyd-button-primary-bg, var(--color-primary, #111));
+    color: var(--xyd-button-primary-color, #fff);
+    border: 1px solid var(--xyd-button-primary-border, transparent);
+    border-radius: var(--xyd-button-border-radius, 6px);
+    cursor: pointer;
+    transition: background-color 0.15s linear;
+  }
+
+  .xyd-login-page [part="button"]:hover {
+    background-color: var(--xyd-button-primary-bg-hover, var(--color-primary--active, #333));
+  }
+
+  .xyd-login-page [part="button"][data-kind="secondary"] {
+    background-color: var(--xyd-button-secondary-bg, #f5f5f1);
+    color: var(--xyd-button-secondary-color, #111);
+    border: 1px solid var(--xyd-button-secondary-border, #ececf1);
+  }
+
+  .xyd-login-page [part="button"][data-kind="secondary"]:hover {
+    background-color: var(--xyd-button-secondary-bg-hover, #e5e5e1);
+  }
+}

@@ -1,0 +1,18 @@
+feat/authentication
+claude --resume "static-site-auth-research"
+/Users/zdunecki/Code/livesession/xyd-feat-authentication
+----
+
+feat/studio
+pls create a new app (apps) - studio. It's an app that will help me to test out multiple xyd version (Branch)
+/Users/zdunecki/Code/livesession/xyd-feat-studio
+----
+
+improve-uniform-sources-functions
+/Users/zdunecki/Code/livesession/xyd BUT SWITHC TO /Users/zdunecki/Code/livesession/xyd/xyd-feat-improve-uniform-sources-functions
+claude --resume 29701b9c-281a-4182-8c72-5f6e56f1569ee
+----
+
+claude --resume b6cf1ec6-fb88-4568-85e6-0275eb23d60e
+feat/xyd-version-env
+/Users/zdunecki/Code/livesession/xyd

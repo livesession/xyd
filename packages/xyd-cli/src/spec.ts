@@ -17,6 +17,10 @@ export const cliSpec: CLI = {
             description: 'Build your docs',
             usage: 'xyd build [flags]',
         },
+        serve: {
+            description: 'Serve your built docs in production mode',
+            usage: 'xyd serve [flags]',
+        },
         install: {
             description: 'Install the xyd framework manually',
             usage: 'xyd install [flags]',

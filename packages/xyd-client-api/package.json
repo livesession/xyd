@@ -1,0 +1,36 @@
+{
+  "name": "@xyd-js/client-api",
+  "version": "0.0.0",
+  "description": "Unified client API for xyd — hooks, contexts, and utilities",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf dist",
+    "prebuild": "pnpm clean",
+    "build": "tsup"
+  },
+  "peerDependencies": {
+    "@xyd-js/framework": "workspace:*",
+    "@xyd-js/analytics": "workspace:*",
+    "@xyd-js/plugin-access-control": "workspace:*",
+    "@xyd-js/content": "workspace:*",
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "rimraf": "^3.0.2",
+    "tsup": "^8.4.0"
+  }
+}

@@ -94,6 +94,13 @@ if (globalThis.__xydRawRouteFiles) {
     prerenderPaths.push(...routes)
 }
 
+// Plugin pages: add for prerendering
+if ((globalThis as any).__xydPluginPages) {
+    const pluginPageRoutes = ((globalThis as any).__xydPluginPages as any[])
+        .map(p => p.route.startsWith("/") ? p.route : `/${p.route}`)
+    prerenderPaths.push(...pluginPageRoutes)
+}
+
 const cwd = process.cwd();
 
 export default {
