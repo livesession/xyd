@@ -1,0 +1,3 @@
+[
+  "{\n    \"robots\": \"index, follow\", // or \"noindex, nofollow\"\n    \"charset\": \"UTF-8\"\n}"
+]

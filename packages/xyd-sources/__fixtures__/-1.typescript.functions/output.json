@@ -1,0 +1,1327 @@
+[
+  {
+    "title": "EventSystemConfig",
+    "canonical": "",
+    "description": "Configuration for an event system with various callback patterns.\n\nDemonstrates how uniform handles functions as properties,\nfrom simple no-arg callbacks to complex generic signatures.\n",
+    "context": {
+      "symbolId": "158",
+      "symbolName": "EventSystemConfig",
+      "symbolKind": 256,
+      "packageName": "@xyd-js/sources",
+      "fileName": "functions.ts",
+      "fileFullPath": "src/functions.ts",
+      "line": 60,
+      "col": 17,
+      "signatureText": {
+        "code": "export interface EventSystemConfig {\n}",
+        "lang": "ts"
+      },
+      "sourcecode": {
+        "code": "export interface EventSystemConfig {\n    // ---- Simple callbacks ----\n\n    /** Called when the system initializes (no arguments) */\n    onInit: () => void;\n\n    /** Called when the system is destroyed, returns cleanup success */\n    onDestroy: () => boolean;\n\n    /** Optional callback when system is ready */\n    onReady?: () => void;\n\n    // ---- Primitive argument callbacks ----\n\n    /** Called when a text value changes */\n    onTextChange: (value: string) => void;\n\n    /** Called on numeric input with min/max boundaries */\n    onRangeChange: (value: number, min: number, max: number) => void;\n\n    /** Called when a toggle state changes */\n    onToggle: (enabled: boolean) => void;\n\n    /** Called on status transition */\n    onStatusChange: (previous: RequestStatus, current: RequestStatus) => void;\n\n    // ---- Object argument callbacks ----\n\n    /** Called when a user is selected */\n    onUserSelect: (user: User) => void;\n\n    /** Called when pagination changes */\n    onPageChange: (pagination: PaginationInfo) => void;\n\n    /** Called when multiple filters are applied */\n    onFilter: (filters: FilterCriteria[]) => void;\n\n    // ---- Callbacks with return values ----\n\n    /** Validates input, returns error message or null */\n    validate: (input: string) => string | null;\n\n    /** Transforms data before saving */\n    transform: (data: Record<string, unknown>) => Record<string, unknown>;\n\n    /** Async data fetcher */\n    fetchData: (url: string, options?: { timeout?: number }) => Promise<AsyncResult<unknown>>;\n\n    // ---- Complex / advanced patterns ----\n\n    /** Comparator for custom sorting */\n    comparator: (a: User, b: User) => number;\n\n    /** Reducer-style callback */\n    reducer: (state: Record<string, unknown>, action: { type: string; payload?: unknown }) => Record<string, unknown>;\n\n    /** Event handler with optional prevent-default */\n    onEvent: (eventName: string, data: unknown, preventDefault?: () => void) => void;\n\n    /** Callback that receives another callback (nested function) */\n    onSubscribe: (unsubscribe: () => void) => void;\n\n    /** Iterator/visitor pattern */\n    forEach: (item: User, index: number, array: User[]) => void;\n\n    /** Optional error handler */\n    onError?: (error: Error, context?: { retryCount: number; timestamp: number }) => void;\n\n    /** Predicate function */\n    filter: (item: User) => boolean;\n\n    /** Map/projection function */\n    mapUser: (user: User) => { label: string; value: string };\n}",
+        "lang": "ts"
+      },
+      "meta": [],
+      "group": [
+        "@xyd-js",
+        "sources",
+        "Interfaces"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Properties",
+        "properties": [
+          {
+            "name": "onInit",
+            "type": "$$function",
+            "description": "Called when the system initializes (no arguments)\n",
+            "properties": [],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onDestroy",
+            "type": "$$function",
+            "description": "Called when the system is destroyed, returns cleanup success\n",
+            "properties": [],
+            "ofProperty": {
+              "name": "",
+              "type": "boolean",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onReady",
+            "type": "$$function",
+            "description": "Optional callback when system is ready\n",
+            "properties": [],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onTextChange",
+            "type": "$$function",
+            "description": "Called when a text value changes\n",
+            "properties": [
+              {
+                "name": "value",
+                "type": "string",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onRangeChange",
+            "type": "$$function",
+            "description": "Called on numeric input with min/max boundaries\n",
+            "properties": [
+              {
+                "name": "value",
+                "type": "number",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              },
+              {
+                "name": "min",
+                "type": "number",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              },
+              {
+                "name": "max",
+                "type": "number",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onToggle",
+            "type": "$$function",
+            "description": "Called when a toggle state changes\n",
+            "properties": [
+              {
+                "name": "enabled",
+                "type": "boolean",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onStatusChange",
+            "type": "$$function",
+            "description": "Called on status transition\n",
+            "properties": [
+              {
+                "name": "previous",
+                "type": "RequestStatus",
+                "description": "Status of a request\n",
+                "symbolDef": {
+                  "id": "140",
+                  "canonical": ""
+                },
+                "meta": [],
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "\"pending\" | \"loading\" | \"success\" | \"error\"",
+                  "description": "Status of a request\n",
+                  "symbolDef": {
+                    "id": [],
+                    "canonical": ""
+                  },
+                  "meta": []
+                }
+              },
+              {
+                "name": "current",
+                "type": "RequestStatus",
+                "description": "Status of a request\n",
+                "symbolDef": {
+                  "id": "140",
+                  "canonical": ""
+                },
+                "meta": [],
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "\"pending\" | \"loading\" | \"success\" | \"error\"",
+                  "description": "Status of a request\n",
+                  "symbolDef": {
+                    "id": [],
+                    "canonical": ""
+                  },
+                  "meta": []
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onUserSelect",
+            "type": "$$function",
+            "description": "Called when a user is selected\n",
+            "properties": [
+              {
+                "name": "user",
+                "type": "User",
+                "description": "User object\n",
+                "symbolDef": {
+                  "id": "141",
+                  "canonical": ""
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "Unique identifier\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "Display name\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "Email address\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  }
+                ]
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onPageChange",
+            "type": "$$function",
+            "description": "Called when pagination changes\n",
+            "properties": [
+              {
+                "name": "pagination",
+                "type": "PaginationInfo",
+                "description": "Pagination info\n",
+                "symbolDef": {
+                  "id": "145",
+                  "canonical": ""
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "page",
+                    "type": "number",
+                    "description": "Current page number\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "totalPages",
+                    "type": "number",
+                    "description": "Total number of pages\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "perPage",
+                    "type": "number",
+                    "description": "Items per page\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  }
+                ]
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onFilter",
+            "type": "$$function",
+            "description": "Called when multiple filters are applied\n",
+            "properties": [
+              {
+                "name": "filters",
+                "type": "$$array",
+                "description": "",
+                "ofProperty": {
+                  "name": "",
+                  "description": "Filter criteria for querying data\n",
+                  "type": "FilterCriteria",
+                  "properties": [
+                    {
+                      "name": "field",
+                      "type": "string",
+                      "description": "Field name to filter on\n",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ],
+                      "symbolDef": {
+                        "canonical": ""
+                      }
+                    },
+                    {
+                      "name": "operator",
+                      "type": "\"eq\" | \"neq\" | \"gt\" | \"lt\" | \"contains\"",
+                      "description": "Comparison operator\n",
+                      "symbolDef": {
+                        "id": [],
+                        "canonical": ""
+                      },
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "value",
+                      "type": "string | number | boolean",
+                      "description": "Value to compare against\n",
+                      "symbolDef": {
+                        "id": [],
+                        "canonical": ""
+                      },
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ],
+                      "properties": []
+                    }
+                  ],
+                  "symbolDef": {
+                    "id": "149",
+                    "canonical": ""
+                  }
+                },
+                "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                },
+                "properties": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "validate",
+            "type": "$$function",
+            "description": "Validates input, returns error message or null\n",
+            "properties": [
+              {
+                "name": "input",
+                "type": "string",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "string",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "transform",
+            "type": "$$function",
+            "description": "Transforms data before saving\n",
+            "properties": [
+              {
+                "name": "data",
+                "type": "Record<string, unknown>",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "Record<string, unknown>",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "fetchData",
+            "type": "$$function",
+            "description": "Async data fetcher\n",
+            "properties": [
+              {
+                "name": "url",
+                "type": "string",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              },
+              {
+                "name": "options",
+                "type": "",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "timeout",
+                    "type": "number",
+                    "description": "",
+                    "meta": []
+                  }
+                ],
+                "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "Promise<AsyncResult>",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "comparator",
+            "type": "$$function",
+            "description": "Comparator for custom sorting\n",
+            "properties": [
+              {
+                "name": "a",
+                "type": "User",
+                "description": "User object\n",
+                "symbolDef": {
+                  "id": "141",
+                  "canonical": ""
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "Unique identifier\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "Display name\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "Email address\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "b",
+                "type": "User",
+                "description": "User object\n",
+                "symbolDef": {
+                  "id": "141",
+                  "canonical": ""
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "Unique identifier\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "Display name\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "Email address\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  }
+                ]
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "number",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "reducer",
+            "type": "$$function",
+            "description": "Reducer-style callback\n",
+            "properties": [
+              {
+                "name": "state",
+                "type": "Record<string, unknown>",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              },
+              {
+                "name": "action",
+                "type": "",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "type",
+                    "type": "string",
+                    "description": "",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "payload",
+                    "type": "unknown",
+                    "description": "",
+                    "meta": []
+                  }
+                ],
+                "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "Record<string, unknown>",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onEvent",
+            "type": "$$function",
+            "description": "Event handler with optional prevent-default\n",
+            "properties": [
+              {
+                "name": "eventName",
+                "type": "string",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              },
+              {
+                "name": "data",
+                "type": "unknown",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              },
+              {
+                "name": "preventDefault",
+                "type": "$$function",
+                "description": "",
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "void",
+                  "description": "",
+                  "symbolDef": {
+                    "canonical": ""
+                  }
+                },
+                "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onSubscribe",
+            "type": "$$function",
+            "description": "Callback that receives another callback (nested function)\n",
+            "properties": [
+              {
+                "name": "unsubscribe",
+                "type": "$$function",
+                "description": "",
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "void",
+                  "description": "",
+                  "symbolDef": {
+                    "canonical": ""
+                  }
+                },
+                "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "forEach",
+            "type": "$$function",
+            "description": "Iterator/visitor pattern\n",
+            "properties": [
+              {
+                "name": "item",
+                "type": "User",
+                "description": "User object\n",
+                "symbolDef": {
+                  "id": "141",
+                  "canonical": ""
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "Unique identifier\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "Display name\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "Email address\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "index",
+                "type": "number",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              },
+              {
+                "name": "array",
+                "type": "$$array",
+                "description": "",
+                "ofProperty": {
+                  "name": "",
+                  "description": "User object\n",
+                  "type": "User",
+                  "properties": [
+                    {
+                      "name": "id",
+                      "type": "string",
+                      "description": "Unique identifier\n",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ],
+                      "symbolDef": {
+                        "canonical": ""
+                      }
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "description": "Display name\n",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ],
+                      "symbolDef": {
+                        "canonical": ""
+                      }
+                    },
+                    {
+                      "name": "email",
+                      "type": "string",
+                      "description": "Email address\n",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ],
+                      "symbolDef": {
+                        "canonical": ""
+                      }
+                    }
+                  ],
+                  "symbolDef": {
+                    "id": "141",
+                    "canonical": ""
+                  }
+                },
+                "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                },
+                "properties": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "onError",
+            "type": "$$function",
+            "description": "Optional error handler\n",
+            "properties": [
+              {
+                "name": "error",
+                "type": "Error",
+                "description": "",
+                "symbolDef": {
+                  "canonical": ""
+                }
+              },
+              {
+                "name": "context",
+                "type": "",
+                "description": "",
+                "properties": [
+                  {
+                    "name": "retryCount",
+                    "type": "number",
+                    "description": "",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "timestamp",
+                    "type": "number",
+                    "description": "",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                ],
+                "meta": [],
+                "symbolDef": {
+                  "canonical": ""
+                }
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "filter",
+            "type": "$$function",
+            "description": "Predicate function\n",
+            "properties": [
+              {
+                "name": "item",
+                "type": "User",
+                "description": "User object\n",
+                "symbolDef": {
+                  "id": "141",
+                  "canonical": ""
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "Unique identifier\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "Display name\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "Email address\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  }
+                ]
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "boolean",
+              "description": "",
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          },
+          {
+            "name": "mapUser",
+            "type": "$$function",
+            "description": "Map/projection function\n",
+            "properties": [
+              {
+                "name": "user",
+                "type": "User",
+                "description": "User object\n",
+                "symbolDef": {
+                  "id": "141",
+                  "canonical": ""
+                },
+                "meta": [],
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "description": "Unique identifier\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "description": "Display name\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  },
+                  {
+                    "name": "email",
+                    "type": "string",
+                    "description": "Email address\n",
+                    "meta": [
+                      {
+                        "name": "required",
+                        "value": "true"
+                      }
+                    ],
+                    "symbolDef": {
+                      "canonical": ""
+                    }
+                  }
+                ]
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "type": "",
+              "description": "",
+              "properties": [
+                {
+                  "name": "label",
+                  "type": "string",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "value",
+                  "type": "string",
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                }
+              ],
+              "meta": [],
+              "symbolDef": {
+                "canonical": ""
+              }
+            },
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "canonical": ""
+            }
+          }
+        ],
+        "symbolDef": {
+          "canonical": ""
+        }
+      }
+    ]
+  }
+]

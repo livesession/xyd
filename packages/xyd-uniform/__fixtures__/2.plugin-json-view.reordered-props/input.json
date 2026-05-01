@@ -1,0 +1,34 @@
+[
+  {
+    "title": "Test title",
+    "description": "Test description",
+    "canonical": "test-canonical",
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Properties",
+        "properties": [
+          {
+            "name": "robots",
+            "type": "string",
+            "description": "Standard meta tag for controlling search engine crawling and indexing\n",
+            "examples": [
+              "index, follow",
+              "noindex, nofollow"
+            ]
+          },
+          {
+            "name": "charset",
+            "type": "string",
+            "description": "Character encoding for the document\n",
+            "examples": [
+              "UTF-8"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

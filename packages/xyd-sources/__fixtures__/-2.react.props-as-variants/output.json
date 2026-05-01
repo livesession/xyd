@@ -4,7 +4,7 @@
     "canonical": "@xyd-js/sources/components/Details",
     "description": "A collapsible details component that supports three variants: primary, secondary, and tertiary.\nEach variant has a different visual style and structure.\n",
     "context": {
-      "symbolId": "226",
+      "symbolId": "485",
       "symbolName": "Details",
       "symbolKind": 64,
       "packageName": "@xyd-js/sources",

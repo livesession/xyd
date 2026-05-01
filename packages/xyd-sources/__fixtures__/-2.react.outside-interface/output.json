@@ -4,7 +4,7 @@
     "canonical": "@xyd-js/sources/components/GuideCard",
     "description": "A card component that displays content with a title and optional icon.\nThe entire card is clickable and links to the specified URL.\n",
     "context": {
-      "symbolId": "217",
+      "symbolId": "476",
       "symbolName": "GuideCard",
       "symbolKind": 64,
       "packageName": "GuideCard",
@@ -51,7 +51,7 @@
             "type": "Kind",
             "description": "Visual style variant of the card\n",
             "symbolDef": {
-              "id": "221"
+              "id": "480"
             },
             "meta": []
           }
