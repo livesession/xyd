@@ -1,20 +1,21 @@
 import {describe, it, expect} from "vitest"
 
 import {infer, uniform} from "../src/inspection"
-import {loadReference, loadInstance} from "./utils"
+import {fixture} from "./utils"
 
 describe("uniform inspection", () => {
     describe("infer + play", () => {
         it("should read property values via proxy", () => {
-            const proxy = infer(loadInstance("3.inspection.basic"), loadReference("3.inspection.basic")).play()
+            const {reference, instance} = fixture`3.inspection.basic`
+            const proxy = infer(reference, instance).play()
 
             expect(proxy.host).toBe("localhost")
             expect(proxy.port).toBe(3000)
         })
 
         it("should write property values via proxy without mutating instance", () => {
-            const instance = loadInstance("3.inspection.basic")
-            const proxy = infer(instance, loadReference("3.inspection.basic")).play()
+            const {reference, instance} = fixture`3.inspection.basic`
+            const proxy = infer(reference, instance).play()
 
             proxy.host = "production"
             expect(proxy.host).toBe("production")
@@ -22,7 +23,8 @@ describe("uniform inspection", () => {
         })
 
         it("should freeze the Reference", () => {
-            const inferred = infer(loadInstance("3.inspection.basic"), loadReference("3.inspection.basic"))
+            const {reference, instance} = fixture`3.inspection.basic`
+            const inferred = infer(reference, instance)
 
             expect(inferred.reference.title).toBe("Config")
             expect(Object.isFrozen(inferred.reference)).toBe(true)
@@ -31,7 +33,8 @@ describe("uniform inspection", () => {
 
     describe("json()", () => {
         it("should return current values as plain object", () => {
-            const proxy = infer(loadInstance("3.inspection.basic"), loadReference("3.inspection.basic")).play()
+            const {reference, instance} = fixture`3.inspection.basic`
+            const proxy = infer(reference, instance).play()
 
             expect(uniform(proxy).json()).toEqual({host: "localhost", port: 3000})
 
@@ -40,10 +43,8 @@ describe("uniform inspection", () => {
         })
 
         it("should exclude function values from json()", () => {
-            const proxy = infer(
-                {value: 0, add: (n: number) => n},
-                loadReference("3.inspection.methods"),
-            ).play()
+            const {reference} = fixture`3.inspection.methods`
+            const proxy = infer(reference, {value: 0, add: (n: number) => n}).play()
 
             expect(uniform(proxy).json()).toEqual({value: 0})
         })
@@ -51,7 +52,8 @@ describe("uniform inspection", () => {
 
     describe("snapshot() and reset()", () => {
         it("should return frozen snapshot of current values", () => {
-            const inferred = infer(loadInstance("3.inspection.basic"), loadReference("3.inspection.basic"))
+            const {reference, instance} = fixture`3.inspection.basic`
+            const inferred = infer(reference, instance)
             const proxy = inferred.play()
 
             const before = inferred.snapshot()
@@ -64,7 +66,8 @@ describe("uniform inspection", () => {
         })
 
         it("should reset values to initial state", () => {
-            const inferred = infer(loadInstance("3.inspection.basic"), loadReference("3.inspection.basic"))
+            const {reference, instance} = fixture`3.inspection.basic`
+            const inferred = infer(reference, instance)
             const proxy = inferred.play()
 
             proxy.port = 8080
@@ -75,10 +78,8 @@ describe("uniform inspection", () => {
 
     describe("method calls", () => {
         it("should call original instance methods", () => {
-            const proxy = infer(
-                {value: 0, add(n: number) { return this.value + n }},
-                loadReference("3.inspection.methods"),
-            ).play()
+            const {reference} = fixture`3.inspection.methods`
+            const proxy = infer(reference, {value: 0, add(n: number) { return this.value + n }}).play()
 
             expect(proxy.add(5)).toBe(5)
         })
@@ -86,7 +87,8 @@ describe("uniform inspection", () => {
 
     describe("nested objects", () => {
         it("should support nested property access and writes", () => {
-            const proxy = infer(loadInstance("3.inspection.nested"), loadReference("3.inspection.nested")).play()
+            const {reference, instance} = fixture`3.inspection.nested`
+            const proxy = infer(reference, instance).play()
 
             expect(proxy.db.host).toBe("localhost")
 
@@ -104,7 +106,8 @@ describe("uniform inspection", () => {
         })
 
         it("should return reference from proxy", () => {
-            const proxy = infer(loadInstance("3.inspection.basic"), loadReference("3.inspection.basic")).play()
+            const {reference, instance} = fixture`3.inspection.basic`
+            const proxy = infer(reference, instance).play()
             expect(uniform(proxy).reference().title).toBe("Config")
         })
     })

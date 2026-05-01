@@ -24,6 +24,14 @@ export function loadInstance(fixtureName: string): any {
     return readFixture(`${fixtureName}/instance.json`);
 }
 
+export function fixture(strings: TemplateStringsArray, ...values: any[]): { reference: Reference; instance: any } {
+    const name = String.raw(strings, ...values);
+    return {
+        reference: loadReference(name),
+        instance: loadInstance(name),
+    };
+}
+
 export async function testConverters(fixtureName: string) {
     const inputData = readFixture(`${fixtureName}/input.json`);
     const expectedOutput = readFixture(`${fixtureName}/output.json`);

@@ -8,7 +8,7 @@ export class InferImpl<T = any> implements IInfer<T> {
     private valueMap: ValueMap
     private instance: T
 
-    constructor(instance: T, reference: Reference) {
+    constructor(reference: Reference, instance: T) {
         this.instance = instance
         this.reference = Object.freeze(structuredClone(reference))
         this.valueMap = new ValueMap()
@@ -28,6 +28,6 @@ export class InferImpl<T = any> implements IInfer<T> {
     }
 }
 
-export function infer<T>(instance: T, reference: Reference): IInfer<T> {
-    return new InferImpl(instance, reference)
+export function infer<T>(reference: Reference, instance: T): IInfer<T> {
+    return new InferImpl(reference, instance)
 }
