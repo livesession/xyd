@@ -82,6 +82,7 @@
 
 ### 14. Uniform
 - @.dev/docs/14.uniform/UniformDataFormat.md
+- @.dev/docs/14.uniform/UniformInspection.md
 
 ### 15. Atlas
 - @.dev/docs/15.atlas/AtlasUiComponents.md
