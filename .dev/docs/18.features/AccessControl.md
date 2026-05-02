@@ -1,3 +1,7 @@
+---
+keywords: access control, jwt, oauth, authentication, authorization
+---
+
 # Access Control
 
 This document describes the access control system in xyd, which protects documentation pages with JWT or OAuth authentication. It covers configuration, the plugin architecture, SSR page exclusion, deploy adapters, search filtering, and the unified client API.
