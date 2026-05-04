@@ -669,8 +669,85 @@ function convertSchemaToUniform(code: string, propertyName: string = '__xydUnifo
     modified = modified.replace(/^\s*\w+\.__xydSchema\s*=\s*typia\.json\.schemas.*;\s*$/gm, '');
     modified = modified.replace(/^import typia from ["']typia["'];?\s*\n?/gm, '');
 
+    // Detect useState hooks in component functions and inject state definitions
+    modified = injectStateDefinitions(modified, propertyName);
+
     if (!hasChanges) return null;
     return {code: modified, map: null};
+}
+
+/**
+ * Scans emitted JS for useState patterns in components that have __xydUniform.
+ * Appends a state definition to the uniform reference.
+ *
+ * Detects: `const [name, setName] = useState(initialValue)`
+ * Generates: definition with meta type=state, hookID, setter name
+ */
+function injectStateDefinitions(code: string, propertyName: string): string {
+    // Find all components that have __xydUniform assignments
+    const uniformRegex = new RegExp(`(\\w+)\\.${propertyName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*=\\s*JSON\\.parse\\('([^']*)'\\)`, 'g');
+    let result = code;
+
+    let uniformMatch: RegExpExecArray | null;
+    while ((uniformMatch = uniformRegex.exec(code)) !== null) {
+        const componentName = uniformMatch[1];
+
+        // Find the function body for this component
+        const fnRegex = new RegExp(`function\\s+${componentName}\\s*\\([^)]*\\)\\s*\\{([\\s\\S]*?)\\n\\}`, 'g');
+        const fnMatch = fnRegex.exec(code);
+        if (!fnMatch) continue;
+
+        const fnBody = fnMatch[1];
+
+        // Detect useState calls: const [x, setX] = useState(...)
+        const useStateRegex = /const\s+\[(\w+)(?:,\s*(\w+))?\]\s*=\s*useState\(/g;
+        const states: Array<{name: string; setter?: string; hookIndex: number}> = [];
+        let hookIndex = 0;
+        let stateMatch: RegExpExecArray | null;
+
+        while ((stateMatch = useStateRegex.exec(fnBody)) !== null) {
+            states.push({
+                name: stateMatch[1],
+                setter: stateMatch[2] || undefined,
+                hookIndex,
+            });
+            hookIndex++;
+        }
+
+        if (states.length === 0) continue;
+
+        // Build state definition properties
+        const stateProperties = states.map(s => {
+            const meta: any[] = [{name: 'hookID', value: String(s.hookIndex)}];
+            if (s.setter) meta.push({name: 'setter', value: s.setter});
+            return {name: s.name, type: 'unknown', description: '', meta};
+        });
+
+        const stateDef = {
+            title: 'State',
+            properties: stateProperties,
+            meta: [{name: 'type', value: 'state'}],
+        };
+
+        // Parse existing uniform, add state definition, re-serialize
+        try {
+            const existingJson = uniformMatch[2]
+                .replace(/\\\\/g, '\\')
+                .replace(/\\'/g, "'");
+            const uniform = JSON.parse(existingJson);
+            uniform.definitions.push(stateDef);
+            const newJson = JSON.stringify(uniform).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+            result = result.replace(
+                uniformMatch[0],
+                `${componentName}.${propertyName} = JSON.parse('${newJson}');`,
+            );
+        } catch {
+            // Failed to parse/modify uniform — skip
+        }
+    }
+
+    return result;
 }
 
 // ─── Component detection (unchanged) ────────────────────────────────────────

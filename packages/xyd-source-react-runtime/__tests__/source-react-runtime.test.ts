@@ -58,6 +58,10 @@ const tests: {
         name: '-3.vite-app.iframe-multi-entry',
         description: 'vite app: multi-entry with iframe loading separate React app',
     },
+    {
+        name: '9.vite-lib.hooks-and-context',
+        description: 'vite lib: useState state extraction and createContext type detection',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {
