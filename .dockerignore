@@ -1,5 +1,6 @@
 **/node_modules
-**/.xyd
+**/.xyd/build
+**/.xyd/cache
 .git
 *.log
 .DS_Store
