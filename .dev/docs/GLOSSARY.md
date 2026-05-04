@@ -94,6 +94,15 @@ HMR (Hot Module Replacement)
 
 ## I
 
+Infer
+: The `infer(reference, instance)` function from `@xyd-js/uniform/inspection`. Wraps a static Reference with a decoupled ValueMap, enabling reactive proxies via `play()`, value snapshots, and reset.
+
+Inspection
+: The reactive Proxy layer over uniform References (`@xyd-js/uniform/inspection`). Provides `infer()`, `play()`, plugins with hooks (get/set/call), `subscribe()`, `snapshot()`, `reset()`, and `uniform(proxy).json()`. Enables interactive playgrounds and live API explorers.
+
+InspectionHooks
+: The hook interface registered by plugins via `context.registerHooks()`. Supports `get(property, value)`, `set(property, oldValue, newValue)`, and `call(method, args, returnValue)`.
+
 Integrations
 : Third-party service configurations in `docs.json` including analytics (LiveSession), search (Orama, Algolia), support (Chatwoot, Intercom, LiveChat), and diagrams (Mermaid, Graphviz).
 
@@ -209,7 +218,13 @@ UI
 Uniform
 : The `@xyd-js/uniform` package. A normalized, language-agnostic data format for API documentation. The central abstraction layer between API spec parsers (OpenAPI, GraphQL, TypeDoc) and UI rendering (Atlas).
 
+Uniform Inspection
+: The `@xyd-js/uniform/inspection` entry. A reactive Proxy layer that wraps uniform References with a decoupled ValueMap. Provides `infer()`, `play()`, plugins, hooks, snapshots, and `json()` output for interactive documentation use cases.
+
 ## V
+
+ValueMap
+: Internal data structure in Uniform Inspection that stores runtime property values separately from the frozen Reference. Uses a flat `Map<string, any>` with dot-path keys for nested properties. Supports `snapshot()` (frozen copy) and `reset()` (restore initial values).
 
 Variant
 : A `DefinitionVariant` in the Uniform format representing alternative representations of a definition (e.g., different HTTP status codes or content types). Managed by `VariantContext` in the UI.

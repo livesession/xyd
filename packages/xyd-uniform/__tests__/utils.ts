@@ -8,12 +8,28 @@ import {pluginJsonView} from "../src/plugins/pluginJsonView";
 import uniform from "../src/index";
 import type {Reference} from "../src/types";
 
-function fixturePath(name: string) {
+export function fixturePath(name: string) {
     return path.join(__dirname, "../__fixtures__", name);
 }
 
-function readFixture(name: string) {
+export function readFixture(name: string) {
     return JSON.parse(fs.readFileSync(fixturePath(name), "utf8"));
+}
+
+export function loadReference(fixtureName: string): Reference {
+    return readFixture(`${fixtureName}/reference.json`);
+}
+
+export function loadInstance(fixtureName: string): any {
+    return readFixture(`${fixtureName}/instance.json`);
+}
+
+export function fixture(strings: TemplateStringsArray, ...values: any[]): { reference: Reference; instance: any } {
+    const name = String.raw(strings, ...values);
+    return {
+        reference: loadReference(name),
+        instance: loadInstance(name),
+    };
 }
 
 export async function testConverters(fixtureName: string) {

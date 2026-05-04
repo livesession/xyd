@@ -1,0 +1,13 @@
+{
+  "title": "Calculator",
+  "canonical": "calculator",
+  "description": "",
+  "examples": {"groups": []},
+  "definitions": [{
+    "title": "Properties",
+    "properties": [
+      {"name": "value", "type": "number", "description": ""},
+      {"name": "add", "type": "$$function", "description": ""}
+    ]
+  }]
+}

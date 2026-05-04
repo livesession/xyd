@@ -1,0 +1,13 @@
+{
+  "title": "Config",
+  "canonical": "config",
+  "description": "",
+  "examples": {"groups": []},
+  "definitions": [{
+    "title": "Properties",
+    "properties": [
+      {"name": "host", "type": "string", "description": ""},
+      {"name": "port", "type": "number", "description": ""}
+    ]
+  }]
+}

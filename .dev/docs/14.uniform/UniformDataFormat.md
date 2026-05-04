@@ -62,6 +62,7 @@ The format builds on three levels: `Reference` contains `Definition` objects, wh
 | `$$xor` | OpenAPI `oneOf` | `properties[]` contains alternatives | Discriminated unions requiring exactly one |
 | `$$array` | OpenAPI `type: array` | `ofProperty` contains item type | Collections and lists |
 | `$$enum` | OpenAPI `enum` | `properties[]` for values | Enumerated constants |
+| `$$function` | TypeDoc reflection | `properties[]` for parameters, `ofProperty` for return type | Function/callback signatures |
 
 ## Property Metadata System
 
@@ -114,6 +115,29 @@ Contains TypeScript source information like file paths and symbol IDs.
 | `$DefinitionBody` | Renders selected variant properties |
 | `ApiRefProperties` | Recursive property tree renderer |
 | `SubProperties` | Nested properties with expand/collapse |
+
+## Function Property Type (`$$function`)
+
+The `$$function` type represents function/callback properties. It reuses the same `properties[]` and `ofProperty` fields as other special types:
+
+- `properties[]` — function **parameters** (each as a `DefinitionProperty` with name, type, description)
+- `ofProperty` — **return type** (same pattern as `$$array`)
+
+Example: `onCallback(arg1: boolean, job: Job): User` produces:
+
+```json
+{
+  "name": "onCallback",
+  "type": "$$function",
+  "properties": [
+    { "name": "arg1", "type": "boolean" },
+    { "name": "job", "type": "Job", "symbolDef": { "id": "..." } }
+  ],
+  "ofProperty": { "name": "", "type": "User", "symbolDef": { "id": "..." } }
+}
+```
+
+Void return types produce `ofProperty: { type: "void" }`. Nested callbacks (function parameters that are themselves functions) produce nested `$$function` types.
 
 ## TypeDoc Integration via MiniUniform
 
