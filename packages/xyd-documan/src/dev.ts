@@ -122,6 +122,19 @@ export async function dev(options?: DevOptions) {
         const newChecksum = calculateFolderChecksum(getHostPath());
         storeChecksum(newChecksum);
     }
+
+    // If setup was skipped but the active theme is missing, re-run setup
+    if (skip && process.env.XYD_CLI) {
+        const themeName = respPluginDocs.settings?.theme?.name || "poetry";
+        const themePkg = `@xyd-js/theme-${themeName}`;
+        const hostPath = getHostPath();
+        if (!fs.existsSync(path.join(hostPath, "node_modules", themePkg))) {
+            await postWorkspaceSetup(respPluginDocs.settings);
+            const newChecksum = calculateFolderChecksum(getHostPath());
+            storeChecksum(newChecksum);
+        }
+    }
+
     const postInstallVitePlugins = commonPostInstallVitePlugins(respPluginDocs, resolvedPlugins)
 
     // ⚠️  
@@ -157,15 +170,9 @@ export async function dev(options?: DevOptions) {
                 // "@pluganalytics/provider-livesession"
             ];
         } else {
+            const themeName = respPluginDocs.settings?.theme?.name || "poetry";
             USE_CONTEXT_ISSUE_PACKAGES = [
-                "@xyd-js/theme-cosmo",
-                "@xyd-js/theme-gusto",
-                "@xyd-js/theme-opener",
-                "@xyd-js/theme-picasso",
-                "@xyd-js/theme-poetry",
-                "@xyd-js/theme-solar",
-                // TODO: optimize plugin deps only if loaded 
-                // "@pluganalytics/provider-livesession"
+                `@xyd-js/theme-${themeName}`,
             ]
         }
     }

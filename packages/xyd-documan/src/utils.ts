@@ -40,6 +40,13 @@ import pluginIntercomVersion from "../../xyd-plugin-intercom/package.json";
 import pluginLivechatVersion from "../../xyd-plugin-livechat/package.json";
 import pluginExtraDiagram from "../../xyd-plugin-extra-diagram/package.json";
 
+import themePoetryPkg from "../../xyd-theme-poetry/package.json";
+import themeCosmoPkg from "../../xyd-theme-cosmo/package.json";
+import themeOpenerPkg from "../../xyd-theme-opener/package.json";
+import themePicassoPkg from "../../xyd-theme-picasso/package.json";
+import themeGustoPkg from "../../xyd-theme-gusto/package.json";
+import themeSolarPkg from "../../xyd-theme-solar/package.json";
+
 import {
     BUILD_FOLDER_PATH,
     CACHE_FOLDER_PATH,
@@ -250,6 +257,36 @@ const resolveComponentDist = (dist: string): { resolvedDist: string; exists: boo
     // Not a local path (e.g., package name like "@xyd-js/plugin-xspec/XSpecPre")
     return { resolvedDist: dist, exists: true };
 };
+
+const BUILT_IN_THEME_VERSIONS: Record<string, string> = {
+    "@xyd-js/theme-poetry": themePoetryPkg.version,
+    "@xyd-js/theme-cosmo": themeCosmoPkg.version,
+    "@xyd-js/theme-opener": themeOpenerPkg.version,
+    "@xyd-js/theme-picasso": themePicassoPkg.version,
+    "@xyd-js/theme-gusto": themeGustoPkg.version,
+    "@xyd-js/theme-solar": themeSolarPkg.version,
+};
+
+function getThemeDependency(settings: Settings): Record<string, string> {
+    const themeName = settings.theme?.name || "poetry";
+    const packageName = `@xyd-js/theme-${themeName}`;
+
+    // Built-in themes: use known version
+    const builtInVersion = BUILT_IN_THEME_VERSIONS[packageName];
+    if (builtInVersion) {
+        return { [packageName]: builtInVersion };
+    }
+
+    // Custom theme: check user's package.json, fall back to latest
+    const cwdPkgPath = path.join(process.cwd(), "package.json");
+    if (fs.existsSync(cwdPkgPath)) {
+        const userPkg = JSON.parse(fs.readFileSync(cwdPkgPath, "utf-8"));
+        const ver = userPkg.dependencies?.[packageName] || userPkg.devDependencies?.[packageName];
+        if (ver) return { [packageName]: ver };
+    }
+
+    return { [packageName]: "latest" };
+}
 
 const EXTERNAL_XYD_PLUGINS = {
     "@xyd-js/plugin-supademo": pluginDemoVersion.version,
@@ -1587,6 +1624,13 @@ export async function postWorkspaceSetup(settings: Settings) {
                 };
             }
         }
+
+        // Theme — install only the active theme
+        const themeDeps = getThemeDependency(settings);
+        packageJson.dependencies = {
+            ...packageJson.dependencies,
+            ...themeDeps,
+        };
 
         fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
