@@ -4,7 +4,7 @@
     "canonical": "@xyd-js/sources/components/Text",
     "description": "A flexible text component that supports different sizes, styles, and weights.\n",
     "context": {
-      "symbolId": "186",
+      "symbolId": "445",
       "symbolName": "Text",
       "symbolKind": 64,
       "packageName": "@xyd-js/sources",
@@ -40,7 +40,7 @@
             "type": "TextFontSizes",
             "description": "Font size of the text\n",
             "symbolDef": {
-              "id": "189"
+              "id": "448"
             },
             "meta": []
           },
@@ -49,7 +49,7 @@
             "type": "TextKindTypes",
             "description": "Visual style/kind of the text\n",
             "symbolDef": {
-              "id": "190"
+              "id": "449"
             },
             "meta": []
           },
@@ -58,7 +58,7 @@
             "type": "TextFontWeights",
             "description": "Font weight of the text\n",
             "symbolDef": {
-              "id": "191"
+              "id": "450"
             },
             "meta": []
           },
@@ -82,9 +82,14 @@
           },
           {
             "name": "onClick",
-            "type": "",
+            "type": "$$function",
             "description": "Click event handler\n",
             "properties": [],
+            "ofProperty": {
+              "name": "",
+              "type": "void",
+              "description": ""
+            },
             "meta": []
           }
         ],

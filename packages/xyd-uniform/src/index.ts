@@ -90,6 +90,16 @@ export default function uniform<T extends UniformPlugin<any>[]>(
     return response;
 }
 
+// Attach inspection API to the uniform function
+export {infer as _infer} from "./inspection/Infer";
+export {uniform as _uniformHelper} from "./inspection/uniform";
+
+import {infer} from "./inspection/Infer";
+import {uniform as uniformHelper} from "./inspection/uniform";
+
+uniform.infer = infer;
+uniform.inspect = uniformHelper;
+
 // Example usage
 // const examplePlugin: UniformPlugin<{ value: boolean }> = (cb) => {
 //     return (ref: Reference) => {

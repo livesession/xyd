@@ -1323,7 +1323,61 @@ function someTypeToUniform(
             return (someType.value || "").toString() // e.g `123` or `true`
         }
 
-        case "reflection": { // inline like {something: true}
+        case "reflection": { // inline like {something: true} or function signatures
+            // Handle function signatures (reflections with signatures[], not children[])
+            if (someType.declaration?.signatures?.length) {
+                const signature = someType.declaration.signatures[0]
+
+                const paramProperties: DefinitionProperty[] = []
+                for (const param of signature.parameters || []) {
+                    const uniformType = someTypeToUniform.call(this, param.type)
+                    let someTypeProps = {}
+                    if (typeof uniformType === "object") {
+                        delete uniformType.ofType
+                        someTypeProps = uniformType
+                    }
+
+                    let description = ""
+                    if (param.comment) {
+                        description = commentToUniformDescription(param.comment)
+                    }
+
+                    paramProperties.push({
+                        name: param.name,
+                        type: typeof uniformType === "string" ? uniformType : "",
+                        description,
+                        ...someTypeProps,
+                    })
+                }
+
+                let ofProperty: DefinitionProperty | undefined
+                if (signature.type) {
+                    const returnType = someTypeToUniform.call(this, signature.type)
+                    if (typeof returnType === "string") {
+                        ofProperty = {
+                            name: "",
+                            type: returnType,
+                            description: "",
+                        }
+                    } else {
+                        ofProperty = {
+                            name: "",
+                            type: returnType.type || "",
+                            description: "",
+                            ...returnType,
+                        }
+                    }
+                }
+
+                return {
+                    type: DEFINED_DEFINITION_PROPERTY_TYPE.FUNCTION,
+                    properties: paramProperties,
+                    ofProperty,
+                    meta,
+                }
+            }
+
+            // Handle object-like reflections (children/indexSignatures)
             const properties = uniformProperties.call(this, someType.declaration)
 
             let type = ""
@@ -1616,6 +1670,7 @@ function uniformProperties(
             ...someTypeProps,
             meta
         }
+
 
         if (prop.comment) {
             const examples = commentToUniformExamples(prop.comment)

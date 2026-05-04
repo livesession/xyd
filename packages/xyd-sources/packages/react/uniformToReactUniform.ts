@@ -122,6 +122,11 @@ function definitionReactPropsPassThrough(
     }
 )  {
     for (const property of defProperties) {
+        if (property.type === "$$function") {
+            reactDef.properties.push(property)
+            continue
+        }
+
         if (property.type === DEFINED_DEFINITION_PROPERTY_TYPE.UNION && !property?.symbolDef?.id) {
             definitionReactPropsPassThrough(
                 refBySymbolId,

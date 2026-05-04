@@ -14,7 +14,6 @@ export interface Reference<
     definitions: Definition<M, VM>[] // TODO: in the future from generic?
     examples: ExampleRoot
 
-
     category?: ReferenceCategory; // TODO: do we need that?
 
     type?: ReferenceType; // TODO: do we need that?
@@ -111,6 +110,8 @@ export enum DEFINED_DEFINITION_PROPERTY_TYPE {
     ARRAY = "$$array",
 
     ENUM = "$$enum",
+
+    FUNCTION = "$$function",
 
     // TYPE = "$$type", TODO: good idea?
 }

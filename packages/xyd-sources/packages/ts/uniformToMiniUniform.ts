@@ -147,7 +147,7 @@ function resolveProperty(
         return property;
     }
 
-    if (property?.properties?.length) {
+    if (property?.properties?.length && property.type !== DEFINED_DEFINITION_PROPERTY_TYPE.FUNCTION) {
         return property
     }
 
@@ -176,7 +176,26 @@ function resolveProperty(
         return property
     }
 
-    // 2. handle symbolDef.id references
+    // 2. handle function types
+    if (property.type === DEFINED_DEFINITION_PROPERTY_TYPE.FUNCTION) {
+        if (property.ofProperty) {
+            resolvedProperty.ofProperty = resolveProperty(
+                refBySymbolId, property.ofProperty,
+                {...options, depth: depth + 1, visited: new Set(visited)}
+            )
+        }
+        const resolvedParams: DefinitionProperty[] = []
+        for (const param of property.properties || []) {
+            resolvedParams.push(resolveProperty(
+                refBySymbolId, param,
+                {...options, depth: depth + 1, visited: new Set(visited)}
+            ))
+        }
+        resolvedProperty.properties = resolvedParams
+        return resolvedProperty
+    }
+
+    // 3. handle symbolDef.id references
     const symbolId = property?.symbolDef?.id;
     if (symbolId) {
         // 3. if symbolId is a string, resolve the reference

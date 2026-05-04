@@ -1,0 +1,12 @@
+{
+  "title": "Counter",
+  "canonical": "counter",
+  "description": "",
+  "examples": {"groups": []},
+  "definitions": [{
+    "title": "Properties",
+    "properties": [
+      {"name": "count", "type": "number", "description": ""}
+    ]
+  }]
+}

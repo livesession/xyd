@@ -1,0 +1,12 @@
+{
+  "title": "AppConfig",
+  "canonical": "app-config",
+  "description": "",
+  "examples": {"groups": []},
+  "definitions": [{
+    "title": "Properties",
+    "properties": [
+      {"name": "db", "type": "object", "description": ""}
+    ]
+  }]
+}
