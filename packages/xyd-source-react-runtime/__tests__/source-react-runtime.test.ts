@@ -66,6 +66,10 @@ const tests: {
         name: '10.vite-lib.namespaced-context',
         description: 'vite lib: createContext inside dotted namespaces (namespace a.b { Context })',
     },
+    {
+        name: '11.vite-lib.date-types',
+        description: 'vite lib: Date type preserved (typia escaped → native Date)',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {

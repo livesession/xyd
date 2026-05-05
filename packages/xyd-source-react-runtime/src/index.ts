@@ -843,6 +843,11 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
         return {type: `Set<${valueType.type}>`};
     }
 
+    // Escaped: types with toJSON() (e.g. Date → string). Use the original type.
+    if (schema.escaped?.original) {
+        return resolveMetadataType(schema.escaped.original, components, typeResolver);
+    }
+
     // Tuples
     if (schema.tuples?.length > 0) {
         return {type: 'tuple'};
