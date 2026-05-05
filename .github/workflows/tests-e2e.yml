@@ -118,5 +118,4 @@ jobs:
     - name: 🧪 Run E2E tests
       run: pnpm run test:e2e
       env:
-        npm_config_registry: http://localhost:4873
-        BUN_CONFIG_REGISTRY: http://localhost:4873
+        XYD_E2E_VERDACCIO_URL: http://localhost:4873

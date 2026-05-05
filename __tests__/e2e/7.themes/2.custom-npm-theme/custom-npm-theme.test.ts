@@ -4,9 +4,8 @@ import path from 'path';
 
 import { createXydBuildServer, XydServer } from '../../utils/xyd-server';
 
-// Use the Verdaccio registry from the environment (Docker entrypoint sets this)
-// or fall back to localhost:4873 for local testing with Verdaccio running
-const REGISTRY = process.env.npm_config_registry || 'http://localhost:4873';
+// Verdaccio URL: Docker entrypoint sets npm_config_registry, CI sets XYD_E2E_VERDACCIO_URL
+const REGISTRY = process.env.XYD_E2E_VERDACCIO_URL || process.env.npm_config_registry || 'http://localhost:4873';
 
 test.describe('Custom npm Theme', () => {
     let server: XydServer;
