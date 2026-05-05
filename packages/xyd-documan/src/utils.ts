@@ -267,22 +267,28 @@ const BUILT_IN_THEME_VERSIONS: Record<string, string> = {
     "@xyd-js/theme-solar": themeSolarPkg.version,
 };
 
+const NPM_THEME_PREFIX = "npm:";
+
 function getThemeDependency(settings: Settings): Record<string, string> {
     const themeName = settings.theme?.name || "poetry";
-    const packageName = `@xyd-js/theme-${themeName}`;
 
-    // Built-in themes: use known version
+    // External theme: "npm:@mycompany/theme" or "npm:my-company-xyd-theme"
+    if (themeName.startsWith(NPM_THEME_PREFIX)) {
+        const packageName = themeName.slice(NPM_THEME_PREFIX.length);
+        const cwdPkgPath = path.join(process.cwd(), "package.json");
+        if (fs.existsSync(cwdPkgPath)) {
+            const userPkg = JSON.parse(fs.readFileSync(cwdPkgPath, "utf-8"));
+            const ver = userPkg.dependencies?.[packageName] || userPkg.devDependencies?.[packageName];
+            if (ver) return { [packageName]: ver };
+        }
+        return { [packageName]: "latest" };
+    }
+
+    // Built-in theme: short name (e.g. "poetry", "cosmo")
+    const packageName = `@xyd-js/theme-${themeName}`;
     const builtInVersion = BUILT_IN_THEME_VERSIONS[packageName];
     if (builtInVersion) {
         return { [packageName]: builtInVersion };
-    }
-
-    // Custom theme: check user's package.json, fall back to latest
-    const cwdPkgPath = path.join(process.cwd(), "package.json");
-    if (fs.existsSync(cwdPkgPath)) {
-        const userPkg = JSON.parse(fs.readFileSync(cwdPkgPath, "utf-8"));
-        const ver = userPkg.dependencies?.[packageName] || userPkg.devDependencies?.[packageName];
-        if (ver) return { [packageName]: ver };
     }
 
     return { [packageName]: "latest" };

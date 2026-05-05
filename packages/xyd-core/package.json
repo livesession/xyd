@@ -1,6 +1,6 @@
 {
   "name": "@xyd-js/core",
-  "version": "0.1.0-build.182",
+  "version": "0.0.0-docker-1778001606-20260505172016",
   "description": "",
   "type": "module",
   "main": "dist/index.js",
