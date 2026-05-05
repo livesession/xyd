@@ -40,6 +40,19 @@ export async function build() {
         const newChecksum = calculateFolderChecksum(getHostPath());
         storeChecksum(newChecksum);
     }
+
+    // If setup was skipped but the active theme is missing, re-run setup
+    if (skip && process.env.XYD_CLI) {
+        const themeName = respPluginDocs.settings?.theme?.name || "poetry";
+        const themePkg = `@xyd-js/theme-${themeName}`;
+        const hostPath = getHostPath();
+        if (!fs.existsSync(path.join(hostPath, "node_modules", themePkg))) {
+            await postWorkspaceSetup(respPluginDocs.settings);
+            const newChecksum = calculateFolderChecksum(getHostPath());
+            storeChecksum(newChecksum);
+        }
+    }
+
     const postInstallVitePlugins = commonPostInstallVitePlugins(respPluginDocs, resolvedPlugins)
 
     {

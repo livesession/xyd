@@ -1,0 +1,7 @@
+{
+    "name": "custom-advanced-theme-test-site",
+    "private": true,
+    "dependencies": {
+        "xyd-theme-custom-advanced-test": "1.0.0"
+    }
+}

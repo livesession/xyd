@@ -213,7 +213,11 @@ export function vitePluginThemeCSS() {
                     const themeName = preinstall.settings.theme?.name || DEFAULT_THEME
                     let themePath = ""
 
-                    if (process.env.XYD_CLI) {
+                    if (themeName.startsWith("npm:")) {
+                        // External theme: resolve from node_modules by package name
+                        const packageName = themeName.slice(4)
+                        themePath = path.join(getHostPath(), `node_modules/${packageName}/dist`)
+                    } else if (process.env.XYD_CLI) {
                         themePath = path.join(getHostPath(), `node_modules/@xyd-js/theme-${themeName}/dist`)
                     } else {
                         themePath = path.join(path.resolve(__dirname, "../../"), `xyd-theme-${themeName}/dist`)
@@ -285,7 +289,10 @@ export function vitePluginTheme() {
                     const themeName = preinstall.settings.theme?.name || DEFAULT_THEME
                     let themePath = ""
 
-                    if (process.env.XYD_CLI) {
+                    if (themeName.startsWith("npm:")) {
+                        // External theme: "npm:@mycompany/theme" → import from "@mycompany/theme"
+                        themePath = themeName.slice(4)
+                    } else if (process.env.XYD_CLI) {
                         themePath = `@xyd-js/theme-${themeName}`
                     } else {
                         themePath = path.join(path.resolve(__dirname, "../../"), `xyd-theme-${themeName}/src`)

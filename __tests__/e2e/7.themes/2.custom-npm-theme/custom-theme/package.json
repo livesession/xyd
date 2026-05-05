@@ -1,0 +1,12 @@
+{
+    "name": "xyd-theme-custom-test",
+    "version": "1.0.0",
+    "type": "module",
+    "main": "dist/index.js",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js"
+        },
+        "./index.css": "./dist/index.css"
+    }
+}

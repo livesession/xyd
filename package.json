@@ -27,7 +27,8 @@
     "test:e2e:local": "npm_config_registry=http://localhost:4873 playwright test",
     "test:node-support": "playwright test --config=playwright.node-support.config.ts",
     "test:node-support:local": "npm_config_registry=http://localhost:4873 playwright test --config=playwright.node-support.config.ts",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:docker": "./__tests__/docker/run-e2e.sh"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.3",

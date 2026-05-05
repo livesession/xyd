@@ -74,3 +74,9 @@ __tests__/output
 # Local Netlify folder
 .netlify
 .research/
+playwright-report
+test-results
+
+# claude
+claude.txt
+

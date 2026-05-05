@@ -54,9 +54,7 @@
 - @.dev/docs/9.host/SsrAndHydration.md
 
 ### 10. Themes
-- @.dev/docs/10.themes/BuiltInThemes.md
-- @.dev/docs/10.themes/ThemeArchitecture.md
-- @.dev/docs/10.themes/ThemeSystem.md
+- @.dev/docs/10.themes/1.THEMES.md
 
 ### 11. Writer Engine
 - @.dev/docs/11.writer-engine/ContentProcessing.md

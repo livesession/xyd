@@ -1,0 +1,10 @@
+{
+    "theme": {
+        "name": "npm:xyd-theme-custom-test"
+    },
+    "navigation": {
+        "sidebar": [
+            "overview"
+        ]
+    }
+}
