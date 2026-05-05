@@ -53,7 +53,7 @@ export function xydSourceReactRuntime(options?: XydSourceReactRuntimeOptions): P
     };
 }
 
-async function buildTypiaSchemas(tsconfigPath: string): Promise<Map<string, string>> {
+async function buildTypiaSchemas(tsconfigPath: string): Promise<any> {
     const result = new Map<string, string>();
 
     let ts: typeof import('typescript');
@@ -87,6 +87,7 @@ async function buildTypiaSchemas(tsconfigPath: string): Promise<Map<string, stri
         }
     }
 
+
     if (componentsByFile.size === 0) return result;
 
     // Step 2: Create modified source files with typia.reflect.schemas calls
@@ -118,11 +119,12 @@ async function buildTypiaSchemas(tsconfigPath: string): Promise<Map<string, stri
         const resolvedName = path.resolve(fileName);
         const existingOutput = result.get(resolvedName);
 
-        const schemaObjPattern = (name: string) => new RegExp(`${name}\\.__xydSchema\\s*=\\s*\\{`);
+        const schemaObjPattern = (name: string) => new RegExp(`${name.replace(/\./g, '\\.')}\\.__xydSchema\\s*=\\s*\\{`);
         const missingComponents = existingOutput
             ? components.filter(c => !schemaObjPattern(c.name).test(existingOutput))
             : components;
 
+        if (missingComponents.length > 0) {
         if (missingComponents.length === 0) continue;
 
         const original = ts.sys.readFile(fileName)!;
@@ -140,7 +142,7 @@ async function buildTypiaSchemas(tsconfigPath: string): Promise<Map<string, stri
                 const singleOutput = singleResult.get(resolvedName);
 
                 if (singleOutput) {
-                    const schemaMatch = singleOutput.match(new RegExp(`${comp.name}\\.__xydSchema\\s*=\\s*\\{[\\s\\S]*?\\n\\};`));
+                    const schemaMatch = singleOutput.match(new RegExp(`${comp.name.replace(/\./g, '\\.')}\\.__xydSchema\\s*=\\s*\\{[\\s\\S]*?\\n\\};`));
                     if (schemaMatch) {
                         if (!mergedOutput) {
                             mergedOutput = singleOutput;
@@ -357,32 +359,69 @@ function fallbackShallowSchema(
 
     let propsType: import('typescript').Type | undefined;
 
-    ts.forEachChild(sourceFile, (node) => {
-        if (propsType) return;
-        if (ts.isFunctionDeclaration(node) && node.name?.text === comp.name) {
-            const param = node.parameters[0];
-            if (param?.type) propsType = checker.getTypeAtLocation(param.type);
-        }
-        if (ts.isVariableStatement(node)) {
-            for (const decl of node.declarationList.declarations) {
-                if (!ts.isIdentifier(decl.name) || decl.name.text !== comp.name) continue;
-                if (decl.initializer && (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer))) {
-                    const param = decl.initializer.parameters[0];
-                    if (param?.type) propsType = checker.getTypeAtLocation(param.type);
-                }
-                // createContext
-                if (decl.initializer && ts.isCallExpression(decl.initializer)) {
-                    const callee = decl.initializer.expression;
-                    const isCreateContext =
-                        (ts.isIdentifier(callee) && callee.text === 'createContext') ||
-                        (ts.isPropertyAccessExpression(callee) && callee.name.text === 'createContext');
-                    if (isCreateContext && decl.initializer.typeArguments?.[0]) {
-                        propsType = checker.getTypeAtLocation(decl.initializer.typeArguments[0]);
+    // For namespaced names like "composer.chat.Context", split and walk into namespaces
+    const nameParts = comp.name.split('.');
+    const leafName = nameParts[nameParts.length - 1];
+    const nsParts = nameParts.slice(0, -1); // namespace path to walk into
+
+    function findInBody(body: import('typescript').Node) {
+        ts.forEachChild(body, (node) => {
+            if (propsType) return;
+            if (ts.isFunctionDeclaration(node) && node.name?.text === leafName) {
+                const param = node.parameters[0];
+                if (param?.type) propsType = checker.getTypeAtLocation(param.type);
+            }
+            if (ts.isVariableStatement(node)) {
+                for (const decl of node.declarationList.declarations) {
+                    if (!ts.isIdentifier(decl.name) || decl.name.text !== leafName) continue;
+                    if (decl.initializer && (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer))) {
+                        const param = decl.initializer.parameters[0];
+                        if (param?.type) propsType = checker.getTypeAtLocation(param.type);
+                    }
+                    // createContext
+                    if (decl.initializer && ts.isCallExpression(decl.initializer)) {
+                        const callee = decl.initializer.expression;
+                        const isCreateContext =
+                            (ts.isIdentifier(callee) && callee.text === 'createContext') ||
+                            (ts.isPropertyAccessExpression(callee) && callee.name.text === 'createContext');
+                        if (isCreateContext && decl.initializer.typeArguments?.[0]) {
+                            propsType = checker.getTypeAtLocation(decl.initializer.typeArguments[0]);
+                        }
                     }
                 }
             }
+        });
+    }
+
+    if (nsParts.length === 0) {
+        // Top-level — search directly
+        findInBody(sourceFile);
+    } else {
+        // Walk into nested namespaces
+        let currentBody: import('typescript').Node = sourceFile;
+        for (const nsPart of nsParts) {
+            let found = false;
+            ts.forEachChild(currentBody, (node) => {
+                if (found) return;
+                if (ts.isModuleDeclaration(node) && node.name.text === nsPart && node.body) {
+                    if (ts.isModuleBlock(node.body)) {
+                        currentBody = node.body;
+                        found = true;
+                    } else if (ts.isModuleDeclaration(node.body)) {
+                        currentBody = node.body;
+                        found = true;
+                    }
+                }
+            });
+            if (!found) break;
         }
-    });
+        // If we walked through nested ModuleDeclarations, unwrap to the final ModuleBlock
+        if (ts.isModuleDeclaration(currentBody) && (currentBody as any).body) {
+            const body = (currentBody as any).body;
+            if (ts.isModuleBlock(body)) currentBody = body;
+        }
+        findInBody(currentBody);
+    }
 
     if (!propsType) return null;
 
@@ -430,73 +469,258 @@ function fallbackShallowSchema(
 
 // ─── Metadata → Uniform conversion ───────────────────────────────────────────
 
-/**
- * Converts a typia reflect metadata schema to the xyd uniform reference format.
- */
-function metadataToUniformReference(componentName: string, collection: any, typeResolver?: (name: string) => any[] | null): any {
-    const ref: any = {
-        title: componentName,
-        canonical: '',
-        description: '',
-        definitions: [],
-        examples: {groups: []},
-    };
 
-    const rootSchema = collection.schemas?.[0];
-    if (!rootSchema) return ref;
 
-    const components = collection.components || {};
+// ─── Schema → Uniform in emitted code ───────────────────────────────────────
 
-    // Resolve the root props object
-    let propsObj: any = null;
-    if (rootSchema.objects?.length > 0) {
-        const objName = rootSchema.objects[0].name;
-        propsObj = components.objects?.find((o: any) => o.name === objName);
-    }
+// ─── Component detection (unchanged) ────────────────────────────────────────
 
-    if (!propsObj?.properties?.length) return ref;
-
-    const properties = propsObj.properties.map((prop: any) =>
-        metadataPropertyToUniform(prop, components, typeResolver),
+function detectComponents(
+    ts: typeof import('typescript'),
+    code: string,
+    fileName: string,
+): ComponentInfo[] {
+    const sourceFile = ts.createSourceFile(
+        fileName, code, ts.ScriptTarget.Latest, true,
+        fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
     );
 
-    ref.definitions.push({
-        title: 'Props',
-        properties,
-        meta: [{name: 'type', value: 'parameters'}],
+    const components: ComponentInfo[] = [];
+
+    function walkNode(node: import('typescript').Node, prefix: string = '') {
+        if (ts.isFunctionDeclaration(node) && node.name && (isExported(ts, node) || prefix)) {
+            const name = prefix ? `${prefix}.${node.name.text}` : node.name.text;
+            if (!isPascalCase(node.name.text)) return;
+            const propsType = extractPropsType(ts, node, sourceFile);
+            if (propsType) components.push({name, propsType, fileName});
+        }
+
+        if (ts.isVariableStatement(node) && (isExported(ts, node) || prefix)) {
+            for (const decl of node.declarationList.declarations) {
+                if (!ts.isIdentifier(decl.name)) continue;
+                const localName = decl.name.text;
+                const name = prefix ? `${prefix}.${localName}` : localName;
+                if (!isPascalCase(localName)) continue;
+                if (!decl.initializer) continue;
+
+                if (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer)) {
+                    const propsType = extractPropsTypeFromParams(ts, decl.initializer.parameters, sourceFile);
+                    if (propsType) components.push({name, propsType, fileName});
+                    continue;
+                }
+
+                const contextType = extractCreateContextType(ts, decl.initializer, sourceFile);
+                if (contextType) components.push({name, propsType: contextType, fileName});
+            }
+        }
+
+        // Walk into namespace/module declarations
+        if (ts.isModuleDeclaration(node) && node.body) {
+            const nsName = prefix ? `${prefix}.${node.name.text}` : node.name.text;
+            if (ts.isModuleBlock(node.body)) {
+                ts.forEachChild(node.body, (child) => walkNode(child, nsName));
+            } else if (ts.isModuleDeclaration(node.body)) {
+                // Nested dotted namespace: `namespace a.b { ... }`
+                walkNode(node.body, nsName);
+            }
+        }
+    }
+
+    ts.forEachChild(sourceFile, (node) => walkNode(node));
+
+    // Re-exported declarations
+    const foundNames = new Set(components.map(c => c.name));
+    const reExportedNames = new Set<string>();
+
+    ts.forEachChild(sourceFile, (node) => {
+        if (ts.isExportDeclaration(node) && node.exportClause && ts.isNamedExports(node.exportClause)) {
+            for (const spec of node.exportClause.elements) {
+                reExportedNames.add(spec.name.text);
+            }
+        }
     });
 
-    return ref;
+    ts.forEachChild(sourceFile, (node) => {
+        if (ts.isFunctionDeclaration(node) && node.name && !isExported(ts, node)) {
+            const name = node.name.text;
+            if (!isPascalCase(name) || foundNames.has(name) || !reExportedNames.has(name)) return;
+            const propsType = extractPropsType(ts, node, sourceFile);
+            if (propsType) {
+                components.push({name, propsType, fileName});
+                foundNames.add(name);
+            }
+        }
+
+        if (ts.isVariableStatement(node) && !isExported(ts, node)) {
+            for (const decl of node.declarationList.declarations) {
+                if (!ts.isIdentifier(decl.name)) continue;
+                const name = decl.name.text;
+                if (!isPascalCase(name) || foundNames.has(name) || !reExportedNames.has(name)) continue;
+                if (!decl.initializer) continue;
+
+                if (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer)) {
+                    const propsType = extractPropsTypeFromParams(ts, decl.initializer.parameters, sourceFile);
+                    if (propsType) {
+                        components.push({name, propsType, fileName});
+                        foundNames.add(name);
+                    }
+                    continue;
+                }
+
+                const contextType = extractCreateContextType(ts, decl.initializer, sourceFile);
+                if (contextType) {
+                    components.push({name, propsType: contextType, fileName});
+                    foundNames.add(name);
+                }
+            }
+        }
+    });
+
+    return components;
 }
 
-function metadataPropertyToUniform(prop: any, components: any, typeResolver?: (name: string) => any[] | null): any {
-    // Extract property name from key
-    const keyConst = prop.key?.constants?.[0]?.values?.[0]?.value;
-    const name = keyConst || '';
+function extractCreateContextType(
+    ts: typeof import('typescript'),
+    initializer: import('typescript').Expression,
+    sourceFile: import('typescript').SourceFile,
+): string | null {
+    if (!ts.isCallExpression(initializer)) return null;
 
-    const valueSchema = prop.value;
-    const resolved = resolveMetadataType(valueSchema, components, typeResolver);
+    const callee = initializer.expression;
+    const isCreateContext =
+        (ts.isIdentifier(callee) && callee.text === 'createContext') ||
+        (ts.isPropertyAccessExpression(callee) && callee.name.text === 'createContext');
 
-    const result: any = {
-        name,
-        type: resolved.type,
-        description: prop.description || '',
-        meta: [],
-    };
+    if (!isCreateContext) return null;
 
-    if (valueSchema.required && !valueSchema.optional) {
-        result.meta.push({name: 'required', value: 'true'});
+    const typeArgs = initializer.typeArguments;
+    if (!typeArgs || typeArgs.length === 0) return null;
+
+    const typeArg = typeArgs[0];
+
+    if (ts.isUnionTypeNode(typeArg)) {
+        const nonNullTypes = typeArg.types.filter(
+            (t) => !(ts.isLiteralTypeNode(t) && t.literal.kind === ts.SyntaxKind.NullKeyword) &&
+                   !(t.kind === ts.SyntaxKind.UndefinedKeyword),
+        );
+        if (nonNullTypes.length === 1) return nonNullTypes[0].getText(sourceFile);
+        return nonNullTypes.map(t => t.getText(sourceFile)).join(' | ');
     }
 
-    if (resolved.properties) {
-        result.properties = resolved.properties;
+    return typeArg.getText(sourceFile);
+}
+
+function isExported(ts: typeof import('typescript'), node: any): boolean {
+    return node.modifiers?.some((m: any) => m.kind === ts.SyntaxKind.ExportKeyword) ?? false;
+}
+
+function isPascalCase(name: string): boolean {
+    return /^[A-Z]/.test(name);
+}
+
+function extractPropsType(
+    ts: typeof import('typescript'),
+    node: import('typescript').FunctionDeclaration,
+    sourceFile: import('typescript').SourceFile,
+): string | null {
+    return extractPropsTypeFromParams(ts, node.parameters, sourceFile);
+}
+
+function extractPropsTypeFromParams(
+    ts: typeof import('typescript'),
+    parameters: import('typescript').NodeArray<import('typescript').ParameterDeclaration>,
+    sourceFile: import('typescript').SourceFile,
+): string | null {
+    if (parameters.length === 0) return null;
+    const firstParam = parameters[0];
+
+    if (firstParam.type && ts.isTypeReferenceNode(firstParam.type)) {
+        return firstParam.type.getText(sourceFile);
     }
-    if (resolved.ofProperty) {
-        result.ofProperty = resolved.ofProperty;
+
+    if (ts.isObjectBindingPattern(firstParam.name) && firstParam.type) {
+        return firstParam.type.getText(sourceFile);
+    }
+
+    return null;
+}
+}
+
+
+/**
+ * Scans emitted JS for useState patterns in components that have __xydUniform.
+ * Appends a state definition to the uniform reference.
+ *
+ * Detects: `const [name, setName] = useState(initialValue)`
+ * Generates: definition with meta type=state, hookID, setter name
+ */
+function injectStateDefinitions(code: string, propertyName: string): string {
+    // Find all components that have __xydUniform assignments
+    const uniformRegex = new RegExp(`(\\w+)\\.${propertyName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*=\\s*JSON\\.parse\\('([^']*)'\\)`, 'g');
+    let result = code;
+
+    let uniformMatch: RegExpExecArray | null;
+    while ((uniformMatch = uniformRegex.exec(code)) !== null) {
+        const componentName = uniformMatch[1];
+
+        // Find the function body for this component
+        const fnRegex = new RegExp(`function\\s+${componentName}\\s*\\([^)]*\\)\\s*\\{([\\s\\S]*?)\\n\\}`, 'g');
+        const fnMatch = fnRegex.exec(code);
+        if (!fnMatch) continue;
+
+        const fnBody = fnMatch[1];
+
+        // Detect useState calls: const [x, setX] = useState(...)
+        const useStateRegex = /const\s+\[(\w+)(?:,\s*(\w+))?\]\s*=\s*useState\(/g;
+        const states: Array<{name: string; setter?: string; hookIndex: number}> = [];
+        let hookIndex = 0;
+        let stateMatch: RegExpExecArray | null;
+
+        while ((stateMatch = useStateRegex.exec(fnBody)) !== null) {
+            states.push({
+                name: stateMatch[1],
+                setter: stateMatch[2] || undefined,
+                hookIndex,
+            });
+            hookIndex++;
+        }
+
+        if (states.length === 0) continue;
+
+        // Build state definition properties
+        const stateProperties = states.map(s => {
+            const meta: any[] = [{name: 'hookID', value: String(s.hookIndex)}];
+            if (s.setter) meta.push({name: 'setter', value: s.setter});
+            return {name: s.name, type: 'unknown', description: '', meta};
+        });
+
+        const stateDef = {
+            title: 'State',
+            properties: stateProperties,
+            meta: [{name: 'type', value: 'state'}],
+        };
+
+        // Parse existing uniform, add state definition, re-serialize
+        try {
+            const existingJson = uniformMatch[2]
+                .replace(/\\\\/g, '\\')
+                .replace(/\\'/g, "'");
+            const uniform = JSON.parse(existingJson);
+            uniform.definitions.push(stateDef);
+            const newJson = JSON.stringify(uniform).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+            result = result.replace(
+                uniformMatch[0],
+                `${componentName}.${propertyName} = JSON.parse('${newJson}');`,
+            );
+        } catch {
+            // Failed to parse/modify uniform — skip
+        }
     }
 
     return result;
 }
+
 
 function resolveMetadataType(schema: any, components: any, typeResolver?: (name: string) => any[] | null): any {
     if (!schema) return {type: 'unknown'};
@@ -637,10 +861,77 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
     return {type: 'unknown'};
 }
 
-// ─── Schema → Uniform in emitted code ───────────────────────────────────────
+
+function metadataPropertyToUniform(prop: any, components: any, typeResolver?: (name: string) => any[] | null): any {
+    // Extract property name from key
+    const keyConst = prop.key?.constants?.[0]?.values?.[0]?.value;
+    const name = keyConst || '';
+
+    const valueSchema = prop.value;
+    const resolved = resolveMetadataType(valueSchema, components, typeResolver);
+
+    const result: any = {
+        name,
+        type: resolved.type,
+        description: prop.description || '',
+        meta: [],
+    };
+
+    if (valueSchema.required && !valueSchema.optional) {
+        result.meta.push({name: 'required', value: 'true'});
+    }
+
+    if (resolved.properties) {
+        result.properties = resolved.properties;
+    }
+    if (resolved.ofProperty) {
+        result.ofProperty = resolved.ofProperty;
+    }
+
+    return result;
+}
+
+/**
+ * Converts a typia reflect metadata schema to the xyd uniform reference format.
+ */
+function metadataToUniformReference(componentName: string, collection: any, typeResolver?: (name: string) => any[] | null): any {
+    const ref: any = {
+        title: componentName,
+        canonical: '',
+        description: '',
+        definitions: [],
+        examples: {groups: []},
+    };
+
+    const rootSchema = collection.schemas?.[0];
+    if (!rootSchema) return ref;
+
+    const components = collection.components || {};
+
+    // Resolve the root props object
+    let propsObj: any = null;
+    if (rootSchema.objects?.length > 0) {
+        const objName = rootSchema.objects[0].name;
+        propsObj = components.objects?.find((o: any) => o.name === objName);
+    }
+
+    if (!propsObj?.properties?.length) return ref;
+
+    const properties = propsObj.properties.map((prop: any) =>
+        metadataPropertyToUniform(prop, components, typeResolver),
+    );
+
+    ref.definitions.push({
+        title: 'Props',
+        properties,
+        meta: [{name: 'type', value: 'parameters'}],
+    });
+
+    return ref;
+}
 
 function convertSchemaToUniform(code: string, propertyName: string = '__xydUniform', typeResolver?: (name: string) => any[] | null): {code: string; map: null} | null {
-    const schemaRegex = /(\w+)\.__xydSchema\s*=\s*(\{[\s\S]*?\n\});/g;
+    const schemaRegex = /([\w.]+)\.__xydSchema\s*=\s*(\{[\s\S]*?\n\});/g;
     let modified = code;
     let hasChanges = false;
 
@@ -665,8 +956,8 @@ function convertSchemaToUniform(code: string, propertyName: string = '__xydUnifo
     }
 
     // Strip any un-transformed typia calls that leaked through
-    modified = modified.replace(/^\s*\w+\.__xydSchema\s*=\s*typia\.reflect\.schemas.*;\s*$/gm, '');
-    modified = modified.replace(/^\s*\w+\.__xydSchema\s*=\s*typia\.json\.schemas.*;\s*$/gm, '');
+    modified = modified.replace(/^\s*[\w.]+\.__xydSchema\s*=\s*typia\.reflect\.schemas.*;\s*$/gm, '');
+    modified = modified.replace(/^\s*[\w.]+\.__xydSchema\s*=\s*typia\.json\.schemas.*;\s*$/gm, '');
     modified = modified.replace(/^import typia from ["']typia["'];?\s*\n?/gm, '');
 
     // Detect useState hooks in component functions and inject state definitions
@@ -676,234 +967,3 @@ function convertSchemaToUniform(code: string, propertyName: string = '__xydUnifo
     return {code: modified, map: null};
 }
 
-/**
- * Scans emitted JS for useState patterns in components that have __xydUniform.
- * Appends a state definition to the uniform reference.
- *
- * Detects: `const [name, setName] = useState(initialValue)`
- * Generates: definition with meta type=state, hookID, setter name
- */
-function injectStateDefinitions(code: string, propertyName: string): string {
-    // Find all components that have __xydUniform assignments
-    const uniformRegex = new RegExp(`(\\w+)\\.${propertyName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*=\\s*JSON\\.parse\\('([^']*)'\\)`, 'g');
-    let result = code;
-
-    let uniformMatch: RegExpExecArray | null;
-    while ((uniformMatch = uniformRegex.exec(code)) !== null) {
-        const componentName = uniformMatch[1];
-
-        // Find the function body for this component
-        const fnRegex = new RegExp(`function\\s+${componentName}\\s*\\([^)]*\\)\\s*\\{([\\s\\S]*?)\\n\\}`, 'g');
-        const fnMatch = fnRegex.exec(code);
-        if (!fnMatch) continue;
-
-        const fnBody = fnMatch[1];
-
-        // Detect useState calls: const [x, setX] = useState(...)
-        const useStateRegex = /const\s+\[(\w+)(?:,\s*(\w+))?\]\s*=\s*useState\(/g;
-        const states: Array<{name: string; setter?: string; hookIndex: number}> = [];
-        let hookIndex = 0;
-        let stateMatch: RegExpExecArray | null;
-
-        while ((stateMatch = useStateRegex.exec(fnBody)) !== null) {
-            states.push({
-                name: stateMatch[1],
-                setter: stateMatch[2] || undefined,
-                hookIndex,
-            });
-            hookIndex++;
-        }
-
-        if (states.length === 0) continue;
-
-        // Build state definition properties
-        const stateProperties = states.map(s => {
-            const meta: any[] = [{name: 'hookID', value: String(s.hookIndex)}];
-            if (s.setter) meta.push({name: 'setter', value: s.setter});
-            return {name: s.name, type: 'unknown', description: '', meta};
-        });
-
-        const stateDef = {
-            title: 'State',
-            properties: stateProperties,
-            meta: [{name: 'type', value: 'state'}],
-        };
-
-        // Parse existing uniform, add state definition, re-serialize
-        try {
-            const existingJson = uniformMatch[2]
-                .replace(/\\\\/g, '\\')
-                .replace(/\\'/g, "'");
-            const uniform = JSON.parse(existingJson);
-            uniform.definitions.push(stateDef);
-            const newJson = JSON.stringify(uniform).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-
-            result = result.replace(
-                uniformMatch[0],
-                `${componentName}.${propertyName} = JSON.parse('${newJson}');`,
-            );
-        } catch {
-            // Failed to parse/modify uniform — skip
-        }
-    }
-
-    return result;
-}
-
-// ─── Component detection (unchanged) ────────────────────────────────────────
-
-function detectComponents(
-    ts: typeof import('typescript'),
-    code: string,
-    fileName: string,
-): ComponentInfo[] {
-    const sourceFile = ts.createSourceFile(
-        fileName, code, ts.ScriptTarget.Latest, true,
-        fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
-    );
-
-    const components: ComponentInfo[] = [];
-
-    ts.forEachChild(sourceFile, (node) => {
-        if (ts.isFunctionDeclaration(node) && node.name && isExported(ts, node)) {
-            const name = node.name.text;
-            if (!isPascalCase(name)) return;
-            const propsType = extractPropsType(ts, node, sourceFile);
-            if (propsType) components.push({name, propsType, fileName});
-        }
-
-        if (ts.isVariableStatement(node) && isExported(ts, node)) {
-            for (const decl of node.declarationList.declarations) {
-                if (!ts.isIdentifier(decl.name)) continue;
-                const name = decl.name.text;
-                if (!isPascalCase(name)) continue;
-                if (!decl.initializer) continue;
-
-                if (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer)) {
-                    const propsType = extractPropsTypeFromParams(ts, decl.initializer.parameters, sourceFile);
-                    if (propsType) components.push({name, propsType, fileName});
-                    continue;
-                }
-
-                const contextType = extractCreateContextType(ts, decl.initializer, sourceFile);
-                if (contextType) components.push({name, propsType: contextType, fileName});
-            }
-        }
-    });
-
-    // Re-exported declarations
-    const foundNames = new Set(components.map(c => c.name));
-    const reExportedNames = new Set<string>();
-
-    ts.forEachChild(sourceFile, (node) => {
-        if (ts.isExportDeclaration(node) && node.exportClause && ts.isNamedExports(node.exportClause)) {
-            for (const spec of node.exportClause.elements) {
-                reExportedNames.add(spec.name.text);
-            }
-        }
-    });
-
-    ts.forEachChild(sourceFile, (node) => {
-        if (ts.isFunctionDeclaration(node) && node.name && !isExported(ts, node)) {
-            const name = node.name.text;
-            if (!isPascalCase(name) || foundNames.has(name) || !reExportedNames.has(name)) return;
-            const propsType = extractPropsType(ts, node, sourceFile);
-            if (propsType) {
-                components.push({name, propsType, fileName});
-                foundNames.add(name);
-            }
-        }
-
-        if (ts.isVariableStatement(node) && !isExported(ts, node)) {
-            for (const decl of node.declarationList.declarations) {
-                if (!ts.isIdentifier(decl.name)) continue;
-                const name = decl.name.text;
-                if (!isPascalCase(name) || foundNames.has(name) || !reExportedNames.has(name)) continue;
-                if (!decl.initializer) continue;
-
-                if (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer)) {
-                    const propsType = extractPropsTypeFromParams(ts, decl.initializer.parameters, sourceFile);
-                    if (propsType) {
-                        components.push({name, propsType, fileName});
-                        foundNames.add(name);
-                    }
-                    continue;
-                }
-
-                const contextType = extractCreateContextType(ts, decl.initializer, sourceFile);
-                if (contextType) {
-                    components.push({name, propsType: contextType, fileName});
-                    foundNames.add(name);
-                }
-            }
-        }
-    });
-
-    return components;
-}
-
-function extractCreateContextType(
-    ts: typeof import('typescript'),
-    initializer: import('typescript').Expression,
-    sourceFile: import('typescript').SourceFile,
-): string | null {
-    if (!ts.isCallExpression(initializer)) return null;
-
-    const callee = initializer.expression;
-    const isCreateContext =
-        (ts.isIdentifier(callee) && callee.text === 'createContext') ||
-        (ts.isPropertyAccessExpression(callee) && callee.name.text === 'createContext');
-
-    if (!isCreateContext) return null;
-
-    const typeArgs = initializer.typeArguments;
-    if (!typeArgs || typeArgs.length === 0) return null;
-
-    const typeArg = typeArgs[0];
-
-    if (ts.isUnionTypeNode(typeArg)) {
-        const nonNullTypes = typeArg.types.filter(
-            (t) => !(ts.isLiteralTypeNode(t) && t.literal.kind === ts.SyntaxKind.NullKeyword) &&
-                   !(t.kind === ts.SyntaxKind.UndefinedKeyword),
-        );
-        if (nonNullTypes.length === 1) return nonNullTypes[0].getText(sourceFile);
-        return nonNullTypes.map(t => t.getText(sourceFile)).join(' | ');
-    }
-
-    return typeArg.getText(sourceFile);
-}
-
-function isExported(ts: typeof import('typescript'), node: any): boolean {
-    return node.modifiers?.some((m: any) => m.kind === ts.SyntaxKind.ExportKeyword) ?? false;
-}
-
-function isPascalCase(name: string): boolean {
-    return /^[A-Z]/.test(name);
-}
-
-function extractPropsType(
-    ts: typeof import('typescript'),
-    node: import('typescript').FunctionDeclaration,
-    sourceFile: import('typescript').SourceFile,
-): string | null {
-    return extractPropsTypeFromParams(ts, node.parameters, sourceFile);
-}
-
-function extractPropsTypeFromParams(
-    ts: typeof import('typescript'),
-    parameters: import('typescript').NodeArray<import('typescript').ParameterDeclaration>,
-    sourceFile: import('typescript').SourceFile,
-): string | null {
-    if (parameters.length === 0) return null;
-    const firstParam = parameters[0];
-
-    if (firstParam.type && ts.isTypeReferenceNode(firstParam.type)) {
-        return firstParam.type.getText(sourceFile);
-    }
-
-    if (ts.isObjectBindingPattern(firstParam.name) && firstParam.type) {
-        return firstParam.type.getText(sourceFile);
-    }
-
-    return null;
-}

@@ -62,6 +62,10 @@ const tests: {
         name: '9.vite-lib.hooks-and-context',
         description: 'vite lib: useState state extraction and createContext type detection',
     },
+    {
+        name: '10.vite-lib.namespaced-context',
+        description: 'vite lib: createContext inside dotted namespaces (namespace a.b { Context })',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {
