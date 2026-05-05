@@ -4,7 +4,7 @@ import path from 'path';
 
 import { createXydBuildServer, XydServer } from '../../utils/xyd-server';
 
-const REGISTRY = process.env.npm_config_registry || 'http://localhost:4873';
+const REGISTRY = process.env.XYD_E2E_VERDACCIO_URL || process.env.npm_config_registry || 'http://localhost:4873';
 
 test.describe('Custom npm Theme (Advanced)', () => {
     let server: XydServer;
