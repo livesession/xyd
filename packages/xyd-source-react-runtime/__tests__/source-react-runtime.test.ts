@@ -70,6 +70,10 @@ const tests: {
         name: '11.vite-lib.date-types',
         description: 'vite lib: Date type preserved (typia escaped → native Date)',
     },
+    {
+        name: '12.vite-lib.string-unions',
+        description: 'vite lib: string literal unions ("a" | "b" | "c") as readable type',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {

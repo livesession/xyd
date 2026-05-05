@@ -738,12 +738,11 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
         }
         if (allConstants.length > 1) {
             return {
-                type: '$xor',
+                type: '$$xor',
                 properties: allConstants.map((v: any) => ({
-                    name: '',
-                    type: 'object',
+                    name: String(v.value),
+                    type: schema.constants[0]?.type ?? 'string',
                     description: '',
-                    meta: [{name: 'required', value: 'true'}],
                 })),
             };
         }
