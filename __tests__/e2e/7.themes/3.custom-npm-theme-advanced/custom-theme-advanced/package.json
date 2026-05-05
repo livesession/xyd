@@ -1,0 +1,29 @@
+{
+    "name": "xyd-theme-custom-advanced-test",
+    "version": "1.0.0",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        "./package.json": "./package.json",
+        "./index.css": "./dist/index.css",
+        ".": {
+            "import": "./dist/index.js"
+        }
+    },
+    "scripts": {
+        "build": "rollup -c rollup.config.js"
+    },
+    "dependencies": {
+        "@linaria/atomic": "^6.2.0",
+        "@linaria/core": "^6.2.0"
+    },
+    "peerDependencies": {
+        "@xyd-js/components": "*",
+        "@xyd-js/framework": "*",
+        "@xyd-js/themes": "*",
+        "react": ">=18",
+        "react-dom": ">=18"
+    },
+    "devDependencies": {}
+}

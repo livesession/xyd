@@ -1,0 +1,7 @@
+@layer themes {
+    :root {
+        --font-body-family: "Inter", sans-serif;
+        --font-body-weight: 400;
+        --custom-advanced-theme: "active";
+    }
+}
