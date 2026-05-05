@@ -27,6 +27,8 @@ interface ComponentInfo {
 export function xydSourceReactRuntime(options?: XydSourceReactRuntimeOptions): Plugin {
     let transformedFiles: Map<string, string> = new Map();
     const propName = options?.propertyName || '__xydUniform';
+    // Map of componentName → uniform JSON string, collected from all successfully converted files
+    let uniformCache: Map<string, string> = new Map();
 
     return {
         name: 'xyd-source-react-runtime',
@@ -35,20 +37,29 @@ export function xydSourceReactRuntime(options?: XydSourceReactRuntimeOptions): P
         async buildStart() {
             const tsconfigPath = options?.tsconfig || path.resolve(process.cwd(), 'tsconfig.json');
             transformedFiles = await buildTypiaSchemas(tsconfigPath);
+
+            // Pre-compute uniform references for all files and cache by component name
+            uniformCache = new Map();
+            const typeResolver = (transformedFiles as any).__typeResolver;
+            for (const [, code] of transformedFiles.entries()) {
+                collectUniformCache(code, propName, typeResolver, uniformCache);
+            }
         },
 
         transform(code, id) {
             if (!id.match(/\.[jt]sx?$/)) return null;
-            const transformed = transformedFiles.get(path.resolve(id));
+            const resolved = path.resolve(id);
+            const transformed = transformedFiles.get(resolved);
             if (!transformed) return null;
-            return convertSchemaToUniform(transformed, propName, (transformedFiles as any).__typeResolver);
+            return convertSchemaToUniform(transformed, propName, (transformedFiles as any).__typeResolver, uniformCache);
         },
 
         load(id) {
             if (!id.match(/\.[jt]sx?$/)) return null;
-            const transformed = transformedFiles.get(path.resolve(id));
+            const resolved = path.resolve(id);
+            const transformed = transformedFiles.get(resolved);
             if (!transformed) return null;
-            return convertSchemaToUniform(transformed, propName, (transformedFiles as any).__typeResolver);
+            return convertSchemaToUniform(transformed, propName, (transformedFiles as any).__typeResolver, uniformCache);
         },
     };
 }
@@ -124,7 +135,6 @@ async function buildTypiaSchemas(tsconfigPath: string): Promise<any> {
             ? components.filter(c => !schemaObjPattern(c.name).test(existingOutput))
             : components;
 
-        if (missingComponents.length > 0) {
         if (missingComponents.length === 0) continue;
 
         const original = ts.sys.readFile(fileName)!;
@@ -223,20 +233,32 @@ function buildTypeResolver(
 
         const checker = program.getTypeChecker();
 
+        // Recursively search for types inside namespace/module declarations
+        function findTypeInNode(node: import('typescript').Node): import('typescript').Type | undefined {
+            let found: import('typescript').Type | undefined;
+            ts.forEachChild(node, (child) => {
+                if (found) return;
+                if (ts.isInterfaceDeclaration(child) && child.name.text === typeName) {
+                    found = checker.getTypeAtLocation(child);
+                } else if (ts.isTypeAliasDeclaration(child) && child.name.text === typeName) {
+                    found = checker.getTypeAtLocation(child);
+                } else if (ts.isModuleDeclaration(child) && child.body) {
+                    // Walk into namespaces
+                    if (ts.isModuleBlock(child.body)) {
+                        found = findTypeInNode(child.body);
+                    } else if (ts.isModuleDeclaration(child.body)) {
+                        found = findTypeInNode(child.body);
+                    }
+                }
+            });
+            return found;
+        }
+
         // Search for the type in all source files
         for (const sourceFile of program.getSourceFiles()) {
             if (sourceFile.isDeclarationFile) continue;
 
-            let foundType: import('typescript').Type | undefined;
-            ts.forEachChild(sourceFile, (node) => {
-                if (foundType) return;
-                if (ts.isInterfaceDeclaration(node) && node.name.text === typeName) {
-                    foundType = checker.getTypeAtLocation(node);
-                }
-                if (ts.isTypeAliasDeclaration(node) && node.name.text === typeName) {
-                    foundType = checker.getTypeAtLocation(node);
-                }
-            });
+            const foundType = findTypeInNode(sourceFile);
 
             if (foundType) {
                 const properties = checker.getPropertiesOfType(foundType);
@@ -247,6 +269,30 @@ function buildTypeResolver(
                     const typeStr = checker.typeToString(memberType);
                     const isOptional = (sym.flags & ts.SymbolFlags.Optional) !== 0;
                     const description = ts.displayPartsToString(sym.getDocumentationComment(checker));
+
+                    // Detect function types via call signatures
+                    const callSigs = memberType.getCallSignatures();
+                    if (callSigs.length > 0) {
+                        const sig = callSigs[0];
+                        const params = sig.getParameters().map(p => {
+                            const pType = checker.getTypeOfSymbolAtLocation(p, sourceFile);
+                            return {
+                                name: p.getName(),
+                                type: checker.typeToString(pType),
+                                description: '',
+                                meta: [],
+                            };
+                        });
+                        const retType = checker.typeToString(sig.getReturnType());
+                        return {
+                            name: sym.getName(),
+                            type: '$$function',
+                            description: description || '',
+                            properties: params,
+                            ofProperty: {name: '', type: retType === 'void' ? 'void' : retType, description: '', meta: []},
+                            meta: isOptional ? [] : [{name: 'required', value: 'true'}],
+                        };
+                    }
 
                     return {
                         name: sym.getName(),
@@ -644,7 +690,6 @@ function extractPropsTypeFromParams(
 
     return null;
 }
-}
 
 
 /**
@@ -709,10 +754,8 @@ function injectStateDefinitions(code: string, propertyName: string): string {
             uniform.definitions.push(stateDef);
             const newJson = JSON.stringify(uniform).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
-            result = result.replace(
-                uniformMatch[0],
-                `${componentName}.${propertyName} = JSON.parse('${newJson}');`,
-            );
+            const stateReplacement = `${componentName}.${propertyName} = JSON.parse('${newJson}');`;
+            result = result.replace(uniformMatch[0], () => stateReplacement);
         } catch {
             // Failed to parse/modify uniform — skip
         }
@@ -801,7 +844,7 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
         const objType = components.objects?.find((o: any) => o.name === nativeName);
         if (objType?.properties?.length) {
             return {
-                type: 'object',
+                type: nativeName,
                 properties: objType.properties.map((p: any) => metadataPropertyToUniform(p, components, typeResolver)),
             };
         }
@@ -809,22 +852,32 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
         if (typeResolver) {
             const resolvedProps = typeResolver(nativeName);
             if (resolvedProps) {
-                return {type: 'object', properties: resolvedProps};
+                return {type: nativeName, properties: resolvedProps};
             }
         }
         return {type: nativeName};
     }
 
-    // Functions: render signature
+    // Functions: structured $$function type
     if (schema.functions?.length > 0) {
         const fn = schema.functions[0];
         const params = (fn.parameters || []).map((p: any) => {
             const pType = resolveMetadataType(p.type, components, typeResolver);
-            return `${p.name}: ${pType.type}`;
-        }).join(', ');
+            return {
+                name: p.name || '',
+                type: pType.type,
+                description: '',
+                properties: pType.properties || [],
+                meta: [],
+            };
+        });
         const retType = resolveMetadataType(fn.output, components, typeResolver);
         const retStr = retType.type === 'undefined' || !retType.type ? 'void' : retType.type;
-        return {type: `(${params}) => ${retStr}`};
+        return {
+            type: '$$function',
+            properties: params,
+            ofProperty: {name: '', type: retStr, description: '', meta: []},
+        };
     }
 
     // Maps
@@ -934,7 +987,27 @@ function metadataToUniformReference(componentName: string, collection: any, type
     return ref;
 }
 
-function convertSchemaToUniform(code: string, propertyName: string = '__xydUniform', typeResolver?: (name: string) => any[] | null): {code: string; map: null} | null {
+/**
+ * Scans emitted code for resolved __xydSchema patterns and caches the uniform JSON by component name.
+ * Called once per file during buildStart to populate the cross-file cache.
+ */
+function collectUniformCache(code: string, propertyName: string, typeResolver: ((name: string) => any[] | null) | undefined, cache: Map<string, string>): void {
+    const schemaRegex = /([\w.]+)\.__xydSchema\s*=\s*(\{[\s\S]*?\n\});/g;
+    let match: RegExpExecArray | null;
+    while ((match = schemaRegex.exec(code)) !== null) {
+        const componentName = match[1];
+        const schemaStr = match[2];
+        if (cache.has(componentName)) continue;
+        try {
+            const schema = new Function(`return ${schemaStr}`)();
+            const uniform = metadataToUniformReference(componentName, schema, typeResolver);
+            const jsonStr = JSON.stringify(uniform).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            cache.set(componentName, jsonStr);
+        } catch { /* skip */ }
+    }
+}
+
+function convertSchemaToUniform(code: string, propertyName: string = '__xydUniform', typeResolver?: (name: string) => any[] | null, uniformCache?: Map<string, string>): {code: string; map: null} | null {
     const schemaRegex = /([\w.]+)\.__xydSchema\s*=\s*(\{[\s\S]*?\n\});/g;
     let modified = code;
     let hasChanges = false;
@@ -948,18 +1021,32 @@ function convertSchemaToUniform(code: string, propertyName: string = '__xydUnifo
             const schema = new Function(`return ${schemaStr}`)();
             const uniform = metadataToUniformReference(componentName, schema, typeResolver);
             const jsonStr = JSON.stringify(uniform).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            const replacement = `${componentName}.${propertyName} = JSON.parse('${jsonStr}');`;
 
-            modified = modified.replace(
-                match[0],
-                `${componentName}.${propertyName} = JSON.parse('${jsonStr}');`,
-            );
+            // Use function replacement to avoid $$ interpolation in String.prototype.replace
+            modified = modified.replace(match[0], () => replacement);
             hasChanges = true;
         } catch (e) {
             console.warn(`[xyd-source-react-runtime] Failed to parse schema for ${componentName}:`, e);
         }
     }
 
-    // Strip any un-transformed typia calls that leaked through
+    // For raw (unresolved) typia calls, check if a cached uniform exists from another file
+    if (uniformCache) {
+        const rawRegex = /^\s*([\w.]+)\.__xydSchema\s*=\s*typia\.reflect\.schemas.*;\s*$/gm;
+        let rawMatch: RegExpExecArray | null;
+        while ((rawMatch = rawRegex.exec(modified)) !== null) {
+            const componentName = rawMatch[1];
+            const cached = uniformCache.get(componentName);
+            if (cached) {
+                const replacement = `${componentName}.${propertyName} = JSON.parse('${cached}');`;
+                modified = modified.replace(rawMatch[0], () => replacement);
+                hasChanges = true;
+            }
+        }
+    }
+
+    // Strip any remaining un-transformed typia calls
     modified = modified.replace(/^\s*[\w.]+\.__xydSchema\s*=\s*typia\.reflect\.schemas.*;\s*$/gm, '');
     modified = modified.replace(/^\s*[\w.]+\.__xydSchema\s*=\s*typia\.json\.schemas.*;\s*$/gm, '');
     modified = modified.replace(/^import typia from ["']typia["'];?\s*\n?/gm, '');

@@ -74,6 +74,10 @@ const tests: {
         name: '12.vite-lib.string-unions',
         description: 'vite lib: string literal unions ("a" | "b" | "c") as readable type',
     },
+    {
+        name: '13.vite-lib.namespace-complex-types',
+        description: 'vite lib: namespaced types with functions, Maps, Uint8Array resolved as nested properties',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {
