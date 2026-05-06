@@ -1,0 +1,34 @@
+storage: /tmp/verdaccio-storage
+auth:
+  htpasswd:
+    file: /tmp/verdaccio-htpasswd
+    max_users: 100
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+packages:
+  "@xyd-js/*":
+    access: $all
+    publish: $all
+    unpublish: $all
+    proxy: npmjs
+  "xyd-js":
+    access: $all
+    publish: $all
+    unpublish: $all
+    proxy: npmjs
+  "**":
+    access: $all
+    publish: $all
+    proxy: npmjs
+max_body_size: 200mb
+server:
+  keepAliveTimeout: 60
+middlewares:
+  audit:
+    enabled: true
+listen: 0.0.0.0:4873
+log:
+  type: stdout
+  format: pretty
+  level: error
