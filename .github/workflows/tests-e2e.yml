@@ -103,7 +103,7 @@ jobs:
     - name: 📦 Start Verdaccio (local registry for e2e tests)
       run: |
         npm install -g verdaccio
-        verdaccio --config __tests__/docker/verdaccio-config.yaml &
+        verdaccio --config __tests__/e2e/verdaccio-ci-config.yaml &
         # Wait for Verdaccio to be ready
         for i in $(seq 1 30); do
           curl -sf http://localhost:4873 > /dev/null 2>&1 && break
