@@ -1,0 +1,10 @@
+{
+    "theme": {
+        "name": "cosmo"
+    },
+    "navigation": {
+        "sidebar": [
+            "overview"
+        ]
+    }
+}

@@ -1,0 +1,10 @@
+**/node_modules
+**/.xyd/build
+**/.xyd/cache
+.git
+*.log
+.DS_Store
+apps/webapp
+apps/website
+playwright-report
+test-results

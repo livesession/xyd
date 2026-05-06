@@ -100,5 +100,23 @@ jobs:
         echo "✅ Installed version:"
         xyd --version || echo "(version command not available)"
 
+    - name: 📦 Start Verdaccio (local registry for e2e tests)
+      run: |
+        npm install -g verdaccio
+        verdaccio --config __tests__/e2e/verdaccio-ci-config.yaml &
+        # Wait for Verdaccio to be ready
+        for i in $(seq 1 30); do
+          curl -sf http://localhost:4873 > /dev/null 2>&1 && break
+          sleep 1
+        done
+        # Create user and save auth token for publishing
+        TOKEN=$(curl -s -XPUT -H "Content-Type: application/json" \
+          -d '{"name":"test","password":"test"}' \
+          http://localhost:4873/-/user/org.couchdb.user:test | jq -r '.token')
+        echo "//localhost:4873/:_authToken=\"${TOKEN}\"" >> ~/.npmrc
+        echo "✅ Verdaccio is running on http://localhost:4873"
+
     - name: 🧪 Run E2E tests
       run: pnpm run test:e2e
+      env:
+        XYD_E2E_VERDACCIO_URL: http://localhost:4873
