@@ -4,7 +4,7 @@ keywords: i18n, internationalization, locale, language, translation
 
 # Internationalization (i18n)
 
-This page documents the i18n layer in xyd: how multi-language docs are configured in `docs.json`, how routes/files are organized, and how the framework wires it all up at runtime.
+This page documents the i18n feature - a multi-language docs are configured in `docs.json`, how routes/files are organized, and how the framework wires it all up at runtime.
 
 > **Status:** V1. Routing, per-locale navigation, and per-locale content all work. SEO (`hreflang`, `<html lang>`), the locale switcher, search-locale filtering, prehydration script, and the `"i18n: <key>"` translation-key resolver are tracked as follow-up slices — see "Future work" at the bottom.
 
