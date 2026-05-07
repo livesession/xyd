@@ -16,67 +16,6 @@ The default locale's content lives at the content root and is served unprefixed 
 
 Missing translations 404 — there is no fallback to the default locale.
 
-## Configuration
-
-### Minimal form
-
-```json
-{
-  "theme": { "name": "cosmo" },
-  "navigation": {
-    "languages": [
-      {
-        "language": "en",
-        "name": "English",
-        "default": true,
-        "sidebar": ["docs/intro"]
-      },
-      { "language": "pl", "name": "Polski",  "sidebar": ["docs/intro"] },
-      { "language": "de", "name": "Deutsch", "sidebar": ["docs/intro"] }
-    ]
-  }
-}
-```
-
-### Optional `i18n` block
-
-A top-level `i18n` block is optional and carries site-wide flags that don't belong on a single locale entry:
-
-```json
-{
-  "i18n": {
-    "defaultLocale": "en",
-    "detectLanguage": true
-  },
-  "navigation": { "languages": [/* … */] }
-}
-```
-
-When the `i18n` block is present, it wins:
-
-- `i18n.defaultLocale` overrides any `default: true` shorthand on language entries.
-- `i18n.detectLanguage` — reserved for the prehydration redirect (future slice; currently unused at runtime).
-- `i18n.translations` — reserved for translation catalogs used by the `"i18n: <key>"` resolver (future slice).
-
-For the full field reference, see the `Settings`, `Navigation`, `LanguageNavigation`, and `I18nConfig` interfaces in `4.settings/1.SETTINGS.md` (and the source of truth: `packages/xyd-core/src/types/settings.ts`).
-
-## File structure
-
-```
-content/
-├── docs/intro.md              # default locale (en)
-├── docs/api.md
-├── pl/
-│   └── docs/intro.md          # Polish translation
-└── de/
-    └── docs/intro.md          # German translation
-```
-
-- The default locale's content lives at the content root, matching its unprefixed URL.
-- Each non-default locale is a mirror subtree under `<language>/`.
-- Frontmatter is translated **per file**: each locale's `.md` owns its own `title`, `description`, etc.
-- Untranslated pages are simply absent on disk → 404 at request time.
-
 ## Architecture
 
 ```mermaid
@@ -178,6 +117,67 @@ This is the only locale-aware step inside `mapSettingsToProps`. Everything downs
 
 `xyd-host/app/docPaths.ts` collects the list of routes to prerender (used by `react-router.config.ts` with `ssr: false`). In i18n mode it walks every language's sidebar and returns the locale-prefixed paths. With React Router 7's stricter `ssr:false` validator, every route that exports a `loader` must be in the prerender list, so this step is load-bearing.
 
+## Configuration
+
+### Minimal form
+
+```json
+{
+  "theme": { "name": "cosmo" },
+  "navigation": {
+    "languages": [
+      {
+        "language": "en",
+        "name": "English",
+        "default": true,
+        "sidebar": ["docs/intro"]
+      },
+      { "language": "pl", "name": "Polski",  "sidebar": ["docs/intro"] },
+      { "language": "de", "name": "Deutsch", "sidebar": ["docs/intro"] }
+    ]
+  }
+}
+```
+
+### Optional `i18n` block
+
+A top-level `i18n` block is optional and carries site-wide flags that don't belong on a single locale entry:
+
+```json
+{
+  "i18n": {
+    "defaultLocale": "en",
+    "detectLanguage": true
+  },
+  "navigation": { "languages": [/* … */] }
+}
+```
+
+When the `i18n` block is present, it wins:
+
+- `i18n.defaultLocale` overrides any `default: true` shorthand on language entries.
+- `i18n.detectLanguage` — reserved for the prehydration redirect (future slice; currently unused at runtime).
+- `i18n.translations` — reserved for translation catalogs used by the `"i18n: <key>"` resolver (future slice).
+
+For the full field reference, see the `Settings`, `Navigation`, `LanguageNavigation`, and `I18nConfig` interfaces in `4.settings/1.SETTINGS.md` (and the source of truth: `packages/xyd-core/src/types/settings.ts`).
+
+## File structure
+
+```
+content/
+├── docs/intro.md              # default locale (en)
+├── docs/api.md
+├── pl/
+│   └── docs/intro.md          # Polish translation
+└── de/
+    └── docs/intro.md          # German translation
+```
+
+- The default locale's content lives at the content root, matching its unprefixed URL.
+- Each non-default locale is a mirror subtree under `<language>/`.
+- Frontmatter is translated **per file**: each locale's `.md` owns its own `title`, `description`, etc.
+- Untranslated pages are simply absent on disk → 404 at request time.
+
 ## Affected files
 
 | Concern | File |
@@ -189,21 +189,6 @@ This is the only locale-aware step inside `mapSettingsToProps`. Everything downs
 | Route generation | `packages/xyd-host/app/pathRoutes.ts` |
 | Prerender list | `packages/xyd-host/app/docPaths.ts` |
 | Sidebar / breadcrumbs / navlinks per locale | `packages/xyd-framework/packages/hydration/mapSettingsToProps.ts` |
-
-## Testing
-
-E2E fixture: `__tests__/e2e/8.i18n/1.basic/`. Three locales (en/pl/de), one page each, asserts:
-
-- Default locale (`en`) serves at unprefixed URL `/docs/intro`.
-- Polish at `/pl/docs/intro`.
-- German at `/de/docs/intro`.
-- Different content per locale (English vs Polish vs German body).
-
-Run via Docker (the only supported way to run e2e locally with a fresh xyd published to Verdaccio):
-
-```bash
-./__tests__/docker/run-e2e.sh -- __tests__/e2e/8.i18n/1.basic
-```
 
 ## Future work
 
