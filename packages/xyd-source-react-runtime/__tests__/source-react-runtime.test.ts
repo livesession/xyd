@@ -78,6 +78,14 @@ const tests: {
         name: '13.vite-lib.namespace-complex-types',
         description: 'vite lib: namespaced types with functions, Maps, Uint8Array resolved as nested properties',
     },
+    {
+        name: '14.vite-lib.context-string-unions',
+        description: 'vite lib: createContext with string literal union type aliases in separate files',
+    },
+    {
+        name: '15.vite-lib.merged-context-string-unions',
+        description: 'vite lib: merged single-file namespaces with string literal unions (Mode/Model) resolved as $xor',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {

@@ -261,6 +261,20 @@ function buildTypeResolver(
             const foundType = findTypeInNode(sourceFile);
 
             if (foundType) {
+                // Detect string literal unions: "auto" | "plan" | "manual" → return $xor marker
+                if (foundType.isUnion()) {
+                    const unionTypes = (foundType as any).types as import('typescript').Type[];
+                    const allStringLiterals = unionTypes.every((t: any) => t.isStringLiteral?.());
+                    if (allStringLiterals && unionTypes.length > 1) {
+                        return unionTypes.map((t: any) => ({
+                            name: String(t.value),
+                            type: 'string',
+                            description: '',
+                            __xor: true, // signal to resolveMetadataType to use $xor
+                        }));
+                    }
+                }
+
                 const properties = checker.getPropertiesOfType(foundType);
                 if (properties.length === 0) return null;
 
@@ -462,29 +476,64 @@ function fallbackShallowSchema(
         // Top-level — search directly
         findInBody(sourceFile);
     } else {
-        // Walk into nested namespaces
+        // Walk into nested namespaces.
+        // TS may split `namespace a.b { ... }` into multiple ModuleDeclarations with the
+        // same name "a". One has a ModuleBlock body (for `namespace a { types }`), another
+        // has a nested ModuleDeclaration body (for `namespace a.b { context }`).
+        // We must try ALL matching declarations to find the right path.
         let currentBody: import('typescript').Node = sourceFile;
-        for (const nsPart of nsParts) {
+        let walkSuccess = false;
+
+        function walkNsParts(body: import('typescript').Node, partIndex: number): boolean {
+            if (partIndex >= nsParts.length) {
+                // Unwrap final ModuleDeclaration → ModuleBlock if needed
+                if (ts.isModuleDeclaration(body) && (body as any).body) {
+                    const inner = (body as any).body;
+                    if (ts.isModuleBlock(inner)) { currentBody = inner; return true; }
+                }
+                currentBody = body;
+                return true;
+            }
+
+            const nsPart = nsParts[partIndex];
+
+            // If body itself IS the target ModuleDeclaration (from dotted namespace unwrapping)
+            if (ts.isModuleDeclaration(body) && (body as any).name?.text === nsPart) {
+                if ((body as any).body) {
+                    if (ts.isModuleBlock((body as any).body)) {
+                        if (partIndex === nsParts.length - 1) { currentBody = (body as any).body; return true; }
+                        return walkNsParts((body as any).body, partIndex + 1);
+                    } else if (ts.isModuleDeclaration((body as any).body)) {
+                        return walkNsParts((body as any).body, partIndex + 1);
+                    }
+                }
+                return false;
+            }
+
             let found = false;
-            ts.forEachChild(currentBody, (node) => {
+            ts.forEachChild(body, (node) => {
                 if (found) return;
                 if (ts.isModuleDeclaration(node) && node.name.text === nsPart && node.body) {
                     if (ts.isModuleBlock(node.body)) {
-                        currentBody = node.body;
-                        found = true;
+                        if (partIndex === nsParts.length - 1) {
+                            currentBody = node.body;
+                            found = true;
+                        } else if (walkNsParts(node.body, partIndex + 1)) {
+                            found = true;
+                        }
                     } else if (ts.isModuleDeclaration(node.body)) {
-                        currentBody = node.body;
-                        found = true;
+                        if (walkNsParts(node.body, partIndex + 1)) {
+                            found = true;
+                        }
                     }
                 }
             });
-            if (!found) break;
+            return found;
         }
-        // If we walked through nested ModuleDeclarations, unwrap to the final ModuleBlock
-        if (ts.isModuleDeclaration(currentBody) && (currentBody as any).body) {
-            const body = (currentBody as any).body;
-            if (ts.isModuleBlock(body)) currentBody = body;
-        }
+
+        walkSuccess = walkNsParts(sourceFile, 0);
+        if (!walkSuccess) currentBody = sourceFile; // fallback to top-level
+
         findInBody(currentBody);
     }
 
@@ -871,7 +920,11 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
         if (typeResolver) {
             const resolvedProps = typeResolver(nativeName);
             if (resolvedProps) {
-                return {type: nativeName, properties: resolvedProps};
+                // String literal union types are marked with __xor by the resolver
+                if (resolvedProps.length > 0 && resolvedProps[0].__xor) {
+                    return {type: '$xor', properties: resolvedProps.map((p: any) => ({name: p.name, type: p.type, description: p.description}))};
+                }
+                return {type: 'object', properties: resolvedProps};
             }
         }
         return {type: nativeName};
