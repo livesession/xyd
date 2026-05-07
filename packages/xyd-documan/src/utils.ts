@@ -269,6 +269,30 @@ const BUILT_IN_THEME_VERSIONS: Record<string, string> = {
 
 const NPM_THEME_PREFIX = "npm:";
 
+// release.js republishes every @xyd-js/* package together with the same
+// snapshot version (e.g. 0.0.0-canary-{sha}-{ts} or 0.0.0-build-{sha}-{ts}),
+// so the theme published alongside this documan is at the exact same
+// version. Reading documan's own package.json at runtime returns the
+// published snapshot — pinning to that exact version keeps builds
+// reproducible (no drift from later canary republishes) and avoids stale
+// values inlined from workspace package.json imports at tsup build time
+// (release.js bumps versions AFTER documan is built).
+function getDocumanRuntimeVersion(): string | null {
+    try {
+        const pkgPath = fileURLToPath(new URL("../package.json", import.meta.url));
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+        return typeof pkg?.version === "string" && pkg.version ? pkg.version : null;
+    } catch {
+        return null;
+    }
+}
+
+function isLockstepSnapshotVersion(version: string): boolean {
+    // Snapshot versions produced by `pnpm changeset version --snapshot {tag}`
+    // — same value across every @xyd-js/* package on a given release.
+    return version.startsWith("0.0.0-canary-") || version.startsWith("0.0.0-build-");
+}
+
 function getThemeDependency(settings: Settings): Record<string, string> {
     const themeName = settings.theme?.name || "poetry";
 
@@ -286,12 +310,18 @@ function getThemeDependency(settings: Settings): Record<string, string> {
 
     // Built-in theme: short name (e.g. "poetry", "cosmo")
     const packageName = `@xyd-js/theme-${themeName}`;
-    const builtInVersion = BUILT_IN_THEME_VERSIONS[packageName];
-    if (builtInVersion) {
-        return { [packageName]: builtInVersion };
+    if (!BUILT_IN_THEME_VERSIONS[packageName]) {
+        return { [packageName]: "latest" };
     }
 
-    return { [packageName]: "latest" };
+    if (!process.env.XYD_DEV_MODE) {
+        const documanVersion = getDocumanRuntimeVersion();
+        if (documanVersion && isLockstepSnapshotVersion(documanVersion)) {
+            return { [packageName]: documanVersion };
+        }
+    }
+
+    return { [packageName]: BUILT_IN_THEME_VERSIONS[packageName] };
 }
 
 const EXTERNAL_XYD_PLUGINS = {
