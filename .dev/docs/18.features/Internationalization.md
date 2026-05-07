@@ -8,8 +8,6 @@ This page documents the i18n layer in xyd: how multi-language docs are configure
 
 > **Status:** V1. Routing, per-locale navigation, and per-locale content all work. SEO (`hreflang`, `<html lang>`), the locale switcher, search-locale filtering, prehydration script, and the `"i18n: <key>"` translation-key resolver are tracked as follow-up slices — see "Future work" at the bottom.
 
-For the original design rationale and the full V1+V2 spec, see `.research/Internationalization.md`.
-
 ## Overview
 
 xyd's i18n is configured via a single source of truth: `navigation.languages[]`. Each entry is a per-locale navigation block (sidebar/tabs/anchors) plus locale fields (`language`, `name`, `default`, `dir`, `overrides`).
@@ -234,5 +232,3 @@ Tracked under follow-up slices, not in V1:
 - **Translation key resolver**: `"i18n: footer.resources.header"` strings in component config, resolved at render time from per-locale catalogs declared in `i18n.translations`.
 - **Search localization**: tag indexed docs with locale, filter by current locale.
 - **Per-locale OpenAPI / GraphQL specs**: V2.
-
-Full spec for each lives in `.research/Internationalization.md`.
