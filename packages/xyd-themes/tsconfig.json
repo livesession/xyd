@@ -18,8 +18,7 @@
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext",
-      "node"
+      "esnext"
     ],
     "allowJs": true,
     "skipLibCheck": true,
