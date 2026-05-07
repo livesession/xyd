@@ -49,6 +49,9 @@ namespace composer {
         toggle: () => void;
         setOpen: (open: boolean) => void;
         addPanelTab: (tab: Tab, setActive?: boolean) => void;
+        // Nullable array: `Tab[] | undefined` — must produce $array with nullable meta,
+        // not a wrapper object leaking into the output.
+        mentionSources?: Tab[];
     }
 }
 

@@ -271,6 +271,17 @@ function buildTypeResolver(
                         __innerWrapperKind: 'firstVariant',
                     }];
                 }
+                // Array wrapper inside nullable: propagate element info
+                if (innerProps[0]?.__wrapperKind === 'array') {
+                    return [{
+                        __wrapperKind: 'nullable',
+                        __innerType: innerName,
+                        __innerWrapperKind: 'array',
+                        __elementType: innerProps[0].__elementType,
+                        __elementProperties: innerProps[0].__elementProperties,
+                        __elementIsXor: innerProps[0].__elementIsXor,
+                    }];
+                }
                 return [{
                     __wrapperKind: 'nullable',
                     __innerType: innerName,
@@ -1205,6 +1216,21 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
                     if (first.__innerWrapperKind === 'firstVariant') {
                         return {type: first.__innerVariantName, properties: first.__innerProperties, __nullable: true};
                     }
+                    if (first.__innerWrapperKind === 'array') {
+                        const ofType = first.__elementIsXor ? '$xor' : first.__elementType;
+                        return {
+                            type: '$array',
+                            properties: [],
+                            ofProperty: {
+                                name: '',
+                                type: ofType,
+                                properties: first.__elementProperties,
+                                description: '',
+                                meta: [{name: 'required', value: 'true'}],
+                            },
+                            __nullable: true,
+                        };
+                    }
                     return {type: innerType, properties: innerProps, __nullable: true};
                 }
 
@@ -1324,7 +1350,24 @@ function metadataPropertyToUniform(prop: any, components: any, typeResolver?: (n
         result.ofProperty = resolved.ofProperty;
     }
 
-    return result;
+    // Safety net: scrub any leaked internal markers (__wrapperKind, __elementType, etc.)
+    // so they never appear in the final uniform output.
+    return scrubInternalMarkers(result);
+}
+
+/** Recursively delete any `__*` keys from a DefinitionProperty tree. */
+function scrubInternalMarkers(node: any): any {
+    if (Array.isArray(node)) {
+        for (const item of node) scrubInternalMarkers(item);
+        return node;
+    }
+    if (node && typeof node === 'object') {
+        for (const key of Object.keys(node)) {
+            if (key.startsWith('__')) delete node[key];
+            else scrubInternalMarkers(node[key]);
+        }
+    }
+    return node;
 }
 
 /**
