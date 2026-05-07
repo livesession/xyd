@@ -218,9 +218,71 @@ function buildTypeResolver(
 
     let program: import('typescript').Program | null = null;
 
-    return (typeName: string): any[] | null => {
-        // Skip known built-in types and generic types
+    const resolver = (typeName: string): any[] | null => {
+        // Skip known built-in types
         if (BUILTIN_TYPES.has(typeName)) return null;
+
+        // Handle array suffix: "Tab[]" → recurse on "Tab", mark as array wrapper
+        const arrayMatch = typeName.match(/^(.+)\[\]$/);
+        if (arrayMatch) {
+            const elementName = arrayMatch[1].trim();
+            const elementProps = resolver(elementName);
+            if (elementProps && elementProps.length > 0) {
+                return [{
+                    __wrapperKind: 'array',
+                    __elementType: elementName,
+                    __elementProperties: elementProps[0]?.__xor
+                        ? elementProps.map((p: any) => ({name: p.name, type: p.type, description: p.description}))
+                        : elementProps,
+                    __elementIsXor: !!elementProps[0]?.__xor,
+                }];
+            }
+            // Element type couldn't be resolved — emit array with primitive element
+            return [{
+                __wrapperKind: 'array',
+                __elementType: elementName,
+                __elementProperties: [],
+                __elementIsXor: false,
+            }];
+        }
+
+        // Strip "| null" or "| undefined" suffix → recurse on inner, mark nullable
+        const nullableMatch = typeName.match(/^(.+?)\s*\|\s*(null|undefined)$/);
+        if (nullableMatch) {
+            const innerName = nullableMatch[1].trim();
+            const innerProps = resolver(innerName);
+            if (innerProps && innerProps.length > 0) {
+                // If inner is a union wrapper, propagate variants directly
+                if (innerProps[0]?.__wrapperKind === 'union') {
+                    return [{
+                        __wrapperKind: 'nullable',
+                        __innerType: innerName,
+                        __innerProperties: innerProps[0].__variants,
+                        __innerWrapperKind: 'union',
+                    }];
+                }
+                // First-variant wrapper: keep the variant name + props
+                if (innerProps[0]?.__wrapperKind === 'firstVariant') {
+                    return [{
+                        __wrapperKind: 'nullable',
+                        __innerType: innerName,
+                        __innerVariantName: innerProps[0].__variantName,
+                        __innerProperties: innerProps[0].__variantProps,
+                        __innerWrapperKind: 'firstVariant',
+                    }];
+                }
+                return [{
+                    __wrapperKind: 'nullable',
+                    __innerType: innerName,
+                    __innerProperties: innerProps[0]?.__xor
+                        ? innerProps.map((p: any) => ({name: p.name, type: p.type, description: p.description}))
+                        : innerProps,
+                    __innerIsXor: !!innerProps[0]?.__xor,
+                }];
+            }
+            return null;
+        }
+
         if (typeName.includes('<') || typeName.includes('.')) return null;
         if (/^[a-z]/.test(typeName)) return null; // primitive types
 
@@ -232,6 +294,153 @@ function buildTypeResolver(
         }
 
         const checker = program.getTypeChecker();
+
+        // Build a single property's DefinitionProperty by recursively resolving its type.
+        // Handles: function signatures, string literal unions ($xor), arrays ($array),
+        // nullable unions (T | null/undefined), and named user types (recurses).
+        function buildNestedProperty(
+            sym: import('typescript').Symbol,
+            sourceFile: import('typescript').SourceFile,
+            visitedNames: Set<string>,
+        ): any {
+            const memberType = checker.getTypeOfSymbolAtLocation(sym, sourceFile);
+            const isOptional = (sym.flags & ts.SymbolFlags.Optional) !== 0;
+            const description = ts.displayPartsToString(sym.getDocumentationComment(checker));
+            const baseMeta = isOptional ? [] : [{name: 'required', value: 'true'}];
+            const name = sym.getName();
+            return resolveTypeIntoProperty(memberType, name, description, baseMeta, visitedNames, sourceFile);
+        }
+
+        // Resolve a TS type into a DefinitionProperty shape, recursing into named types.
+        function resolveTypeIntoProperty(
+            t: import('typescript').Type,
+            name: string,
+            description: string,
+            meta: any[],
+            visitedNames: Set<string>,
+            sourceFile: import('typescript').SourceFile,
+        ): any {
+            // Function types
+            const callSigs = t.getCallSignatures();
+            if (callSigs.length > 0) {
+                const sig = callSigs[0];
+                const params = sig.getParameters().map(p => ({
+                    name: p.getName(),
+                    type: checker.typeToString(checker.getTypeOfSymbolAtLocation(p, sourceFile)),
+                    description: '',
+                    meta: [],
+                }));
+                const retType = checker.typeToString(sig.getReturnType());
+                return {
+                    name,
+                    type: '$$function',
+                    description: description || '',
+                    properties: params,
+                    ofProperty: {name: '', type: retType === 'void' ? 'void' : retType, description: '', meta: []},
+                    meta,
+                };
+            }
+
+            // Union types
+            if (t.isUnion?.()) {
+                const unionTypes = (t as any).types as import('typescript').Type[];
+
+                // String literal union → $xor
+                const allStringLiterals = unionTypes.every((u: any) => u.isStringLiteral?.());
+                if (allStringLiterals && unionTypes.length > 1) {
+                    return {
+                        name,
+                        type: '$xor',
+                        description: description || '',
+                        properties: unionTypes.map((u: any) => ({name: String(u.value), type: 'string', description: ''})),
+                        meta,
+                    };
+                }
+
+                // Nullable union: unwrap null/undefined → recurse on non-null
+                const nonNull = unionTypes.filter((u: any) =>
+                    !(u.flags & ts.TypeFlags.Null) && !(u.flags & ts.TypeFlags.Undefined),
+                );
+                if (nonNull.length === 1 && nonNull.length < unionTypes.length) {
+                    const inner = resolveTypeIntoProperty(nonNull[0], name, description, meta, visitedNames, sourceFile);
+                    if (!inner.meta.some((m: any) => m.name === 'nullable')) {
+                        inner.meta = [...inner.meta, {name: 'nullable', value: 'true'}];
+                    }
+                    return inner;
+                }
+
+                // Discriminated union of named object types → use FIRST variant
+                // (matches typia's behavior — easier for UIs to render than $$union)
+                const allObjectLike = nonNull.every((u: any) =>
+                    ((u.flags & ts.TypeFlags.Object) !== 0) || u.isClassOrInterface?.(),
+                );
+                if (!allStringLiterals && allObjectLike && nonNull.length > 1) {
+                    const first = nonNull[0];
+                    const variantName = checker.typeToString(first);
+                    const variantProps = checker.getPropertiesOfType(first).map((sym: any) =>
+                        buildNestedProperty(sym, sourceFile, new Set([...visitedNames, variantName])),
+                    );
+                    const result: any = {
+                        name,
+                        type: variantName,
+                        description: description || '',
+                        properties: variantProps,
+                        meta,
+                    };
+                    if (nonNull.length < unionTypes.length) {
+                        result.meta = [...meta, {name: 'nullable', value: 'true'}];
+                    }
+                    return result;
+                }
+            }
+
+            // Array types: T[]
+            if (checker.isArrayType?.(t)) {
+                const elementType = (t as any).typeArguments?.[0] ?? (t as any).resolvedTypeArguments?.[0];
+                if (elementType) {
+                    const elProp = resolveTypeIntoProperty(elementType, '', '', [{name: 'required', value: 'true'}], visitedNames, sourceFile);
+                    return {
+                        name,
+                        type: '$array',
+                        description: description || '',
+                        properties: [],
+                        ofProperty: elProp,
+                        meta,
+                    };
+                }
+            }
+
+            // Named object/interface types — recurse into properties
+            const typeStr = checker.typeToString(t);
+            const isObjectLike = !!(t.flags & ts.TypeFlags.Object) || !!t.isClassOrInterface?.();
+            const looksLikeNamedUserType = isObjectLike
+                && /^[A-Z]/.test(typeStr)
+                && !typeStr.includes('{')
+                && !typeStr.startsWith('Array<')
+                && !typeStr.includes('=>');
+
+            if (looksLikeNamedUserType && !visitedNames.has(typeStr)) {
+                const subProps = checker.getPropertiesOfType(t);
+                if (subProps.length > 0) {
+                    const newVisited = new Set(visitedNames).add(typeStr);
+                    return {
+                        name,
+                        type: typeStr,
+                        description: description || '',
+                        properties: subProps.map(s => buildNestedProperty(s, sourceFile, newVisited)),
+                        meta,
+                    };
+                }
+            }
+
+            // Fallback — primitive or unrecognized
+            return {
+                name,
+                type: typeStr,
+                description: description || '',
+                meta,
+            };
+        }
 
         // Recursively search for types inside namespace/module declarations
         function findTypeInNode(node: import('typescript').Node): import('typescript').Type | undefined {
@@ -261,10 +470,25 @@ function buildTypeResolver(
             const foundType = findTypeInNode(sourceFile);
 
             if (foundType) {
-                // Detect string literal unions: "auto" | "plan" | "manual" → return $xor marker
+                // Detect unions
                 if (foundType.isUnion()) {
                     const unionTypes = (foundType as any).types as import('typescript').Type[];
                     const allStringLiterals = unionTypes.every((t: any) => t.isStringLiteral?.());
+
+                    // Discriminated union of named object types → use FIRST variant
+                    // (matches typia's behavior — easier for UIs to render than a union)
+                    const allObjectLike = unionTypes.every((t: any) =>
+                        ((t.flags & ts.TypeFlags.Object) !== 0) || t.isClassOrInterface?.(),
+                    );
+                    if (!allStringLiterals && allObjectLike && unionTypes.length > 1) {
+                        const first = unionTypes[0];
+                        const variantName = checker.typeToString(first);
+                        const variantProps = checker.getPropertiesOfType(first).map((sym: any) =>
+                            buildNestedProperty(sym, sourceFile, new Set([typeName, variantName])),
+                        );
+                        return [{__wrapperKind: 'firstVariant', __variantName: variantName, __variantProps: variantProps}];
+                    }
+
                     if (allStringLiterals && unionTypes.length > 1) {
                         return unionTypes.map((t: any) => ({
                             name: String(t.value),
@@ -278,67 +502,13 @@ function buildTypeResolver(
                 const properties = checker.getPropertiesOfType(foundType);
                 if (properties.length === 0) return null;
 
-                return properties.map(sym => {
-                    const memberType = checker.getTypeOfSymbolAtLocation(sym, sourceFile);
-                    const typeStr = checker.typeToString(memberType);
-                    const isOptional = (sym.flags & ts.SymbolFlags.Optional) !== 0;
-                    const description = ts.displayPartsToString(sym.getDocumentationComment(checker));
-
-                    // Detect function types via call signatures
-                    const callSigs = memberType.getCallSignatures();
-                    if (callSigs.length > 0) {
-                        const sig = callSigs[0];
-                        const params = sig.getParameters().map(p => {
-                            const pType = checker.getTypeOfSymbolAtLocation(p, sourceFile);
-                            return {
-                                name: p.getName(),
-                                type: checker.typeToString(pType),
-                                description: '',
-                                meta: [],
-                            };
-                        });
-                        const retType = checker.typeToString(sig.getReturnType());
-                        return {
-                            name: sym.getName(),
-                            type: '$$function',
-                            description: description || '',
-                            properties: params,
-                            ofProperty: {name: '', type: retType === 'void' ? 'void' : retType, description: '', meta: []},
-                            meta: isOptional ? [] : [{name: 'required', value: 'true'}],
-                        };
-                    }
-
-                    // Detect string literal unions: "auto" | "plan" | "manual" → $xor
-                    if (memberType.isUnion()) {
-                        const unionTypes = (memberType as any).types as import('typescript').Type[];
-                        const allStringLiterals = unionTypes.every((t: any) => t.isStringLiteral?.());
-                        if (allStringLiterals && unionTypes.length > 1) {
-                            return {
-                                name: sym.getName(),
-                                type: '$xor',
-                                description: description || '',
-                                properties: unionTypes.map((t: any) => ({
-                                    name: String(t.value),
-                                    type: 'string',
-                                    description: '',
-                                })),
-                                meta: isOptional ? [] : [{name: 'required', value: 'true'}],
-                            };
-                        }
-                    }
-
-                    return {
-                        name: sym.getName(),
-                        type: typeStr,
-                        description: description || '',
-                        meta: isOptional ? [] : [{name: 'required', value: 'true'}],
-                    };
-                });
+                return properties.map(sym => buildNestedProperty(sym, sourceFile, new Set([typeName])));
             }
         }
 
         return null;
     };
+    return resolver;
 }
 
 function emitWithTypia(
@@ -539,9 +709,19 @@ function fallbackShallowSchema(
 
     if (!propsType) return null;
 
+    // Strip null/undefined from union: `Foo | null` → `Foo` so we can read properties
+    if (propsType.isUnion?.()) {
+        const nonNull = (propsType as any).types.filter((t: any) =>
+            !(t.flags & ts.TypeFlags.Null) && !(t.flags & ts.TypeFlags.Undefined),
+        );
+        if (nonNull.length === 1) {
+            propsType = nonNull[0];
+        }
+    }
+
     // Build a reflect-schemas-compatible structure so it goes through the same converter
     const properties: any[] = [];
-    for (const symbol of checker.getPropertiesOfType(propsType)) {
+    for (const symbol of checker.getPropertiesOfType(propsType as import('typescript').Type)) {
         const name = symbol.getName();
         const memberType = checker.getTypeOfSymbolAtLocation(symbol, sourceFile);
         const typeStr = checker.typeToString(memberType);
@@ -917,28 +1097,100 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
 
     // Natives: built-in types (Date, Map, Set, etc.) or unresolved user types
     if (schema.natives?.length > 0) {
-        const nativeName = schema.natives[0].name;
+        let nativeName = schema.natives[0].name;
+        // Strip "| null" / "| undefined" suffix for primitives — mark nullable
+        let isNullable = false;
+        const primitiveNullableMatch = nativeName.match(/^(string|number|boolean)\s*\|\s*(null|undefined)$/);
+        if (primitiveNullableMatch) {
+            nativeName = primitiveNullableMatch[1];
+            isNullable = true;
+        }
         // Check if this "native" is actually a user-defined type in components.objects
         const objType = components.objects?.find((o: any) => o.name === nativeName);
         if (objType?.properties?.length) {
-            return {
+            const result: any = {
                 type: nativeName,
                 properties: objType.properties.map((p: any) => metadataPropertyToUniform(p, components, typeResolver)),
             };
+            if (isNullable) result.__nullable = true;
+            return result;
         }
         // Try resolving via TS type checker (for user-defined types typia put in natives)
         if (typeResolver) {
             const resolvedProps = typeResolver(nativeName);
-            if (resolvedProps) {
-                // String literal union types are marked with __xor by the resolver
-                if (resolvedProps.length > 0 && resolvedProps[0].__xor) {
+            if (resolvedProps && resolvedProps.length > 0) {
+                const first = resolvedProps[0];
+
+                // Array wrapper: "Tab[]" → $array with resolved element type
+                if (first.__wrapperKind === 'array') {
+                    let elementType = first.__elementType;
+                    let elementProperties = first.__elementProperties || [];
+                    if (first.__elementIsXor) {
+                        return {
+                            type: '$array',
+                            properties: [],
+                            ofProperty: {
+                                name: '',
+                                type: '$xor',
+                                properties: elementProperties,
+                                description: '',
+                                meta: [{name: 'required', value: 'true'}],
+                            },
+                        };
+                    }
+                    return {
+                        type: '$array',
+                        properties: [],
+                        ofProperty: {
+                            name: '',
+                            type: elementType,
+                            properties: elementProperties,
+                            description: '',
+                            meta: [{name: 'required', value: 'true'}],
+                        },
+                    };
+                }
+
+                // Nullable wrapper: "Tab | null" → inner type with nullable meta
+                if (first.__wrapperKind === 'nullable') {
+                    const innerType = first.__innerType;
+                    const innerProps = first.__innerProperties || [];
+                    if (first.__innerIsXor) {
+                        return {type: '$xor', properties: innerProps, __nullable: true};
+                    }
+                    if (first.__innerWrapperKind === 'union') {
+                        return {type: '$$union', properties: first.__innerProperties, __nullable: true};
+                    }
+                    if (first.__innerWrapperKind === 'firstVariant') {
+                        return {type: first.__innerVariantName, properties: first.__innerProperties, __nullable: true};
+                    }
+                    return {type: innerType, properties: innerProps, __nullable: true};
+                }
+
+                // Union wrapper: "TypeA | TypeB" → $$union with variants
+                if (first.__wrapperKind === 'union') {
+                    return {type: '$$union', properties: first.__variants};
+                }
+
+                // First-variant wrapper: discriminated union → emit just the first variant
+                if (first.__wrapperKind === 'firstVariant') {
+                    return {type: first.__variantName, properties: first.__variantProps};
+                }
+
+                // String literal union: "auto" | "plan" | "manual" → $xor
+                if (first.__xor) {
                     return {type: '$xor', properties: resolvedProps.map((p: any) => ({name: p.name, type: p.type, description: p.description}))};
                 }
+
                 // Preserve the original type name (VFS, BootVolume, etc.) — not 'object'
-                return {type: nativeName, properties: resolvedProps};
+                const r: any = {type: nativeName, properties: resolvedProps};
+                if (isNullable) r.__nullable = true;
+                return r;
             }
         }
-        return {type: nativeName};
+        const fallback: any = {type: nativeName};
+        if (isNullable) fallback.__nullable = true;
+        return fallback;
     }
 
     // Functions: structured $$function type
@@ -1019,6 +1271,9 @@ function metadataPropertyToUniform(prop: any, components: any, typeResolver?: (n
 
     if (valueSchema.required && !valueSchema.optional) {
         result.meta.push({name: 'required', value: 'true'});
+    }
+    if (resolved.__nullable) {
+        result.meta.push({name: 'nullable', value: 'true'});
     }
 
     if (resolved.properties) {

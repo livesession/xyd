@@ -90,6 +90,14 @@ const tests: {
         name: '16.vite-lib.merged-context-namespaced-objects',
         description: 'vite lib: merged single-file namespaces with namespaced object types (VFS, BootVolume) preserve original type name',
     },
+    {
+        name: '17.vite-lib.merged-named-arrays',
+        description: 'vite lib: fallback path resolves named arrays (Tab[]) and nullable types (Tab | null, string | null) into $array / nullable structures',
+    },
+    {
+        name: '18.vite-lib.typia-nullable-named',
+        description: 'vite lib: typia path deeply resolves nested named types (PreviewEngine inside Tab inside Tab[]) and nullable types',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {
