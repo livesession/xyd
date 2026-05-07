@@ -86,6 +86,10 @@ const tests: {
         name: '15.vite-lib.merged-context-string-unions',
         description: 'vite lib: merged single-file namespaces with string literal unions (Mode/Model) resolved as $xor',
     },
+    {
+        name: '16.vite-lib.merged-context-namespaced-objects',
+        description: 'vite lib: merged single-file namespaces with namespaced object types (VFS, BootVolume) preserve original type name',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {

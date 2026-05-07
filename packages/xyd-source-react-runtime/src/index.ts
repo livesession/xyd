@@ -864,15 +864,25 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
         const objName = schema.objects[0].name;
         const objType = components.objects?.find((o: any) => o.name === objName);
         if (objType?.properties?.length) {
+            // Preserve the original type name (VFS, BootVolume, etc.) for named user types.
+            // Anonymous/inline objects in typia have names like __type, __object, or are numeric.
+            const isNamed = objName && !/^(__type|__object|\d+)/.test(objName);
             return {
-                type: 'object',
+                type: isNamed ? objName : 'object',
                 properties: objType.properties.map((p: any) => metadataPropertyToUniform(p, components, typeResolver)),
             };
         }
         // Try resolving via TS type checker
         if (typeResolver) {
             const resolvedProps = typeResolver(objName);
-            if (resolvedProps) return {type: 'object', properties: resolvedProps};
+            if (resolvedProps) {
+                // String literal union types are marked with __xor by the resolver
+                if (resolvedProps.length > 0 && resolvedProps[0].__xor) {
+                    return {type: '$xor', properties: resolvedProps.map((p: any) => ({name: p.name, type: p.type, description: p.description}))};
+                }
+                // Preserve the original type name (VFS, BootVolume, etc.) — not 'object'
+                return {type: objName, properties: resolvedProps};
+            }
         }
         return {type: objName};
     }
@@ -924,7 +934,8 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
                 if (resolvedProps.length > 0 && resolvedProps[0].__xor) {
                     return {type: '$xor', properties: resolvedProps.map((p: any) => ({name: p.name, type: p.type, description: p.description}))};
                 }
-                return {type: 'object', properties: resolvedProps};
+                // Preserve the original type name (VFS, BootVolume, etc.) — not 'object'
+                return {type: nativeName, properties: resolvedProps};
             }
         }
         return {type: nativeName};
