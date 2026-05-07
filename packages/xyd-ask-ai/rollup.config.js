@@ -2,7 +2,7 @@ import {createRequire} from 'module';
 
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import typescript from 'rollup-plugin-typescript2';
+import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
 import {terser} from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
@@ -44,10 +44,7 @@ export default [
             }),
             commonjs(),
             typescript({
-                tsconfig: './tsconfig.json',
-                declaration: true,
-                declarationDir: 'dist',
-                useTsconfigDeclarationDir: true
+                tsconfig: './tsconfig.json'
             }),
             babel({
                 babelHelpers: 'bundled',
