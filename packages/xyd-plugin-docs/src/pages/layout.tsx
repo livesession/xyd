@@ -141,7 +141,8 @@ export async function loader({ request }: { request: any }) {
 
     new Composer() // TODO: better API
 
-    const slug = getPathname(request.url || "index", settings?.advanced?.basename) || "index"
+    const { slug: rawSlug, locale } = getPathname(request.url || "index", settings?.advanced?.basename)
+    const slug = rawSlug || "index"
 
     const {
         groups: sidebarGroups,
@@ -152,6 +153,8 @@ export async function loader({ request }: { request: any }) {
         settings,
         globalThis.__xydPagePathMapping,
         slug,
+        undefined,
+        locale,
     )
 
     let bannerContentCode = ""
@@ -398,21 +401,31 @@ function PostLayout({ children }: { children: React.ReactNode }) {
     return children
 }
 
-function getPathname(url: string, basename?: string) {
+function getPathname(url: string, basename?: string): { slug: string, locale: string } {
+    // See xyd-plugin-docs/src/pages/page.tsx#getPathname — slug is
+    // pre-prefixed with locale (e.g. "pl/docs/intro") in i18n mode.
+    const i18n = (globalThis as any).__xydI18n as
+        | { defaultLocale: string; locales: string[] }
+        | undefined;
     const parsedUrl = new URL(url);
     let pathname = parsedUrl.pathname;
-    
-    // Trim basename from the pathname if it exists
+
     if (basename && basename !== "/" && pathname.startsWith(basename)) {
         pathname = pathname.slice(basename.length);
     }
-    
-    // Ensure we have a leading slash and then remove it to get the slug
     if (!pathname.startsWith("/")) {
         pathname = "/" + pathname;
     }
-    
-    return pathname.replace(/^\//, '');
+
+    const slug = pathname.replace(/^\//, '');
+    let locale = i18n?.defaultLocale ?? "";
+    if (i18n) {
+        const seg = slug.split("/")[0];
+        if (seg && i18n.locales.includes(seg) && seg !== i18n.defaultLocale) {
+            locale = seg;
+        }
+    }
+    return { slug, locale };
 }
 
 

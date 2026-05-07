@@ -13,7 +13,8 @@ export async function mapSettingsToProps(
     settings: Settings,
     pagePathMapping: { [key: string]: string },
     slug: string,
-    frontmatters?: MetadataMap
+    frontmatters?: MetadataMap,
+    locale?: string,
 ): Promise<{
     groups: FwSidebarItemProps[],
     breadcrumbs: IBreadcrumb[]
@@ -22,7 +23,10 @@ export async function mapSettingsToProps(
     metadata?: Metadata | null
 }> {
     let uniqIndex = 0
-    let filteredNav = filterNavigation(settings, slug)
+    // i18n: when languages[] is configured, swap the navigation source for
+    // the matching language entry (already pre-prefixed by pluginDocs).
+    const effectiveSettings = resolveLocaleSettings(settings, locale)
+    let filteredNav = filterNavigation(effectiveSettings, slug)
     if (!frontmatters) {
         frontmatters = await pageFrontMatters(filteredNav, pagePathMapping) as MetadataMap
     }
@@ -226,7 +230,7 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
     }
 
     // First pass: find if current route matches any route-based navigation
-    settings?.navigation?.sidebar.forEach(sidebar => {
+    settings?.navigation?.sidebar?.forEach(sidebar => {
         if (typeof sidebar !== "string" && "route" in sidebar) {
             findRoute(sidebar)
         }
@@ -242,7 +246,7 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
     // Otherwise, process flat pages and regular sidebar items
     const flatPages: string[] = []
     
-    settings?.navigation?.sidebar.forEach(sidebar => {
+    settings?.navigation?.sidebar?.forEach(sidebar => {
         if (typeof sidebar === "string") {
             flatPages.push(sidebar)
         } else if (!("route" in sidebar)) {
@@ -568,4 +572,29 @@ function findPathToPage(
 
     searchInNavigation(navigation, [])
     return path
+}
+
+// In i18n mode, resolve the right per-language navigation block for the
+// current locale and present it as the effective `navigation.sidebar`/
+// `tabs`/etc. so the rest of mapSettingsToProps stays locale-unaware.
+//
+// Sidebar pages and route strings inside `navigation.languages[].sidebar`
+// are pre-prefixed with the locale code by pluginDocs at boot, so the slug
+// passed in here matches the prefixed sidebar without further translation.
+function resolveLocaleSettings(settings: Settings, locale?: string): Settings {
+    const langs = settings?.navigation?.languages
+    if (!locale || !langs?.length) return settings
+    const entry = langs.find(l => l.language === locale)
+    if (!entry) return settings
+    return {
+        ...settings,
+        navigation: {
+            ...settings.navigation,
+            sidebar: entry.sidebar,
+            tabs: entry.tabs,
+            sidebarDropdown: entry.sidebarDropdown,
+            segments: entry.segments,
+            anchors: entry.anchors,
+        }
+    }
 }

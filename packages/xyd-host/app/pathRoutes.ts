@@ -12,12 +12,25 @@ type Route = {
 
 // Helper function to recursively extract route definitions from nested pages
 export function pathRoutes(basePath: string, navigation: Settings['navigation']) {
-    if (!navigation?.sidebar) return [];
+    const i18n = (globalThis as any).__xydI18n as
+        | { defaultLocale: string; locales: string[] }
+        | undefined;
 
     const routes: Route[] = [];
 
-    // Process each sidebar group
-    extractNestedRoutes(navigation.sidebar || [], routes)
+    if (i18n && navigation?.languages?.length) {
+        // i18n mode: each language's sidebar was pre-prefixed in pluginDocs,
+        // so its `route`s and string pages already include the locale prefix
+        // (e.g. "/pl/docs"). Walk them with no further prefixing.
+        for (const lang of navigation.languages) {
+            extractNestedRoutes(lang.sidebar || [], routes);
+        }
+    } else if (navigation?.sidebar) {
+        // Non-i18n mode: original behavior.
+        extractNestedRoutes(navigation.sidebar || [], routes);
+    } else {
+        return [];
+    }
 
     if (!routes.length) {
         const rrRoutes: RouteConfigEntry[] = []
