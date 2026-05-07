@@ -294,6 +294,25 @@ function buildTypeResolver(
                         };
                     }
 
+                    // Detect string literal unions: "auto" | "plan" | "manual" → $xor
+                    if (memberType.isUnion()) {
+                        const unionTypes = (memberType as any).types as import('typescript').Type[];
+                        const allStringLiterals = unionTypes.every((t: any) => t.isStringLiteral?.());
+                        if (allStringLiterals && unionTypes.length > 1) {
+                            return {
+                                name: sym.getName(),
+                                type: '$xor',
+                                description: description || '',
+                                properties: unionTypes.map((t: any) => ({
+                                    name: String(t.value),
+                                    type: 'string',
+                                    description: '',
+                                })),
+                                meta: isOptional ? [] : [{name: 'required', value: 'true'}],
+                            };
+                        }
+                    }
+
                     return {
                         name: sym.getName(),
                         type: typeStr,

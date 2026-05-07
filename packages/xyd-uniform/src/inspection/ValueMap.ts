@@ -1,3 +1,10 @@
+/** Check if a value is a plain object (not Date, RegExp, Map, Set, etc.) */
+function isPlainObject(value: unknown): value is Record<string, any> {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) return false
+    const proto = Object.getPrototypeOf(value)
+    return proto === Object.prototype || proto === null
+}
+
 export class ValueMap {
     private values: Map<string, any>
     private initial: Map<string, any>
@@ -55,7 +62,7 @@ export class ValueMap {
                 continue // skip functions in JSON output
             }
 
-            if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+            if (isPlainObject(value)) {
                 result[path] = this.buildNested(path)
             } else {
                 result[path] = value
@@ -77,7 +84,7 @@ export class ValueMap {
 
             if (typeof value === "function") continue
 
-            if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+            if (isPlainObject(value)) {
                 result[rest] = this.buildNested(path)
             } else {
                 result[rest] = value
