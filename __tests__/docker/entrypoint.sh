@@ -38,6 +38,15 @@ SNAPSHOT_VERSION="docker-$(date +%s)"
 node release.js --snapshot "$SNAPSHOT_VERSION" --no-publish
 step_done "Versioning packages"
 
+step_start "Installing Linux native binaries"
+# Host install (macOS) only has darwin binaries for optional deps like rollup's
+# native bindings. Re-run install here so pnpm picks up the Linux equivalents
+# (e.g. @rollup/rollup-linux-arm64-gnu) needed by tsup/rollup at build time.
+# --config.confirm-modules-purge=false auto-confirms pnpm's platform-mismatch
+# purge prompt, which would otherwise hang silently with no TTY.
+pnpm install --ignore-scripts --config.confirm-modules-purge=false
+step_done "Installing Linux native binaries"
+
 step_start "Rebuilding documan"
 pnpm run --filter @xyd-js/documan build
 step_done "Rebuilding documan"
