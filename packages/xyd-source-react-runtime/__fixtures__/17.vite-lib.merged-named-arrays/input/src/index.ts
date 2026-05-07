@@ -46,6 +46,9 @@ namespace composer {
         history: HistoryItem[];
         activeTab: Tab | undefined;
         activeTabId: string | null;
+        toggle: () => void;
+        setOpen: (open: boolean) => void;
+        addPanelTab: (tab: Tab, setActive?: boolean) => void;
     }
 }
 

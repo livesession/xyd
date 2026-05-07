@@ -719,18 +719,59 @@ function fallbackShallowSchema(
         }
     }
 
+    // Helper to build an empty typia value-shape with one field populated
+    const emptyValueShape = (overrides: any) => ({
+        atomics: [], constants: [], required: true, optional: false, nullable: false, any: false,
+        functions: [], templates: [], escaped: null, rest: null,
+        arrays: [], tuples: [], objects: [], aliases: [], natives: [], sets: [], maps: [],
+        ...overrides,
+    });
+
     // Build a reflect-schemas-compatible structure so it goes through the same converter
     const properties: any[] = [];
     for (const symbol of checker.getPropertiesOfType(propsType as import('typescript').Type)) {
         const name = symbol.getName();
         const memberType = checker.getTypeOfSymbolAtLocation(symbol, sourceFile);
-        const typeStr = checker.typeToString(memberType);
         const isOptional = (symbol.flags & ts.SymbolFlags.Optional) !== 0;
         const description = ts.displayPartsToString(symbol.getDocumentationComment(checker));
+        const keyShape = {atomics: [{type: 'string', tags: []}], constants: [{type: 'string', values: [{value: name, tags: []}]}], required: true, optional: false, nullable: false, any: false, functions: [], templates: [], escaped: null, rest: null, arrays: [], tuples: [], objects: [], aliases: [], natives: [], sets: [], maps: []};
 
+        // Detect function types — emit typia-style `value.functions: [...]`
+        const callSigs = memberType.getCallSignatures();
+        if (callSigs.length > 0) {
+            const sig = callSigs[0];
+            const params = sig.getParameters().map(p => {
+                const pType = checker.getTypeOfSymbolAtLocation(p, sourceFile);
+                return {
+                    name: p.getName(),
+                    type: emptyValueShape({natives: [{name: checker.typeToString(pType), tags: []}]}),
+                };
+            });
+            const retTypeStr = checker.typeToString(sig.getReturnType());
+            properties.push({
+                key: keyShape,
+                value: emptyValueShape({
+                    required: !isOptional,
+                    optional: isOptional,
+                    functions: [{
+                        parameters: params,
+                        output: emptyValueShape({natives: [{name: retTypeStr, tags: []}]}),
+                    }],
+                }),
+                description: description || null,
+                jsDocTags: [],
+            });
+            continue;
+        }
+
+        const typeStr = checker.typeToString(memberType);
         properties.push({
-            key: {atomics: [{type: 'string', tags: []}], constants: [{type: 'string', values: [{value: name, tags: []}]}], required: true, optional: false, nullable: false, any: false, functions: [], templates: [], escaped: null, rest: null, arrays: [], tuples: [], objects: [], aliases: [], natives: [], sets: [], maps: []},
-            value: {atomics: [], constants: [], required: !isOptional, optional: isOptional, nullable: false, any: false, functions: [], templates: [], escaped: null, rest: null, arrays: [], tuples: [], objects: [], aliases: [], natives: [{name: typeStr, tags: []}], sets: [], maps: []},
+            key: keyShape,
+            value: emptyValueShape({
+                required: !isOptional,
+                optional: isOptional,
+                natives: [{name: typeStr, tags: []}],
+            }),
             description: description || null,
             jsDocTags: [],
         });
