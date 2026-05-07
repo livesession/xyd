@@ -58,24 +58,7 @@ When the `i18n` block is present, it wins:
 - `i18n.detectLanguage` — reserved for the prehydration redirect (future slice; currently unused at runtime).
 - `i18n.translations` — reserved for translation catalogs used by the `"i18n: <key>"` resolver (future slice).
 
-### Field reference
-
-| Field | Type | Description |
-|---|---|---|
-| `navigation.languages[]` | `LanguageNavigation[]` | Required for i18n. Per-locale navigation blocks. |
-| `navigation.languages[].language` | `string` | Required. ISO 639-1 code. Used in URLs. |
-| `navigation.languages[].name` | `string` | Native display name (`Polski`, not `Polish`). Reserved for the locale switcher. |
-| `navigation.languages[].default` | `boolean` | Marks this entry as the default locale. Exactly one entry should set this; if none does, the first wins. |
-| `navigation.languages[].dir` | `"ltr" \| "rtl"` | Optional, sets `<html dir>` (full theme RTL audit is V2). |
-| `navigation.languages[].overrides` | `Partial<Settings>` | Per-locale overrides for top-level `Settings` keys (e.g. `components.footer`, `theme.head`). Shallow-merged on top of root settings when serving this locale. |
-| `navigation.languages[].sidebar` | `SidebarNavigation` | Per-locale sidebar tree. |
-| `navigation.languages[].tabs` / `.anchors` / `.sidebarDropdown` / `.segments` | various | Same as the flat `Navigation` shape. |
-| `i18n` | `I18nConfig` | Optional. Site-wide i18n flags. Omit if the per-language entries above are sufficient. |
-| `i18n.defaultLocale` | `string` | Explicit default. Overrides per-entry `default: true`. |
-| `i18n.detectLanguage` | `boolean` | Reserved (future). Default `false`. |
-| `i18n.translations` | `Record<string, string \| TranslationCatalog>` | Reserved (future). |
-
-Types are defined in `packages/xyd-core/src/types/settings.ts`.
+For the full field reference, see the `Settings`, `Navigation`, `LanguageNavigation`, and `I18nConfig` interfaces in `4.settings/1.SETTINGS.md` (and the source of truth: `packages/xyd-core/src/types/settings.ts`).
 
 ## File structure
 
