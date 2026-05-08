@@ -157,7 +157,9 @@ export async function dev(options?: DevOptions) {
     {
         // TODO: !!! IN THE FUTURE BETTER SOLUTION !!!
         if (process.env.XYD_DEV_MODE) {
+            const themeName = respPluginDocs.settings?.theme?.name || "poetry";
             USE_CONTEXT_ISSUE_PACKAGES = [
+                `@xyd-js/theme-${themeName}`,
                 "react-github-btn",
                 "radix-ui",
                 "@code-hike/lighter",
@@ -207,6 +209,13 @@ export async function dev(options?: DevOptions) {
             'process.env': {}
         },
         resolve: {
+            dedupe: [
+                "react",
+                "react-dom",
+                "react-router",
+                "react/jsx-runtime",
+                "react/jsx-dev-runtime",
+            ],
             alias: {
                 process: 'process/browser',
                 // When rehype-mermaid is externalized, resolve it from CLI's node_modules
@@ -215,18 +224,7 @@ export async function dev(options?: DevOptions) {
                     "rehype-graphviz": path.resolve(getHostPath(), "./node_modules/rehype-graphviz"),
                     "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
                 })
-            },
-            // Force a single resolution for React and React Router so Context
-            // identity is consistent across the framework and any plugins
-            // that transitively pull in a different React minor (e.g.,
-            // @oramacloud/client → react@18 alongside the host's react@19).
-            // Without this, <SurfaceContext.Provider> in @xyd-js/framework
-            // and useContext(SurfaceContext) in @xyd-js/framework's Surface
-            // can end up referring to two different context objects on two
-            // different React copies, and the consumer reads the default
-            // value (`{ surfaces: undefined }`).
-            dedupe: ["react", "react-dom", "react/jsx-runtime", "react-router"],
-            // preserveSymlinks: true
+            }
         },
         build: {
             rollupOptions: {

@@ -19,9 +19,9 @@
   },
   "dependencies": {
     "@iconify/tools": "^4.1.2",
-    "@react-router/dev": "^7.7.1",
-    "@react-router/node": "^7.7.1",
-    "@react-router/serve": "^7.7.1",
+    "@react-router/dev": "^7.15.0",
+    "@react-router/node": "^7.15.0",
+    "@react-router/serve": "^7.15.0",
     "@xyd-js/content": "workspace:*",
     "@xyd-js/core": "workspace:*",
     "@xyd-js/plugin-access-control": "workspace:*",
