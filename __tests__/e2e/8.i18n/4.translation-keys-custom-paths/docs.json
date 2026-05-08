@@ -1,0 +1,34 @@
+{
+    "theme": { "name": "cosmo" },
+    "i18n": {
+        "translations": {
+            "en": "./locales/english.json",
+            "pl": { "sidebar.getstarted": "Zaczynamy" }
+        }
+    },
+    "navigation": {
+        "languages": [
+            {
+                "language": "en",
+                "name": "English",
+                "default": true,
+                "sidebar": [
+                    {
+                        "group": "i18n: sidebar.getstarted",
+                        "pages": ["docs/intro"]
+                    }
+                ]
+            },
+            {
+                "language": "pl",
+                "name": "Polski",
+                "sidebar": [
+                    {
+                        "group": "i18n: sidebar.getstarted",
+                        "pages": ["docs/intro"]
+                    }
+                ]
+            }
+        ]
+    }
+}

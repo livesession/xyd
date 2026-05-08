@@ -6,7 +6,7 @@ keywords: i18n, internationalization, locale, language, translation
 
 This page documents the i18n feature - a multi-language docs are configured in `docs.json`, how routes/files are organized, and how the framework wires it all up at runtime.
 
-> **Status:** V1. Routing, per-locale navigation, and per-locale content all work. SEO (`hreflang`, `<html lang>`), the locale switcher, search-locale filtering, prehydration script, and the `"i18n: <key>"` translation-key resolver are tracked as follow-up slices — see "Future work" at the bottom.
+> **Status:** V1. Routing, per-locale navigation, per-locale content, the `FwLocaleSwitcher` component (auto-registered on the `nav.right` surface), and the `"i18n: <key>"` translation-key resolver all work. SEO (`hreflang`, `<html lang>`), search-locale filtering, and the prehydration script are tracked as follow-up slices — see "Future work" at the bottom.
 
 ## Overview
 
@@ -157,7 +157,56 @@ When the `i18n` block is present, it wins:
 
 - `i18n.defaultLocale` overrides any `default: true` shorthand on language entries.
 - `i18n.detectLanguage` — reserved for the prehydration redirect (future slice; currently unused at runtime).
-- `i18n.translations` — reserved for translation catalogs used by the `"i18n: <key>"` resolver (future slice).
+- `i18n.translations` — translation catalogs used by the `"i18n: <key>"` resolver. See [Translation catalogs](#translation-catalogs) below.
+
+### Translation catalogs
+
+Any string in the navigation tree (and any value passed through `useT()` from a theme) can be written as `"i18n: <key>"`. At request time the framework looks the key up in the current-locale catalog (then the default-locale catalog, then falls back to the literal key for visibility in dev). Catalogs accept both flat dot-keys and nested objects in the same file.
+
+There are three ways to register catalogs, in priority order:
+
+**1. Custom file paths** — relative to project root or absolute:
+
+```json
+{
+  "i18n": {
+    "translations": {
+      "en": "./locales/english.json",
+      "pl": "./tlumaczenia/polski.json",
+      "de": "./locales/de-DE.json"
+    }
+  }
+}
+```
+
+**2. Inline catalogs** — useful for small projects:
+
+```json
+{
+  "i18n": {
+    "translations": {
+      "en": { "footer.copyright": "All rights reserved" },
+      "pl": { "footer": { "copyright": "Wszelkie prawa zastrzeżone" } }
+    }
+  }
+}
+```
+
+**3. Convention fallback** — when `i18n.translations` is omitted (or a particular locale's entry is missing), the framework auto-discovers `i18n/<language>.json` at the project root.
+
+#### Catalog file format
+
+Two equivalent shapes; both can coexist in the same file:
+
+```json
+// Flat dot-keys
+{ "footer.resources.header": "Resources", "footer.resources.examples": "Examples" }
+
+// Or nested objects
+{ "footer": { "resources": { "header": "Resources", "examples": "Examples" } } }
+```
+
+Lookup tries the exact flat key first, then walks dot-segments through nested objects.
 
 For the full field reference, see the `Settings`, `Navigation`, `LanguageNavigation`, and `I18nConfig` interfaces in `4.settings/1.SETTINGS.md` (and the source of truth: `packages/xyd-core/src/types/settings.ts`).
 
@@ -195,8 +244,6 @@ content/
 Tracked under follow-up slices, not in V1:
 
 - **SEO**: `<html lang>`, `<link rel="alternate" hreflang="…">`, sitemap `xhtml:link` alternates, per-locale `llms.txt`.
-- **Locale switcher**: `FwLocaleSwitcher` component + Surface registration on `nav.right`.
 - **Prehydration script**: sets `<html lang>` synchronously before React hydration; honors `i18n.detectLanguage`.
-- **Translation key resolver**: `"i18n: footer.resources.header"` strings in component config, resolved at render time from per-locale catalogs declared in `i18n.translations`.
 - **Search localization**: tag indexed docs with locale, filter by current locale.
 - **Per-locale OpenAPI / GraphQL specs**: V2.
