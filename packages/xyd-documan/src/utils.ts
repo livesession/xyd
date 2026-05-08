@@ -1854,6 +1854,7 @@ export function nodeInstallPackages(hostPath: string) {
 }
 
 export function pmInstall() {
+    // 1. Explicit override always wins.
     if (process.env.XYD_NODE_PM) {
         switch (process.env.XYD_NODE_PM) {
             case "npm": {
@@ -1874,19 +1875,49 @@ export function pmInstall() {
         }
     }
 
+    // 2. Respect the project's existing lockfile so we don't introduce a
+    //    second package manager mid-tree (e.g., creating bun.lock in a pnpm
+    //    workspace just because bun is on PATH).
+    const lockChoice = pickByProjectLockfile();
+    if (lockChoice) {
+        return lockChoice;
+    }
+
+    // 3. Respect the package manager that invoked the current process.
+    const { pnpm, bun } = runningPm();
+    if (pnpm) {
+        return pnpmInstall();
+    }
+    if (bun) {
+        return bunInstall();
+    }
+
+    // 4. Greenfield project — prefer bun for speed if available.
     if (hasBun()) {
         return bunInstall();
     }
 
-    const { pnpm } = runningPm();
-
     console.log("ℹ️ consider install `bun` for better performance \n");
 
-    if (pnpm) {
+    return npmInstall();
+}
+
+function pickByProjectLockfile(): string | undefined {
+    const cwd = process.cwd();
+    if (fs.existsSync(path.join(cwd, "pnpm-lock.yaml"))) {
         return pnpmInstall();
     }
-
-    return npmInstall();
+    if (fs.existsSync(path.join(cwd, "bun.lock")) || fs.existsSync(path.join(cwd, "bun.lockb"))) {
+        return bunInstall();
+    }
+    if (fs.existsSync(path.join(cwd, "yarn.lock"))) {
+        // We don't have a yarn install path; fall through to other detection.
+        return undefined;
+    }
+    if (fs.existsSync(path.join(cwd, "package-lock.json"))) {
+        return npmInstall();
+    }
+    return undefined;
 }
 
 function hasBun(): boolean {
