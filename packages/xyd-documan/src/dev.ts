@@ -215,6 +215,13 @@ export async function dev(options?: DevOptions) {
                 "react-router",
                 "react/jsx-runtime",
                 "react/jsx-dev-runtime",
+                "@xyd-js/framework",
+                "@xyd-js/core",
+                "@xyd-js/ui",
+                "@xyd-js/components",
+                "@xyd-js/atlas",
+                "@xyd-js/themes",
+                "@xyd-js/analytics",
             ],
             alias: {
                 process: 'process/browser',
@@ -241,6 +248,29 @@ export async function dev(options?: DevOptions) {
             ],
             exclude: optimizeDepsExclude,
             // exclude: ["react", "react-dom"]
+            ...(process.env.XYD_DEV_MODE ? {
+                esbuildOptions: {
+                    plugins: [
+                        {
+                            name: 'externalize-xyd-packages',
+                            setup(build: any) {
+                                // Externalize @xyd-js/* and react from pre-bundled deps
+                                // so they use the same module instances as source code
+                                build.onResolve({ filter: /^@xyd-js\// }, (args: any) => {
+                                    if (args.kind === 'import-statement' && args.importer?.includes('node_modules')) {
+                                        return { path: args.path, external: true }
+                                    }
+                                })
+                                build.onResolve({ filter: /^react(-dom|-router)?(\/.*)?$/ }, (args: any) => {
+                                    if (args.kind === 'import-statement' && args.importer?.includes('node_modules')) {
+                                        return { path: args.path, external: true }
+                                    }
+                                })
+                            }
+                        }
+                    ]
+                }
+            } : {}),
         },
         plugins: [
             ...(commonRunVitePlugins as PluginOption[]),
