@@ -1,6 +1,6 @@
 // server-only
 
-import { Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL } from "@xyd-js/core";
+import { Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL, TranslationCatalog, resolveI18nDeep } from "@xyd-js/core";
 import { pageFrontMatters } from "@xyd-js/content";
 import { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
@@ -26,6 +26,28 @@ export async function mapSettingsToProps(
     // i18n: when languages[] is configured, swap the navigation source for
     // the matching language entry (already pre-prefixed by pluginDocs).
     const effectiveSettings = resolveLocaleSettings(settings, locale)
+
+    // i18n: resolve "i18n: <key>" reference strings inside the navigation
+    // tree (sidebar groups, tab/anchor labels, etc.) against the loaded
+    // translation catalogs for the current locale.
+    const catalogs = (globalThis as any).__xydI18nTranslations as
+        | Record<string, TranslationCatalog>
+        | undefined
+    const i18nState = (globalThis as any).__xydI18n as
+        | { defaultLocale: string }
+        | undefined
+    if (catalogs && i18nState && locale && effectiveSettings.navigation) {
+        // Deep-clone the navigation block so we don't mutate the cached
+        // user settings (resolveI18nDeep mutates in place).
+        const navClone = JSON.parse(JSON.stringify(effectiveSettings.navigation))
+        effectiveSettings.navigation = resolveI18nDeep(
+            navClone,
+            locale,
+            i18nState.defaultLocale,
+            catalogs
+        )
+    }
+
     let filteredNav = filterNavigation(effectiveSettings, slug)
     if (!frontmatters) {
         frontmatters = await pageFrontMatters(filteredNav, pagePathMapping) as MetadataMap

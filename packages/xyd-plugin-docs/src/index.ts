@@ -1,4 +1,4 @@
-import { Navigation, Settings, LanguageNavigation } from "@xyd-js/core";
+import { Navigation, Settings, LanguageNavigation, TranslationCatalog } from "@xyd-js/core";
 import type { Plugin as VitePlugin } from "vite";
 import { RouteConfigEntry } from "@react-router/dev/routes";
 import type { PageURL, Sidebar, SidebarRoute } from "@xyd-js/core";
@@ -16,6 +16,7 @@ export interface I18nDerived {
 
 declare global {
     var __xydI18n: I18nDerived | undefined;
+    var __xydI18nTranslations: Record<string, TranslationCatalog> | undefined;
 }
 
 export function deriveI18n(settings: Settings): I18nDerived | undefined {
@@ -33,6 +34,53 @@ export function deriveI18n(settings: Settings): I18nDerived | undefined {
         byLocale,
         detectLanguage: settings.i18n?.detectLanguage ?? false
     };
+}
+
+// Load per-locale translation catalogs from i18n.translations config (or
+// auto-discover i18n/<locale>.json at the project root). Catalogs accept
+// either flat dot-keys ({"footer.x.label": "..."}) or nested objects.
+export function loadI18nTranslations(
+    settings: Settings,
+    locales: string[]
+): Record<string, TranslationCatalog> {
+    const catalogs: Record<string, TranslationCatalog> = {};
+    const declared = settings.i18n?.translations;
+
+    for (const locale of locales) {
+        // Explicit declaration wins.
+        if (declared && locale in declared) {
+            const entry = declared[locale];
+            if (typeof entry === "string") {
+                const filePath = path.isAbsolute(entry)
+                    ? entry
+                    : path.join(process.cwd(), entry);
+                if (fs.existsSync(filePath)) {
+                    try {
+                        catalogs[locale] = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+                    } catch (e) {
+                        console.warn(`[xyd:i18n] failed to parse ${filePath}: ${(e as Error).message}`);
+                    }
+                } else {
+                    console.warn(`[xyd:i18n] translation file not found: ${filePath}`);
+                }
+            } else if (entry && typeof entry === "object") {
+                catalogs[locale] = entry;
+            }
+            continue;
+        }
+
+        // Convention fallback: i18n/<locale>.json
+        const conv = path.join(process.cwd(), "i18n", `${locale}.json`);
+        if (fs.existsSync(conv)) {
+            try {
+                catalogs[locale] = JSON.parse(fs.readFileSync(conv, "utf-8"));
+            } catch (e) {
+                console.warn(`[xyd:i18n] failed to parse ${conv}: ${(e as Error).message}`);
+            }
+        }
+    }
+
+    return catalogs;
 }
 
 import { docsPreset } from "./presets/docs";
@@ -227,6 +275,13 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
     // sitemap, prehydration) read from globalThis.__xydI18n.
     const i18n = deriveI18n(settings)
     globalThis.__xydI18n = i18n
+
+    // Load translation catalogs for each declared locale. Read by the
+    // resolveI18nString walker in mapSettingsToProps and by themes via the
+    // useI18n() hook.
+    if (i18n) {
+        globalThis.__xydI18nTranslations = loadI18nTranslations(settings, i18n.locales)
+    }
 
     if (settings?.navigation) {
         if (i18n) {

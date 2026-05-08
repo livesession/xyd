@@ -16,7 +16,9 @@
     "clean": "rimraf build",
     "prebuild": "pnpm clean",
     "build": "tsup",
-    "watch": "tsup --watch"
+    "watch": "tsup --watch",
+    "test": "vitest",
+    "ci:test": "vitest run"
   },
   "peerDependencies": {
     "vite": "^7.0.0"
@@ -31,6 +33,7 @@
     "rimraf": "^3.0.2",
     "tsup": "^8.3.0",
     "typescript": "^4.5.5",
-    "vite": "^7.0.0"
+    "vite": "^7.0.0",
+    "vitest": "^2.1.8"
   }
 }

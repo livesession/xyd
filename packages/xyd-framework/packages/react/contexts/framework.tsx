@@ -1,13 +1,21 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigation } from "react-router";
 
-import { Metadata, Settings } from "@xyd-js/core";
+import { Metadata, Settings, LanguageNavigation, TranslationCatalog, resolveI18nString } from "@xyd-js/core";
 import { Banner } from "@xyd-js/components/writer";
 import { type ITOC, type IBreadcrumb, type INavLinks, ProgressBar } from "@xyd-js/ui";
 
 import { FwSidebarItemProps } from "../components/FwSidebarItem";
 import { SurfaceContext } from "../components/Surfaces";
 import { Surfaces } from "../../../src"
+
+export interface IFrameworkI18n {
+    currentLocale: string
+    defaultLocale: string
+    locales: Array<{ code: string, name?: string }>
+    byLocale: Readonly<Record<string, LanguageNavigation>>
+    catalogs: Readonly<Record<string, TranslationCatalog>>
+}
 
 export interface IFramework {
     settings: Readonly<Settings>
@@ -17,6 +25,9 @@ export interface IFramework {
     setMetadata: (metadata: Metadata) => void
     components?: Readonly<{ [componentName: string]: React.ComponentType<any> }>
     BannerContent: React.ComponentType<any> | null
+
+    /** i18n state. `undefined` when navigation.languages[] isn't configured. */
+    i18n?: Readonly<IFrameworkI18n>
 }
 
 const framework: IFramework = {
@@ -41,6 +52,8 @@ export interface FrameworkProps {
     surfaces: Surfaces,
     components?: { [componentName: string]: React.ComponentType<any> },
     BannerContent: React.ComponentType<any>
+    /** i18n state. Pass when serving a locale-aware request. */
+    i18n?: IFrameworkI18n
 }
 
 export function Framework(props: FrameworkProps) {
@@ -60,6 +73,7 @@ export function Framework(props: FrameworkProps) {
             setMetadata: setMetadata,
             components: Object.freeze(props.components || {}),
             BannerContent: props.BannerContent || null,
+            i18n: props.i18n ? Object.freeze(props.i18n) : undefined,
         }}>
             <SurfaceContext value={{
                 surfaces: props.surfaces
@@ -219,4 +233,47 @@ export function useShowColorSchemeButton() {
         && ctx.settings.theme?.appearance?.colorSchemeButton !== false
 
     return showColorSchemeButton
+}
+
+// ---------- i18n hooks ----------
+
+/**
+ * Current locale code (e.g. "en", "pl"). Returns undefined when i18n is
+ * not configured.
+ */
+export function useCurrentLocale(): string | undefined {
+    const ctx = useContext(FrameworkContext)
+    return ctx.i18n?.currentLocale
+}
+
+/**
+ * Default locale code. Returns undefined when i18n is not configured.
+ */
+export function useDefaultLocale(): string | undefined {
+    const ctx = useContext(FrameworkContext)
+    return ctx.i18n?.defaultLocale
+}
+
+/**
+ * List of available locales `{ code, name }`. Empty when i18n is not
+ * configured.
+ */
+export function useAvailableLocales(): Array<{ code: string, name?: string }> {
+    const ctx = useContext(FrameworkContext)
+    return ctx.i18n?.locales ?? []
+}
+
+/**
+ * Resolve a single string against the current locale's translation
+ * catalog. Strings without the `i18n:` prefix pass through unchanged;
+ * strings of the form `"i18n: foo.bar"` are looked up in the catalog
+ * (current locale, then default locale, then literal key fallback).
+ */
+export function useT(): (value: string) => string {
+    const ctx = useContext(FrameworkContext)
+    const i18n = ctx.i18n
+    return (value: string) => {
+        if (!i18n) return value
+        return resolveI18nString(value, i18n.currentLocale, i18n.defaultLocale, i18n.catalogs)
+    }
 }
