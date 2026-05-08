@@ -91,7 +91,11 @@ export async function build() {
                         "rehype-graphviz": path.resolve(getHostPath(), "./node_modules/rehype-graphviz"),
                         "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
                     }),
-                }
+                },
+                // Force single React/React-Router resolution. See dev.ts for
+                // the full rationale (transitive deps like @oramacloud/client
+                // pull in react@18 alongside the host's react@19).
+                dedupe: ["react", "react-dom", "react/jsx-runtime", "react-router"],
             },
             build: {
                 rollupOptions: {
@@ -155,7 +159,11 @@ export async function build() {
                         "rehype-graphviz": path.resolve(getHostPath(), "./node_modules/rehype-graphviz"),
                         "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
                     }),
-                }
+                },
+                // Force single React/React-Router resolution. See dev.ts for
+                // the full rationale (transitive deps like @oramacloud/client
+                // pull in react@18 alongside the host's react@19).
+                dedupe: ["react", "react-dom", "react/jsx-runtime", "react-router"],
             },
             ssr: {
                 external: externalPackages,

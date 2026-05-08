@@ -66,7 +66,7 @@ export function Framework(props: FrameworkProps) {
     const appearance = props.settings.theme?.appearance
 
     return <>
-        <FrameworkContext value={{
+        <FrameworkContext.Provider value={{
             settings: Object.freeze({ ...props.settings }),
             sidebarGroups: Object.freeze([...props.sidebarGroups]),
             metadata: Object.freeze({ ...metadata, title: metadata?.title || "" }),
@@ -75,7 +75,7 @@ export function Framework(props: FrameworkProps) {
             BannerContent: props.BannerContent || null,
             i18n: props.i18n ? Object.freeze(props.i18n) : undefined,
         }}>
-            <SurfaceContext value={{
+            <SurfaceContext.Provider value={{
                 surfaces: props.surfaces
             }}>
                 <ProgressBar isActive={navigation.state === 'loading'} />
@@ -87,8 +87,8 @@ export function Framework(props: FrameworkProps) {
                     <BannerContent />
                 </BannerComponent> : null}
                 {props.children}
-            </SurfaceContext>
-        </FrameworkContext>
+            </SurfaceContext.Provider>
+        </FrameworkContext.Provider>
     </>
 }
 
@@ -132,7 +132,7 @@ export function FrameworkPage(props: FrameworkPageProps) {
         setMetadata(props.metadata)
     }, [])
 
-    return <FrameworkPageContext value={{
+    return <FrameworkPageContext.Provider value={{
         ContentComponent: props.ContentComponent || (() => <></>),
         ContentOriginal: props.ContentOriginal || (() => <></>),
         metadata: Object.freeze(props.metadata),
@@ -143,7 +143,7 @@ export function FrameworkPage(props: FrameworkPageProps) {
         editLink: Object.freeze(props.editLink),
     }}>
         {props.children}
-    </FrameworkPageContext>
+    </FrameworkPageContext.Provider>
 }
 
 export function useSidebarGroups() {

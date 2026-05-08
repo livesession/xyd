@@ -204,6 +204,16 @@ export async function dev(options?: DevOptions) {
                     "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
                 })
             },
+            // Force a single resolution for React and React Router so Context
+            // identity is consistent across the framework and any plugins
+            // that transitively pull in a different React minor (e.g.,
+            // @oramacloud/client → react@18 alongside the host's react@19).
+            // Without this, <SurfaceContext.Provider> in @xyd-js/framework
+            // and useContext(SurfaceContext) in @xyd-js/framework's Surface
+            // can end up referring to two different context objects on two
+            // different React copies, and the consumer reads the default
+            // value (`{ surfaces: undefined }`).
+            dedupe: ["react", "react-dom", "react/jsx-runtime", "react-router"],
             // preserveSymlinks: true
         },
         build: {

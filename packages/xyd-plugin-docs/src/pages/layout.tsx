@@ -95,7 +95,11 @@ if (SidebarItemRight) {
 // i18n: auto-register the built-in locale switcher on `nav.right` when
 // navigation.languages[] is configured. Themes can override by registering
 // their own component on the same surface.
-if (globalThis.__xydI18n) {
+//
+// Read from settings (available both server-side and client-side via the
+// virtual:xyd-settings bundle), NOT from globalThis.__xydI18n which is
+// only populated server-side at appInit time.
+if (settings?.navigation?.languages?.length) {
     surfaces.define(
         "nav.right",
         FwLocaleSwitcher as any,
