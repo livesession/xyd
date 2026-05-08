@@ -1,6 +1,8 @@
 import React, { useCallback } from "react";
 import { useLocation, useNavigate } from "react-router";
 
+import { LocaleSwitcher } from "@xyd-js/components/writer";
+
 import {
     useAvailableLocales,
     useCurrentLocale,
@@ -41,20 +43,22 @@ export function computeLocaleHref(
 }
 
 export interface FwLocaleSwitcherProps {
-    /** Optional className passed to the wrapping `<select>` element. */
+    /** Optional className passed through to the underlying LocaleSwitcher. */
     className?: string;
 }
 
 /**
- * Built-in locale switcher. Renders a native `<select>` listing every
- * locale declared in `navigation.languages[]`. On change:
+ * Built-in locale switcher. Pulls available locales + current locale from
+ * the Framework context and delegates rendering to the LocaleSwitcher
+ * primitive in `@xyd-js/components/writer`.
  *
- * 1. Computes the destination path under the new locale.
- * 2. Persists the choice in the `xyd-locale` cookie (1 year).
- * 3. Navigates via React Router.
+ * On change:
+ *   1. Computes the destination path under the new locale.
+ *   2. Persists the choice in the `xyd-locale` cookie (1 year).
+ *   3. Navigates via React Router.
  *
  * Themes can override or replace this by registering their own component
- * on the `nav.right` surface (or any surface they prefer).
+ * on the `nav.right` surface.
  */
 export function FwLocaleSwitcher(props: FwLocaleSwitcherProps = {}) {
     const locales = useAvailableLocales();
@@ -64,8 +68,7 @@ export function FwLocaleSwitcher(props: FwLocaleSwitcherProps = {}) {
     const location = useLocation();
 
     const onChange = useCallback(
-        (e: React.ChangeEvent<HTMLSelectElement>) => {
-            const next = e.target.value;
+        (next: string) => {
             if (!current || !defaultLocale || next === current) return;
             const href = computeLocaleHref(
                 location.pathname,
@@ -86,18 +89,11 @@ export function FwLocaleSwitcher(props: FwLocaleSwitcherProps = {}) {
     if (!locales.length || !current) return null;
 
     return (
-        <select
+        <LocaleSwitcher
             className={props.className}
+            locales={locales}
             value={current}
             onChange={onChange}
-            data-fw-locale-switcher
-            aria-label="Select language"
-        >
-            {locales.map((l) => (
-                <option key={l.code} value={l.code}>
-                    {l.name || l.code}
-                </option>
-            ))}
-        </select>
+        />
     );
 }

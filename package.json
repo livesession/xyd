@@ -48,5 +48,10 @@
   "pre-commit": "lint-staged",
   "lint-staged": {
     "*.{js,ts,cjs,mjs,md,json,jsonc}": "biome ci --no-errors-on-unmatched"
+  },
+  "pnpm": {
+    "overrides": {
+      "typescript": "^5.6.2"
+    }
   }
 }
