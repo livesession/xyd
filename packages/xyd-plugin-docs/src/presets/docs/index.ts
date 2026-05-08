@@ -217,6 +217,9 @@ export function vitePluginThemeCSS() {
                         // External theme: resolve from node_modules by package name
                         const packageName = themeName.slice(4)
                         themePath = path.join(getHostPath(), `node_modules/${packageName}/dist`)
+                    } else if (process.env.XYD_DEV_MODE) {
+                        // In dev mode, use local source dist
+                        themePath = path.join(path.resolve(__dirname, "../../"), `xyd-theme-${themeName}/dist`)
                     } else if (process.env.XYD_CLI) {
                         themePath = path.join(getHostPath(), `node_modules/@xyd-js/theme-${themeName}/dist`)
                     } else {
@@ -292,6 +295,9 @@ export function vitePluginTheme() {
                     if (themeName.startsWith("npm:")) {
                         // External theme: "npm:@mycompany/theme" → import from "@mycompany/theme"
                         themePath = themeName.slice(4)
+                    } else if (process.env.XYD_DEV_MODE) {
+                        // In dev mode, always use local source to avoid duplicate React/context instances
+                        themePath = path.join(path.resolve(__dirname, "../../"), `xyd-theme-${themeName}/src`)
                     } else if (process.env.XYD_CLI) {
                         themePath = `@xyd-js/theme-${themeName}`
                     } else {

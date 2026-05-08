@@ -10,6 +10,7 @@
     "./index.css": "./dist/index.css",
     "./tokens.css": "./dist/tokens.css",
     "./decorators/*": "./dist/decorators/*",
+    "./dist/decorators/*": "./dist/decorators/*",
     ".": {
       "import": "./dist/index.js"
     },
