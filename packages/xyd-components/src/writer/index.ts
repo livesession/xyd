@@ -34,8 +34,6 @@ export * from "./Image"
 
 export * from "./List"
 
-export * from "./LocaleSwitcher"
-
 export * from "./NavLinks"
 
 export * from "./Pre"

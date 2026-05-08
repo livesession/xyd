@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useLocation, useNavigate } from "react-router";
 
-import { LocaleSwitcher } from "@xyd-js/components/writer";
+import { LocaleSwitcher } from "@xyd-js/components/system";
 
 import {
     useAvailableLocales,
@@ -50,7 +50,7 @@ export interface FwLocaleSwitcherProps {
 /**
  * Built-in locale switcher. Pulls available locales + current locale from
  * the Framework context and delegates rendering to the LocaleSwitcher
- * primitive in `@xyd-js/components/writer`.
+ * primitive in `@xyd-js/components/system`.
  *
  * On change:
  *   1. Computes the destination path under the new locale.
