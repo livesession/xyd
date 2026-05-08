@@ -157,7 +157,9 @@ export async function dev(options?: DevOptions) {
     {
         // TODO: !!! IN THE FUTURE BETTER SOLUTION !!!
         if (process.env.XYD_DEV_MODE) {
+            const themeName = respPluginDocs.settings?.theme?.name || "poetry";
             USE_CONTEXT_ISSUE_PACKAGES = [
+                `@xyd-js/theme-${themeName}`,
                 "react-github-btn",
                 "radix-ui",
                 "@code-hike/lighter",
@@ -166,7 +168,7 @@ export async function dev(options?: DevOptions) {
                 "pluganalytics",
                 "@orama/orama",
                 "@orama/react-components",
-                // TODO: optimize plugin deps only if loaded 
+                // TODO: optimize plugin deps only if loaded
                 // "@pluganalytics/provider-livesession"
             ];
         } else {
@@ -195,6 +197,13 @@ export async function dev(options?: DevOptions) {
             'process.env': {}
         },
         resolve: {
+            dedupe: [
+                "react",
+                "react-dom",
+                "react-router",
+                "react/jsx-runtime",
+                "react/jsx-dev-runtime",
+            ],
             alias: {
                 process: 'process/browser',
                 // When rehype-mermaid is externalized, resolve it from CLI's node_modules
