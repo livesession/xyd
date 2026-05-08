@@ -361,7 +361,7 @@ function buildTypeResolver(
                 if (allStringLiterals && unionTypes.length > 1) {
                     return {
                         name,
-                        type: '$xor',
+                        type: '$$xor',
                         description: description || '',
                         properties: unionTypes.map((u: any) => ({name: String(u.value), type: 'string', description: ''})),
                         meta,
@@ -412,7 +412,7 @@ function buildTypeResolver(
                     const elProp = resolveTypeIntoProperty(elementType, '', '', [{name: 'required', value: 'true'}], visitedNames, sourceFile);
                     return {
                         name,
-                        type: '$array',
+                        type: '$$array',
                         description: description || '',
                         properties: [],
                         ofProperty: elProp,
@@ -1110,7 +1110,7 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
             if (resolvedProps) {
                 // String literal union types are marked with __xor by the resolver
                 if (resolvedProps.length > 0 && resolvedProps[0].__xor) {
-                    return {type: '$xor', properties: resolvedProps.map((p: any) => ({name: p.name, type: p.type, description: p.description}))};
+                    return {type: '$$xor', properties: resolvedProps.map((p: any) => ({name: p.name, type: p.type, description: p.description}))};
                 }
                 // Preserve the original type name (VFS, BootVolume, etc.) — not 'object'
                 return {type: objName, properties: resolvedProps};
@@ -1135,7 +1135,7 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
         const arrType = components.arrays?.find((a: any) => a.name === arrName);
         const itemResolved = arrType?.value ? resolveMetadataType(arrType.value, components, typeResolver) : {type: 'unknown'};
         return {
-            type: '$array',
+            type: '$$array',
             properties: [],
             ofProperty: {
                 name: '',
@@ -1179,11 +1179,11 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
                     let elementProperties = first.__elementProperties || [];
                     if (first.__elementIsXor) {
                         return {
-                            type: '$array',
+                            type: '$$array',
                             properties: [],
                             ofProperty: {
                                 name: '',
-                                type: '$xor',
+                                type: '$$xor',
                                 properties: elementProperties,
                                 description: '',
                                 meta: [{name: 'required', value: 'true'}],
@@ -1191,7 +1191,7 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
                         };
                     }
                     return {
-                        type: '$array',
+                        type: '$$array',
                         properties: [],
                         ofProperty: {
                             name: '',
@@ -1208,7 +1208,7 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
                     const innerType = first.__innerType;
                     const innerProps = first.__innerProperties || [];
                     if (first.__innerIsXor) {
-                        return {type: '$xor', properties: innerProps, __nullable: true};
+                        return {type: '$$xor', properties: innerProps, __nullable: true};
                     }
                     if (first.__innerWrapperKind === 'union') {
                         return {type: '$$union', properties: first.__innerProperties, __nullable: true};
@@ -1217,9 +1217,9 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
                         return {type: first.__innerVariantName, properties: first.__innerProperties, __nullable: true};
                     }
                     if (first.__innerWrapperKind === 'array') {
-                        const ofType = first.__elementIsXor ? '$xor' : first.__elementType;
+                        const ofType = first.__elementIsXor ? '$$xor' : first.__elementType;
                         return {
-                            type: '$array',
+                            type: '$$array',
                             properties: [],
                             ofProperty: {
                                 name: '',
@@ -1246,7 +1246,7 @@ function resolveMetadataType(schema: any, components: any, typeResolver?: (name:
 
                 // String literal union: "auto" | "plan" | "manual" → $xor
                 if (first.__xor) {
-                    return {type: '$xor', properties: resolvedProps.map((p: any) => ({name: p.name, type: p.type, description: p.description}))};
+                    return {type: '$$xor', properties: resolvedProps.map((p: any) => ({name: p.name, type: p.type, description: p.description}))};
                 }
 
                 // Preserve the original type name (VFS, BootVolume, etc.) — not 'object'
