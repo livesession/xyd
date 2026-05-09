@@ -103,7 +103,7 @@ export interface I18nConfig {
    * keyed by locale code. If omitted, the framework auto-discovers
    * `i18n/{language}.json` files at the project root.
    */
-  translations?: Record<string, string | TranslationCatalog>;
+  catalogs?: Record<string, string | TranslationCatalog>;
 }
 
 /**

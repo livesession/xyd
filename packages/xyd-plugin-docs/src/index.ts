@@ -36,7 +36,45 @@ export function deriveI18n(settings: Settings): I18nDerived | undefined {
     };
 }
 
-// Load per-locale translation catalogs from i18n.translations config (or
+// Catalog keys prefixed with `$` are not translation keys — they encode
+// per-locale settings overrides applied to the matching language entry.
+// Splits each catalog into pure translations + an overrides object (flat
+// dot-key map) and MUTATES the input catalogs to remove `$`-keys.
+//
+// Example:
+//   { "sidebar.greet": "Hi", "$components.footer.props.children": "Hi PL" }
+//
+// Returns:
+//   { "components.footer.props.children": "Hi PL" }
+//
+// And the catalog becomes:
+//   { "sidebar.greet": "Hi" }
+export function extractCatalogOverrides(
+    catalogs: Record<string, TranslationCatalog>
+): Record<string, Record<string, any>> {
+    const out: Record<string, Record<string, any>> = {};
+
+    for (const locale of Object.keys(catalogs)) {
+        const catalog = catalogs[locale] as Record<string, any>;
+        if (!catalog || typeof catalog !== "object") continue;
+
+        const overrides: Record<string, any> = {};
+        for (const key of Object.keys(catalog)) {
+            if (key.startsWith("$")) {
+                overrides[key.slice(1)] = catalog[key];
+                delete catalog[key];
+            }
+        }
+
+        if (Object.keys(overrides).length > 0) {
+            out[locale] = overrides;
+        }
+    }
+
+    return out;
+}
+
+// Load per-locale translation catalogs from i18n.catalogs config (or
 // auto-discover i18n/<locale>.json at the project root). Catalogs accept
 // either flat dot-keys ({"footer.x.label": "..."}) or nested objects.
 export function loadI18nTranslations(
@@ -44,7 +82,7 @@ export function loadI18nTranslations(
     locales: string[]
 ): Record<string, TranslationCatalog> {
     const catalogs: Record<string, TranslationCatalog> = {};
-    const declared = settings.i18n?.translations;
+    const declared = settings.i18n?.catalogs;
 
     for (const locale of locales) {
         // Explicit declaration wins.
@@ -280,11 +318,31 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
     // resolveI18nString walker in mapSettingsToProps and by themes via the
     // useI18n() hook.
     if (i18n) {
-        globalThis.__xydI18nTranslations = loadI18nTranslations(settings, i18n.locales)
+        const loaded = loadI18nTranslations(settings, i18n.locales)
+        // `$`-prefixed catalog keys are settings override paths, not
+        // translation keys. Pull them out of the catalogs and merge them
+        // into the matching language entry's `overrides` so applyOverrides
+        // (in mapSettingsToProps) picks them up at request time.
+        const catalogOverrides = extractCatalogOverrides(loaded)
+        for (const lang of settings.navigation?.languages || []) {
+            const fromCatalog = catalogOverrides[lang.language]
+            if (!fromCatalog) continue
+            lang.overrides = {
+                ...(lang.overrides as any || {}),
+                ...fromCatalog
+            } as any
+        }
+        globalThis.__xydI18nTranslations = loaded
     }
 
     if (settings?.navigation) {
         if (i18n) {
+            // Catalog-only mode: when a language entry omits sidebar/tabs/etc.,
+            // inherit the top-level navigation. Lets users define the structure
+            // once at navigation.sidebar and only declare locales in
+            // navigation.languages — translations come from i18n catalogs.
+            inheritTopLevelNavigation(settings)
+
             // i18n mode: pre-prefix each non-default language's sidebar so
             // that page references, route strings, pagePathMapping keys,
             // and URL paths all share one key space (e.g. "pl/docs/intro").
@@ -422,6 +480,37 @@ export function sortSidebarGroups(sidebar: (SidebarRoute | Sidebar | string)[]) 
 
             // Replace the original pages with sorted groups + other items
             entry.pages = [...sortedGroups, ...otherItems];
+        }
+    }
+}
+
+// Catalog-only mode helper: for any language entry that omits sidebar/tabs/
+// sidebarDropdown/segments/anchors, copy the top-level navigation field down
+// onto the entry. This lets users write the navigation structure once at
+// navigation.sidebar and only declare locales in navigation.languages —
+// the per-locale strings come from i18n catalogs.
+//
+// Deep-cloned so the per-locale prefixing in prefixSidebarPages doesn't
+// mutate the shared source. Mutates `settings` in place to match the
+// existing pattern used by prefixSidebarPages.
+export function inheritTopLevelNavigation(settings: Settings) {
+    const nav = settings?.navigation
+    const langs = nav?.languages
+    if (!langs?.length) return
+
+    const FIELDS = [
+        "sidebar",
+        "tabs",
+        "sidebarDropdown",
+        "segments",
+        "anchors"
+    ] as const
+
+    for (const lang of langs) {
+        for (const f of FIELDS) {
+            if (lang[f] === undefined && (nav as any)[f] !== undefined) {
+                ;(lang as any)[f] = JSON.parse(JSON.stringify((nav as any)[f]))
+            }
         }
     }
 }

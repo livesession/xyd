@@ -1,7 +1,7 @@
 {
     "theme": { "name": "cosmo" },
     "i18n": {
-        "translations": {
+        "catalogs": {
             "en": "./locales/english.json",
             "pl": { "sidebar.getstarted": "Zaczynamy" }
         }

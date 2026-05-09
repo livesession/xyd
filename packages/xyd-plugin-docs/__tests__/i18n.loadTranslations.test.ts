@@ -9,9 +9,9 @@ import { loadI18nTranslations } from "../src";
 
 /**
  * loadI18nTranslations resolves catalogs in priority order:
- *   1. i18n.translations[locale] is a string → load that JSON file
+ *   1. i18n.catalogs[locale] is a string → load that JSON file
  *      (path is resolved relative to process.cwd() unless absolute).
- *   2. i18n.translations[locale] is an object → use it as the inline catalog.
+ *   2. i18n.catalogs[locale] is an object → use it as the inline catalog.
  *   3. Convention fallback: i18n/<locale>.json at process.cwd().
  *
  * These tests temporarily chdir into a tmp workspace per test so the
@@ -33,8 +33,8 @@ describe("loadI18nTranslations", () => {
         fs.rmSync(tmpDir, { recursive: true, force: true });
     });
 
-    function settings(translations?: Record<string, any>): Settings {
-        return { i18n: translations ? { translations } : undefined } as Settings;
+    function settings(catalogs?: Record<string, any>): Settings {
+        return { i18n: catalogs ? { catalogs } : undefined } as Settings;
     }
 
     it("loads a catalog from a relative file path", () => {
@@ -83,7 +83,7 @@ describe("loadI18nTranslations", () => {
         expect(out.pl).toEqual({ "footer.x": "Stopka X" });
     });
 
-    it("uses convention fallback when i18n.translations is undefined entirely", () => {
+    it("uses convention fallback when i18n.catalogs is undefined entirely", () => {
         fs.mkdirSync(path.join(tmpDir, "i18n"));
         fs.writeFileSync(path.join(tmpDir, "i18n/de.json"), JSON.stringify({ x: "X" }));
 
