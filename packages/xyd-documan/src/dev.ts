@@ -229,6 +229,13 @@ export async function dev(options?: DevOptions) {
         },
         ssr: {
             external: externalPackages,
+            // In dev mode, prevent @xyd-js/* from being externalized during SSR
+            // so that resolve.dedupe can unify them with the source code instances
+            ...(process.env.XYD_DEV_MODE ? {
+                noExternal: [
+                    /^@xyd-js\//,
+                ],
+            } : {}),
         },
         optimizeDeps: {
             include: [
