@@ -168,18 +168,6 @@ export async function dev(options?: DevOptions) {
                 "pluganalytics",
                 "@orama/orama",
                 "@orama/react-components",
-                // xyd workspace UI packages: when symlinked workspace
-                // packages serve their compiled dist directly, Vite can
-                // bundle them on a different React module instance from
-                // the host's prebundled react. That makes Context objects
-                // (e.g. SurfaceContext, FrameworkContext) identity-mismatch
-                // between provider and consumer, so useContext silently
-                // falls back to the default value. Including these here
-                // forces Vite to prebundle them through the host's React.
-                "@xyd-js/framework",
-                "@xyd-js/components",
-                "@xyd-js/atlas",
-                "@xyd-js/themes",
                 // TODO: optimize plugin deps only if loaded
                 // "@pluganalytics/provider-livesession"
             ];
@@ -231,7 +219,8 @@ export async function dev(options?: DevOptions) {
                     "rehype-graphviz": path.resolve(getHostPath(), "./node_modules/rehype-graphviz"),
                     "@hpcc-js/wasm": path.resolve(getHostPath(), "./node_modules/@hpcc-js/wasm"),
                 })
-            }
+            },
+            // preserveSymlinks: true
         },
         build: {
             rollupOptions: {
