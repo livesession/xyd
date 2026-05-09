@@ -157,9 +157,7 @@ export async function dev(options?: DevOptions) {
     {
         // TODO: !!! IN THE FUTURE BETTER SOLUTION !!!
         if (process.env.XYD_DEV_MODE) {
-            const themeName = respPluginDocs.settings?.theme?.name || "poetry";
             USE_CONTEXT_ISSUE_PACKAGES = [
-                `@xyd-js/theme-${themeName}`,
                 "react-github-btn",
                 "radix-ui",
                 "@code-hike/lighter",
@@ -197,20 +195,6 @@ export async function dev(options?: DevOptions) {
             'process.env': {}
         },
         resolve: {
-            dedupe: [
-                "react",
-                "react-dom",
-                "react-router",
-                "react/jsx-runtime",
-                "react/jsx-dev-runtime",
-                "@xyd-js/framework",
-                "@xyd-js/core",
-                "@xyd-js/ui",
-                "@xyd-js/components",
-                "@xyd-js/atlas",
-                "@xyd-js/themes",
-                "@xyd-js/analytics",
-            ],
             alias: {
                 process: 'process/browser',
                 // When rehype-mermaid is externalized, resolve it from CLI's node_modules
@@ -229,13 +213,6 @@ export async function dev(options?: DevOptions) {
         },
         ssr: {
             external: externalPackages,
-            // In dev mode, prevent @xyd-js/* from being externalized during SSR
-            // so that resolve.dedupe can unify them with the source code instances
-            ...(process.env.XYD_DEV_MODE ? {
-                noExternal: [
-                    /^@xyd-js\//,
-                ],
-            } : {}),
         },
         optimizeDeps: {
             include: [
@@ -244,29 +221,6 @@ export async function dev(options?: DevOptions) {
             ],
             exclude: optimizeDepsExclude,
             // exclude: ["react", "react-dom"]
-            ...(process.env.XYD_DEV_MODE ? {
-                esbuildOptions: {
-                    plugins: [
-                        {
-                            name: 'externalize-xyd-packages',
-                            setup(build: any) {
-                                // Externalize @xyd-js/* and react from pre-bundled deps
-                                // so they use the same module instances as source code
-                                build.onResolve({ filter: /^@xyd-js\// }, (args: any) => {
-                                    if (args.kind === 'import-statement' && args.importer?.includes('node_modules')) {
-                                        return { path: args.path, external: true }
-                                    }
-                                })
-                                build.onResolve({ filter: /^react(-dom|-router)?(\/.*)?$/ }, (args: any) => {
-                                    if (args.kind === 'import-statement' && args.importer?.includes('node_modules')) {
-                                        return { path: args.path, external: true }
-                                    }
-                                })
-                            }
-                        }
-                    ]
-                }
-            } : {}),
         },
         plugins: [
             ...(commonRunVitePlugins as PluginOption[]),
