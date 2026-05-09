@@ -314,6 +314,22 @@ function getThemeDependency(settings: Settings): Record<string, string> {
         return { [packageName]: "latest" };
     }
 
+    // In dev mode, prefer the live workspace package via `workspace:*` so
+    // changes to the theme source (and its compiled dist) propagate without
+    // bumping BUILT_IN_THEME_VERSIONS or republishing. This matches the
+    // pattern every other @xyd-js/* dep already uses in the host package.json
+    // template.
+    if (process.env.XYD_DEV_MODE) {
+        const workspacePath = path.resolve(
+            __dirname,
+            "../..",
+            `xyd-theme-${themeName}`
+        );
+        if (fs.existsSync(path.join(workspacePath, "package.json"))) {
+            return { [packageName]: "workspace:*" };
+        }
+    }
+
     if (!process.env.XYD_DEV_MODE) {
         const documanVersion = getDocumanRuntimeVersion();
         if (documanVersion && isLockstepSnapshotVersion(documanVersion)) {
