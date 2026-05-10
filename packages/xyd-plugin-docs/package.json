@@ -18,9 +18,7 @@
     "clean": "rimraf build",
     "prebuild": "pnpm clean",
     "build": "tsup",
-    "watch": "tsup --watch",
-    "test": "vitest",
-    "ci:test": "vitest run"
+    "watch": "tsup --watch"
   },
   "dependencies": {
     "@xyd-js/openapi": "workspace:*",

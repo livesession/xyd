@@ -66,53 +66,6 @@ export interface Settings {
    * it is code-split into separate JS chunks loaded only after authentication.
    */
   accessControl?: AccessControl;
-
-  /**
-   * Internationalization (i18n) configuration.
-   *
-   * The required source of truth for i18n is `navigation.languages[]`.
-   * This `i18n` block is OPTIONAL and carries only site-wide flags
-   * (explicit `defaultLocale` override, browser detection, translation catalogs).
-   *
-   * If `navigation.languages[]` is absent, this block has no effect.
-   */
-  i18n?: I18nConfig;
-}
-
-/**
- * Optional site-wide i18n config.
- * `navigation.languages[]` is the source of truth for per-locale state.
- */
-export interface I18nConfig {
-  /**
-   * Explicit default locale. Overrides any `default: true` shorthand on
-   * `navigation.languages[]` entries when set.
-   * Must match a `language` declared in `navigation.languages[]`.
-   */
-  defaultLocale?: string;
-
-  /**
-   * When `true`, redirect `/` based on `navigator.language` / `xyd-locale`
-   * cookie. Default `false`.
-   */
-  detectLanguage?: boolean;
-
-  /**
-   * Translation catalogs for `"i18n: <key>"` references in component
-   * config. Either a path to a JSON file, or an inline catalog object,
-   * keyed by locale code. If omitted, the framework auto-discovers
-   * `i18n/{language}.json` files at the project root.
-   */
-  catalogs?: Record<string, string | TranslationCatalog>;
-}
-
-/**
- * Translation catalog. Keys may be flat dot-paths
- * (e.g. `"footer.resources.header"`) OR nested objects; both shapes
- * coexist in one file.
- */
-export interface TranslationCatalog {
-  [key: string]: string | TranslationCatalog;
 }
 
 // ------ START settings for theme START ------
@@ -536,10 +489,8 @@ export type SearchType = "side" | "top";
 export interface Navigation {
   /**
    * Sidebar navigation - main navigation on the left side of the page.
-   *
-   * Optional when `languages` is set (each language entry carries its own sidebar).
    */
-  sidebar?: SidebarNavigation;
+  sidebar: SidebarNavigation;
 
   /**
    * Tabs navigation - navigation through tabs.
@@ -562,68 +513,10 @@ export interface Navigation {
   anchors?: Anchors;
 
   /**
-   * Per-locale navigation entries (i18n).
-   *
-   * When present, the framework switches into i18n mode:
-   * - The default locale's content lives at the content root (URLs unprefixed).
-   * - Each non-default locale's content lives under `<language>/` and is
-   *   served at `/<language>/<slug>`.
-   *
-   * Mutually exclusive with the flat `sidebar`/`tabs`/`anchors` shape on the
-   * parent `Navigation`.
+   * Array of version names. Only use this if you want to show different versions of docs
+   * with a dropdown in the navigation bar.
    */
-  languages?: LanguageNavigation[];
-}
-
-/**
- * Per-locale navigation block. Same shape as `Navigation` plus locale fields.
- */
-export interface LanguageNavigation {
-  /**
-   * ISO 639-1 code for this locale. Used in URLs (`/{language}/...`).
-   */
-  language: string;
-
-  /**
-   * Native display name shown in the locale switcher (`Polski`, not `Polish`).
-   */
-  name?: string;
-
-  /**
-   * Marks this entry as the default locale (URLs unprefixed).
-   * Ignored when `i18n.defaultLocale` is set explicitly.
-   * If neither is set, the first entry wins.
-   */
-  default?: boolean;
-
-  /**
-   * Text direction. Sets `<html dir>` on pages of this locale.
-   * Defaults to `"ltr"`.
-   */
-  dir?: "ltr" | "rtl";
-
-  /**
-   * Per-locale overrides for top-level `Settings` keys (e.g. `components.footer`,
-   * `theme.head`, `seo`). Shallow-merged on top of root settings when serving
-   * this locale. If you override `components.footer`, the whole footer config
-   * is replaced for this locale.
-   */
-  overrides?: Partial<Settings>;
-
-  /** Sidebar navigation for this locale. */
-  sidebar?: SidebarNavigation;
-
-  /** Tabs navigation for this locale. */
-  tabs?: Tabs;
-
-  /** Sidebar dropdown for this locale. */
-  sidebarDropdown?: SidebarDropdown;
-
-  /** Segments for this locale. */
-  segments?: Segment[];
-
-  /** Anchors for this locale. */
-  anchors?: Anchors;
+  // versions?: string[]
 }
 
 export type SidebarDropdown = NavigationItem[];

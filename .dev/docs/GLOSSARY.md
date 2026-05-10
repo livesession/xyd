@@ -94,9 +94,6 @@ HMR (Hot Module Replacement)
 
 ## I
 
-i18n
-: Internationalization. xyd's multi-language support, configured via `navigation.languages[]` in `docs.json`. Default locale is unprefixed; non-default locales are served under `/<language>/`. Missing translations 404. See `18.features/Internationalization.md`.
-
 Infer
 : The `infer(reference, instance)` function from `@xyd-js/uniform/inspection`. Wraps a static Reference with a decoupled ValueMap, enabling reactive proxies via `play()`, value snapshots, and reset.
 
@@ -116,14 +113,8 @@ KaTeX
 
 ## L
 
-LanguageNavigation
-: A `navigation.languages[]` entry. Same shape as `Navigation` (sidebar/tabs/anchors) plus locale fields: `language` (ISO 639-1 code), `name` (native display), `default`, `dir`, and `overrides` (per-locale `Partial<Settings>`).
-
 Lerna
 : Build orchestrator used for monorepo management alongside pnpm workspaces. Handles dependency-ordered builds and watch mode.
-
-Locale
-: An ISO 639-1 language code (e.g. `en`, `pl`, `de`) declared in `navigation.languages[].language`. The default locale's URLs are unprefixed; other locales are prefixed with `/<language>/`.
 
 Linaria
 : Zero-runtime CSS-in-JS library used for styling across `@xyd-js/components`, `@xyd-js/ui`, and `@xyd-js/atlas` packages.

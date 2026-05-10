@@ -228,7 +228,6 @@
             "pages": [
               "guides/writing-quickstart",
               "guides/developer-content",
-              "guides/internalization",
               "guides/seo",
               "guides/react-components",
               "guides/compose-content"
