@@ -89,9 +89,9 @@ importers:
       '@xyd-js/plugin-orama':
         specifier: workspace:*
         version: link:../../packages/xyd-plugin-orama
-      '@xyd-js/theme-gusto':
-        specifier: 0.1.0-build.168
-        version: 0.1.0-build.168(@xyd-js/atlas@packages+xyd-atlas)(@xyd-js/components@packages+xyd-components)(@xyd-js/framework@packages+xyd-framework)(@xyd-js/themes@packages+xyd-themes)(@xyd-js/ui@0.1.0-build.185(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(@xyd-js/components@packages+xyd-components)(react-dom@19.2.6(react@19.2.6))(react-router@7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-router@7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
+      '@xyd-js/theme-cosmo':
+        specifier: 0.1.0-build.169
+        version: 0.1.0-build.169(@xyd-js/atlas@packages+xyd-atlas)(@xyd-js/components@packages+xyd-components)(@xyd-js/framework@packages+xyd-framework)(@xyd-js/themes@packages+xyd-themes)(react-dom@19.2.6(react@19.2.6))(react-router@7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
       '@xyd-js/themes':
         specifier: workspace:*
         version: link:../../packages/xyd-themes
@@ -8408,23 +8408,15 @@ packages:
     resolution: {integrity: sha512-mBvWew1kZJHfNQVVfVllMjUDwCGN9apPa0t4/z1zaUJ9MzpXjRL3w8fsfJKB8gHN/h4rik9HneKfDbh2fErN+w==}
     engines: {node: ^14.14.0 || >=16.0.0}
 
-  '@xyd-js/theme-gusto@0.1.0-build.168':
-    resolution: {integrity: sha512-iFIuc/ubkT99+gqtDCz5fnOxv6yi3R5+q778n2IUp3uYbEorsiSChn5aaufoSg9KiCKxFmyngb9RPEjNnrwRkA==}
+  '@xyd-js/theme-cosmo@0.1.0-build.169':
+    resolution: {integrity: sha512-GuYzR5qc+XRDikPMZCGRh5anpcWFE6jmjnEpeaQLtU21f0BiZOwKEV3pRrdyLuqTyqAHqtQPvUOcgPJB9NycBA==}
     peerDependencies:
       '@xyd-js/atlas': 0.1.0-build.185
       '@xyd-js/components': 0.1.0-build.180
       '@xyd-js/framework': 0.1.0-build.201
       '@xyd-js/themes': 0.1.1-build.172
-      '@xyd-js/ui': 0.1.0-build.185
       react: ^19.1.0
       react-dom: ^19.1.0
-      react-router: ^7.7.1
-
-  '@xyd-js/ui@0.1.0-build.185':
-    resolution: {integrity: sha512-LCFJEk88oC1N604fKChXJzojwQDwjWDV3NxO9TYSrVV8jEQYZpDAhfJIXKLo1KOxYvRHJxdDq87jjyZHEOeYpQ==}
-    peerDependencies:
-      '@xyd-js/components': 0.1.0-build.180
-      react: ^19.1.0
       react-router: ^7.7.1
 
   '@yarnpkg/lockfile@1.1.0':
@@ -23767,32 +23759,18 @@ snapshots:
       - bare-buffer
       - react-native-b4a
 
-  '@xyd-js/theme-gusto@0.1.0-build.168(@xyd-js/atlas@packages+xyd-atlas)(@xyd-js/components@packages+xyd-components)(@xyd-js/framework@packages+xyd-framework)(@xyd-js/themes@packages+xyd-themes)(@xyd-js/ui@0.1.0-build.185(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(@xyd-js/components@packages+xyd-components)(react-dom@19.2.6(react@19.2.6))(react-router@7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-router@7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)':
+  '@xyd-js/theme-cosmo@0.1.0-build.169(@xyd-js/atlas@packages+xyd-atlas)(@xyd-js/components@packages+xyd-components)(@xyd-js/framework@packages+xyd-framework)(@xyd-js/themes@packages+xyd-themes)(react-dom@19.2.6(react@19.2.6))(react-router@7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)':
     dependencies:
+      '@linaria/atomic': 6.3.0(react@19.2.6)
       '@linaria/core': 6.3.0
       '@xyd-js/atlas': link:packages/xyd-atlas
       '@xyd-js/components': link:packages/xyd-components
       '@xyd-js/framework': link:packages/xyd-framework
       '@xyd-js/themes': link:packages/xyd-themes
-      '@xyd-js/ui': 0.1.0-build.185(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(@xyd-js/components@packages+xyd-components)(react-dom@19.2.6(react@19.2.6))(react-router@7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
       react-router: 7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
     transitivePeerDependencies:
-      - supports-color
-
-  '@xyd-js/ui@0.1.0-build.185(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(@xyd-js/components@packages+xyd-components)(react-dom@19.2.6(react@19.2.6))(react-router@7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)':
-    dependencies:
-      '@linaria/atomic': 6.3.0(react@19.2.6)
-      '@linaria/core': 6.3.0
-      '@xyd-js/components': link:packages/xyd-components
-      radix-ui: 1.4.3(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react: 19.2.6
-      react-router: 7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-    transitivePeerDependencies:
-      - '@types/react'
-      - '@types/react-dom'
-      - react-dom
       - supports-color
 
   '@yarnpkg/lockfile@1.1.0': {}
