@@ -188,6 +188,38 @@ function setupInstallableEnvironmentV2() {
     }
     fs.symlinkSync(hostNodeModules, symbolicXydNodeModules, 'dir');
 
+    // In XYD_DEV_MODE the host (.xyd/host) lives in the monorepo, but
+    // <cwd>/.xyd/build/server/index.js — the file react-router's prerender
+    // plugin dynamically imports — sits in the user's CWD. Node's module
+    // resolution walks up from that file and reaches .xyd/node_modules
+    // (symlinked above to the host's node_modules, which only carries the
+    // host's *direct* deps as pnpm symlinks). It never sees the monorepo's
+    // root node_modules where shamefully-hoist makes every transitive dep
+    // (radix-ui, vfile, lucide-react, …) resolvable. Without this fallback,
+    // the prerender's `import()` blows up with "Cannot find package …" and
+    // the build silently emits no HTML — surfacing only as
+    // "✗ Build failed in N.NNs". A real install path (CI, published xyd-js)
+    // doesn't need this because pnpm install in .xyd/host produces a
+    // fully-populated node_modules.
+    if (process.env.XYD_DEV_MODE) {
+        // <documan>/dist/index.js → packages/xyd-documan → packages → monorepo
+        const monorepoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..")
+        const monorepoNodeModules = path.join(monorepoRoot, "node_modules")
+        const cwdNodeModules = path.join(process.cwd(), "node_modules")
+        const insideMonorepo = process.cwd() === monorepoRoot ||
+            process.cwd().startsWith(monorepoRoot + path.sep)
+
+        if (!insideMonorepo && fs.existsSync(monorepoNodeModules)) {
+            if (fs.existsSync(cwdNodeModules) && fs.lstatSync(cwdNodeModules).isSymbolicLink()) {
+                fs.unlinkSync(cwdNodeModules)
+            }
+            // Don't clobber a real node_modules the user already manages.
+            if (!fs.existsSync(cwdNodeModules)) {
+                fs.symlinkSync(monorepoNodeModules, cwdNodeModules, 'dir')
+            }
+        }
+    }
+
     // const buildDir = getBuildPath();
     // const packageJsonPath = path.join(buildDir, 'package.json');
 
