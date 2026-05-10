@@ -1417,6 +1417,35 @@
       "minItems": 2,
       "type": "array"
     },
+    "I18nConfig": {
+      "additionalProperties": false,
+      "description": "Optional site-wide i18n config. `navigation.languages[]` is the source of truth for per-locale state.",
+      "properties": {
+        "defaultLocale": {
+          "description": "Explicit default locale. Overrides any `default: true` shorthand on `navigation.languages[]` entries when set. Must match a `language` declared in `navigation.languages[]`.",
+          "type": "string"
+        },
+        "detectLanguage": {
+          "description": "When `true`, redirect `/` based on `navigator.language` / `xyd-locale` cookie. Default `false`.",
+          "type": "boolean"
+        },
+        "translations": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/definitions/TranslationCatalog"
+              }
+            ]
+          },
+          "description": "Translation catalogs for `\"i18n: <key>\"` references in component config. Either a path to a JSON file, or an inline catalog object, keyed by locale code. If omitted, the framework auto-discovers `i18n/{language}.json` files at the project root.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
     "IconLibrary": {
       "additionalProperties": false,
       "properties": {
@@ -1874,6 +1903,64 @@
       },
       "type": "object"
     },
+    "LanguageNavigation": {
+      "additionalProperties": false,
+      "description": "Per-locale navigation block. Same shape as `Navigation` plus locale fields.",
+      "properties": {
+        "anchors": {
+          "$ref": "#/definitions/Anchors",
+          "description": "Anchors for this locale."
+        },
+        "default": {
+          "description": "Marks this entry as the default locale (URLs unprefixed). Ignored when `i18n.defaultLocale` is set explicitly. If neither is set, the first entry wins.",
+          "type": "boolean"
+        },
+        "dir": {
+          "description": "Text direction. Sets `<html dir>` on pages of this locale. Defaults to `\"ltr\"`.",
+          "enum": [
+            "ltr",
+            "rtl"
+          ],
+          "type": "string"
+        },
+        "language": {
+          "description": "ISO 639-1 code for this locale. Used in URLs (`/{language}/...`).",
+          "type": "string"
+        },
+        "name": {
+          "description": "Native display name shown in the locale switcher (`Polski`, not `Polish`).",
+          "type": "string"
+        },
+        "overrides": {
+          "additionalProperties": false,
+          "description": "Per-locale overrides for top-level `Settings` keys (e.g. `components.footer`, `theme.head`, `seo`). Shallow-merged on top of root settings when serving this locale. If you override `components.footer`, the whole footer config is replaced for this locale.",
+          "type": "object"
+        },
+        "segments": {
+          "description": "Segments for this locale.",
+          "items": {
+            "$ref": "#/definitions/Segment"
+          },
+          "type": "array"
+        },
+        "sidebar": {
+          "$ref": "#/definitions/SidebarNavigation",
+          "description": "Sidebar navigation for this locale."
+        },
+        "sidebarDropdown": {
+          "$ref": "#/definitions/SidebarDropdown",
+          "description": "Sidebar dropdown for this locale."
+        },
+        "tabs": {
+          "$ref": "#/definitions/Tabs",
+          "description": "Tabs navigation for this locale."
+        }
+      },
+      "required": [
+        "language"
+      ],
+      "type": "object"
+    },
     "Logo": {
       "additionalProperties": false,
       "description": "Logo configuration interface",
@@ -1915,6 +2002,13 @@
           "$ref": "#/definitions/Anchors",
           "description": "Anchors navigation - fixed navigation, for anchor-like elements."
         },
+        "languages": {
+          "description": "Per-locale navigation entries (i18n).\n\nWhen present, the framework switches into i18n mode:\n- The default locale's content lives at the content root (URLs unprefixed).\n- Each non-default locale's content lives under `<language>/` and is   served at `/<language>/<slug>`.\n\nMutually exclusive with the flat `sidebar`/`tabs`/`anchors` shape on the parent `Navigation`.",
+          "items": {
+            "$ref": "#/definitions/LanguageNavigation"
+          },
+          "type": "array"
+        },
         "segments": {
           "description": "Segments navigation - navigation elements visible only on specific routes.",
           "items": {
@@ -1924,7 +2018,7 @@
         },
         "sidebar": {
           "$ref": "#/definitions/SidebarNavigation",
-          "description": "Sidebar navigation - main navigation on the left side of the page."
+          "description": "Sidebar navigation - main navigation on the left side of the page.\n\nOptional when `languages` is set (each language entry carries its own sidebar)."
         },
         "sidebarDropdown": {
           "$ref": "#/definitions/SidebarDropdown",
@@ -1935,9 +2029,6 @@
           "description": "Tabs navigation - navigation through tabs."
         }
       },
-      "required": [
-        "sidebar"
-      ],
       "type": "object"
     },
     "NavigationItem": {
@@ -2686,6 +2777,20 @@
       ],
       "type": "string"
     },
+    "TranslationCatalog": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "$ref": "#/definitions/TranslationCatalog"
+          }
+        ]
+      },
+      "description": "Translation catalog. Keys may be flat dot-paths (e.g. `\"footer.resources.header\"`) OR nested objects; both shapes coexist in one file.",
+      "type": "object"
+    },
     "WebEditor": {
       "additionalProperties": false,
       "description": "WebEditor configuration",
@@ -3039,6 +3144,10 @@
     "engine": {
       "$ref": "#/definitions/Engine",
       "description": "Engine configuration - advanced engine-like configuration"
+    },
+    "i18n": {
+      "$ref": "#/definitions/I18nConfig",
+      "description": "Internationalization (i18n) configuration.\n\nThe required source of truth for i18n is `navigation.languages[]`. This `i18n` block is OPTIONAL and carries only site-wide flags (explicit `defaultLocale` override, browser detection, translation catalogs).\n\nIf `navigation.languages[]` is absent, this block has no effect."
     },
     "integrations": {
       "$ref": "#/definitions/Integrations",

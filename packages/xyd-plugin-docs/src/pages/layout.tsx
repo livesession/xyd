@@ -14,7 +14,7 @@ import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 
 import type { Metadata, MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core";
 import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
-import { Framework, FwLink, FwLogo, useSettings, type FwSidebarItemProps } from "@xyd-js/framework/react";
+import { Framework, FwLink, FwLogo, FwLocaleSwitcher, useSettings, type FwSidebarItemProps, type IFrameworkI18n } from "@xyd-js/framework/react";
 import { ReactContent } from "@xyd-js/components/content";
 import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
 import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
@@ -92,6 +92,21 @@ if (SidebarItemRight) {
     )
 }
 
+// i18n: auto-register the built-in locale switcher on `nav.right` when
+// navigation.languages[] is configured. Themes can override by registering
+// their own component on the same surface.
+//
+// Read from settings (available both server-side and client-side via the
+// virtual:xyd-settings bundle), NOT from globalThis.__xydI18n which is
+// only populated server-side at appInit time.
+if (settings?.navigation?.languages?.length) {
+    surfaces.define(
+        "nav.right",
+        FwLocaleSwitcher as any,
+        { append: true }
+    )
+}
+
 const reactContent = new ReactContent(settings, {
     Link: FwLink,
     components: {
@@ -134,6 +149,7 @@ interface LoaderData {
     navlinks?: INavLinks,
     bannerContentCode?: string
     protectedPage?: boolean
+    locale?: string
 }
 
 export async function loader({ request }: { request: any }) {
@@ -141,7 +157,8 @@ export async function loader({ request }: { request: any }) {
 
     new Composer() // TODO: better API
 
-    const slug = getPathname(request.url || "index", settings?.advanced?.basename) || "index"
+    const { slug: rawSlug, locale } = getPathname(request.url || "index", settings?.advanced?.basename)
+    const slug = rawSlug || "index"
 
     const {
         groups: sidebarGroups,
@@ -152,6 +169,8 @@ export async function loader({ request }: { request: any }) {
         settings,
         globalThis.__xydPagePathMapping,
         slug,
+        undefined,
+        locale,
     )
 
     let bannerContentCode = ""
@@ -267,6 +286,7 @@ export async function loader({ request }: { request: any }) {
         metadata,
         bannerContentCode,
         protectedPage,
+        locale,
     } as LoaderData
 }
 
@@ -348,6 +368,7 @@ export default function Layout() {
                             Logo: FwLogo,
                             ...userComponents
                         }}
+                        i18n={buildFrameworkI18n(loaderData.locale)}
                     >
                         <AtlasContext
                             value={{
@@ -389,7 +410,7 @@ export default function Layout() {
 
 function PostLayout({ children }: { children: React.ReactNode }) {
     const analytics = useAnalytics()
-    
+
     useEffect(() => {
         // @ts-ignore
         window.analytics = analytics
@@ -398,21 +419,53 @@ function PostLayout({ children }: { children: React.ReactNode }) {
     return children
 }
 
-function getPathname(url: string, basename?: string) {
+// Derive the IFrameworkI18n payload passed into <Framework />. Reads from
+// settings.navigation.languages[] so this works both server-side (where
+// globalThis.__xydI18n exists) and inside the client bundle (where settings
+// are baked into virtual:xyd-settings).
+function buildFrameworkI18n(currentLocale?: string): IFrameworkI18n | undefined {
+    const langs = settings?.navigation?.languages
+    if (!langs || langs.length === 0) return undefined
+    const explicit = settings.i18n?.defaultLocale
+    const flagged = langs.find(l => l.default)?.language
+    const defaultLocale = explicit ?? flagged ?? langs[0].language
+    const byLocale: Record<string, any> = {}
+    for (const l of langs) byLocale[l.language] = l
+    const catalogs = ((globalThis as any).__xydI18nTranslations || {}) as Record<string, any>
+    return {
+        currentLocale: currentLocale || defaultLocale,
+        defaultLocale,
+        locales: langs.map(l => ({ code: l.language, name: l.name })),
+        byLocale,
+        catalogs,
+    }
+}
+
+function getPathname(url: string, basename?: string): { slug: string, locale: string } {
+    // See xyd-plugin-docs/src/pages/page.tsx#getPathname — slug is
+    // pre-prefixed with locale (e.g. "pl/docs/intro") in i18n mode.
+    const i18n = (globalThis as any).__xydI18n as
+        | { defaultLocale: string; locales: string[] }
+        | undefined;
     const parsedUrl = new URL(url);
     let pathname = parsedUrl.pathname;
-    
-    // Trim basename from the pathname if it exists
+
     if (basename && basename !== "/" && pathname.startsWith(basename)) {
         pathname = pathname.slice(basename.length);
     }
-    
-    // Ensure we have a leading slash and then remove it to get the slug
     if (!pathname.startsWith("/")) {
         pathname = "/" + pathname;
     }
-    
-    return pathname.replace(/^\//, '');
+
+    const slug = pathname.replace(/^\//, '');
+    let locale = i18n?.defaultLocale ?? "";
+    if (i18n) {
+        const seg = slug.split("/")[0];
+        if (seg && i18n.locales.includes(seg) && seg !== i18n.defaultLocale) {
+            locale = seg;
+        }
+    }
+    return { slug, locale };
 }
 
 

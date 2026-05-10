@@ -9,7 +9,7 @@ export {
     SurfaceContext,
 } from "./components/Surfaces"
 
-export type { FrameworkProps } from "./contexts"
+export type { FrameworkProps, IFrameworkI18n } from "./contexts"
 export {
     Framework, FrameworkPage,
     useMetadata,
@@ -20,6 +20,10 @@ export {
     useContentOriginal,
     useEditLink,
     useShowColorSchemeButton,
+    useCurrentLocale,
+    useDefaultLocale,
+    useAvailableLocales,
+    useT,
 } from "./contexts"
 
 export {

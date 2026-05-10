@@ -24,21 +24,37 @@ import { PageContext } from "./context";
 import { SUPPORTED_META_TAGS } from "./metatags";
 import { useAnalytics } from "@xyd-js/analytics";
 
-function getPathname(url: string, basename?: string) {
+function getPathname(url: string, basename?: string): { slug: string, locale: string } {
+    // In i18n mode, the slug for non-default locales already contains the
+    // locale prefix (e.g. "pl/docs/intro") because pluginDocs pre-prefixes
+    // each language's sidebar at boot, so pagePathMapping keys, sidebar
+    // pages, and the URL path all live in the same key space.
+    //
+    // We still surface `locale` as a derived value so the layout/page
+    // loaders can pass it to mapSettingsToProps (which uses it to pick the
+    // right per-language navigation tree).
+    const i18n = (globalThis as any).__xydI18n as
+        | { defaultLocale: string; locales: string[] }
+        | undefined;
     const parsedUrl = new URL(url);
     let pathname = parsedUrl.pathname;
-    
-    // Trim basename from the pathname if it exists
+
     if (basename && basename !== "/" && pathname.startsWith(basename)) {
         pathname = pathname.slice(basename.length);
     }
-    
-    // Ensure we have a leading slash and then remove it to get the slug
     if (!pathname.startsWith("/")) {
         pathname = "/" + pathname;
     }
-    
-    return pathname.replace(/^\//, '');
+
+    const slug = pathname.replace(/^\//, '');
+    let locale = i18n?.defaultLocale ?? "";
+    if (i18n) {
+        const seg = slug.split("/")[0];
+        if (seg && i18n.locales.includes(seg) && seg !== i18n.defaultLocale) {
+            locale = seg;
+        }
+    }
+    return { slug, locale };
 }
 
 declare global {
@@ -111,7 +127,8 @@ export async function loader({ request }: { request: any }) {
 
     timedebug.total
 
-    const slug = getPathname(request.url || "index", settings?.advanced?.basename) || "index"
+    const { slug: rawSlug, locale } = getPathname(request.url || "index", settings?.advanced?.basename)
+    const slug = rawSlug || "index"
     if (path.extname(slug)) {
         console.log(`(loader): currently not supporting file extension in slug: ${slug}`);
         timedebug.totalEnd
@@ -130,6 +147,8 @@ export async function loader({ request }: { request: any }) {
         settings || globalThis.__xydSettings,
         globalThis.__xydPagePathMapping,
         slug,
+        undefined,
+        locale,
     )
     timedebug.mapSettingsToPropsEnd
 
