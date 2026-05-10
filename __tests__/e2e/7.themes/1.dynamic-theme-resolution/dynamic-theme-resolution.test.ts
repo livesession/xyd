@@ -3,6 +3,12 @@ import { test, expect } from '@playwright/test';
 import { createXydBuildServer, XydServer } from '../../utils/xyd-server';
 
 test.describe('Dynamic Theme Resolution', () => {
+    // Run tests serially so they share a single beforeAll/server. With
+    // fullyParallel: true, each test would spawn its own xyd build, and they'd
+    // race on the shared <monorepo>/.xyd/host directory (rmSync of host fails
+    // with ENOTEMPTY when another worker is mid-copy).
+    test.describe.configure({ mode: 'serial' });
+
     let server: XydServer;
 
     test.beforeAll(async () => {

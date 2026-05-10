@@ -7,6 +7,11 @@ import { createXydBuildServer, XydServer } from '../../utils/xyd-server';
 const REGISTRY = process.env.XYD_E2E_VERDACCIO_URL || process.env.npm_config_registry || 'http://localhost:4873';
 
 test.describe('Custom npm Theme (Advanced)', () => {
+    // Run tests serially so they share a single beforeAll/server. With
+    // fullyParallel: true, each test would spawn its own xyd build, and they'd
+    // race on the shared <monorepo>/.xyd/host directory.
+    test.describe.configure({ mode: 'serial' });
+
     let server: XydServer;
 
     test.beforeAll(async () => {

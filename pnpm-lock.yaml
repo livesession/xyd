@@ -89,9 +89,12 @@ importers:
       '@xyd-js/plugin-orama':
         specifier: workspace:*
         version: link:../../packages/xyd-plugin-orama
-      '@xyd-js/theme-cosmo':
-        specifier: 0.1.0-build.169
-        version: 0.1.0-build.169(@xyd-js/atlas@packages+xyd-atlas)(@xyd-js/components@packages+xyd-components)(@xyd-js/framework@packages+xyd-framework)(@xyd-js/themes@packages+xyd-themes)(react-dom@19.2.6(react@19.2.6))(react-router@7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
+      '@xyd-js/plugin-supademo':
+        specifier: 0.1.0-build.29
+        version: 0.1.0-build.29
+      '@xyd-js/theme-opener':
+        specifier: workspace:*
+        version: link:../../packages/xyd-theme-opener
       '@xyd-js/themes':
         specifier: workspace:*
         version: link:../../packages/xyd-themes
@@ -8408,16 +8411,8 @@ packages:
     resolution: {integrity: sha512-mBvWew1kZJHfNQVVfVllMjUDwCGN9apPa0t4/z1zaUJ9MzpXjRL3w8fsfJKB8gHN/h4rik9HneKfDbh2fErN+w==}
     engines: {node: ^14.14.0 || >=16.0.0}
 
-  '@xyd-js/theme-cosmo@0.1.0-build.169':
-    resolution: {integrity: sha512-GuYzR5qc+XRDikPMZCGRh5anpcWFE6jmjnEpeaQLtU21f0BiZOwKEV3pRrdyLuqTyqAHqtQPvUOcgPJB9NycBA==}
-    peerDependencies:
-      '@xyd-js/atlas': 0.1.0-build.185
-      '@xyd-js/components': 0.1.0-build.180
-      '@xyd-js/framework': 0.1.0-build.201
-      '@xyd-js/themes': 0.1.1-build.172
-      react: ^19.1.0
-      react-dom: ^19.1.0
-      react-router: ^7.7.1
+  '@xyd-js/plugin-supademo@0.1.0-build.29':
+    resolution: {integrity: sha512-EKIM2PoTR8g5UapzQ2sup3fuyCkvJfm3fqGh4Xk5uJ1wcALhI/ta4XOgcz+Xgy8dIaWtO2Y/d6yWt1Hk791kOg==}
 
   '@yarnpkg/lockfile@1.1.0':
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
@@ -8607,6 +8602,10 @@ packages:
 
   ansi-styles@6.2.1:
     resolution: {integrity: sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==}
+    engines: {node: '>=12'}
+
+  ansi-styles@6.2.3:
+    resolution: {integrity: sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==}
     engines: {node: '>=12'}
 
   ansi-to-html@0.7.2:
@@ -17120,7 +17119,7 @@ snapshots:
       '@babel/types': 7.29.0
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
-      jsesc: 3.1.0
+      jsesc: 3.0.2
 
   '@babel/helper-annotate-as-pure@7.27.3':
     dependencies:
@@ -23759,19 +23758,7 @@ snapshots:
       - bare-buffer
       - react-native-b4a
 
-  '@xyd-js/theme-cosmo@0.1.0-build.169(@xyd-js/atlas@packages+xyd-atlas)(@xyd-js/components@packages+xyd-components)(@xyd-js/framework@packages+xyd-framework)(@xyd-js/themes@packages+xyd-themes)(react-dom@19.2.6(react@19.2.6))(react-router@7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)':
-    dependencies:
-      '@linaria/atomic': 6.3.0(react@19.2.6)
-      '@linaria/core': 6.3.0
-      '@xyd-js/atlas': link:packages/xyd-atlas
-      '@xyd-js/components': link:packages/xyd-components
-      '@xyd-js/framework': link:packages/xyd-framework
-      '@xyd-js/themes': link:packages/xyd-themes
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
-      react-router: 7.15.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-    transitivePeerDependencies:
-      - supports-color
+  '@xyd-js/plugin-supademo@0.1.0-build.29': {}
 
   '@yarnpkg/lockfile@1.1.0': {}
 
@@ -23956,6 +23943,8 @@ snapshots:
   ansi-styles@5.2.0: {}
 
   ansi-styles@6.2.1: {}
+
+  ansi-styles@6.2.3: {}
 
   ansi-to-html@0.7.2:
     dependencies:
@@ -24365,7 +24354,7 @@ snapshots:
     dependencies:
       ansi-align: 3.0.1
       camelcase: 7.0.1
-      chalk: 5.3.0
+      chalk: 5.6.2
       cli-boxes: 3.0.0
       string-width: 5.1.2
       type-fest: 2.19.0
@@ -34414,7 +34403,7 @@ snapshots:
 
   wrap-ansi@8.1.0:
     dependencies:
-      ansi-styles: 6.2.1
+      ansi-styles: 6.2.3
       string-width: 5.1.2
       strip-ansi: 7.2.0
 
