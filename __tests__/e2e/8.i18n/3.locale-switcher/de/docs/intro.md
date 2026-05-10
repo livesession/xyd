@@ -1,5 +1,0 @@
----
-title: Einführung
----
-
-# Deutsch Willkommen

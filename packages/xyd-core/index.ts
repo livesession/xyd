@@ -5,5 +5,3 @@ export * from "./src/types/seo";
 export * from "./src/types/settings";
 
 export * from "./src/types/page-api.i";
-
-export * from "./src/i18n/resolver";

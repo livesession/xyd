@@ -10,9 +10,6 @@ export {FwLink} from "./FwLink";
 
 export {FwLogo} from "./FwLogo";
 
-export {FwLocaleSwitcher, computeLocaleHref} from "./FwLocaleSwitcher";
-export type {FwLocaleSwitcherProps} from "./FwLocaleSwitcher";
-
 export {FwNav} from "./FwNav";
 
 export {FwNavLinks} from "./FwNavLinks";

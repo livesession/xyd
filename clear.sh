@@ -11,8 +11,8 @@ npx lerna clean --yes
 rm -rf .lerna
 
 # Define the directories to clean
-root_directories=("node_modules" "pnpm-lock.yaml" "bun.lock" "dist" "cli", ".xyd")
-package_directories=("packages/*/node_modules" "packages/*/pnpm-lock.yaml" "packages/*/bun.lock" "packages/*/dist" "packages/*/.cli")
+root_directories=("node_modules" "pnpm-lock.yaml" "dist" "cli", ".xyd")
+package_directories=("packages/*/node_modules" "packages/*/pnpm-lock.yaml" "packages/*/dist" "packages/*/.cli")
 
 # Loop through each package directory and remove node_modules and pnpm-lock.yaml
 for dir in "${package_directories[@]}"; do

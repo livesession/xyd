@@ -1,7 +1,7 @@
-import {PageURL, Settings, Sidebar, SidebarNavigation} from "@xyd-js/core";
+import {PageURL, Settings, Sidebar} from "@xyd-js/core";
 
 export function docPaths(navigation: Settings['navigation']) {
-    if (!navigation?.sidebar && !navigation?.languages?.length) return [];
+    if (!navigation?.sidebar) return [];
 
     const paths: string[] = [];
 
@@ -9,19 +9,8 @@ export function docPaths(navigation: Settings['navigation']) {
         paths.push("/")
     }
 
-    // i18n: walk every language's sidebar. Each language's sidebar was
-    // pre-prefixed with the locale code by pluginDocs, so the resulting
-    // paths already include the locale prefix (e.g. "/pl/docs/intro").
-    if (navigation?.languages?.length) {
-        for (const lang of navigation.languages) {
-            walkSidebar(lang.sidebar || []);
-        }
-    } else if (navigation?.sidebar) {
-        walkSidebar(navigation.sidebar);
-    }
-
-    function walkSidebar(sidebar: SidebarNavigation) {
-        sidebar.forEach(sidebarGroup => {
+    // Process each sidebar group
+    navigation?.sidebar.forEach(sidebarGroup => {
         if (typeof sidebarGroup === "string") {
             paths.push(sidebarGroup.startsWith("/") ? sidebarGroup : `/${sidebarGroup}`)
             return
@@ -39,8 +28,7 @@ export function docPaths(navigation: Settings['navigation']) {
         if ("pages" in sidebarGroup && sidebarGroup.pages?.length) {
             processSidebarItems(sidebarGroup.pages);
         }
-        });
-    }
+    });
 
     // Helper function to process sidebar items recursively
     function processSidebarItems(items: Sidebar[] | PageURL[]) {
