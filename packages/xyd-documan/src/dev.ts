@@ -278,9 +278,15 @@ export async function dev(options?: DevOptions) {
             syntaxHighlightPaths = resolveSyntaxHighlightFilePaths(process.cwd(), respPluginDocs.settings)
         }
 
+        let i18nCatalogPaths: { [path: string]: boolean } = {}
+        if (respPluginDocs?.settings) {
+            i18nCatalogPaths = resolveI18nCatalogPaths(process.cwd(), respPluginDocs.settings)
+        }
+
         const apiChanged = !!apiPaths[filePath]
         const iconChanged = !!iconPaths[filePath]
         const syntaxHighlightChanged = !!syntaxHighlightPaths[filePath]
+        const i18nCatalogChanged = !!i18nCatalogPaths[filePath]
 
         const isSettingsFile = SUPPORTED_SETTINGS_FILES.some(ext => filePath.endsWith(ext))
         const isContentFile = SUPPORTED_CONTENT_FILES.some(ext => filePath.endsWith(ext))
@@ -291,6 +297,7 @@ export async function dev(options?: DevOptions) {
             apiChanged ||
             iconChanged ||
             syntaxHighlightChanged ||
+            i18nCatalogChanged ||
             isPublicPathReload ||
             isEnvFile
 
@@ -329,6 +336,7 @@ export async function dev(options?: DevOptions) {
             iconChanged ||
             apiChanged ||
             syntaxHighlightChanged ||
+            i18nCatalogChanged ||
             isEnvFile
 
         if (isReloadFile) {
@@ -343,6 +351,8 @@ export async function dev(options?: DevOptions) {
                 console.log('🔄 Syntax highlight theme file changed, refresh...');
             } else if (apiChanged) {
                 console.log('🔄 API file changed, refresh...');
+            } else if (i18nCatalogChanged) {
+                console.log('🔄 i18n catalog file changed, refresh...');
             } else if (syntaxHighlightChanged) {
                 console.log('🔄 Syntax highlight theme file changed, refresh...');
             } else if (isEnvFile) {
@@ -606,6 +616,47 @@ export function resolveSyntaxHighlightFilePaths(
             const syntaxHighlightAbsPath = path.resolve(basePath, syntaxHighlight.name)
             result[syntaxHighlightAbsPath] = true
         }
+    }
+
+    return result
+}
+
+
+/**
+ * Walks i18n catalog configuration and returns a set of absolute paths to
+ * watched JSON catalog files.
+ *
+ * Catalogs come from two sources (matching loadI18nTranslations priority):
+ *   1. Explicit `i18n.catalogs[locale]` as a string path.
+ *   2. Convention fallback: `i18n/<locale>.json` at the project root for
+ *      every locale declared in `navigation.languages[]`.
+ */
+export function resolveI18nCatalogPaths(
+    basePath: string,
+    settings: any
+): Record<string, true> {
+    const result: Record<string, true> = {}
+
+    const declared = settings?.i18n?.catalogs
+    const languages = settings?.navigation?.languages
+    if (!languages?.length) return result
+
+    for (const lang of languages) {
+        const locale = lang?.language
+        if (!locale) continue
+
+        const declaredEntry = declared?.[locale]
+        if (typeof declaredEntry === "string") {
+            const abs = path.isAbsolute(declaredEntry)
+                ? declaredEntry
+                : path.resolve(basePath, declaredEntry)
+            result[abs] = true
+            continue
+        }
+        // Convention fallback: always watch i18n/<locale>.json even if the file
+        // doesn't exist yet — creating it should trigger a reload.
+        const convPath = path.resolve(basePath, "i18n", `${locale}.json`)
+        result[convPath] = true
     }
 
     return result

@@ -131,7 +131,7 @@ Each language can have its own navigation, sidebar, tabs, anchors, and so on. Bu
 
 ### Navigation Catalogs
 
-If your navigation has the same structure in every language, you don't need to repeat the whole tree per locale. Define the structure **once** at `navigation.sidebar`, list the locales under `navigation.languages`, and let the strings come from [translation catalogs](#translation-catalogs):
+If your navigation has the same structure in every language, you don't need to repeat the whole tree per locale. Define the structure **once** at `navigation.sidebar`, list the locales under `navigation.languages`, and let the strings come from [translation catalogs](/guides/internalization#translation-catalogs):
 
 ```json docs.json
 {
@@ -224,25 +224,20 @@ Both flat dot-keys and nested objects are accepted — and can coexist in the sa
 
 ## Per-Locale Overrides
 
-If you need to override translations for a built-in structures like [`footer link`](/guides/components#footer) or [`banner`](/guides/components#banner) add `overrides`:
+If you need to override translations for a built-in structure like [`banner`](/guides/components#banner) or [`footer`](/guides/components#footer) add `overrides`:
 
 :::tabs{kind="secondary"}
 
 1. [Text overrides](case=text)
-    Override just the `children` so the link points to the same URL but renders translated text:
+    Override just the banner `content` so each locale renders a translated announcement:
 
     ```json docs.json [!scroll descHead="Tip" desc="<code>overrides</code> accepts any subset of the <code>Settings</code> interface — <code>theme</code>, <code>components</code>, <code>integrations</code>, <code>seo</code>, etc."]
     {
       "components": {
-        "footer": {
-          "footnote": {
-            "component": "a",
-            "props": {
-              "href": "https://livesession.io",
-              // !diff +
-              "children": "Powered by LiveSession"
-            }
-          }
+        "banner": {
+          // !diff +
+          "content": "**xyd 0.1.0-beta** — Coming Soon",
+          "icon": "sparkles"
         }
       },
       "navigation": {
@@ -252,7 +247,7 @@ If you need to override translations for a built-in structures like [`footer lin
             "language": "pl",
             "overrides": {
               // !diff +
-              "components.footer.footnote.props.children": "Wspierane przez LiveSession"
+              "components.banner.content": "**xyd 0.1.0-beta** — już wkrótce"
             }
           }
         ]
@@ -260,22 +255,17 @@ If you need to override translations for a built-in structures like [`footer lin
     }
     ```
 
-2. [Props overrides](case=props)
-    Override `href` as well — point Polish users at a localized landing page:
+2. [Multiple fields](case=multi)
+    Override `icon` as well — Polish gets a different icon alongside translated text:
 
     ```json docs.json [!scroll descHead="Tip" desc="<code>overrides</code> accepts any subset of the <code>Settings</code> interface — <code>theme</code>, <code>components</code>, <code>integrations</code>, <code>seo</code>, etc."]
     {
       "components": {
-        "footer": {
-          "footnote": {
-            "component": "a",
-            "props": {
-              // !diff +
-              "href": "https://livesession.io",
-              // !diff +
-              "children": "Powered by LiveSession"
-            }
-          }
+        "banner": {
+          // !diff +
+          "content": "**xyd 0.1.0-beta** — Coming Soon",
+          // !diff +
+          "icon": "sparkles"
         }
       },
       "navigation": {
@@ -285,9 +275,9 @@ If you need to override translations for a built-in structures like [`footer lin
             "language": "pl",
             "overrides": {
               // !diff +
-              "components.footer.footnote.props.children": "Wspierane przez LiveSession",
+              "components.banner.content": "**xyd 0.1.0-beta** — już wkrótce",
               // !diff +
-              "components.footer.footnote.props.href": "https://pl.livesession.io"
+              "components.banner.icon": "rocket"
             }
           }
         ]
@@ -301,8 +291,8 @@ If you need to override translations for a built-in structures like [`footer lin
     ```json pl.json
     {
       "sidebar.getstarted": "Zaczynamy",
-      "$components.footer.footnote.props.children": "Wspierane przez LiveSession",
-      "$components.footer.footnote.props.href": "https://pl.livesession.io"
+      "$components.banner.content": "**xyd 0.1.0-beta** — już wkrótce",
+      "$components.banner.icon": "rocket"
     }
     ```
 :::

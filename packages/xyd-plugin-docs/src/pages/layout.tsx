@@ -11,6 +11,10 @@ import {
 import { UXNode } from "openux-js";
 
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
+// Client-safe import: doesn't drag in server-only @xyd-js/content via
+// the main hydration bundle. Safe to call from the React Layout
+// component that runs both SSR and on the client.
+import { resolveLocaleSettings } from "@xyd-js/framework/hydration/locale";
 
 import type { Metadata, MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core";
 import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
@@ -160,6 +164,12 @@ export async function loader({ request }: { request: any }) {
     const { slug: rawSlug, locale } = getPathname(request.url || "index", settings?.advanced?.basename)
     const slug = rawSlug || "index"
 
+    // Apply per-locale settings overrides (catalog $-keys + declared
+    // navigation.languages[].overrides) so downstream rendering — banner
+    // content compilation, FrameworkContext, layout components — all see
+    // the locale-effective settings instead of the raw root settings.
+    const effectiveSettings = locale ? resolveLocaleSettings(settings, locale) : settings
+
     const {
         groups: sidebarGroups,
         breadcrumbs,
@@ -205,9 +215,9 @@ export async function loader({ request }: { request: any }) {
         globalThis?.__xydUserMarkdownPlugins?.remarkRehypeHandlers || {}
     )
 
-    if (settings?.components?.banner?.content && typeof settings?.components?.banner?.content === "string") {
+    if (effectiveSettings?.components?.banner?.content && typeof effectiveSettings?.components?.banner?.content === "string") {
         bannerContentCode = await contentFs.compileContent(
-            settings?.components?.banner?.content,
+            effectiveSettings.components.banner.content,
         )
     }
 
@@ -339,6 +349,13 @@ export default function Layout() {
         }
     }
 
+    // Apply per-locale settings overrides so `useSettings()` returns the
+    // locale-effective settings (banner.icon/label, components.footer.*,
+    // theme overrides, etc.) for the active locale.
+    const effectiveSettings = loaderData.locale
+        ? resolveLocaleSettings(settings, loaderData.locale)
+        : settings
+
     // TODO: !!! IT SHOULD BE globalThis.__xydCustomUserComponents !!!
     const userComponents = (globalThis.__xydUserComponents || []).reduce((acc, component) => {
         acc[component.name] = component.component;
@@ -358,7 +375,7 @@ export default function Layout() {
                     }}
                 >
                     <Framework
-                        settings={settings || globalThis.__xydSettings}
+                        settings={effectiveSettings || globalThis.__xydSettings}
                         sidebarGroups={loaderData.sidebarGroups || []}
                         metadata={loaderData.metadata || {}}
                         surfaces={surfaces}

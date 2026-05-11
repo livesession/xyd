@@ -1,0 +1,22 @@
+{
+    "theme": { "name": "cosmo" },
+    "components": {
+        "banner": {
+            "content": "**xyd 0.1.0-beta** — Coming Soon",
+            "icon": "sparkles"
+        }
+    },
+    "navigation": {
+        "languages": [
+            { "language": "en", "name": "English", "default": true },
+            { "language": "pl", "name": "Polski" },
+            { "language": "de", "name": "Deutsch" }
+        ],
+        "sidebar": [
+            {
+                "group": "i18n: sidebar.getstarted",
+                "pages": ["docs/intro"]
+            }
+        ]
+    }
+}

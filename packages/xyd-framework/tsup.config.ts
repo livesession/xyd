@@ -5,6 +5,10 @@ export default defineConfig({
         index: 'src/index.ts',
         react: 'packages/react/index.ts',
         hydration: 'packages/hydration/index.ts',
+        // Client-safe entry: locale-resolution + override helpers only.
+        // Importing from this path keeps server-only mapSettingsToProps
+        // (and @xyd-js/content) out of the browser bundle.
+        'hydration-locale': 'packages/hydration/locale.ts',
     },
     format: ['esm'], // Output both ESM and CJS formats
     target: 'node16', // Ensure compatibility with Node.js 16
@@ -13,6 +17,7 @@ export default defineConfig({
             index: 'src/index.ts',
             react: 'packages/react/index.ts',
             hydration: 'packages/hydration/index.ts',
+            'hydration-locale': 'packages/hydration/locale.ts',
         },
         resolve: true, // Resolve external types
     },
