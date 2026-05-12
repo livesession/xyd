@@ -99,6 +99,7 @@
 ### 18. Features
 - @.dev/docs/18.features/1.FEATURES.md
 - @.dev/docs/18.features/AccessControl.md
+- @.dev/docs/18.features/Internationalization.md
 
 ### 19. Refactor
 

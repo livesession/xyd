@@ -1,0 +1,40 @@
+{
+    "theme": { "name": "cosmo" },
+    "components": {
+        "banner": {
+            "content": "**xyd 0.1.0-beta** — Coming Soon",
+            "icon": "sparkles"
+        }
+    },
+    "navigation": {
+        "languages": [
+            {
+                "language": "en",
+                "name": "English",
+                "default": true,
+                "sidebar": ["docs/intro"]
+            },
+            {
+                "language": "pl",
+                "name": "Polski",
+                "sidebar": ["docs/intro"],
+                "overrides": {
+                    "components.banner.content": "**xyd 0.1.0-beta** — już wkrótce",
+                    "components.banner.icon": "rocket"
+                }
+            },
+            {
+                "language": "de",
+                "name": "Deutsch",
+                "sidebar": ["docs/intro"],
+                "overrides": {
+                    "components": {
+                        "banner": {
+                            "content": "**xyd 0.1.0-beta** — Bald verfügbar"
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}

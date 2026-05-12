@@ -1,0 +1,23 @@
+{
+    "theme": { "name": "cosmo" },
+    "navigation": {
+        "languages": [
+            {
+                "language": "en",
+                "name": "English",
+                "default": true,
+                "sidebar": ["docs/intro"]
+            },
+            {
+                "language": "pl",
+                "name": "Polski",
+                "sidebar": ["docs/intro"]
+            },
+            {
+                "language": "de",
+                "name": "Deutsch",
+                "sidebar": ["docs/intro"]
+            }
+        ]
+    }
+}

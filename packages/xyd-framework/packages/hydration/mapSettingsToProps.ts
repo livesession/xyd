@@ -1,10 +1,11 @@
 // server-only
 
-import { Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL } from "@xyd-js/core";
+import { Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL, TranslationCatalog, resolveI18nDeep } from "@xyd-js/core";
 import { pageFrontMatters } from "@xyd-js/content";
 import { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
 import { FwSidebarItemProps } from "../react";
+import { resolveLocaleSettings } from "./locale";
 
 // TODO: framework vs content responsibility
 
@@ -13,7 +14,8 @@ export async function mapSettingsToProps(
     settings: Settings,
     pagePathMapping: { [key: string]: string },
     slug: string,
-    frontmatters?: MetadataMap
+    frontmatters?: MetadataMap,
+    locale?: string,
 ): Promise<{
     groups: FwSidebarItemProps[],
     breadcrumbs: IBreadcrumb[]
@@ -22,7 +24,32 @@ export async function mapSettingsToProps(
     metadata?: Metadata | null
 }> {
     let uniqIndex = 0
-    let filteredNav = filterNavigation(settings, slug)
+    // i18n: when languages[] is configured, swap the navigation source for
+    // the matching language entry (already pre-prefixed by pluginDocs).
+    const effectiveSettings = resolveLocaleSettings(settings, locale)
+
+    // i18n: resolve "i18n: <key>" reference strings inside the navigation
+    // tree (sidebar groups, tab/anchor labels, etc.) against the loaded
+    // translation catalogs for the current locale.
+    const catalogs = (globalThis as any).__xydI18nTranslations as
+        | Record<string, TranslationCatalog>
+        | undefined
+    const i18nState = (globalThis as any).__xydI18n as
+        | { defaultLocale: string }
+        | undefined
+    if (catalogs && i18nState && locale && effectiveSettings.navigation) {
+        // Deep-clone the navigation block so we don't mutate the cached
+        // user settings (resolveI18nDeep mutates in place).
+        const navClone = JSON.parse(JSON.stringify(effectiveSettings.navigation))
+        effectiveSettings.navigation = resolveI18nDeep(
+            navClone,
+            locale,
+            i18nState.defaultLocale,
+            catalogs
+        )
+    }
+
+    let filteredNav = filterNavigation(effectiveSettings, slug)
     if (!frontmatters) {
         frontmatters = await pageFrontMatters(filteredNav, pagePathMapping) as MetadataMap
     }
@@ -226,7 +253,7 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
     }
 
     // First pass: find if current route matches any route-based navigation
-    settings?.navigation?.sidebar.forEach(sidebar => {
+    settings?.navigation?.sidebar?.forEach(sidebar => {
         if (typeof sidebar !== "string" && "route" in sidebar) {
             findRoute(sidebar)
         }
@@ -242,7 +269,7 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
     // Otherwise, process flat pages and regular sidebar items
     const flatPages: string[] = []
     
-    settings?.navigation?.sidebar.forEach(sidebar => {
+    settings?.navigation?.sidebar?.forEach(sidebar => {
         if (typeof sidebar === "string") {
             flatPages.push(sidebar)
         } else if (!("route" in sidebar)) {
@@ -569,3 +596,20 @@ function findPathToPage(
     searchInNavigation(navigation, [])
     return path
 }
+
+// In i18n mode, resolve the right per-language navigation block for the
+// current locale and present it as the effective `navigation.sidebar`/
+// `tabs`/etc. so the rest of mapSettingsToProps stays locale-unaware.
+//
+// Sidebar pages and route strings inside `navigation.languages[].sidebar`
+// are pre-prefixed with the locale code by pluginDocs at boot, so the slug
+// passed in here matches the prefixed sidebar without further translation.
+//
+// If the language entry has `overrides` (either declared in docs.json or
+// extracted from `$`-prefixed catalog keys at boot), they are deep-merged
+// on top of the result so any settings field — components, theme, seo,
+// etc. — can vary per locale.
+// resolveLocaleSettings, applyOverrides, expandDotKeys live in a
+// client-safe file (./locale) so they can be imported from the Layout
+// component without dragging in @xyd-js/content (which is server-only).
+export { resolveLocaleSettings, applyOverrides, expandDotKeys } from "./locale"
