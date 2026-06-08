@@ -8,7 +8,10 @@
     "context": {
       "serverUrl": "https://demo.example.com/mcp",
       "transport": "http",
-      "toolName": "search"
+      "toolName": "search",
+      "group": [
+        "Tools"
+      ]
     },
     "definitions": [
       {
@@ -42,7 +45,10 @@
       "serverUrl": "https://demo.example.com/mcp",
       "transport": "http",
       "resourceUri": "doc:///readme",
-      "mimeType": "text/markdown"
+      "mimeType": "text/markdown",
+      "group": [
+        "Resources"
+      ]
     },
     "definitions": [
       {

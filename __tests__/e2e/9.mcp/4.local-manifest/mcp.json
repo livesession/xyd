@@ -1,0 +1,29 @@
+{
+  "serverUrl": "https://demo.example.com/mcp",
+  "tools": [
+    {
+      "name": "echo",
+      "description": "Echoes back the provided message.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "description": "Text to echo." }
+        },
+        "required": ["message"]
+      }
+    },
+    {
+      "name": "ping",
+      "description": "Health check.",
+      "inputSchema": { "type": "object" }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "doc:///readme",
+      "name": "README",
+      "description": "Project readme.",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

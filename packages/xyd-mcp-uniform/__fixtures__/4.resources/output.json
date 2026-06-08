@@ -9,7 +9,10 @@
       "serverUrl": "https://example.com/mcp",
       "transport": "http",
       "resourceUri": "file:///readme.md",
-      "mimeType": "text/markdown"
+      "mimeType": "text/markdown",
+      "group": [
+        "Resources"
+      ]
     },
     "definitions": [
       {
@@ -43,7 +46,10 @@
     "context": {
       "serverUrl": "https://example.com/mcp",
       "transport": "http",
-      "resourceUri": "file:///changelog.md"
+      "resourceUri": "file:///changelog.md",
+      "group": [
+        "Resources"
+      ]
     },
     "definitions": [
       {

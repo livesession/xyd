@@ -8,7 +8,10 @@
     "context": {
       "serverUrl": "https://example.com/mcp",
       "transport": "http",
-      "toolName": "ping"
+      "toolName": "ping",
+      "group": [
+        "Tools"
+      ]
     },
     "definitions": [
       {
@@ -29,7 +32,10 @@
     "context": {
       "serverUrl": "https://example.com/mcp",
       "transport": "http",
-      "toolName": "search"
+      "toolName": "search",
+      "group": [
+        "Tools"
+      ]
     },
     "definitions": [
       {

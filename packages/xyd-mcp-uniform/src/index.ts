@@ -160,6 +160,10 @@ function toolToReference(
             serverUrl,
             transport,
             toolName: tool.name,
+            // pluginNavigation reads context.group to organise the generated
+            // sidebar. Without it, no entries are emitted and the tool pages
+            // never get routed. Tools live under "Tools".
+            group: ["Tools"],
         },
         definitions: [
             {
@@ -188,6 +192,7 @@ function resourceToReference(
             transport,
             resourceUri: resource.uri,
             mimeType: resource.mimeType,
+            group: ["Resources"],
         },
         definitions: [
             {
