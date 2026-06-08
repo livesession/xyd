@@ -967,6 +967,46 @@ export interface API {
    * Sources configuration
    */
   sources?: APIFile;
+
+  /**
+   * MCP server configuration. Source is a remote MCP server URL (http/https/sse).
+   * Tools and resources from the server are rendered as API reference pages.
+   */
+  mcp?: MCPAPIFile;
+}
+
+/**
+ * MCP API file configuration. URL shorthand, advanced, or named map.
+ */
+export type MCPAPIFile =
+  | string
+  | MCPAPIFileAdvanced
+  | MCPAPIFileAdvanced[]
+  | { [name: string]: string | MCPAPIFileAdvanced };
+
+export interface MCPAPIFileAdvanced {
+  /** MCP server URL (http/https/sse). */
+  source: string;
+
+  /** Sidebar route prefix to nest the generated pages under. */
+  route?: string;
+
+  /** Per-source options. */
+  info?: MCPAPIInfo;
+}
+
+export interface MCPAPIInfo {
+  /** Display name for the server in the docs. */
+  name?: string;
+
+  /**
+   * Bearer token sent as `Authorization: Bearer <token>`.
+   * Supports `$ENV_VAR` substitution via the standard settings env replacement.
+   */
+  token?: string;
+
+  /** Additional request headers (e.g. cookies, custom API keys). */
+  headers?: Record<string, string>;
 }
 
 /**

@@ -18,7 +18,8 @@ import uniform, {
     Reference,
     ReferenceType,
     OpenAPIReferenceContext,
-    GraphQLReferenceContext
+    GraphQLReferenceContext,
+    MCPReferenceContext
 } from "@xyd-js/uniform";
 import { uniformPluginXDocsSidebar } from "@xyd-js/openapi";
 
@@ -390,6 +391,16 @@ async function uniformResolver(
                     meta.openapi = `${resolvedApiFile}#${region}`
                     break
                 }
+                case "mcp": {
+                    const ctx = ref.context as MCPReferenceContext;
+                    if (ctx?.toolName) {
+                        region = `tool:${ctx.toolName}`
+                    } else if (ctx?.resourceUri) {
+                        region = `resource:${ctx.resourceUri}`
+                    }
+                    meta.mcp = `${resolvedApiFile}#${region}`
+                    break
+                }
             }
 
             let composedContent = ""
@@ -711,7 +722,7 @@ function vitePluginUniformContent(pluginId: string) {
     }
 }
 
-type UniformType = "graphql" | "openapi" | "sources"
+type UniformType = "graphql" | "openapi" | "sources" | "mcp"
 
 function uniformPreset(
     id: string,

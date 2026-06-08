@@ -188,6 +188,7 @@ export enum ReferenceCategory {
     // for API
     REST = "rest",
     GRAPHQL = "graphql",
+    MCP = "mcp",
     // end for API
 
     // for code
@@ -225,6 +226,10 @@ export enum ReferenceType {
     GRAPHQL_UNION = "graphql_union",
     GRAPHQL_ENUM = "graphql_enum",
     GRAPHQL_INPUT = "graphql_input",
+    // ---
+    MCP_TOOL = "mcp_tool",
+    MCP_RESOURCE = "mcp_resource",
+    // TODO: MCP_PROMPT
     // end for API
 
     // for code
@@ -284,7 +289,19 @@ export interface TypeDocReferenceContext extends BaseReferenceContext {
     meta?: TypeDocReferenceContextMeta[]
 }
 
-export type ReferenceContext = GraphQLReferenceContext | OpenAPIReferenceContext | TypeDocReferenceContext
+export interface MCPReferenceContext extends BaseReferenceContext {
+    serverUrl: string;
+
+    transport: "http" | "sse"; // TODO: "stdio"
+
+    toolName?: string;
+
+    resourceUri?: string;
+
+    mimeType?: string;
+}
+
+export type ReferenceContext = GraphQLReferenceContext | OpenAPIReferenceContext | TypeDocReferenceContext | MCPReferenceContext
 
 export interface GraphQLExampleContext {
     schema?: any; // TODO:

@@ -1,0 +1,12 @@
+{
+  "url": "https://example.com/mcp",
+  "responses": {
+    "tools/list": { "tools": [] },
+    "resources/list": {
+      "resources": [
+        { "uri": "file:///readme.md", "name": "README", "description": "Project readme.", "mimeType": "text/markdown" },
+        { "uri": "file:///changelog.md", "name": "CHANGELOG" }
+      ]
+    }
+  }
+}

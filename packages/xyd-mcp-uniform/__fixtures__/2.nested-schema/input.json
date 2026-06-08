@@ -1,0 +1,33 @@
+{
+  "url": "https://example.com/mcp",
+  "responses": {
+    "tools/list": {
+      "tools": [
+        {
+          "name": "create_user",
+          "description": "Creates a user with nested address and tag list.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "address": {
+                "type": "object",
+                "properties": {
+                  "street": { "type": "string" },
+                  "city": { "type": "string" }
+                },
+                "required": ["street"]
+              },
+              "tags": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["name", "address"]
+          }
+        }
+      ]
+    },
+    "resources/list": { "resources": [] }
+  }
+}

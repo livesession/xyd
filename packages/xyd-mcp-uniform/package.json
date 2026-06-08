@@ -1,0 +1,24 @@
+{
+  "name": "@xyd-js/mcp-uniform",
+  "version": "0.1.0-build.0",
+  "description": "Convert remote MCP server endpoints (tools/resources) into xyd-uniform References.",
+  "main": "./dist/index.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rimraf dist",
+    "prebuild": "pnpm clean",
+    "build": "tsup",
+    "test": "vitest",
+    "ci:test": "vitest run"
+  },
+  "dependencies": {
+    "@xyd-js/openapi": "workspace:*",
+    "@xyd-js/uniform": "workspace:*"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.8"
+  }
+}

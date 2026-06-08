@@ -77,6 +77,7 @@
 - @.dev/docs/13.api-definitions/OpenApiProcessing.md
 - @.dev/docs/13.api-definitions/PackageSources.md
 - @.dev/docs/13.api-definitions/TypeTransformationSystem.md
+- @.dev/docs/13.api-definitions/McpProcessing.md
 
 ### 14. Uniform
 - @.dev/docs/14.uniform/UniformDataFormat.md

@@ -27,6 +27,7 @@
     "@xyd-js/core": "workspace:*",
     "@xyd-js/gql": "workspace:*",
     "@xyd-js/openapi": "workspace:*",
+    "@xyd-js/mcp-uniform": "workspace:*",
     "@xyd-js/sources": "workspace:*",
     "acorn-jsx": "^5.3.2",
     "codehike": "^1.0.4",

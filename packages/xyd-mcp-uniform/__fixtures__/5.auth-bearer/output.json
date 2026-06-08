@@ -1,0 +1,23 @@
+[
+  {
+    "title": "secret_tool",
+    "description": "Auth-only.",
+    "canonical": "secret-tool",
+    "category": "mcp",
+    "type": "mcp_tool",
+    "context": {
+      "serverUrl": "https://example.com/mcp",
+      "transport": "http",
+      "toolName": "secret_tool"
+    },
+    "definitions": [
+      {
+        "title": "Input",
+        "properties": []
+      }
+    ],
+    "examples": {
+      "groups": []
+    }
+  }
+]

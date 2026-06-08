@@ -74,6 +74,18 @@ function $IntroHeader({ reference }: ApiRefItemProps) {
             />
             break;
         }
+        case ReferenceCategory.MCP: {
+            const ctx = reference.context as { toolName?: string; resourceUri?: string } | undefined
+            if (!ctx) break;
+            const label = ctx.toolName ? "tool" : ctx.resourceUri ? "resource" : "mcp"
+            const subtitle = ctx.toolName || ctx.resourceUri || ""
+            topNavbar = <$Navbar
+                label={label}
+                subtitle={subtitle}
+                matchSubtitle={subtitle}
+            />
+            break;
+        }
     }
     return <>
         <$Title title={reference.title} />

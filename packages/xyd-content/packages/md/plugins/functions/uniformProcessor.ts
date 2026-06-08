@@ -83,6 +83,9 @@ async function processUniformFile(
         if (matter?.graphql) {
             ext = "graphql"
         }
+        if (matter?.mcp) {
+            ext = "mcp"
+        }
 
 
         const baseDir = resolveFrom || (file.dirname || process.cwd());
@@ -181,6 +184,20 @@ async function processUniformFile(
                 });
 
                 return references;
+            }
+
+            case 'mcp': {
+                // Lazy import — keeps the build-time MCP HTTP client out of the
+                // hot path for projects that don't use it.
+                const { mcpUrlToReferences } = await import('@xyd-js/mcp-uniform');
+                const references = await mcpUrlToReferences(resolvedFilePath);
+                if (regions.length === 0) return references;
+                const wanted = new Set(regions.map(r => r.name));
+                return references.filter(ref => {
+                    const ctx = ref?.context as { toolName?: string; resourceUri?: string } | undefined;
+                    return (ctx?.toolName && wanted.has(ctx.toolName))
+                        || (ctx?.resourceUri && wanted.has(ctx.resourceUri));
+                });
             }
 
             default: {
