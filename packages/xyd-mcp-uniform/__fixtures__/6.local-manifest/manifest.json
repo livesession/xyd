@@ -1,0 +1,24 @@
+{
+  "serverUrl": "https://demo.example.com/mcp",
+  "tools": [
+    {
+      "name": "search",
+      "description": "Search the docs index.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "q": { "type": "string", "description": "Query string." }
+        },
+        "required": ["q"]
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "doc:///readme",
+      "name": "README",
+      "description": "Project readme.",
+      "mimeType": "text/markdown"
+    }
+  ]
+}

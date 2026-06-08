@@ -34,54 +34,88 @@ export interface McpUrlToReferencesOptions {
 }
 
 /**
- * Fetch tools + resources from a remote MCP server and convert them into a Reference[].
+ * Convert an MCP source into a Reference[]. The source is either:
+ *   - a URL (http/https/sse) — fetched live via JSON-RPC at build time, or
+ *   - a local file path to a JSON manifest with the shape
+ *     `{ tools: McpTool[], resources?: McpResource[] }` (same shape the
+ *     server would return from tools/list + resources/list).
  *
- * One Reference is emitted per tool (MCP_TOOL) and per resource (MCP_RESOURCE), mirroring
- * the one-page-per-endpoint layout used by OpenAPI/GraphQL converters.
+ * One Reference is emitted per tool (MCP_TOOL) and per resource (MCP_RESOURCE),
+ * mirroring the one-page-per-endpoint layout used by OpenAPI/GraphQL converters.
  *
  * TODO: prompts/list (MCP_PROMPT)
  * TODO: stdio transport (spawn local process)
  */
 export async function mcpUrlToReferences(
-    url: string,
+    source: string,
     options: McpUrlToReferencesOptions = {},
 ): Promise<Reference[]> {
-    if (!url) {
+    if (!source) {
         return [];
     }
 
-    const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-        Accept: "application/json, text/event-stream",
-        ...(options.headers || {}),
-    };
-    if (options.token) {
-        headers.Authorization = `Bearer ${options.token}`;
+    const isUrl = /^https?:\/\//i.test(source);
+
+    let tools: McpTool[] = [];
+    let resources: McpResource[] = [];
+    let transport: MCPReferenceContext["transport"] = "http";
+    let serverUrl = source;
+
+    if (isUrl) {
+        transport = source.includes("/sse") ? "sse" : "http";
+
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+            Accept: "application/json, text/event-stream",
+            ...(options.headers || {}),
+        };
+        if (options.token) {
+            headers.Authorization = `Bearer ${options.token}`;
+        }
+
+        const rpc = makeRpcClient(source, headers, options.fetcher);
+
+        const [toolsResult, resourcesResult] = await Promise.all([
+            rpc<{ tools?: McpTool[] }>("tools/list").catch(() => ({ tools: [] })),
+            rpc<{ resources?: McpResource[] }>("resources/list").catch(() => ({
+                resources: [],
+            })),
+        ]);
+        tools = toolsResult.tools || [];
+        resources = resourcesResult.resources || [];
+    } else {
+        // Local manifest mode — read tools / resources from a JSON file shaped
+        // like the combined output of tools/list and resources/list.
+        const manifest = await readLocalManifest(source);
+        tools = manifest.tools || [];
+        resources = manifest.resources || [];
+        // For local manifests, drop the file path from the rendered context —
+        // it's irrelevant to consumers of the generated docs.
+        serverUrl = manifest.serverUrl || "";
     }
-
-    const transport: MCPReferenceContext["transport"] = url.includes("/sse")
-        ? "sse"
-        : "http";
-
-    const rpc = makeRpcClient(url, headers, options.fetcher);
-
-    const [toolsResult, resourcesResult] = await Promise.all([
-        rpc<{ tools?: McpTool[] }>("tools/list").catch(() => ({ tools: [] })),
-        rpc<{ resources?: McpResource[] }>("resources/list").catch(() => ({
-            resources: [],
-        })),
-    ]);
 
     const references: Reference[] = [];
 
-    for (const tool of toolsResult.tools || []) {
-        references.push(toolToReference(tool, url, transport));
+    for (const tool of tools) {
+        references.push(toolToReference(tool, serverUrl, transport));
     }
-    for (const resource of resourcesResult.resources || []) {
-        references.push(resourceToReference(resource, url, transport));
+    for (const resource of resources) {
+        references.push(resourceToReference(resource, serverUrl, transport));
     }
 
     return references;
+}
+
+interface McpManifest {
+    serverUrl?: string;
+    tools?: McpTool[];
+    resources?: McpResource[];
+}
+
+async function readLocalManifest(filePath: string): Promise<McpManifest> {
+    const fs = await import("node:fs/promises");
+    const raw = await fs.readFile(filePath, "utf8");
+    return JSON.parse(raw) as McpManifest;
 }
 
 function makeRpcClient(

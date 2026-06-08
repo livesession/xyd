@@ -1,0 +1,70 @@
+[
+  {
+    "title": "search",
+    "description": "Search the docs index.",
+    "canonical": "search",
+    "category": "mcp",
+    "type": "mcp_tool",
+    "context": {
+      "serverUrl": "https://demo.example.com/mcp",
+      "transport": "http",
+      "toolName": "search"
+    },
+    "definitions": [
+      {
+        "title": "Input",
+        "properties": [
+          {
+            "name": "q",
+            "type": "string",
+            "description": "Query string.",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "examples": {
+      "groups": []
+    }
+  },
+  {
+    "title": "README",
+    "description": "Project readme.",
+    "canonical": "readme",
+    "category": "mcp",
+    "type": "mcp_resource",
+    "context": {
+      "serverUrl": "https://demo.example.com/mcp",
+      "transport": "http",
+      "resourceUri": "doc:///readme",
+      "mimeType": "text/markdown"
+    },
+    "definitions": [
+      {
+        "title": "Resource",
+        "properties": [
+          {
+            "name": "uri",
+            "type": "string",
+            "description": "Resource URI.",
+            "examples": "doc:///readme"
+          },
+          {
+            "name": "mimeType",
+            "type": "string",
+            "description": "MIME type.",
+            "examples": "text/markdown"
+          }
+        ]
+      }
+    ],
+    "examples": {
+      "groups": []
+    }
+  }
+]
