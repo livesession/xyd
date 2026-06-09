@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Meta } from '@storybook/react';
 import { MemoryRouter } from "react-router";
+import { UXNode } from "openux-js";
 
 import { Reference } from '@xyd-js/uniform';
 import { Atlas } from "@xyd-js/atlas";
@@ -31,9 +32,9 @@ const Template = (args: any) => {
         load()
     }, [])
 
-    return <>
-        <Atlas references={references} />
-    </>
+    return <UXNode name="AtlasStory" props={{}}>
+        <Atlas analytics references={references} />
+    </UXNode>
 }
 
 export const Primary = Template.bind({});
@@ -41,9 +42,9 @@ Primary.args = {};
 
 
 const TemplateSecondary = () => {
-    return <>
-        <Atlas kind="secondary" references={[exampleSourceUniform]} />
-    </>
+    return <UXNode name="AtlasStory" props={{}}>
+        <Atlas analytics kind="secondary" references={[exampleSourceUniform]} />
+    </UXNode>
 }
 
 export const Secondary = TemplateSecondary.bind({});
