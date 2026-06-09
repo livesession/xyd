@@ -1,6 +1,6 @@
 ---
 title: MCP
-icon: docs:openapiinitiative
+icon: docs:mcp
 tocCard:
     - link: https://canary.examples.xyd.dev/mcp
       title: MCP Demo
