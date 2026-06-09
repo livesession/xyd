@@ -79,23 +79,61 @@ function getMDXExport(code: string) {
 }
 
 export async function uniformToReferences(): Promise<MDXReference<Reference[]> | []> {
-    let content: string = ""
+    // The CodeHike round-trip (md → mdx → parse) turns reference fields into Block objects
+    // ({children, title, _data}) which Atlas can't render directly without the Composer.
+    // For Storybook we don't need code highlighting via CodeHike — Atlas reads the raw JSON
+    // shape just fine, so return it as-is.
+    return sanitizeDescriptions(todoAppUniform as Reference[]) as MDXReference<Reference[]>
+}
 
-    for (const ref of todoAppUniform as Reference[]) {
-        const ast = referenceAST(ref)
-        const md = compileMarkdown(ast)
+// Strip frontmatter (`---\ntitle: …\n---\n\n`) from descriptions so they render as plain text.
+function sanitizeDescriptions(refs: Reference[]): Reference[] {
+    return refs.map((ref) => ({
+        ...ref,
+        description:
+            typeof ref.description === "string"
+                ? ref.description.replace(/^---[\s\S]*?---\n+/, "")
+                : ref.description,
+    }))
+}
 
-        content += md + "\n"
+// CodeHike's parse() returns sections as Block objects: { children, title, _data, ...subsections }.
+// React can't render those directly, so deeply walk the references and replace any Block-shaped
+// value with its `children` (the actual ReactNode).
+function isBlock(value: any): boolean {
+    if (!value || typeof value !== "object") return false
+    if (React.isValidElement(value)) return false
+    if (Array.isArray(value)) return false
+    return "children" in value && "_data" in value
+}
+
+// Walk the references tree and replace any `description` field that is a CodeHike Block
+// with its rendered `children` (the actual ReactNode).
+function unwrapBlock(block: any): any {
+    // CodeHike heading like `!description some text` (no body) → Block.children is undefined and the
+    // user text lives on Block.title. With a body paragraph the text becomes Block.children.
+    if (block?.children !== undefined && block.children !== null) return block.children
+    if (typeof block?.title === "string") return block.title
+    return null
+}
+
+function unwrapDescriptions(value: any): any {
+    if (Array.isArray(value)) return value.map(unwrapDescriptions)
+    if (React.isValidElement(value)) return value
+    if (value && typeof value === "object") {
+        const out: any = {}
+        for (const k of Object.keys(value)) {
+            let v = value[k]
+            if (k === "description" && isBlock(v)) {
+                v = unwrapBlock(v)
+            }
+            out[k] = unwrapDescriptions(v)
+        }
+        return out
     }
+    return value
+}
 
-    const compiled = await compile(content)
-    const contentCode = getMDXComponent(compiled)
-
-    const parsedContent = contentCode ? parse(contentCode) : null
-
-    if (parsedContent) {
-        return parsedContent.references
-    }
-
-    return []
+function flattenBlocks(refs: any[]): any {
+    return refs.map(unwrapDescriptions)
 }

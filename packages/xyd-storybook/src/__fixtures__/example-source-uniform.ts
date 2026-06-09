@@ -10,7 +10,11 @@ export const exampleSourceUniform = {
         "line": 48,
         "col": 16,
         "signatureText": "export function gqlSchemaToReferences(schemaLocation: string): Promise<[\n]>;",
-        "sourcecode": "export function gqlSchemaToReferences(\n    schemaLocation: string\n): Promise<[]> {\n    if (schemaLocation.endsWith(\".graphql\")) {\n        return Promise.resolve([])\n    }\n\n    return Promise.resolve([])\n}",
+        "sourcecode": {
+            "lang": "ts",
+            "description": "",
+            "code": "export function gqlSchemaToReferences(\n    schemaLocation: string\n): Promise<[]> {\n    if (schemaLocation.endsWith(\".graphql\")) {\n        return Promise.resolve([])\n    }\n\n    return Promise.resolve([])\n}"
+        },
         "package": "@xyd-sources-examples/package-a"
     },
     "examples": {

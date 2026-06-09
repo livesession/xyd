@@ -2,6 +2,8 @@
 import { addons } from '@storybook/manager-api';
 import theme from './theme';
 
+import './sidebar-theme-addon';
+
 addons.setConfig({
   // where to show the addon panel: 'bottom' (default) or 'right'
   panelPosition: 'right',

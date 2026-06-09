@@ -2,7 +2,7 @@
   {
     "title": "users",
     "canonical": "users",
-    "description": "Get a list of all users",
+    "description": "---\ntitle: Users\ngroup: [GraphQL, Users]\n---\n\nGet a list of all users",
     "category": "graphql",
     "type": "graphql_query",
     "examples": {
@@ -36,7 +36,7 @@
           {
             "name": "id",
             "type": "ID!",
-            "description": "The unique **ID** of the user [here](#/example)",
+            "description": "The unique ID of the user, more details [here](#/example).",
             "properties": []
           },
           {
@@ -93,7 +93,7 @@
   {
     "title": "user",
     "canonical": "user",
-    "description": "Get a user by ID",
+    "description": "---\ntitle: User\ngroup: [GraphQL, Users]\n---\n\nGet a user by ID",
     "category": "graphql",
     "type": "graphql_query",
     "examples": {
@@ -191,7 +191,7 @@
   {
     "title": "todos",
     "canonical": "todos",
-    "description": "Get a list of all todos",
+    "description": "---\ntitle: Todos\ngroup: [GraphQL, Todos]\n---\n\nGet a list of all todos",
     "category": "graphql",
     "type": "graphql_query",
     "examples": {
@@ -257,7 +257,7 @@
   {
     "title": "todo",
     "canonical": "todo",
-    "description": "Get a todo by ID",
+    "description": "---\ntitle: Todo\ngroup: [GraphQL, Todos]\n---\n\nGet a todo by ID",
     "category": "graphql",
     "type": "graphql_query",
     "examples": {
@@ -330,7 +330,7 @@
   {
     "title": "createUser",
     "canonical": "createUser",
-    "description": "Create a new user",
+    "description": "---\ntitle: Create User\ngroup: [GraphQL, Users]\n---\n\nCreate a new user",
     "category": "graphql",
     "type": "graphql_mutation",
     "examples": {
@@ -434,7 +434,7 @@
   {
     "title": "createTodo",
     "canonical": "createTodo",
-    "description": "Create a new todo",
+    "description": "---\ntitle: Create Todo\ngroup: [GraphQL, Todos]\n---\n\nCreate a new todo",
     "category": "graphql",
     "type": "graphql_mutation",
     "examples": {
@@ -507,7 +507,7 @@
   {
     "title": "updateTodo",
     "canonical": "updateTodo",
-    "description": "Update an existing todo",
+    "description": "---\ntitle: Update Todo\ngroup: [GraphQL, Todos]\n---\n\nUpdate an existing todo",
     "category": "graphql",
     "type": "graphql_mutation",
     "examples": {
@@ -580,7 +580,7 @@
   {
     "title": "deleteTodo",
     "canonical": "deleteTodo",
-    "description": "Delete a todo by ID",
+    "description": "---\ntitle: Delete Todo\ngroup: [GraphQL, Todos]\n---\n\nDelete a todo by ID",
     "category": "graphql",
     "type": "graphql_mutation",
     "examples": {
