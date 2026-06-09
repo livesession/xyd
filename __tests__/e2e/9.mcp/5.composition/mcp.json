@@ -1,0 +1,22 @@
+{
+  "serverUrl": "https://demo.example.com/mcp",
+  "tools": [
+    {
+      "name": "search_docs",
+      "description": "Auto-generated tool description.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string", "description": "Free-text query." }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "ping",
+      "description": "Untouched tool.",
+      "inputSchema": { "type": "object" }
+    }
+  ],
+  "resources": []
+}
