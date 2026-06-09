@@ -52,14 +52,16 @@ test.describe('i18n — catalog $-prefixed override keys', () => {
         const bundleRes = await request.get(server.getUrl(match![0]));
         const bundle = await bundleRes.text();
 
-        // pl entry: both content + icon override paths from pl.json $-keys
-        expect(bundle).toContain(
-            '"components.banner.content":"**xyd 0.1.0-beta** — już wkrótce"'
+        // pl entry: both content + icon override paths from pl.json $-keys.
+        // Vite/esbuild may emit string values with either double quotes or
+        // backticks (template literals) — match either via regex.
+        expect(bundle).toMatch(
+            /"components\.banner\.content":\s*["`]\*\*xyd 0\.1\.0-beta\*\* — już wkrótce["`]/
         );
-        expect(bundle).toContain('"components.banner.icon":"rocket"');
+        expect(bundle).toMatch(/"components\.banner\.icon":\s*["`]rocket["`]/);
         // de entry: only content override (no icon in de.json)
-        expect(bundle).toContain(
-            '"components.banner.content":"**xyd 0.1.0-beta** — Bald verfügbar"'
+        expect(bundle).toMatch(
+            /"components\.banner\.content":\s*["`]\*\*xyd 0\.1\.0-beta\*\* — Bald verfügbar["`]/
         );
 
         // The `$`-prefix must be stripped — overrides keys are plain dot-paths.

@@ -1,0 +1,82 @@
+[
+  {
+    "title": "create_user",
+    "description": "Creates a user with nested address and tag list.",
+    "canonical": "create-user",
+    "category": "mcp",
+    "type": "mcp_tool",
+    "context": {
+      "serverUrl": "https://example.com/mcp",
+      "transport": "http",
+      "toolName": "create_user",
+      "group": [
+        "Tools"
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Input",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "address",
+            "type": "object",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "properties": [
+              {
+                "name": "street",
+                "type": "string",
+                "description": "",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "city",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ]
+          },
+          {
+            "name": "tags",
+            "type": "$$array",
+            "description": "",
+            "meta": [],
+            "properties": [
+              {
+                "name": "",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "examples": {
+      "groups": []
+    }
+  }
+]

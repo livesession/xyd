@@ -1,0 +1,12 @@
+{
+  "url": "https://example.com/mcp",
+  "responses": {
+    "tools/list": {
+      "tools": [
+        { "name": "ping", "description": "Health check.", "inputSchema": { "type": "object" } },
+        { "name": "search", "description": "Search the index.", "inputSchema": { "type": "object", "properties": { "q": { "type": "string" } }, "required": ["q"] } }
+      ]
+    },
+    "resources/list": { "resources": [] }
+  }
+}

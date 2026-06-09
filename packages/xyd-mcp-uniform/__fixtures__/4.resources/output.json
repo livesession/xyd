@@ -1,0 +1,68 @@
+[
+  {
+    "title": "README",
+    "description": "Project readme.",
+    "canonical": "readme",
+    "category": "mcp",
+    "type": "mcp_resource",
+    "context": {
+      "serverUrl": "https://example.com/mcp",
+      "transport": "http",
+      "resourceUri": "file:///readme.md",
+      "mimeType": "text/markdown",
+      "group": [
+        "Resources"
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Resource",
+        "properties": [
+          {
+            "name": "uri",
+            "type": "string",
+            "description": "Resource URI `file:///readme.md`."
+          },
+          {
+            "name": "mimeType",
+            "type": "string",
+            "description": "MIME type `text/markdown`."
+          }
+        ]
+      }
+    ],
+    "examples": {
+      "groups": []
+    }
+  },
+  {
+    "title": "CHANGELOG",
+    "description": "",
+    "canonical": "changelog",
+    "category": "mcp",
+    "type": "mcp_resource",
+    "context": {
+      "serverUrl": "https://example.com/mcp",
+      "transport": "http",
+      "resourceUri": "file:///changelog.md",
+      "group": [
+        "Resources"
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Resource",
+        "properties": [
+          {
+            "name": "uri",
+            "type": "string",
+            "description": "Resource URI `file:///changelog.md`."
+          }
+        ]
+      }
+    ],
+    "examples": {
+      "groups": []
+    }
+  }
+]

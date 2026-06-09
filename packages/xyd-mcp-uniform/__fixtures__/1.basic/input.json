@@ -1,0 +1,21 @@
+{
+  "url": "https://example.com/mcp",
+  "responses": {
+    "tools/list": {
+      "tools": [
+        {
+          "name": "echo",
+          "description": "Echoes back the provided message.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "message": { "type": "string", "description": "Text to echo." }
+            },
+            "required": ["message"]
+          }
+        }
+      ]
+    },
+    "resources/list": { "resources": [] }
+  }
+}

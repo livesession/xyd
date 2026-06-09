@@ -491,10 +491,15 @@ export function resolveApiFilePaths(
 ): Record<string, true> {
     const result: Record<string, true> = {}
 
-    const apis = [api.openapi, api.graphql, api.sources].filter((s): s is APIFile => s !== undefined)
+    const apis = [api.openapi, api.graphql, api.sources, api.mcp as APIFile | undefined].filter((s): s is APIFile => s !== undefined)
 
     apis.forEach(section => {
         flattenApiFile(section).forEach(p => {
+            // Skip URL sources (e.g. MCP servers exposed over http/sse) — there is
+            // no local file to watch.
+            if (p.startsWith('http://') || p.startsWith('https://')) {
+                return
+            }
             const apiAbsPath = path.resolve(basePath, p)
             result[apiAbsPath] = true
         })

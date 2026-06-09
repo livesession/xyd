@@ -1,0 +1,8 @@
+{
+  "url": "https://example.com/mcp",
+  "token": "secret-token",
+  "responses": {
+    "tools/list": { "tools": [{ "name": "secret_tool", "description": "Auth-only.", "inputSchema": { "type": "object" } }] },
+    "resources/list": { "resources": [] }
+  }
+}

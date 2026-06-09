@@ -18,7 +18,8 @@ import uniform, {
     Reference,
     ReferenceType,
     OpenAPIReferenceContext,
-    GraphQLReferenceContext
+    GraphQLReferenceContext,
+    MCPReferenceContext
 } from "@xyd-js/uniform";
 import { uniformPluginXDocsSidebar } from "@xyd-js/openapi";
 
@@ -390,6 +391,16 @@ async function uniformResolver(
                     meta.openapi = `${resolvedApiFile}#${region}`
                     break
                 }
+                case "mcp": {
+                    const ctx = ref.context as MCPReferenceContext;
+                    if (ctx?.toolName) {
+                        region = `tool:${ctx.toolName}`
+                    } else if (ctx?.resourceUri) {
+                        region = `resource:${ctx.resourceUri}`
+                    }
+                    meta.mcp = `${resolvedApiFile}#${region}`
+                    break
+                }
             }
 
             let composedContent = ""
@@ -502,9 +513,21 @@ async function composeFileMap(basePath: string, matchRoute: string) {
                     const content = await fs.readFile(fullPath, 'utf-8');
                     const { data: frontmatter } = matter(content);
 
-                    if (frontmatter && frontmatter.openapi) {
-                        const route = frontmatter.openapi;
-                        routeMap[route] = path.join(matchRoute, entry.name);
+                    if (frontmatter) {
+                        // Each preset writes its key into meta under its own
+                        // name (frontmatter.openapi, frontmatter.graphql,
+                        // frontmatter.mcp). The user is documented to write
+                        // either form: `<source>#<region>` or just `<region>`.
+                        // The downstream lookup uses the region alone, so
+                        // strip the `<source>#` prefix when present.
+                        const raw = frontmatter.openapi
+                            || frontmatter.graphql
+                            || frontmatter.mcp;
+                        if (raw) {
+                            const hashIdx = String(raw).lastIndexOf("#");
+                            const region = hashIdx >= 0 ? String(raw).slice(hashIdx + 1) : String(raw);
+                            routeMap[region] = path.join(matchRoute, entry.name);
+                        }
                     }
                 } catch (error) {
                     console.error(`Error processing file ${fullPath}:`, error);
@@ -711,7 +734,7 @@ function vitePluginUniformContent(pluginId: string) {
     }
 }
 
-type UniformType = "graphql" | "openapi" | "sources"
+type UniformType = "graphql" | "openapi" | "sources" | "mcp"
 
 function uniformPreset(
     id: string,

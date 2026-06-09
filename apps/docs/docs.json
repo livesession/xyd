@@ -254,6 +254,7 @@
             "pages": [
               "guides/openapi",
               "guides/graphql",
+              "guides/mcp",
               "guides/components-api",
               {
                 "group": "Source Code",

@@ -52,11 +52,14 @@ test.describe('i18n — per-locale overrides (dot-keys + nested form)', () => {
         const bundleRes = await request.get(server.getUrl(match![0]));
         const bundle = await bundleRes.text();
 
-        // pl flat dot-keys preserved as-is (expanded by applyOverrides at request time)
-        expect(bundle).toContain(
-            '"components.banner.content":"**xyd 0.1.0-beta** — już wkrótce"'
+        // pl flat dot-keys preserved as-is (expanded by applyOverrides at request time).
+        // Vite/esbuild may serialize string values with either double quotes or
+        // backticks (template literals) — assert via regex on the key/value pair
+        // instead of pinning to a specific quote style.
+        expect(bundle).toMatch(
+            /"components\.banner\.content":\s*["`]\*\*xyd 0\.1\.0-beta\*\* — już wkrótce["`]/
         );
-        expect(bundle).toContain('"components.banner.icon":"rocket"');
+        expect(bundle).toMatch(/"components\.banner\.icon":\s*["`]rocket["`]/);
 
         // de nested-object form preserved
         expect(bundle).toContain('Bald verfügbar');

@@ -69,10 +69,17 @@ export interface Metadata<P = void> {
 
     /**
      * @internal
-     * 
+     *
      * used for openapi references
      */
     openapi?: string
+
+    /**
+     * @internal
+     *
+     * used for mcp references
+     */
+    mcp?: string
 
     /**
      * If true, hide from navigation

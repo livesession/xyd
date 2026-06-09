@@ -1,0 +1,38 @@
+[
+  {
+    "title": "echo",
+    "description": "Echoes back the provided message.",
+    "canonical": "echo",
+    "category": "mcp",
+    "type": "mcp_tool",
+    "context": {
+      "serverUrl": "https://example.com/mcp",
+      "transport": "http",
+      "toolName": "echo",
+      "group": [
+        "Tools"
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Input",
+        "properties": [
+          {
+            "name": "message",
+            "type": "string",
+            "description": "Text to echo.",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "examples": {
+      "groups": []
+    }
+  }
+]
