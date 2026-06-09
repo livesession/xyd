@@ -3,41 +3,49 @@ title: MCP
 icon: docs:openapiinitiative
 tocCard:
     - link: https://canary.examples.xyd.dev/mcp
-      title: MCP example
-      description: Live demo of MCP server docs
+      title: MCP Demo
+      description: Live example of MCP server docs
       icon: globe
 
     - link: https://github.com/xyd-js/examples/tree/master/mcp
-      title: MCP sample
-      description: Learn how to setup an MCP docs site
+      title: MCP Samples
+      description: Learn how to setup MCP pages
       icon: docs:github
 ---
 
-# MCP
+# MCP {label="Alpha"}
 :::subtitle
 Reference MCP (Model Context Protocol) tools and resources in your docs pages
 :::
 
-xyd reads `tools/list` and `resources/list` from an MCP server (or a static
-JSON manifest with the same shape) and renders one page per tool and one
-page per resource. Each tool's `inputSchema` (JSON Schema) becomes a typed
-property tree — required fields, nested objects, arrays, enums and
-defaults — using the same Atlas components that power the OpenAPI and
-GraphQL output.
+To describe your MCP server, point xyd at a remote MCP endpoint or commit a local JSON manifest that matches the `tools/list` + `resources/list` shape.
 
 :::callout
-MCP source can be either a remote URL (http/https/sse) or a local JSON
-manifest committed alongside `docs.json`.
+Source can be an `http://`, `https://`, or `sse://` URL — or a path to a local JSON file.
 :::
 
 ## Configuration Quickstart
-
-Add an `mcp` field to `api` in your [`docs.json`](/guides/settings).
-The value can be a URL, a path to a local manifest, or a `{source, route}`
-pair:
+The fastest way to get started with MCP is to add an `mcp` field to `api` in the [`settings`](/guides/settings) file.
+This field can contain either a path to a local manifest in your docs, or the URL of a live MCP server:
 
 :::tabs{kind="secondary"}
-1. [Remote URL](routing=remote)
+1. [docs.json](routing=docs.json)
+    ```json
+    {
+        // ... rest of settings
+        "api": {
+            "mcp": {
+                "source": "./mcp.json",
+                "route": "docs/api/mcp"
+            }
+        },
+    }
+    ```
+
+2. [Remote URL](routing=remote)
+
+    Use a live MCP server when you want docs that always reflect the running surface:
+
     ```json
     {
         // ... rest of settings
@@ -49,61 +57,67 @@ pair:
         }
     }
     ```
+:::
 
-2. [Local manifest](routing=local)
+This will create a new route based on your MCP source at `docs/api/mcp/*`.
 
-    Use a static JSON file when you want deterministic, offline builds:
+:::callout
+The local manifest mirrors the wire format of `tools/list` + `resources/list`. See the [sample](https://github.com/xyd-js/examples/tree/master/mcp) for the exact shape.
+:::
+
+## Multi Spec Configuration
+Documenting more than one MCP server is also possible:
+
+:::tabs{kind="secondary"}
+1. [docs.json](multi=docs.json)
+
+    ```json
+    {
+        // ... rest of settings
+        "api": {
+            "mcp": [
+              {
+                "source": "https://primary.example.com/mcp",
+                "route": "docs/api/primary"
+              },
+              {
+                "source": "https://secondary.example.com/mcp",
+                "route": "docs/api/secondary"
+              }
+            ]
+        }
+    }
+    ```
+
+2. [docs.json + name keys](multi=docs.json-named)
+
+    :::callout
+    This method is still in experimental stage.
+    :::
 
     ```json
     {
         // ... rest of settings
         "api": {
             "mcp": {
-                "source": "./mcp.json",
-                "route": "docs/api/mcp"
+                "primary": {
+                  "source": "https://primary.example.com/mcp",
+                  "route": "docs/api/primary"
+                },
+                "secondary": {
+                  "source": "https://secondary.example.com/mcp",
+                  "route": "docs/api/secondary"
+                }
             }
-        }
-    }
-    ```
-
-    `mcp.json` mirrors the wire format of `tools/list` + `resources/list`:
-
-    ```json
-    {
-      "serverUrl": "https://my-mcp-server.example.com/mcp",
-      "tools": [
-        {
-          "name": "search_docs",
-          "description": "Search the documentation index.",
-          "inputSchema": {
-            "type": "object",
-            "properties": {
-              "query": { "type": "string", "description": "Free-text query." }
-            },
-            "required": ["query"]
-          }
-        }
-      ],
-      "resources": [
-        {
-          "uri": "doc:///readme",
-          "name": "README",
-          "mimeType": "text/markdown"
-        }
-      ]
+        },
     }
     ```
 :::
 
-This creates a route at `docs/api/mcp/*` with one page per tool (under
-"Tools") and one page per resource (under "Resources"), alongside any
-manually authored pages you put in the sidebar.
+Thanks to this configuration, you'll have two routes: `docs/api/primary/*` and `docs/api/secondary/*`.
 
 ## Authentication
-
-Remote MCP servers can require a bearer token. Pass it via `info.token`
-— `$ENV_VAR` substitution works the same as anywhere else in
-`docs.json`:
+Bearer tokens are passed via `info.token` and sent as `Authorization: Bearer <token>`. Use `$ENV_VAR` to keep secrets out of `docs.json`:
 
 ```json
 {
@@ -120,90 +134,33 @@ Remote MCP servers can require a bearer token. Pass it via `info.token`
 }
 ```
 
-`info.token` is sent as `Authorization: Bearer <token>`. `info.headers`
-are merged on top of the default JSON-RPC headers — useful for tenant
-IDs, custom API keys, or cookies.
+`info.headers` is merged on top of the default JSON-RPC headers — useful for tenant IDs, custom API keys, or cookies.
 
-## Multi-Server Configuration
+## API Docs Generation Guides
 
-You can list more than one MCP server. Two forms are supported:
+- The generator automatically creates documentation based on your MCP source
+- Each tool becomes its own page; `inputSchema` is expanded into a typed property tree
+- Each resource becomes its own page showing `uri` and `mimeType`
+- Tools are grouped under "Tools", resources under "Resources"
+- Required / deprecated / default / nullable / min / max metadata is rendered identically to OpenAPI
 
-:::tabs{kind="secondary"}
-1. [Array](multi=array)
+## Composition
 
-    ```json
-    {
-        "api": {
-            "mcp": [
-                {
-                    "source": "https://primary.example.com/mcp",
-                    "route": "docs/api/primary"
-                },
-                {
-                    "source": "https://secondary.example.com/mcp",
-                    "route": "docs/api/secondary"
-                }
-            ]
-        }
-    }
-    ```
-
-2. [Named map](multi=named)
-
-    ```json
-    {
-        "api": {
-            "mcp": {
-                "primary": {
-                    "source": "https://primary.example.com/mcp",
-                    "route": "docs/api/primary"
-                },
-                "secondary": {
-                    "source": "https://secondary.example.com/mcp",
-                    "route": "docs/api/secondary"
-                }
-            }
-        }
-    }
-    ```
-:::
-
-Each server gets its own route prefix and an independent set of tool /
-resource pages.
-
-## Composing Pages
-
-You can override or extend a single auto-generated tool or resource page
-by writing a markdown file whose frontmatter points at the matching
-region:
+You can hand-author a markdown page that targets a single tool or resource by referencing its region in the page frontmatter:
 
 ```md
 ---
-title: search_docs (custom intro)
+title: search_docs
 mcp: ./mcp.json#tool:search_docs
 ---
 
-This goes above the auto-generated property tree.
+This intro goes above the auto-generated property tree.
 ```
 
-The frontmatter `mcp:` value uses the same `<source>#<region>` syntax as
-`openapi:` and `graphql:`. Regions are `tool:<name>` or `resource:<uri>`.
+Regions are written as `tool:<name>` or `resource:<uri>`. The `mcp:` frontmatter key uses the same `<source>#<region>` syntax as `openapi:` and `graphql:`.
 
-## What Gets Generated
+## Roadmap {label="Coming Soon"}
+Support for `prompts/list` and stdio-transport MCP servers is currently in development.
 
-For each tool:
-
-- Page title is the tool name
-- Description renders the tool's `description`
-- A single "Input" definition expands `inputSchema` into a property tree
-- Atlas renders required / deprecated / default / nullable / min / max
-  metadata identically to the OpenAPI output
-
-For each resource:
-
-- Page title is the resource name (or URI as a fallback)
-- A "Resource" definition lists `uri` and `mimeType`
-
-## MCP Sample
-
+## MCP Samples
 Learn [how to setup MCP pages](https://github.com/xyd-js/examples/tree/master/mcp).
