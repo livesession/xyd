@@ -192,7 +192,14 @@ async function processUniformFile(
                 const { mcpUrlToReferences } = await import('@xyd-js/mcp-uniform');
                 const references = await mcpUrlToReferences(resolvedFilePath);
                 if (regions.length === 0) return references;
-                const wanted = new Set(regions.map(r => r.name));
+                // mcpPreset writes meta.mcp regions as `tool:<name>` / `resource:<uri>`
+                // (see uniformResolver). The context fields they map to are bare
+                // `toolName` / `resourceUri`, so strip the prefix before matching.
+                const wanted = new Set(
+                    regions
+                        .map(r => r.name)
+                        .map(name => name.replace(/^(tool|resource):/, ""))
+                );
                 return references.filter(ref => {
                     const ctx = ref?.context as { toolName?: string; resourceUri?: string } | undefined;
                     return (ctx?.toolName && wanted.has(ctx.toolName))
