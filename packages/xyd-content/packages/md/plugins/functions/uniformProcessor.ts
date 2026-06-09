@@ -39,7 +39,7 @@ export async function processUniformFunctionCall(
     }
 
     // Process the uniform file
-    const references = await processUniformFile(resolvedFilePath, regions, lineRanges, file, resolveFrom);
+    const references = await processUniformFile(resolvedFilePath, regions, lineRanges, file, resolveFrom, settings);
 
     if (!references) {
         return null
@@ -65,7 +65,8 @@ async function processUniformFile(
     regions: Region[],
     lineRanges: LineRange[],
     file: VFile,
-    resolveFrom?: string
+    resolveFrom?: string,
+    settings?: Settings,
 ): Promise<any[] | null> {
     try {
         const isRemote = isRemotePath(filePath)
@@ -190,7 +191,15 @@ async function processUniformFile(
                 // Lazy import — keeps the build-time MCP HTTP client out of the
                 // hot path for projects that don't use it.
                 const { mcpUrlToReferences } = await import('@xyd-js/mcp-uniform');
-                const references = await mcpUrlToReferences(resolvedFilePath);
+                // Look up auth info from settings.api.mcp so the composer's
+                // re-fetch matches what the preset's initial fetch used. Without
+                // this, authenticated MCP servers return 401 here, the page
+                // gets empty references, and the h1 / Atlas tree never render.
+                const info = findMcpAuthForSource(settings, resolvedFilePath);
+                const references = await mcpUrlToReferences(resolvedFilePath, {
+                    token: info?.token,
+                    headers: info?.headers,
+                });
                 if (regions.length === 0) return references;
                 // mcpPreset writes meta.mcp regions as `tool:<name>` / `resource:<uri>`
                 // (see uniformResolver). The context fields they map to are bare
@@ -288,4 +297,29 @@ function findClosestPackageJsonDir(
 
 function isRemotePath(filePath: string): boolean {
     return filePath.startsWith('http://') || filePath.startsWith('https://');
+}
+
+/**
+ * Mirrors `findInfoForSource` in @xyd-js/plugin-docs's mcpPreset. The composer
+ * re-fetches MCP refs per virtual page (one HTTP roundtrip per page) — for
+ * authenticated servers it has to pass the same bearer/headers the preset's
+ * initial fetch used.
+ */
+function findMcpAuthForSource(
+    settings: Settings | undefined,
+    source: string,
+): { token?: string; headers?: Record<string, string> } | undefined {
+    const mcp = settings?.api?.mcp;
+    if (!mcp || typeof mcp === 'string') return undefined;
+    if (Array.isArray(mcp)) {
+        return mcp.find(m => typeof m !== 'string' && m.source === source)?.info;
+    }
+    if ('source' in mcp) {
+        return (mcp as any).source === source ? (mcp as any).info : undefined;
+    }
+    for (const key of Object.keys(mcp)) {
+        const entry = (mcp as any)[key];
+        if (typeof entry !== 'string' && entry?.source === source) return entry.info;
+    }
+    return undefined;
 }
