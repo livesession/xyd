@@ -57,14 +57,12 @@
           {
             "name": "uri",
             "type": "string",
-            "description": "Resource URI.",
-            "examples": "doc:///readme"
+            "description": "Resource URI `doc:///readme`."
           },
           {
             "name": "mimeType",
             "type": "string",
-            "description": "MIME type.",
-            "examples": "text/markdown"
+            "description": "MIME type `text/markdown`."
           }
         ]
       }

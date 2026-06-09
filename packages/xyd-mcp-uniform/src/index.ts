@@ -199,18 +199,22 @@ function resourceToReference(
                 title: "Resource",
                 properties: [
                     {
+                        // Atlas only renders `name`, `type`, `description` and
+                        // metadata badges visibly in the property card — the
+                        // `examples` field doesn't appear in the rendered tree.
+                        // For resources the URI and mimeType ARE the
+                        // information the page needs to show, so put them in
+                        // the description text.
                         name: "uri",
                         type: "string",
-                        description: "Resource URI.",
-                        examples: resource.uri,
+                        description: `Resource URI \`${resource.uri}\`.`,
                     },
                     ...(resource.mimeType
                         ? [
                               {
                                   name: "mimeType",
                                   type: "string",
-                                  description: "MIME type.",
-                                  examples: resource.mimeType,
+                                  description: `MIME type \`${resource.mimeType}\`.`,
                               } satisfies DefinitionProperty,
                           ]
                         : []),

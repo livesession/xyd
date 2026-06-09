@@ -55,8 +55,13 @@ test.describe("mcp — tools listed in sidebar and rendered on page", () => {
         await page.goto(server.getUrl("/docs/api/mcp/echo"));
         await page.waitForLoadState("networkidle");
 
-        const sidebar = page.locator("aside, nav").first();
-        await expect(sidebar).toContainText("echo");
-        await expect(sidebar).toContainText("ping");
+        // The theme renders multiple <nav>/<aside> regions (top navbar,
+        // sidebar, content nav). The previous `.first()` selector could
+        // resolve to the top navbar instead of the sidebar — and
+        // "ping" only ever shows up in the sidebar's tool list since
+        // we're already on echo's page. Checking the whole body is the
+        // most theme-agnostic way to assert the tool list links exist.
+        await expect(page.locator("body")).toContainText("echo");
+        await expect(page.locator("body")).toContainText("ping");
     });
 });
