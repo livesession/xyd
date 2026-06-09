@@ -34,7 +34,7 @@ test.describe("mcp — resources render uri + mimeType", () => {
     });
 
     test("resource page shows uri and mimeType", async ({ page }) => {
-        await page.goto(server.getUrl("/mcp/readme"));
+        await page.goto(server.getUrl("/docs/api/mcp/readme"));
         await page.waitForLoadState("networkidle");
 
         await expect(page.locator("main")).toContainText("file:///readme.md");

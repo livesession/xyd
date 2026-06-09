@@ -1,14 +1,19 @@
 {
-  "theme": { "name": "poetry" },
+  "theme": {
+    "name": "poetry"
+  },
   "navigation": {
     "sidebar": [
-      { "route": "/mcp", "pages": [] }
+      {
+        "route": "docs/api/mcp",
+        "pages": []
+      }
     ]
   },
   "api": {
     "mcp": {
       "source": "./mcp.json",
-      "route": "/mcp"
+      "route": "docs/api/mcp"
     }
   }
 }

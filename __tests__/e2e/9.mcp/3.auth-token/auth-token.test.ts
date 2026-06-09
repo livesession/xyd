@@ -29,7 +29,7 @@ test.describe("mcp — bearer token from $MCP_TOKEN is sent to the server", () =
     });
 
     test("stub server saw Authorization: Bearer <token>", async ({ page }) => {
-        await page.goto(server.getUrl("/mcp/secret-tool"));
+        await page.goto(server.getUrl("/docs/api/mcp/secret-tool"));
         await page.waitForLoadState("networkidle");
 
         expect(stub.receivedHeaders.length).toBeGreaterThan(0);

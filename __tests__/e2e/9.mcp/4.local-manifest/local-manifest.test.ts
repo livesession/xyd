@@ -23,7 +23,7 @@ test.describe("mcp — local JSON manifest source", () => {
     });
 
     test("each tool from mcp.json renders as its own page", async ({ page }) => {
-        await page.goto(server.getUrl("/mcp/echo"));
+        await page.goto(server.getUrl("/docs/api/mcp/echo"));
         await page.waitForLoadState("networkidle");
 
         await expect(page.locator("h1")).toContainText("echo");
@@ -32,7 +32,7 @@ test.describe("mcp — local JSON manifest source", () => {
     });
 
     test("ping tool (empty inputSchema) is reachable", async ({ page }) => {
-        await page.goto(server.getUrl("/mcp/ping"));
+        await page.goto(server.getUrl("/docs/api/mcp/ping"));
         await page.waitForLoadState("networkidle");
 
         await expect(page.locator("h1")).toContainText("ping");
@@ -40,7 +40,7 @@ test.describe("mcp — local JSON manifest source", () => {
     });
 
     test("resource page shows uri + mimeType", async ({ page }) => {
-        await page.goto(server.getUrl("/mcp/readme"));
+        await page.goto(server.getUrl("/docs/api/mcp/readme"));
         await page.waitForLoadState("networkidle");
 
         await expect(page.locator("main")).toContainText("doc:///readme");

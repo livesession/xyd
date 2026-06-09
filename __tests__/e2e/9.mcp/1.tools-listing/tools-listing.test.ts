@@ -43,7 +43,7 @@ test.describe("mcp — tools listed in sidebar and rendered on page", () => {
     });
 
     test("each tool renders as its own page", async ({ page }) => {
-        await page.goto(server.getUrl("/mcp/echo"));
+        await page.goto(server.getUrl("/docs/api/mcp/echo"));
         await page.waitForLoadState("networkidle");
 
         await expect(page.locator("h1")).toContainText("echo");
@@ -52,7 +52,7 @@ test.describe("mcp — tools listed in sidebar and rendered on page", () => {
     });
 
     test("sidebar contains both tools", async ({ page }) => {
-        await page.goto(server.getUrl("/mcp/echo"));
+        await page.goto(server.getUrl("/docs/api/mcp/echo"));
         await page.waitForLoadState("networkidle");
 
         const sidebar = page.locator("aside, nav").first();
