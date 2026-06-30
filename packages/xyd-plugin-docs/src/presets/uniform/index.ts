@@ -530,7 +530,8 @@ async function composeFileMap(basePath: string, matchRoute: string) {
                         // strip the `<source>#` prefix when present.
                         const raw = frontmatter.openapi
                             || frontmatter.graphql
-                            || frontmatter.mcp;
+                            || frontmatter.mcp
+                            || frontmatter.cli;
                         if (raw) {
                             const hashIdx = String(raw).lastIndexOf("#");
                             const region = hashIdx >= 0 ? String(raw).slice(hashIdx + 1) : String(raw);
