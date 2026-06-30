@@ -973,6 +973,18 @@ export interface API {
    * Tools and resources from the server are rendered as API reference pages.
    */
   mcp?: MCPAPIFile;
+
+  /**
+   * CLI configuration. Each source is an OpenCLI spec (a JSON file path or URL).
+   *
+   * Point it at a spec to auto-generate one reference page per command
+   * (arguments + options), the same way `openapi` / `graphql` generate pages:
+   *
+   * ```json
+   * { "api": { "cli": [{ "source": "./spice.opencli.json", "route": "docs/cli" }] } }
+   * ```
+   */
+  cli?: APIFile;
 }
 
 /**

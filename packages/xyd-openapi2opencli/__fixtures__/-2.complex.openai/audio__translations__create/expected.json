@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "audio",
+    "translations",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "file",
+    "model"
+  ],
+  "docCommand": "openai audio:translations create --api-key 'My API Key' --file 'Example data' --model whisper-1",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/audio/subresources/translations/methods/create"
+}

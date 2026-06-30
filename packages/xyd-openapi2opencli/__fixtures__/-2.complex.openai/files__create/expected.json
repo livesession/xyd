@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "files",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "file",
+    "purpose"
+  ],
+  "docCommand": "openai files create --api-key 'My API Key' --file 'Example data' --purpose assistants",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/files/methods/create"
+}

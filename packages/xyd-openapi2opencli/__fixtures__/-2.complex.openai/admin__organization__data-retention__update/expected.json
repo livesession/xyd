@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "data-retention",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "retention-type"
+  ],
+  "docCommand": "openai admin:organization:data-retention update --admin-api-key 'My Admin API Key' --retention-type zero_data_retention",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/data_retention/methods/update"
+}

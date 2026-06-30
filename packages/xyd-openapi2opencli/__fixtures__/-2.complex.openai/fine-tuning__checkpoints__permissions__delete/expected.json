@@ -1,0 +1,15 @@
+{
+  "commandPath": [
+    "fine-tuning",
+    "checkpoints",
+    "permissions",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "fine-tuned-model-checkpoint",
+    "permission-id"
+  ],
+  "docCommand": "openai fine-tuning:checkpoints:permissions delete --api-key 'My API Key' --fine-tuned-model-checkpoint ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd --permission-id cp_zc4Q7MP6XxulcVzj4MZdwsAB",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/fine_tuning/subresources/checkpoints/subresources/permissions/methods/delete"
+}

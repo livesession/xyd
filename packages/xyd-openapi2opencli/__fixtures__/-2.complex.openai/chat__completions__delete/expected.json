@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "chat",
+    "completions",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "completion-id"
+  ],
+  "docCommand": "openai chat:completions delete --api-key 'My API Key' --completion-id completion_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/chat/subresources/completions/methods/delete"
+}

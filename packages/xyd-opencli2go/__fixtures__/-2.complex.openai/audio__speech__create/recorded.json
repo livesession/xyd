@@ -1,0 +1,25 @@
+{
+  "args": [
+    "audio",
+    "speech",
+    "create",
+    "--model",
+    "EXAMPLE",
+    "--input",
+    "EXAMPLE",
+    "--voice",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/audio/speech",
+    "query": [],
+    "bodyFields": [
+      "input",
+      "model",
+      "voice"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

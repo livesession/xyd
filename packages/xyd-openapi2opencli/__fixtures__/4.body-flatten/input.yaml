@@ -1,0 +1,61 @@
+openapi: 3.0.3
+info:
+  title: Chat API
+  version: 1.0.0
+servers:
+  - url: https://api.chat.test/v1
+security:
+  - bearerAuth: []
+paths:
+  /chat/completions:
+    post:
+      operationId: createChatCompletion
+      summary: Creates a model response for the given chat conversation.
+      tags:
+        - Chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model, messages]
+              properties:
+                model:
+                  type: string
+                  description: ID of the model to use.
+                  enum: [gpt-4o, gpt-4o-mini, o3]
+                messages:
+                  type: array
+                  description: A list of messages comprising the conversation.
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                      content:
+                        type: string
+                temperature:
+                  type: number
+                  default: 1
+                  description: Sampling temperature.
+                stop:
+                  type: array
+                  items:
+                    type: string
+                stream:
+                  type: boolean
+                  default: false
+                response_format:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+      responses:
+        "200":
+          description: OK
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer

@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "moderations",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "input"
+  ],
+  "docCommand": "openai moderations create --api-key 'My API Key' --input 'I want to kill them.'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/moderations/methods/create"
+}

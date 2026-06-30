@@ -1,0 +1,31 @@
+{
+  "httpMethod": "post",
+  "path": "/threads/runs",
+  "operationId": "createThreadAndRun",
+  "title": "Create thread and run",
+  "summary": "Create a thread and run it in one request.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "assistant_id",
+      "thread",
+      "model",
+      "instructions",
+      "tools",
+      "tool_resources",
+      "metadata",
+      "temperature",
+      "top_p",
+      "stream",
+      "max_prompt_tokens",
+      "max_completion_tokens",
+      "truncation_strategy",
+      "tool_choice",
+      "parallel_tool_calls",
+      "response_format",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "groups",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "group-id",
+    "name"
+  ],
+  "docCommand": "openai admin:organization:groups update --admin-api-key 'My Admin API Key' --group-id group_id --name x",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/groups/methods/update"
+}

@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "fine-tuning",
+    "checkpoints",
+    "permissions",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "fine-tuned-model-checkpoint"
+  ],
+  "docCommand": "openai fine-tuning:checkpoints:permissions retrieve --api-key 'My API Key' --fine-tuned-model-checkpoint ft-AF1WoRqd3aJAHsqc9NY7iL8F",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/fine_tuning/subresources/checkpoints/subresources/permissions/methods/retrieve"
+}

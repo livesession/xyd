@@ -1,0 +1,15 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/groups",
+  "operationId": "create-group",
+  "title": "Create group",
+  "summary": "Creates a new group in the organization.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "name"
+    ]
+  }
+}

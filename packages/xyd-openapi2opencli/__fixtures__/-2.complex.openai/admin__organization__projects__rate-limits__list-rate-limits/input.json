@@ -1,0 +1,29 @@
+{
+  "httpMethod": "get",
+  "path": "/organization/projects/{project_id}/rate_limits",
+  "operationId": "list-project-rate-limits",
+  "title": "List project rate limits",
+  "summary": "Returns the rate limits per model for a project.",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "before",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

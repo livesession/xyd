@@ -1,0 +1,113 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "xyd",
+    "version": "0.1.0-build.342",
+    "description": "Docs platform for future dev"
+  },
+  "options": [
+    {
+      "name": "help",
+      "aliases": [
+        "h"
+      ],
+      "description": "Print this help message and exit",
+      "recursive": true
+    },
+    {
+      "name": "version",
+      "aliases": [
+        "v"
+      ],
+      "description": "Print the CLI version and exit",
+      "recursive": true
+    },
+    {
+      "name": "verbose",
+      "description": "Enable verbose output",
+      "recursive": true
+    },
+    {
+      "name": "port",
+      "aliases": [
+        "p"
+      ],
+      "description": "Port to run the dev server on",
+      "arguments": [
+        {
+          "name": "number"
+        }
+      ],
+      "recursive": true
+    },
+    {
+      "name": "logLevel",
+      "aliases": [
+        "l"
+      ],
+      "description": "Set logging level (e.g. info, debug)",
+      "arguments": [
+        {
+          "name": "string"
+        }
+      ],
+      "recursive": true
+    },
+    {
+      "name": "debug",
+      "description": "Enable debug output",
+      "recursive": true
+    }
+  ],
+  "commands": [
+    {
+      "name": "dev",
+      "description": "Run your docs locally in development mode"
+    },
+    {
+      "name": "build",
+      "description": "Build your docs"
+    },
+    {
+      "name": "serve",
+      "description": "Serve your built docs in production mode"
+    },
+    {
+      "name": "install",
+      "description": "Install the xyd framework manually"
+    },
+    {
+      "name": "migrateme",
+      "description": "Migrate your docs to the new xyd framework",
+      "arguments": [
+        {
+          "name": "resource",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "components",
+      "description": "Manage xyd components",
+      "arguments": [
+        {
+          "name": "subcommand",
+          "required": true
+        },
+        {
+          "name": "args"
+        }
+      ]
+    },
+    {
+      "name": "completion",
+      "description": "Generate shell completions or the CLI OpenCLI document. Run `xyd completion <zsh|fish>` to print a script, `xyd completion install [shell]` to install it, or `xyd completion opencli` to print the OpenCLI document.",
+      "arguments": [
+        {
+          "name": "shell",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

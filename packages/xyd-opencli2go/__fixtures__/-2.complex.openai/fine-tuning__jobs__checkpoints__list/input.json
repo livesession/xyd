@@ -1,0 +1,99 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "fine-tuning",
+      "commands": [
+        {
+          "name": "jobs",
+          "commands": [
+            {
+              "name": "checkpoints",
+              "commands": [
+                {
+                  "name": "list",
+                  "description": "List checkpoints for a fine-tuning job.\n",
+                  "arguments": [
+                    {
+                      "name": "fine-tuning-job-id",
+                      "required": true,
+                      "description": "The ID of the fine-tuning job to get checkpoints for.\n"
+                    }
+                  ],
+                  "options": [
+                    {
+                      "name": "after",
+                      "description": "Identifier for the last checkpoint ID from the previous pagination request.",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "string"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "limit",
+                      "description": "Number of checkpoints to retrieve.",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "integer"
+                        }
+                      ]
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "get",
+                    "path": "/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints",
+                    "operationId": "listFineTuningJobCheckpoints",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "fine_tuning_job_id",
+                        "from": "argument:fine-tuning-job-id",
+                        "required": true
+                      },
+                      {
+                        "in": "query",
+                        "name": "after",
+                        "from": "option:after"
+                      },
+                      {
+                        "in": "query",
+                        "name": "limit",
+                        "from": "option:limit"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

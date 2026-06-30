@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "containers",
+    "files",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "container-id"
+  ],
+  "docCommand": "openai containers:files list --api-key 'My API Key' --container-id container_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/containers/subresources/files/methods/list"
+}

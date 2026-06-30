@@ -1,0 +1,57 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "responses",
+      "commands": [
+        {
+          "name": "delete",
+          "description": "Deletes a model response with the given ID.\n",
+          "arguments": [
+            {
+              "name": "response-id",
+              "required": true,
+              "description": "The ID of the response to delete."
+            }
+          ],
+          "x-openapi": {
+            "method": "delete",
+            "path": "/responses/{response_id}",
+            "operationId": "deleteResponse",
+            "params": [
+              {
+                "in": "path",
+                "name": "response_id",
+                "from": "argument:response-id",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

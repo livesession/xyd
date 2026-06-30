@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "groups",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "group-id"
+  ],
+  "docCommand": "openai admin:organization:groups delete --admin-api-key 'My Admin API Key' --group-id group_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/groups/methods/delete"
+}

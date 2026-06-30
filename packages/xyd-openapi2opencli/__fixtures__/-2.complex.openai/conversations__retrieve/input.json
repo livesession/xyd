@@ -1,0 +1,14 @@
+{
+  "httpMethod": "get",
+  "path": "/conversations/{conversation_id}",
+  "operationId": "getConversation",
+  "title": "Retrieve a conversation",
+  "summary": "Get a conversation",
+  "parameters": [
+    {
+      "name": "conversation_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

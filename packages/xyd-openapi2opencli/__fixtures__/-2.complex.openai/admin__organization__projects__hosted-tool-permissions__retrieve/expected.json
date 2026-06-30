@@ -1,0 +1,15 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "projects",
+    "hosted-tool-permissions",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "project-id"
+  ],
+  "docCommand": "openai admin:organization:projects:hosted-tool-permissions retrieve --admin-api-key 'My Admin API Key' --project-id project_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/projects/subresources/hosted_tool_permissions/methods/retrieve"
+}

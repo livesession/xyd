@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "completions",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "model",
+    "prompt"
+  ],
+  "docCommand": "openai completions create --api-key 'My API Key' --model gpt-3.5-turbo-instruct --prompt 'This is a test.'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/completions/methods/create"
+}

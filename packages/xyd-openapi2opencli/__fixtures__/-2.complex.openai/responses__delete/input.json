@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/responses/{response_id}",
+  "operationId": "deleteResponse",
+  "title": "Delete a model response",
+  "summary": "Deletes a model response with the given ID.\n",
+  "parameters": [
+    {
+      "name": "response_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

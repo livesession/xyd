@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "images",
+    "create-variation"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "image"
+  ],
+  "docCommand": "openai images create-variation --api-key 'My API Key' --image 'Example data'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/images/methods/create_variation"
+}

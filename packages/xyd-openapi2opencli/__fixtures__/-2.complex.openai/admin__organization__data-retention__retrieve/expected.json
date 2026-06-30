@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "data-retention",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [],
+  "docCommand": "openai admin:organization:data-retention retrieve --admin-api-key 'My Admin API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/data_retention/methods/retrieve"
+}

@@ -1,0 +1,139 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "embeddings",
+      "commands": [
+        {
+          "name": "create",
+          "description": "Creates an embedding vector representing the input text.",
+          "options": [
+            {
+              "name": "input",
+              "group": "body",
+              "required": true,
+              "description": "Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a single request, pass an array of strings or array of token arrays. The input must not exceed the max input tokens for the model (8192 tokens for all embedding models), cannot be an empty string, and any array must be 2048 dimensions or less. [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken) for counting tokens. In addition to the per-input token limit, all embedding  models enforce a maximum of 300,000 tokens summed across all inputs in a  single request.\n",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "model",
+              "group": "body",
+              "required": true,
+              "description": "ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.\n",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "encoding-format",
+              "group": "body",
+              "description": "The format to return the embeddings in. Can be either `float` or [`base64`](https://pypi.org/project/pybase64/).",
+              "arguments": [
+                {
+                  "name": "string",
+                  "acceptedValues": [
+                    "float",
+                    "base64"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "dimensions",
+              "group": "body",
+              "description": "The number of dimensions the resulting output embeddings should have. Only supported in `text-embedding-3` and later models.\n",
+              "arguments": [
+                {
+                  "name": "integer"
+                }
+              ]
+            },
+            {
+              "name": "user",
+              "group": "body",
+              "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices#end-user-ids).\n",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "post",
+            "path": "/embeddings",
+            "operationId": "createEmbedding",
+            "contentType": "application/json",
+            "body": {
+              "style": "flatten",
+              "contentType": "application/json",
+              "properties": [
+                {
+                  "name": "input",
+                  "from": "option:input",
+                  "jsonPath": "input",
+                  "encoding": "json",
+                  "required": true
+                },
+                {
+                  "name": "model",
+                  "from": "option:model",
+                  "jsonPath": "model",
+                  "encoding": "json",
+                  "required": true
+                },
+                {
+                  "name": "encoding_format",
+                  "from": "option:encoding-format",
+                  "jsonPath": "encoding_format",
+                  "encoding": "string"
+                },
+                {
+                  "name": "dimensions",
+                  "from": "option:dimensions",
+                  "jsonPath": "dimensions",
+                  "encoding": "integer"
+                },
+                {
+                  "name": "user",
+                  "from": "option:user",
+                  "jsonPath": "user",
+                  "encoding": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

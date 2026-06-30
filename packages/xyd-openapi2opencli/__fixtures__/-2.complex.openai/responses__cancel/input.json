@@ -1,0 +1,13 @@
+{
+  "httpMethod": "post",
+  "path": "/responses",
+  "operationId": "createResponse",
+  "title": "Create a model response",
+  "summary": "Creates a model response. Provide [text](/docs/guides/text) or\n[image](/docs/guides/images) inputs to generate [text](/docs/guides/text)\nor [JSON](/docs/guides/structured-outputs) outputs. Have the model call\nyour own [custom code](/docs/guides/function-calling) or use built-in\n[tools](/docs/guides/tools) like [web search](/docs/guides/tools-web-search)\nor [file search](/docs/guides/tools-file-search) to use your own data\nas input for the model's response.\n",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": []
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "httpMethod": "post",
+  "path": "/containers",
+  "operationId": "CreateContainer",
+  "title": "Create container",
+  "summary": "Create Container",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": false,
+    "properties": [
+      "name",
+      "file_ids",
+      "expires_after",
+      "skills",
+      "memory_limit",
+      "network_policy"
+    ]
+  }
+}

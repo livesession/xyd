@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "responses",
+    "cancel"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "response-id"
+  ],
+  "docCommand": "openai responses cancel --api-key 'My API Key' --response-id resp_677efb5139a88190b512bc3fef8e535d",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/responses/methods/cancel"
+}

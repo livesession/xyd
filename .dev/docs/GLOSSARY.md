@@ -155,6 +155,15 @@ Orama
 OpenAPI
 : The `@xyd-js/openapi` package. Converts OpenAPI 3.x specifications into the Uniform `Reference[]` format via `oapSchemaToReferences()`. Handles dereferencing, circular references, schema composition, and code sample generation.
 
+OpenCLI
+: An open specification ([opencli.org](https://opencli.org)) describing a CLI's surface — command tree, arguments, options. The `@xyd-js/opencli` package owns the (extended) schema, generated types, and helpers. Used as the neutral intermediate format in the OpenAPI → CLI pipeline. See `13.api-definitions/OpenCliCliGeneration.md`.
+
+openapi2opencli
+: The `@xyd-js/openapi2opencli` package (Stage A of CLI generation). Converts an OpenAPI 3.x document into an OpenCLI document, emitting the `x-openapi` request binding. Conformance-tested against OpenAI's spec and `openai-cli`.
+
+opencli2go
+: The `@xyd-js/opencli2go` package. Generates a buildable Go CLI project (urfave/cli v3) from an OpenCLI document as a pure virtual file map. Functional handlers read `x-openapi` to make real HTTP requests.
+
 ## P
 
 Plugin
@@ -242,6 +251,9 @@ Virtual Modules
 : Vite-based modules dynamically generated at build time. Include `virtual:xyd-settings`, `virtual:xyd-theme`, `virtual:xyd-user-components`, `virtual:xyd-analytics-providers`, `virtual:xyd-scripts`, and `virtual:xyd-icon-set`.
 
 ## X
+
+x-openapi
+: An extension on an OpenCLI document that binds each command back to its HTTP request (method, path, auth, and how arguments/options map into the request). It is what makes generated CLIs *functional* (able to call the API) rather than structural stubs. Emitted by `openapi2opencli`, consumed by `opencli2go`. See `13.api-definitions/OpenCliCliGeneration.md`.
 
 xyd
 : The documentation framework. A batteries-included platform combining CLI, desktop application, theming, plugin system, and API documentation capabilities. Requires Node.js >= 22.12.0.

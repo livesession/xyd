@@ -1,0 +1,135 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "users",
+          "commands": [
+            {
+              "name": "modify",
+              "description": "Modifies a user's role in the organization.",
+              "arguments": [
+                {
+                  "name": "user-id",
+                  "required": true,
+                  "description": "The ID of the user."
+                }
+              ],
+              "options": [
+                {
+                  "name": "role",
+                  "group": "body",
+                  "description": "`owner` or `reader`",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "role-id",
+                  "group": "body",
+                  "description": "Role ID to assign to the user.",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "technical-level",
+                  "group": "body",
+                  "description": "Technical level metadata.",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "developer-persona",
+                  "group": "body",
+                  "description": "Developer persona metadata.",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/organization/users/{user_id}",
+                "operationId": "modify-user",
+                "contentType": "application/json",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "user_id",
+                    "from": "argument:user-id",
+                    "required": true
+                  }
+                ],
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "role",
+                      "from": "option:role",
+                      "jsonPath": "role",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "role_id",
+                      "from": "option:role-id",
+                      "jsonPath": "role_id",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "technical_level",
+                      "from": "option:technical-level",
+                      "jsonPath": "technical_level",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "developer_persona",
+                      "from": "option:developer-persona",
+                      "jsonPath": "developer_persona",
+                      "encoding": "json"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

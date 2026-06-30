@@ -1,0 +1,16 @@
+{
+  "args": [
+    "organization",
+    "users",
+    "roles",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/organization/users/{user_id}/roles",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

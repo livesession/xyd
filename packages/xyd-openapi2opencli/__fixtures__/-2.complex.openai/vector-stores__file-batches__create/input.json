@@ -1,0 +1,25 @@
+{
+  "httpMethod": "post",
+  "path": "/vector_stores/{vector_store_id}/file_batches",
+  "operationId": "createVectorStoreFileBatch",
+  "title": "Create vector store file batch",
+  "summary": "Create a vector store file batch.",
+  "parameters": [
+    {
+      "name": "vector_store_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "file_ids",
+      "files",
+      "chunking_strategy",
+      "attributes",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

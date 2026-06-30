@@ -1,0 +1,34 @@
+{
+  "httpMethod": "get",
+  "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions",
+  "operationId": "listFineTuningCheckpointPermissions",
+  "title": "List checkpoint permissions",
+  "summary": "**NOTE:** This endpoint requires an [admin API key](../admin-api-keys).\n\nOrganization owners can use this endpoint to view all permissions for a fine-tuned model checkpoint.\n",
+  "parameters": [
+    {
+      "name": "fine_tuned_model_checkpoint",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "project_id",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

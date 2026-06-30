@@ -1,0 +1,15 @@
+{
+  "args": [
+    "responses",
+    "input-tokens",
+    "create"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/responses/input_tokens",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

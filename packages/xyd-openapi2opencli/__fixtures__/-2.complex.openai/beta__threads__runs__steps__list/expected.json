@@ -1,0 +1,16 @@
+{
+  "commandPath": [
+    "beta",
+    "threads",
+    "runs",
+    "steps",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "run-id",
+    "thread-id"
+  ],
+  "docCommand": "openai beta:threads:runs:steps list --api-key 'My API Key' --thread-id thread_id --run-id run_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/threads/subresources/runs/subresources/steps/methods/list"
+}

@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "vector-stores",
+    "search"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "query",
+    "vector-store-id"
+  ],
+  "docCommand": "openai vector-stores search --api-key 'My API Key' --vector-store-id vs_abc123 --query string",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/vector_stores/methods/search"
+}

@@ -1,0 +1,62 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "groups",
+          "commands": [
+            {
+              "name": "delete",
+              "description": "Deletes a group from the organization.",
+              "arguments": [
+                {
+                  "name": "group-id",
+                  "required": true,
+                  "description": "The ID of the group to delete."
+                }
+              ],
+              "x-openapi": {
+                "method": "delete",
+                "path": "/organization/groups/{group_id}",
+                "operationId": "delete-group",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "group_id",
+                    "from": "argument:group-id",
+                    "required": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

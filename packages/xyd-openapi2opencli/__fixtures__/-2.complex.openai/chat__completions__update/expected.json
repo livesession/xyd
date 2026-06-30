@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "chat",
+    "completions",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "completion-id",
+    "metadata"
+  ],
+  "docCommand": "openai chat:completions update --api-key 'My API Key' --completion-id completion_id --metadata '{foo: string}'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/chat/subresources/completions/methods/update"
+}

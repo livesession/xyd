@@ -1,0 +1,133 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "transcribe-api",
+    "version": "1.0.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.transcribe.test/v1"
+    ]
+  },
+  "commands": [
+    {
+      "name": "audio",
+      "commands": [
+        {
+          "name": "transcriptions",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Transcribes audio into the input language.",
+              "options": [
+                {
+                  "name": "model",
+                  "group": "body",
+                  "required": true,
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "acceptedValues": [
+                        "gpt-4o-transcribe",
+                        "whisper-1"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "language",
+                  "group": "body",
+                  "description": "The language of the input audio (ISO-639-1).",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/audio/transcriptions",
+                "operationId": "createTranscription",
+                "contentType": "application/json",
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "model",
+                      "from": "option:model",
+                      "jsonPath": "model",
+                      "encoding": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "language",
+                      "from": "option:language",
+                      "jsonPath": "language",
+                      "encoding": "string"
+                    }
+                  ]
+                },
+                "responses": [
+                  {
+                    "status": "200",
+                    "contentType": "application/json",
+                    "description": "OK",
+                    "example": {
+                      "text": "string",
+                      "language": "string",
+                      "duration": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "models",
+      "commands": [
+        {
+          "name": "retrieve",
+          "aliases": [
+            "get"
+          ],
+          "description": "Retrieve a model instance.",
+          "arguments": [
+            {
+              "name": "model",
+              "required": true
+            }
+          ],
+          "x-openapi": {
+            "method": "get",
+            "path": "/models/{model}",
+            "operationId": "retrieveModel",
+            "params": [
+              {
+                "in": "path",
+                "name": "model",
+                "from": "argument:model",
+                "required": true
+              }
+            ],
+            "responses": [
+              {
+                "status": "200",
+                "contentType": "application/json",
+                "description": "OK",
+                "example": {
+                  "id": "gpt-4o-transcribe",
+                  "object": "model"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

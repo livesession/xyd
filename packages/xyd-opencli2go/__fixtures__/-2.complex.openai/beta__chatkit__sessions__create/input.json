@@ -1,0 +1,140 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "chatkit",
+      "commands": [
+        {
+          "name": "sessions",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Create a ChatKit session.",
+              "options": [
+                {
+                  "name": "workflow",
+                  "group": "body",
+                  "required": true,
+                  "description": "Workflow that powers the session.",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "user",
+                  "group": "body",
+                  "required": true,
+                  "description": "A free-form string that identifies your end user; ensures this Session can access other objects that have the same `user` scope.",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "expires-after",
+                  "group": "body",
+                  "description": "Optional override for session expiration timing in seconds from creation. Defaults to 10 minutes.",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "rate-limits",
+                  "group": "body",
+                  "description": "Optional override for per-minute request limits. When omitted, defaults to 10.",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "chatkit-configuration",
+                  "group": "body",
+                  "description": "Optional overrides for ChatKit runtime configuration features",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/chatkit/sessions",
+                "operationId": "CreateChatSessionMethod",
+                "contentType": "application/json",
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "workflow",
+                      "from": "option:workflow",
+                      "jsonPath": "workflow",
+                      "encoding": "json",
+                      "required": true
+                    },
+                    {
+                      "name": "user",
+                      "from": "option:user",
+                      "jsonPath": "user",
+                      "encoding": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "expires_after",
+                      "from": "option:expires-after",
+                      "jsonPath": "expires_after",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "rate_limits",
+                      "from": "option:rate-limits",
+                      "jsonPath": "rate_limits",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "chatkit_configuration",
+                      "from": "option:chatkit-configuration",
+                      "jsonPath": "chatkit_configuration",
+                      "encoding": "json"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

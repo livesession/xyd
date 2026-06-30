@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "videos",
+    "extend"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "prompt",
+    "seconds",
+    "video"
+  ],
+  "docCommand": "openai videos extend --api-key 'My API Key' --prompt x --seconds 4 --video 'Example data'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/videos/methods/extend"
+}

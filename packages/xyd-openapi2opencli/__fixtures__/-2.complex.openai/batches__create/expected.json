@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "batches",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "completion-window",
+    "endpoint",
+    "input-file-id"
+  ],
+  "docCommand": "openai batches create --api-key 'My API Key' --completion-window 24h --endpoint /v1/responses --input-file-id input_file_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/batches/methods/create"
+}

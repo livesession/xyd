@@ -1,0 +1,24 @@
+{
+  "httpMethod": "get",
+  "path": "/organization/admin_api_keys",
+  "operationId": "admin-api-keys-list",
+  "title": "List all organization and project API keys.",
+  "summary": "List organization API keys",
+  "parameters": [
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

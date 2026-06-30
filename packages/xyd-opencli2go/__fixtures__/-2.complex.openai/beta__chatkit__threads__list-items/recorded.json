@@ -1,0 +1,15 @@
+{
+  "args": [
+    "chatkit",
+    "threads",
+    "retrieve",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/chatkit/threads/{thread_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

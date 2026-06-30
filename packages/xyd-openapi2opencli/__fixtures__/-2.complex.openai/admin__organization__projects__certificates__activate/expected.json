@@ -1,0 +1,16 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "projects",
+    "certificates",
+    "activate"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "certificate-id",
+    "project-id"
+  ],
+  "docCommand": "openai admin:organization:projects:certificates activate --admin-api-key 'My Admin API Key' --project-id project_id --certificate-id cert_abc",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/projects/subresources/certificates/methods/activate"
+}

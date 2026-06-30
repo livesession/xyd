@@ -1,0 +1,15 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/admin_api_keys",
+  "operationId": "admin-api-keys-create",
+  "title": "Create admin API key",
+  "summary": "Create an organization admin API key",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "name"
+    ]
+  }
+}

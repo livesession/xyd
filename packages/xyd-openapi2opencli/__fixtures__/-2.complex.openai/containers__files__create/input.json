@@ -1,0 +1,22 @@
+{
+  "httpMethod": "post",
+  "path": "/containers/{container_id}/files",
+  "operationId": "CreateContainerFile",
+  "title": "Create container file",
+  "summary": "Create a Container File\n\nYou can send either a multipart/form-data request with the raw file content, or a JSON request with a file ID.\n",
+  "parameters": [
+    {
+      "name": "container_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "file_id",
+      "file"
+    ]
+  }
+}

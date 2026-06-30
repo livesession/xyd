@@ -1,0 +1,16 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "projects",
+    "spend-alerts",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "alert-id",
+    "project-id"
+  ],
+  "docCommand": "openai admin:organization:projects:spend-alerts retrieve --admin-api-key 'My Admin API Key' --project-id project_id --alert-id alert_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/projects/subresources/spend_alerts/methods/retrieve"
+}

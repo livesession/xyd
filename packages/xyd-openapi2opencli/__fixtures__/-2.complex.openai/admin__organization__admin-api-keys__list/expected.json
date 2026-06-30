@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "admin-api-keys",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [],
+  "docCommand": "openai admin:organization:admin-api-keys list --admin-api-key 'My Admin API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/admin_api_keys/methods/list"
+}

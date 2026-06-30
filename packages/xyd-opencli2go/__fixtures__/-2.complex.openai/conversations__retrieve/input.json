@@ -1,0 +1,60 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "conversations",
+      "commands": [
+        {
+          "name": "retrieve",
+          "aliases": [
+            "get"
+          ],
+          "description": "Get a conversation",
+          "arguments": [
+            {
+              "name": "conversation-id",
+              "required": true,
+              "description": "The ID of the conversation to retrieve."
+            }
+          ],
+          "x-openapi": {
+            "method": "get",
+            "path": "/conversations/{conversation_id}",
+            "operationId": "getConversation",
+            "params": [
+              {
+                "in": "path",
+                "name": "conversation_id",
+                "from": "argument:conversation-id",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

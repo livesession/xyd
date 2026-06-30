@@ -1,0 +1,19 @@
+{
+  "httpMethod": "post",
+  "path": "/embeddings",
+  "operationId": "createEmbedding",
+  "title": "Create embeddings",
+  "summary": "Creates an embedding vector representing the input text.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "input",
+      "model",
+      "encoding_format",
+      "dimensions",
+      "user"
+    ]
+  }
+}

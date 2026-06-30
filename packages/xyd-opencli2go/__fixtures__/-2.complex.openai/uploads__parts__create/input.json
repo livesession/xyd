@@ -1,0 +1,89 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "uploads",
+      "commands": [
+        {
+          "name": "parts",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Adds a [Part](/docs/api-reference/uploads/part-object) to an [Upload](/docs/api-reference/uploads/object) object. A Part represents a chunk of bytes from the file you are trying to upload. \n\nEach Part can be at most 64 MB, and you can add Parts until you hit the Upload maximum of 8 GB.\n\nIt is possible to add multiple Parts in parallel. You can decide the intended order of the Parts when you [complete the Upload](/docs/api-reference/uploads/complete).\n",
+              "arguments": [
+                {
+                  "name": "upload-id",
+                  "required": true,
+                  "description": "The ID of the Upload.\n"
+                }
+              ],
+              "options": [
+                {
+                  "name": "data",
+                  "group": "body",
+                  "required": true,
+                  "description": "The chunk of bytes for this Part.\n",
+                  "arguments": [
+                    {
+                      "name": "path"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/uploads/{upload_id}/parts",
+                "operationId": "addUploadPart",
+                "contentType": "multipart/form-data",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "upload_id",
+                    "from": "argument:upload-id",
+                    "required": true
+                  }
+                ],
+                "body": {
+                  "style": "multipart",
+                  "contentType": "multipart/form-data",
+                  "properties": [
+                    {
+                      "name": "data",
+                      "from": "option:data",
+                      "jsonPath": "data",
+                      "encoding": "file",
+                      "required": true
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

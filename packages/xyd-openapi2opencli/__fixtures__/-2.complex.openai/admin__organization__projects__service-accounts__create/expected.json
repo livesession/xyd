@@ -1,0 +1,16 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "projects",
+    "service-accounts",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "name",
+    "project-id"
+  ],
+  "docCommand": "openai admin:organization:projects:service-accounts create --admin-api-key 'My Admin API Key' --project-id project_id --name name",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/projects/subresources/service_accounts/methods/create"
+}

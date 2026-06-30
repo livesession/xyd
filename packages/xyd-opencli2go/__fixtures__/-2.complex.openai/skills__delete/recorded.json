@@ -1,0 +1,14 @@
+{
+  "args": [
+    "skills",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/skills/{skill_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

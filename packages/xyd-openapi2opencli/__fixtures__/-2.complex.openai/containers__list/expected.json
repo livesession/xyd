@@ -1,0 +1,10 @@
+{
+  "commandPath": [
+    "containers",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [],
+  "docCommand": "openai containers list --api-key 'My API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/containers/methods/list"
+}

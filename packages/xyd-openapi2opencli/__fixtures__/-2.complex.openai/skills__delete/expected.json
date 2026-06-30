@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "skills",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "skill-id"
+  ],
+  "docCommand": "openai skills delete --api-key 'My API Key' --skill-id skill_123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/skills/methods/delete"
+}

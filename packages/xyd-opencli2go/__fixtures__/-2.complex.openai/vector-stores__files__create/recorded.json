@@ -1,0 +1,20 @@
+{
+  "args": [
+    "vector-stores",
+    "files",
+    "create",
+    "EXAMPLE",
+    "--file-id",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/vector_stores/{vector_store_id}/files",
+    "query": [],
+    "bodyFields": [
+      "file_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

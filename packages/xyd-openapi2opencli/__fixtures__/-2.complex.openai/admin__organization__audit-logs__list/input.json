@@ -1,0 +1,54 @@
+{
+  "httpMethod": "get",
+  "path": "/organization/audit_logs",
+  "operationId": "list-audit-logs",
+  "title": "List audit logs",
+  "summary": "List user actions and configuration changes within this organization.",
+  "parameters": [
+    {
+      "name": "effective_at",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "project_ids[]",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "event_types[]",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "actor_ids[]",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "actor_emails[]",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "resource_ids[]",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "before",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

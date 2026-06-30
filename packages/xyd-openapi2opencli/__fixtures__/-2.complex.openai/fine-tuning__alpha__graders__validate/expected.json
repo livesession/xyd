@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "fine-tuning",
+    "alpha",
+    "graders",
+    "validate"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "grader"
+  ],
+  "docCommand": "openai fine-tuning:alpha:graders validate --api-key 'My API Key' --grader '{input: input, name: name, operation: eq, reference: reference, type: string_check}'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/fine_tuning/subresources/alpha/subresources/graders/methods/validate"
+}

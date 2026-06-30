@@ -1,0 +1,14 @@
+{
+  "args": [
+    "assistants",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/assistants/{assistant_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

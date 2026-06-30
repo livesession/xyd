@@ -1,0 +1,18 @@
+{
+  "args": [
+    "containers",
+    "create",
+    "--name",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/containers",
+    "query": [],
+    "bodyFields": [
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

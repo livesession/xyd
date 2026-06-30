@@ -1,0 +1,11 @@
+{
+  "commandPath": [
+    "fine-tuning",
+    "jobs",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [],
+  "docCommand": "openai fine-tuning:jobs list --api-key 'My API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/fine_tuning/subresources/jobs/methods/list"
+}

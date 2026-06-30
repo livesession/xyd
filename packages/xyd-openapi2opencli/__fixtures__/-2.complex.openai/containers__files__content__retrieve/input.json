@@ -1,0 +1,19 @@
+{
+  "httpMethod": "get",
+  "path": "/containers/{container_id}/files/{file_id}/content",
+  "operationId": "RetrieveContainerFileContent",
+  "title": "Retrieve container file content",
+  "summary": "Retrieve Container File Content",
+  "parameters": [
+    {
+      "name": "container_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "file_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

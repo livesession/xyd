@@ -1,0 +1,26 @@
+{
+  "httpMethod": "post",
+  "path": "/conversations/{conversation_id}/items",
+  "operationId": "createConversationItems",
+  "title": "Create items",
+  "summary": "Create items in a conversation with the given ID.",
+  "parameters": [
+    {
+      "name": "conversation_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "include",
+      "in": "query",
+      "required": false
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "items"
+    ]
+  }
+}

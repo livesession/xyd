@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "containers",
+    "files",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "container-id",
+    "file-id"
+  ],
+  "docCommand": "openai containers:files delete --api-key 'My API Key' --container-id container_id --file-id file_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/containers/subresources/files/methods/delete"
+}

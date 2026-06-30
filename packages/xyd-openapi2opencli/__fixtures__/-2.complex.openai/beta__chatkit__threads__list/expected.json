@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "beta",
+    "chatkit",
+    "threads",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [],
+  "docCommand": "openai beta:chatkit:threads list --api-key 'My API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/chatkit/subresources/threads/methods/list"
+}

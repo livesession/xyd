@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "groups",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "group-id"
+  ],
+  "docCommand": "openai admin:organization:groups retrieve --admin-api-key 'My Admin API Key' --group-id group_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/groups/methods/retrieve"
+}

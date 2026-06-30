@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "images",
+    "generate"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "prompt"
+  ],
+  "docCommand": "openai images generate --api-key 'My API Key' --prompt 'A cute baby sea otter'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/images/methods/generate"
+}

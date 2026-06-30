@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "groups",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "name"
+  ],
+  "docCommand": "openai admin:organization:groups create --admin-api-key 'My Admin API Key' --name x",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/groups/methods/create"
+}

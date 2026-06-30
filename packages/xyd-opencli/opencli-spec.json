@@ -1,0 +1,621 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "opencli-spec.json",
+    "type": "object",
+    "properties": {
+        "opencli": {
+            "type": "string",
+            "description": "The OpenCLI version number"
+        },
+        "info": {
+            "$ref": "#/$defs/CliInfo",
+            "description": "Information about the CLI"
+        },
+        "conventions": {
+            "$ref": "#/$defs/Conventions",
+            "description": "The conventions used by the CLI"
+        },
+        "arguments": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/Argument"
+            },
+            "description": "Root command arguments"
+        },
+        "options": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/Option"
+            },
+            "description": "Root command options"
+        },
+        "commands": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/Command"
+            },
+            "description": "Root command sub commands"
+        },
+        "exitCodes": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/ExitCode"
+            },
+            "description": "Root command exit codes"
+        },
+        "examples": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "Examples of how to use the CLI"
+        },
+        "interactive": {
+            "type": "boolean",
+            "description": "Indicates whether or not the command requires interactive input"
+        },
+        "metadata": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/Metadata"
+            },
+            "description": "Custom metadata"
+        },
+        "x-openapi": {
+            "$ref": "#/$defs/XOpenApiRoot",
+            "description": "xyd extension: OpenAPI/HTTP binding for the CLI as a whole (servers + security). Emitted by @xyd-js/openapi2opencli and consumed by the opencli2* code generators to build real API requests."
+        }
+    },
+    "required": [
+        "opencli",
+        "info"
+    ],
+    "description": "The OpenCLI description",
+    "$defs": {
+        "CliInfo": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "description": "The application title"
+                },
+                "summary": {
+                    "type": "string",
+                    "description": "A short summary of the application"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A description of the application"
+                },
+                "contact": {
+                    "$ref": "#/$defs/Contact",
+                    "description": "The contact information"
+                },
+                "license": {
+                    "$ref": "#/$defs/License",
+                    "description": "The application license"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "The application version"
+                }
+            },
+            "required": [
+                "title",
+                "version"
+            ]
+        },
+        "Conventions": {
+            "type": "object",
+            "properties": {
+                "groupOptions": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether or not grouping of short options are allowed"
+                },
+                "optionSeparator": {
+                    "type": "string",
+                    "default": " ",
+                    "description": "The option argument separator"
+                }
+            }
+        },
+        "Argument": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The argument name"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "Whether or not the argument is required"
+                },
+                "arity": {
+                    "$ref": "#/$defs/Arity",
+                    "description": "The argument arity. Arity defines the minimum and maximum number of argument values"
+                },
+                "acceptedValues": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of accepted values"
+                },
+                "group": {
+                    "type": "string",
+                    "description": "The argument group"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "The argument description"
+                },
+                "hidden": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether or not the argument is hidden"
+                },
+                "metadata": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Metadata"
+                    },
+                    "description": "Custom metadata"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "Option": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The option name"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "Whether or not the option is required"
+                },
+                "aliases": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "uniqueItems": true,
+                    "description": "The option's aliases"
+                },
+                "arguments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Argument"
+                    },
+                    "description": "The option's arguments"
+                },
+                "group": {
+                    "type": "string",
+                    "description": "The option group"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "The option description"
+                },
+                "recursive": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Specifies whether the option is accessible from the immediate parent command and, recursively, from its subcommands"
+                },
+                "hidden": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether or not the option is hidden"
+                },
+                "metadata": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Metadata"
+                    },
+                    "description": "Custom metadata"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "Command": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The command name"
+                },
+                "aliases": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "uniqueItems": true,
+                    "description": "The command aliases"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Option"
+                    },
+                    "description": "The command options"
+                },
+                "arguments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Argument"
+                    },
+                    "description": "The command arguments"
+                },
+                "commands": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Command"
+                    },
+                    "description": "The command's sub commands"
+                },
+                "exitCodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/ExitCode"
+                    },
+                    "description": "The command's exit codes"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "The command description"
+                },
+                "hidden": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Whether or not the command is hidden"
+                },
+                "examples": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Examples of how to use the command"
+                },
+                "interactive": {
+                    "type": "boolean",
+                    "description": "Indicate whether or not the command requires interactive input"
+                },
+                "metadata": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Metadata"
+                    },
+                    "description": "Custom metadata"
+                },
+                "x-openapi": {
+                    "$ref": "#/$defs/XOpenApiCommand",
+                    "description": "xyd extension: OpenAPI/HTTP binding for this command's operation (method, path, params, body). Consumed by the opencli2* code generators to build real API requests."
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "ExitCode": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "description": "The exit code"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "The exit code description"
+                }
+            },
+            "required": [
+                "code"
+            ]
+        },
+        "Metadata": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {}
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "Contact": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The identifying name of the contact person/organization"
+                },
+                "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "The URI for the contact information. This MUST be in the form of a URI."
+                },
+                "email": {
+                    "$ref": "#/$defs/email",
+                    "description": "The email address of the contact person/organization. This MUST be in the form of an email address."
+                }
+            },
+            "description": "Contact information"
+        },
+        "License": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The license name"
+                },
+                "identifier": {
+                    "type": "string",
+                    "description": "The SPDX license identifier"
+                },
+                "url": {
+                    "type": "string",
+                    "description": "The URI for the license. This MUST be in the form of a URI"
+                }
+            }
+        },
+        "Arity": {
+            "type": "object",
+            "properties": {
+                "minimum": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "The minimum number of values allowed"
+                },
+                "maximum": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "The maximum number of values allowed"
+                }
+            },
+            "description": "Arity defines the minimum and maximum number of argument values"
+        },
+        "email": {
+            "type": "string",
+            "pattern": ".+\\@.+\\..+"
+        },
+        "XOpenApiRoot": {
+            "type": "object",
+            "description": "xyd extension: OpenAPI/HTTP binding for the CLI as a whole.",
+            "properties": {
+                "servers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Available API base URLs (from the OpenAPI servers list)"
+                },
+                "security": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/XOpenApiSecurity"
+                    },
+                    "description": "Default security requirements for the CLI"
+                }
+            }
+        },
+        "XOpenApiSecurity": {
+            "type": "object",
+            "description": "A single security scheme mapped from the OpenAPI securitySchemes.",
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "description": "Normalized scheme a generator branches on: bearer | apiKey-header | apiKey-query | apiKey-cookie | basic | other"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "The OpenAPI security scheme type (e.g. http, apiKey, oauth2)"
+                },
+                "scheme": {
+                    "type": "string",
+                    "description": "The HTTP auth scheme (e.g. bearer, basic) when type is http"
+                },
+                "in": {
+                    "type": "string",
+                    "description": "Location for an apiKey scheme (header, query or cookie)"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Header/query/cookie name for an apiKey scheme"
+                },
+                "bearerFormat": {
+                    "type": "string",
+                    "description": "The bearer token format hint (e.g. JWT)"
+                },
+                "envVar": {
+                    "type": "string",
+                    "description": "Environment variable a generated CLI reads the credential from (e.g. OPENAI_API_KEY)"
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "XOpenApiCommand": {
+            "type": "object",
+            "description": "xyd extension: OpenAPI/HTTP binding for a single command's operation.",
+            "properties": {
+                "operationId": {
+                    "type": "string",
+                    "description": "The source OpenAPI operationId, when present"
+                },
+                "method": {
+                    "type": "string",
+                    "description": "HTTP method (lowercase)"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "HTTP path template (e.g. /chat/completions/{completion_id})"
+                },
+                "server": {
+                    "type": "string",
+                    "description": "Override base URL for this operation, if any"
+                },
+                "contentType": {
+                    "type": "string",
+                    "description": "Request body content type"
+                },
+                "security": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/XOpenApiSecurity"
+                    },
+                    "description": "Per-operation security requirements (overrides root)"
+                },
+                "params": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/XOpenApiParam"
+                    },
+                    "description": "How CLI arguments/options map to HTTP parameters"
+                },
+                "body": {
+                    "$ref": "#/$defs/XOpenApiBody",
+                    "description": "How CLI options map to the request body"
+                },
+                "responses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/XOpenApiResponse"
+                    },
+                    "description": "Example responses (status/contentType/schema/example), carried so api.cli pages can render a response sample"
+                }
+            },
+            "required": [
+                "method",
+                "path"
+            ]
+        },
+        "XOpenApiResponse": {
+            "type": "object",
+            "description": "xyd extension: an example HTTP response for a command's operation, so api.cli pages can render a response sample (mirrors an OpenAPI response).",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "HTTP status code (e.g. \"200\")"
+                },
+                "contentType": {
+                    "type": "string",
+                    "description": "Response content type (e.g. application/json)"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "The response description"
+                },
+                "schema": {
+                    "type": "object",
+                    "description": "JSON Schema of the response body (for a future Response properties table)"
+                },
+                "example": {
+                    "tsType": "unknown",
+                    "description": "A representative example of the response body, rendered as the response sample"
+                }
+            }
+        },
+        "XOpenApiParam": {
+            "type": "object",
+            "description": "Maps one CLI argument/option onto an HTTP parameter.",
+            "properties": {
+                "in": {
+                    "type": "string",
+                    "description": "Parameter location (path, query, header or cookie)"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The wire name of the HTTP parameter"
+                },
+                "from": {
+                    "type": "string",
+                    "description": "Source CLI token: 'argument:<name>' or 'option:<name>'"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "Whether the HTTP parameter is required"
+                },
+                "explode": {
+                    "type": "boolean",
+                    "description": "OpenAPI explode flag for array/object serialization"
+                },
+                "style": {
+                    "type": "string",
+                    "description": "OpenAPI serialization style"
+                }
+            },
+            "required": [
+                "in",
+                "name",
+                "from"
+            ]
+        },
+        "XOpenApiBody": {
+            "type": "object",
+            "description": "Maps CLI options onto the HTTP request body.",
+            "properties": {
+                "style": {
+                    "type": "string",
+                    "description": "How the body is assembled: 'flatten' (per-property flags), 'json' (single JSON flag) or 'multipart'"
+                },
+                "contentType": {
+                    "type": "string",
+                    "description": "Body content type"
+                },
+                "from": {
+                    "type": "string",
+                    "description": "Source CLI token when the whole body comes from one option (style=json)"
+                },
+                "properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/XOpenApiBodyProp"
+                    },
+                    "description": "Per-property body field mappings (style=flatten/multipart)"
+                }
+            },
+            "required": [
+                "style"
+            ]
+        },
+        "XOpenApiBodyProp": {
+            "type": "object",
+            "description": "Maps one CLI option onto a request body field.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The wire name of the body field"
+                },
+                "from": {
+                    "type": "string",
+                    "description": "Source CLI token: 'option:<name>'"
+                },
+                "jsonPath": {
+                    "type": "string",
+                    "description": "Dot path of the field within the JSON body"
+                },
+                "encoding": {
+                    "type": "string",
+                    "description": "How the CLI value is encoded into the field: 'string', 'number', 'integer', 'boolean', 'json' (parse as JSON), 'array' or 'file'"
+                },
+                "required": {
+                    "type": "boolean",
+                    "description": "Whether the body field is required"
+                }
+            },
+            "required": [
+                "name",
+                "from"
+            ]
+        }
+    }
+}

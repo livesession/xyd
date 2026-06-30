@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "files",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "file-id"
+  ],
+  "docCommand": "openai files retrieve --api-key 'My API Key' --file-id file_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/files/methods/retrieve"
+}

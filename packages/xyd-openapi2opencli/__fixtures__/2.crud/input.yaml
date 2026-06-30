@@ -1,0 +1,113 @@
+openapi: 3.0.3
+info:
+  title: Widgets API
+  version: 2.0.0
+servers:
+  - url: https://api.widgets.test
+security:
+  - apiKey: []
+paths:
+  /widgets:
+    get:
+      operationId: listWidgets
+      summary: List all widgets.
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of widgets to return.
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: Filter by status.
+          schema:
+            type: string
+            enum: [active, archived, draft]
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: createWidget
+      summary: Create a widget.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  description: The widget name.
+                color:
+                  type: string
+                  enum: [red, green, blue]
+                tags:
+                  type: array
+                  items:
+                    type: string
+                enabled:
+                  type: boolean
+                config:
+                  type: object
+                  properties:
+                    weight:
+                      type: number
+      responses:
+        "201":
+          description: Created
+  /widgets/{widget_id}:
+    get:
+      operationId: retrieveWidget
+      summary: Retrieve a widget.
+      parameters:
+        - name: widget_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+    patch:
+      operationId: updateWidget
+      summary: Update a widget.
+      parameters:
+        - name: widget_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                enabled:
+                  type: boolean
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: deleteWidget
+      summary: Delete a widget.
+      parameters:
+        - name: widget_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-Api-Key

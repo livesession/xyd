@@ -1,0 +1,14 @@
+{
+  "args": [
+    "files",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/files/{file_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

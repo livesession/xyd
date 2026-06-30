@@ -401,6 +401,14 @@ async function uniformResolver(
                     meta.mcp = `${resolvedApiFile}#${region}`
                     break
                 }
+                case "cli": {
+                    const ctx = ref.context as OpenAPIReferenceContext;
+                    if (ctx?.path) {
+                        region = ctx.path
+                    }
+                    meta.cli = `${resolvedApiFile}#${region}`
+                    break
+                }
             }
 
             let composedContent = ""
@@ -734,7 +742,7 @@ function vitePluginUniformContent(pluginId: string) {
     }
 }
 
-type UniformType = "graphql" | "openapi" | "sources" | "mcp"
+type UniformType = "graphql" | "openapi" | "sources" | "mcp" | "cli"
 
 function uniformPreset(
     id: string,

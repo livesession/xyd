@@ -1,0 +1,57 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "containers",
+      "commands": [
+        {
+          "name": "delete",
+          "description": "Delete Container",
+          "arguments": [
+            {
+              "name": "container-id",
+              "required": true,
+              "description": "The ID of the container to delete."
+            }
+          ],
+          "x-openapi": {
+            "method": "delete",
+            "path": "/containers/{container_id}",
+            "operationId": "DeleteContainer",
+            "params": [
+              {
+                "in": "path",
+                "name": "container_id",
+                "from": "argument:container-id",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "beta",
+    "threads",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "thread-id"
+  ],
+  "docCommand": "openai beta:threads update --api-key 'My API Key' --thread-id thread_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/threads/methods/update"
+}

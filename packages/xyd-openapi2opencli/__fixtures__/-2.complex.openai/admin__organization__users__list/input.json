@@ -1,0 +1,24 @@
+{
+  "httpMethod": "get",
+  "path": "/organization/users",
+  "operationId": "list-users",
+  "title": "List users",
+  "summary": "Lists all of the users in the organization.",
+  "parameters": [
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "emails",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

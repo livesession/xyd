@@ -1,0 +1,97 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "fine-tuning",
+      "commands": [
+        {
+          "name": "checkpoints",
+          "commands": [
+            {
+              "name": "permissions",
+              "commands": [
+                {
+                  "name": "create",
+                  "description": "**NOTE:** Calling this endpoint requires an [admin API key](../admin-api-keys).\n\nThis enables organization owners to share fine-tuned models with other projects in their organization.\n",
+                  "arguments": [
+                    {
+                      "name": "fine-tuned-model-checkpoint",
+                      "required": true,
+                      "description": "The ID of the fine-tuned model checkpoint to create a permission for.\n"
+                    }
+                  ],
+                  "options": [
+                    {
+                      "name": "project-ids",
+                      "group": "body",
+                      "required": true,
+                      "description": "The project identifiers to grant access to.",
+                      "arguments": [
+                        {
+                          "name": "string",
+                          "arity": {
+                            "minimum": 0
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "post",
+                    "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions",
+                    "operationId": "createFineTuningCheckpointPermission",
+                    "contentType": "application/json",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "fine_tuned_model_checkpoint",
+                        "from": "argument:fine-tuned-model-checkpoint",
+                        "required": true
+                      }
+                    ],
+                    "body": {
+                      "style": "flatten",
+                      "contentType": "application/json",
+                      "properties": [
+                        {
+                          "name": "project_ids",
+                          "from": "option:project-ids",
+                          "jsonPath": "project_ids",
+                          "encoding": "array",
+                          "required": true
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

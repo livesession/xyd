@@ -1,0 +1,19 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/groups/{group_id}/users/{user_id}",
+  "operationId": "remove-group-user",
+  "title": "Remove group user",
+  "summary": "Removes a user from a group.",
+  "parameters": [
+    {
+      "name": "group_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "user_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

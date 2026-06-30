@@ -1,0 +1,62 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "invites",
+          "commands": [
+            {
+              "name": "delete",
+              "description": "Delete an invite. If the invite has already been accepted, it cannot be deleted.",
+              "arguments": [
+                {
+                  "name": "invite-id",
+                  "required": true,
+                  "description": "The ID of the invite to delete."
+                }
+              ],
+              "x-openapi": {
+                "method": "delete",
+                "path": "/organization/invites/{invite_id}",
+                "operationId": "delete-invite",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "invite_id",
+                    "from": "argument:invite-id",
+                    "required": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

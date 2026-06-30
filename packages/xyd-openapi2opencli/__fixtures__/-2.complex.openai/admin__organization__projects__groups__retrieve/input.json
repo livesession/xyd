@@ -1,0 +1,29 @@
+{
+  "httpMethod": "get",
+  "path": "/organization/projects/{project_id}/groups",
+  "operationId": "list-project-groups",
+  "title": "List project groups",
+  "summary": "Lists the groups that have access to a project.",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

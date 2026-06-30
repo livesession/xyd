@@ -1,0 +1,26 @@
+{
+  "httpMethod": "post",
+  "path": "/assistants",
+  "operationId": "createAssistant",
+  "title": "Create assistant",
+  "summary": "Create an assistant with a model and instructions.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "model",
+      "name",
+      "description",
+      "instructions",
+      "reasoning_effort",
+      "tools",
+      "tool_resources",
+      "metadata",
+      "temperature",
+      "top_p",
+      "response_format",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

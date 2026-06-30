@@ -1,0 +1,31 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/projects/{project_id}/rate_limits/{rate_limit_id}",
+  "operationId": "update-project-rate-limits",
+  "title": "Modify project rate limit",
+  "summary": "Updates a project rate limit.",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "rate_limit_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "max_requests_per_1_minute",
+      "max_tokens_per_1_minute",
+      "max_images_per_1_minute",
+      "max_audio_megabytes_per_1_minute",
+      "max_requests_per_1_day",
+      "batch_1_day_max_input_tokens"
+    ]
+  }
+}

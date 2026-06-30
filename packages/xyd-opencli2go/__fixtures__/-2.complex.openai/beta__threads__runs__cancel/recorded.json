@@ -1,0 +1,19 @@
+{
+  "args": [
+    "threads",
+    "runs",
+    "create",
+    "--assistant-id",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/threads/runs",
+    "query": [],
+    "bodyFields": [
+      "assistant_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

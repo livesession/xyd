@@ -1,0 +1,33 @@
+{
+  "httpMethod": "post",
+  "path": "/completions",
+  "operationId": "createCompletion",
+  "title": "Create completion",
+  "summary": "Creates a completion for the provided prompt and parameters.\n\nReturns a completion object, or a sequence of completion objects if the request is streamed.\n",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "model",
+      "prompt",
+      "best_of",
+      "echo",
+      "frequency_penalty",
+      "logit_bias",
+      "logprobs",
+      "max_tokens",
+      "n",
+      "presence_penalty",
+      "seed",
+      "stop",
+      "stream",
+      "stream_options",
+      "suffix",
+      "temperature",
+      "top_p",
+      "user",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

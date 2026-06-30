@@ -1,0 +1,23 @@
+{
+  "args": [
+    "threads",
+    "messages",
+    "create",
+    "EXAMPLE",
+    "--role",
+    "EXAMPLE",
+    "--content",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/threads/{thread_id}/messages",
+    "query": [],
+    "bodyFields": [
+      "content",
+      "role"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

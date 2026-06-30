@@ -1,0 +1,19 @@
+{
+  "args": [
+    "organization",
+    "certificates",
+    "create",
+    "--certificate",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/organization/certificates",
+    "query": [],
+    "bodyFields": [
+      "certificate"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

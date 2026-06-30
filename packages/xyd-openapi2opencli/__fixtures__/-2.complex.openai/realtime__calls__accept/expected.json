@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "realtime",
+    "calls",
+    "accept"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "call-id",
+    "type"
+  ],
+  "docCommand": "openai realtime:calls accept --api-key 'My API Key' --call-id call_id --type realtime",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/realtime/subresources/calls/methods/accept"
+}

@@ -1,0 +1,62 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "chatkit",
+      "commands": [
+        {
+          "name": "threads",
+          "commands": [
+            {
+              "name": "delete",
+              "description": "Delete a ChatKit thread along with its items and stored attachments.",
+              "arguments": [
+                {
+                  "name": "thread-id",
+                  "required": true,
+                  "description": "Identifier of the ChatKit thread to delete."
+                }
+              ],
+              "x-openapi": {
+                "method": "delete",
+                "path": "/chatkit/threads/{thread_id}",
+                "operationId": "DeleteThreadMethod",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "thread_id",
+                    "from": "argument:thread-id",
+                    "required": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "skills",
+      "commands": [
+        {
+          "name": "versions",
+          "commands": [
+            {
+              "name": "content",
+              "commands": [
+                {
+                  "name": "list",
+                  "description": "Download a skill version zip bundle.",
+                  "arguments": [
+                    {
+                      "name": "skill-id",
+                      "required": true,
+                      "description": "The identifier of the skill."
+                    },
+                    {
+                      "name": "version",
+                      "required": true,
+                      "description": "The skill version number."
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "get",
+                    "path": "/skills/{skill_id}/versions/{version}/content",
+                    "operationId": "GetSkillVersionContent",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "skill_id",
+                        "from": "argument:skill-id",
+                        "required": true
+                      },
+                      {
+                        "in": "path",
+                        "name": "version",
+                        "from": "argument:version",
+                        "required": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

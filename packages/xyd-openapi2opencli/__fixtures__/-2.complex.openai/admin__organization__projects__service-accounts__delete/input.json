@@ -1,0 +1,19 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/projects/{project_id}/service_accounts/{service_account_id}",
+  "operationId": "delete-project-service-account",
+  "title": "Delete project service account",
+  "summary": "Deletes a service account from the project.\n\nReturns confirmation of service account deletion, or an error if the project\nis archived (archived projects have no service accounts).\n",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "service_account_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

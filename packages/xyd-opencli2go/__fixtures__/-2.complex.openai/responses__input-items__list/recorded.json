@@ -1,0 +1,15 @@
+{
+  "args": [
+    "responses",
+    "input-items",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/responses/{response_id}/input_items",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

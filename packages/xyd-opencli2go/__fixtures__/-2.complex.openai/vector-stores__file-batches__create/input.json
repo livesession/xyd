@@ -1,0 +1,140 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "vector-stores",
+      "commands": [
+        {
+          "name": "file-batches",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Create a vector store file batch.",
+              "arguments": [
+                {
+                  "name": "vector-store-id",
+                  "required": true,
+                  "description": "The ID of the vector store for which to create a File Batch.\n"
+                }
+              ],
+              "options": [
+                {
+                  "name": "file-ids",
+                  "group": "body",
+                  "description": "A list of [File](/docs/api-reference/files) IDs that the vector store should use. Useful for tools like `file_search` that can access files.  If `attributes` or `chunking_strategy` are provided, they will be  applied to all files in the batch. The maximum batch size is 2000 files. This endpoint is recommended for multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with `files`.",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "files",
+                  "group": "body",
+                  "description": "A list of objects that each include a `file_id` plus optional `attributes` or `chunking_strategy`. Use this when you need to override metadata for specific files. The global `attributes` or `chunking_strategy` will be ignored and must be specified for each file. The maximum batch size is 2000 files. This endpoint is recommended for multi-file ingestion and helps reduce per-vector-store write request pressure. Mutually exclusive with `file_ids`.",
+                  "arguments": [
+                    {
+                      "name": "json",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "chunking-strategy",
+                  "group": "body",
+                  "description": "The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy.",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "attributes",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/vector_stores/{vector_store_id}/file_batches",
+                "operationId": "createVectorStoreFileBatch",
+                "contentType": "application/json",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "vector_store_id",
+                    "from": "argument:vector-store-id",
+                    "required": true
+                  }
+                ],
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "file_ids",
+                      "from": "option:file-ids",
+                      "jsonPath": "file_ids",
+                      "encoding": "array"
+                    },
+                    {
+                      "name": "files",
+                      "from": "option:files",
+                      "jsonPath": "files",
+                      "encoding": "array"
+                    },
+                    {
+                      "name": "chunking_strategy",
+                      "from": "option:chunking-strategy",
+                      "jsonPath": "chunking_strategy",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "attributes",
+                      "from": "option:attributes",
+                      "jsonPath": "attributes",
+                      "encoding": "json"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

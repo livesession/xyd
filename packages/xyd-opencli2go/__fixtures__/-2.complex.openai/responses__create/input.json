@@ -1,0 +1,498 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "responses",
+      "commands": [
+        {
+          "name": "create",
+          "description": "Creates a model response. Provide [text](/docs/guides/text) or\n[image](/docs/guides/images) inputs to generate [text](/docs/guides/text)\nor [JSON](/docs/guides/structured-outputs) outputs. Have the model call\nyour own [custom code](/docs/guides/function-calling) or use built-in\n[tools](/docs/guides/tools) like [web search](/docs/guides/tools-web-search)\nor [file search](/docs/guides/tools-file-search) to use your own data\nas input for the model's response.\n",
+          "options": [
+            {
+              "name": "metadata",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "top-logprobs",
+              "group": "body",
+              "description": "An integer between 0 and 20 specifying the maximum number of most likely\ntokens to return at each token position, each with an associated log\nprobability. In some cases, the number of returned tokens may be fewer than\nrequested.\n",
+              "arguments": [
+                {
+                  "name": "integer"
+                }
+              ]
+            },
+            {
+              "name": "temperature",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "top-p",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "user",
+              "group": "body",
+              "description": "This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key` instead to maintain caching optimizations.\nA stable identifier for your end-users.\nUsed to boost cache hit rates by better bucketing similar requests and  to help OpenAI detect and prevent abuse. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "safety-identifier",
+              "group": "body",
+              "description": "A stable identifier used to help detect users of your application that may be violating OpenAI's usage policies.\nThe IDs should be a string that uniquely identifies each user, with a maximum length of 64 characters. We recommend hashing their username or email address, in order to avoid sending us any identifying information. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "prompt-cache-key",
+              "group": "body",
+              "description": "Used by OpenAI to cache responses for similar requests to optimize your cache hit rates. Replaces the `user` field. [Learn more](/docs/guides/prompt-caching).\n",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "service-tier",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "prompt-cache-retention",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "previous-response-id",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "model",
+              "group": "body",
+              "description": "Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI\noffers a wide range of models with different capabilities, performance\ncharacteristics, and price points. Refer to the [model guide](/docs/models)\nto browse and compare available models.\n",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "reasoning",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "background",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "max-tool-calls",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "text",
+              "group": "body",
+              "description": "Configuration options for a text response from the model. Can be plain\ntext or structured JSON data. Learn more:\n- [Text inputs and outputs](/docs/guides/text)\n- [Structured Outputs](/docs/guides/structured-outputs)\n",
+              "arguments": [
+                {
+                  "name": "json"
+                }
+              ]
+            },
+            {
+              "name": "tools",
+              "group": "body",
+              "description": "An array of tools the model may call while generating a response. You\ncan specify which tool to use by setting the `tool_choice` parameter.\n\nWe support the following categories of tools:\n- **Built-in tools**: Tools that are provided by OpenAI that extend the\n  model's capabilities, like [web search](/docs/guides/tools-web-search)\n  or [file search](/docs/guides/tools-file-search). Learn more about\n  [built-in tools](/docs/guides/tools).\n- **MCP Tools**: Integrations with third-party systems via custom MCP servers\n  or predefined connectors such as Google Drive and SharePoint. Learn more about\n  [MCP Tools](/docs/guides/tools-connectors-mcp).\n- **Function calls (custom tools)**: Functions that are defined by you,\n  enabling the model to call your own code with strongly typed arguments\n  and outputs. Learn more about\n  [function calling](/docs/guides/function-calling). You can also use\n  custom tools to call your own code.\n",
+              "arguments": [
+                {
+                  "name": "value",
+                  "arity": {
+                    "minimum": 0
+                  }
+                }
+              ]
+            },
+            {
+              "name": "tool-choice",
+              "group": "body",
+              "description": "How the model should select which tool (or tools) to use when generating\na response. See the `tools` parameter to see how to specify which tools\nthe model can call.\n",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "prompt",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "truncation",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "input",
+              "group": "body",
+              "description": "Text, image, or file inputs to the model, used to generate a response.\n\nLearn more:\n- [Text inputs and outputs](/docs/guides/text)\n- [Image inputs](/docs/guides/images)\n- [File inputs](/docs/guides/pdf-files)\n- [Conversation state](/docs/guides/conversation-state)\n- [Function calling](/docs/guides/function-calling)\n",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "include",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "parallel-tool-calls",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "store",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "instructions",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "stream",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "stream-options",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "conversation",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "context-management",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "max-output-tokens",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "post",
+            "path": "/responses",
+            "operationId": "createResponse",
+            "contentType": "application/json",
+            "body": {
+              "style": "flatten",
+              "contentType": "application/json",
+              "properties": [
+                {
+                  "name": "metadata",
+                  "from": "option:metadata",
+                  "jsonPath": "metadata",
+                  "encoding": "json"
+                },
+                {
+                  "name": "top_logprobs",
+                  "from": "option:top-logprobs",
+                  "jsonPath": "top_logprobs",
+                  "encoding": "integer"
+                },
+                {
+                  "name": "temperature",
+                  "from": "option:temperature",
+                  "jsonPath": "temperature",
+                  "encoding": "json"
+                },
+                {
+                  "name": "top_p",
+                  "from": "option:top-p",
+                  "jsonPath": "top_p",
+                  "encoding": "json"
+                },
+                {
+                  "name": "user",
+                  "from": "option:user",
+                  "jsonPath": "user",
+                  "encoding": "string"
+                },
+                {
+                  "name": "safety_identifier",
+                  "from": "option:safety-identifier",
+                  "jsonPath": "safety_identifier",
+                  "encoding": "string"
+                },
+                {
+                  "name": "prompt_cache_key",
+                  "from": "option:prompt-cache-key",
+                  "jsonPath": "prompt_cache_key",
+                  "encoding": "string"
+                },
+                {
+                  "name": "service_tier",
+                  "from": "option:service-tier",
+                  "jsonPath": "service_tier",
+                  "encoding": "json"
+                },
+                {
+                  "name": "prompt_cache_retention",
+                  "from": "option:prompt-cache-retention",
+                  "jsonPath": "prompt_cache_retention",
+                  "encoding": "json"
+                },
+                {
+                  "name": "previous_response_id",
+                  "from": "option:previous-response-id",
+                  "jsonPath": "previous_response_id",
+                  "encoding": "json"
+                },
+                {
+                  "name": "model",
+                  "from": "option:model",
+                  "jsonPath": "model",
+                  "encoding": "json"
+                },
+                {
+                  "name": "reasoning",
+                  "from": "option:reasoning",
+                  "jsonPath": "reasoning",
+                  "encoding": "json"
+                },
+                {
+                  "name": "background",
+                  "from": "option:background",
+                  "jsonPath": "background",
+                  "encoding": "json"
+                },
+                {
+                  "name": "max_tool_calls",
+                  "from": "option:max-tool-calls",
+                  "jsonPath": "max_tool_calls",
+                  "encoding": "json"
+                },
+                {
+                  "name": "text",
+                  "from": "option:text",
+                  "jsonPath": "text",
+                  "encoding": "json"
+                },
+                {
+                  "name": "tools",
+                  "from": "option:tools",
+                  "jsonPath": "tools",
+                  "encoding": "array"
+                },
+                {
+                  "name": "tool_choice",
+                  "from": "option:tool-choice",
+                  "jsonPath": "tool_choice",
+                  "encoding": "json"
+                },
+                {
+                  "name": "prompt",
+                  "from": "option:prompt",
+                  "jsonPath": "prompt",
+                  "encoding": "json"
+                },
+                {
+                  "name": "truncation",
+                  "from": "option:truncation",
+                  "jsonPath": "truncation",
+                  "encoding": "json"
+                },
+                {
+                  "name": "input",
+                  "from": "option:input",
+                  "jsonPath": "input",
+                  "encoding": "json"
+                },
+                {
+                  "name": "include",
+                  "from": "option:include",
+                  "jsonPath": "include",
+                  "encoding": "json"
+                },
+                {
+                  "name": "parallel_tool_calls",
+                  "from": "option:parallel-tool-calls",
+                  "jsonPath": "parallel_tool_calls",
+                  "encoding": "json"
+                },
+                {
+                  "name": "store",
+                  "from": "option:store",
+                  "jsonPath": "store",
+                  "encoding": "json"
+                },
+                {
+                  "name": "instructions",
+                  "from": "option:instructions",
+                  "jsonPath": "instructions",
+                  "encoding": "json"
+                },
+                {
+                  "name": "stream",
+                  "from": "option:stream",
+                  "jsonPath": "stream",
+                  "encoding": "json"
+                },
+                {
+                  "name": "stream_options",
+                  "from": "option:stream-options",
+                  "jsonPath": "stream_options",
+                  "encoding": "json"
+                },
+                {
+                  "name": "conversation",
+                  "from": "option:conversation",
+                  "jsonPath": "conversation",
+                  "encoding": "json"
+                },
+                {
+                  "name": "context_management",
+                  "from": "option:context-management",
+                  "jsonPath": "context_management",
+                  "encoding": "json"
+                },
+                {
+                  "name": "max_output_tokens",
+                  "from": "option:max-output-tokens",
+                  "jsonPath": "max_output_tokens",
+                  "encoding": "json"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

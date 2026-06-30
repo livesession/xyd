@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "videos",
+    "edit"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "prompt",
+    "video"
+  ],
+  "docCommand": "openai videos edit --api-key 'My API Key' --prompt x --video 'Example data'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/videos/methods/edit"
+}

@@ -1,0 +1,15 @@
+{
+  "commandPath": [
+    "uploads",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "bytes",
+    "filename",
+    "mime-type",
+    "purpose"
+  ],
+  "docCommand": "openai uploads create --api-key 'My API Key' --bytes 0 --filename filename --mime-type mime_type --purpose assistants",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/uploads/methods/create"
+}

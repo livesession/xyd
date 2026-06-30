@@ -1,0 +1,111 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "files",
+      "commands": [
+        {
+          "name": "create",
+          "description": "Upload a file that can be used across various endpoints. Individual files\ncan be up to 512 MB, and each project can store up to 2.5 TB of files in\ntotal. There is no organization-wide storage limit. Uploads to this\nendpoint are rate-limited to 1,000 requests per minute per authenticated\nuser.\n\n- The Assistants API supports files up to 2 million tokens and of specific\n  file types. See the [Assistants Tools guide](/docs/assistants/tools) for\n  details.\n- The Fine-tuning API only supports `.jsonl` files. The input also has\n  certain required formats for fine-tuning\n  [chat](/docs/api-reference/fine-tuning/chat-input) or\n  [completions](/docs/api-reference/fine-tuning/completions-input) models.\n- The Batch API only supports `.jsonl` files up to 200 MB in size. The input\n  also has a specific required\n  [format](/docs/api-reference/batch/request-input).\n- For Retrieval or `file_search` ingestion, upload files here first. If\n  you need to attach multiple uploaded files to the same vector store, use\n  [`/vector_stores/{vector_store_id}/file_batches`](/docs/api-reference/vector-stores-file-batches/createBatch)\n  instead of attaching them one by one. Vector store attachment has separate\n  limits from file upload, including 2,000 attached files per minute per\n  organization.\n\nPlease [contact us](https://help.openai.com/) if you need to increase these\nstorage limits.\n",
+          "options": [
+            {
+              "name": "file",
+              "group": "body",
+              "required": true,
+              "description": "The File object (not file name) to be uploaded.\n",
+              "arguments": [
+                {
+                  "name": "path"
+                }
+              ]
+            },
+            {
+              "name": "purpose",
+              "group": "body",
+              "required": true,
+              "description": "The intended purpose of the uploaded file. One of:\n- `assistants`: Used in the Assistants API\n- `batch`: Used in the Batch API\n- `fine-tune`: Used for fine-tuning\n- `vision`: Images used for vision fine-tuning\n- `user_data`: Flexible file type for any purpose\n- `evals`: Used for eval data sets\n",
+              "arguments": [
+                {
+                  "name": "string",
+                  "acceptedValues": [
+                    "assistants",
+                    "batch",
+                    "fine-tune",
+                    "vision",
+                    "user_data",
+                    "evals"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "expires-after",
+              "group": "body",
+              "description": "The expiration policy for a file. By default, files with `purpose=batch` expire after 30 days and all other files are persisted until they are manually deleted.",
+              "arguments": [
+                {
+                  "name": "json"
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "post",
+            "path": "/files",
+            "operationId": "createFile",
+            "contentType": "multipart/form-data",
+            "body": {
+              "style": "multipart",
+              "contentType": "multipart/form-data",
+              "properties": [
+                {
+                  "name": "file",
+                  "from": "option:file",
+                  "jsonPath": "file",
+                  "encoding": "file",
+                  "required": true
+                },
+                {
+                  "name": "purpose",
+                  "from": "option:purpose",
+                  "jsonPath": "purpose",
+                  "encoding": "string",
+                  "required": true
+                },
+                {
+                  "name": "expires_after",
+                  "from": "option:expires-after",
+                  "jsonPath": "expires_after",
+                  "encoding": "json"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

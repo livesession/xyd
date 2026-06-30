@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "uploads",
+    "parts",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "data",
+    "upload-id"
+  ],
+  "docCommand": "openai uploads:parts create --api-key 'My API Key' --upload-id upload_abc123 --data 'Example data'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/uploads/subresources/parts/methods/create"
+}

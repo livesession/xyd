@@ -33,6 +33,12 @@ export const cliSpec: CLI = {
             description: 'Manage xyd components',
             usage: 'xyd components <subcommand> [args] [flags]',
         },
+        completion: {
+            description:
+                'Generate shell completions or the CLI OpenCLI document. ' +
+                'Run `xyd completion <zsh|fish>` to print a script, `xyd completion install [shell]` to install it, or `xyd completion opencli` to print the OpenCLI document.',
+            usage: 'xyd completion <shell> [flags]',
+        },
     },
     globalFlags: {
         'help': {

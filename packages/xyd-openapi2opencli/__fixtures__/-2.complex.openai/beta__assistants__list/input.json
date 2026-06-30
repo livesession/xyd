@@ -1,0 +1,29 @@
+{
+  "httpMethod": "get",
+  "path": "/assistants",
+  "operationId": "listAssistants",
+  "title": "List assistants",
+  "summary": "Returns a list of assistants.",
+  "parameters": [
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "before",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

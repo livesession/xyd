@@ -1,0 +1,18 @@
+{
+  "httpMethod": "post",
+  "path": "/threads",
+  "operationId": "createThread",
+  "title": "Create thread",
+  "summary": "Create a thread.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": false,
+    "properties": [
+      "messages",
+      "tool_resources",
+      "metadata",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

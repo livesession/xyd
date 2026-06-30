@@ -1,0 +1,24 @@
+{
+  "httpMethod": "get",
+  "path": "/fine_tuning/jobs",
+  "operationId": "listPaginatedFineTuningJobs",
+  "title": "List fine-tuning jobs",
+  "summary": "List your organization's fine-tuning jobs\n",
+  "parameters": [
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "metadata",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/groups/{group_id}/roles",
+  "operationId": "assign-group-role",
+  "title": "Assign organization role to group",
+  "summary": "Assigns an organization role to a group within the organization.",
+  "parameters": [
+    {
+      "name": "group_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "role_id"
+    ]
+  }
+}

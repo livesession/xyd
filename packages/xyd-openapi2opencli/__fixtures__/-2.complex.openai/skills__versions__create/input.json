@@ -1,0 +1,21 @@
+{
+  "httpMethod": "post",
+  "path": "/skills/{skill_id}/versions",
+  "operationId": "CreateSkillVersion",
+  "summary": "Create a new immutable skill version.",
+  "parameters": [
+    {
+      "name": "skill_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "multipart/form-data",
+    "required": false,
+    "properties": [
+      "files",
+      "default"
+    ]
+  }
+}

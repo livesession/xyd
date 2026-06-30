@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/admin_api_keys/{key_id}",
+  "operationId": "admin-api-keys-delete",
+  "title": "Delete admin API key",
+  "summary": "Delete an organization admin API key",
+  "parameters": [
+    {
+      "name": "key_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

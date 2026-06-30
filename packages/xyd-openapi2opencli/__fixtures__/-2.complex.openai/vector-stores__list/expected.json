@@ -1,0 +1,10 @@
+{
+  "commandPath": [
+    "vector-stores",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [],
+  "docCommand": "openai vector-stores list --api-key 'My API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/vector_stores/methods/list"
+}

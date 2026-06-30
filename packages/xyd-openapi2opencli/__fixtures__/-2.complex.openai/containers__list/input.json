@@ -1,0 +1,29 @@
+{
+  "httpMethod": "get",
+  "path": "/containers",
+  "operationId": "ListContainers",
+  "title": "List containers",
+  "summary": "List Containers",
+  "parameters": [
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "name",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

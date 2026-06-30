@@ -82,6 +82,13 @@ export interface Metadata<P = void> {
     mcp?: string
 
     /**
+     * @internal
+     *
+     * used for cli (OpenCLI) references
+     */
+    cli?: string
+
+    /**
      * If true, hide from navigation
      */
     hidden?: boolean

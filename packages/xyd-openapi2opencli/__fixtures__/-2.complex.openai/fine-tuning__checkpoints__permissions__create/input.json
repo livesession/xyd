@@ -1,0 +1,21 @@
+{
+  "httpMethod": "post",
+  "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions",
+  "operationId": "createFineTuningCheckpointPermission",
+  "title": "Create checkpoint permissions",
+  "summary": "**NOTE:** Calling this endpoint requires an [admin API key](../admin-api-keys).\n\nThis enables organization owners to share fine-tuned models with other projects in their organization.\n",
+  "parameters": [
+    {
+      "name": "fine_tuned_model_checkpoint",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "project_ids"
+    ]
+  }
+}

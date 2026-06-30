@@ -1,0 +1,304 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "threads",
+      "commands": [
+        {
+          "name": "runs",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Create a thread and run it in one request.",
+              "options": [
+                {
+                  "name": "assistant-id",
+                  "group": "body",
+                  "required": true,
+                  "description": "The ID of the [assistant](/docs/api-reference/assistants) to use to execute this run.",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "thread",
+                  "group": "body",
+                  "description": "Options to create a new thread. If no thread is provided when running a\nrequest, an empty thread will be created.\n",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "model",
+                  "group": "body",
+                  "description": "The ID of the [Model](/docs/api-reference/models) to be used to execute this run. If a value is provided here, it will override the model associated with the assistant. If not, the model associated with the assistant will be used.",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "instructions",
+                  "group": "body",
+                  "description": "Override the default system message of the assistant. This is useful for modifying the behavior on a per-run basis.",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "tools",
+                  "group": "body",
+                  "description": "Override the tools the assistant can use for this run. This is useful for modifying the behavior on a per-run basis.",
+                  "arguments": [
+                    {
+                      "name": "value",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "tool-resources",
+                  "group": "body",
+                  "description": "A set of resources that are used by the assistant's tools. The resources are specific to the type of tool. For example, the `code_interpreter` tool requires a list of file IDs, while the `file_search` tool requires a list of vector store IDs.\n",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "metadata",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "temperature",
+                  "group": "body",
+                  "description": "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.\n",
+                  "arguments": [
+                    {
+                      "name": "number"
+                    }
+                  ]
+                },
+                {
+                  "name": "top-p",
+                  "group": "body",
+                  "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.\n\nWe generally recommend altering this or temperature but not both.\n",
+                  "arguments": [
+                    {
+                      "name": "number"
+                    }
+                  ]
+                },
+                {
+                  "name": "stream",
+                  "group": "body",
+                  "description": "If `true`, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a `data: [DONE]` message.\n"
+                },
+                {
+                  "name": "max-prompt-tokens",
+                  "group": "body",
+                  "description": "The maximum number of prompt tokens that may be used over the course of the run. The run will make a best effort to use only the number of prompt tokens specified, across multiple turns of the run. If the run exceeds the number of prompt tokens specified, the run will end with status `incomplete`. See `incomplete_details` for more info.\n",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "max-completion-tokens",
+                  "group": "body",
+                  "description": "The maximum number of completion tokens that may be used over the course of the run. The run will make a best effort to use only the number of completion tokens specified, across multiple turns of the run. If the run exceeds the number of completion tokens specified, the run will end with status `incomplete`. See `incomplete_details` for more info.\n",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "truncation-strategy",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "tool-choice",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "parallel-tool-calls",
+                  "group": "body",
+                  "description": "Whether to enable [parallel function calling](/docs/guides/function-calling#configuring-parallel-function-calling) during tool use."
+                },
+                {
+                  "name": "response-format",
+                  "group": "body",
+                  "description": "Specifies the format that the model must output. Compatible with [GPT-4o](/docs/models#gpt-4o), [GPT-4 Turbo](/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.\n\nSetting to `{ \"type\": \"json_schema\", \"json_schema\": {...} }` enables Structured Outputs which ensures the model will match your supplied JSON schema. Learn more in the [Structured Outputs guide](/docs/guides/structured-outputs).\n\nSetting to `{ \"type\": \"json_object\" }` enables JSON mode, which ensures the message the model generates is valid JSON.\n\n**Important:** when using JSON mode, you **must** also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly \"stuck\" request. Also note that the message content may be partially cut off if `finish_reason=\"length\"`, which indicates the generation exceeded `max_tokens` or the conversation exceeded the max context length.\n",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/threads/runs",
+                "operationId": "createThreadAndRun",
+                "contentType": "application/json",
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "assistant_id",
+                      "from": "option:assistant-id",
+                      "jsonPath": "assistant_id",
+                      "encoding": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "thread",
+                      "from": "option:thread",
+                      "jsonPath": "thread",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "model",
+                      "from": "option:model",
+                      "jsonPath": "model",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "instructions",
+                      "from": "option:instructions",
+                      "jsonPath": "instructions",
+                      "encoding": "string"
+                    },
+                    {
+                      "name": "tools",
+                      "from": "option:tools",
+                      "jsonPath": "tools",
+                      "encoding": "array"
+                    },
+                    {
+                      "name": "tool_resources",
+                      "from": "option:tool-resources",
+                      "jsonPath": "tool_resources",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "metadata",
+                      "from": "option:metadata",
+                      "jsonPath": "metadata",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "temperature",
+                      "from": "option:temperature",
+                      "jsonPath": "temperature",
+                      "encoding": "number"
+                    },
+                    {
+                      "name": "top_p",
+                      "from": "option:top-p",
+                      "jsonPath": "top_p",
+                      "encoding": "number"
+                    },
+                    {
+                      "name": "stream",
+                      "from": "option:stream",
+                      "jsonPath": "stream",
+                      "encoding": "boolean"
+                    },
+                    {
+                      "name": "max_prompt_tokens",
+                      "from": "option:max-prompt-tokens",
+                      "jsonPath": "max_prompt_tokens",
+                      "encoding": "integer"
+                    },
+                    {
+                      "name": "max_completion_tokens",
+                      "from": "option:max-completion-tokens",
+                      "jsonPath": "max_completion_tokens",
+                      "encoding": "integer"
+                    },
+                    {
+                      "name": "truncation_strategy",
+                      "from": "option:truncation-strategy",
+                      "jsonPath": "truncation_strategy",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "tool_choice",
+                      "from": "option:tool-choice",
+                      "jsonPath": "tool_choice",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "parallel_tool_calls",
+                      "from": "option:parallel-tool-calls",
+                      "jsonPath": "parallel_tool_calls",
+                      "encoding": "boolean"
+                    },
+                    {
+                      "name": "response_format",
+                      "from": "option:response-format",
+                      "jsonPath": "response_format",
+                      "encoding": "json"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

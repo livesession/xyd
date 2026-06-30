@@ -1,0 +1,17 @@
+{
+  "args": [
+    "containers",
+    "files",
+    "content",
+    "list",
+    "EXAMPLE",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/containers/{container_id}/files/{file_id}/content",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "args": [
+    "assistants",
+    "create",
+    "--model",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/assistants",
+    "query": [],
+    "bodyFields": [
+      "model"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

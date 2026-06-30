@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "vector-stores",
+    "files",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "file-id",
+    "vector-store-id"
+  ],
+  "docCommand": "openai vector-stores:files retrieve --api-key 'My API Key' --vector-store-id vs_abc123 --file-id file-abc123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/vector_stores/subresources/files/methods/retrieve"
+}

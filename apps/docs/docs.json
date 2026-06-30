@@ -24,6 +24,14 @@
   "advanced": {
     "basename": "/docs"
   },
+  "api": {
+    "cli": [
+      {
+        "source": "./public/opencli.json",
+        "route": "reference/cli"
+      }
+    ]
+  },
   "ai": {
     "llmsTxt": {
       "title": "xyd docs",
@@ -322,7 +330,7 @@
           },
           {
             "group": "SDK Generation",
-            "pages": ["guides/sdk-quickstart", "guides/opensdk"]
+            "pages": ["guides/sdk-quickstart", "guides/opensdk", "guides/opencli"]
           }
         ]
       },

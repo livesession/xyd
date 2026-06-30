@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "usage",
+    "vector-stores"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "start-time"
+  ],
+  "docCommand": "openai admin:organization:usage vector-stores --admin-api-key 'My Admin API Key' --start-time 0",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/usage/methods/vector_stores"
+}

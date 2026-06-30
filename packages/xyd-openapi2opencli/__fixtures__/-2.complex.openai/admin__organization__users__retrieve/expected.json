@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "users",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "user-id"
+  ],
+  "docCommand": "openai admin:organization:users retrieve --admin-api-key 'My Admin API Key' --user-id user_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/users/methods/retrieve"
+}

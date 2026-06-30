@@ -1,0 +1,44 @@
+{
+  "httpMethod": "get",
+  "path": "/threads/{thread_id}/runs/{run_id}/steps",
+  "operationId": "listRunSteps",
+  "title": "List run steps",
+  "summary": "Returns a list of run steps belonging to a run.",
+  "parameters": [
+    {
+      "name": "thread_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "run_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "before",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "include[]",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

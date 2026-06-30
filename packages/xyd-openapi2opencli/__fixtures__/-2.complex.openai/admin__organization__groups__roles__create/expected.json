@@ -1,0 +1,16 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "groups",
+    "roles",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "group-id",
+    "role-id"
+  ],
+  "docCommand": "openai admin:organization:groups:roles create --admin-api-key 'My Admin API Key' --group-id group_id --role-id role_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/groups/subresources/roles/methods/create"
+}

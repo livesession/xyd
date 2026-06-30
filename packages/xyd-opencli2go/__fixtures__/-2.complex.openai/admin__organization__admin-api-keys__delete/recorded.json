@@ -1,0 +1,15 @@
+{
+  "args": [
+    "organization",
+    "admin-api-keys",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/organization/admin_api_keys/{key_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

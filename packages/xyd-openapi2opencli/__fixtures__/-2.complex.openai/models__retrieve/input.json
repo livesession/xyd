@@ -1,0 +1,8 @@
+{
+  "httpMethod": "get",
+  "path": "/models",
+  "operationId": "listModels",
+  "title": "List models",
+  "summary": "Lists the currently available models, and provides basic information about each one such as the owner and availability.",
+  "parameters": []
+}

@@ -1,0 +1,28 @@
+{
+  "httpMethod": "get",
+  "path": "/skills/{skill_id}/versions",
+  "operationId": "ListSkillVersions",
+  "summary": "List skill versions for a skill.",
+  "parameters": [
+    {
+      "name": "skill_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

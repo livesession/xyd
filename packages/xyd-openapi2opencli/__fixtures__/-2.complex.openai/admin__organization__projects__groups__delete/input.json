@@ -1,0 +1,19 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/projects/{project_id}/groups/{group_id}",
+  "operationId": "remove-project-group",
+  "title": "Remove project group",
+  "summary": "Revokes a group's access to a project.",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "group_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "httpMethod": "post",
+  "path": "/chatkit/sessions",
+  "operationId": "CreateChatSessionMethod",
+  "title": "Create ChatKit session",
+  "summary": "Create a ChatKit session.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": false,
+    "properties": [
+      "workflow",
+      "user",
+      "expires_after",
+      "rate_limits",
+      "chatkit_configuration",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

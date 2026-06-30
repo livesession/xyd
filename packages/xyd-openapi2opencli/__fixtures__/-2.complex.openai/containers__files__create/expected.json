@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "containers",
+    "files",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "container-id"
+  ],
+  "docCommand": "openai containers:files create --api-key 'My API Key' --container-id container_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/containers/subresources/files/methods/create"
+}

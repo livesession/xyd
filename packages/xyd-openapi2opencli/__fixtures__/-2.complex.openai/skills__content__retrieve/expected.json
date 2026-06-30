@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "skills",
+    "content",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "skill-id"
+  ],
+  "docCommand": "openai skills:content retrieve --api-key 'My API Key' --skill-id skill_123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/skills/subresources/content/methods/retrieve"
+}

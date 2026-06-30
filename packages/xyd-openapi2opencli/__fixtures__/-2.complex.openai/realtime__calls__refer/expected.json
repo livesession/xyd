@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "realtime",
+    "calls",
+    "refer"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "call-id",
+    "target-uri"
+  ],
+  "docCommand": "openai realtime:calls refer --api-key 'My API Key' --call-id call_id --target-uri tel:+14155550123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/realtime/subresources/calls/methods/refer"
+}

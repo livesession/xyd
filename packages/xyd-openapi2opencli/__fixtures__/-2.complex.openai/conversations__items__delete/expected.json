@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "conversations",
+    "items",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "conversation-id",
+    "item-id"
+  ],
+  "docCommand": "openai conversations:items delete --api-key 'My API Key' --conversation-id conv_123 --item-id msg_abc",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/conversations/subresources/items/methods/delete"
+}

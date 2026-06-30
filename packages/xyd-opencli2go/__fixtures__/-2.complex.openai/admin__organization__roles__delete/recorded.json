@@ -1,0 +1,15 @@
+{
+  "args": [
+    "organization",
+    "roles",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/organization/roles/{role_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

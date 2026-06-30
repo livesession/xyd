@@ -1,0 +1,62 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "chat",
+      "commands": [
+        {
+          "name": "completions",
+          "commands": [
+            {
+              "name": "delete",
+              "description": "Delete a stored chat completion. Only Chat Completions that have been\ncreated with the `store` parameter set to `true` can be deleted.\n",
+              "arguments": [
+                {
+                  "name": "completion-id",
+                  "required": true,
+                  "description": "The ID of the chat completion to delete."
+                }
+              ],
+              "x-openapi": {
+                "method": "delete",
+                "path": "/chat/completions/{completion_id}",
+                "operationId": "deleteChatCompletion",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "completion_id",
+                    "from": "argument:completion-id",
+                    "required": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

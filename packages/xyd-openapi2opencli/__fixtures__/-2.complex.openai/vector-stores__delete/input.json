@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/vector_stores/{vector_store_id}",
+  "operationId": "deleteVectorStore",
+  "title": "Delete vector store",
+  "summary": "Delete a vector store.",
+  "parameters": [
+    {
+      "name": "vector_store_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

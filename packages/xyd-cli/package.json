@@ -15,7 +15,9 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest"
+    "test": "vitest",
+    "gen:opencli": "node dist/index.js completion opencli > opencli.json && cp opencli.json ../../apps/docs/public/opencli.json",
+    "gen:opencli:build": "pnpm build && pnpm gen:opencli"
   },
   "dependencies": {
     "@xyd-js/documan": "workspace:*",
@@ -36,6 +38,8 @@
   },
   "devDependencies": {
     "@types/update-notifier": "^6.0.8",
+    "@xyd-js/opencli": "workspace:*",
+    "@xyd-js/opencli-completion": "workspace:*",
     "tsup": "^8.3.0",
     "vitest": "^2.1.8"
   }

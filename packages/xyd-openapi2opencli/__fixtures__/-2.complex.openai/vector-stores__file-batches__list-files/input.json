@@ -1,0 +1,19 @@
+{
+  "httpMethod": "get",
+  "path": "/vector_stores/{vector_store_id}/file_batches/{batch_id}",
+  "operationId": "getVectorStoreFileBatch",
+  "title": "Retrieve vector store file batch",
+  "summary": "Retrieves a vector store file batch.",
+  "parameters": [
+    {
+      "name": "vector_store_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "batch_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

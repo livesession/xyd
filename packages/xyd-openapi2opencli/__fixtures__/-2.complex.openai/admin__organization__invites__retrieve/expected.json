@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "invites",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "invite-id"
+  ],
+  "docCommand": "openai admin:organization:invites retrieve --admin-api-key 'My Admin API Key' --invite-id invite_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/invites/methods/retrieve"
+}

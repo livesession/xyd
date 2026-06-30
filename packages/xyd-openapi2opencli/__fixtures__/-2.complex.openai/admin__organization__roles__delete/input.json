@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/roles/{role_id}",
+  "operationId": "delete-role",
+  "title": "Delete organization role",
+  "summary": "Deletes a custom role from the organization.",
+  "parameters": [
+    {
+      "name": "role_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

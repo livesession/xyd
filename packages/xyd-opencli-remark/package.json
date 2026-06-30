@@ -10,10 +10,10 @@
     "build": "tsup",
     "test": "vitest",
     "ci:test": "vitest run",
-    "test:generate-types": "bun ./src/__tests__/generate-types.ts",
-    "generate:types": "json2ts -i opencli-spec.json -o src/types.ts"
+    "test:generate-types": "bun ./src/__tests__/generate-types.ts"
   },
   "dependencies": {
+    "@xyd-js/opencli": "workspace:*",
     "js-yaml": "^4.1.0",
     "mdast": "^3.0.0",
     "unified": "^11.0.5",
@@ -24,7 +24,6 @@
   "devDependencies": {
     "@types/node": "^20.9.0",
     "glob": "^13.0.0",
-    "json-schema-to-typescript": "^14.0.1",
     "remark-frontmatter": "^5.0.0",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",

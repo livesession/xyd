@@ -1,0 +1,19 @@
+{
+  "args": [
+    "realtime",
+    "calls",
+    "create",
+    "--sdp",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/realtime/calls",
+    "query": [],
+    "bodyFields": [
+      "sdp"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

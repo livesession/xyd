@@ -126,6 +126,7 @@ import { graphqlPreset } from "./presets/graphql";
 import { openapiPreset } from "./presets/openapi";
 import { sourcesPreset } from "./presets/sources";
 import { mcpPreset } from "./presets/mcp";
+import { cliPreset } from "./presets/cli";
 
 import type { PluginOutput, Plugin } from "./types";
 import { ensureAndCleanupVirtualFolder } from "./presets/uniform";
@@ -343,6 +344,43 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
 
         mcp.routes = mcp.routes || []
         routes.push(...mcp.routes)
+    }
+
+    // cli preset setup
+    if (!options?.disableAPIGeneration && settings?.api?.cli) {
+        const opt = {
+            disableFSWrite: options?.disableFSWrite
+        }
+
+        const cli = cliPreset(settings, opt)
+        cli.preinstall = cli.preinstall || []
+
+        let preinstallMerge = {}
+
+        for (const preinstall of cli.preinstall) {
+            const resp = await preinstall(opt)(settings, {
+                routes: cli.routes,
+            })
+
+            if (resp && typeof resp === 'object') {
+                preinstallMerge = {
+                    ...preinstallMerge,
+                    ...resp
+                }
+            }
+        }
+
+        cli.vitePlugins = cli.vitePlugins || []
+        for (const vitePlugin of cli.vitePlugins) {
+            const vitePlug = await vitePlugin()({
+                preinstall: preinstallMerge
+            })
+
+            vitePlugins.push(vitePlug)
+        }
+
+        cli.routes = cli.routes || []
+        routes.push(...cli.routes)
     }
 
     let pagePathMapping: Record<string, string> = {}

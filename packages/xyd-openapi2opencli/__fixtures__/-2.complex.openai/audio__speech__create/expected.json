@@ -1,0 +1,15 @@
+{
+  "commandPath": [
+    "audio",
+    "speech",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "input",
+    "model",
+    "voice"
+  ],
+  "docCommand": "openai audio:speech create --api-key 'My API Key' --input input --model tts-1 --voice alloy",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/audio/subresources/speech/methods/create"
+}

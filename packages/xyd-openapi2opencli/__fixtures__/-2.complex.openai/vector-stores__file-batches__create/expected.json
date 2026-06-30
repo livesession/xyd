@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "vector-stores",
+    "file-batches",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "vector-store-id"
+  ],
+  "docCommand": "openai vector-stores:file-batches create --api-key 'My API Key' --vector-store-id vs_abc123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/vector_stores/subresources/file_batches/methods/create"
+}

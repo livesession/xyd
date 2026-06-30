@@ -1,0 +1,106 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "projects",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Create a new project in the organization. Projects can be created and archived, but cannot be deleted.",
+              "options": [
+                {
+                  "name": "name",
+                  "group": "body",
+                  "required": true,
+                  "description": "The friendly name of the project, this name appears in reports.",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "geography",
+                  "group": "body",
+                  "description": "Create the project with the specified data residency region. Your organization must have access to Data residency functionality in order to use. See [data residency controls](/docs/guides/your-data#data-residency-controls) to review the functionality and limitations of setting this field.",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "external-key-id",
+                  "group": "body",
+                  "description": "External key ID to associate with the project.",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/organization/projects",
+                "operationId": "create-project",
+                "contentType": "application/json",
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "name",
+                      "from": "option:name",
+                      "jsonPath": "name",
+                      "encoding": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "geography",
+                      "from": "option:geography",
+                      "jsonPath": "geography",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "external_key_id",
+                      "from": "option:external-key-id",
+                      "jsonPath": "external_key_id",
+                      "encoding": "json"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

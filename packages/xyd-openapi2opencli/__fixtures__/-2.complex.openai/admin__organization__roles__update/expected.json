@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "roles",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "role-id"
+  ],
+  "docCommand": "openai admin:organization:roles update --admin-api-key 'My Admin API Key' --role-id role_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/roles/methods/update"
+}

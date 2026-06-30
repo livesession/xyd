@@ -1,0 +1,133 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "fine-tuning",
+      "commands": [
+        {
+          "name": "checkpoints",
+          "commands": [
+            {
+              "name": "permissions",
+              "commands": [
+                {
+                  "name": "list",
+                  "description": "**NOTE:** This endpoint requires an [admin API key](../admin-api-keys).\n\nOrganization owners can use this endpoint to view all permissions for a fine-tuned model checkpoint.\n",
+                  "arguments": [
+                    {
+                      "name": "fine-tuned-model-checkpoint",
+                      "required": true,
+                      "description": "The ID of the fine-tuned model checkpoint to get permissions for.\n"
+                    }
+                  ],
+                  "options": [
+                    {
+                      "name": "project-id",
+                      "description": "The ID of the project to get permissions for.",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "string"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "after",
+                      "description": "Identifier for the last permission ID from the previous pagination request.",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "string"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "limit",
+                      "description": "Number of permissions to retrieve.",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "integer"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "order",
+                      "description": "The order in which to retrieve permissions.",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "string",
+                          "acceptedValues": [
+                            "ascending",
+                            "descending"
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "get",
+                    "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions",
+                    "operationId": "listFineTuningCheckpointPermissions",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "fine_tuned_model_checkpoint",
+                        "from": "argument:fine-tuned-model-checkpoint",
+                        "required": true
+                      },
+                      {
+                        "in": "query",
+                        "name": "project_id",
+                        "from": "option:project-id"
+                      },
+                      {
+                        "in": "query",
+                        "name": "after",
+                        "from": "option:after"
+                      },
+                      {
+                        "in": "query",
+                        "name": "limit",
+                        "from": "option:limit"
+                      },
+                      {
+                        "in": "query",
+                        "name": "order",
+                        "from": "option:order"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

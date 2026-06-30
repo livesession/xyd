@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "vector-stores",
+    "file-batches",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "batch-id",
+    "vector-store-id"
+  ],
+  "docCommand": "openai vector-stores:file-batches retrieve --api-key 'My API Key' --vector-store-id vs_abc123 --batch-id vsfb_abc123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/vector_stores/subresources/file_batches/methods/retrieve"
+}

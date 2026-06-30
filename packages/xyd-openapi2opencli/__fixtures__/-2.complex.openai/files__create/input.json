@@ -1,0 +1,18 @@
+{
+  "httpMethod": "post",
+  "path": "/files",
+  "operationId": "createFile",
+  "title": "Upload file",
+  "summary": "Upload a file that can be used across various endpoints. Individual files\ncan be up to 512 MB, and each project can store up to 2.5 TB of files in\ntotal. There is no organization-wide storage limit. Uploads to this\nendpoint are rate-limited to 1,000 requests per minute per authenticated\nuser.\n\n- The Assistants API supports files up to 2 million tokens and of specific\n  file types. See the [Assistants Tools guide](/docs/assistants/tools) for\n  details.\n- The Fine-tuning API only supports `.jsonl` files. The input also has\n  certain required formats for fine-tuning\n  [chat](/docs/api-reference/fine-tuning/chat-input) or\n  [completions](/docs/api-reference/fine-tuning/completions-input) models.\n- The Batch API only supports `.jsonl` files up to 200 MB in size. The input\n  also has a specific required\n  [format](/docs/api-reference/batch/request-input).\n- For Retrieval or `file_search` ingestion, upload files here first. If\n  you need to attach multiple uploaded files to the same vector store, use\n  [`/vector_stores/{vector_store_id}/file_batches`](/docs/api-reference/vector-stores-file-batches/createBatch)\n  instead of attaching them one by one. Vector store attachment has separate\n  limits from file upload, including 2,000 attached files per minute per\n  organization.\n\nPlease [contact us](https://help.openai.com/) if you need to increase these\nstorage limits.\n",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "multipart/form-data",
+    "required": true,
+    "properties": [
+      "file",
+      "purpose",
+      "expires_after",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

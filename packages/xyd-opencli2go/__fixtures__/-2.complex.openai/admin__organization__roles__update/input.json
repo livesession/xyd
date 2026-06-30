@@ -1,0 +1,111 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "roles",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Creates a custom role for the organization.",
+              "options": [
+                {
+                  "name": "role-name",
+                  "group": "body",
+                  "required": true,
+                  "description": "Unique name for the role.",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "permissions",
+                  "group": "body",
+                  "required": true,
+                  "description": "Permissions to grant to the role.",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "description",
+                  "group": "body",
+                  "description": "Optional description of the role.",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/organization/roles",
+                "operationId": "create-role",
+                "contentType": "application/json",
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "role_name",
+                      "from": "option:role-name",
+                      "jsonPath": "role_name",
+                      "encoding": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "permissions",
+                      "from": "option:permissions",
+                      "jsonPath": "permissions",
+                      "encoding": "array",
+                      "required": true
+                    },
+                    {
+                      "name": "description",
+                      "from": "option:description",
+                      "jsonPath": "description",
+                      "encoding": "json"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

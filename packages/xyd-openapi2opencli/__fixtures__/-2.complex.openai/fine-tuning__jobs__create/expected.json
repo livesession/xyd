@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "fine-tuning",
+    "jobs",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "model",
+    "training-file"
+  ],
+  "docCommand": "openai fine-tuning:jobs create --api-key 'My API Key' --model gpt-4o-mini --training-file file-abc123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/fine_tuning/subresources/jobs/methods/create"
+}

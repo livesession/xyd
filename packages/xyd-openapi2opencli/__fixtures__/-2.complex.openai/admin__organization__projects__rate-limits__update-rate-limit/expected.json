@@ -1,0 +1,16 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "projects",
+    "rate-limits",
+    "update-rate-limit"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "project-id",
+    "rate-limit-id"
+  ],
+  "docCommand": "openai admin:organization:projects:rate-limits update-rate-limit --admin-api-key 'My Admin API Key' --project-id project_id --rate-limit-id rate_limit_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/projects/subresources/rate_limits/methods/update_rate_limit"
+}

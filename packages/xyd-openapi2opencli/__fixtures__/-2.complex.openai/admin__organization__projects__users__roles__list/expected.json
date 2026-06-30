@@ -1,0 +1,17 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "projects",
+    "users",
+    "roles",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "project-id",
+    "user-id"
+  ],
+  "docCommand": "openai admin:organization:projects:users:roles list --admin-api-key 'My Admin API Key' --project-id project_id --user-id user_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/projects/subresources/users/subresources/roles/methods/list"
+}

@@ -1,0 +1,16 @@
+{
+  "httpMethod": "post",
+  "path": "/realtime/calls",
+  "operationId": "create-realtime-call",
+  "title": "Create call",
+  "summary": "Create a new Realtime API call over WebRTC and receive the SDP answer needed\nto complete the peer connection.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "multipart/form-data",
+    "required": true,
+    "properties": [
+      "sdp",
+      "session"
+    ]
+  }
+}
