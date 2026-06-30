@@ -16,12 +16,33 @@ describe('cliToOpencli', () => {
         expect(port?.arguments).toEqual([{ name: 'number' }]); // Number → takes a value
         expect(spec.options?.find((o) => o.name === 'help')?.arguments).toBeUndefined(); // Boolean → switch
 
-        // commands present; migrateme gets a positional from its usage line
+        // commands present; migrateme takes a path positional with an example value
         expect(spec.commands?.map((c) => c.name)).toEqual(
             expect.arrayContaining(['dev', 'build', 'serve', 'install', 'migrateme', 'components', 'completion']),
         );
         const migrate = spec.commands?.find((c) => c.name === 'migrateme');
-        expect(migrate?.arguments).toEqual([{ name: 'resource', required: true }]);
+        expect(migrate?.arguments).toEqual([
+            {
+                name: 'path',
+                required: true,
+                description: 'Path to the docs directory to migrate',
+                metadata: [{ name: 'example', value: './path-to-docs' }],
+            },
+        ]);
+
+        // components is a command group — no positional of its own, a nested
+        // `install <component>` subcommand instead
+        const componentsCmd = spec.commands?.find((c) => c.name === 'components');
+        expect(componentsCmd?.arguments).toBeUndefined();
+        const installSub = componentsCmd?.commands?.find((c) => c.name === 'install');
+        expect(installSub?.arguments).toEqual([
+            {
+                name: 'component',
+                required: true,
+                description: 'Name of the component to install',
+                metadata: [{ name: 'example', value: 'diagrams' }],
+            },
+        ]);
     });
 });
 

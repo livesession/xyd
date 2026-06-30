@@ -27,11 +27,33 @@ export const cliSpec: CLI = {
         },
         migrateme: {
             description: 'Migrate your docs to the new xyd framework',
-            usage: 'xyd migrateme  <resource> [flags]',
+            usage: 'xyd migrateme <path> [flags]',
+            arguments: [
+                {
+                    name: 'path',
+                    required: true,
+                    description: 'Path to the docs directory to migrate',
+                    example: './path-to-docs',
+                },
+            ],
         },
         components: {
             description: 'Manage xyd components',
-            usage: 'xyd components <subcommand> [args] [flags]',
+            usage: 'xyd components <command> [flags]',
+            commands: {
+                install: {
+                    description: 'Install a xyd component into your project',
+                    usage: 'xyd components install <component> [flags]',
+                    arguments: [
+                        {
+                            name: 'component',
+                            required: true,
+                            description: 'Name of the component to install',
+                            example: 'diagrams',
+                        },
+                    ],
+                },
+            },
         },
         completion: {
             description:

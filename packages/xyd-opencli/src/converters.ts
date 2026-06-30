@@ -192,8 +192,10 @@ function shellQuote(value: string): string {
   return /[\s'"$`\\<>|&;()]/.test(value) ? `'${value.replace(/'/g, "'\\''")}'` : value;
 }
 
-/** A representative value for an argument: an accepted/enum value, else a placeholder. */
+/** A representative value for an argument: an explicit example, an accepted/enum value, else a placeholder. */
 function exampleValue(arg: Argument | undefined): string {
+  const example = arg?.metadata?.find((m) => m.name === 'example')?.value;
+  if (typeof example === 'string' && example) return example;
   if (arg?.acceptedValues?.length) return String(arg.acceptedValues[0]);
   return 'Example data';
 }

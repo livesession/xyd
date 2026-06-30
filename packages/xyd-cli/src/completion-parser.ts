@@ -1,6 +1,6 @@
 import type { Argument, CliInfo, Command, OpencliSpecJson, Option } from '@xyd-js/opencli';
 
-import type { CLI, CLICommand, CLIGlobalFlag, FlagType } from './types';
+import type { CLI, CLIArgument, CLICommand, CLIGlobalFlag, FlagType } from './types';
 
 /**
  * Transform the xyd CLI's declarative arg/command spec (`cliSpec`) into an
@@ -35,7 +35,13 @@ function commandToOpencli(name: string, cmd: CLICommand): Command {
     const command: Command = { name };
     if (cmd.description) command.description = cmd.description;
 
-    const args = parseUsageArguments(cmd.usage);
+    // Prefer structured arguments; otherwise parse them out of the usage line.
+    // A command that groups subcommands carries no positional of its own.
+    const args = cmd.arguments?.length
+        ? cmd.arguments.map(argToOpencli)
+        : cmd.commands
+            ? []
+            : parseUsageArguments(cmd.usage);
     if (args.length) command.arguments = args;
 
     if (cmd.flags) {
@@ -45,7 +51,24 @@ function commandToOpencli(name: string, cmd: CLICommand): Command {
         if (options.length) command.options = options;
     }
 
+    if (cmd.commands) {
+        const subcommands = Object.entries(cmd.commands).map(([subName, sub]) => commandToOpencli(subName, sub));
+        if (subcommands.length) command.commands = subcommands;
+    }
+
     return command;
+}
+
+/** Map a declarative CLI argument to an OpenCLI argument. */
+function argToOpencli(arg: CLIArgument): Argument {
+    const out: Argument = { name: arg.name };
+    if (arg.required) out.required = true;
+    if (arg.description) out.description = arg.description;
+    if (arg.acceptedValues?.length) out.acceptedValues = arg.acceptedValues;
+    // Carry the example via metadata so the generated invocation shows a real
+    // value (e.g. `./path-to-docs`) instead of a generic placeholder.
+    if (arg.example != null) out.metadata = [{ name: 'example', value: arg.example }];
+    return out;
 }
 
 function flagToOption(name: string, flag: CLIGlobalFlag, recursive: boolean): Option {
@@ -64,7 +87,7 @@ function valueLabel(type: FlagType): string {
     return type === 'Number' ? 'number' : 'string';
 }
 
-const META_TOKENS = new Set(['flags', 'globalflags', 'options']);
+const META_TOKENS = new Set(['flags', 'globalflags', 'options', 'subcommand', 'command', 'args']);
 
 /** Positional arguments parsed from a usage line, e.g. `xyd migrateme <resource> [flags]`. */
 export function parseUsageArguments(usage: string | undefined): Argument[] {

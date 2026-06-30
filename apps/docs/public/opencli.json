@@ -81,21 +81,38 @@
       "description": "Migrate your docs to the new xyd framework",
       "arguments": [
         {
-          "name": "resource",
-          "required": true
+          "name": "path",
+          "required": true,
+          "description": "Path to the docs directory to migrate",
+          "metadata": [
+            {
+              "name": "example",
+              "value": "./path-to-docs"
+            }
+          ]
         }
       ]
     },
     {
       "name": "components",
       "description": "Manage xyd components",
-      "arguments": [
+      "commands": [
         {
-          "name": "subcommand",
-          "required": true
-        },
-        {
-          "name": "args"
+          "name": "install",
+          "description": "Install a xyd component into your project",
+          "arguments": [
+            {
+              "name": "component",
+              "required": true,
+              "description": "Name of the component to install",
+              "metadata": [
+                {
+                  "name": "example",
+                  "value": "diagrams"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
