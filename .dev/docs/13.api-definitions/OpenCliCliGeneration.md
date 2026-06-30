@@ -5,7 +5,8 @@ spec into a *functional* command-line interface that makes real HTTP requests. I
 three packages involved, the `x-openapi` request-binding extension, the mapping algorithm, the
 Go generator, and the test/CI setup.
 
-> User-facing entry point: `apps/docs/guides/opencli.md`. This page is the under-the-hood view.
+> The user-facing guide is not published yet (the feature is merged without official user docs);
+> this page is the under-the-hood view.
 
 ## Overview
 

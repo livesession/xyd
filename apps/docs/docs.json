@@ -330,7 +330,7 @@
           },
           {
             "group": "SDK Generation",
-            "pages": ["guides/sdk-quickstart", "guides/opensdk", "guides/opencli"]
+            "pages": ["guides/sdk-quickstart", "guides/opensdk"]
           }
         ]
       },
