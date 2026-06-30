@@ -503,6 +503,8 @@ function $BuiltWithXYD() {
 function isDefaultContent(meta: Metadata) {
     return meta?.openapi ||
         meta?.graphql ||
+        meta?.cli ||
+        meta?.mcp ||
         meta.component === "atlas" ||
         meta.uniform ||
         meta.layout === "page"
