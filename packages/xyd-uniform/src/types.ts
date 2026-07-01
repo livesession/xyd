@@ -189,6 +189,7 @@ export enum ReferenceCategory {
     REST = "rest",
     GRAPHQL = "graphql",
     MCP = "mcp",
+    CLI = "cli",
     // end for API
 
     // for code

@@ -11,6 +11,11 @@ export function generateUsage(_spec: OpencliSpecJson, command: Command, commandP
   // Command path
   parts.push(commandPath);
 
+  // A command that owns subcommands takes one as its next token.
+  if (command.commands && command.commands.filter((c) => !c.hidden).length > 0) {
+    parts.push('<command>');
+  }
+
   // Options indicator
   if (command.options && command.options.length > 0) {
     const visibleOptions = command.options.filter((opt) => !opt.hidden);

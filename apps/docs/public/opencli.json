@@ -122,7 +122,12 @@
       "arguments": [
         {
           "name": "shell",
-          "required": true
+          "required": true,
+          "description": "Shell to generate completions for",
+          "acceptedValues": [
+            "zsh",
+            "fish"
+          ]
         }
       ]
     }

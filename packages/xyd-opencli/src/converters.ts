@@ -27,6 +27,9 @@ export interface OpencliReference {
   title: string;
   canonical: string;
   description: string;
+  // Marks these as CLI references so the docs engine / Atlas can render the
+  // usage-formula header (mirrors an OpenAPI page's method + path).
+  category: 'cli';
   // `group` drives sidebar placement (the docs engine groups references by it);
   // `path` is the region key round-tripped through the page frontmatter.
   context: { path: string; fullPath: string; group: string[] };
@@ -42,7 +45,17 @@ export interface OpencliToReferencesOptions {
    * space-joined from the CLI root (e.g. `"install"`, `"remote add"`).
    */
   regions?: string[];
+
+  /**
+   * Render the CLI's global (root recursive) options on every command page.
+   * When false (the default), a single "Global options" reference is emitted
+   * instead — so the options appear once in the sidebar rather than repeated
+   * on every command.
+   */
+  globalOptionsPerCommand?: boolean;
 }
+
+const GLOBAL_OPTIONS_REGION = 'global-options';
 
 /**
  * Convert an OpenCLI document to uniform `Reference[]` — one Reference per
@@ -57,10 +70,12 @@ export function opencliToReferences(
 
   const cliTitle = spec.info?.title || 'cli';
   const regionSet = options.regions?.length ? new Set(options.regions) : null;
+  const perCommand = options.globalOptionsPerCommand ?? false;
   const refs: OpencliReference[] = [];
 
   // Root-level recursive options (e.g. a CLI's global flags) apply to every
-  // command, so they're rendered as a "Global options" section on each page.
+  // command. By default they get their own page; with `globalOptionsPerCommand`
+  // they're rendered as a "Global options" section on each command instead.
   const globalOptions = (spec.options || []).filter((o) => o.recursive && !o.hidden);
 
   const walk = (commands: Command[] | undefined, parentPath: string[]) => {
@@ -69,14 +84,31 @@ export function opencliToReferences(
       const cmdPath = [...parentPath, cmd.name];
       const region = cmdPath.join(' ');
       if (!regionSet || regionSet.has(region)) {
-        refs.push(commandToReference(spec, cmd, cmdPath, cliTitle, globalOptions));
+        refs.push(commandToReference(spec, cmd, cmdPath, cliTitle, perCommand ? globalOptions : []));
       }
       if (cmd.commands?.length) walk(cmd.commands, cmdPath);
     }
   };
   walk(spec.commands, []);
 
+  // Default: the global options live on a single dedicated page in the sidebar.
+  if (!perCommand && globalOptions.length && (!regionSet || regionSet.has(GLOBAL_OPTIONS_REGION))) {
+    refs.push(globalOptionsReference(globalOptions));
+  }
+
   return refs;
+}
+
+function globalOptionsReference(globalOptions: Option[]): OpencliReference {
+  return {
+    title: 'Global options',
+    canonical: GLOBAL_OPTIONS_REGION,
+    description: 'Options available on every command.',
+    category: 'cli',
+    context: { path: GLOBAL_OPTIONS_REGION, fullPath: '', group: ['Global options'] },
+    examples: { groups: [] },
+    definitions: [{ title: 'Global options', properties: globalOptions.map(optionToProperty) }],
+  };
 }
 
 function commandToReference(
@@ -118,34 +150,29 @@ function commandToReference(
     definitions.push({ title: 'Global options', properties: globalOptions.map(optionToProperty) });
   }
 
-  // Sidebar grouping: top-level commands sit under "Commands"; a subcommand sits
-  // under a group named after its parent path (e.g. `auth login` → group "auth").
-  // (One group level is required — the docs engine drops references with an empty
-  // group — and a group must not mix direct pages with subgroups.)
-  const group = cmdPath.length === 1 ? ['Commands'] : [cmdPath.slice(0, -1).join(' ')];
+  // Sidebar grouping: a leaf top-level command sits directly under "Commands".
+  // A command that owns subcommands becomes a nested group (named after itself)
+  // under "Commands", and each of its subcommands sits inside that same group —
+  // e.g. `components` + `components install` → "Commands" › "components".
+  const hasSubcommands = (cmd.commands || []).some((c) => !c.hidden);
+  const group =
+    cmdPath.length === 1 && !hasSubcommands ? ['Commands'] : ['Commands', ...(hasSubcommands ? cmdPath : cmdPath.slice(0, -1))];
 
   // The runnable invocation ("CLI Tool") at groups[0], plus — when the OpenAPI
   // binding carried one — an "Example response" group rendered as a JSON sample.
   // This mirrors an OpenAPI page's request + response code samples; Atlas stacks
   // the groups vertically. Keep the CLI Tool group first.
-  const groups: OpencliRefExampleGroup[] = [
-    {
-      examples: [
-        {
-          codeblock: {
-            tabs: [{ title: 'CLI Tool', language: 'shell', code: generateCliExample(cliTitle, cmd, cmdPath) }],
-          },
-        },
-      ],
-    },
-  ];
+  const groups: OpencliRefExampleGroup[] = [{ examples: cliToolExamples(cliTitle, cmd, cmdPath) }];
   const responseGroup = responseExampleGroup(cmd);
   if (responseGroup) groups.push(responseGroup);
 
   return {
-    title: region || cliTitle,
+    // A command that owns subcommands reads as "<path> <command>" so it's
+    // distinct from its group and shows it takes a subcommand.
+    title: (hasSubcommands ? `${region} <command>` : region) || cliTitle,
     canonical: cmdPath.join('/') || cliTitle,
     description: cmd.description || '',
+    category: 'cli',
     // context.path is the region key the docs engine writes into the page
     // frontmatter (`cli: <spec>#<path>`) and reads back to re-resolve the command.
     context: { path: region, fullPath: generateUsage(spec, cmd, displayPath), group },
@@ -201,15 +228,71 @@ function exampleValue(arg: Argument | undefined): string {
 }
 
 /**
+ * The "CLI Tool" example(s) for a command. When a required argument enumerates
+ * its accepted values (e.g. `completion <zsh|fish>`), each value becomes its own
+ * example (`codeblock.title` = the value) — so Atlas renders an example-level
+ * switcher (`[zsh] [fish]`) rather than language tabs inside a single code
+ * block. Otherwise a single "CLI Tool" example.
+ */
+function cliToolExamples(cliTitle: string, cmd: Command, cmdPath: string[]): OpencliRefExampleGroup['examples'] {
+  const reqArgs = (cmd.arguments || []).filter((a) => a.required && !a.hidden);
+  // The argument whose representative value(s) label the example(s): an enum
+  // (acceptedValues) gives one tab per value; a single example value gives one.
+  const variantArg = [...reqArgs].reverse().find((a) => a.acceptedValues?.length || argExampleValue(a) != null);
+  const values = variantArg?.acceptedValues?.length
+    ? variantArg.acceptedValues.map(String)
+    : variantArg
+      ? [String(argExampleValue(variantArg))]
+      : null;
+
+  if (variantArg && values) {
+    // Each value is its own example (`codeblock.title` = the value) so Atlas
+    // renders an example switcher — `[zsh] [fish]`, `[diagrams]`, etc.
+    return values.map((value) => ({
+      codeblock: {
+        title: value,
+        tabs: [
+          {
+            title: 'CLI Tool',
+            language: 'shell',
+            code: generateCliExample(cliTitle, cmd, cmdPath, { [variantArg.name]: value }),
+          },
+        ],
+      },
+    }));
+  }
+
+  return [{ codeblock: { tabs: [{ title: 'CLI Tool', language: 'shell', code: generateCliExample(cliTitle, cmd, cmdPath) }] } }];
+}
+
+/** An argument's explicit example value (from metadata), or null. */
+function argExampleValue(arg: Argument): string | null {
+  const example = arg.metadata?.find((m) => m.name === 'example')?.value;
+  return typeof example === 'string' && example ? example : null;
+}
+
+/**
  * A runnable, concrete CLI invocation for a command — the command path plus its
  * required arguments and options filled with example values, one option per line
- * (the shape shown on an OpenAPI page's request sample).
+ * (the shape shown on an OpenAPI page's request sample). `overrides` pins a
+ * specific value for a named argument (used to render one tab per accepted value).
  */
-function generateCliExample(cliTitle: string, cmd: Command, cmdPath: string[]): string {
+function generateCliExample(
+  cliTitle: string,
+  cmd: Command,
+  cmdPath: string[],
+  overrides: Record<string, string> = {},
+): string {
   let head = [cliTitle, ...cmdPath].join(' ');
 
+  // A command group takes a subcommand — shown as a placeholder (unquoted, like
+  // the usage formula), e.g. `xyd components <command>`.
+  if ((cmd.commands || []).some((c) => !c.hidden)) {
+    head += ' <command>';
+  }
+
   for (const arg of (cmd.arguments || []).filter((a) => a.required && !a.hidden)) {
-    head += ` ${shellQuote(exampleValue(arg))}`;
+    head += ` ${shellQuote(overrides[arg.name] ?? exampleValue(arg))}`;
   }
 
   const lines = [head];
@@ -225,12 +308,21 @@ function generateCliExample(cliTitle: string, cmd: Command, cmdPath: string[]): 
 }
 
 function argumentToProperty(arg: Argument): OpencliRefProperty {
-  const meta = arg.required ? [{ name: 'required', value: 'true' }] : undefined;
+  const meta: { name: string; value: unknown }[] = [];
+  if (arg.required) meta.push({ name: 'required', value: 'true' });
+  // Surface the argument's accepted values / example in the Arguments section
+  // (e.g. `component` → diagrams, `shell` → zsh, fish).
+  if (arg.acceptedValues?.length) {
+    meta.push({ name: 'examples', value: arg.acceptedValues });
+  } else {
+    const example = arg.metadata?.find((m) => m.name === 'example')?.value;
+    if (example != null && example !== '') meta.push({ name: 'example', value: example });
+  }
   return {
     name: arg.name,
     type: arg.arity ? 'array' : 'string',
     description: arg.description || '',
-    ...(meta ? { meta } : {}),
+    ...(meta.length ? { meta } : {}),
   };
 }
 

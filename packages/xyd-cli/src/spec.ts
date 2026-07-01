@@ -60,6 +60,14 @@ export const cliSpec: CLI = {
                 'Generate shell completions or the CLI OpenCLI document. ' +
                 'Run `xyd completion <zsh|fish>` to print a script, `xyd completion install [shell]` to install it, or `xyd completion opencli` to print the OpenCLI document.',
             usage: 'xyd completion <shell> [flags]',
+            arguments: [
+                {
+                    name: 'shell',
+                    required: true,
+                    description: 'Shell to generate completions for',
+                    acceptedValues: ['zsh', 'fish'],
+                },
+            ],
         },
     },
     globalFlags: {

@@ -106,20 +106,17 @@ function convertGroupMapsToSidebar(settings: Settings, groupMaps: GroupMap): Sid
             })
         })
 
-        if (Object.keys(current.__groups).length) {
-            const subNav: Sidebar = {
-                group: groupName,
-                pages: convertGroupMapsToSidebar(settings, current.__groups)
-            }
-
-            nav.push(subNav)
-
-            return
-        }
+        // A group can hold both direct pages and nested subgroups (e.g. the CLI's
+        // "Commands" group has leaf commands plus a "components" subgroup that
+        // holds `components install`). Render the direct pages first, then the
+        // subgroups, under the same group — don't drop one for the other.
+        const subGroups = Object.keys(current.__groups).length
+            ? convertGroupMapsToSidebar(settings, current.__groups)
+            : []
 
         nav.push({
             group: groupName,
-            pages,
+            pages: [...pages, ...subGroups],
         })
     })
 

@@ -1045,7 +1045,22 @@ export type APIFileAdvanced = {
 
   /** API information configuration */
   info?: APIInfo;
+
+  /** Preset-specific rendering options (e.g. CLI). */
+  options?: APIFileOptions;
 };
+
+/**
+ * Preset-specific rendering options for an API source.
+ */
+export interface APIFileOptions {
+  /**
+   * (CLI) Render the CLI's global options on every command page. When `false`
+   * (the default), the global options are rendered once as a dedicated
+   * "Global options" page in the sidebar instead of repeated on each command.
+   */
+  globalOptionsPerCommand?: boolean;
+}
 
 /**
  * API file type - can be a string, array of strings, or a map of strings

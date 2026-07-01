@@ -1,4 +1,6 @@
-import {Settings} from "@xyd-js/core";
+import path from "node:path";
+
+import {Settings, APIFile, APIFileAdvanced} from "@xyd-js/core";
 import {loadOpencliSpec, opencliToReferences} from "@xyd-js/opencli";
 import type {Reference} from "@xyd-js/uniform";
 
@@ -21,6 +23,8 @@ function preset(
 export const cliPreset = preset satisfies Preset<unknown>
 
 class CLIUniformPreset extends UniformPreset {
+    private readonly cliApi: APIFile
+
     private constructor(
         settings: Settings,
         options: {
@@ -33,6 +37,7 @@ class CLIUniformPreset extends UniformPreset {
             settings?.navigation?.sidebar || [],
             options.disableFSWrite
         )
+        this.cliApi = settings.api?.cli || ""
         this.uniformRefResolver = this.uniformRefResolver.bind(this)
     }
 
@@ -56,6 +61,26 @@ class CLIUniformPreset extends UniformPreset {
 
         // OpencliReference is a structural subset of Reference (the OpenCLI core
         // stays free of the React-typed uniform package).
-        return opencliToReferences(spec) as unknown as Reference[]
+        return opencliToReferences(spec, {
+            globalOptionsPerCommand: this.globalOptionsPerCommand(filePath),
+        }) as unknown as Reference[]
+    }
+
+    /** Read `api.cli[x].options.globalOptionsPerCommand` for the given source. */
+    private globalOptionsPerCommand(filePath: string): boolean {
+        const target = path.resolve(process.cwd(), filePath)
+        const entries = this.cliEntries()
+        const match = entries.find((e) => e.source && path.resolve(process.cwd(), e.source) === target)
+        return ((match ?? entries.find((e) => e.options))?.options?.globalOptionsPerCommand) ?? false
+    }
+
+    private cliEntries(): APIFileAdvanced[] {
+        const cli = this.cliApi
+        if (!cli || typeof cli === "string") return []
+        const isAdvanced = (e: unknown): e is APIFileAdvanced =>
+            typeof e === "object" && e != null && "source" in e
+        if (Array.isArray(cli)) return cli.filter(isAdvanced)
+        if (isAdvanced(cli)) return [cli]
+        return Object.values(cli).filter(isAdvanced)
     }
 }
