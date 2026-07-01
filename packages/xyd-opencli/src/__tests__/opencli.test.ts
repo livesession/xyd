@@ -40,9 +40,10 @@ describe('@xyd-js/opencli core', () => {
     expect(cmd?.commands?.[0]?.name).toBe('install');
   });
 
-  it('generateUsage renders options + required arg', () => {
+  it('generateUsage renders the subcommand placeholder + options + required arg', () => {
     const cmd = findCommand(spec, 'install')!;
-    expect(generateUsage(spec, cmd, 'spice install')).toBe('spice install [options] <package>');
+    // `install` owns a `dev` subcommand, so the usage carries `<command>`
+    expect(generateUsage(spec, cmd, 'spice install')).toBe('spice install <command> [options] <package>');
   });
 
   it('generateOptions / generateArguments render tab-indented code style', () => {
