@@ -175,7 +175,8 @@ function commandToReference(
     category: 'cli',
     // context.path is the region key the docs engine writes into the page
     // frontmatter (`cli: <spec>#<path>`) and reads back to re-resolve the command.
-    context: { path: region, fullPath: generateUsage(spec, cmd, displayPath), group },
+    // api.cli shows the more specific form — a command group carries `<command>`.
+    context: { path: region, fullPath: generateUsage(spec, cmd, displayPath, { commandPlaceholder: true }), group },
     examples: { groups },
     definitions,
   };

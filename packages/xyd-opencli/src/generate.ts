@@ -5,14 +5,21 @@ export type IndentStyle = 'code' | 'list';
 /**
  * Generate usage line for a command (like: "shadcn init [options] [components...]")
  */
-export function generateUsage(_spec: OpencliSpecJson, command: Command, commandPath: string): string {
+export function generateUsage(
+  _spec: OpencliSpecJson,
+  command: Command,
+  commandPath: string,
+  opts: { commandPlaceholder?: boolean } = {},
+): string {
   const parts: string[] = [];
 
   // Command path
   parts.push(commandPath);
 
-  // A command that owns subcommands takes one as its next token.
-  if (command.commands && command.commands.filter((c) => !c.hidden).length > 0) {
+  // A command that owns subcommands takes one as its next token. Opt-in, so
+  // consumers that render a command's own usage (e.g. opencli-remark) keep their
+  // output — only api.cli asks for the placeholder.
+  if (opts.commandPlaceholder && command.commands && command.commands.filter((c) => !c.hidden).length > 0) {
     parts.push('<command>');
   }
 
