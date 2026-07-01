@@ -13,7 +13,12 @@ export async function cli(argv = process.argv.slice(2)) {
         process.exit(1);
     }
 
-    await updateNotify()
+    // Only check for updates in an interactive terminal — never when output is
+    // piped/redirected (e.g. `xyd completion zsh > _xyd`), so machine-readable
+    // output stays clean.
+    if (process.stdout.isTTY) {
+        await updateNotify()
+    }
 
     process.env.XYD_CLI = 'true';
 
@@ -44,6 +49,10 @@ export async function cli(argv = process.argv.slice(2)) {
         case 'components':
             // Handle subcommands for components
             await globalCommands.components(commandArgs, globalFlags);
+            break;
+        case 'completion':
+            // Pass the raw args array (shell name / subcommand)
+            await globalCommands.completion(commandArgs, globalFlags);
             break;
         default:
             await (globalCommands[globalCommand as keyof typeof globalCommands] as any)(...commandArgs, globalFlags);

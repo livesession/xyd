@@ -1,0 +1,14 @@
+{
+  "args": [
+    "responses",
+    "retrieve",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/responses/{response_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

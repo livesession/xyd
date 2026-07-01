@@ -1,0 +1,18 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "spend-alerts",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "alert-id",
+    "currency",
+    "interval",
+    "notification-channel",
+    "threshold-amount"
+  ],
+  "docCommand": "openai admin:organization:spend-alerts update --admin-api-key 'My Admin API Key' --alert-id alert_id --currency USD --interval month --notification-channel '{recipients: [string], type: email}' --threshold-amount 0",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/spend_alerts/methods/update"
+}

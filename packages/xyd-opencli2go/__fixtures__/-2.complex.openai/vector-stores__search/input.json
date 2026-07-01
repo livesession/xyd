@@ -1,0 +1,149 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "vector-stores",
+      "commands": [
+        {
+          "name": "create",
+          "description": "Create a vector store.",
+          "options": [
+            {
+              "name": "file-ids",
+              "group": "body",
+              "description": "A list of [File](/docs/api-reference/files) IDs that the vector store should use. Useful for tools like `file_search` that can access files.",
+              "arguments": [
+                {
+                  "name": "string",
+                  "arity": {
+                    "minimum": 0
+                  }
+                }
+              ]
+            },
+            {
+              "name": "name",
+              "group": "body",
+              "description": "The name of the vector store.",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "description",
+              "group": "body",
+              "description": "A description for the vector store. Can be used to describe the vector store's purpose.",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "expires-after",
+              "group": "body",
+              "description": "The expiration policy for a vector store.",
+              "arguments": [
+                {
+                  "name": "json"
+                }
+              ]
+            },
+            {
+              "name": "chunking-strategy",
+              "group": "body",
+              "description": "The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy. Only applicable if `file_ids` is non-empty.",
+              "arguments": [
+                {
+                  "name": "json"
+                }
+              ]
+            },
+            {
+              "name": "metadata",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "post",
+            "path": "/vector_stores",
+            "operationId": "createVectorStore",
+            "contentType": "application/json",
+            "body": {
+              "style": "flatten",
+              "contentType": "application/json",
+              "properties": [
+                {
+                  "name": "file_ids",
+                  "from": "option:file-ids",
+                  "jsonPath": "file_ids",
+                  "encoding": "array"
+                },
+                {
+                  "name": "name",
+                  "from": "option:name",
+                  "jsonPath": "name",
+                  "encoding": "string"
+                },
+                {
+                  "name": "description",
+                  "from": "option:description",
+                  "jsonPath": "description",
+                  "encoding": "string"
+                },
+                {
+                  "name": "expires_after",
+                  "from": "option:expires-after",
+                  "jsonPath": "expires_after",
+                  "encoding": "json"
+                },
+                {
+                  "name": "chunking_strategy",
+                  "from": "option:chunking-strategy",
+                  "jsonPath": "chunking_strategy",
+                  "encoding": "json"
+                },
+                {
+                  "name": "metadata",
+                  "from": "option:metadata",
+                  "jsonPath": "metadata",
+                  "encoding": "json"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

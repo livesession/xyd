@@ -1,0 +1,19 @@
+{
+  "httpMethod": "delete",
+  "path": "/containers/{container_id}/files/{file_id}",
+  "operationId": "DeleteContainerFile",
+  "title": "Delete a container file",
+  "summary": "Delete Container File",
+  "parameters": [
+    {
+      "name": "container_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "file_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

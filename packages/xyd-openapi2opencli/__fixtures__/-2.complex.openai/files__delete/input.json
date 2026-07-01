@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/files/{file_id}",
+  "operationId": "deleteFile",
+  "title": "Delete file",
+  "summary": "Delete a file and remove it from all vector stores.",
+  "parameters": [
+    {
+      "name": "file_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

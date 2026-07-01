@@ -1,0 +1,19 @@
+{
+  "httpMethod": "get",
+  "path": "/organization/invites",
+  "operationId": "list-invites",
+  "title": "List invites",
+  "summary": "Returns a list of invites in the organization.",
+  "parameters": [
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

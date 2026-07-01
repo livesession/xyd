@@ -12,6 +12,20 @@ GitHub Actions for testing, building, and releasing.
 | cli-prerelease.yml | Tag v*.*.*-* | Pre-releases |
 | test-release-notes.yml | Manual | Test release notes |
 
+## Test Workflows
+
+Run on push / PR to `master` and `dev`.
+
+| Workflow | Runs | Toolchain |
+|----------|------|-----------|
+| tests-unit.yml | `pnpm test:unit` (root Vitest — all packages' offline unit tests) | Node + pnpm |
+| tests-e2e.yml | Playwright e2e | Node + pnpm + Chromium |
+| tests-node-support.yml | Node 22/23/24 × npm/pnpm/bun matrix | Node + pnpm |
+| tests-opencli-pipeline.yml | OpenAPI → OpenCLI → Go pipeline, incl. Go-gated layers (`O2G_GO_SMOKE=1`, `E2E_CLI=1`) excluded by the root Vitest config | Node + pnpm + **Go 1.22** |
+
+`tests-opencli-pipeline.yml` is `paths`-scoped to `packages/xyd-opencli*` so the heavier Go job
+only runs when the pipeline packages change. See `13.api-definitions/OpenCliCliGeneration.md`.
+
 ## Stable Release
 
 Verify version → run tests → publish npm → generate notes → create GitHub release.

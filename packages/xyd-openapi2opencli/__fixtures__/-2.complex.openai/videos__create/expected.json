@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "videos",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "prompt"
+  ],
+  "docCommand": "openai videos create --api-key 'My API Key' --prompt x",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/videos/methods/create"
+}

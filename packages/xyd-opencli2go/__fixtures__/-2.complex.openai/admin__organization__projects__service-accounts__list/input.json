@@ -1,0 +1,99 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "projects",
+          "commands": [
+            {
+              "name": "service-accounts",
+              "commands": [
+                {
+                  "name": "list",
+                  "description": "Returns a list of service accounts in the project.",
+                  "arguments": [
+                    {
+                      "name": "project-id",
+                      "required": true,
+                      "description": "The ID of the project."
+                    }
+                  ],
+                  "options": [
+                    {
+                      "name": "limit",
+                      "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "integer"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "after",
+                      "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "string"
+                        }
+                      ]
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "get",
+                    "path": "/organization/projects/{project_id}/service_accounts",
+                    "operationId": "list-project-service-accounts",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "project_id",
+                        "from": "argument:project-id",
+                        "required": true
+                      },
+                      {
+                        "in": "query",
+                        "name": "limit",
+                        "from": "option:limit"
+                      },
+                      {
+                        "in": "query",
+                        "name": "after",
+                        "from": "option:after"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

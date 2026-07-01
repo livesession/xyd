@@ -1,0 +1,65 @@
+openapi: 3.0.3
+info:
+  title: Transcribe API
+  version: 1.0.0
+servers:
+  - url: https://api.transcribe.test/v1
+paths:
+  /audio/transcriptions:
+    post:
+      operationId: createTranscription
+      summary: Transcribes audio into the input language.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [model]
+              properties:
+                model:
+                  type: string
+                  enum: [gpt-4o-transcribe, whisper-1]
+                language:
+                  type: string
+                  description: The language of the input audio (ISO-639-1).
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  text:
+                    type: string
+                  language:
+                    type: string
+                  duration:
+                    type: number
+  /models/{model}:
+    get:
+      operationId: retrieveModel
+      summary: Retrieve a model instance.
+      parameters:
+        - name: model
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  object:
+                    type: string
+                    enum: [model]
+              example:
+                id: gpt-4o-transcribe
+                object: model

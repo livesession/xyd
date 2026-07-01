@@ -1,0 +1,17 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/roles",
+  "operationId": "create-role",
+  "title": "Create organization role",
+  "summary": "Creates a custom role for the organization.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "role_name",
+      "permissions",
+      "description"
+    ]
+  }
+}

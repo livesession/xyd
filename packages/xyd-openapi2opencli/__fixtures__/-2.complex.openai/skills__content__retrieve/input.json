@@ -1,0 +1,13 @@
+{
+  "httpMethod": "get",
+  "path": "/skills/{skill_id}/content",
+  "operationId": "GetSkillContent",
+  "summary": "Download a skill zip bundle by its ID.",
+  "parameters": [
+    {
+      "name": "skill_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

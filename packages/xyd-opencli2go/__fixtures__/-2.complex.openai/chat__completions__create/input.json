@@ -1,0 +1,600 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "chat",
+      "commands": [
+        {
+          "name": "completions",
+          "commands": [
+            {
+              "name": "create",
+              "description": "**Starting a new project?** We recommend trying [Responses](/docs/api-reference/responses)\nto take advantage of the latest OpenAI platform features. Compare\n[Chat Completions with Responses](/docs/guides/responses-vs-chat-completions?api-mode=responses).\n\n---\n\nCreates a model response for the given chat conversation. Learn more in the\n[text generation](/docs/guides/text-generation), [vision](/docs/guides/vision),\nand [audio](/docs/guides/audio) guides.\n\nParameter support can differ depending on the model used to generate the\nresponse, particularly for newer reasoning models. Parameters that are only\nsupported for reasoning models are noted below. For the current state of\nunsupported parameters in reasoning models,\n[refer to the reasoning guide](/docs/guides/reasoning).\n\nReturns a chat completion object, or a streamed sequence of chat completion\nchunk objects if the request is streamed.\n",
+              "options": [
+                {
+                  "name": "metadata",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "top-logprobs",
+                  "group": "body",
+                  "description": "An integer between 0 and 20 specifying the maximum number of most likely\ntokens to return at each token position, each with an associated log\nprobability. In some cases, the number of returned tokens may be fewer than\nrequested.\n`logprobs` must be set to `true` if this parameter is used.\n",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "temperature",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "top-p",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "user",
+                  "group": "body",
+                  "description": "This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key` instead to maintain caching optimizations.\nA stable identifier for your end-users.\nUsed to boost cache hit rates by better bucketing similar requests and  to help OpenAI detect and prevent abuse. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "safety-identifier",
+                  "group": "body",
+                  "description": "A stable identifier used to help detect users of your application that may be violating OpenAI's usage policies.\nThe IDs should be a string that uniquely identifies each user, with a maximum length of 64 characters. We recommend hashing their username or email address, in order to avoid sending us any identifying information. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "prompt-cache-key",
+                  "group": "body",
+                  "description": "Used by OpenAI to cache responses for similar requests to optimize your cache hit rates. Replaces the `user` field. [Learn more](/docs/guides/prompt-caching).\n",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "service-tier",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "prompt-cache-retention",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "messages",
+                  "group": "body",
+                  "required": true,
+                  "description": "A list of messages comprising the conversation so far. Depending on the\n[model](/docs/models) you use, different message types (modalities) are\nsupported, like [text](/docs/guides/text-generation),\n[images](/docs/guides/vision), and [audio](/docs/guides/audio).\n",
+                  "arguments": [
+                    {
+                      "name": "value",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "model",
+                  "group": "body",
+                  "required": true,
+                  "description": "Model ID used to generate the response, like `gpt-4o` or `o3`. OpenAI\noffers a wide range of models with different capabilities, performance\ncharacteristics, and price points. Refer to the [model guide](/docs/models)\nto browse and compare available models.\n",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "modalities",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "verbosity",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "reasoning-effort",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "max-completion-tokens",
+                  "group": "body",
+                  "description": "An upper bound for the number of tokens that can be generated for a completion, including visible output tokens and [reasoning tokens](/docs/guides/reasoning).\n",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "frequency-penalty",
+                  "group": "body",
+                  "description": "Number between -2.0 and 2.0. Positive values penalize new tokens based on\ntheir existing frequency in the text so far, decreasing the model's\nlikelihood to repeat the same line verbatim.\n",
+                  "arguments": [
+                    {
+                      "name": "number"
+                    }
+                  ]
+                },
+                {
+                  "name": "presence-penalty",
+                  "group": "body",
+                  "description": "Number between -2.0 and 2.0. Positive values penalize new tokens based on\nwhether they appear in the text so far, increasing the model's likelihood\nto talk about new topics.\n",
+                  "arguments": [
+                    {
+                      "name": "number"
+                    }
+                  ]
+                },
+                {
+                  "name": "web-search-options",
+                  "group": "body",
+                  "description": "This tool searches the web for relevant results to use in a response.\nLearn more about the [web search tool](/docs/guides/tools-web-search?api-mode=chat).\n",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "response-format",
+                  "group": "body",
+                  "description": "An object specifying the format that the model must output.\n\nSetting to `{ \"type\": \"json_schema\", \"json_schema\": {...} }` enables\nStructured Outputs which ensures the model will match your supplied JSON\nschema. Learn more in the [Structured Outputs\nguide](/docs/guides/structured-outputs).\n\nSetting to `{ \"type\": \"json_object\" }` enables the older JSON mode, which\nensures the message the model generates is valid JSON. Using `json_schema`\nis preferred for models that support it.\n",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "audio",
+                  "group": "body",
+                  "description": "Parameters for audio output. Required when audio output is requested with\n`modalities: [\"audio\"]`. [Learn more](/docs/guides/audio).\n",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "store",
+                  "group": "body",
+                  "description": "Whether or not to store the output of this chat completion request for\nuse in our [model distillation](/docs/guides/distillation) or\n[evals](/docs/guides/evals) products.\n\nSupports text and image inputs. Note: image inputs over 8MB will be dropped.\n"
+                },
+                {
+                  "name": "stream",
+                  "group": "body",
+                  "description": "If set to true, the model response data will be streamed to the client\nas it is generated using [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).\nSee the [Streaming section below](/docs/api-reference/chat/streaming)\nfor more information, along with the [streaming responses](/docs/guides/streaming-responses)\nguide for more information on how to handle the streaming events.\n"
+                },
+                {
+                  "name": "stop",
+                  "group": "body",
+                  "description": "Not supported with latest reasoning models `o3` and `o4-mini`.\n\nUp to 4 sequences where the API will stop generating further tokens. The\nreturned text will not contain the stop sequence.\n",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "logit-bias",
+                  "group": "body",
+                  "description": "Modify the likelihood of specified tokens appearing in the completion.\n\nAccepts a JSON object that maps tokens (specified by their token ID in the\ntokenizer) to an associated bias value from -100 to 100. Mathematically,\nthe bias is added to the logits generated by the model prior to sampling.\nThe exact effect will vary per model, but values between -1 and 1 should\ndecrease or increase likelihood of selection; values like -100 or 100\nshould result in a ban or exclusive selection of the relevant token.\n",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "logprobs",
+                  "group": "body",
+                  "description": "Whether to return log probabilities of the output tokens or not. If true,\nreturns the log probabilities of each output token returned in the\n`content` of `message`.\n"
+                },
+                {
+                  "name": "max-tokens",
+                  "group": "body",
+                  "description": "The maximum number of [tokens](/tokenizer) that can be generated in the\nchat completion. This value can be used to control\n[costs](https://openai.com/api/pricing/) for text generated via API.\n\nThis value is now deprecated in favor of `max_completion_tokens`, and is\nnot compatible with [o-series models](/docs/guides/reasoning).\n",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "n",
+                  "group": "body",
+                  "description": "How many chat completion choices to generate for each input message. Note that you will be charged based on the number of generated tokens across all of the choices. Keep `n` as `1` to minimize costs.",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "prediction",
+                  "group": "body",
+                  "description": "Configuration for a [Predicted Output](/docs/guides/predicted-outputs),\nwhich can greatly improve response times when large parts of the model\nresponse are known ahead of time. This is most common when you are\nregenerating a file with only minor changes to most of the content.\n",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "seed",
+                  "group": "body",
+                  "description": "This feature is in Beta.\nIf specified, our system will make a best effort to sample deterministically, such that repeated requests with the same `seed` and parameters should return the same result.\nDeterminism is not guaranteed, and you should refer to the `system_fingerprint` response parameter to monitor changes in the backend.\n",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "stream-options",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "tools",
+                  "group": "body",
+                  "description": "A list of tools the model may call. You can provide either\n[custom tools](/docs/guides/function-calling#custom-tools) or\n[function tools](/docs/guides/function-calling).\n",
+                  "arguments": [
+                    {
+                      "name": "value",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "tool-choice",
+                  "group": "body",
+                  "description": "Controls which (if any) tool is called by the model.\n`none` means the model will not call any tool and instead generates a message.\n`auto` means the model can pick between generating a message or calling one or more tools.\n`required` means the model must call one or more tools.\nSpecifying a particular tool via `{\"type\": \"function\", \"function\": {\"name\": \"my_function\"}}` forces the model to call that tool.\n\n`none` is the default when no tools are present. `auto` is the default if tools are present.\n",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "parallel-tool-calls",
+                  "group": "body",
+                  "description": "Whether to enable [parallel function calling](/docs/guides/function-calling#configuring-parallel-function-calling) during tool use."
+                },
+                {
+                  "name": "function-call",
+                  "group": "body",
+                  "description": "Deprecated in favor of `tool_choice`.\n\nControls which (if any) function is called by the model.\n\n`none` means the model will not call a function and instead generates a\nmessage.\n\n`auto` means the model can pick between generating a message or calling a\nfunction.\n\nSpecifying a particular function via `{\"name\": \"my_function\"}` forces the\nmodel to call that function.\n\n`none` is the default when no functions are present. `auto` is the default\nif functions are present.\n",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "functions",
+                  "group": "body",
+                  "description": "Deprecated in favor of `tools`.\n\nA list of functions the model may generate JSON inputs for.\n",
+                  "arguments": [
+                    {
+                      "name": "json",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/chat/completions",
+                "operationId": "createChatCompletion",
+                "contentType": "application/json",
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "metadata",
+                      "from": "option:metadata",
+                      "jsonPath": "metadata",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "top_logprobs",
+                      "from": "option:top-logprobs",
+                      "jsonPath": "top_logprobs",
+                      "encoding": "integer"
+                    },
+                    {
+                      "name": "temperature",
+                      "from": "option:temperature",
+                      "jsonPath": "temperature",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "top_p",
+                      "from": "option:top-p",
+                      "jsonPath": "top_p",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "user",
+                      "from": "option:user",
+                      "jsonPath": "user",
+                      "encoding": "string"
+                    },
+                    {
+                      "name": "safety_identifier",
+                      "from": "option:safety-identifier",
+                      "jsonPath": "safety_identifier",
+                      "encoding": "string"
+                    },
+                    {
+                      "name": "prompt_cache_key",
+                      "from": "option:prompt-cache-key",
+                      "jsonPath": "prompt_cache_key",
+                      "encoding": "string"
+                    },
+                    {
+                      "name": "service_tier",
+                      "from": "option:service-tier",
+                      "jsonPath": "service_tier",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "prompt_cache_retention",
+                      "from": "option:prompt-cache-retention",
+                      "jsonPath": "prompt_cache_retention",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "messages",
+                      "from": "option:messages",
+                      "jsonPath": "messages",
+                      "encoding": "array",
+                      "required": true
+                    },
+                    {
+                      "name": "model",
+                      "from": "option:model",
+                      "jsonPath": "model",
+                      "encoding": "json",
+                      "required": true
+                    },
+                    {
+                      "name": "modalities",
+                      "from": "option:modalities",
+                      "jsonPath": "modalities",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "verbosity",
+                      "from": "option:verbosity",
+                      "jsonPath": "verbosity",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "reasoning_effort",
+                      "from": "option:reasoning-effort",
+                      "jsonPath": "reasoning_effort",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "max_completion_tokens",
+                      "from": "option:max-completion-tokens",
+                      "jsonPath": "max_completion_tokens",
+                      "encoding": "integer"
+                    },
+                    {
+                      "name": "frequency_penalty",
+                      "from": "option:frequency-penalty",
+                      "jsonPath": "frequency_penalty",
+                      "encoding": "number"
+                    },
+                    {
+                      "name": "presence_penalty",
+                      "from": "option:presence-penalty",
+                      "jsonPath": "presence_penalty",
+                      "encoding": "number"
+                    },
+                    {
+                      "name": "web_search_options",
+                      "from": "option:web-search-options",
+                      "jsonPath": "web_search_options",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "response_format",
+                      "from": "option:response-format",
+                      "jsonPath": "response_format",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "audio",
+                      "from": "option:audio",
+                      "jsonPath": "audio",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "store",
+                      "from": "option:store",
+                      "jsonPath": "store",
+                      "encoding": "boolean"
+                    },
+                    {
+                      "name": "stream",
+                      "from": "option:stream",
+                      "jsonPath": "stream",
+                      "encoding": "boolean"
+                    },
+                    {
+                      "name": "stop",
+                      "from": "option:stop",
+                      "jsonPath": "stop",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "logit_bias",
+                      "from": "option:logit-bias",
+                      "jsonPath": "logit_bias",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "logprobs",
+                      "from": "option:logprobs",
+                      "jsonPath": "logprobs",
+                      "encoding": "boolean"
+                    },
+                    {
+                      "name": "max_tokens",
+                      "from": "option:max-tokens",
+                      "jsonPath": "max_tokens",
+                      "encoding": "integer"
+                    },
+                    {
+                      "name": "n",
+                      "from": "option:n",
+                      "jsonPath": "n",
+                      "encoding": "integer"
+                    },
+                    {
+                      "name": "prediction",
+                      "from": "option:prediction",
+                      "jsonPath": "prediction",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "seed",
+                      "from": "option:seed",
+                      "jsonPath": "seed",
+                      "encoding": "integer"
+                    },
+                    {
+                      "name": "stream_options",
+                      "from": "option:stream-options",
+                      "jsonPath": "stream_options",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "tools",
+                      "from": "option:tools",
+                      "jsonPath": "tools",
+                      "encoding": "array"
+                    },
+                    {
+                      "name": "tool_choice",
+                      "from": "option:tool-choice",
+                      "jsonPath": "tool_choice",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "parallel_tool_calls",
+                      "from": "option:parallel-tool-calls",
+                      "jsonPath": "parallel_tool_calls",
+                      "encoding": "boolean"
+                    },
+                    {
+                      "name": "function_call",
+                      "from": "option:function-call",
+                      "jsonPath": "function_call",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "functions",
+                      "from": "option:functions",
+                      "jsonPath": "functions",
+                      "encoding": "array"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

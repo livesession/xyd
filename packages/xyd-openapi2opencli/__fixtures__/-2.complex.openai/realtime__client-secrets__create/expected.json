@@ -1,0 +1,11 @@
+{
+  "commandPath": [
+    "realtime",
+    "client-secrets",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [],
+  "docCommand": "openai realtime:client-secrets create --api-key 'My API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/realtime/subresources/client_secrets/methods/create"
+}

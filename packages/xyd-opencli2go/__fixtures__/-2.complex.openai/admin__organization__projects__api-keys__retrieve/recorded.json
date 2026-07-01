@@ -1,0 +1,16 @@
+{
+  "args": [
+    "organization",
+    "projects",
+    "api-keys",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/organization/projects/{project_id}/api_keys",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

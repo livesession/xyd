@@ -1,0 +1,27 @@
+{
+  "httpMethod": "post",
+  "path": "/audio/transcriptions",
+  "operationId": "createTranscription",
+  "title": "Create transcription",
+  "summary": "Transcribes audio into the input language.\n\nReturns a transcription object in `json`, `diarized_json`, or `verbose_json`\nformat, or a stream of transcript events.\n",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "multipart/form-data",
+    "required": true,
+    "properties": [
+      "file",
+      "model",
+      "language",
+      "prompt",
+      "response_format",
+      "temperature",
+      "include",
+      "timestamp_granularities",
+      "stream",
+      "chunking_strategy",
+      "known_speaker_names",
+      "known_speaker_references",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

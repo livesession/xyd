@@ -1,0 +1,16 @@
+{
+  "commandPath": [
+    "beta",
+    "threads",
+    "messages",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "content",
+    "role",
+    "thread-id"
+  ],
+  "docCommand": "openai beta:threads:messages create --api-key 'My API Key' --thread-id thread_id --content string --role user",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/threads/subresources/messages/methods/create"
+}

@@ -1,0 +1,15 @@
+{
+  "args": [
+    "chat",
+    "completions",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/chat/completions/{completion_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

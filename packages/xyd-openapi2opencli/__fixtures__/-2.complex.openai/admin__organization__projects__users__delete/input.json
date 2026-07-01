@@ -1,0 +1,19 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/projects/{project_id}/users/{user_id}",
+  "operationId": "delete-project-user",
+  "title": "Delete project user",
+  "summary": "Deletes a user from the project.\n\nReturns confirmation of project user deletion, or an error if the project is\narchived (archived projects have no users).\n",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "user_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

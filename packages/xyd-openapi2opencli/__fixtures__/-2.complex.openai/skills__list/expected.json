@@ -1,0 +1,10 @@
+{
+  "commandPath": [
+    "skills",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [],
+  "docCommand": "openai skills list --api-key 'My API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/skills/methods/list"
+}

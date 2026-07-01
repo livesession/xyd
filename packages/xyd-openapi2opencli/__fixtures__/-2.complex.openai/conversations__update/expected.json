@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "conversations",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "conversation-id",
+    "metadata"
+  ],
+  "docCommand": "openai conversations update --api-key 'My API Key' --conversation-id conv_123 --metadata '{foo: string}'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/conversations/methods/update"
+}

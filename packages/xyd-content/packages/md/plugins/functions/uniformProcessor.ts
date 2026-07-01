@@ -8,6 +8,7 @@ import { sourcesToUniform, sourcesToUniformV2, type TypeDocReferenceContext } fr
 import { reactDocgenToUniform, uniformToReactUniform } from '@xyd-js/sources/react';
 import { gqlSchemaToReferences } from "@xyd-js/gql"
 import { oapSchemaToReferences, deferencedOpenAPI, uniformPluginXDocsSidebar } from "@xyd-js/openapi"
+import { loadOpencliSpec, opencliToReferences } from "@xyd-js/opencli"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
 import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
@@ -86,6 +87,9 @@ async function processUniformFile(
         }
         if (matter?.mcp) {
             ext = "mcp"
+        }
+        if (matter?.cli) {
+            ext = "cli"
         }
 
 
@@ -214,6 +218,15 @@ async function processUniformFile(
                     return (ctx?.toolName && wanted.has(ctx.toolName))
                         || (ctx?.resourceUri && wanted.has(ctx.resourceUri));
                 });
+            }
+
+            case 'cli': {
+                const spec = await loadOpencliSpec(resolvedFilePath);
+                const references = opencliToReferences(spec, {
+                    regions: regions.map(region => region.name)
+                });
+
+                return references;
             }
 
             default: {

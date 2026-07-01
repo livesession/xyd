@@ -1,0 +1,34 @@
+{
+  "httpMethod": "get",
+  "path": "/responses/{response_id}",
+  "operationId": "getResponse",
+  "title": "Get a model response",
+  "summary": "Retrieves a model response with the given ID.\n",
+  "parameters": [
+    {
+      "name": "response_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "include",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "stream",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "starting_after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "include_obfuscation",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

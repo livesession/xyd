@@ -42,7 +42,7 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
       }
 
       let uniformMeta = false
-      if (meta?.uniform || meta?.openapi || meta?.graphql || meta?.mcp) {
+      if (meta?.uniform || meta?.openapi || meta?.graphql || meta?.mcp || meta?.cli) {
         uniformMeta = true
         if (meta.graphql) {
           meta.uniform = meta.graphql
@@ -50,6 +50,8 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
           meta.uniform = meta.openapi
         } else if (meta.mcp) {
           meta.uniform = meta.mcp
+        } else if (meta.cli) {
+          meta.uniform = meta.cli
         }
         meta.component = "atlas"
 

@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/users/{user_id}",
+  "operationId": "delete-user",
+  "title": "Delete user",
+  "summary": "Deletes a user from the organization.",
+  "parameters": [
+    {
+      "name": "user_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

@@ -2,8 +2,18 @@ import { visit } from 'unist-util-visit';
 import { VFile } from 'vfile';
 import { Root } from 'mdast';
 import { matter } from 'vfile-matter';
-import type { OpencliSpecJson, Command } from './types.js';
 import { load } from 'js-yaml';
+
+import {
+  loadOpencliSpec,
+  findCommand,
+  generateUsage,
+  generateDescription,
+  generateArguments,
+  generateOptions,
+  generateCommands,
+  type Command,
+} from '@xyd-js/opencli';
 
 export interface OpencliDocsOptions {
   [cliKey: string]: {
@@ -13,20 +23,20 @@ export interface OpencliDocsOptions {
 
 /**
  * Remark plugin for generating OpenCLI documentation from placeholders
- * 
+ *
  * @example
  * ```md
  * ---
  * xyd.opencli.spice: "install"
  * ---
- * 
+ *
  * ### Usage
  * {opencli.current.usage}
- * 
+ *
  * ### Flags
  * {opencli.current.flags}
  * ```
- * 
+ *
  * @example
  * ```ts
  * remarkOpencliDocs({
@@ -46,11 +56,11 @@ export function remarkOpencliDocs(options: OpencliDocsOptions) {
     if (!file.data) {
       file.data = {};
     }
-    
+
     // Quick check: look for xyd.opencli.* pattern in YAML nodes before parsing
     let hasOpencliKey = false;
     let yamlContent: string | null = null;
-    
+
     visit(tree, 'yaml', (node: any) => {
       if (node.value && !yamlContent) {
         const content = String(node.value);
@@ -61,7 +71,7 @@ export function remarkOpencliDocs(options: OpencliDocsOptions) {
         }
       }
     });
-    
+
     // If no YAML node found, check file.value directly
     if (!yamlContent && file.value) {
       const fileValue = typeof file.value === 'string' ? file.value : new TextDecoder().decode(file.value);
@@ -71,15 +81,15 @@ export function remarkOpencliDocs(options: OpencliDocsOptions) {
         yamlContent = frontmatterMatch[1];
       }
     }
-    
+
     // If no xyd.opencli.* key found anywhere, return early without any processing
     if (!hasOpencliKey) {
       return;
     }
-    
+
     // Now parse frontmatter since we know there's a potential match
     let frontmatter = file.data.matter as Record<string, any> | undefined;
-    
+
     // If not parsed, parse from YAML content we found
     if (!frontmatter && yamlContent) {
       try {
@@ -93,13 +103,13 @@ export function remarkOpencliDocs(options: OpencliDocsOptions) {
         }
       }
     }
-    
+
     // Fallback: try to parse from file.value if YAML nodes weren't found
     if (!frontmatter && file.value) {
       matter(file as any);
       frontmatter = file.data.matter as Record<string, any> | undefined;
     }
-    
+
     // Find xyd.opencli.{cliKey} pattern in frontmatter
     let cliKey: string | null = null;
     let opencliConfig: any = null;
@@ -139,8 +149,8 @@ export function remarkOpencliDocs(options: OpencliDocsOptions) {
 
     const normalizedPath = commandPath?.trim() || '';
 
-    // Load OpenCLI spec
-    const spec = await loadOpencliSpec(cliConfig.source, file);
+    // Load OpenCLI spec (resolve relative file paths from the markdown file's dir)
+    const spec = await loadOpencliSpec(cliConfig.source, { cwd: file.dirname });
     if (!spec) {
       console.warn(`Failed to load OpenCLI spec from ${cliConfig.source}`);
       return;
@@ -155,7 +165,7 @@ export function remarkOpencliDocs(options: OpencliDocsOptions) {
 
     // Build display path: CLI title + command path (or just CLI title for root)
     const cliTitle = spec.info?.title || '';
-    const displayPath = normalizedPath 
+    const displayPath = normalizedPath
       ? `${cliTitle} ${normalizedPath}`.trim()
       : cliTitle || command.name;
 
@@ -212,6 +222,45 @@ export function remarkOpencliDocs(options: OpencliDocsOptions) {
       }
     });
 
+    // In an MDX pipeline `{opencli.current.*}` is parsed as a JS expression node
+    // (mdxFlowExpression / mdxTextExpression), not literal text — so the visitors
+    // above never see it (and it would throw at render since `opencli` is undefined).
+    // Resolve those expression nodes here.
+    const mdxExprValue = (expr: string): string | null => {
+      switch (expr) {
+        case 'opencli.current.usage': return usage;
+        case 'opencli.current.description': return description;
+        case 'opencli.current.commands': return subcommands;
+        case 'opencli.current.arguments': return argsText;
+        case 'opencli.current.options': return optsText;
+        default: return null;
+      }
+    };
+    visit(tree, ['mdxFlowExpression', 'mdxTextExpression'], (node: any, index: number | undefined, parent: any) => {
+      if (!parent || index === undefined || typeof node.value !== 'string') return;
+      const expr = node.value.trim();
+      if (!expr.startsWith('opencli.current.')) return;
+
+      if (indentStyle === 'list' && (expr === 'opencli.current.arguments' || expr === 'opencli.current.options')) {
+        const listNode = expr === 'opencli.current.arguments'
+          ? createArgumentsListNode(command)
+          : createOptionsListNode(command);
+        parent.children[index] = listNode || { type: 'text', value: '' };
+        return;
+      }
+
+      const value = mdxExprValue(expr);
+      if (value === null) return;
+
+      if (node.type === 'mdxFlowExpression') {
+        parent.children[index] = expr === 'opencli.current.description'
+          ? { type: 'paragraph', children: [{ type: 'text', value }] }
+          : { type: 'code', value };
+      } else {
+        parent.children[index] = { type: 'text', value };
+      }
+    });
+
     // For list format, replace argument/option placeholders with mdast list nodes
     if (indentStyle === 'list') {
       // Replace {opencli.current.arguments} with list node
@@ -253,315 +302,6 @@ export function remarkOpencliDocs(options: OpencliDocsOptions) {
       });
     }
   };
-}
-
-/**
- * Load OpenCLI spec from file or URL
- */
-async function loadOpencliSpec(
-  source: string,
-  file: VFile
-): Promise<OpencliSpecJson | null> {
-  try {
-    let content: string;
-    
-    if (source.startsWith('http://') || source.startsWith('https://')) {
-      // Load from URL
-      const response = await fetch(source);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch OpenCLI spec: ${response.statusText}`);
-      }
-      content = await response.text();
-    } else {
-      // Load from file
-      const fs = await import('node:fs/promises');
-      const path = await import('node:path');
-      
-      // Resolve relative to the markdown file's directory
-      const resolvedPath = path.isAbsolute(source)
-        ? source
-        : path.resolve(file.dirname || process.cwd(), source);
-      
-      content = await fs.readFile(resolvedPath, 'utf-8');
-    }
-    
-    return JSON.parse(content) as OpencliSpecJson;
-  } catch (error) {
-    console.error(`Error loading OpenCLI spec from ${source}:`, error);
-    return null;
-  }
-}
-
-/**
- * Find a command in the spec by path (e.g., "spice install")
- * If path is empty, returns a synthetic root command
- */
-function findCommand(
-  spec: OpencliSpecJson,
-  commandPath: string
-): Command | null {
-  let parts = commandPath.trim().split(/\s+/).filter(Boolean);
-
-  // If no path specified, create a synthetic root command from spec root
-  if (parts.length === 0) {
-    return {
-      name: spec.info?.title || 'root',
-      description: spec.info?.description || spec.info?.summary,
-      options: spec.options || [],
-      arguments: spec.arguments || [],
-      commands: spec.commands || [],
-      examples: spec.examples || [],
-      exitCodes: spec.exitCodes || [],
-      interactive: spec.interactive,
-    };
-  }
-
-  // Skip the CLI name if it matches the first part (e.g., "spice install" -> "install")
-  if (parts.length > 0 && spec.info?.title && parts[0] === spec.info.title) {
-    parts = parts.slice(1);
-  }
-
-  // If only the CLI name was provided, return root command
-  if (parts.length === 0) {
-    return {
-      name: spec.info?.title || 'root',
-      description: spec.info?.description || spec.info?.summary,
-      options: spec.options || [],
-      arguments: spec.arguments || [],
-      commands: spec.commands || [],
-      examples: spec.examples || [],
-      exitCodes: spec.exitCodes || [],
-      interactive: spec.interactive,
-    };
-  }
-
-  // Start from root commands
-  let currentCommands = spec.commands || [];
-  let foundCommand: Command | null = null;
-
-  for (const part of parts) {
-    foundCommand = currentCommands.find(
-      (cmd) => cmd.name === part || cmd.aliases?.includes(part)
-    ) || null;
-
-    if (!foundCommand) {
-      return null;
-    }
-
-    // Move to subcommands for next iteration
-    currentCommands = foundCommand.commands || [];
-  }
-
-  return foundCommand;
-}
-
-/**
- * Generate usage line for a command (like: "shadcn init [options] [components...]")
- */
-function generateUsage(
-  spec: OpencliSpecJson,
-  command: Command,
-  commandPath: string
-): string {
-  const parts: string[] = [];
-
-  // Command path
-  parts.push(commandPath);
-
-  // Options indicator
-  if (command.options && command.options.length > 0) {
-    const visibleOptions = command.options.filter(opt => !opt.hidden);
-    if (visibleOptions.length > 0) {
-      parts.push('[options]');
-    }
-  }
-
-  // Arguments
-  if (command.arguments && command.arguments.length > 0) {
-    const visibleArgs = command.arguments.filter(arg => !arg.hidden);
-    const argParts = visibleArgs.map(arg => {
-      const name = arg.name.toLowerCase();
-      // Use ... suffix if argument can accept multiple values (variadic)
-      const suffix = arg.variadic ? '...' : '';
-      return arg.required ? `<${name}${suffix}>` : `[${name}${suffix}]`;
-    });
-    parts.push(...argParts);
-  }
-
-  return parts.join(' ');
-}
-
-/**
- * Generate description for a command
- */
-function generateDescription(command: Command): string {
-  return command.description || '';
-}
-
-/**
- * Generate arguments documentation
- * @param indentStyle - 'code' for tab-indented CLI style, 'list' for markdown list style
- */
-function generateArguments(command: Command, indentStyle: 'code' | 'list' = 'code'): string {
-  if (!command.arguments || command.arguments.length === 0) {
-    return '';
-  }
-
-  const visibleArgs = command.arguments.filter(arg => !arg.hidden);
-  if (visibleArgs.length === 0) {
-    return '';
-  }
-
-  const lines: string[] = [];
-
-  for (const arg of visibleArgs) {
-    const name = arg.name.toLowerCase();
-    const desc = arg.description || '';
-
-    if (indentStyle === 'list') {
-      // Markdown list format: - `package`         Package name
-      lines.push(`- \`${name}\`${desc ? `  ${desc}` : ''}`);
-    } else {
-      // Code/CLI format with tab indentation
-      const paddedName = name.padEnd(30);
-      lines.push(`\t${paddedName}${desc}`);
-    }
-  }
-
-  return lines.join('\n');
-}
-
-/**
- * Generate options documentation
- * @param indentStyle - 'code' for tab-indented CLI style, 'list' for markdown list style
- */
-function generateOptions(command: Command, indentStyle: 'code' | 'list' = 'code'): string {
-  if (!command.options || command.options.length === 0) {
-    return '';
-  }
-
-  const visibleOptions = command.options.filter(opt => !opt.hidden);
-  if (visibleOptions.length === 0) {
-    return '';
-  }
-
-  const lines: string[] = [];
-
-  for (const option of visibleOptions) {
-    // Build option signature
-    const aliases = option.aliases?.filter(a => a.length === 1) || [];
-    const short = aliases.length > 0 ? `-${aliases[0]}` : '';
-    const long = `--${option.name}`;
-
-    // Add argument placeholder if option takes arguments
-    let argPlaceholder = '';
-    if (option.arguments && option.arguments.length > 0) {
-      const argNames = option.arguments
-        .filter(arg => !arg.hidden)
-        .map(arg => `<${arg.name.toLowerCase()}>`);
-      argPlaceholder = ' ' + argNames.join(' ');
-    }
-
-    const desc = option.description || '';
-
-    if (indentStyle === 'list') {
-      // Markdown list format: - `-g`, `--global`   Install globally
-      const shortPart = short ? `\`${short}\`, ` : '';
-      lines.push(`- ${shortPart}\`${long}\`${argPlaceholder}${desc ? `  ${desc}` : ''}`);
-    } else {
-      // Code/CLI format with tab indentation
-      const signature = `${short ? `${short}, ` : ''}${long}${argPlaceholder}`;
-      const paddedSignature = signature.padEnd(30);
-      lines.push(`\t${paddedSignature}${desc}`);
-    }
-  }
-
-  return lines.join('\n');
-}
-
-/**
- * TODO: OPTIONS DO ALMOST THE SAME
- * Generate flags/options documentation
- */
-function generateFlags(command: Command): string {
-  if (!command.options || command.options.length === 0) {
-    return 'No flags available.';
-  }
-
-  const visibleOptions = command.options.filter(opt => !opt.hidden);
-  if (visibleOptions.length === 0) {
-    return 'No flags available.';
-  }
-
-  const lines: string[] = [];
-  
-  for (const option of visibleOptions) {
-    const optionParts: string[] = [];
-    
-    // Option name and aliases
-    const aliases = option.aliases?.filter(a => a.length === 1) || [];
-    const short = aliases.length > 0 ? `-${aliases[0]}` : '';
-    const long = `--${option.name}`;
-    const name = short ? `\`${short}\`, \`${long}\`` : `\`${long}\``;
-    optionParts.push(name);
-    
-    // Required indicator
-    if (option.required) {
-      optionParts.push('**(required)**');
-    }
-    
-    lines.push(`- ${optionParts.join(' ')}`);
-    
-    // Description
-    if (option.description) {
-      lines.push(`  ${option.description}`);
-    }
-    
-    // Option arguments
-    if (option.arguments && option.arguments.length > 0) {
-      const argParts = option.arguments
-        .filter(arg => !arg.hidden)
-        .map(arg => {
-          const name = arg.name.toUpperCase();
-          return arg.required ? `<${name}>` : `[${name}]`;
-        });
-      if (argParts.length > 0) {
-        lines.push(`  Arguments: ${argParts.join(' ')}`);
-      }
-    }
-  }
-
-  return lines.join('\n');
-}
-
-/**
- * Generate subcommands documentation
- */
-function generateCommands(command: Command): string {
-  if (!command.commands || command.commands.length === 0) {
-    return 'No subcommands available.';
-  }
-
-  const visibleCommands = command.commands.filter(cmd => !cmd.hidden);
-  if (visibleCommands.length === 0) {
-    return 'No subcommands available.';
-  }
-
-  const lines: string[] = [];
-
-  for (const subcommand of visibleCommands) {
-    lines.push(`- \`${subcommand.name}\``);
-
-    if (subcommand.aliases && subcommand.aliases.length > 0) {
-      lines.push(`  Aliases: ${subcommand.aliases.map(a => `\`${a}\``).join(', ')}`);
-    }
-
-    if (subcommand.description) {
-      lines.push(`  ${subcommand.description}`);
-    }
-  }
-
-  return lines.join('\n');
 }
 
 /**

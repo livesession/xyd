@@ -1,0 +1,14 @@
+{
+  "args": [
+    "organization",
+    "invites",
+    "list"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/organization/invites",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

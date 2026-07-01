@@ -1,0 +1,24 @@
+{
+  "httpMethod": "get",
+  "path": "/organization/projects/{project_id}/users",
+  "operationId": "list-project-users",
+  "title": "List project users",
+  "summary": "Returns a list of users in the project.",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "videos",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "video-id"
+  ],
+  "docCommand": "openai videos retrieve --api-key 'My API Key' --video-id video_123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/videos/methods/retrieve"
+}

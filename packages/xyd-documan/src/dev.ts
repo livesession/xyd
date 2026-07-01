@@ -491,7 +491,7 @@ export function resolveApiFilePaths(
 ): Record<string, true> {
     const result: Record<string, true> = {}
 
-    const apis = [api.openapi, api.graphql, api.sources, api.mcp as APIFile | undefined].filter((s): s is APIFile => s !== undefined)
+    const apis = [api.openapi, api.graphql, api.sources, api.mcp as APIFile | undefined, api.cli].filter((s): s is APIFile => s !== undefined)
 
     apis.forEach(section => {
         flattenApiFile(section).forEach(p => {

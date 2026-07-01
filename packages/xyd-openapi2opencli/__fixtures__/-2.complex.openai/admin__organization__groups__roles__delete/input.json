@@ -1,0 +1,19 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/groups/{group_id}/roles/{role_id}",
+  "operationId": "unassign-group-role",
+  "title": "Unassign organization role from group",
+  "summary": "Unassigns an organization role from a group within the organization.",
+  "parameters": [
+    {
+      "name": "group_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "role_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

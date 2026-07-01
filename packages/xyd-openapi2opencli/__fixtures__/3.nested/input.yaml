@@ -1,0 +1,84 @@
+openapi: 3.0.3
+info:
+  title: Stores API
+  version: 1.0.0
+servers:
+  - url: https://api.stores.test/v2
+paths:
+  /stores/{store_id}/items:
+    get:
+      operationId: listStoreItems
+      summary: List items in a store.
+      parameters:
+        - name: store_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: createStoreItem
+      summary: Create an item in a store.
+      parameters:
+        - name: store_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sku]
+              properties:
+                sku:
+                  type: string
+                quantity:
+                  type: integer
+      responses:
+        "201":
+          description: Created
+  /stores/{store_id}/items/{item_id}:
+    get:
+      operationId: retrieveStoreItem
+      summary: Retrieve a store item.
+      parameters:
+        - name: store_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+  /stores/{store_id}/items/{item_id}/archive:
+    post:
+      operationId: archiveStoreItem
+      summary: Archive a store item.
+      parameters:
+        - name: store_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK

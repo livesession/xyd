@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "audio",
+    "transcriptions",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "file",
+    "model"
+  ],
+  "docCommand": "openai audio:transcriptions create --api-key 'My API Key' --file 'Example data' --model gpt-4o-transcribe",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/audio/subresources/transcriptions/methods/create"
+}

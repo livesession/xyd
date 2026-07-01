@@ -1,0 +1,39 @@
+{
+  "httpMethod": "get",
+  "path": "/vector_stores/{vector_store_id}/files",
+  "operationId": "listVectorStoreFiles",
+  "title": "List vector store files",
+  "summary": "Returns a list of vector store files.",
+  "parameters": [
+    {
+      "name": "vector_store_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "before",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "filter",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

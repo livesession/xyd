@@ -1,0 +1,16 @@
+{
+  "args": [
+    "vector-stores",
+    "files",
+    "delete",
+    "EXAMPLE",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/vector_stores/{vector_store_id}/files/{file_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

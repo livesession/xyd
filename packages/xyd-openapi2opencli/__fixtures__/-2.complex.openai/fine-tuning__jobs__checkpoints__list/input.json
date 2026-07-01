@@ -1,0 +1,24 @@
+{
+  "httpMethod": "get",
+  "path": "/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints",
+  "operationId": "listFineTuningJobCheckpoints",
+  "title": "List fine-tuning checkpoints",
+  "summary": "List checkpoints for a fine-tuning job.\n",
+  "parameters": [
+    {
+      "name": "fine_tuning_job_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

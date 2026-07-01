@@ -1,0 +1,19 @@
+{
+  "httpMethod": "get",
+  "path": "/batches",
+  "operationId": "listBatches",
+  "title": "List batches",
+  "summary": "List your organization's batches.",
+  "parameters": [
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

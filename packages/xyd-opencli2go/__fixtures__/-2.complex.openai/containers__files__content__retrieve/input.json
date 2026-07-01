@@ -1,0 +1,76 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "containers",
+      "commands": [
+        {
+          "name": "files",
+          "commands": [
+            {
+              "name": "content",
+              "commands": [
+                {
+                  "name": "list",
+                  "description": "Retrieve Container File Content",
+                  "arguments": [
+                    {
+                      "name": "container-id",
+                      "required": true
+                    },
+                    {
+                      "name": "file-id",
+                      "required": true
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "get",
+                    "path": "/containers/{container_id}/files/{file_id}/content",
+                    "operationId": "RetrieveContainerFileContent",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "container_id",
+                        "from": "argument:container-id",
+                        "required": true
+                      },
+                      {
+                        "in": "path",
+                        "name": "file_id",
+                        "from": "argument:file-id",
+                        "required": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

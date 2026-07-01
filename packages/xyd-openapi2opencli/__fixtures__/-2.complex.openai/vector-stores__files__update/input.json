@@ -1,0 +1,24 @@
+{
+  "httpMethod": "post",
+  "path": "/vector_stores/{vector_store_id}/files",
+  "operationId": "createVectorStoreFile",
+  "title": "Create vector store file",
+  "summary": "Create a vector store file by attaching a [File](/docs/api-reference/files) to a [vector store](/docs/api-reference/vector-stores/object).",
+  "parameters": [
+    {
+      "name": "vector_store_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "file_id",
+      "chunking_strategy",
+      "attributes",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

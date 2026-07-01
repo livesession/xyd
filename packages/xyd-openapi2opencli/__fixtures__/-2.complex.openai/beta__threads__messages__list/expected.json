@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "beta",
+    "threads",
+    "messages",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "thread-id"
+  ],
+  "docCommand": "openai beta:threads:messages list --api-key 'My API Key' --thread-id thread_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/threads/subresources/messages/methods/list"
+}

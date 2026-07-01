@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "uploads",
+    "complete"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "part-id",
+    "upload-id"
+  ],
+  "docCommand": "openai uploads complete --api-key 'My API Key' --upload-id upload_abc123 --part-id string",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/uploads/methods/complete"
+}

@@ -1,0 +1,17 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/projects",
+  "operationId": "create-project",
+  "title": "Create project",
+  "summary": "Create a new project in the organization. Projects can be created and archived, but cannot be deleted.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "name",
+      "geography",
+      "external_key_id"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "conversations",
+    "items",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "conversation-id"
+  ],
+  "docCommand": "openai conversations:items list --api-key 'My API Key' --conversation-id conv_123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/conversations/subresources/items/methods/list"
+}

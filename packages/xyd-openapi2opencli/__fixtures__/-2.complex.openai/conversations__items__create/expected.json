@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "conversations",
+    "items",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "conversation-id",
+    "item"
+  ],
+  "docCommand": "openai conversations:items create --api-key 'My API Key' --conversation-id conv_123 --item '{content: string, role: user, type: message}'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/conversations/subresources/items/methods/create"
+}

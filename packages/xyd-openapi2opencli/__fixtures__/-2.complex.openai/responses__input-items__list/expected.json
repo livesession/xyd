@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "responses",
+    "input-items",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "response-id"
+  ],
+  "docCommand": "openai responses:input-items list --api-key 'My API Key' --response-id response_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/responses/subresources/input_items/methods/list"
+}

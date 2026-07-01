@@ -1,0 +1,18 @@
+{
+  "args": [
+    "moderations",
+    "create",
+    "--input",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/moderations",
+    "query": [],
+    "bodyFields": [
+      "input"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

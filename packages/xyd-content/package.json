@@ -26,6 +26,7 @@
     "@xyd-js/context": "workspace:*",
     "@xyd-js/core": "workspace:*",
     "@xyd-js/gql": "workspace:*",
+    "@xyd-js/opencli": "workspace:*",
     "@xyd-js/openapi": "workspace:*",
     "@xyd-js/mcp-uniform": "workspace:*",
     "@xyd-js/sources": "workspace:*",

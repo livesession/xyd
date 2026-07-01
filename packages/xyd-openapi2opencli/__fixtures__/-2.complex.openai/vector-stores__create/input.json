@@ -1,0 +1,21 @@
+{
+  "httpMethod": "post",
+  "path": "/vector_stores",
+  "operationId": "createVectorStore",
+  "title": "Create vector store",
+  "summary": "Create a vector store.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "file_ids",
+      "name",
+      "description",
+      "expires_after",
+      "chunking_strategy",
+      "metadata",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "projects",
+          "commands": [
+            {
+              "name": "api-keys",
+              "commands": [
+                {
+                  "name": "delete",
+                  "description": "Deletes an API key from the project.\n\nReturns confirmation of the key deletion, or an error if the key belonged to\na service account.\n",
+                  "arguments": [
+                    {
+                      "name": "project-id",
+                      "required": true,
+                      "description": "The ID of the project."
+                    },
+                    {
+                      "name": "api-key-id",
+                      "required": true,
+                      "description": "The ID of the API key."
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "delete",
+                    "path": "/organization/projects/{project_id}/api_keys/{api_key_id}",
+                    "operationId": "delete-project-api-key",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "project_id",
+                        "from": "argument:project-id",
+                        "required": true
+                      },
+                      {
+                        "in": "path",
+                        "name": "api_key_id",
+                        "from": "argument:api-key-id",
+                        "required": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

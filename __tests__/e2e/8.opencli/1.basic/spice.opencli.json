@@ -1,0 +1,26 @@
+{
+  "opencli": "1.0.0",
+  "info": { "title": "spice", "version": "1.0.0", "description": "A fast, friendly package manager." },
+  "commands": [
+    {
+      "name": "install",
+      "aliases": ["i"],
+      "description": "Install one or more packages and add them to the manifest.",
+      "arguments": [{ "name": "packages", "required": true, "description": "Packages to install." }],
+      "options": [
+        { "name": "global", "aliases": ["g"], "description": "Install the package(s) globally." },
+        { "name": "save-dev", "description": "Add the package(s) to devDependencies." }
+      ]
+    },
+    {
+      "name": "remove",
+      "description": "Remove one or more packages from the manifest.",
+      "arguments": [{ "name": "packages", "required": true, "description": "Packages to remove." }]
+    },
+    {
+      "name": "list",
+      "description": "List installed packages.",
+      "options": [{ "name": "global", "aliases": ["g"], "description": "List globally installed packages." }]
+    }
+  ]
+}

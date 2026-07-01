@@ -1,0 +1,16 @@
+{
+  "httpMethod": "post",
+  "path": "/moderations",
+  "operationId": "createModeration",
+  "title": "Create moderation",
+  "summary": "Classifies if text and/or image inputs are potentially harmful. Learn\nmore in the [moderation guide](/docs/guides/moderation).\n",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "input",
+      "model"
+    ]
+  }
+}

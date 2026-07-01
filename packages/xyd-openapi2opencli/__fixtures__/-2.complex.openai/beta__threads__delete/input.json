@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/threads/{thread_id}",
+  "operationId": "deleteThread",
+  "title": "Delete thread",
+  "summary": "Delete a thread.",
+  "parameters": [
+    {
+      "name": "thread_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

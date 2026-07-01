@@ -1,0 +1,254 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "audit-logs",
+          "commands": [
+            {
+              "name": "list",
+              "description": "List user actions and configuration changes within this organization.",
+              "options": [
+                {
+                  "name": "effective-at",
+                  "description": "Return only events whose `effective_at` (Unix seconds) is in this range.",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "project-ids[]",
+                  "description": "Return only events for these projects.",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "event-types[]",
+                  "description": "Return only events with a `type` in one of these values. For example, `project.created`. For all options, see the documentation for the [audit log object](/docs/api-reference/audit-logs/object).",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "acceptedValues": [
+                        "api_key.created",
+                        "api_key.updated",
+                        "api_key.deleted",
+                        "certificate.created",
+                        "certificate.updated",
+                        "certificate.deleted",
+                        "certificates.activated",
+                        "certificates.deactivated",
+                        "checkpoint.permission.created",
+                        "checkpoint.permission.deleted",
+                        "external_key.registered",
+                        "external_key.removed",
+                        "group.created",
+                        "group.updated",
+                        "group.deleted",
+                        "invite.sent",
+                        "invite.accepted",
+                        "invite.deleted",
+                        "ip_allowlist.created",
+                        "ip_allowlist.updated",
+                        "ip_allowlist.deleted",
+                        "ip_allowlist.config.activated",
+                        "ip_allowlist.config.deactivated",
+                        "login.succeeded",
+                        "login.failed",
+                        "logout.succeeded",
+                        "logout.failed",
+                        "organization.updated",
+                        "project.created",
+                        "project.updated",
+                        "project.archived",
+                        "project.deleted",
+                        "rate_limit.updated",
+                        "rate_limit.deleted",
+                        "resource.deleted",
+                        "tunnel.created",
+                        "tunnel.updated",
+                        "tunnel.deleted",
+                        "role.created",
+                        "role.updated",
+                        "role.deleted",
+                        "role.assignment.created",
+                        "role.assignment.deleted",
+                        "scim.enabled",
+                        "scim.disabled",
+                        "service_account.created",
+                        "service_account.updated",
+                        "service_account.deleted",
+                        "user.added",
+                        "user.updated",
+                        "user.deleted"
+                      ],
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "actor-ids[]",
+                  "description": "Return only events performed by these actors. Can be a user ID, a service account ID, or an api key tracking ID.",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "actor-emails[]",
+                  "description": "Return only events performed by users with these emails.",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "resource-ids[]",
+                  "description": "Return only events performed on these targets. For example, a project ID updated.",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "limit",
+                  "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "after",
+                  "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "before",
+                  "description": "A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.\n",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "get",
+                "path": "/organization/audit_logs",
+                "operationId": "list-audit-logs",
+                "params": [
+                  {
+                    "in": "query",
+                    "name": "effective_at",
+                    "from": "option:effective-at"
+                  },
+                  {
+                    "in": "query",
+                    "name": "project_ids[]",
+                    "from": "option:project-ids[]"
+                  },
+                  {
+                    "in": "query",
+                    "name": "event_types[]",
+                    "from": "option:event-types[]"
+                  },
+                  {
+                    "in": "query",
+                    "name": "actor_ids[]",
+                    "from": "option:actor-ids[]"
+                  },
+                  {
+                    "in": "query",
+                    "name": "actor_emails[]",
+                    "from": "option:actor-emails[]"
+                  },
+                  {
+                    "in": "query",
+                    "name": "resource_ids[]",
+                    "from": "option:resource-ids[]"
+                  },
+                  {
+                    "in": "query",
+                    "name": "limit",
+                    "from": "option:limit"
+                  },
+                  {
+                    "in": "query",
+                    "name": "after",
+                    "from": "option:after"
+                  },
+                  {
+                    "in": "query",
+                    "name": "before",
+                    "from": "option:before"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

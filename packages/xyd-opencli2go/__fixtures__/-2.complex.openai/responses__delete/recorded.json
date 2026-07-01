@@ -1,0 +1,14 @@
+{
+  "args": [
+    "responses",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/responses/{response_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

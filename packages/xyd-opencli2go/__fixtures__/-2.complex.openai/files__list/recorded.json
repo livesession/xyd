@@ -1,0 +1,13 @@
+{
+  "args": [
+    "files",
+    "list"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/files",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

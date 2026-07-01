@@ -1,0 +1,19 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/projects/{project_id}/api_keys/{api_key_id}",
+  "operationId": "delete-project-api-key",
+  "title": "Delete project API key",
+  "summary": "Deletes an API key from the project.\n\nReturns confirmation of the key deletion, or an error if the key belonged to\na service account.\n",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "api_key_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

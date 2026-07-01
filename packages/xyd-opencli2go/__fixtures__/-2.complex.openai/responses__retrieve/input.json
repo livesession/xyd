@@ -1,0 +1,125 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "responses",
+      "commands": [
+        {
+          "name": "retrieve",
+          "aliases": [
+            "get"
+          ],
+          "description": "Retrieves a model response with the given ID.\n",
+          "arguments": [
+            {
+              "name": "response-id",
+              "required": true,
+              "description": "The ID of the response to retrieve."
+            }
+          ],
+          "options": [
+            {
+              "name": "include",
+              "description": "Additional fields to include in the response. See the `include`\nparameter for Response creation above for more information.\n",
+              "group": "query",
+              "arguments": [
+                {
+                  "name": "string",
+                  "acceptedValues": [
+                    "file_search_call.results",
+                    "web_search_call.results",
+                    "web_search_call.action.sources",
+                    "message.input_image.image_url",
+                    "computer_call_output.output.image_url",
+                    "code_interpreter_call.outputs",
+                    "reasoning.encrypted_content",
+                    "message.output_text.logprobs"
+                  ],
+                  "arity": {
+                    "minimum": 0
+                  }
+                }
+              ]
+            },
+            {
+              "name": "stream",
+              "description": "If set to true, the model response data will be streamed to the client\nas it is generated using [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).\nSee the [Streaming section below](/docs/api-reference/responses-streaming)\nfor more information.\n",
+              "group": "query"
+            },
+            {
+              "name": "starting-after",
+              "description": "The sequence number of the event after which to start streaming.\n",
+              "group": "query",
+              "arguments": [
+                {
+                  "name": "integer"
+                }
+              ]
+            },
+            {
+              "name": "include-obfuscation",
+              "description": "When true, stream obfuscation will be enabled. Stream obfuscation adds\nrandom characters to an `obfuscation` field on streaming delta events\nto normalize payload sizes as a mitigation to certain side-channel\nattacks. These obfuscation fields are included by default, but add a\nsmall amount of overhead to the data stream. You can set\n`include_obfuscation` to false to optimize for bandwidth if you trust\nthe network links between your application and the OpenAI API.\n",
+              "group": "query"
+            }
+          ],
+          "x-openapi": {
+            "method": "get",
+            "path": "/responses/{response_id}",
+            "operationId": "getResponse",
+            "params": [
+              {
+                "in": "path",
+                "name": "response_id",
+                "from": "argument:response-id",
+                "required": true
+              },
+              {
+                "in": "query",
+                "name": "include",
+                "from": "option:include"
+              },
+              {
+                "in": "query",
+                "name": "stream",
+                "from": "option:stream"
+              },
+              {
+                "in": "query",
+                "name": "starting_after",
+                "from": "option:starting-after"
+              },
+              {
+                "in": "query",
+                "name": "include_obfuscation",
+                "from": "option:include-obfuscation"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

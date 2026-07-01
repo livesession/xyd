@@ -1,0 +1,20 @@
+{
+  "httpMethod": "post",
+  "path": "/uploads",
+  "operationId": "createUpload",
+  "title": "Create upload",
+  "summary": "Creates an intermediate [Upload](/docs/api-reference/uploads/object) object\nthat you can add [Parts](/docs/api-reference/uploads/part-object) to.\nCurrently, an Upload can accept at most 8 GB in total and expires after an\nhour after you create it.\n\nOnce you complete the Upload, we will create a\n[File](/docs/api-reference/files/object) object that contains all the parts\nyou uploaded. This File is usable in the rest of our platform as a regular\nFile object.\n\nFor certain `purpose` values, the correct `mime_type` must be specified. \nPlease refer to documentation for the \n[supported MIME types for your use case](/docs/assistants/tools/file-search#supported-files).\n\nFor guidance on the proper filename extensions for each purpose, please\nfollow the documentation on [creating a\nFile](/docs/api-reference/files/create).\n\nReturns the Upload object with status `pending`.\n",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "filename",
+      "purpose",
+      "bytes",
+      "mime_type",
+      "expires_after",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

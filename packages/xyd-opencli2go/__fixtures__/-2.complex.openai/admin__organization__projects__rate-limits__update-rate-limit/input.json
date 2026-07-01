@@ -1,0 +1,183 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "projects",
+          "commands": [
+            {
+              "name": "rate-limits",
+              "commands": [
+                {
+                  "name": "update",
+                  "description": "Updates a project rate limit.",
+                  "arguments": [
+                    {
+                      "name": "project-id",
+                      "required": true,
+                      "description": "The ID of the project."
+                    },
+                    {
+                      "name": "rate-limit-id",
+                      "required": true,
+                      "description": "The ID of the rate limit."
+                    }
+                  ],
+                  "options": [
+                    {
+                      "name": "max-requests-per-1-minute",
+                      "group": "body",
+                      "description": "The maximum requests per minute.",
+                      "arguments": [
+                        {
+                          "name": "integer"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "max-tokens-per-1-minute",
+                      "group": "body",
+                      "description": "The maximum tokens per minute.",
+                      "arguments": [
+                        {
+                          "name": "integer"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "max-images-per-1-minute",
+                      "group": "body",
+                      "description": "The maximum images per minute. Only relevant for certain models.",
+                      "arguments": [
+                        {
+                          "name": "integer"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "max-audio-megabytes-per-1-minute",
+                      "group": "body",
+                      "description": "The maximum audio megabytes per minute. Only relevant for certain models.",
+                      "arguments": [
+                        {
+                          "name": "integer"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "max-requests-per-1-day",
+                      "group": "body",
+                      "description": "The maximum requests per day. Only relevant for certain models.",
+                      "arguments": [
+                        {
+                          "name": "integer"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "batch-1-day-max-input-tokens",
+                      "group": "body",
+                      "description": "The maximum batch input tokens per day. Only relevant for certain models.",
+                      "arguments": [
+                        {
+                          "name": "integer"
+                        }
+                      ]
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "post",
+                    "path": "/organization/projects/{project_id}/rate_limits/{rate_limit_id}",
+                    "operationId": "update-project-rate-limits",
+                    "contentType": "application/json",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "project_id",
+                        "from": "argument:project-id",
+                        "required": true
+                      },
+                      {
+                        "in": "path",
+                        "name": "rate_limit_id",
+                        "from": "argument:rate-limit-id",
+                        "required": true
+                      }
+                    ],
+                    "body": {
+                      "style": "flatten",
+                      "contentType": "application/json",
+                      "properties": [
+                        {
+                          "name": "max_requests_per_1_minute",
+                          "from": "option:max-requests-per-1-minute",
+                          "jsonPath": "max_requests_per_1_minute",
+                          "encoding": "integer"
+                        },
+                        {
+                          "name": "max_tokens_per_1_minute",
+                          "from": "option:max-tokens-per-1-minute",
+                          "jsonPath": "max_tokens_per_1_minute",
+                          "encoding": "integer"
+                        },
+                        {
+                          "name": "max_images_per_1_minute",
+                          "from": "option:max-images-per-1-minute",
+                          "jsonPath": "max_images_per_1_minute",
+                          "encoding": "integer"
+                        },
+                        {
+                          "name": "max_audio_megabytes_per_1_minute",
+                          "from": "option:max-audio-megabytes-per-1-minute",
+                          "jsonPath": "max_audio_megabytes_per_1_minute",
+                          "encoding": "integer"
+                        },
+                        {
+                          "name": "max_requests_per_1_day",
+                          "from": "option:max-requests-per-1-day",
+                          "jsonPath": "max_requests_per_1_day",
+                          "encoding": "integer"
+                        },
+                        {
+                          "name": "batch_1_day_max_input_tokens",
+                          "from": "option:batch-1-day-max-input-tokens",
+                          "jsonPath": "batch_1_day_max_input_tokens",
+                          "encoding": "integer"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

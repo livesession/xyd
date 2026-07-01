@@ -1,0 +1,26 @@
+{
+  "httpMethod": "post",
+  "path": "/responses/input_tokens",
+  "operationId": "Getinputtokencounts",
+  "title": "Get input token counts",
+  "summary": "Returns input token counts of the request.\n\nReturns an object with `object` set to `response.input_tokens` and an `input_tokens` count.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": false,
+    "properties": [
+      "model",
+      "input",
+      "previous_response_id",
+      "tools",
+      "text",
+      "reasoning",
+      "truncation",
+      "instructions",
+      "conversation",
+      "tool_choice",
+      "parallel_tool_calls",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

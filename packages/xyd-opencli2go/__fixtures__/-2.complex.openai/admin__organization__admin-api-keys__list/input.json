@@ -1,0 +1,97 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "admin-api-keys",
+          "commands": [
+            {
+              "name": "list",
+              "description": "List organization API keys",
+              "options": [
+                {
+                  "name": "after",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "order",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "acceptedValues": [
+                        "asc",
+                        "desc"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "limit",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "get",
+                "path": "/organization/admin_api_keys",
+                "operationId": "admin-api-keys-list",
+                "params": [
+                  {
+                    "in": "query",
+                    "name": "after",
+                    "from": "option:after"
+                  },
+                  {
+                    "in": "query",
+                    "name": "order",
+                    "from": "option:order"
+                  },
+                  {
+                    "in": "query",
+                    "name": "limit",
+                    "from": "option:limit"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

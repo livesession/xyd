@@ -1,0 +1,29 @@
+{
+  "httpMethod": "get",
+  "path": "/organization/groups/{group_id}/users",
+  "operationId": "list-group-users",
+  "title": "List group users",
+  "summary": "Lists the users assigned to a group.",
+  "parameters": [
+    {
+      "name": "group_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

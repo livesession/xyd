@@ -1,0 +1,90 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "certificates",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Upload a certificate to the organization. This does **not** automatically activate the certificate.\n\nOrganizations can upload up to 50 certificates.\n",
+              "options": [
+                {
+                  "name": "name",
+                  "group": "body",
+                  "description": "An optional name for the certificate",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "certificate",
+                  "group": "body",
+                  "required": true,
+                  "description": "The certificate content in PEM format",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/organization/certificates",
+                "operationId": "uploadCertificate",
+                "contentType": "application/json",
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "name",
+                      "from": "option:name",
+                      "jsonPath": "name",
+                      "encoding": "string"
+                    },
+                    {
+                      "name": "certificate",
+                      "from": "option:certificate",
+                      "jsonPath": "certificate",
+                      "encoding": "string",
+                      "required": true
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

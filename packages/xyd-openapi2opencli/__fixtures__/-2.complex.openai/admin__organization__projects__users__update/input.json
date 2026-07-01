@@ -1,0 +1,23 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/projects/{project_id}/users",
+  "operationId": "create-project-user",
+  "title": "Create project user",
+  "summary": "Adds a user to the project. Users must already be members of the organization to be added to a project.",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "user_id",
+      "email",
+      "role"
+    ]
+  }
+}

@@ -47,6 +47,46 @@ export interface CLICommand<F = null> {
      * The flags of the command
      */
     flags?: Record<string, F>;
+
+    /**
+     * The command's positional arguments. Preferred over parsing them out of
+     * `usage` — lets an argument carry a description and an example value
+     * (e.g. a path rather than a generic placeholder).
+     */
+    arguments?: CLIArgument[];
+
+    /**
+     * Nested subcommands, keyed by name (e.g. `components install`).
+     */
+    commands?: Record<string, CLICommand<F>>;
+}
+
+export interface CLIArgument {
+    /**
+     * The argument name (rendered as `<name>` in usage).
+     */
+    name: string;
+
+    /**
+     * What the argument is for.
+     */
+    description?: string;
+
+    /**
+     * Whether the argument must be provided.
+     */
+    required?: boolean;
+
+    /**
+     * A representative value shown in the generated example invocation
+     * (e.g. `./path-to-docs`). Falls back to a generic placeholder.
+     */
+    example?: string;
+
+    /**
+     * A closed set of accepted values.
+     */
+    acceptedValues?: string[];
 }
 
 export interface CLIGlobalFlag {

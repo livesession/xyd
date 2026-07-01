@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/conversations/{conversation_id}",
+  "operationId": "deleteConversation",
+  "title": "Delete a conversation",
+  "summary": "Delete a conversation. Items in the conversation will not be deleted.",
+  "parameters": [
+    {
+      "name": "conversation_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

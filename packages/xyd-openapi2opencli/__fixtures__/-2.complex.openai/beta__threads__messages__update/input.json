@@ -1,0 +1,25 @@
+{
+  "httpMethod": "post",
+  "path": "/threads/{thread_id}/messages",
+  "operationId": "createMessage",
+  "title": "Create message",
+  "summary": "Create a message.",
+  "parameters": [
+    {
+      "name": "thread_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "role",
+      "content",
+      "attachments",
+      "metadata",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

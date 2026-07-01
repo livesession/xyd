@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "models",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "model"
+  ],
+  "docCommand": "openai models retrieve --api-key 'My API Key' --model gpt-4o-mini",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/models/methods/retrieve"
+}

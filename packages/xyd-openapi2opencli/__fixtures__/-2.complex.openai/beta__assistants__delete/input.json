@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/assistants/{assistant_id}",
+  "operationId": "deleteAssistant",
+  "title": "Delete assistant",
+  "summary": "Delete an assistant.",
+  "parameters": [
+    {
+      "name": "assistant_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

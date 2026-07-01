@@ -14,9 +14,15 @@ import * as cn from "./ApiRefSamples.styles";
 
 export interface ApiRefSamplesProps {
   examples: ExampleRoot;
+  /**
+   * Also show the example switcher for a single *labelled* example (one whose
+   * codeblock has a title). Off by default, so other reference types (e.g. an
+   * OpenAPI page with a single response) keep a plain, tab-less sample.
+   */
+  singleExampleTab?: boolean;
 }
 
-export function ApiRefSamples({ examples }: ApiRefSamplesProps) {
+export function ApiRefSamples({ examples, singleExampleTab }: ApiRefSamplesProps) {
   const [activeExampleIndices, setActiveExampleIndices] = useState<
     Record<number, number>
   >({});
@@ -41,6 +47,7 @@ export function ApiRefSamples({ examples }: ApiRefSamplesProps) {
             examples={samples}
             name={String(i)}
             description={description}
+            singleExampleTab={singleExampleTab}
             onExampleChange={(ex) => {
               const index = samples.findIndex((e) => e === ex);
               handleExampleChange(i, index);
@@ -57,19 +64,26 @@ interface CodeSampleItemProps {
   examples: Example[];
   name: string;
   description?: string;
+  singleExampleTab?: boolean;
   onExampleChange: (example: Example) => void;
 }
 
 function CodeSampleItem(props: CodeSampleItemProps) {
-  const { currentExample, examples, name, description, onExampleChange } =
+  const { currentExample, examples, name, description, singleExampleTab, onExampleChange } =
     props;
   const { markdownFormat } = useContext(AtlasContext);
   const syntaxHighlight = useSyntaxHighlight();
 
   const shouldRenderAllExamples = markdownFormat;
 
-  // example tabs
-  const buttons = examples?.length > 1 && (
+  // example tabs — always for 2+ examples; and, when opted in, for a single
+  // *labelled* example (one whose codeblock has a title, e.g. a CLI Tool sample
+  // tagged `diagrams`) so it still reads as a tab. Default keeps a lone,
+  // unlabelled sample plain (so an OpenAPI single-response page is unchanged).
+  const showButtons =
+    examples?.length > 1 ||
+    (!!singleExampleTab && examples?.length === 1 && !!examples[0]?.codeblock?.title);
+  const buttons = showButtons && (
     <CodeExampleButtons
       activeExample={currentExample}
       examples={examples}

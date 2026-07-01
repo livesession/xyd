@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "beta",
+    "threads",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "thread-id"
+  ],
+  "docCommand": "openai beta:threads delete --api-key 'My API Key' --thread-id thread_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/threads/methods/delete"
+}

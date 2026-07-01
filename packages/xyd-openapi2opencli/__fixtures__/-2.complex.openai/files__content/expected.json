@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "files",
+    "content"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "file-id"
+  ],
+  "docCommand": "openai files content --api-key 'My API Key' --file-id file_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/files/methods/content"
+}

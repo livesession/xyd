@@ -1,0 +1,20 @@
+{
+  "httpMethod": "post",
+  "path": "/videos",
+  "operationId": "createVideo",
+  "title": "Create video",
+  "summary": "Create a new video generation job from a prompt and optional reference assets.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "multipart/form-data",
+    "required": false,
+    "properties": [
+      "model",
+      "prompt",
+      "input_reference",
+      "seconds",
+      "size",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

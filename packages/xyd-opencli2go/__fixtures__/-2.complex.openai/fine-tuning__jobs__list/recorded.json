@@ -1,0 +1,14 @@
+{
+  "args": [
+    "fine-tuning",
+    "jobs",
+    "list"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/fine_tuning/jobs",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

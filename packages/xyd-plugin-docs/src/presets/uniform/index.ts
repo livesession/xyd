@@ -401,6 +401,14 @@ async function uniformResolver(
                     meta.mcp = `${resolvedApiFile}#${region}`
                     break
                 }
+                case "cli": {
+                    const ctx = ref.context as OpenAPIReferenceContext;
+                    if (ctx?.path) {
+                        region = ctx.path
+                    }
+                    meta.cli = `${resolvedApiFile}#${region}`
+                    break
+                }
             }
 
             let composedContent = ""
@@ -522,7 +530,8 @@ async function composeFileMap(basePath: string, matchRoute: string) {
                         // strip the `<source>#` prefix when present.
                         const raw = frontmatter.openapi
                             || frontmatter.graphql
-                            || frontmatter.mcp;
+                            || frontmatter.mcp
+                            || frontmatter.cli;
                         if (raw) {
                             const hashIdx = String(raw).lastIndexOf("#");
                             const region = hashIdx >= 0 ? String(raw).slice(hashIdx + 1) : String(raw);
@@ -734,7 +743,7 @@ function vitePluginUniformContent(pluginId: string) {
     }
 }
 
-type UniformType = "graphql" | "openapi" | "sources" | "mcp"
+type UniformType = "graphql" | "openapi" | "sources" | "mcp" | "cli"
 
 function uniformPreset(
     id: string,

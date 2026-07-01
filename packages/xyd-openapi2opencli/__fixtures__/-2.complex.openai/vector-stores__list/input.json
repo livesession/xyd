@@ -1,0 +1,29 @@
+{
+  "httpMethod": "get",
+  "path": "/vector_stores",
+  "operationId": "listVectorStores",
+  "title": "List vector stores",
+  "summary": "Returns a list of vector stores.",
+  "parameters": [
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "before",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

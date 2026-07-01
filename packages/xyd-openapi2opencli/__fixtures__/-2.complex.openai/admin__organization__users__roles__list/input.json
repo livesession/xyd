@@ -1,0 +1,29 @@
+{
+  "httpMethod": "get",
+  "path": "/organization/users/{user_id}/roles",
+  "operationId": "list-user-role-assignments",
+  "title": "List user organization role assignments",
+  "summary": "Lists the organization roles assigned to a user within the organization.",
+  "parameters": [
+    {
+      "name": "user_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

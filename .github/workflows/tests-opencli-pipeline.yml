@@ -1,0 +1,99 @@
+name: tests:opencli-pipeline
+
+# Verifies the OpenAPI → OpenCLI → Go pipeline end to end:
+#   @xyd-js/opencli (core model) · @xyd-js/openapi2opencli (Stage A)
+#   · @xyd-js/opencli2go (Go generator)
+#
+# The root vitest config (tests:unit) already runs each package's offline unit
+# tests, but it EXCLUDES `**/__tests__/e2e/**`. This job adds a Go toolchain so
+# the gated layers can run where generated binaries actually execute (Linux):
+#   - O2G_GO_SMOKE=1 — a sample of generated Go projects `go build`/`go vet`
+#   - E2E_CLI=1      — assemble the whole CLI, run it against a recording server,
+#                      diff the real HTTP requests against the committed fixtures
+# (O2G_BUILD_DOCS / E2E_RECORD regenerate goldens and are deliberately NOT set.)
+
+on:
+  push:
+    branches: [ master, canary ]
+    paths:
+      - 'packages/xyd-opencli/**'
+      - 'packages/xyd-openapi2opencli/**'
+      - 'packages/xyd-opencli2go/**'
+      - '.github/workflows/tests-opencli-pipeline.yml'
+  pull_request:
+    branches: [ master, canary ]
+    paths:
+      - 'packages/xyd-opencli/**'
+      - 'packages/xyd-openapi2opencli/**'
+      - 'packages/xyd-opencli2go/**'
+      - '.github/workflows/tests-opencli-pipeline.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.12.0]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9.10.0
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: 'latest'
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+        # The generated CLIs vendor urfave/cli v3; cache its module downloads.
+        cache: false
+
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - name: Setup pnpm cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      run: pnpm i
+
+    - name: Build pipeline packages (and their workspace deps)
+      run: >-
+        pnpm
+        --filter "@xyd-js/opencli..."
+        --filter "@xyd-js/openapi2opencli..."
+        --filter "@xyd-js/opencli2go..."
+        build
+
+    - name: Test @xyd-js/opencli (core model + schema round-trip)
+      run: pnpm --filter @xyd-js/opencli ci:test
+
+    - name: Test @xyd-js/openapi2opencli (Stage A + conformance)
+      run: pnpm --filter @xyd-js/openapi2opencli ci:test
+
+    - name: Test @xyd-js/opencli2go (regen guard + Go build + e2e CLI)
+      run: pnpm --filter @xyd-js/opencli2go ci:test
+      env:
+        O2G_GO_SMOKE: '1'
+        E2E_CLI: '1'

@@ -1,0 +1,20 @@
+{
+  "args": [
+    "uploads",
+    "parts",
+    "create",
+    "EXAMPLE",
+    "--data",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/uploads/{upload_id}/parts",
+    "query": [],
+    "bodyFields": [
+      "data"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

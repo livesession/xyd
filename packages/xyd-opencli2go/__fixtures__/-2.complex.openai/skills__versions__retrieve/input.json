@@ -1,0 +1,113 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "skills",
+      "commands": [
+        {
+          "name": "versions",
+          "commands": [
+            {
+              "name": "list",
+              "description": "List skill versions for a skill.",
+              "arguments": [
+                {
+                  "name": "skill-id",
+                  "required": true,
+                  "description": "The identifier of the skill."
+                }
+              ],
+              "options": [
+                {
+                  "name": "limit",
+                  "description": "Number of versions to retrieve.",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "order",
+                  "description": "Sort order of results by version number.",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "acceptedValues": [
+                        "asc",
+                        "desc"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "after",
+                  "description": "The skill version ID to start after.",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "get",
+                "path": "/skills/{skill_id}/versions",
+                "operationId": "ListSkillVersions",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "skill_id",
+                    "from": "argument:skill-id",
+                    "required": true
+                  },
+                  {
+                    "in": "query",
+                    "name": "limit",
+                    "from": "option:limit"
+                  },
+                  {
+                    "in": "query",
+                    "name": "order",
+                    "from": "option:order"
+                  },
+                  {
+                    "in": "query",
+                    "name": "after",
+                    "from": "option:after"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

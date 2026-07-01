@@ -1,0 +1,22 @@
+{
+  "httpMethod": "post",
+  "path": "/audio/speech",
+  "operationId": "createSpeech",
+  "title": "Create speech",
+  "summary": "Generates audio from the input text.\n\nReturns the audio file content, or a stream of audio events.\n",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "model",
+      "input",
+      "instructions",
+      "voice",
+      "response_format",
+      "speed",
+      "stream_format",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

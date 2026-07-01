@@ -1,0 +1,21 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/users/{user_id}/roles",
+  "operationId": "assign-user-role",
+  "title": "Assign organization role to user",
+  "summary": "Assigns an organization role to a user within the organization.",
+  "parameters": [
+    {
+      "name": "user_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "role_id"
+    ]
+  }
+}

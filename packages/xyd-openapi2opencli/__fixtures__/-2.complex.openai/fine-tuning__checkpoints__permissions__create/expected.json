@@ -1,0 +1,15 @@
+{
+  "commandPath": [
+    "fine-tuning",
+    "checkpoints",
+    "permissions",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "fine-tuned-model-checkpoint",
+    "project-id"
+  ],
+  "docCommand": "openai fine-tuning:checkpoints:permissions create --api-key 'My API Key' --fine-tuned-model-checkpoint ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd --project-id string",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/fine_tuning/subresources/checkpoints/subresources/permissions/methods/create"
+}

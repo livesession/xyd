@@ -1,0 +1,19 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/users/{user_id}/roles/{role_id}",
+  "operationId": "unassign-user-role",
+  "title": "Unassign organization role from user",
+  "summary": "Unassigns an organization role from a user within the organization.",
+  "parameters": [
+    {
+      "name": "user_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "role_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

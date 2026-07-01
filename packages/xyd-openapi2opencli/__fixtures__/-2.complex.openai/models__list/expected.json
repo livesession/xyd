@@ -1,0 +1,10 @@
+{
+  "commandPath": [
+    "models",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [],
+  "docCommand": "openai models list --api-key 'My API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/models/methods/list"
+}

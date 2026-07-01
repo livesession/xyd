@@ -28,9 +28,17 @@
       "additionalProperties": false,
       "description": "API Docs configuration interface",
       "properties": {
+        "cli": {
+          "$ref": "#/definitions/APIFile",
+          "description": "CLI configuration. Each source is an OpenCLI spec (a JSON file path or URL).\n\nPoint it at a spec to auto-generate one reference page per command (arguments + options), the same way `openapi` / `graphql` generate pages:\n\n```json { \"api\": { \"cli\": [{ \"source\": \"./spice.opencli.json\", \"route\": \"docs/cli\" }] } } ```"
+        },
         "graphql": {
           "$ref": "#/definitions/APIFile",
           "description": "GraphQL configuration"
+        },
+        "mcp": {
+          "$ref": "#/definitions/MCPAPIFile",
+          "description": "MCP server configuration. Source is a remote MCP server URL (http/https/sse). Tools and resources from the server are rendered as API reference pages."
         },
         "openapi": {
           "$ref": "#/definitions/APIFile",
@@ -1421,15 +1429,7 @@
       "additionalProperties": false,
       "description": "Optional site-wide i18n config. `navigation.languages[]` is the source of truth for per-locale state.",
       "properties": {
-        "defaultLocale": {
-          "description": "Explicit default locale. Overrides any `default: true` shorthand on `navigation.languages[]` entries when set. Must match a `language` declared in `navigation.languages[]`.",
-          "type": "string"
-        },
-        "detectLanguage": {
-          "description": "When `true`, redirect `/` based on `navigator.language` / `xyd-locale` cookie. Default `false`.",
-          "type": "boolean"
-        },
-        "translations": {
+        "catalogs": {
           "additionalProperties": {
             "anyOf": [
               {
@@ -1442,6 +1442,14 @@
           },
           "description": "Translation catalogs for `\"i18n: <key>\"` references in component config. Either a path to a JSON file, or an inline catalog object, keyed by locale code. If omitted, the framework auto-discovers `i18n/{language}.json` files at the project root.",
           "type": "object"
+        },
+        "defaultLocale": {
+          "description": "Explicit default locale. Overrides any `default: true` shorthand on `navigation.languages[]` entries when set. Must match a `language` declared in `navigation.languages[]`.",
+          "type": "string"
+        },
+        "detectLanguage": {
+          "description": "When `true`, redirect `/` based on `navigator.language` / `xyd-locale` cookie. Default `false`.",
+          "type": "boolean"
         }
       },
       "type": "object"
@@ -1979,6 +1987,78 @@
         },
         "page": {
           "description": "The page to link to when clicking on the logo",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "MCPAPIFile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/MCPAPIFileAdvanced"
+        },
+        {
+          "items": {
+            "$ref": "#/definitions/MCPAPIFileAdvanced"
+          },
+          "type": "array"
+        },
+        {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/definitions/MCPAPIFileAdvanced"
+              }
+            ]
+          },
+          "type": "object"
+        }
+      ],
+      "description": "MCP API file configuration. URL shorthand, advanced, or named map."
+    },
+    "MCPAPIFileAdvanced": {
+      "additionalProperties": false,
+      "properties": {
+        "info": {
+          "$ref": "#/definitions/MCPAPIInfo",
+          "description": "Per-source options."
+        },
+        "route": {
+          "description": "Sidebar route prefix to nest the generated pages under.",
+          "type": "string"
+        },
+        "source": {
+          "description": "MCP server URL (http/https/sse).",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "type": "object"
+    },
+    "MCPAPIInfo": {
+      "additionalProperties": false,
+      "properties": {
+        "headers": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Additional request headers (e.g. cookies, custom API keys).",
+          "type": "object"
+        },
+        "name": {
+          "description": "Display name for the server in the docs.",
+          "type": "string"
+        },
+        "token": {
+          "description": "Bearer token sent as `Authorization: Bearer <token>`. Supports `$ENV_VAR` substitution via the standard settings env replacement.",
           "type": "string"
         }
       },

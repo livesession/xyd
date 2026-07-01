@@ -1,0 +1,102 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "containers",
+      "commands": [
+        {
+          "name": "files",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Create a Container File\n\nYou can send either a multipart/form-data request with the raw file content, or a JSON request with a file ID.\n",
+              "arguments": [
+                {
+                  "name": "container-id",
+                  "required": true
+                }
+              ],
+              "options": [
+                {
+                  "name": "file-id",
+                  "group": "body",
+                  "description": "Name of the file to create.",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "file",
+                  "group": "body",
+                  "description": "The File object (not file name) to be uploaded.\n",
+                  "arguments": [
+                    {
+                      "name": "path"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/containers/{container_id}/files",
+                "operationId": "CreateContainerFile",
+                "contentType": "application/json",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "container_id",
+                    "from": "argument:container-id",
+                    "required": true
+                  }
+                ],
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "file_id",
+                      "from": "option:file-id",
+                      "jsonPath": "file_id",
+                      "encoding": "string"
+                    },
+                    {
+                      "name": "file",
+                      "from": "option:file",
+                      "jsonPath": "file",
+                      "encoding": "file"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

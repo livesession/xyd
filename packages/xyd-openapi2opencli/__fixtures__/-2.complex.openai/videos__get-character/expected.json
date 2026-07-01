@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "videos",
+    "get-character"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "character-id"
+  ],
+  "docCommand": "openai videos get-character --api-key 'My API Key' --character-id char_123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/videos/methods/get_character"
+}

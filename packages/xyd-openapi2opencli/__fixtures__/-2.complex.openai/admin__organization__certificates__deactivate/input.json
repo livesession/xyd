@@ -1,0 +1,16 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/certificates",
+  "operationId": "uploadCertificate",
+  "title": "Upload certificate",
+  "summary": "Upload a certificate to the organization. This does **not** automatically activate the certificate.\n\nOrganizations can upload up to 50 certificates.\n",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "name",
+      "certificate"
+    ]
+  }
+}

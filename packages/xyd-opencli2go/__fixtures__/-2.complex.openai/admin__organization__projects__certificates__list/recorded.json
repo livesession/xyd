@@ -1,0 +1,16 @@
+{
+  "args": [
+    "organization",
+    "projects",
+    "certificates",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/organization/projects/{project_id}/certificates",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "batches",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "batch-id"
+  ],
+  "docCommand": "openai batches retrieve --api-key 'My API Key' --batch-id batch_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/batches/methods/retrieve"
+}

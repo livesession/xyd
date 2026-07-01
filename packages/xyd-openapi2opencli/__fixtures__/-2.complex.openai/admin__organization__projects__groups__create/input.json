@@ -1,0 +1,22 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/projects/{project_id}/groups",
+  "operationId": "add-project-group",
+  "title": "Add project group",
+  "summary": "Grants a group access to a project.",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "group_id",
+      "role"
+    ]
+  }
+}

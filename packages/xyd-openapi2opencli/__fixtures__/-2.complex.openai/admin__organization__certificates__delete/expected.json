@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "certificates",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "certificate-id"
+  ],
+  "docCommand": "openai admin:organization:certificates delete --admin-api-key 'My Admin API Key' --certificate-id certificate_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/certificates/methods/delete"
+}

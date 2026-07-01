@@ -1,0 +1,24 @@
+{
+  "args": [
+    "batches",
+    "create",
+    "--input-file-id",
+    "EXAMPLE",
+    "--endpoint",
+    "EXAMPLE",
+    "--completion-window",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/batches",
+    "query": [],
+    "bodyFields": [
+      "completion_window",
+      "endpoint",
+      "input_file_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

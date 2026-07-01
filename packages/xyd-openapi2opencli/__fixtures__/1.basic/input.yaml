@@ -1,0 +1,48 @@
+openapi: 3.0.3
+info:
+  title: Sample API
+  version: 1.2.0
+  description: A tiny sample API for testing openapi2opencli.
+  contact:
+    name: API Support
+    url: https://example.com/support
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: https://api.example.com/v1
+security:
+  - bearerAuth: []
+paths:
+  /models:
+    get:
+      operationId: listModels
+      summary: Lists the currently available models.
+      tags:
+        - Models
+      responses:
+        "200":
+          description: OK
+  /models/{model}:
+    get:
+      operationId: retrieveModel
+      summary: Retrieves a model instance.
+      tags:
+        - Models
+      parameters:
+        - name: model
+          in: path
+          required: true
+          description: The ID of the model to use for this request.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

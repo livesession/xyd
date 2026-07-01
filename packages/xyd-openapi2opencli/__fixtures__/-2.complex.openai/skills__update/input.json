@@ -1,0 +1,14 @@
+{
+  "httpMethod": "post",
+  "path": "/skills",
+  "operationId": "CreateSkill",
+  "summary": "Create a new skill.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "multipart/form-data",
+    "required": false,
+    "properties": [
+      "files"
+    ]
+  }
+}

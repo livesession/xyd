@@ -1,0 +1,126 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "projects",
+          "commands": [
+            {
+              "name": "users",
+              "commands": [
+                {
+                  "name": "create",
+                  "description": "Adds a user to the project. Users must already be members of the organization to be added to a project.",
+                  "arguments": [
+                    {
+                      "name": "project-id",
+                      "required": true,
+                      "description": "The ID of the project."
+                    }
+                  ],
+                  "options": [
+                    {
+                      "name": "user-id",
+                      "group": "body",
+                      "description": "The ID of the user.",
+                      "arguments": [
+                        {
+                          "name": "value"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "email",
+                      "group": "body",
+                      "description": "Email of the user to add.",
+                      "arguments": [
+                        {
+                          "name": "value"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "role",
+                      "group": "body",
+                      "required": true,
+                      "description": "`owner` or `member`",
+                      "arguments": [
+                        {
+                          "name": "string"
+                        }
+                      ]
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "post",
+                    "path": "/organization/projects/{project_id}/users",
+                    "operationId": "create-project-user",
+                    "contentType": "application/json",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "project_id",
+                        "from": "argument:project-id",
+                        "required": true
+                      }
+                    ],
+                    "body": {
+                      "style": "flatten",
+                      "contentType": "application/json",
+                      "properties": [
+                        {
+                          "name": "user_id",
+                          "from": "option:user-id",
+                          "jsonPath": "user_id",
+                          "encoding": "json"
+                        },
+                        {
+                          "name": "email",
+                          "from": "option:email",
+                          "jsonPath": "email",
+                          "encoding": "json"
+                        },
+                        {
+                          "name": "role",
+                          "from": "option:role",
+                          "jsonPath": "role",
+                          "encoding": "string",
+                          "required": true
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

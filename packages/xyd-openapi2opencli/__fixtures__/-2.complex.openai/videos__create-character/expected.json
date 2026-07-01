@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "videos",
+    "create-character"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "name",
+    "video"
+  ],
+  "docCommand": "openai videos create-character --api-key 'My API Key' --name x --video 'Example data'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/videos/methods/create_character"
+}

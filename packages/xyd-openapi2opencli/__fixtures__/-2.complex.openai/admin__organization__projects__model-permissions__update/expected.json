@@ -1,0 +1,17 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "projects",
+    "model-permissions",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "mode",
+    "model-id",
+    "project-id"
+  ],
+  "docCommand": "openai admin:organization:projects:model-permissions update --admin-api-key 'My Admin API Key' --project-id project_id --mode allow_list --model-id string",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/projects/subresources/model_permissions/methods/update"
+}

@@ -1,0 +1,24 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/users/{user_id}",
+  "operationId": "modify-user",
+  "title": "Modify user",
+  "summary": "Modifies a user's role in the organization.",
+  "parameters": [
+    {
+      "name": "user_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "role",
+      "role_id",
+      "technical_level",
+      "developer_persona"
+    ]
+  }
+}

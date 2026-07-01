@@ -1,0 +1,11 @@
+{
+  "commandPath": [
+    "beta",
+    "assistants",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [],
+  "docCommand": "openai beta:assistants list --api-key 'My API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/assistants/methods/list"
+}

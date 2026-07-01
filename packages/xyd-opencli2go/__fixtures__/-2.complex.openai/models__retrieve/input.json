@@ -1,0 +1,42 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "models",
+      "commands": [
+        {
+          "name": "list",
+          "description": "Lists the currently available models, and provides basic information about each one such as the owner and availability.",
+          "x-openapi": {
+            "method": "get",
+            "path": "/models",
+            "operationId": "listModels"
+          }
+        }
+      ]
+    }
+  ]
+}

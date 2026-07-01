@@ -1,0 +1,15 @@
+{
+  "args": [
+    "organization",
+    "groups",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/organization/groups/{group_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

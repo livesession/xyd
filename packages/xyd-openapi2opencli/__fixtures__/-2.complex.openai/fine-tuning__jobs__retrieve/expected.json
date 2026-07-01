@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "fine-tuning",
+    "jobs",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "fine-tuning-job-id"
+  ],
+  "docCommand": "openai fine-tuning:jobs retrieve --api-key 'My API Key' --fine-tuning-job-id ft-AF1WoRqd3aJAHsqc9NY7iL8F",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/fine_tuning/subresources/jobs/methods/retrieve"
+}

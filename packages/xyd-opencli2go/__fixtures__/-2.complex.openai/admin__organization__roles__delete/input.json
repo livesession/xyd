@@ -1,0 +1,62 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "roles",
+          "commands": [
+            {
+              "name": "delete",
+              "description": "Deletes a custom role from the organization.",
+              "arguments": [
+                {
+                  "name": "role-id",
+                  "required": true,
+                  "description": "The ID of the role to delete."
+                }
+              ],
+              "x-openapi": {
+                "method": "delete",
+                "path": "/organization/roles/{role_id}",
+                "operationId": "delete-role",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "role_id",
+                    "from": "argument:role-id",
+                    "required": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

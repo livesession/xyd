@@ -30,7 +30,12 @@ export function ApiRefItem({
     const hasExamples = reference.examples?.groups?.length || false
 
     let header: React.ReactNode | null = <$IntroHeader reference={reference} />
-    let examples: React.ReactNode | null = <ApiRefSamples examples={reference.examples} />
+    // CLI Tool samples read as tabs even when there's a single labelled example
+    // (e.g. `diagrams`); other reference types keep the default (2+ only).
+    let examples: React.ReactNode | null = <ApiRefSamples
+        examples={reference.examples}
+        singleExampleTab={reference.category === ReferenceCategory.CLI}
+    />
 
     if (kind === "secondary") {
         header = null
@@ -83,6 +88,17 @@ function $IntroHeader({ reference }: ApiRefItemProps) {
                 label={label}
                 subtitle={subtitle}
                 matchSubtitle={subtitle}
+            />
+            break;
+        }
+        case ReferenceCategory.CLI: {
+            const ctx = reference.context as { fullPath?: string; path?: string } | undefined
+            if (!ctx?.fullPath) break;
+            // The usage formula, e.g. `xyd components install <component>` — no
+            // method badge (a CLI command has no HTTP "method").
+            topNavbar = <$Navbar
+                subtitle={ctx.fullPath}
+                matchSubtitle={ctx.path || ""}
             />
             break;
         }
@@ -477,7 +493,7 @@ function $DefinitionBody(props: DefinitionBodyProps) {
 }
 
 interface NavbarProps {
-    label: string
+    label?: string
     subtitle: string
     matchSubtitle?: string
 }
@@ -511,14 +527,16 @@ function $Navbar({ label, subtitle, matchSubtitle }: NavbarProps) {
     return <>
         <div className={cn.ApiRefItemNavbarHost}>
             <div className={cn.ApiRefItemNavbarContainer}>
-                <div className={cn.ApiRefItemNavbarLabel}>
-                    {/* TODO: in the future not only for REST */}
-                    <div data-active="true" data-atlas-oas-method={label.toUpperCase()}>
-                        <Badge size="xs">
-                            {label.toUpperCase()}
-                        </Badge>
+                {label ? (
+                    <div className={cn.ApiRefItemNavbarLabel}>
+                        {/* TODO: in the future not only for REST */}
+                        <div data-active="true" data-atlas-oas-method={label.toUpperCase()}>
+                            <Badge size="xs">
+                                {label.toUpperCase()}
+                            </Badge>
+                        </div>
                     </div>
-                </div>
+                ) : null}
                 <div
                     className={cn.ApiRefItemNavbarSubtitle}
                 >

@@ -1,0 +1,15 @@
+{
+  "commandPath": [
+    "fine-tuning",
+    "alpha",
+    "graders",
+    "run"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "grader",
+    "model-sample"
+  ],
+  "docCommand": "openai fine-tuning:alpha:graders run --api-key 'My API Key' --grader '{input: input, name: name, operation: eq, reference: reference, type: string_check}' --model-sample model_sample",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/fine_tuning/subresources/alpha/subresources/graders/methods/run"
+}

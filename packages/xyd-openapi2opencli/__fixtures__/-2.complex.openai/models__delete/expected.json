@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "models",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "model"
+  ],
+  "docCommand": "openai models delete --api-key 'My API Key' --model ft:gpt-4o-mini:acemeco:suffix:abc123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/models/methods/delete"
+}

@@ -1,0 +1,57 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "threads",
+      "commands": [
+        {
+          "name": "delete",
+          "description": "Delete a thread.",
+          "arguments": [
+            {
+              "name": "thread-id",
+              "required": true,
+              "description": "The ID of the thread to delete."
+            }
+          ],
+          "x-openapi": {
+            "method": "delete",
+            "path": "/threads/{thread_id}",
+            "operationId": "deleteThread",
+            "params": [
+              {
+                "in": "path",
+                "name": "thread_id",
+                "from": "argument:thread-id",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

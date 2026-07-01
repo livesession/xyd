@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@xyd-js/openapi": "workspace:*",
+    "@xyd-js/opencli": "workspace:*",
     "@xyd-js/gql": "workspace:*",
     "@xyd-js/mcp-uniform": "workspace:*",
     "@xyd-js/uniform": "workspace:*",

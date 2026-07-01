@@ -1,0 +1,14 @@
+{
+  "args": [
+    "conversations",
+    "retrieve",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/conversations/{conversation_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "beta",
+    "assistants",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "assistant-id"
+  ],
+  "docCommand": "openai beta:assistants update --api-key 'My API Key' --assistant-id assistant_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/assistants/methods/update"
+}

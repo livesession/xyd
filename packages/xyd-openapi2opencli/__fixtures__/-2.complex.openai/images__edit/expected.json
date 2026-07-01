@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "images",
+    "edit"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "image",
+    "prompt"
+  ],
+  "docCommand": "openai images edit --api-key 'My API Key' --image 'Example data' --prompt 'A cute baby sea otter wearing a beret'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/images/methods/edit"
+}

@@ -1,0 +1,21 @@
+{
+  "httpMethod": "post",
+  "path": "/organization/groups/{group_id}/users",
+  "operationId": "add-group-user",
+  "title": "Add group user",
+  "summary": "Adds a user to a group.",
+  "parameters": [
+    {
+      "name": "group_id",
+      "in": "path",
+      "required": true
+    }
+  ],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "user_id"
+    ]
+  }
+}

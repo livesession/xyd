@@ -1,0 +1,16 @@
+{
+  "commandPath": [
+    "beta",
+    "threads",
+    "runs",
+    "submit-tool-outputs"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "run-id",
+    "thread-id",
+    "tool-output"
+  ],
+  "docCommand": "openai beta:threads:runs submit-tool-outputs --api-key 'My API Key' --thread-id thread_id --run-id run_id --tool-output '{}'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/threads/subresources/runs/methods/submit_tool_outputs"
+}

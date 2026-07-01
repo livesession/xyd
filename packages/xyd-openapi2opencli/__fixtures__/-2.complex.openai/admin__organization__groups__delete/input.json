@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/groups/{group_id}",
+  "operationId": "delete-group",
+  "title": "Delete group",
+  "summary": "Deletes a group from the organization.",
+  "parameters": [
+    {
+      "name": "group_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

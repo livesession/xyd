@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/chat/completions/{completion_id}",
+  "operationId": "deleteChatCompletion",
+  "title": "Delete chat completion",
+  "summary": "Delete a stored chat completion. Only Chat Completions that have been\ncreated with the `store` parameter set to `true` can be deleted.\n",
+  "parameters": [
+    {
+      "name": "completion_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

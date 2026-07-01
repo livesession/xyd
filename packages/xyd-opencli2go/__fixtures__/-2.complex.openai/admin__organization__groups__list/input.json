@@ -1,0 +1,100 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "groups",
+          "commands": [
+            {
+              "name": "list",
+              "description": "Lists all groups in the organization.",
+              "options": [
+                {
+                  "name": "limit",
+                  "description": "A limit on the number of groups to be returned. Limit can range between 0 and 1000, and the default is 100.\n",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "after",
+                  "description": "A cursor for use in pagination. `after` is a group ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with group_abc, your subsequent call can include `after=group_abc` in order to fetch the next page of the list.\n",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "order",
+                  "description": "Specifies the sort order of the returned groups.",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "acceptedValues": [
+                        "asc",
+                        "desc"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "get",
+                "path": "/organization/groups",
+                "operationId": "list-groups",
+                "params": [
+                  {
+                    "in": "query",
+                    "name": "limit",
+                    "from": "option:limit"
+                  },
+                  {
+                    "in": "query",
+                    "name": "after",
+                    "from": "option:after"
+                  },
+                  {
+                    "in": "query",
+                    "name": "order",
+                    "from": "option:order"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

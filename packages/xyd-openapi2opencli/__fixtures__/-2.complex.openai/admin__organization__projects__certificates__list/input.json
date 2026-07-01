@@ -1,0 +1,29 @@
+{
+  "httpMethod": "get",
+  "path": "/organization/projects/{project_id}/certificates",
+  "operationId": "listProjectCertificates",
+  "title": "List project certificates",
+  "summary": "List certificates for this project.",
+  "parameters": [
+    {
+      "name": "project_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

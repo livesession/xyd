@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "vector-stores",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "vector-store-id"
+  ],
+  "docCommand": "openai vector-stores update --api-key 'My API Key' --vector-store-id vector_store_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/vector_stores/methods/update"
+}

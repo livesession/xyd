@@ -1,0 +1,21 @@
+{
+  "theme": { "name": "poetry" },
+  "navigation": {
+    "sidebar": [
+      {
+        "route": "docs/cli",
+        "pages": [
+          {
+            "group": "spice CLI",
+            "pages": ["docs/cli/overview"]
+          }
+        ]
+      }
+    ]
+  },
+  "api": {
+    "cli": [
+      { "source": "./spice.opencli.json", "route": "docs/cli" }
+    ]
+  }
+}

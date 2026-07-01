@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "usage",
+    "file-search-calls"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "start-time"
+  ],
+  "docCommand": "openai admin:organization:usage file-search-calls --admin-api-key 'My Admin API Key' --start-time 0",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/usage/methods/file_search_calls"
+}

@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/certificates/{certificate_id}",
+  "operationId": "deleteCertificate",
+  "title": "Delete certificate",
+  "summary": "Delete a certificate from the organization.\n\nThe certificate must be inactive for the organization and all projects.\n",
+  "parameters": [
+    {
+      "name": "certificate_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

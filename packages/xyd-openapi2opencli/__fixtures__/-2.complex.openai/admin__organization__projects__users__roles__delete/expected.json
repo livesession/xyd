@@ -1,0 +1,18 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "projects",
+    "users",
+    "roles",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "project-id",
+    "role-id",
+    "user-id"
+  ],
+  "docCommand": "openai admin:organization:projects:users:roles delete --admin-api-key 'My Admin API Key' --project-id project_id --user-id user_id --role-id role_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/projects/subresources/users/subresources/roles/methods/delete"
+}

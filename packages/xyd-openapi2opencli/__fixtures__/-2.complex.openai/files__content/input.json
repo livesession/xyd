@@ -1,0 +1,29 @@
+{
+  "httpMethod": "get",
+  "path": "/files",
+  "operationId": "listFiles",
+  "title": "List files",
+  "summary": "Returns a list of files.",
+  "parameters": [
+    {
+      "name": "purpose",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "order",
+      "in": "query",
+      "required": false
+    },
+    {
+      "name": "after",
+      "in": "query",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "conversations",
+      "commands": [
+        {
+          "name": "items",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Create items in a conversation with the given ID.",
+              "arguments": [
+                {
+                  "name": "conversation-id",
+                  "required": true,
+                  "description": "The ID of the conversation to add the item to."
+                }
+              ],
+              "options": [
+                {
+                  "name": "include",
+                  "description": "Additional fields to include in the response. See the `include`\nparameter for [listing Conversation items above](/docs/api-reference/conversations/list-items#conversations_list_items-include) for more information.\n",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "acceptedValues": [
+                        "file_search_call.results",
+                        "web_search_call.results",
+                        "web_search_call.action.sources",
+                        "message.input_image.image_url",
+                        "computer_call_output.output.image_url",
+                        "code_interpreter_call.outputs",
+                        "reasoning.encrypted_content",
+                        "message.output_text.logprobs"
+                      ],
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "items",
+                  "group": "body",
+                  "required": true,
+                  "description": "The items to add to the conversation. You may add up to 20 items at a time.\n",
+                  "arguments": [
+                    {
+                      "name": "value",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/conversations/{conversation_id}/items",
+                "operationId": "createConversationItems",
+                "contentType": "application/json",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "conversation_id",
+                    "from": "argument:conversation-id",
+                    "required": true
+                  },
+                  {
+                    "in": "query",
+                    "name": "include",
+                    "from": "option:include"
+                  }
+                ],
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "items",
+                      "from": "option:items",
+                      "jsonPath": "items",
+                      "encoding": "array",
+                      "required": true
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "commandPath": [
+    "chat",
+    "completions",
+    "list"
+  ],
+  "httpMethod": "get",
+  "docFlags": [],
+  "docCommand": "openai chat:completions list --api-key 'My API Key'",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/chat/subresources/completions/methods/list"
+}

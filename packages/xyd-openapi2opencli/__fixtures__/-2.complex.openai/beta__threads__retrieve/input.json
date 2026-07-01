@@ -1,0 +1,14 @@
+{
+  "httpMethod": "get",
+  "path": "/threads/{thread_id}",
+  "operationId": "getThread",
+  "title": "Retrieve thread",
+  "summary": "Retrieves a thread.",
+  "parameters": [
+    {
+      "name": "thread_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

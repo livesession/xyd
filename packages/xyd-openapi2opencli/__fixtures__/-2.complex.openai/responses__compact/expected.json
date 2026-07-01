@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "responses",
+    "compact"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "model"
+  ],
+  "docCommand": "openai responses compact --api-key 'My API Key' --model gpt-5.4",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/responses/methods/compact"
+}

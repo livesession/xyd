@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "invites",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "invite-id"
+  ],
+  "docCommand": "openai admin:organization:invites delete --admin-api-key 'My Admin API Key' --invite-id invite_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/invites/methods/delete"
+}

@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/models/{model}",
+  "operationId": "deleteModel",
+  "title": "Delete a fine-tuned model",
+  "summary": "Delete a fine-tuned model. You must have the Owner role in your organization to delete a model.",
+  "parameters": [
+    {
+      "name": "model",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

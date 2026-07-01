@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "skills",
+    "update"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "default-version",
+    "skill-id"
+  ],
+  "docCommand": "openai skills update --api-key 'My API Key' --skill-id skill_123 --default-version default_version",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/skills/methods/update"
+}

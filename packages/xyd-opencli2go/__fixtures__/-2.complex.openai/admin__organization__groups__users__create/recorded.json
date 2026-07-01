@@ -1,0 +1,21 @@
+{
+  "args": [
+    "organization",
+    "groups",
+    "users",
+    "create",
+    "EXAMPLE",
+    "--user-id",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/organization/groups/{group_id}/users",
+    "query": [],
+    "bodyFields": [
+      "user_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

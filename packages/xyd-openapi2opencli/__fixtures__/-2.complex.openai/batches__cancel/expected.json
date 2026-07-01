@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "batches",
+    "cancel"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "batch-id"
+  ],
+  "docCommand": "openai batches cancel --api-key 'My API Key' --batch-id batch_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/batches/methods/cancel"
+}

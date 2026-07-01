@@ -1,0 +1,14 @@
+{
+  "args": [
+    "conversations",
+    "create"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/conversations",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

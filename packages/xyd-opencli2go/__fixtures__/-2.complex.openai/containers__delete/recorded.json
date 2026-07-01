@@ -1,0 +1,14 @@
+{
+  "args": [
+    "containers",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/containers/{container_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

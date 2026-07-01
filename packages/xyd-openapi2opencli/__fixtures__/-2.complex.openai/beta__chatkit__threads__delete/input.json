@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/chatkit/threads/{thread_id}",
+  "operationId": "DeleteThreadMethod",
+  "title": "Delete ChatKit thread",
+  "summary": "Delete a ChatKit thread along with its items and stored attachments.",
+  "parameters": [
+    {
+      "name": "thread_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

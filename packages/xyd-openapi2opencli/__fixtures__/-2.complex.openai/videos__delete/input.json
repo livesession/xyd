@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/videos/{video_id}",
+  "operationId": "DeleteVideo",
+  "title": "Delete video",
+  "summary": "Permanently delete a completed or failed video and its stored assets.",
+  "parameters": [
+    {
+      "name": "video_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "beta",
+    "chatkit",
+    "threads",
+    "retrieve"
+  ],
+  "httpMethod": "get",
+  "docFlags": [
+    "thread-id"
+  ],
+  "docCommand": "openai beta:chatkit:threads retrieve --api-key 'My API Key' --thread-id cthr_123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/chatkit/subresources/threads/methods/retrieve"
+}

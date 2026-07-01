@@ -1,0 +1,14 @@
+{
+  "commandPath": [
+    "vector-stores",
+    "files",
+    "delete"
+  ],
+  "httpMethod": "delete",
+  "docFlags": [
+    "file-id",
+    "vector-store-id"
+  ],
+  "docCommand": "openai vector-stores:files delete --api-key 'My API Key' --vector-store-id vector_store_id --file-id file_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/vector_stores/subresources/files/methods/delete"
+}

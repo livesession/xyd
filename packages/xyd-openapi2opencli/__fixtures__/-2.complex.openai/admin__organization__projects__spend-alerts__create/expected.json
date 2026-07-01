@@ -1,0 +1,19 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "projects",
+    "spend-alerts",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "currency",
+    "interval",
+    "notification-channel",
+    "project-id",
+    "threshold-amount"
+  ],
+  "docCommand": "openai admin:organization:projects:spend-alerts create --admin-api-key 'My Admin API Key' --project-id project_id --currency USD --interval month --notification-channel '{recipients: [string], type: email}' --threshold-amount 0",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/projects/subresources/spend_alerts/methods/create"
+}

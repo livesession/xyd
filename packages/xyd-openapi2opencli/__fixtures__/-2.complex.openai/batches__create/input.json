@@ -1,0 +1,20 @@
+{
+  "httpMethod": "post",
+  "path": "/batches",
+  "operationId": "createBatch",
+  "title": "Create batch",
+  "summary": "Creates and executes a batch from an uploaded file of requests",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": true,
+    "properties": [
+      "input_file_id",
+      "endpoint",
+      "completion_window",
+      "metadata",
+      "output_expires_after",
+      "__UNSAFE_refPath"
+    ]
+  }
+}

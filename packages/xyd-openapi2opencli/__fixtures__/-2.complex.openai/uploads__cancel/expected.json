@@ -1,0 +1,12 @@
+{
+  "commandPath": [
+    "uploads",
+    "cancel"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "upload-id"
+  ],
+  "docCommand": "openai uploads cancel --api-key 'My API Key' --upload-id upload_abc123",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/uploads/methods/cancel"
+}

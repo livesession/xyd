@@ -27,11 +27,47 @@ export const cliSpec: CLI = {
         },
         migrateme: {
             description: 'Migrate your docs to the new xyd framework',
-            usage: 'xyd migrateme  <resource> [flags]',
+            usage: 'xyd migrateme <path> [flags]',
+            arguments: [
+                {
+                    name: 'path',
+                    required: true,
+                    description: 'Path to the docs directory to migrate',
+                    example: './path-to-docs',
+                },
+            ],
         },
         components: {
             description: 'Manage xyd components',
-            usage: 'xyd components <subcommand> [args] [flags]',
+            usage: 'xyd components <command> [flags]',
+            commands: {
+                install: {
+                    description: 'Install a xyd component into your project',
+                    usage: 'xyd components install <component> [flags]',
+                    arguments: [
+                        {
+                            name: 'component',
+                            required: true,
+                            description: 'Name of the component to install',
+                            example: 'diagrams',
+                        },
+                    ],
+                },
+            },
+        },
+        completion: {
+            description:
+                'Generate shell completions or the CLI OpenCLI document. ' +
+                'Run `xyd completion <zsh|fish>` to print a script, `xyd completion install [shell]` to install it, or `xyd completion opencli` to print the OpenCLI document.',
+            usage: 'xyd completion <shell> [flags]',
+            arguments: [
+                {
+                    name: 'shell',
+                    required: true,
+                    description: 'Shell to generate completions for',
+                    acceptedValues: ['zsh', 'fish'],
+                },
+            ],
         },
     },
     globalFlags: {

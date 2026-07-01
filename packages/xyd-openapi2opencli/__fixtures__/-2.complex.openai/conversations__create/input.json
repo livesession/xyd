@@ -1,0 +1,16 @@
+{
+  "httpMethod": "post",
+  "path": "/conversations",
+  "operationId": "createConversation",
+  "title": "Create a conversation",
+  "summary": "Create a conversation.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "application/json",
+    "required": false,
+    "properties": [
+      "metadata",
+      "items"
+    ]
+  }
+}

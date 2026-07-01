@@ -1,0 +1,15 @@
+{
+  "commandPath": [
+    "admin",
+    "organization",
+    "invites",
+    "create"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "email",
+    "role"
+  ],
+  "docCommand": "openai admin:organization:invites create --admin-api-key 'My Admin API Key' --email email --role reader",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/admin/subresources/organization/subresources/invites/methods/create"
+}

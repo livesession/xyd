@@ -1,0 +1,78 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "groups",
+          "commands": [
+            {
+              "name": "users",
+              "commands": [
+                {
+                  "name": "delete",
+                  "description": "Removes a user from a group.",
+                  "arguments": [
+                    {
+                      "name": "group-id",
+                      "required": true,
+                      "description": "The ID of the group to update."
+                    },
+                    {
+                      "name": "user-id",
+                      "required": true,
+                      "description": "The ID of the user to remove from the group."
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "delete",
+                    "path": "/organization/groups/{group_id}/users/{user_id}",
+                    "operationId": "remove-group-user",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "group_id",
+                        "from": "argument:group-id",
+                        "required": true
+                      },
+                      {
+                        "in": "path",
+                        "name": "user_id",
+                        "from": "argument:user-id",
+                        "required": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

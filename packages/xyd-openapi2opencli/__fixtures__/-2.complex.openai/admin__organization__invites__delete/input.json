@@ -1,0 +1,14 @@
+{
+  "httpMethod": "delete",
+  "path": "/organization/invites/{invite_id}",
+  "operationId": "delete-invite",
+  "title": "Delete invite",
+  "summary": "Delete an invite. If the invite has already been accepted, it cannot be deleted.",
+  "parameters": [
+    {
+      "name": "invite_id",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

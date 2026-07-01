@@ -1,0 +1,4 @@
+{
+  "command": 0.23,
+  "note": "Per-method command coverage vs OpenAI CLI docs (input-driven, current vendored spec). Biggest remaining lever: admin/beta Stainless namespacing. Refresh docs: DOCS_REFRESH=1; rebuild inputs: DOCS_BUILD_INPUTS=1; reseed backlog: DOCS_RESEED=1."
+}

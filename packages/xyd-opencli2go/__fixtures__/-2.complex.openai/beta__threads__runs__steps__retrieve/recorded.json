@@ -1,0 +1,17 @@
+{
+  "args": [
+    "threads",
+    "runs",
+    "steps",
+    "list",
+    "EXAMPLE",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/threads/{thread_id}/runs/{run_id}/steps",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

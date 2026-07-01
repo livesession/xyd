@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "realtime",
+    "calls",
+    "hangup"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "call-id"
+  ],
+  "docCommand": "openai realtime:calls hangup --api-key 'My API Key' --call-id call_id",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/realtime/subresources/calls/methods/hangup"
+}

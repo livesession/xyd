@@ -1,0 +1,13 @@
+{
+  "commandPath": [
+    "videos",
+    "remix"
+  ],
+  "httpMethod": "post",
+  "docFlags": [
+    "prompt",
+    "video-id"
+  ],
+  "docCommand": "openai videos remix --api-key 'My API Key' --video-id video_123 --prompt x",
+  "docUrl": "https://developers.openai.com/api/reference/cli/resources/videos/methods/remix"
+}

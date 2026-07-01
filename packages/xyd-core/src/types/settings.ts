@@ -973,6 +973,18 @@ export interface API {
    * Tools and resources from the server are rendered as API reference pages.
    */
   mcp?: MCPAPIFile;
+
+  /**
+   * CLI configuration. Each source is an OpenCLI spec (a JSON file path or URL).
+   *
+   * Point it at a spec to auto-generate one reference page per command
+   * (arguments + options), the same way `openapi` / `graphql` generate pages:
+   *
+   * ```json
+   * { "api": { "cli": [{ "source": "./spice.opencli.json", "route": "docs/cli" }] } }
+   * ```
+   */
+  cli?: APIFile;
 }
 
 /**
@@ -1033,7 +1045,22 @@ export type APIFileAdvanced = {
 
   /** API information configuration */
   info?: APIInfo;
+
+  /** Preset-specific rendering options (e.g. CLI). */
+  options?: APIFileOptions;
 };
+
+/**
+ * Preset-specific rendering options for an API source.
+ */
+export interface APIFileOptions {
+  /**
+   * (CLI) Render the CLI's global options on every command page. When `false`
+   * (the default), the global options are rendered once as a dedicated
+   * "Global options" page in the sidebar instead of repeated on each command.
+   */
+  globalOptionsPerCommand?: boolean;
+}
 
 /**
  * API file type - can be a string, array of strings, or a map of strings

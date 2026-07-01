@@ -1,0 +1,19 @@
+{
+  "httpMethod": "post",
+  "path": "/audio/translations",
+  "operationId": "createTranslation",
+  "title": "Create translation",
+  "summary": "Translates audio into English.",
+  "parameters": [],
+  "requestBody": {
+    "contentType": "multipart/form-data",
+    "required": true,
+    "properties": [
+      "file",
+      "model",
+      "prompt",
+      "response_format",
+      "temperature"
+    ]
+  }
+}

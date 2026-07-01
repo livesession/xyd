@@ -1,0 +1,15 @@
+{
+  "args": [
+    "realtime",
+    "client-secrets",
+    "create"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/realtime/client_secrets",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "httpMethod": "delete",
+  "path": "/skills/{skill_id}/versions/{version}",
+  "operationId": "DeleteSkillVersion",
+  "summary": "Delete a skill version.",
+  "parameters": [
+    {
+      "name": "skill_id",
+      "in": "path",
+      "required": true
+    },
+    {
+      "name": "version",
+      "in": "path",
+      "required": true
+    }
+  ]
+}

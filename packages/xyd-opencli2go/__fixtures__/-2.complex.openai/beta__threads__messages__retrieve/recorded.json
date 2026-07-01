@@ -1,0 +1,15 @@
+{
+  "args": [
+    "threads",
+    "messages",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/threads/{thread_id}/messages",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}
