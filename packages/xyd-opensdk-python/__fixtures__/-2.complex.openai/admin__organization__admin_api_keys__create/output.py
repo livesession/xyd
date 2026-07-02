@@ -9,16 +9,16 @@ from .models import *  # noqa: F401,F403
 class AdminResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.organization = OrganizationResource(transport)
+        self.organization = AdminOrganizationResource(transport)
 
 
-class OrganizationResource:
+class AdminOrganizationResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.admin_api_keys = AdminApiKeysResource(transport)
+        self.admin_api_keys = AdminOrganizationAdminApiKeysResource(transport)
 
 
-class AdminApiKeysResource:
+class AdminOrganizationAdminApiKeysResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

@@ -11,10 +11,10 @@ from .models import *  # noqa: F401,F403
 class ImagesResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.variations = VariationsResource(transport)
+        self.variations = ImagesVariationsResource(transport)
 
 
-class VariationsResource:
+class ImagesVariationsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

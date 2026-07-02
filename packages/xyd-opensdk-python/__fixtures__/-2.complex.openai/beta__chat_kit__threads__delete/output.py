@@ -9,16 +9,16 @@ from .models import *  # noqa: F401,F403
 class BetaResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.chat_kit = ChatKitResource(transport)
+        self.chat_kit = BetaChatKitResource(transport)
 
 
-class ChatKitResource:
+class BetaChatKitResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.threads = ThreadsResource(transport)
+        self.threads = BetaChatKitThreadsResource(transport)
 
 
-class ThreadsResource:
+class BetaChatKitThreadsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

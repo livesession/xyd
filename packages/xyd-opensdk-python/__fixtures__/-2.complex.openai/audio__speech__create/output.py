@@ -11,10 +11,10 @@ from .models import *  # noqa: F401,F403
 class AudioResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.speech = SpeechResource(transport)
+        self.speech = AudioSpeechResource(transport)
 
 
-class SpeechResource:
+class AudioSpeechResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

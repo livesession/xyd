@@ -12,10 +12,10 @@ from .models import *  # noqa: F401,F403
 class FineTuningResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.jobs = JobsResource(transport)
+        self.jobs = FineTuningJobsResource(transport)
 
 
-class JobsResource:
+class FineTuningJobsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

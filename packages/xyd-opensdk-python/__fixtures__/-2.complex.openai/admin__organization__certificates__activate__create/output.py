@@ -9,22 +9,22 @@ from .models import *  # noqa: F401,F403
 class AdminResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.organization = OrganizationResource(transport)
+        self.organization = AdminOrganizationResource(transport)
 
 
-class OrganizationResource:
+class AdminOrganizationResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.certificates = CertificatesResource(transport)
+        self.certificates = AdminOrganizationCertificatesResource(transport)
 
 
-class CertificatesResource:
+class AdminOrganizationCertificatesResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.activate = ActivateResource(transport)
+        self.activate = AdminOrganizationCertificatesActivateResource(transport)
 
 
-class ActivateResource:
+class AdminOrganizationCertificatesActivateResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

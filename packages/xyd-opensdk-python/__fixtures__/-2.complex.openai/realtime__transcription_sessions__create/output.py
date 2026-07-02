@@ -11,10 +11,10 @@ from .models import *  # noqa: F401,F403
 class RealtimeResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.transcription_sessions = TranscriptionSessionsResource(transport)
+        self.transcription_sessions = RealtimeTranscriptionSessionsResource(transport)
 
 
-class TranscriptionSessionsResource:
+class RealtimeTranscriptionSessionsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

@@ -9,10 +9,10 @@ from .models import *  # noqa: F401,F403
 class RealtimeResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.calls = CallsResource(transport)
+        self.calls = RealtimeCallsResource(transport)
 
 
-class CallsResource:
+class RealtimeCallsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

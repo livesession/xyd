@@ -12,10 +12,10 @@ from .models import *  # noqa: F401,F403
 class VectorStoresResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.file_batches = FileBatchesResource(transport)
+        self.file_batches = VectorStoresFileBatchesResource(transport)
 
 
-class FileBatchesResource:
+class VectorStoresFileBatchesResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

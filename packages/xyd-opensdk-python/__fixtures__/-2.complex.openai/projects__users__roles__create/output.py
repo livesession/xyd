@@ -9,16 +9,16 @@ from .models import *  # noqa: F401,F403
 class ProjectsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.users = UsersResource(transport)
+        self.users = ProjectsUsersResource(transport)
 
 
-class UsersResource:
+class ProjectsUsersResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.roles = RolesResource(transport)
+        self.roles = ProjectsUsersRolesResource(transport)
 
 
-class RolesResource:
+class ProjectsUsersRolesResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

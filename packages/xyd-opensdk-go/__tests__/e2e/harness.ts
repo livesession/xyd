@@ -7,6 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import type { Method, OpensdkSpecJson, Resource } from '@xyd-js/opensdk-core';
 import {
+  MockServer,
   type RecordedFixture,
   type RecordedRequest,
   RecordingServer,
@@ -218,4 +219,58 @@ export function defineE2E(cfg: ApiConfig) {
       }
     });
   }
+}
+
+/**
+ * (Gated E2E_SDK_TESTS=1) RUN the SDK's OWN generated test suite against a
+ * spec-shaped mock — the analog of pointing openai-go's video_test.go at a Prism
+ * mock of the OpenAPI spec. Generates the whole SDK (with its <resource>_test.go),
+ * stands up a MockServer that answers every method with a decodable example
+ * response, and runs `go test ./...` with TEST_API_BASE_URL pointed at it, so the
+ * emitted tests EXECUTE and PASS (not just compile). CGO_ENABLED=0 avoids the
+ * macOS cgo-test exec wedge; runs on Linux CI unconditionally.
+ */
+export function runGeneratedTests(cfg: ApiConfig) {
+  const RUN = process.env.E2E_SDK_TESTS === '1';
+  describe.runIf(RUN)(`${cfg.name} e2e: the SDK's own generated tests pass against a mock`, () => {
+    it('go test ./... is green against the spec-shaped mock', async () => {
+      if (!hasCommand('go version')) return;
+      const spec = fullIR(cfg.fixturesDir, cfg.sdkName);
+      const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'o2s-selftest-'));
+      const mock = new MockServer(spec);
+      await mock.start();
+      try {
+        await writeProject(opensdkGo(spec), tmpDir);
+        execSync('go mod tidy', { cwd: tmpDir, stdio: 'pipe' });
+        // `go test` via async spawn (NOT execSync): the mock runs in THIS Node
+        // process, so a synchronous child would block the event loop and the
+        // SDK's CheckTestServer http.Get would deadlock. spawn keeps the loop
+        // free to serve the mock.
+        await new Promise<void>((resolve, reject) => {
+          const p = spawn('go', ['test', './...'], {
+            cwd: tmpDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: {
+              ...process.env,
+              TEST_API_BASE_URL: `http://127.0.0.1:${mock.port}`,
+              CGO_ENABLED: '0',
+              GODEBUG: 'netdns=go',
+            },
+          });
+          let out = '';
+          p.stdout?.on('data', (d) => {
+            out += d;
+          });
+          p.stderr?.on('data', (d) => {
+            out += d;
+          });
+          p.on('exit', (code) => (code === 0 ? resolve() : reject(new Error(`go test failed:\n${out}`))));
+          p.on('error', reject);
+        });
+      } finally {
+        mock.stop();
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      }
+    }, 600000);
+  });
 }

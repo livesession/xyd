@@ -9,22 +9,22 @@ from .models import *  # noqa: F401,F403
 class FineTuningResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.alpha = AlphaResource(transport)
+        self.alpha = FineTuningAlphaResource(transport)
 
 
-class AlphaResource:
+class FineTuningAlphaResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.graders = GradersResource(transport)
+        self.graders = FineTuningAlphaGradersResource(transport)
 
 
-class GradersResource:
+class FineTuningAlphaGradersResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.validate = ValidateResource(transport)
+        self.validate = FineTuningAlphaGradersValidateResource(transport)
 
 
-class ValidateResource:
+class FineTuningAlphaGradersValidateResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

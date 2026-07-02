@@ -11,14 +11,14 @@ from .models import *  # noqa: F401,F403
 class SkillsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.versions = VersionsResource(transport)
+        self.versions = SkillsVersionsResource(transport)
 
 
-class VersionsResource:
+class SkillsVersionsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 
     def create(self, skill_id: str, *, files: CreateSkillVersionBodyFiles, default: Optional[bool] = None) -> SkillVersionResource:
         if not skill_id:
             raise ValueError(f"Expected a non-empty value for `skill_id` but received {skill_id!r}")
-        return decode(SkillVersionResource, self._transport.request("POST", f"/skills/{skill_id}/versions", body={"files": files, "default": default}))
+        return decode(SkillVersionResource, self._transport.request("POST", f"/skills/{skill_id}/versions", body={"files": files, "default": default}, encoding="multipart"))

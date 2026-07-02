@@ -14,5 +14,6 @@ export {
   diffRequest,
 } from './e2e';
 export type { RecordedRequest, RecordedFixture, PerMethodFixture } from './e2e';
+export { MockServer } from './mock';
 export { parityProbe, missingMarkers } from './parity';
 export type { ParityMarker, ParityProbe } from './parity';

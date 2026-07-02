@@ -11,4 +11,4 @@ class SkillsResource:
         self._transport = transport
 
     def create(self, *, files: CreateSkillBodyFiles) -> SkillResource:
-        return decode(SkillResource, self._transport.request("POST", "/skills", body={"files": files}))
+        return decode(SkillResource, self._transport.request("POST", "/skills", body={"files": files}, encoding="multipart"))

@@ -11,10 +11,10 @@ from .models import *  # noqa: F401,F403
 class UploadsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.parts = PartsResource(transport)
+        self.parts = UploadsPartsResource(transport)
 
 
-class PartsResource:
+class UploadsPartsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

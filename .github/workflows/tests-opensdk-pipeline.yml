@@ -6,9 +6,11 @@ name: tests:opensdk-pipeline
 #
 # The root vitest config (tests:unit) already runs each package's offline unit
 # tests (including the conformance surface diff, which reads the committed
-# oracle/surface.json). This job adds a Go toolchain so the gated layer can run
-# where the generated Go SDK actually builds:
-#   - O2S_GO_SMOKE=1 — a sample of generated Go SDK projects `go build`/`go vet`
+# oracle/surface.json). This job adds Go + Python toolchains so the gated layers
+# can run where the generated SDKs actually build and execute:
+#   - O2S_GO_SMOKE=1  — a sample of generated Go SDK projects `go build`/`go vet`
+#   - E2E_SDK / E2E_SDK_TESTS=1 — RUN each generated SDK's OWN test suite against
+#     a spec-shaped mock (Go `go test`, Python `pytest`).
 # (SDK_ORACLE_REFRESH regenerates the oracle over the network and is NOT set.)
 
 on:
@@ -69,6 +71,11 @@ jobs:
         # The generated SDKs vendor only stdlib — no module downloads needed.
         cache: false
 
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
     - name: Get pnpm store directory
       shell: bash
       run: |
@@ -109,16 +116,30 @@ jobs:
     - name: Test @xyd-js/openapi2opensdk (converter + openai-go conformance)
       run: pnpm --filter @xyd-js/openapi2opensdk ci:test
 
-    - name: Test @xyd-js/opensdk-go (golden trees + Go build/vet smoke + e2e real SDK)
+    - name: Test @xyd-js/opensdk-go (golden trees + Go build/vet smoke + e2e real SDK + generated-test run)
       run: pnpm --filter @xyd-js/opensdk-go ci:test
       env:
         O2S_GO_SMOKE: '1'
         E2E_SDK: '1'
+        # RUN the generated SDK's own <resource>_test.go against a spec-shaped mock
+        # (openai-go/Prism style). Linux only — the binary-response httptest listener
+        # wedges macOS's cgo test exec, so this stays gated and off by default locally.
+        E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-python (golden trees + py_compile smoke)
+    # pytest is also pip-installed into a per-run venv by the python e2e harness,
+    # but install it here too so it's available regardless of the harness design.
+    - name: Ensure pytest is available
+      run: python3 -m pip install pytest
+
+    - name: Test @xyd-js/opensdk-python (golden trees + py_compile smoke + generated-test run)
       run: pnpm --filter @xyd-js/opensdk-python ci:test
       env:
         O2S_PY_SMOKE: '1'
+        # RUN the generated Python SDK's own tests/test_<resource>.py against a
+        # spec-shaped mock (openai-python/Prism style): the harness stands up a
+        # venv + pytest and points TEST_API_BASE_URL at the mock, so the emitted
+        # tests EXECUTE and PASS (not just py_compile).
+        E2E_SDK_TESTS: '1'
 
     - name: Test @xyd-js/opensdk-cli (parse/generate/init + plugin config)
       run: pnpm --filter @xyd-js/opensdk-cli ci:test

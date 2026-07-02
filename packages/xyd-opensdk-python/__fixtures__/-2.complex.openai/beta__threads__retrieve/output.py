@@ -9,10 +9,10 @@ from .models import *  # noqa: F401,F403
 class BetaResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.threads = ThreadsResource(transport)
+        self.threads = BetaThreadsResource(transport)
 
 
-class ThreadsResource:
+class BetaThreadsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

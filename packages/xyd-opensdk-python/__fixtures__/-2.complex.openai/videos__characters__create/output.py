@@ -11,10 +11,10 @@ from .models import *  # noqa: F401,F403
 class VideosResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.characters = CharactersResource(transport)
+        self.characters = VideosCharactersResource(transport)
 
 
-class CharactersResource:
+class VideosCharactersResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

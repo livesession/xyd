@@ -12,10 +12,10 @@ from .models import *  # noqa: F401,F403
 class ProjectsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.roles = RolesResource(transport)
+        self.roles = ProjectsRolesResource(transport)
 
 
-class RolesResource:
+class ProjectsRolesResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

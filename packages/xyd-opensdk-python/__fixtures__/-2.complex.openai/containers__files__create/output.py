@@ -11,14 +11,14 @@ from .models import *  # noqa: F401,F403
 class ContainersResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.files = FilesResource(transport)
+        self.files = ContainersFilesResource(transport)
 
 
-class FilesResource:
+class ContainersFilesResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 
     def create(self, container_id: str, *, file_id: Optional[str] = None, file: Optional[Union[bytes, BinaryIO]] = None) -> ContainerFileResource:
         if not container_id:
             raise ValueError(f"Expected a non-empty value for `container_id` but received {container_id!r}")
-        return decode(ContainerFileResource, self._transport.request("POST", f"/containers/{container_id}/files", body={"file_id": file_id, "file": file}))
+        return decode(ContainerFileResource, self._transport.request("POST", f"/containers/{container_id}/files", body={"file_id": file_id, "file": file}, encoding="multipart"))

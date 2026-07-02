@@ -11,16 +11,16 @@ from .models import *  # noqa: F401,F403
 class RealtimeResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.translations = TranslationsResource(transport)
+        self.translations = RealtimeTranslationsResource(transport)
 
 
-class TranslationsResource:
+class RealtimeTranslationsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.client_secrets = ClientSecretsResource(transport)
+        self.client_secrets = RealtimeTranslationsClientSecretsResource(transport)
 
 
-class ClientSecretsResource:
+class RealtimeTranslationsClientSecretsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

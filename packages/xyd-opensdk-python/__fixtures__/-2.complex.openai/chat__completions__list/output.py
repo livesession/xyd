@@ -12,10 +12,10 @@ from .models import *  # noqa: F401,F403
 class ChatResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.completions = CompletionsResource(transport)
+        self.completions = ChatCompletionsResource(transport)
 
 
-class CompletionsResource:
+class ChatCompletionsResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 

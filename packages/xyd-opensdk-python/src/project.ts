@@ -58,7 +58,16 @@ interface ModelsCtx {
 
 export function modelsPy(spec: OpensdkSpecJson): string {
   const ctx: ModelsCtx = { uses: new PyUses(), needsField: false };
-  const decls = (spec.types || []).map((t) => namedType(t, ctx)).filter(Boolean);
+  // Ordering matters: a struct's field annotations are lazy (`from __future__
+  // import annotations`), so structs/enums may appear in any order. But an
+  // alias/union assignment `X = list[Y]` is evaluated EAGERLY at import, so Y
+  // must already be defined. Emit all structs/enums first, then the alias group
+  // topologically sorted so an alias that references another alias comes after it.
+  const types = spec.types || [];
+  const aliasKinds = new Set(['alias', 'union']);
+  const structsEnums = types.filter((t) => !aliasKinds.has(t.kind));
+  const aliases = orderAliases(types.filter((t) => aliasKinds.has(t.kind)));
+  const decls = [...structsEnums, ...aliases].map((t) => namedType(t, ctx)).filter(Boolean);
   const lines = [
     'from __future__ import annotations',
     '',
@@ -68,6 +77,42 @@ export function modelsPy(spec: OpensdkSpecJson): string {
   const typingLine = ctx.uses.typingImport();
   if (typingLine) lines.push(typingLine);
   return `${lines.join('\n')}\n\n\n${decls.join('\n\n\n')}\n`;
+}
+
+/** All named-type references inside a TypeRef tree (for alias dependency ordering). */
+function typeRefNames(ref: TypeRef | undefined, out: Set<string>): void {
+  if (!ref) return;
+  if (ref.kind === 'ref' && ref.name) out.add(ref.name);
+  typeRefNames(ref.items as TypeRef | undefined, out);
+  typeRefNames(ref.values as TypeRef | undefined, out);
+}
+
+/**
+ * Topologically order the alias/union group so an alias whose RHS references
+ * another alias is emitted after it (the RHS is eagerly evaluated at import).
+ * References to structs/enums are ignored (already emitted above); cycles fall
+ * back to input order (unreachable for list/dict/Any alias forms).
+ */
+function orderAliases(aliases: NamedType[]): NamedType[] {
+  const byName = new Map(aliases.map((a) => [a.name, a]));
+  const ordered: NamedType[] = [];
+  const done = new Set<string>();
+  const visiting = new Set<string>();
+  const visit = (a: NamedType) => {
+    if (done.has(a.name) || visiting.has(a.name)) return;
+    visiting.add(a.name);
+    const refs = new Set<string>();
+    if (a.kind === 'alias') typeRefNames(a.of as TypeRef | undefined, refs);
+    for (const r of refs) {
+      const dep = byName.get(r);
+      if (dep && dep !== a) visit(dep);
+    }
+    visiting.delete(a.name);
+    done.add(a.name);
+    ordered.push(a);
+  };
+  for (const a of aliases) visit(a);
+  return ordered;
 }
 
 function namedType(type: NamedType, ctx: ModelsCtx): string {
@@ -150,13 +195,14 @@ export function resourcesPy(spec: OpensdkSpecJson, types: Map<string, NamedType>
     pages: new Set(),
   };
   const classes: string[] = [];
-  const emit = (resources: Resource[]) => {
+  const emit = (resources: Resource[], parent: string[]) => {
     for (const r of resources) {
-      classes.push(resourceClass(r, ctx));
-      if (r.resources?.length) emit(r.resources);
+      const segments = [...parent, r.name];
+      classes.push(resourceClass(r, segments, ctx));
+      if (r.resources?.length) emit(r.resources, segments);
     }
   };
-  emit(spec.resources || []);
+  emit(spec.resources || [], []);
 
   const lines = ['from __future__ import annotations', ''];
   const typingLine = ctx.uses.typingImport();
@@ -171,15 +217,25 @@ export function resourcesPy(spec: OpensdkSpecJson, types: Map<string, NamedType>
   return `${lines.join('\n')}\n\n\n${classes.join('\n\n\n')}\n`;
 }
 
-function resourceClassName(resource: Resource): string {
-  return `${pascalCase(resource.name)}Resource`;
+/**
+ * The globally-unique resource class name, path-qualified by the FULL segment
+ * chain from root (mirrors the Go emitter's `serviceTypeName`). Two different
+ * `roles` resources under different parents (`projects.roles` vs
+ * `projects.groups.roles`) therefore get distinct class names
+ * (`ProjectsRolesResource` vs `ProjectsGroupsRolesResource`) instead of one
+ * shadowing the other in the single generated `resources.py` module. Attribute
+ * (field) names stay local (`self.roles`), like the Go emitter.
+ */
+function resourceClassName(segments: string[]): string {
+  return `${segments.map((s) => pascalCase(s)).join('')}Resource`;
 }
 
-function resourceClass(resource: Resource, ctx: ResourcesCtx): string {
-  const cls = resourceClassName(resource);
+function resourceClass(resource: Resource, segments: string[], ctx: ResourcesCtx): string {
+  const cls = resourceClassName(segments);
   const subs = resource.resources || [];
   const ctorLines = ['        self._transport = transport'];
-  for (const sub of subs) ctorLines.push(`        self.${snakeCase(sub.name)} = ${resourceClassName(sub)}(transport)`);
+  for (const sub of subs)
+    ctorLines.push(`        self.${snakeCase(sub.name)} = ${resourceClassName([...segments, sub.name])}(transport)`);
   const ctor = `    def __init__(self, transport: Transport) -> None:\n${ctorLines.join('\n')}`;
   const methods = (resource.methods || []).map((m) => methodDef(m, ctx));
   return `class ${cls}:\n${[ctor, ...methods].join('\n\n')}`;
@@ -218,7 +274,15 @@ function methodDef(method: Method, ctx: ResourcesCtx): string {
   const headerEntries = headerParams.map((h) => `${JSON.stringify(h.wireName ?? h.name)}: ${snakeCase(h.name)}`);
   if (rawContentType) headerEntries.unshift(`"Accept": ${JSON.stringify(rawContentType)}`);
   if (headerEntries.length) callArgs.push(`headers={${headerEntries.join(', ')}}`);
-  const encoding = plan.encoding ?? 'json';
+  // Body encoding: the IR encoding (json|multipart|form) normally decides, but a
+  // body that carries a binary field (bytes / file-like) must NOT be json.dumps'd
+  // even when the spec labels it application/json — some specs (e.g. OpenAI's
+  // `skills` upload) declare a json content type over a `format: binary` field.
+  // Route those through the multipart encoder, mirroring the Go apiform encoder.
+  let encoding = plan.encoding ?? 'json';
+  if (bodyParams.length && encoding === 'json' && bodyParams.some((b) => isBinaryTypeRef(b.type, ctx.types))) {
+    encoding = 'multipart';
+  }
   if (bodyParams.length && encoding !== 'json') callArgs.push(`encoding=${JSON.stringify(encoding)}`);
   if (rawContentType) callArgs.push('raw=True');
   // sdk.idempotency: flagged methods get a transport-generated key (one per
@@ -296,6 +360,28 @@ interface BodyField {
   required: boolean;
 }
 
+/**
+ * Whether a TypeRef ultimately carries binary bytes (`format: binary`),
+ * following array items and named union/alias refs. Struct/enum refs are never
+ * binary. A `seen` set guards recursive/self-referential unions.
+ */
+function isBinaryTypeRef(ref: TypeRef | undefined, types: Map<string, NamedType>, seen = new Set<string>()): boolean {
+  if (!ref) return false;
+  if (ref.kind === 'scalar') return ref.scalar === 'string' && ref.format === 'binary';
+  if (ref.kind === 'array') return isBinaryTypeRef(ref.items as TypeRef | undefined, types, seen);
+  if (ref.kind === 'ref' && ref.name) {
+    if (seen.has(ref.name)) return false;
+    seen.add(ref.name);
+    const named = types.get(ref.name);
+    if (!named) return false;
+    if (named.kind === 'union') {
+      return (named.variants || []).some((v) => isBinaryTypeRef(v as TypeRef, types, seen));
+    }
+    if (named.kind === 'alias') return isBinaryTypeRef(named.of as TypeRef | undefined, types, seen);
+  }
+  return false;
+}
+
 function bodyFieldList(method: Method, types: Map<string, NamedType>): BodyField[] {
   const ref = method.requestBody?.type;
   if (ref?.kind !== 'ref' || !ref.name) return [];
@@ -315,8 +401,10 @@ function pathExpr(path: string, hasParams: boolean): string {
 
 export function clientPy(spec: OpensdkSpecJson, envVar: string): string {
   const resources = spec.resources || [];
-  const attrLines = resources.map((r) => `        self.${snakeCase(r.name)} = ${resourceClassName(r)}(self._transport)`);
-  const imports = resources.map((r) => resourceClassName(r)).join(', ');
+  const attrLines = resources.map(
+    (r) => `        self.${snakeCase(r.name)} = ${resourceClassName([r.name])}(self._transport)`,
+  );
+  const imports = resources.map((r) => resourceClassName([r.name])).join(', ');
   return `from __future__ import annotations
 
 import os

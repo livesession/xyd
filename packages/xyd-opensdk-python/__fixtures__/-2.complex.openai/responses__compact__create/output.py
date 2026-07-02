@@ -11,10 +11,10 @@ from .models import *  # noqa: F401,F403
 class ResponsesResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
-        self.compact = CompactResource(transport)
+        self.compact = ResponsesCompactResource(transport)
 
 
-class CompactResource:
+class ResponsesCompactResource:
     def __init__(self, transport: Transport) -> None:
         self._transport = transport
 
