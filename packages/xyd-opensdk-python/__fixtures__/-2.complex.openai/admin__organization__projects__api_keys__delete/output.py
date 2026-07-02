@@ -29,4 +29,8 @@ class ApiKeysResource:
         self._transport = transport
 
     def delete(self, project_id: str, api_key_id: str) -> ProjectApiKeyDeleteResponse:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
+        if not api_key_id:
+            raise ValueError(f"Expected a non-empty value for `api_key_id` but received {api_key_id!r}")
         return decode(ProjectApiKeyDeleteResponse, self._transport.request("DELETE", f"/organization/projects/{project_id}/api_keys/{api_key_id}"))

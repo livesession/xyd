@@ -17,4 +17,6 @@ class CompletionsResource:
         self._transport = transport
 
     def delete(self, completion_id: str) -> ChatCompletionDeleted:
+        if not completion_id:
+            raise ValueError(f"Expected a non-empty value for `completion_id` but received {completion_id!r}")
         return decode(ChatCompletionDeleted, self._transport.request("DELETE", f"/chat/completions/{completion_id}"))

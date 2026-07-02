@@ -17,4 +17,6 @@ class ThreadsResource:
         self._transport = transport
 
     def delete(self, thread_id: str) -> DeleteThreadResponse:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
         return decode(DeleteThreadResponse, self._transport.request("DELETE", f"/threads/{thread_id}"))

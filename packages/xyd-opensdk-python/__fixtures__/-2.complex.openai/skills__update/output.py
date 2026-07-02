@@ -11,4 +11,6 @@ class SkillsResource:
         self._transport = transport
 
     def update(self, skill_id: str, *, default_version: str) -> SkillResource:
+        if not skill_id:
+            raise ValueError(f"Expected a non-empty value for `skill_id` but received {skill_id!r}")
         return decode(SkillResource, self._transport.request("POST", f"/skills/{skill_id}", body={"default_version": default_version}))

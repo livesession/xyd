@@ -20,4 +20,6 @@ class FilesResource:
         self._transport = transport
 
     def list(self, container_id: str, *, limit: Optional[int] = None, order: Optional[ContainersFilesListOrder] = None, after: Optional[str] = None) -> CursorPage[ContainerFileResource]:
+        if not container_id:
+            raise ValueError(f"Expected a non-empty value for `container_id` but received {container_id!r}")
         return CursorPage.from_response(ContainerFileResource, self._transport.request("GET", f"/containers/{container_id}/files", query={"limit": limit, "order": order, "after": after}))

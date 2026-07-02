@@ -23,3 +23,5 @@ export type {
   PageName,
   PrimaryResponseKind,
 } from './operation-plan';
+export { planExample, exampleFields, planMethodExample } from './example-plan';
+export type { ExampleValue, ExampleField, MethodExample, PlanExampleOptions } from './example-plan';

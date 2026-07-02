@@ -23,4 +23,6 @@ class InvitesResource:
         self._transport = transport
 
     def retrieve(self, invite_id: str) -> Invite:
+        if not invite_id:
+            raise ValueError(f"Expected a non-empty value for `invite_id` but received {invite_id!r}")
         return decode(Invite, self._transport.request("GET", f"/organization/invites/{invite_id}"))

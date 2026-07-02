@@ -11,4 +11,6 @@ class VectorStoresResource:
         self._transport = transport
 
     def delete(self, vector_store_id: str) -> DeleteVectorStoreResponse:
+        if not vector_store_id:
+            raise ValueError(f"Expected a non-empty value for `vector_store_id` but received {vector_store_id!r}")
         return decode(DeleteVectorStoreResponse, self._transport.request("DELETE", f"/vector_stores/{vector_store_id}"))

@@ -42,6 +42,17 @@ export function constFieldName(typeName: string, fieldName: string): string {
   return `${pascalCase(typeName)}${pascalCase(fieldName)}Const`;
 }
 
+/**
+ * The generated Go const identifier for one enum value — the SAME name
+ * `renderEnum` emits into `types.go` (a named value → its PascalCased name,
+ * else `<EnumType><PascalValue>`). The test emitter references these constants,
+ * so this MUST stay in lockstep with `renderEnum`.
+ */
+export function goEnumConstName(enumTypeName: string, value: EnumValue): string {
+  if (value.name) return pascalCase(value.name);
+  return `${pascalCase(enumTypeName)}${pascalCase(String(value.value))}`;
+}
+
 /** The Go literal for a const scalar value (string quoted, number/bool verbatim). */
 export function goConstLiteral(value: unknown): string {
   if (typeof value === 'number' || typeof value === 'boolean') return String(value);
@@ -87,13 +98,8 @@ function renderEnum(type: NamedType): string {
   const values = type.values || [];
   if (values.length === 0) return head;
 
-  const consts = values.map((v) => `\t${constName(name, v)} ${name} = ${literal(v.value, base)}`).join('\n');
+  const consts = values.map((v) => `\t${goEnumConstName(type.name, v)} ${name} = ${literal(v.value, base)}`).join('\n');
   return `${head}\n\nconst (\n${consts}\n)`;
-}
-
-function constName(typeName: string, value: EnumValue): string {
-  if (value.name) return pascalCase(value.name);
-  return `${typeName}${pascalCase(String(value.value))}`;
 }
 
 function literal(value: unknown, base: string): string {

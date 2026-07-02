@@ -32,4 +32,8 @@ class StepsResource:
         self._transport = transport
 
     def list(self, thread_id: str, run_id: str, *, limit: Optional[int] = None, order: Optional[BetaThreadsRunsStepsListOrder] = None, after: Optional[str] = None, before: Optional[str] = None, include: Optional[list[str]] = None) -> CursorPage[RunStepObject]:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
+        if not run_id:
+            raise ValueError(f"Expected a non-empty value for `run_id` but received {run_id!r}")
         return CursorPage.from_response(RunStepObject, self._transport.request("GET", f"/threads/{thread_id}/runs/{run_id}/steps", query={"limit": limit, "order": order, "after": after, "before": before, "include[]": include}))

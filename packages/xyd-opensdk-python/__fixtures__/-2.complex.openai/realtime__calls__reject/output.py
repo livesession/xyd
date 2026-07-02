@@ -19,4 +19,6 @@ class CallsResource:
         self._transport = transport
 
     def reject(self, call_id: str, *, status_code: Optional[int] = None) -> None:
+        if not call_id:
+            raise ValueError(f"Expected a non-empty value for `call_id` but received {call_id!r}")
         self._transport.request("POST", f"/realtime/calls/{call_id}/reject", body={"status_code": status_code})

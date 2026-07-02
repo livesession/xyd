@@ -11,4 +11,6 @@ class VideosResource:
         self._transport = transport
 
     def delete(self, video_id: str) -> DeletedVideoResource:
+        if not video_id:
+            raise ValueError(f"Expected a non-empty value for `video_id` but received {video_id!r}")
         return decode(DeletedVideoResource, self._transport.request("DELETE", f"/videos/{video_id}"))

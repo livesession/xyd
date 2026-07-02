@@ -11,4 +11,6 @@ class ModelsResource:
         self._transport = transport
 
     def retrieve(self, model: str) -> Model:
+        if not model:
+            raise ValueError(f"Expected a non-empty value for `model` but received {model!r}")
         return decode(Model, self._transport.request("GET", f"/models/{model}"))

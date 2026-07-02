@@ -23,4 +23,6 @@ class InvitesResource:
         self._transport = transport
 
     def delete(self, invite_id: str) -> InviteDeleteResponse:
+        if not invite_id:
+            raise ValueError(f"Expected a non-empty value for `invite_id` but received {invite_id!r}")
         return decode(InviteDeleteResponse, self._transport.request("DELETE", f"/organization/invites/{invite_id}"))

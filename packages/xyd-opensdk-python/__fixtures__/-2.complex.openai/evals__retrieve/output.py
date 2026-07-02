@@ -11,4 +11,6 @@ class EvalsResource:
         self._transport = transport
 
     def retrieve(self, eval_id: str) -> Eval:
+        if not eval_id:
+            raise ValueError(f"Expected a non-empty value for `eval_id` but received {eval_id!r}")
         return decode(Eval, self._transport.request("GET", f"/evals/{eval_id}"))

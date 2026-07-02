@@ -13,4 +13,6 @@ class EvalsResource:
         self._transport = transport
 
     def update(self, eval_id: str, *, name: Optional[str] = None, metadata: Optional[Metadata] = None) -> Eval:
+        if not eval_id:
+            raise ValueError(f"Expected a non-empty value for `eval_id` but received {eval_id!r}")
         return decode(Eval, self._transport.request("POST", f"/evals/{eval_id}", body={"name": name, "metadata": metadata}))

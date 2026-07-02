@@ -11,4 +11,6 @@ class ModelsResource:
         self._transport = transport
 
     def delete(self, model: str) -> DeleteModelResponse:
+        if not model:
+            raise ValueError(f"Expected a non-empty value for `model` but received {model!r}")
         return decode(DeleteModelResponse, self._transport.request("DELETE", f"/models/{model}"))

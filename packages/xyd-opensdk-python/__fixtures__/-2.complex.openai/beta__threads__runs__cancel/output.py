@@ -23,4 +23,8 @@ class RunsResource:
         self._transport = transport
 
     def cancel(self, thread_id: str, run_id: str) -> RunObject:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
+        if not run_id:
+            raise ValueError(f"Expected a non-empty value for `run_id` but received {run_id!r}")
         return decode(RunObject, self._transport.request("POST", f"/threads/{thread_id}/runs/{run_id}/cancel"))

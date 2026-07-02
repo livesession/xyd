@@ -81,6 +81,7 @@ export function generateFileMap(
   add(emitter.generateTypes(spec.types || [], ctx), 'generateTypes');
   add(emitter.generateResources(spec.resources || [], ctx), 'generateResources');
   add(emitter.generateRuntime(spec, ctx), 'generateRuntime');
+  if (emitter.generateTests) add(emitter.generateTests(spec, ctx), 'generateTests');
   return files;
 }
 

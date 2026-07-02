@@ -23,4 +23,10 @@ class OutputItemsResource:
         self._transport = transport
 
     def retrieve(self, eval_id: str, run_id: str, output_item_id: str) -> EvalRunOutputItem:
+        if not eval_id:
+            raise ValueError(f"Expected a non-empty value for `eval_id` but received {eval_id!r}")
+        if not run_id:
+            raise ValueError(f"Expected a non-empty value for `run_id` but received {run_id!r}")
+        if not output_item_id:
+            raise ValueError(f"Expected a non-empty value for `output_item_id` but received {output_item_id!r}")
         return decode(EvalRunOutputItem, self._transport.request("GET", f"/evals/{eval_id}/runs/{run_id}/output_items/{output_item_id}"))

@@ -29,4 +29,8 @@ class ServiceAccountsResource:
         self._transport = transport
 
     def delete(self, project_id: str, service_account_id: str) -> ProjectServiceAccountDeleteResponse:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
+        if not service_account_id:
+            raise ValueError(f"Expected a non-empty value for `service_account_id` but received {service_account_id!r}")
         return decode(ProjectServiceAccountDeleteResponse, self._transport.request("DELETE", f"/organization/projects/{project_id}/service_accounts/{service_account_id}"))

@@ -29,4 +29,8 @@ class UsersResource:
         self._transport = transport
 
     def delete(self, project_id: str, user_id: str) -> ProjectUserDeleteResponse:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
+        if not user_id:
+            raise ValueError(f"Expected a non-empty value for `user_id` but received {user_id!r}")
         return decode(ProjectUserDeleteResponse, self._transport.request("DELETE", f"/organization/projects/{project_id}/users/{user_id}"))

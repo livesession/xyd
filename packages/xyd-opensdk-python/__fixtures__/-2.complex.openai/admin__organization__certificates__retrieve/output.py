@@ -25,4 +25,6 @@ class CertificatesResource:
         self._transport = transport
 
     def retrieve(self, certificate_id: str, *, include: Optional[list[str]] = None) -> Certificate:
+        if not certificate_id:
+            raise ValueError(f"Expected a non-empty value for `certificate_id` but received {certificate_id!r}")
         return decode(Certificate, self._transport.request("GET", f"/organization/certificates/{certificate_id}", query={"include": include}))

@@ -23,4 +23,6 @@ class UsersResource:
         self._transport = transport
 
     def retrieve(self, user_id: str) -> User:
+        if not user_id:
+            raise ValueError(f"Expected a non-empty value for `user_id` but received {user_id!r}")
         return decode(User, self._transport.request("GET", f"/organization/users/{user_id}"))

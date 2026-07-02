@@ -31,4 +31,8 @@ class SubmitToolOutputsResource:
         self._transport = transport
 
     def create(self, thread_id: str, run_id: str, *, tool_outputs: list[SubmitToolOutputsRunRequestToolOutputsItem], stream: Optional[bool] = None) -> RunObject:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
+        if not run_id:
+            raise ValueError(f"Expected a non-empty value for `run_id` but received {run_id!r}")
         return decode(RunObject, self._transport.request("POST", f"/threads/{thread_id}/runs/{run_id}/submit_tool_outputs", body={"tool_outputs": tool_outputs, "stream": stream}))

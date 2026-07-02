@@ -2,6 +2,7 @@ import { type NamedType, type OpensdkSpecJson, type Resource, sdkBehavior } from
 import type { Emitter, EmitterContext, GeneratedFile } from '@xyd-js/opensdk-framework';
 
 import { renderClientFile } from './client';
+import { generateGoTests } from './example-go';
 import { renderTypesFile } from './model';
 import { goPackageName } from './naming';
 import { runtimeFiles } from './runtime';
@@ -73,5 +74,12 @@ export const goEmitter: Emitter = {
   generateRuntime(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {
     const { modulePath, baseURL, pkg } = resolveOptions(spec, ctx);
     return Object.entries(runtimeFiles(spec, modulePath, baseURL, pkg)).map(([path, content]) => ({ path, content }));
+  },
+
+  // The SDK's OWN openai-go-shaped test suite. Default ON; opt out with
+  // emitterOptions.tests === false.
+  generateTests(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {
+    if ((ctx.emitterOptions as OpensdkGoOptions).tests === false) return [];
+    return generateGoTests(spec, goCtx(spec, ctx));
   },
 };

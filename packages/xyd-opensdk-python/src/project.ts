@@ -229,7 +229,27 @@ function methodDef(method: Method, ctx: ResourcesCtx): string {
 
   const call = `self._transport.request(${callArgs.join(', ')})`;
   const { annotation, body } = returnPlan(plan, call, ctx);
-  return `    def ${name}(${params}) -> ${annotation}:\n${body}`;
+  const guards = pathParamGuards(pathParams);
+  const fullBody = guards ? `${guards}\n${body}` : body;
+  return `    def ${name}(${params}) -> ${annotation}:\n${fullBody}`;
+}
+
+/**
+ * Guard statements raised at the top of a method for each required string path
+ * param: reject the empty string BEFORE building the path (an empty segment
+ * would otherwise silently collapse `/pets/{id}` to the collection endpoint).
+ * Matches openai-python and the Go emitter's guard; the generated test suite's
+ * test_path_params_* variant asserts it fires.
+ */
+function pathParamGuards(pathParams: Param[]): string {
+  const lines: string[] = [];
+  for (const p of pathParams) {
+    if (p.type?.kind !== 'scalar' || p.type.scalar !== 'string' || p.required === false) continue;
+    const n = snakeCase(p.name);
+    lines.push(`        if not ${n}:`);
+    lines.push(`            raise ValueError(f"Expected a non-empty value for \`${n}\` but received {${n}!r}")`);
+  }
+  return lines.join('\n');
 }
 
 function paramArg(p: Param, ctx: ResourcesCtx): string {

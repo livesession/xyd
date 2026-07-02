@@ -13,4 +13,6 @@ class UploadsResource:
         self._transport = transport
 
     def complete(self, upload_id: str, *, part_ids: list[str], md5: Optional[str] = None) -> Upload:
+        if not upload_id:
+            raise ValueError(f"Expected a non-empty value for `upload_id` but received {upload_id!r}")
         return decode(Upload, self._transport.request("POST", f"/uploads/{upload_id}/complete", body={"part_ids": part_ids, "md5": md5}))

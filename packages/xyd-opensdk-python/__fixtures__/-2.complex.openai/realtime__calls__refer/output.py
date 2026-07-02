@@ -17,4 +17,6 @@ class CallsResource:
         self._transport = transport
 
     def refer(self, call_id: str, *, target_uri: str) -> None:
+        if not call_id:
+            raise ValueError(f"Expected a non-empty value for `call_id` but received {call_id!r}")
         self._transport.request("POST", f"/realtime/calls/{call_id}/refer", body={"target_uri": target_uri})

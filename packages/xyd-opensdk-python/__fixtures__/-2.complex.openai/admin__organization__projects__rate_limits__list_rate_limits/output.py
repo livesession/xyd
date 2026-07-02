@@ -32,4 +32,6 @@ class RateLimitsResource:
         self._transport = transport
 
     def list_rate_limits(self, project_id: str, *, limit: Optional[int] = None, after: Optional[str] = None, before: Optional[str] = None) -> CursorPage[ProjectRateLimit]:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
         return CursorPage.from_response(ProjectRateLimit, self._transport.request("GET", f"/organization/projects/{project_id}/rate_limits", query={"limit": limit, "after": after, "before": before}))

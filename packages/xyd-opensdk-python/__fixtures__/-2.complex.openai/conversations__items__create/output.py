@@ -20,4 +20,6 @@ class ItemsResource:
         self._transport = transport
 
     def create(self, conversation_id: str, *, include: Optional[list[IncludeEnum]] = None, items: list[InputItem]) -> CursorPage[ConversationItem]:
+        if not conversation_id:
+            raise ValueError(f"Expected a non-empty value for `conversation_id` but received {conversation_id!r}")
         return CursorPage.from_response(ConversationItem, self._transport.request("POST", f"/conversations/{conversation_id}/items", query={"include": include}, body={"items": items}))

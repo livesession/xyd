@@ -307,17 +307,17 @@ function constFillLines(method: Method, ctx: GoCtx): string[] {
  *   map    — map field; deepObject k[sub]=v, else a JSON-encoded value
  *   object — struct ref / any; deepObject k[sub]=v via a JSON round-trip, else JSON-encoded
  */
-type QueryKind = 'scalar' | 'array' | 'map' | 'object';
+export type QueryKind = 'scalar' | 'array' | 'map' | 'object';
 
-function queryKind(ref: TypeRef | undefined, ctx: GoCtx): QueryKind {
+export function queryKind(ref: TypeRef | undefined, types: Map<string, NamedType>): QueryKind {
   if (!ref) return 'scalar';
   if (ref.kind === 'scalar') return 'scalar';
   if (ref.kind === 'array') return 'array';
   if (ref.kind === 'map') return 'map';
   if (ref.kind === 'ref' && ref.name) {
-    const named = ctx.types.get(ref.name);
+    const named = types.get(ref.name);
     if (named?.kind === 'enum') return 'scalar';
-    if (named?.kind === 'alias') return queryKind(named.of as TypeRef | undefined, ctx);
+    if (named?.kind === 'alias') return queryKind(named.of as TypeRef | undefined, types);
     return 'object';
   }
   return 'object';
@@ -327,7 +327,7 @@ function queryKind(ref: TypeRef | undefined, ctx: GoCtx): QueryKind {
 function queryFieldLine(q: Param, ctx: GoCtx, imports: Imports): string {
   const tag = `json:"-" query:${JSON.stringify(q.wireName ?? q.name)}`;
   const fieldName = pascalCase(q.name);
-  const kind = queryKind(q.type, ctx);
+  const kind = queryKind(q.type, ctx.types);
   const base = goType(q.type);
   if (kind === 'array' || kind === 'map') return goField(fieldName, base, tag);
   if (kind === 'object') {
@@ -375,7 +375,7 @@ function queryParamLines(argName: string, q: Param, ctx: GoCtx, imports: Imports
   const field = `${argName}.${fieldName}`;
   const key = q.wireName ?? q.name;
   const wire = JSON.stringify(key);
-  const kind = queryKind(q.type, ctx);
+  const kind = queryKind(q.type, ctx.types);
   const deepObject = q.style === 'deepObject';
 
   if (kind === 'array') {

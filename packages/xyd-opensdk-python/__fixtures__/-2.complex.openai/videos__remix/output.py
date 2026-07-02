@@ -11,4 +11,6 @@ class VideosResource:
         self._transport = transport
 
     def remix(self, video_id: str, *, prompt: str) -> VideoResource:
+        if not video_id:
+            raise ValueError(f"Expected a non-empty value for `video_id` but received {video_id!r}")
         return decode(VideoResource, self._transport.request("POST", f"/videos/{video_id}/remix", body={"prompt": prompt}))

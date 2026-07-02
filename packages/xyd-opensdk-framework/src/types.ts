@@ -84,6 +84,17 @@ export interface Emitter {
 
   /** Project manifest files, e.g. go.mod / pyproject.toml. */
   generateProject(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[];
+
+  /**
+   * The SDK's OWN test suite (optional) — the artifact openai-go/openai-python
+   * ship: one `<resource>_test.go` / `tests/test_<resource>.py` per resource
+   * that constructs a client against a mock base URL, calls every method with
+   * example values (a required-only case plus a "with all params" case when the
+   * method has optionals), guards empty path params, and checks the typed error.
+   * Example values come from the shared example planner (planMethodExample) so
+   * both languages exercise identical shapes. Return [] to opt out.
+   */
+  generateTests?(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[];
 }
 
 /** Plugin bundle a consumer registers (mirrors oagen's config shape). */

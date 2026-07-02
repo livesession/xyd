@@ -32,4 +32,6 @@ class ItemsResource:
         self._transport = transport
 
     def list(self, thread_id: str, *, limit: Optional[int] = None, order: Optional[OrderEnum] = None, after: Optional[str] = None, before: Optional[str] = None) -> CursorPage[ThreadItem]:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
         return CursorPage.from_response(ThreadItem, self._transport.request("GET", f"/chatkit/threads/{thread_id}/items", query={"limit": limit, "order": order, "after": after, "before": before}))

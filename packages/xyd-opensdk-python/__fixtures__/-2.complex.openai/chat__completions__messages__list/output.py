@@ -26,4 +26,6 @@ class MessagesResource:
         self._transport = transport
 
     def list(self, completion_id: str, *, after: Optional[str] = None, limit: Optional[int] = None, order: Optional[ChatCompletionsMessagesListOrder] = None) -> CursorPage[ChatCompletionMessageListDataItem]:
+        if not completion_id:
+            raise ValueError(f"Expected a non-empty value for `completion_id` but received {completion_id!r}")
         return CursorPage.from_response(ChatCompletionMessageListDataItem, self._transport.request("GET", f"/chat/completions/{completion_id}/messages", query={"after": after, "limit": limit, "order": order}))

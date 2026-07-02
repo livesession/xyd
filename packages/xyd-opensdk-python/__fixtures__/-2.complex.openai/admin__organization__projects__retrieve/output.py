@@ -23,4 +23,6 @@ class ProjectsResource:
         self._transport = transport
 
     def retrieve(self, project_id: str) -> Project:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
         return decode(Project, self._transport.request("GET", f"/organization/projects/{project_id}"))

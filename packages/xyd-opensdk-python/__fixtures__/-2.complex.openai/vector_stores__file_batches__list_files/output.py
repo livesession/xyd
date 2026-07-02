@@ -20,4 +20,8 @@ class FileBatchesResource:
         self._transport = transport
 
     def list_files(self, vector_store_id: str, batch_id: str, *, limit: Optional[int] = None, order: Optional[VectorStoresFileBatchesListFilesOrder] = None, after: Optional[str] = None, before: Optional[str] = None, filter: Optional[VectorStoresFileBatchesListFilesFilter] = None) -> CursorPage[VectorStoreFileObject]:
+        if not vector_store_id:
+            raise ValueError(f"Expected a non-empty value for `vector_store_id` but received {vector_store_id!r}")
+        if not batch_id:
+            raise ValueError(f"Expected a non-empty value for `batch_id` but received {batch_id!r}")
         return CursorPage.from_response(VectorStoreFileObject, self._transport.request("GET", f"/vector_stores/{vector_store_id}/file_batches/{batch_id}/files", query={"limit": limit, "order": order, "after": after, "before": before, "filter": filter}))

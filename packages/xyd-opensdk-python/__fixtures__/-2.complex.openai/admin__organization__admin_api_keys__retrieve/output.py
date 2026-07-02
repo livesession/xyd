@@ -23,4 +23,6 @@ class AdminApiKeysResource:
         self._transport = transport
 
     def retrieve(self, key_id: str) -> AdminApiKey:
+        if not key_id:
+            raise ValueError(f"Expected a non-empty value for `key_id` but received {key_id!r}")
         return decode(AdminApiKey, self._transport.request("GET", f"/organization/admin_api_keys/{key_id}"))

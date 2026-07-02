@@ -20,4 +20,6 @@ class VersionsResource:
         self._transport = transport
 
     def list(self, skill_id: str, *, limit: Optional[int] = None, order: Optional[OrderEnum] = None, after: Optional[str] = None) -> CursorPage[SkillVersionResource]:
+        if not skill_id:
+            raise ValueError(f"Expected a non-empty value for `skill_id` but received {skill_id!r}")
         return CursorPage.from_response(SkillVersionResource, self._transport.request("GET", f"/skills/{skill_id}/versions", query={"limit": limit, "order": order, "after": after}))

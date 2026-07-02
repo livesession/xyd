@@ -31,4 +31,8 @@ class RateLimitsResource:
         self._transport = transport
 
     def update_rate_limit(self, project_id: str, rate_limit_id: str, *, max_requests_per_1_minute: Optional[int] = None, max_tokens_per_1_minute: Optional[int] = None, max_images_per_1_minute: Optional[int] = None, max_audio_megabytes_per_1_minute: Optional[int] = None, max_requests_per_1_day: Optional[int] = None, batch_1_day_max_input_tokens: Optional[int] = None) -> ProjectRateLimit:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
+        if not rate_limit_id:
+            raise ValueError(f"Expected a non-empty value for `rate_limit_id` but received {rate_limit_id!r}")
         return decode(ProjectRateLimit, self._transport.request("POST", f"/organization/projects/{project_id}/rate_limits/{rate_limit_id}", body={"max_requests_per_1_minute": max_requests_per_1_minute, "max_tokens_per_1_minute": max_tokens_per_1_minute, "max_images_per_1_minute": max_images_per_1_minute, "max_audio_megabytes_per_1_minute": max_audio_megabytes_per_1_minute, "max_requests_per_1_day": max_requests_per_1_day, "batch_1_day_max_input_tokens": batch_1_day_max_input_tokens}))

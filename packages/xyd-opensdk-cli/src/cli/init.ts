@@ -27,6 +27,9 @@ export default {
   emitterOptions: {
     // go: { modulePath: 'github.com/acme/acme-go' },
     // python: { packageName: 'acme' },
+    // Generated SDKs ship a self-test suite by default. Opt a language out with
+    // <lang>.tests: false (same effect as \`generate --no-tests\`):
+    // go: { tests: false },
   },
   // Declarative runtime behavior of the generated SDKs, deep-merged over the
   // canonical defaults (@xyd-js/opensdk-core defaultSdkBehavior()); arrays

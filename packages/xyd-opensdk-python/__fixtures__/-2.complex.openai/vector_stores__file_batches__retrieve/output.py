@@ -17,4 +17,8 @@ class FileBatchesResource:
         self._transport = transport
 
     def retrieve(self, vector_store_id: str, batch_id: str) -> VectorStoreFileBatchObject:
+        if not vector_store_id:
+            raise ValueError(f"Expected a non-empty value for `vector_store_id` but received {vector_store_id!r}")
+        if not batch_id:
+            raise ValueError(f"Expected a non-empty value for `batch_id` but received {batch_id!r}")
         return decode(VectorStoreFileBatchObject, self._transport.request("GET", f"/vector_stores/{vector_store_id}/file_batches/{batch_id}"))

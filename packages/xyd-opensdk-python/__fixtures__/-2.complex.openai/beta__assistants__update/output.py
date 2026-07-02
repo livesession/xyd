@@ -19,4 +19,6 @@ class AssistantsResource:
         self._transport = transport
 
     def update(self, assistant_id: str, *, model: Optional[ModifyAssistantRequestModel] = None, reasoning_effort: Optional[ReasoningEffort] = None, name: Optional[str] = None, description: Optional[str] = None, instructions: Optional[str] = None, tools: Optional[list[ModifyAssistantRequestToolsItem]] = None, tool_resources: Optional[ModifyAssistantRequestToolResources] = None, metadata: Optional[Metadata] = None, temperature: Optional[float] = None, top_p: Optional[float] = None, response_format: Optional[AssistantsApiResponseFormatOption] = None) -> AssistantObject:
+        if not assistant_id:
+            raise ValueError(f"Expected a non-empty value for `assistant_id` but received {assistant_id!r}")
         return decode(AssistantObject, self._transport.request("POST", f"/assistants/{assistant_id}", body={"model": model, "reasoning_effort": reasoning_effort, "name": name, "description": description, "instructions": instructions, "tools": tools, "tool_resources": tool_resources, "metadata": metadata, "temperature": temperature, "top_p": top_p, "response_format": response_format}))

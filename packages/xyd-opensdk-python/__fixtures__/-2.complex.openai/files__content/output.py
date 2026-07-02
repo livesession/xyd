@@ -11,4 +11,6 @@ class FilesResource:
         self._transport = transport
 
     def content(self, file_id: str) -> str:
+        if not file_id:
+            raise ValueError(f"Expected a non-empty value for `file_id` but received {file_id!r}")
         return self._transport.request("GET", f"/files/{file_id}/content")

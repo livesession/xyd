@@ -76,6 +76,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     .option('--sdk-name <name>', 'SDK name for the converter')
     .option('--grouping <path>', 'JSON grouping file ({mountRules, operationHints}); overrides the config values')
     .option('--dry-run', 'Print the files that would be generated without writing')
+    .option('--no-tests', "Don't emit the generated SDK's self-test suite (sets emitterOptions.<lang>.tests=false)")
     .action(async (opts) => {
       try {
         await generateCommand({
@@ -88,6 +89,8 @@ export async function main(argv: string[] = process.argv): Promise<void> {
           grouping: opts.grouping,
           sdk: config?.sdk,
           dryRun: opts.dryRun,
+          // Commander maps `--no-tests` to opts.tests === false (default true).
+          noTests: opts.tests === false,
           emitterOptions: config?.emitterOptions?.[opts.lang],
         });
       } catch (err) {

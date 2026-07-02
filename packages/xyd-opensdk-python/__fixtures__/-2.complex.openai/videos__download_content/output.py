@@ -13,4 +13,6 @@ class VideosResource:
         self._transport = transport
 
     def download_content(self, video_id: str, *, variant: Optional[VideoContentVariant] = None) -> str:
+        if not video_id:
+            raise ValueError(f"Expected a non-empty value for `video_id` but received {video_id!r}")
         return self._transport.request("GET", f"/videos/{video_id}/content", query={"variant": variant})

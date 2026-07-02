@@ -23,4 +23,6 @@ class RolesResource:
         self._transport = transport
 
     def delete(self, role_id: str) -> RoleDeletedResource:
+        if not role_id:
+            raise ValueError(f"Expected a non-empty value for `role_id` but received {role_id!r}")
         return decode(RoleDeletedResource, self._transport.request("DELETE", f"/organization/roles/{role_id}"))

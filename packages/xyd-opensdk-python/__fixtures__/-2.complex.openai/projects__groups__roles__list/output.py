@@ -26,4 +26,8 @@ class RolesResource:
         self._transport = transport
 
     def list(self, project_id: str, group_id: str, *, limit: Optional[int] = None, after: Optional[str] = None, order: Optional[ProjectsGroupsRolesListOrder] = None) -> CursorPage[AssignedRoleDetails]:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
+        if not group_id:
+            raise ValueError(f"Expected a non-empty value for `group_id` but received {group_id!r}")
         return CursorPage.from_response(AssignedRoleDetails, self._transport.request("GET", f"/projects/{project_id}/groups/{group_id}/roles", query={"limit": limit, "after": after, "order": order}))

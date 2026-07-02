@@ -29,4 +29,6 @@ class GroupsResource:
         self._transport = transport
 
     def create(self, project_id: str, *, group_id: str, role: str) -> ProjectGroup:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
         return decode(ProjectGroup, self._transport.request("POST", f"/organization/projects/{project_id}/groups", body={"group_id": group_id, "role": role}))

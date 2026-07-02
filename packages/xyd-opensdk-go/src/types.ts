@@ -10,4 +10,9 @@ export interface OpensdkGoOptions {
    * via `option.WithBaseURL`). Default: the first `servers` entry.
    */
   baseURL?: string;
+  /**
+   * Emit the SDK's OWN test suite (`<resource>_test.go` + `internal/testutil`),
+   * openai-go-shaped. Default: true. Set false to skip.
+   */
+  tests?: boolean;
 }

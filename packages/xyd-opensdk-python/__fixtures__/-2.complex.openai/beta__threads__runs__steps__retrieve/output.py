@@ -31,4 +31,10 @@ class StepsResource:
         self._transport = transport
 
     def retrieve(self, thread_id: str, run_id: str, step_id: str, *, include: Optional[list[str]] = None) -> RunStepObject:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
+        if not run_id:
+            raise ValueError(f"Expected a non-empty value for `run_id` but received {run_id!r}")
+        if not step_id:
+            raise ValueError(f"Expected a non-empty value for `step_id` but received {step_id!r}")
         return decode(RunStepObject, self._transport.request("GET", f"/threads/{thread_id}/runs/{run_id}/steps/{step_id}", query={"include[]": include}))

@@ -17,4 +17,6 @@ class VoiceConsentsResource:
         self._transport = transport
 
     def retrieve(self, consent_id: str) -> VoiceConsentResource:
+        if not consent_id:
+            raise ValueError(f"Expected a non-empty value for `consent_id` but received {consent_id!r}")
         return decode(VoiceConsentResource, self._transport.request("GET", f"/audio/voice_consents/{consent_id}"))

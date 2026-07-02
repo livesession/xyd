@@ -25,4 +25,8 @@ class MessagesResource:
         self._transport = transport
 
     def update(self, thread_id: str, message_id: str, *, metadata: Optional[Metadata] = None) -> MessageObject:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
+        if not message_id:
+            raise ValueError(f"Expected a non-empty value for `message_id` but received {message_id!r}")
         return decode(MessageObject, self._transport.request("POST", f"/threads/{thread_id}/messages/{message_id}", body={"metadata": metadata}))

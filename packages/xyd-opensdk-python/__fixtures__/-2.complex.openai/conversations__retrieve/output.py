@@ -11,4 +11,6 @@ class ConversationsResource:
         self._transport = transport
 
     def retrieve(self, conversation_id: str) -> ConversationResource:
+        if not conversation_id:
+            raise ValueError(f"Expected a non-empty value for `conversation_id` but received {conversation_id!r}")
         return decode(ConversationResource, self._transport.request("GET", f"/conversations/{conversation_id}"))

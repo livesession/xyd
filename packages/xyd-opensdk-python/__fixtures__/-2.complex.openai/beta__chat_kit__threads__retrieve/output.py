@@ -23,4 +23,6 @@ class ThreadsResource:
         self._transport = transport
 
     def retrieve(self, thread_id: str) -> ThreadResource:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
         return decode(ThreadResource, self._transport.request("GET", f"/chatkit/threads/{thread_id}"))

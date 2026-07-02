@@ -3,8 +3,10 @@ import type { Emitter, EmitterContext, GeneratedFile } from '@xyd-js/opensdk-fra
 import { generate, planOperation } from '@xyd-js/opensdk-framework';
 
 import { pyPageName } from './method';
+import { snakeCase } from './naming';
 import { clientPy, modelsPy, pyproject, resolvePythonOptions, resourcesPy } from './project';
 import { errorClassNames, paginationPy, transportPy } from './runtime';
+import { resourceTestPy, testConftestPy, testUtilsPy } from './tests-py';
 import type { OpensdkPythonOptions } from './types';
 
 const resolve = (spec: OpensdkSpecJson, ctx: EmitterContext) =>
@@ -60,6 +62,25 @@ export const pythonEmitter: Emitter = {
     // paginated endpoints gets no dead runtime code (mirrors the Go emitter).
     if (walkMethods(spec).some(({ method }) => pyPageName(planOperation(method, ctx.types)) !== null)) {
       files.push({ path: `${pkg}/_pagination.py`, content: paginationPy() });
+    }
+    return files;
+  },
+
+  // The SDK's own pytest suite (openai-python's tests/api_resources/*). SYNC
+  // only — no async/raw/streaming client yet (follow-ups). Off via
+  // emitterOptions.tests === false; default ON. One test file per top-level
+  // resource plus the shared conftest fixture + assert_matches_type helper.
+  generateTests(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {
+    if ((ctx.emitterOptions as OpensdkPythonOptions).tests === false) return [];
+    const { pkg } = resolve(spec, ctx);
+    const resources = spec.resources || [];
+    if (resources.length === 0) return [];
+    const files: GeneratedFile[] = [
+      { path: 'tests/utils.py', content: testUtilsPy() },
+      { path: 'tests/conftest.py', content: testConftestPy(pkg) },
+    ];
+    for (const r of resources) {
+      files.push({ path: `tests/test_${snakeCase(r.name)}.py`, content: resourceTestPy(r, pkg, ctx.types) });
     }
     return files;
   },

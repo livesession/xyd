@@ -23,4 +23,6 @@ class AdminApiKeysResource:
         self._transport = transport
 
     def delete(self, key_id: str) -> AdminOrganizationAdminApiKeysDeleteResponse:
+        if not key_id:
+            raise ValueError(f"Expected a non-empty value for `key_id` but received {key_id!r}")
         return decode(AdminOrganizationAdminApiKeysDeleteResponse, self._transport.request("DELETE", f"/organization/admin_api_keys/{key_id}"))

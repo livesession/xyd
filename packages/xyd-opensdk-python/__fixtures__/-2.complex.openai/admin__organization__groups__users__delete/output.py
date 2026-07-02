@@ -29,4 +29,8 @@ class UsersResource:
         self._transport = transport
 
     def delete(self, group_id: str, user_id: str) -> GroupUserDeletedResource:
+        if not group_id:
+            raise ValueError(f"Expected a non-empty value for `group_id` but received {group_id!r}")
+        if not user_id:
+            raise ValueError(f"Expected a non-empty value for `user_id` but received {user_id!r}")
         return decode(GroupUserDeletedResource, self._transport.request("DELETE", f"/organization/groups/{group_id}/users/{user_id}"))

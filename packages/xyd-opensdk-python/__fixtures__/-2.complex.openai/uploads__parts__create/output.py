@@ -19,4 +19,6 @@ class PartsResource:
         self._transport = transport
 
     def create(self, upload_id: str, *, data: Union[bytes, BinaryIO]) -> UploadPart:
+        if not upload_id:
+            raise ValueError(f"Expected a non-empty value for `upload_id` but received {upload_id!r}")
         return decode(UploadPart, self._transport.request("POST", f"/uploads/{upload_id}/parts", body={"data": data}, encoding="multipart"))

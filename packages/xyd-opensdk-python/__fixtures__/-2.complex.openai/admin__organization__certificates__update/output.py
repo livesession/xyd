@@ -25,4 +25,6 @@ class CertificatesResource:
         self._transport = transport
 
     def update(self, certificate_id: str, *, name: Optional[str] = None) -> Certificate:
+        if not certificate_id:
+            raise ValueError(f"Expected a non-empty value for `certificate_id` but received {certificate_id!r}")
         return decode(Certificate, self._transport.request("POST", f"/organization/certificates/{certificate_id}", body={"name": name}))

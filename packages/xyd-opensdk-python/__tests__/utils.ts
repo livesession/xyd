@@ -44,6 +44,9 @@ export function pyCompileSmoke(name: string, options?: OpensdkPythonOptions) {
   try {
     writeTree(dir, files);
     const modules = Object.keys(files).filter((f) => f.endsWith('.py'));
+    // The generated pytest suite (tests/*.py) is part of the compiled set, so
+    // the smoke provably covers it — not just the package modules.
+    expect(modules.some((m) => m.startsWith('tests/')), `${name}: no generated tests/*.py to compile`).toBe(true);
     execSync(`python3 -m py_compile ${modules.map((m) => JSON.stringify(m)).join(' ')}`, { cwd: dir, stdio: 'pipe' });
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });

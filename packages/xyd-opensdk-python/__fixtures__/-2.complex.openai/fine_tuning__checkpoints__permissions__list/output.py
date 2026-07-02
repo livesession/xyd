@@ -26,4 +26,6 @@ class PermissionsResource:
         self._transport = transport
 
     def list(self, fine_tuned_model_checkpoint: str, *, project_id: Optional[str] = None, after: Optional[str] = None, limit: Optional[int] = None, order: Optional[FineTuningCheckpointsPermissionsListOrder] = None) -> CursorPage[FineTuningCheckpointPermission]:
+        if not fine_tuned_model_checkpoint:
+            raise ValueError(f"Expected a non-empty value for `fine_tuned_model_checkpoint` but received {fine_tuned_model_checkpoint!r}")
         return CursorPage.from_response(FineTuningCheckpointPermission, self._transport.request("GET", f"/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions", query={"project_id": project_id, "after": after, "limit": limit, "order": order}))

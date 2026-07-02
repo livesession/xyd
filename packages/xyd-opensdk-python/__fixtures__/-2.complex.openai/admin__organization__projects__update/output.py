@@ -25,4 +25,6 @@ class ProjectsResource:
         self._transport = transport
 
     def update(self, project_id: str, *, name: Optional[str] = None, external_key_id: Optional[str] = None, geography: Optional[str] = None) -> Project:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
         return decode(Project, self._transport.request("POST", f"/organization/projects/{project_id}", body={"name": name, "external_key_id": external_key_id, "geography": geography}))

@@ -32,4 +32,6 @@ class RolesResource:
         self._transport = transport
 
     def list(self, user_id: str, *, limit: Optional[int] = None, after: Optional[str] = None, order: Optional[AdminOrganizationUsersRolesListOrder] = None) -> CursorPage[AssignedRoleDetails]:
+        if not user_id:
+            raise ValueError(f"Expected a non-empty value for `user_id` but received {user_id!r}")
         return CursorPage.from_response(AssignedRoleDetails, self._transport.request("GET", f"/organization/users/{user_id}/roles", query={"limit": limit, "after": after, "order": order}))

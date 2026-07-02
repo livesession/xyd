@@ -14,15 +14,26 @@ export async function generateCommand(
     lang: string;
     output: string;
     dryRun?: boolean;
+    /**
+     * Opt OUT of the emitted self-test suite for the active language. Threaded
+     * onto the per-language emitterOptions bag as `{ tests: false }` (emitters
+     * emit their test suite unless `tests === false`).
+     */
+    noTests?: boolean;
     /** Language-specific option bag for the active emitter (from config). */
     emitterOptions?: Record<string, unknown>;
   },
 ): Promise<void> {
   const ir = await loadIR(opts.spec, converterOptions(opts));
   const emitter = getEmitter(opts.lang);
+  // --no-tests rides the per-language emitterOptions bag as { tests: false };
+  // the config bag can carry other emitter options (modulePath, packageName, ...).
+  const emitterOptions = opts.noTests
+    ? { ...(opts.emitterOptions ?? {}), tests: false }
+    : (opts.emitterOptions ?? {});
   // generateFileMap keeps per-file writeMode (skipIfExists/mergeJson) so
   // regenerating into a live repo honors user-owned scaffolds.
-  const files = generateFileMap(ir, emitter, opts.emitterOptions ?? {});
+  const files = generateFileMap(ir, emitter, emitterOptions);
 
   if (opts.dryRun) {
     for (const path of Object.keys(files).sort()) console.log(path);

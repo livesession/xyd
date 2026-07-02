@@ -25,6 +25,8 @@ class UploadsResource:
         return decode(UploadResult, self._transport.request("POST", "/uploads", body={"file": file, "label": label}, encoding="multipart"))
 
     def download(self, upload_id: str) -> bytes:
+        if not upload_id:
+            raise ValueError(f"Expected a non-empty value for `upload_id` but received {upload_id!r}")
         return self._transport.request("GET", f"/uploads/{upload_id}/content", headers={"Accept": "application/octet-stream"}, raw=True)
 
 

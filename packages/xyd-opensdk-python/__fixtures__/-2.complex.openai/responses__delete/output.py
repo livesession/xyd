@@ -11,4 +11,6 @@ class ResponsesResource:
         self._transport = transport
 
     def delete(self, response_id: str) -> None:
+        if not response_id:
+            raise ValueError(f"Expected a non-empty value for `response_id` but received {response_id!r}")
         self._transport.request("DELETE", f"/responses/{response_id}")

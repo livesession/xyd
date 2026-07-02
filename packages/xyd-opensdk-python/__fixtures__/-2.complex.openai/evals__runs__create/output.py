@@ -19,4 +19,6 @@ class RunsResource:
         self._transport = transport
 
     def create(self, eval_id: str, *, name: Optional[str] = None, metadata: Optional[Metadata] = None, data_source: CreateEvalRunRequestDataSource) -> EvalRun:
+        if not eval_id:
+            raise ValueError(f"Expected a non-empty value for `eval_id` but received {eval_id!r}")
         return decode(EvalRun, self._transport.request("POST", f"/evals/{eval_id}/runs", body={"name": name, "metadata": metadata, "data_source": data_source}))

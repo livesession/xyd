@@ -19,4 +19,8 @@ class ItemsResource:
         self._transport = transport
 
     def retrieve(self, conversation_id: str, item_id: str, *, include: Optional[list[IncludeEnum]] = None) -> ConversationItem:
+        if not conversation_id:
+            raise ValueError(f"Expected a non-empty value for `conversation_id` but received {conversation_id!r}")
+        if not item_id:
+            raise ValueError(f"Expected a non-empty value for `item_id` but received {item_id!r}")
         return decode(ConversationItem, self._transport.request("GET", f"/conversations/{conversation_id}/items/{item_id}", query={"include": include}))

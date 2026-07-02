@@ -17,4 +17,6 @@ class AssistantsResource:
         self._transport = transport
 
     def retrieve(self, assistant_id: str) -> AssistantObject:
+        if not assistant_id:
+            raise ValueError(f"Expected a non-empty value for `assistant_id` but received {assistant_id!r}")
         return decode(AssistantObject, self._transport.request("GET", f"/assistants/{assistant_id}"))

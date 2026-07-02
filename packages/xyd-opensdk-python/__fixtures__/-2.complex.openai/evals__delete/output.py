@@ -11,4 +11,6 @@ class EvalsResource:
         self._transport = transport
 
     def delete(self, eval_id: str) -> EvalsDeleteResponse:
+        if not eval_id:
+            raise ValueError(f"Expected a non-empty value for `eval_id` but received {eval_id!r}")
         return decode(EvalsDeleteResponse, self._transport.request("DELETE", f"/evals/{eval_id}"))

@@ -11,4 +11,6 @@ class UploadsResource:
         self._transport = transport
 
     def cancel(self, upload_id: str) -> Upload:
+        if not upload_id:
+            raise ValueError(f"Expected a non-empty value for `upload_id` but received {upload_id!r}")
         return decode(Upload, self._transport.request("POST", f"/uploads/{upload_id}/cancel"))

@@ -17,4 +17,8 @@ class FilesResource:
         self._transport = transport
 
     def delete(self, vector_store_id: str, file_id: str) -> DeleteVectorStoreFileResponse:
+        if not vector_store_id:
+            raise ValueError(f"Expected a non-empty value for `vector_store_id` but received {vector_store_id!r}")
+        if not file_id:
+            raise ValueError(f"Expected a non-empty value for `file_id` but received {file_id!r}")
         return decode(DeleteVectorStoreFileResponse, self._transport.request("DELETE", f"/vector_stores/{vector_store_id}/files/{file_id}"))

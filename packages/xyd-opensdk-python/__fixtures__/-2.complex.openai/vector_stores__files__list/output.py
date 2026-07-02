@@ -20,4 +20,6 @@ class FilesResource:
         self._transport = transport
 
     def list(self, vector_store_id: str, *, limit: Optional[int] = None, order: Optional[VectorStoresFilesListOrder] = None, after: Optional[str] = None, before: Optional[str] = None, filter: Optional[VectorStoresFilesListFilter] = None) -> CursorPage[VectorStoreFileObject]:
+        if not vector_store_id:
+            raise ValueError(f"Expected a non-empty value for `vector_store_id` but received {vector_store_id!r}")
         return CursorPage.from_response(VectorStoreFileObject, self._transport.request("GET", f"/vector_stores/{vector_store_id}/files", query={"limit": limit, "order": order, "after": after, "before": before, "filter": filter}))

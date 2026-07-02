@@ -23,4 +23,8 @@ class MessagesResource:
         self._transport = transport
 
     def retrieve(self, thread_id: str, message_id: str) -> MessageObject:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
+        if not message_id:
+            raise ValueError(f"Expected a non-empty value for `message_id` but received {message_id!r}")
         return decode(MessageObject, self._transport.request("GET", f"/threads/{thread_id}/messages/{message_id}"))

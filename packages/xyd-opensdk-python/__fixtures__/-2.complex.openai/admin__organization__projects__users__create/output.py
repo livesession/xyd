@@ -31,4 +31,6 @@ class UsersResource:
         self._transport = transport
 
     def create(self, project_id: str, *, user_id: Optional[str] = None, email: Optional[str] = None, role: str) -> ProjectUser:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
         return decode(ProjectUser, self._transport.request("POST", f"/organization/projects/{project_id}/users", body={"user_id": user_id, "email": email, "role": role}))

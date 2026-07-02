@@ -28,7 +28,12 @@ const GO_SMOKE = process.env.O2S_GO_SMOKE === '1';
 /** The single top-level resource `.go` file in a generated project (the interesting bit). */
 function resourceFileKey(files: Record<string, string>): string | undefined {
   return Object.keys(files).find(
-    (k) => k.endsWith('.go') && !k.includes('/') && k !== 'client.go' && k !== 'types.go',
+    (k) =>
+      k.endsWith('.go') &&
+      !k.endsWith('_test.go') && // the SDK's own <resource>_test.go is a sibling, not the resource file
+      !k.includes('/') &&
+      k !== 'client.go' &&
+      k !== 'types.go',
   );
 }
 

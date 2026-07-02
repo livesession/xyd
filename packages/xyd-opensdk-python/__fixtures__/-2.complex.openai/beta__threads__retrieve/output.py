@@ -17,4 +17,6 @@ class ThreadsResource:
         self._transport = transport
 
     def retrieve(self, thread_id: str) -> ThreadObject:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
         return decode(ThreadObject, self._transport.request("GET", f"/threads/{thread_id}"))

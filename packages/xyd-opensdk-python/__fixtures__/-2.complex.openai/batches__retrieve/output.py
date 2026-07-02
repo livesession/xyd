@@ -11,4 +11,6 @@ class BatchesResource:
         self._transport = transport
 
     def retrieve(self, batch_id: str) -> Batch:
+        if not batch_id:
+            raise ValueError(f"Expected a non-empty value for `batch_id` but received {batch_id!r}")
         return decode(Batch, self._transport.request("GET", f"/batches/{batch_id}"))

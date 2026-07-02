@@ -17,4 +17,6 @@ class CharactersResource:
         self._transport = transport
 
     def retrieve(self, character_id: str) -> VideoCharacterResource:
+        if not character_id:
+            raise ValueError(f"Expected a non-empty value for `character_id` but received {character_id!r}")
         return decode(VideoCharacterResource, self._transport.request("GET", f"/videos/characters/{character_id}"))

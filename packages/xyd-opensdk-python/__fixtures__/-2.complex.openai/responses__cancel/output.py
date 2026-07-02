@@ -11,4 +11,6 @@ class ResponsesResource:
         self._transport = transport
 
     def cancel(self, response_id: str) -> Response:
+        if not response_id:
+            raise ValueError(f"Expected a non-empty value for `response_id` but received {response_id!r}")
         return decode(Response, self._transport.request("POST", f"/responses/{response_id}/cancel"))

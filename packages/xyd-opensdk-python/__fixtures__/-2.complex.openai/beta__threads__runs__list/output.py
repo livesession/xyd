@@ -26,4 +26,6 @@ class RunsResource:
         self._transport = transport
 
     def list(self, thread_id: str, *, limit: Optional[int] = None, order: Optional[BetaThreadsRunsListOrder] = None, after: Optional[str] = None, before: Optional[str] = None) -> CursorPage[RunObject]:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
         return CursorPage.from_response(RunObject, self._transport.request("GET", f"/threads/{thread_id}/runs", query={"limit": limit, "order": order, "after": after, "before": before}))

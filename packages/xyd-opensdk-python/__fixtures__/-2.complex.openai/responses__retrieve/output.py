@@ -13,4 +13,6 @@ class ResponsesResource:
         self._transport = transport
 
     def retrieve(self, response_id: str, *, include: Optional[list[IncludeEnum]] = None, stream: Optional[bool] = None, starting_after: Optional[int] = None, include_obfuscation: Optional[bool] = None) -> Response:
+        if not response_id:
+            raise ValueError(f"Expected a non-empty value for `response_id` but received {response_id!r}")
         return decode(Response, self._transport.request("GET", f"/responses/{response_id}", query={"include": include, "stream": stream, "starting_after": starting_after, "include_obfuscation": include_obfuscation}))

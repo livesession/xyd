@@ -26,4 +26,6 @@ class MessagesResource:
         self._transport = transport
 
     def list(self, thread_id: str, *, limit: Optional[int] = None, order: Optional[BetaThreadsMessagesListOrder] = None, after: Optional[str] = None, before: Optional[str] = None, run_id: Optional[str] = None) -> CursorPage[MessageObject]:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
         return CursorPage.from_response(MessageObject, self._transport.request("GET", f"/threads/{thread_id}/messages", query={"limit": limit, "order": order, "after": after, "before": before, "run_id": run_id}))

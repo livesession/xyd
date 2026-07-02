@@ -11,4 +11,6 @@ class FilesResource:
         self._transport = transport
 
     def retrieve(self, file_id: str) -> OpenAiFile:
+        if not file_id:
+            raise ValueError(f"Expected a non-empty value for `file_id` but received {file_id!r}")
         return decode(OpenAiFile, self._transport.request("GET", f"/files/{file_id}"))

@@ -40,12 +40,16 @@ export function testFixture(name: string, options?: OpensdkGoOptions) {
 
 /**
  * Optional: write the project to a temp dir and run `go mod tidy && go build && go vet`.
- * When `runtimeTest` names a Go test file it is copied next to client.go and
- * `go test ./...` runs too — a REAL runtime check of the vendored runtime
- * (retry loop, multipart/form encoders, User-Agent, APIError), not just compile.
- * CGO is disabled for the test run: the pure-Go resolver keeps it hermetic and
- * dodges a macOS stall where a freshly-built cgo test binary that opens a
- * localhost listener wedges at exec (uninterruptible, pre-main).
+ * `go test` then TYPECHECKS the SDK's own generated `<resource>_test.go` files:
+ *   - with a `runtimeTest` file, `go test ./...` runs it (a REAL runtime check of
+ *     the vendored runtime — retry loop, multipart/form encoders, UA, APIError)
+ *     AND compiles the generated tests (mock tests skip via SKIP_MOCK_TESTS);
+ *   - without one, a never-match `-run` filter compiles the generated tests
+ *     without executing any (pure typecheck).
+ * SKIP_MOCK_TESTS=true makes the generated CheckTestServer tests skip cleanly
+ * (no mock server is running). CGO is disabled for the test run: the pure-Go
+ * resolver keeps it hermetic and dodges a macOS stall where a freshly-built cgo
+ * test binary that opens a localhost listener wedges at exec (pre-main).
  */
 export function goBuildSmoke(name: string, options?: OpensdkGoOptions, runtimeTest?: string) {
   const files = opensdkGo(readIR(name), options);
@@ -56,24 +60,23 @@ export function goBuildSmoke(name: string, options?: OpensdkGoOptions, runtimeTe
     execSync('go mod tidy', { cwd: dir, stdio: 'pipe' });
     execSync('go build ./...', { cwd: dir, stdio: 'pipe' });
     execSync('go vet ./...', { cwd: dir, stdio: 'pipe' });
-    if (runtimeTest) {
-      execSync('go test -timeout 120s -count=1 ./...', {
-        cwd: dir,
-        stdio: 'pipe',
-        env: {
-          ...process.env,
-          CGO_ENABLED: '0',
-          GODEBUG: 'netdns=go',
-          // Hermetic User-Agent: the generated runtime sniffs these at init
-          // (sdk.userAgent.aiAgentEnvVars) and would append an agent slug.
-          CLAUDE_CODE: '',
-          CURSOR_AGENT: '',
-          CLINE_ACTIVE: '',
-          WINDSURF_ACTIVE: '',
-          COPILOT_AGENT: '',
-        },
-      });
-    }
+    const testEnv = {
+      ...process.env,
+      // The generated CheckTestServer tests skip when no mock server answers.
+      SKIP_MOCK_TESTS: 'true',
+      CGO_ENABLED: '0',
+      GODEBUG: 'netdns=go',
+      // Hermetic User-Agent: the generated runtime sniffs these at init
+      // (sdk.userAgent.aiAgentEnvVars) and would append an agent slug.
+      CLAUDE_CODE: '',
+      CURSOR_AGENT: '',
+      CLINE_ACTIVE: '',
+      WINDSURF_ACTIVE: '',
+      COPILOT_AGENT: '',
+    };
+    // A never-match run filter compiles every _test.go without executing tests.
+    const runArgs = runtimeTest ? '-timeout 120s' : "-run 'X_NEVER_MATCH_X'";
+    execSync(`go test ${runArgs} -count=1 ./...`, { cwd: dir, stdio: 'pipe', env: testEnv });
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

@@ -17,4 +17,8 @@ class VersionsResource:
         self._transport = transport
 
     def content(self, skill_id: str, version: str) -> str:
+        if not skill_id:
+            raise ValueError(f"Expected a non-empty value for `skill_id` but received {skill_id!r}")
+        if not version:
+            raise ValueError(f"Expected a non-empty value for `version` but received {version!r}")
         return self._transport.request("GET", f"/skills/{skill_id}/versions/{version}/content")

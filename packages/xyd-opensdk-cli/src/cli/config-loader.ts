@@ -10,7 +10,16 @@ import type { Emitter } from '@xyd-js/opensdk-framework';
 export interface OpensdkCliConfig {
   /** Extra emitter plugins to register (may override the built-in go/python). */
   emitters?: Emitter[];
-  /** Language-specific emitter options; only the active language's bag is passed on generate. */
+  /**
+   * Language-specific emitter options; only the active language's bag is passed
+   * on generate (e.g. `{ go: { modulePath }, python: { packageName } }`).
+   *
+   * Reserved key — `tests`: emitters ship a self-test suite by default; set
+   * `emitterOptions.<lang>.tests: false` to opt that language's generated SDK
+   * out of the emitted tests (the same effect as the `generate --no-tests`
+   * flag, which threads `{ tests: false }` onto this bag for the active
+   * language). Emitters emit their test suite unless `tests` is `false`.
+   */
   emitterOptions?: Record<string, Record<string, unknown>>;
   /** Default SDK name passed to the converter (overridable per command with --sdk-name). */
   sdkName?: string;

@@ -17,4 +17,6 @@ class VoiceConsentsResource:
         self._transport = transport
 
     def delete(self, consent_id: str) -> VoiceConsentDeletedResource:
+        if not consent_id:
+            raise ValueError(f"Expected a non-empty value for `consent_id` but received {consent_id!r}")
         return decode(VoiceConsentDeletedResource, self._transport.request("DELETE", f"/audio/voice_consents/{consent_id}"))

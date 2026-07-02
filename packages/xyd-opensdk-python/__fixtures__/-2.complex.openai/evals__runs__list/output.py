@@ -20,4 +20,6 @@ class RunsResource:
         self._transport = transport
 
     def list(self, eval_id: str, *, after: Optional[str] = None, limit: Optional[int] = None, order: Optional[EvalsRunsListOrder] = None, status: Optional[EvalsRunsListStatus] = None) -> CursorPage[EvalRun]:
+        if not eval_id:
+            raise ValueError(f"Expected a non-empty value for `eval_id` but received {eval_id!r}")
         return CursorPage.from_response(EvalRun, self._transport.request("GET", f"/evals/{eval_id}/runs", query={"after": after, "limit": limit, "order": order, "status": status}))

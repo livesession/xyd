@@ -17,4 +17,8 @@ class FilesResource:
         self._transport = transport
 
     def retrieve(self, container_id: str, file_id: str) -> ContainerFileResource:
+        if not container_id:
+            raise ValueError(f"Expected a non-empty value for `container_id` but received {container_id!r}")
+        if not file_id:
+            raise ValueError(f"Expected a non-empty value for `file_id` but received {file_id!r}")
         return decode(ContainerFileResource, self._transport.request("GET", f"/containers/{container_id}/files/{file_id}"))

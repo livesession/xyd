@@ -25,4 +25,6 @@ class RolesResource:
         self._transport = transport
 
     def update(self, role_id: str, *, permissions: Optional[list[str]] = None, description: Optional[str] = None, role_name: Optional[str] = None) -> Role:
+        if not role_id:
+            raise ValueError(f"Expected a non-empty value for `role_id` but received {role_id!r}")
         return decode(Role, self._transport.request("POST", f"/organization/roles/{role_id}", body={"permissions": permissions, "description": description, "role_name": role_name}))

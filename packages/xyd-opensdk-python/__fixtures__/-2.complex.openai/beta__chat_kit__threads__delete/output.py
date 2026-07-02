@@ -23,4 +23,6 @@ class ThreadsResource:
         self._transport = transport
 
     def delete(self, thread_id: str) -> DeletedThreadResource:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
         return decode(DeletedThreadResource, self._transport.request("DELETE", f"/chatkit/threads/{thread_id}"))

@@ -20,4 +20,6 @@ class ItemsResource:
         self._transport = transport
 
     def list(self, conversation_id: str, *, limit: Optional[int] = None, order: Optional[ConversationsItemsListOrder] = None, after: Optional[str] = None, include: Optional[list[IncludeEnum]] = None) -> CursorPage[ConversationItem]:
+        if not conversation_id:
+            raise ValueError(f"Expected a non-empty value for `conversation_id` but received {conversation_id!r}")
         return CursorPage.from_response(ConversationItem, self._transport.request("GET", f"/conversations/{conversation_id}/items", query={"limit": limit, "order": order, "after": after, "include": include}))

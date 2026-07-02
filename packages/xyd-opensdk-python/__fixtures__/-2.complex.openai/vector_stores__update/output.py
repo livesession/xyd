@@ -13,4 +13,6 @@ class VectorStoresResource:
         self._transport = transport
 
     def update(self, vector_store_id: str, *, name: Optional[str] = None, expires_after: Optional[VectorStoreExpirationAfter] = None, metadata: Optional[Metadata] = None) -> VectorStoreObject:
+        if not vector_store_id:
+            raise ValueError(f"Expected a non-empty value for `vector_store_id` but received {vector_store_id!r}")
         return decode(VectorStoreObject, self._transport.request("POST", f"/vector_stores/{vector_store_id}", body={"name": name, "expires_after": expires_after, "metadata": metadata}))

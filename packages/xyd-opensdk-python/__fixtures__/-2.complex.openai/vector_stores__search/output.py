@@ -14,4 +14,6 @@ class VectorStoresResource:
         self._transport = transport
 
     def search(self, vector_store_id: str, *, query: VectorStoreSearchRequestQuery, rewrite_query: Optional[bool] = None, max_num_results: Optional[int] = None, filters: Optional[VectorStoreSearchRequestFilters] = None, ranking_options: Optional[VectorStoreSearchRequestRankingOptions] = None) -> CursorPage[VectorStoreSearchResultItem]:
+        if not vector_store_id:
+            raise ValueError(f"Expected a non-empty value for `vector_store_id` but received {vector_store_id!r}")
         return CursorPage.from_response(VectorStoreSearchResultItem, self._transport.request("POST", f"/vector_stores/{vector_store_id}/search", body={"query": query, "rewrite_query": rewrite_query, "max_num_results": max_num_results, "filters": filters, "ranking_options": ranking_options}))

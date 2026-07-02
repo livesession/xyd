@@ -23,4 +23,6 @@ class SessionsResource:
         self._transport = transport
 
     def cancel(self, session_id: str) -> ChatSessionResource:
+        if not session_id:
+            raise ValueError(f"Expected a non-empty value for `session_id` but received {session_id!r}")
         return decode(ChatSessionResource, self._transport.request("POST", f"/chatkit/sessions/{session_id}/cancel"))

@@ -17,4 +17,8 @@ class RunsResource:
         self._transport = transport
 
     def cancel(self, eval_id: str, run_id: str) -> EvalRun:
+        if not eval_id:
+            raise ValueError(f"Expected a non-empty value for `eval_id` but received {eval_id!r}")
+        if not run_id:
+            raise ValueError(f"Expected a non-empty value for `run_id` but received {run_id!r}")
         return decode(EvalRun, self._transport.request("POST", f"/evals/{eval_id}/runs/{run_id}"))

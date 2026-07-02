@@ -35,4 +35,6 @@ class DeactivateResource:
         self._transport = transport
 
     def create(self, project_id: str, *, certificate_ids: list[str]) -> OrganizationProjectCertificateDeactivationResponse:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
         return decode(OrganizationProjectCertificateDeactivationResponse, self._transport.request("POST", f"/organization/projects/{project_id}/certificates/deactivate", body={"certificate_ids": certificate_ids}))

@@ -19,4 +19,6 @@ class FilesResource:
         self._transport = transport
 
     def create(self, vector_store_id: str, *, file_id: str, chunking_strategy: Optional[ChunkingStrategyRequestParam] = None, attributes: Optional[VectorStoreFileAttributes] = None) -> VectorStoreFileObject:
+        if not vector_store_id:
+            raise ValueError(f"Expected a non-empty value for `vector_store_id` but received {vector_store_id!r}")
         return decode(VectorStoreFileObject, self._transport.request("POST", f"/vector_stores/{vector_store_id}/files", body={"file_id": file_id, "chunking_strategy": chunking_strategy, "attributes": attributes}))

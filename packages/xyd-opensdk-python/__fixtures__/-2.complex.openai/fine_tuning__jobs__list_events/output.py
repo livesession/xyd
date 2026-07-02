@@ -20,4 +20,6 @@ class JobsResource:
         self._transport = transport
 
     def list_events(self, fine_tuning_job_id: str, *, after: Optional[str] = None, limit: Optional[int] = None) -> CursorPage[FineTuningJobEvent]:
+        if not fine_tuning_job_id:
+            raise ValueError(f"Expected a non-empty value for `fine_tuning_job_id` but received {fine_tuning_job_id!r}")
         return CursorPage.from_response(FineTuningJobEvent, self._transport.request("GET", f"/fine_tuning/jobs/{fine_tuning_job_id}/events", query={"after": after, "limit": limit}))

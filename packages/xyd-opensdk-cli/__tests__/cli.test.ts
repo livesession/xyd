@@ -5,7 +5,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import type { Emitter } from '@xyd-js/opensdk-framework';
-import { generate, getEmitter } from '@xyd-js/opensdk-framework';
+import { generate, getEmitter, registerEmitter } from '@xyd-js/opensdk-framework';
 
 import { applyConfig, generateCommand, initCommand, loadConfig, parseCommand, registerBuiltinEmitters } from '../src';
 
@@ -137,6 +137,93 @@ describe('init command', () => {
       await initCommand({ project: dir });
       expect(fs.readFileSync(path.join(dir, 'opensdk.config.mjs'), 'utf8')).toContain('emitters');
       await expect(initCommand({ project: dir })).rejects.toThrow(/already initialized/);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+// Recursively list every generated file, path relative to `root`.
+function walkFiles(root: string, prefix = ''): string[] {
+  const out: string[] = [];
+  for (const entry of fs.readdirSync(path.join(root, prefix), { withFileTypes: true })) {
+    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) out.push(...walkFiles(root, rel));
+    else out.push(rel);
+  }
+  return out;
+}
+
+// The go emitter's self-test suite (generateTests) lands in parallel with the
+// CLI. Detect it on the freshly-built emitter so the strict go assertions run
+// (and enforce both directions) once it's present, and the suite stays green in
+// the interim. The --no-tests WIRING itself is proven deterministically below.
+function goHasTestEmitter(): boolean {
+  registerBuiltinEmitters();
+  return typeof (getEmitter('go') as Emitter).generateTests === 'function';
+}
+const GO_TEST_EMITTER = goHasTestEmitter();
+
+describe('generate --no-tests (self-test suite emission)', () => {
+  it.skipIf(!GO_TEST_EMITTER)('go emits a *_test.go suite + internal/testutil/testutil.go by default', async () => {
+    registerBuiltinEmitters();
+    const dir = tmp();
+    try {
+      await generateCommand({ spec: SPEC, lang: 'go', output: dir });
+      const files = walkFiles(dir);
+      expect(files.some((f) => f.endsWith('_test.go'))).toBe(true);
+      expect(fs.existsSync(path.join(dir, 'internal/testutil/testutil.go'))).toBe(true);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it.skipIf(!GO_TEST_EMITTER)('go --no-tests emits no *_test.go and no testutil', async () => {
+    registerBuiltinEmitters();
+    const dir = tmp();
+    try {
+      await generateCommand({ spec: SPEC, lang: 'go', output: dir, noTests: true });
+      const files = walkFiles(dir);
+      expect(files.some((f) => f.endsWith('_test.go'))).toBe(false);
+      expect(fs.existsSync(path.join(dir, 'internal/testutil/testutil.go'))).toBe(false);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  // Deterministic proof of the flag wiring, independent of the go emitter build:
+  // --no-tests must thread { tests: false } onto the active language's
+  // emitterOptions bag (alongside any config options), and omit it otherwise.
+  it('--no-tests threads { tests: false } onto the active emitter options; default leaves it unset', async () => {
+    const seen: { tests?: unknown; modulePath?: unknown }[] = [];
+    const stub: Emitter = {
+      language: 'wiretest',
+      generateProject: () => [{ path: 'x.txt', content: 'x' }],
+      generateClient: () => [],
+      generateTypes: () => [],
+      generateResources: () => [],
+      generateRuntime: () => [],
+      generateTests: (_spec, ctx) => {
+        seen.push({ tests: ctx.emitterOptions.tests, modulePath: ctx.emitterOptions.modulePath });
+        return [{ path: 'wiretest_test.txt', content: 't' }];
+      },
+    };
+    registerEmitter(stub);
+    const dir = tmp();
+    try {
+      // WITH --no-tests: tests === false, and the config bag is preserved.
+      await generateCommand({
+        spec: SPEC,
+        lang: 'wiretest',
+        output: path.join(dir, 'off'),
+        noTests: true,
+        emitterOptions: { modulePath: 'github.com/acme/acme-go' },
+      });
+      expect(seen[0]).toEqual({ tests: false, modulePath: 'github.com/acme/acme-go' });
+
+      // WITHOUT --no-tests: no tests key is injected (emitters default ON).
+      await generateCommand({ spec: SPEC, lang: 'wiretest', output: path.join(dir, 'on') });
+      expect(seen[1]?.tests).toBeUndefined();
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

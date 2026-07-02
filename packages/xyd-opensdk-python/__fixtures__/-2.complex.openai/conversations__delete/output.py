@@ -11,4 +11,6 @@ class ConversationsResource:
         self._transport = transport
 
     def delete(self, conversation_id: str) -> DeletedConversationResource:
+        if not conversation_id:
+            raise ValueError(f"Expected a non-empty value for `conversation_id` but received {conversation_id!r}")
         return decode(DeletedConversationResource, self._transport.request("DELETE", f"/conversations/{conversation_id}"))

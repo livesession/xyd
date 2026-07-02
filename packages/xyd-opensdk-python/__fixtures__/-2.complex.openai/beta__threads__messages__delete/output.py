@@ -23,4 +23,8 @@ class MessagesResource:
         self._transport = transport
 
     def delete(self, thread_id: str, message_id: str) -> DeleteMessageResponse:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
+        if not message_id:
+            raise ValueError(f"Expected a non-empty value for `message_id` but received {message_id!r}")
         return decode(DeleteMessageResponse, self._transport.request("DELETE", f"/threads/{thread_id}/messages/{message_id}"))

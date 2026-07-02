@@ -11,4 +11,6 @@ class SkillsResource:
         self._transport = transport
 
     def delete(self, skill_id: str) -> DeletedSkillResource:
+        if not skill_id:
+            raise ValueError(f"Expected a non-empty value for `skill_id` but received {skill_id!r}")
         return decode(DeletedSkillResource, self._transport.request("DELETE", f"/skills/{skill_id}"))

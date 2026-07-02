@@ -20,4 +20,6 @@ class PetsResource:
         return decode(Pet, self._transport.request("POST", "/pets", body={"name": name, "status": status}))
 
     def retrieve(self, pet_id: str) -> Pet:
+        if not pet_id:
+            raise ValueError(f"Expected a non-empty value for `pet_id` but received {pet_id!r}")
         return decode(Pet, self._transport.request("GET", f"/pets/{pet_id}"))

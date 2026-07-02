@@ -23,4 +23,8 @@ class RolesResource:
         self._transport = transport
 
     def create(self, project_id: str, group_id: str, *, role_id: str) -> GroupRoleAssignment:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
+        if not group_id:
+            raise ValueError(f"Expected a non-empty value for `group_id` but received {group_id!r}")
         return decode(GroupRoleAssignment, self._transport.request("POST", f"/projects/{project_id}/groups/{group_id}/roles", body={"role_id": role_id}))

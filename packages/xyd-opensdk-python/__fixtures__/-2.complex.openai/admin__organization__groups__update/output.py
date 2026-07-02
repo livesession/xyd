@@ -23,4 +23,6 @@ class GroupsResource:
         self._transport = transport
 
     def update(self, group_id: str, *, name: str) -> GroupResourceWithSuccess:
+        if not group_id:
+            raise ValueError(f"Expected a non-empty value for `group_id` but received {group_id!r}")
         return decode(GroupResourceWithSuccess, self._transport.request("POST", f"/organization/groups/{group_id}", body={"name": name}))

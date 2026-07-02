@@ -32,4 +32,6 @@ class ServiceAccountsResource:
         self._transport = transport
 
     def list(self, project_id: str, *, limit: Optional[int] = None, after: Optional[str] = None) -> CursorPage[ProjectServiceAccount]:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
         return CursorPage.from_response(ProjectServiceAccount, self._transport.request("GET", f"/organization/projects/{project_id}/service_accounts", query={"limit": limit, "after": after}))

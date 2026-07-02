@@ -23,4 +23,6 @@ class CertificatesResource:
         self._transport = transport
 
     def delete(self, certificate_id: str) -> DeleteCertificateResponse:
+        if not certificate_id:
+            raise ValueError(f"Expected a non-empty value for `certificate_id` but received {certificate_id!r}")
         return decode(DeleteCertificateResponse, self._transport.request("DELETE", f"/organization/certificates/{certificate_id}"))

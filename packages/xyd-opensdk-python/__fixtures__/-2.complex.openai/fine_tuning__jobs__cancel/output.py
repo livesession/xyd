@@ -17,4 +17,6 @@ class JobsResource:
         self._transport = transport
 
     def cancel(self, fine_tuning_job_id: str) -> FineTuningJob:
+        if not fine_tuning_job_id:
+            raise ValueError(f"Expected a non-empty value for `fine_tuning_job_id` but received {fine_tuning_job_id!r}")
         return decode(FineTuningJob, self._transport.request("POST", f"/fine_tuning/jobs/{fine_tuning_job_id}/cancel"))

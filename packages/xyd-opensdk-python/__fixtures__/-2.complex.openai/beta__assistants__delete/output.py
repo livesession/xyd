@@ -17,4 +17,6 @@ class AssistantsResource:
         self._transport = transport
 
     def delete(self, assistant_id: str) -> DeleteAssistantResponse:
+        if not assistant_id:
+            raise ValueError(f"Expected a non-empty value for `assistant_id` but received {assistant_id!r}")
         return decode(DeleteAssistantResponse, self._transport.request("DELETE", f"/assistants/{assistant_id}"))

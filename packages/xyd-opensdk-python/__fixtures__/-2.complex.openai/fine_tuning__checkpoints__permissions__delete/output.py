@@ -23,4 +23,8 @@ class PermissionsResource:
         self._transport = transport
 
     def delete(self, fine_tuned_model_checkpoint: str, permission_id: str) -> DeleteFineTuningCheckpointPermissionResponse:
+        if not fine_tuned_model_checkpoint:
+            raise ValueError(f"Expected a non-empty value for `fine_tuned_model_checkpoint` but received {fine_tuned_model_checkpoint!r}")
+        if not permission_id:
+            raise ValueError(f"Expected a non-empty value for `permission_id` but received {permission_id!r}")
         return decode(DeleteFineTuningCheckpointPermissionResponse, self._transport.request("DELETE", f"/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}"))

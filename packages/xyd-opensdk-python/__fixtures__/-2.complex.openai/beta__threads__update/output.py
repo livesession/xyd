@@ -19,4 +19,6 @@ class ThreadsResource:
         self._transport = transport
 
     def update(self, thread_id: str, *, tool_resources: Optional[ModifyThreadRequestToolResources] = None, metadata: Optional[Metadata] = None) -> ThreadObject:
+        if not thread_id:
+            raise ValueError(f"Expected a non-empty value for `thread_id` but received {thread_id!r}")
         return decode(ThreadObject, self._transport.request("POST", f"/threads/{thread_id}", body={"tool_resources": tool_resources, "metadata": metadata}))

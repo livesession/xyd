@@ -25,4 +25,6 @@ class UsersResource:
         self._transport = transport
 
     def update(self, user_id: str, *, role: Optional[str] = None, role_id: Optional[str] = None, technical_level: Optional[str] = None, developer_persona: Optional[str] = None) -> User:
+        if not user_id:
+            raise ValueError(f"Expected a non-empty value for `user_id` but received {user_id!r}")
         return decode(User, self._transport.request("POST", f"/organization/users/{user_id}", body={"role": role, "role_id": role_id, "technical_level": technical_level, "developer_persona": developer_persona}))

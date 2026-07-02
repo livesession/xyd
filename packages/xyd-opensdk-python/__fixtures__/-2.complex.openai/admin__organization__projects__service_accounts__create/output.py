@@ -29,4 +29,6 @@ class ServiceAccountsResource:
         self._transport = transport
 
     def create(self, project_id: str, *, name: str) -> ProjectServiceAccountCreateResponse:
+        if not project_id:
+            raise ValueError(f"Expected a non-empty value for `project_id` but received {project_id!r}")
         return decode(ProjectServiceAccountCreateResponse, self._transport.request("POST", f"/organization/projects/{project_id}/service_accounts", body={"name": name}))
