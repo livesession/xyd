@@ -1,0 +1,3325 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateChatCompletionRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": false
+        },
+        {
+          "name": "top_logprobs",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "description": "An integer between 0 and 20 specifying the maximum number of most likely\ntokens to return at each token position, each with an associated log\nprobability. In some cases, the number of returned tokens may be fewer than\nrequested.\n`logprobs` must be set to `true` if this parameter is used.\n"
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "top_p",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "deprecated": true,
+          "description": "This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key` instead to maintain caching optimizations.\nA stable identifier for your end-users.\nUsed to boost cache hit rates by better bucketing similar requests and  to help OpenAI detect and prevent abuse. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n"
+        },
+        {
+          "name": "safety_identifier",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A stable identifier used to help detect users of your application that may be violating OpenAI's usage policies.\nThe IDs should be a string that uniquely identifies each user, with a maximum length of 64 characters. We recommend hashing their username or email address, in order to avoid sending us any identifying information. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n"
+        },
+        {
+          "name": "prompt_cache_key",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Used by OpenAI to cache responses for similar requests to optimize your cache hit rates. Replaces the `user` field. [Learn more](/docs/guides/prompt-caching).\n"
+        },
+        {
+          "name": "service_tier",
+          "type": {
+            "kind": "ref",
+            "name": "ServiceTier"
+          },
+          "required": false
+        },
+        {
+          "name": "prompt_cache_retention",
+          "type": {
+            "kind": "ref",
+            "name": "CreateChatCompletionRequestPromptCacheRetention",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "messages",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ChatCompletionRequestMessage"
+            }
+          },
+          "required": true,
+          "description": "A list of messages comprising the conversation so far. Depending on the\n[model](/docs/models) you use, different message types (modalities) are\nsupported, like [text](/docs/guides/text-generation),\n[images](/docs/guides/vision), and [audio](/docs/guides/audio).\n"
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "ModelIdsShared"
+          },
+          "required": true
+        },
+        {
+          "name": "modalities",
+          "type": {
+            "kind": "ref",
+            "name": "ResponseModalities"
+          },
+          "required": false
+        },
+        {
+          "name": "verbosity",
+          "type": {
+            "kind": "ref",
+            "name": "Verbosity"
+          },
+          "required": false
+        },
+        {
+          "name": "reasoning_effort",
+          "type": {
+            "kind": "ref",
+            "name": "ReasoningEffort"
+          },
+          "required": false
+        },
+        {
+          "name": "max_completion_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "description": "An upper bound for the number of tokens that can be generated for a completion, including visible output tokens and [reasoning tokens](/docs/guides/reasoning).\n"
+        },
+        {
+          "name": "frequency_penalty",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": 0,
+          "description": "Number between -2.0 and 2.0. Positive values penalize new tokens based on\ntheir existing frequency in the text so far, decreasing the model's\nlikelihood to repeat the same line verbatim.\n"
+        },
+        {
+          "name": "presence_penalty",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": 0,
+          "description": "Number between -2.0 and 2.0. Positive values penalize new tokens based on\nwhether they appear in the text so far, increasing the model's likelihood\nto talk about new topics.\n"
+        },
+        {
+          "name": "web_search_options",
+          "type": {
+            "kind": "ref",
+            "name": "CreateChatCompletionRequestWebSearchOptions"
+          },
+          "required": false,
+          "description": "This tool searches the web for relevant results to use in a response.\nLearn more about the [web search tool](/docs/guides/tools-web-search?api-mode=chat).\n"
+        },
+        {
+          "name": "response_format",
+          "type": {
+            "kind": "ref",
+            "name": "CreateChatCompletionRequestResponseFormat"
+          },
+          "required": false,
+          "description": "An object specifying the format that the model must output.\n\nSetting to `{ \"type\": \"json_schema\", \"json_schema\": {...} }` enables\nStructured Outputs which ensures the model will match your supplied JSON\nschema. Learn more in the [Structured Outputs\nguide](/docs/guides/structured-outputs).\n\nSetting to `{ \"type\": \"json_object\" }` enables the older JSON mode, which\nensures the message the model generates is valid JSON. Using `json_schema`\nis preferred for models that support it.\n"
+        },
+        {
+          "name": "audio",
+          "type": {
+            "kind": "ref",
+            "name": "CreateChatCompletionRequestAudio",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Parameters for audio output. Required when audio output is requested with\n`modalities: [\"audio\"]`. [Learn more](/docs/guides/audio).\n"
+        },
+        {
+          "name": "store",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": false,
+          "description": "Whether or not to store the output of this chat completion request for\nuse in our [model distillation](/docs/guides/distillation) or\n[evals](/docs/guides/evals) products.\n\nSupports text and image inputs. Note: image inputs over 8MB will be dropped.\n"
+        },
+        {
+          "name": "stream",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": false,
+          "description": "If set to true, the model response data will be streamed to the client\nas it is generated using [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).\nSee the [Streaming section below](/docs/api-reference/chat/streaming)\nfor more information, along with the [streaming responses](/docs/guides/streaming-responses)\nguide for more information on how to handle the streaming events.\n"
+        },
+        {
+          "name": "stop",
+          "type": {
+            "kind": "ref",
+            "name": "StopConfiguration"
+          },
+          "required": false
+        },
+        {
+          "name": "logit_bias",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "scalar",
+              "scalar": "integer"
+            },
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": null,
+          "description": "Modify the likelihood of specified tokens appearing in the completion.\n\nAccepts a JSON object that maps tokens (specified by their token ID in the\ntokenizer) to an associated bias value from -100 to 100. Mathematically,\nthe bias is added to the logits generated by the model prior to sampling.\nThe exact effect will vary per model, but values between -1 and 1 should\ndecrease or increase likelihood of selection; values like -100 or 100\nshould result in a ban or exclusive selection of the relevant token.\n"
+        },
+        {
+          "name": "logprobs",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": false,
+          "description": "Whether to return log probabilities of the output tokens or not. If true,\nreturns the log probabilities of each output token returned in the\n`content` of `message`.\n"
+        },
+        {
+          "name": "max_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "deprecated": true,
+          "description": "The maximum number of [tokens](/tokenizer) that can be generated in the\nchat completion. This value can be used to control\n[costs](https://openai.com/api/pricing/) for text generated via API.\n\nThis value is now deprecated in favor of `max_completion_tokens`, and is\nnot compatible with [o-series models](/docs/guides/reasoning).\n"
+        },
+        {
+          "name": "n",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": 1,
+          "description": "How many chat completion choices to generate for each input message. Note that you will be charged based on the number of generated tokens across all of the choices. Keep `n` as `1` to minimize costs."
+        },
+        {
+          "name": "prediction",
+          "type": {
+            "kind": "ref",
+            "name": "PredictionContent",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Configuration for a [Predicted Output](/docs/guides/predicted-outputs),\nwhich can greatly improve response times when large parts of the model\nresponse are known ahead of time. This is most common when you are\nregenerating a file with only minor changes to most of the content.\n"
+        },
+        {
+          "name": "seed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "deprecated": true,
+          "description": "This feature is in Beta.\nIf specified, our system will make a best effort to sample deterministically, such that repeated requests with the same `seed` and parameters should return the same result.\nDeterminism is not guaranteed, and you should refer to the `system_fingerprint` response parameter to monitor changes in the backend.\n"
+        },
+        {
+          "name": "stream_options",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionStreamOptions"
+          },
+          "required": false
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateChatCompletionRequestToolsItem"
+            }
+          },
+          "required": false,
+          "description": "A list of tools the model may call. You can provide either\n[custom tools](/docs/guides/function-calling#custom-tools) or\n[function tools](/docs/guides/function-calling).\n"
+        },
+        {
+          "name": "tool_choice",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionToolChoiceOption"
+          },
+          "required": false
+        },
+        {
+          "name": "parallel_tool_calls",
+          "type": {
+            "kind": "ref",
+            "name": "ParallelToolCalls"
+          },
+          "required": false
+        },
+        {
+          "name": "function_call",
+          "type": {
+            "kind": "ref",
+            "name": "CreateChatCompletionRequestFunctionCall"
+          },
+          "required": false,
+          "deprecated": true,
+          "description": "Deprecated in favor of `tool_choice`.\n\nControls which (if any) function is called by the model.\n\n`none` means the model will not call a function and instead generates a\nmessage.\n\n`auto` means the model can pick between generating a message or calling a\nfunction.\n\nSpecifying a particular function via `{\"name\": \"my_function\"}` forces the\nmodel to call that function.\n\n`none` is the default when no functions are present. `auto` is the default\nif functions are present.\n"
+        },
+        {
+          "name": "functions",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ChatCompletionFunctions"
+            }
+          },
+          "required": false,
+          "deprecated": true,
+          "description": "Deprecated in favor of `tools`.\n\nA list of functions the model may generate JSON inputs for.\n"
+        }
+      ]
+    },
+    {
+      "name": "Metadata",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        "nullable": true
+      }
+    },
+    {
+      "name": "ServiceTier",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "default"
+        },
+        {
+          "value": "flex"
+        },
+        {
+          "value": "scale"
+        },
+        {
+          "value": "priority"
+        }
+      ],
+      "description": "Specifies the processing type used for serving the request.\n  - If set to 'auto', then the request will be processed with the service tier configured in the Project settings. Unless otherwise configured, the Project will use 'default'.\n  - If set to 'default', then the request will be processed with the standard pricing and performance for the selected model.\n  - If set to '[flex](/docs/guides/flex-processing)' or '[priority](https://openai.com/api-priority-processing/)', then the request will be processed with the corresponding service tier.\n  - When not set, the default behavior is 'auto'.\n\n  When the `service_tier` parameter is set, the response body will include the `service_tier` value based on the processing mode actually used to serve the request. This response value may be different from the value set in the parameter.\n"
+    },
+    {
+      "name": "CreateChatCompletionRequestPromptCacheRetention",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_memory"
+        },
+        {
+          "value": "24h"
+        }
+      ],
+      "description": "The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours. [Learn more](/docs/guides/prompt-caching#prompt-cache-retention).\n"
+    },
+    {
+      "name": "ChatCompletionRequestMessage",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestDeveloperMessage"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestSystemMessage"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestUserMessage"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestAssistantMessage"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestToolMessage"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestFunctionMessage"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "role",
+        "mapping": {
+          "developer": "ChatCompletionRequestDeveloperMessage",
+          "system": "ChatCompletionRequestSystemMessage",
+          "user": "ChatCompletionRequestUserMessage",
+          "assistant": "ChatCompletionRequestAssistantMessage",
+          "tool": "ChatCompletionRequestToolMessage",
+          "function": "ChatCompletionRequestFunctionMessage"
+        }
+      }
+    },
+    {
+      "name": "ChatCompletionRequestDeveloperMessage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestDeveloperMessageContent"
+          },
+          "required": true,
+          "description": "The contents of the developer message."
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "developer"
+          },
+          "required": true,
+          "description": "The role of the messages author, in this case `developer`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "An optional name for the participant. Provides the model information to differentiate between participants of the same role."
+        }
+      ],
+      "description": "Developer-provided instructions that the model should follow, regardless of\nmessages sent by the user. With o1 models and newer, `developer` messages\nreplace the previous `system` messages.\n"
+    },
+    {
+      "name": "ChatCompletionRequestDeveloperMessageContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestMessageContentPartText"
+          }
+        }
+      ],
+      "description": "The contents of the developer message."
+    },
+    {
+      "name": "ChatCompletionRequestMessageContentPartText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "description": "The type of the content part."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text content."
+        }
+      ],
+      "description": "Learn about [text inputs](/docs/guides/text-generation).\n"
+    },
+    {
+      "name": "ChatCompletionRequestSystemMessage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestSystemMessageContent"
+          },
+          "required": true,
+          "description": "The contents of the system message."
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "system"
+          },
+          "required": true,
+          "description": "The role of the messages author, in this case `system`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "An optional name for the participant. Provides the model information to differentiate between participants of the same role."
+        }
+      ],
+      "description": "Developer-provided instructions that the model should follow, regardless of\nmessages sent by the user. With o1 models and newer, use `developer` messages\nfor this purpose instead.\n"
+    },
+    {
+      "name": "ChatCompletionRequestSystemMessageContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestSystemMessageContentPart"
+          }
+        }
+      ],
+      "description": "The contents of the system message."
+    },
+    {
+      "name": "ChatCompletionRequestSystemMessageContentPart",
+      "kind": "alias",
+      "of": {
+        "kind": "ref",
+        "name": "ChatCompletionRequestMessageContentPartText"
+      }
+    },
+    {
+      "name": "ChatCompletionRequestUserMessage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestUserMessageContent"
+          },
+          "required": true,
+          "description": "The contents of the user message.\n"
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "user"
+          },
+          "required": true,
+          "description": "The role of the messages author, in this case `user`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "An optional name for the participant. Provides the model information to differentiate between participants of the same role."
+        }
+      ],
+      "description": "Messages sent by an end user, containing prompts or additional context\ninformation.\n"
+    },
+    {
+      "name": "ChatCompletionRequestUserMessageContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestUserMessageContentPart"
+          }
+        }
+      ],
+      "description": "The contents of the user message.\n"
+    },
+    {
+      "name": "ChatCompletionRequestUserMessageContentPart",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestMessageContentPartText"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestMessageContentPartImage"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestMessageContentPartAudio"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestMessageContentPartFile"
+        }
+      ]
+    },
+    {
+      "name": "ChatCompletionRequestMessageContentPartImage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "image_url"
+          },
+          "required": true,
+          "description": "The type of the content part."
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestMessageContentPartImageImageUrl"
+          },
+          "required": true
+        }
+      ],
+      "description": "Learn about [image inputs](/docs/guides/vision).\n"
+    },
+    {
+      "name": "ChatCompletionRequestMessageContentPartImageImageUrl",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "Either a URL of the image or the base64 encoded image data."
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestMessageContentPartImageImageUrlDetail"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Specifies the detail level of the image. Learn more in the [Vision guide](/docs/guides/vision#low-or-high-fidelity-image-understanding)."
+        }
+      ]
+    },
+    {
+      "name": "ChatCompletionRequestMessageContentPartImageImageUrlDetail",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "low"
+        },
+        {
+          "value": "high"
+        }
+      ],
+      "description": "Specifies the detail level of the image. Learn more in the [Vision guide](/docs/guides/vision#low-or-high-fidelity-image-understanding)."
+    },
+    {
+      "name": "ChatCompletionRequestMessageContentPartAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_audio"
+          },
+          "required": true,
+          "description": "The type of the content part. Always `input_audio`."
+        },
+        {
+          "name": "input_audio",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestMessageContentPartAudioInputAudio"
+          },
+          "required": true
+        }
+      ],
+      "description": "Learn about [audio inputs](/docs/guides/audio).\n"
+    },
+    {
+      "name": "ChatCompletionRequestMessageContentPartAudioInputAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Base64 encoded audio data."
+        },
+        {
+          "name": "format",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestMessageContentPartAudioInputAudioFormat"
+          },
+          "required": true,
+          "description": "The format of the encoded audio data. Currently supports \"wav\" and \"mp3\".\n"
+        }
+      ]
+    },
+    {
+      "name": "ChatCompletionRequestMessageContentPartAudioInputAudioFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "wav"
+        },
+        {
+          "value": "mp3"
+        }
+      ],
+      "description": "The format of the encoded audio data. Currently supports \"wav\" and \"mp3\".\n"
+    },
+    {
+      "name": "ChatCompletionRequestMessageContentPartFile",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file"
+          },
+          "required": true,
+          "description": "The type of the content part. Always `file`."
+        },
+        {
+          "name": "file",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestMessageContentPartFileFile"
+          },
+          "required": true
+        }
+      ],
+      "description": "Learn about [file inputs](/docs/guides/text) for text generation.\n"
+    },
+    {
+      "name": "ChatCompletionRequestMessageContentPartFileFile",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the file, used when passing the file to the model as a \nstring.\n"
+        },
+        {
+          "name": "file_data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The base64 encoded file data, used when passing the file to the model \nas a string.\n"
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of an uploaded file to use as input.\n"
+        }
+      ]
+    },
+    {
+      "name": "ChatCompletionRequestAssistantMessage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestAssistantMessageContent",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "refusal",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "assistant"
+          },
+          "required": true,
+          "description": "The role of the messages author, in this case `assistant`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "An optional name for the participant. Provides the model information to differentiate between participants of the same role."
+        },
+        {
+          "name": "audio",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestAssistantMessageAudio",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "tool_calls",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionMessageToolCalls"
+          },
+          "required": false
+        },
+        {
+          "name": "function_call",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestAssistantMessageFunctionCall",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Messages sent by the model in response to user messages.\n"
+    },
+    {
+      "name": "ChatCompletionRequestAssistantMessageContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestAssistantMessageContentPart"
+          }
+        }
+      ],
+      "description": "The contents of the assistant message. Required unless `tool_calls` or `function_call` is specified.\n"
+    },
+    {
+      "name": "ChatCompletionRequestAssistantMessageContentPart",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestMessageContentPartText"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionRequestMessageContentPartRefusal"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "text": "ChatCompletionRequestMessageContentPartText",
+          "refusal": "ChatCompletionRequestMessageContentPartRefusal"
+        }
+      }
+    },
+    {
+      "name": "ChatCompletionRequestMessageContentPartRefusal",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "refusal"
+          },
+          "required": true,
+          "description": "The type of the content part."
+        },
+        {
+          "name": "refusal",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The refusal message generated by the model."
+        }
+      ]
+    },
+    {
+      "name": "ChatCompletionRequestAssistantMessageAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique identifier for a previous audio response from the model.\n"
+        }
+      ],
+      "description": "Data about a previous audio response from the model.\n[Learn more](/docs/guides/audio).\n"
+    },
+    {
+      "name": "ChatCompletionMessageToolCalls",
+      "kind": "alias",
+      "of": {
+        "kind": "array",
+        "items": {
+          "kind": "ref",
+          "name": "ChatCompletionMessageToolCallsItem"
+        }
+      }
+    },
+    {
+      "name": "ChatCompletionMessageToolCallsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ChatCompletionMessageToolCall"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionMessageCustomToolCall"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "function": "ChatCompletionMessageToolCall",
+          "custom": "ChatCompletionMessageCustomToolCall"
+        }
+      }
+    },
+    {
+      "name": "ChatCompletionMessageToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the tool call."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "description": "The type of the tool. Currently, only `function` is supported."
+        },
+        {
+          "name": "function",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionMessageToolCallFunction"
+          },
+          "required": true,
+          "description": "The function that the model called."
+        }
+      ],
+      "description": "A call to a function tool created by the model.\n"
+    },
+    {
+      "name": "ChatCompletionMessageToolCallFunction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to call."
+        },
+        {
+          "name": "arguments",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The arguments to call the function with, as generated by the model in JSON format. Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function."
+        }
+      ],
+      "description": "The function that the model called."
+    },
+    {
+      "name": "ChatCompletionMessageCustomToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the tool call."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "custom"
+          },
+          "required": true,
+          "description": "The type of the tool. Always `custom`."
+        },
+        {
+          "name": "custom",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionMessageCustomToolCallCustom"
+          },
+          "required": true,
+          "description": "The custom tool that the model called."
+        }
+      ],
+      "description": "A call to a custom tool created by the model.\n"
+    },
+    {
+      "name": "ChatCompletionMessageCustomToolCallCustom",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the custom tool to call."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The input for the custom tool call generated by the model."
+        }
+      ],
+      "description": "The custom tool that the model called."
+    },
+    {
+      "name": "ChatCompletionRequestAssistantMessageFunctionCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "arguments",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The arguments to call the function with, as generated by the model in JSON format. Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to call."
+        }
+      ],
+      "description": "Deprecated and replaced by `tool_calls`. The name and arguments of a function that should be called, as generated by the model."
+    },
+    {
+      "name": "ChatCompletionRequestToolMessage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "tool"
+          },
+          "required": true,
+          "description": "The role of the messages author, in this case `tool`."
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestToolMessageContent"
+          },
+          "required": true,
+          "description": "The contents of the tool message."
+        },
+        {
+          "name": "tool_call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Tool call that this message is responding to."
+        }
+      ]
+    },
+    {
+      "name": "ChatCompletionRequestToolMessageContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestToolMessageContentPart"
+          }
+        }
+      ],
+      "description": "The contents of the tool message."
+    },
+    {
+      "name": "ChatCompletionRequestToolMessageContentPart",
+      "kind": "alias",
+      "of": {
+        "kind": "ref",
+        "name": "ChatCompletionRequestMessageContentPartText"
+      }
+    },
+    {
+      "name": "ChatCompletionRequestFunctionMessage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "description": "The role of the messages author, in this case `function`."
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to call."
+        }
+      ]
+    },
+    {
+      "name": "ModelIdsShared",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "ModelIdsSharedString"
+        }
+      ]
+    },
+    {
+      "name": "ModelIdsSharedString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "gpt-5.4"
+        },
+        {
+          "value": "gpt-5.4-mini"
+        },
+        {
+          "value": "gpt-5.4-nano"
+        },
+        {
+          "value": "gpt-5.4-mini-2026-03-17"
+        },
+        {
+          "value": "gpt-5.4-nano-2026-03-17"
+        },
+        {
+          "value": "gpt-5.3-chat-latest"
+        },
+        {
+          "value": "gpt-5.2"
+        },
+        {
+          "value": "gpt-5.2-2025-12-11"
+        },
+        {
+          "value": "gpt-5.2-chat-latest"
+        },
+        {
+          "value": "gpt-5.2-pro"
+        },
+        {
+          "value": "gpt-5.2-pro-2025-12-11"
+        },
+        {
+          "value": "gpt-5.1"
+        },
+        {
+          "value": "gpt-5.1-2025-11-13"
+        },
+        {
+          "value": "gpt-5.1-codex"
+        },
+        {
+          "value": "gpt-5.1-mini"
+        },
+        {
+          "value": "gpt-5.1-chat-latest"
+        },
+        {
+          "value": "gpt-5"
+        },
+        {
+          "value": "gpt-5-mini"
+        },
+        {
+          "value": "gpt-5-nano"
+        },
+        {
+          "value": "gpt-5-2025-08-07"
+        },
+        {
+          "value": "gpt-5-mini-2025-08-07"
+        },
+        {
+          "value": "gpt-5-nano-2025-08-07"
+        },
+        {
+          "value": "gpt-5-chat-latest"
+        },
+        {
+          "value": "gpt-4.1"
+        },
+        {
+          "value": "gpt-4.1-mini"
+        },
+        {
+          "value": "gpt-4.1-nano"
+        },
+        {
+          "value": "gpt-4.1-2025-04-14"
+        },
+        {
+          "value": "gpt-4.1-mini-2025-04-14"
+        },
+        {
+          "value": "gpt-4.1-nano-2025-04-14"
+        },
+        {
+          "value": "o4-mini"
+        },
+        {
+          "value": "o4-mini-2025-04-16"
+        },
+        {
+          "value": "o3"
+        },
+        {
+          "value": "o3-2025-04-16"
+        },
+        {
+          "value": "o3-mini"
+        },
+        {
+          "value": "o3-mini-2025-01-31"
+        },
+        {
+          "value": "o1"
+        },
+        {
+          "value": "o1-2024-12-17"
+        },
+        {
+          "value": "o1-preview"
+        },
+        {
+          "value": "o1-preview-2024-09-12"
+        },
+        {
+          "value": "o1-mini"
+        },
+        {
+          "value": "o1-mini-2024-09-12"
+        },
+        {
+          "value": "gpt-4o"
+        },
+        {
+          "value": "gpt-4o-2024-11-20"
+        },
+        {
+          "value": "gpt-4o-2024-08-06"
+        },
+        {
+          "value": "gpt-4o-2024-05-13"
+        },
+        {
+          "value": "gpt-4o-audio-preview"
+        },
+        {
+          "value": "gpt-4o-audio-preview-2024-10-01"
+        },
+        {
+          "value": "gpt-4o-audio-preview-2024-12-17"
+        },
+        {
+          "value": "gpt-4o-audio-preview-2025-06-03"
+        },
+        {
+          "value": "gpt-4o-mini-audio-preview"
+        },
+        {
+          "value": "gpt-4o-mini-audio-preview-2024-12-17"
+        },
+        {
+          "value": "gpt-4o-search-preview"
+        },
+        {
+          "value": "gpt-4o-mini-search-preview"
+        },
+        {
+          "value": "gpt-4o-search-preview-2025-03-11"
+        },
+        {
+          "value": "gpt-4o-mini-search-preview-2025-03-11"
+        },
+        {
+          "value": "chatgpt-4o-latest"
+        },
+        {
+          "value": "codex-mini-latest"
+        },
+        {
+          "value": "gpt-4o-mini"
+        },
+        {
+          "value": "gpt-4o-mini-2024-07-18"
+        },
+        {
+          "value": "gpt-4-turbo"
+        },
+        {
+          "value": "gpt-4-turbo-2024-04-09"
+        },
+        {
+          "value": "gpt-4-0125-preview"
+        },
+        {
+          "value": "gpt-4-turbo-preview"
+        },
+        {
+          "value": "gpt-4-1106-preview"
+        },
+        {
+          "value": "gpt-4-vision-preview"
+        },
+        {
+          "value": "gpt-4"
+        },
+        {
+          "value": "gpt-4-0314"
+        },
+        {
+          "value": "gpt-4-0613"
+        },
+        {
+          "value": "gpt-4-32k"
+        },
+        {
+          "value": "gpt-4-32k-0314"
+        },
+        {
+          "value": "gpt-4-32k-0613"
+        },
+        {
+          "value": "gpt-3.5-turbo"
+        },
+        {
+          "value": "gpt-3.5-turbo-16k"
+        },
+        {
+          "value": "gpt-3.5-turbo-0301"
+        },
+        {
+          "value": "gpt-3.5-turbo-0613"
+        },
+        {
+          "value": "gpt-3.5-turbo-1106"
+        },
+        {
+          "value": "gpt-3.5-turbo-0125"
+        },
+        {
+          "value": "gpt-3.5-turbo-16k-0613"
+        }
+      ]
+    },
+    {
+      "name": "ResponseModalities",
+      "kind": "alias",
+      "of": {
+        "kind": "array",
+        "items": {
+          "kind": "ref",
+          "name": "ResponseModalitiesItem"
+        },
+        "nullable": true
+      }
+    },
+    {
+      "name": "ResponseModalitiesItem",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "text"
+        },
+        {
+          "value": "audio"
+        }
+      ]
+    },
+    {
+      "name": "Verbosity",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        }
+      ],
+      "description": "Constrains the verbosity of the model's response. Lower values will result in\nmore concise responses, while higher values will result in more verbose responses.\nCurrently supported values are `low`, `medium`, and `high`.\n"
+    },
+    {
+      "name": "ReasoningEffort",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "none"
+        },
+        {
+          "value": "minimal"
+        },
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "xhigh"
+        }
+      ],
+      "description": "Constrains effort on reasoning for\n[reasoning models](https://platform.openai.com/docs/guides/reasoning).\nCurrently supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing\nreasoning effort can result in faster responses and fewer tokens used\non reasoning in a response.\n\n- `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for all reasoning values in gpt-5.1.\n- All models before `gpt-5.1` default to `medium` reasoning effort, and do not support `none`.\n- The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.\n- `xhigh` is supported for all models after `gpt-5.1-codex-max`.\n"
+    },
+    {
+      "name": "CreateChatCompletionRequestWebSearchOptions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "user_location",
+          "type": {
+            "kind": "ref",
+            "name": "CreateChatCompletionRequestWebSearchOptionsUserLocation",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "description": "Approximate location parameters for the search.\n"
+        },
+        {
+          "name": "search_context_size",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchContextSize"
+          },
+          "required": false
+        }
+      ],
+      "description": "This tool searches the web for relevant results to use in a response.\nLearn more about the [web search tool](/docs/guides/tools-web-search?api-mode=chat).\n"
+    },
+    {
+      "name": "CreateChatCompletionRequestWebSearchOptionsUserLocation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "approximate"
+          },
+          "required": true,
+          "description": "The type of location approximation. Always `approximate`.\n"
+        },
+        {
+          "name": "approximate",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchLocation"
+          },
+          "required": true
+        }
+      ],
+      "description": "Approximate location parameters for the search.\n"
+    },
+    {
+      "name": "WebSearchLocation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "country",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The two-letter \n[ISO country code](https://en.wikipedia.org/wiki/ISO_3166-1) of the user,\ne.g. `US`.\n"
+        },
+        {
+          "name": "region",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Free text input for the region of the user, e.g. `California`.\n"
+        },
+        {
+          "name": "city",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Free text input for the city of the user, e.g. `San Francisco`.\n"
+        },
+        {
+          "name": "timezone",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The [IANA timezone](https://timeapi.io/documentation/iana-timezones) \nof the user, e.g. `America/Los_Angeles`.\n"
+        }
+      ],
+      "description": "Approximate location parameters for the search."
+    },
+    {
+      "name": "WebSearchContextSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        }
+      ],
+      "description": "High level guidance for the amount of context window space to use for the \nsearch. One of `low`, `medium`, or `high`. `medium` is the default.\n"
+    },
+    {
+      "name": "CreateChatCompletionRequestResponseFormat",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ResponseFormatText"
+        },
+        {
+          "kind": "ref",
+          "name": "ResponseFormatJsonSchema"
+        },
+        {
+          "kind": "ref",
+          "name": "ResponseFormatJsonObject"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "text": "ResponseFormatText",
+          "json_schema": "ResponseFormatJsonSchema",
+          "json_object": "ResponseFormatJsonObject"
+        }
+      },
+      "description": "An object specifying the format that the model must output.\n\nSetting to `{ \"type\": \"json_schema\", \"json_schema\": {...} }` enables\nStructured Outputs which ensures the model will match your supplied JSON\nschema. Learn more in the [Structured Outputs\nguide](/docs/guides/structured-outputs).\n\nSetting to `{ \"type\": \"json_object\" }` enables the older JSON mode, which\nensures the message the model generates is valid JSON. Using `json_schema`\nis preferred for models that support it.\n"
+    },
+    {
+      "name": "ResponseFormatText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "description": "The type of response format being defined. Always `text`."
+        }
+      ],
+      "description": "Default response format. Used to generate text responses.\n"
+    },
+    {
+      "name": "ResponseFormatJsonSchema",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "json_schema"
+          },
+          "required": true,
+          "description": "The type of response format being defined. Always `json_schema`."
+        },
+        {
+          "name": "json_schema",
+          "type": {
+            "kind": "ref",
+            "name": "ResponseFormatJsonSchemaJsonSchema"
+          },
+          "required": true,
+          "description": "Structured Outputs configuration options, including a JSON Schema.\n"
+        }
+      ],
+      "description": "JSON Schema response format. Used to generate structured JSON responses.\nLearn more about [Structured Outputs](/docs/guides/structured-outputs).\n"
+    },
+    {
+      "name": "ResponseFormatJsonSchemaJsonSchema",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A description of what the response format is for, used by the model to\ndetermine how to respond in the format.\n"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the response format. Must be a-z, A-Z, 0-9, or contain\nunderscores and dashes, with a maximum length of 64.\n"
+        },
+        {
+          "name": "schema",
+          "type": {
+            "kind": "ref",
+            "name": "ResponseFormatJsonSchemaSchema"
+          },
+          "required": false
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Structured Outputs configuration options, including a JSON Schema.\n"
+    },
+    {
+      "name": "ResponseFormatJsonSchemaSchema",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "name": "ResponseFormatJsonObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "json_object"
+          },
+          "required": true,
+          "description": "The type of response format being defined. Always `json_object`."
+        }
+      ],
+      "description": "JSON object response format. An older method of generating JSON responses.\nUsing `json_schema` is recommended for models that support it. Note that the\nmodel will not generate JSON without a system or user message instructing it\nto do so.\n"
+    },
+    {
+      "name": "CreateChatCompletionRequestAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "voice",
+          "type": {
+            "kind": "ref",
+            "name": "VoiceIdsOrCustomVoice"
+          },
+          "required": true
+        },
+        {
+          "name": "format",
+          "type": {
+            "kind": "ref",
+            "name": "CreateChatCompletionRequestAudioFormat"
+          },
+          "required": true,
+          "description": "Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`,\n`opus`, or `pcm16`.\n"
+        }
+      ],
+      "description": "Parameters for audio output. Required when audio output is requested with\n`modalities: [\"audio\"]`. [Learn more](/docs/guides/audio).\n"
+    },
+    {
+      "name": "VoiceIdsOrCustomVoice",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "VoiceIdsShared"
+        },
+        {
+          "kind": "ref",
+          "name": "VoiceIdsOrCustomVoiceVariant1"
+        }
+      ],
+      "description": "A built-in voice name or a custom voice reference.\n"
+    },
+    {
+      "name": "VoiceIdsShared",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "VoiceIdsSharedString"
+        }
+      ]
+    },
+    {
+      "name": "VoiceIdsSharedString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "alloy"
+        },
+        {
+          "value": "ash"
+        },
+        {
+          "value": "ballad"
+        },
+        {
+          "value": "coral"
+        },
+        {
+          "value": "echo"
+        },
+        {
+          "value": "sage"
+        },
+        {
+          "value": "shimmer"
+        },
+        {
+          "value": "verse"
+        },
+        {
+          "value": "marin"
+        },
+        {
+          "value": "cedar"
+        }
+      ]
+    },
+    {
+      "name": "VoiceIdsOrCustomVoiceVariant1",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The custom voice ID, e.g. `voice_1234`."
+        }
+      ],
+      "description": "Custom voice reference."
+    },
+    {
+      "name": "CreateChatCompletionRequestAudioFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "wav"
+        },
+        {
+          "value": "aac"
+        },
+        {
+          "value": "mp3"
+        },
+        {
+          "value": "flac"
+        },
+        {
+          "value": "opus"
+        },
+        {
+          "value": "pcm16"
+        }
+      ],
+      "description": "Specifies the output audio format. Must be one of `wav`, `mp3`, `flac`,\n`opus`, or `pcm16`.\n"
+    },
+    {
+      "name": "StopConfiguration",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string",
+          "nullable": true
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "scalar",
+            "scalar": "string"
+          }
+        }
+      ],
+      "description": "Not supported with latest reasoning models `o3` and `o4-mini`.\n\nUp to 4 sequences where the API will stop generating further tokens. The\nreturned text will not contain the stop sequence.\n"
+    },
+    {
+      "name": "PredictionContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "content"
+          },
+          "required": true,
+          "description": "The type of the predicted content you want to provide. This type is\ncurrently always `content`.\n"
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestDeveloperMessageContent"
+          },
+          "required": true,
+          "description": "The content that should be matched when generating a model response.\nIf generated tokens would match this content, the entire model response\ncan be returned much more quickly.\n"
+        }
+      ],
+      "description": "Static predicted output content, such as the content of a text file that is\nbeing regenerated.\n"
+    },
+    {
+      "name": "ChatCompletionStreamOptions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "include_usage",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "If set, an additional chunk will be streamed before the `data: [DONE]`\nmessage. The `usage` field on this chunk shows the token usage statistics\nfor the entire request, and the `choices` field will always be an empty\narray.\n\nAll other chunks will also include a `usage` field, but with a null\nvalue. **NOTE:** If the stream is interrupted, you may not receive the\nfinal usage chunk which contains the total token usage for the request.\n"
+        },
+        {
+          "name": "include_obfuscation",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "When true, stream obfuscation will be enabled. Stream obfuscation adds\nrandom characters to an `obfuscation` field on streaming delta events to\nnormalize payload sizes as a mitigation to certain side-channel attacks.\nThese obfuscation fields are included by default, but add a small amount\nof overhead to the data stream. You can set `include_obfuscation` to\nfalse to optimize for bandwidth if you trust the network links between\nyour application and the OpenAI API.\n"
+        }
+      ],
+      "description": "Options for streaming response. Only set this when you set `stream: true`.\n"
+    },
+    {
+      "name": "CreateChatCompletionRequestToolsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ChatCompletionTool"
+        },
+        {
+          "kind": "ref",
+          "name": "CustomToolChatCompletions"
+        }
+      ]
+    },
+    {
+      "name": "ChatCompletionTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "description": "The type of the tool. Currently, only `function` is supported."
+        },
+        {
+          "name": "function",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionObject"
+          },
+          "required": true
+        }
+      ],
+      "description": "A function tool that can be used to generate a response.\n"
+    },
+    {
+      "name": "FunctionObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A description of what the function does, used by the model to choose when and how to call the function."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64."
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionParameters"
+          },
+          "required": false
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "FunctionParameters",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "name": "CustomToolChatCompletions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "custom"
+          },
+          "required": true,
+          "description": "The type of the custom tool. Always `custom`."
+        },
+        {
+          "name": "custom",
+          "type": {
+            "kind": "ref",
+            "name": "CustomToolChatCompletionsCustom"
+          },
+          "required": true,
+          "description": "Properties of the custom tool.\n"
+        }
+      ],
+      "description": "A custom tool that processes input using a specified format.\n"
+    },
+    {
+      "name": "CustomToolChatCompletionsCustom",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the custom tool, used to identify it in tool calls."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Optional description of the custom tool, used to provide more context.\n"
+        },
+        {
+          "name": "format",
+          "type": {
+            "kind": "ref",
+            "name": "CustomToolChatCompletionsCustomFormat"
+          },
+          "required": false,
+          "description": "The input format for the custom tool. Default is unconstrained text.\n"
+        }
+      ],
+      "description": "Properties of the custom tool.\n"
+    },
+    {
+      "name": "CustomToolChatCompletionsCustomFormat",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CustomToolChatCompletionsCustomFormatText"
+        },
+        {
+          "kind": "ref",
+          "name": "CustomToolChatCompletionsCustomFormatGrammar"
+        }
+      ],
+      "description": "The input format for the custom tool. Default is unconstrained text.\n"
+    },
+    {
+      "name": "CustomToolChatCompletionsCustomFormatText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "description": "Unconstrained text format. Always `text`."
+        }
+      ],
+      "description": "Unconstrained free-form text."
+    },
+    {
+      "name": "CustomToolChatCompletionsCustomFormatGrammar",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "grammar"
+          },
+          "required": true,
+          "description": "Grammar format. Always `grammar`."
+        },
+        {
+          "name": "grammar",
+          "type": {
+            "kind": "ref",
+            "name": "CustomToolChatCompletionsCustomFormatGrammarGrammar"
+          },
+          "required": true,
+          "description": "Your chosen grammar."
+        }
+      ],
+      "description": "A grammar defined by the user."
+    },
+    {
+      "name": "CustomToolChatCompletionsCustomFormatGrammarGrammar",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "definition",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The grammar definition."
+        },
+        {
+          "name": "syntax",
+          "type": {
+            "kind": "ref",
+            "name": "CustomToolChatCompletionsCustomFormatGrammarGrammarSyntax"
+          },
+          "required": true,
+          "description": "The syntax of the grammar definition. One of `lark` or `regex`."
+        }
+      ],
+      "description": "Your chosen grammar."
+    },
+    {
+      "name": "CustomToolChatCompletionsCustomFormatGrammarGrammarSyntax",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "lark"
+        },
+        {
+          "value": "regex"
+        }
+      ],
+      "description": "The syntax of the grammar definition. One of `lark` or `regex`."
+    },
+    {
+      "name": "ChatCompletionToolChoiceOption",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ChatCompletionToolChoiceOptionToolChoiceMode"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionAllowedToolsChoice"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionNamedToolChoice"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionNamedToolChoiceCustom"
+        }
+      ],
+      "description": "Controls which (if any) tool is called by the model.\n`none` means the model will not call any tool and instead generates a message.\n`auto` means the model can pick between generating a message or calling one or more tools.\n`required` means the model must call one or more tools.\nSpecifying a particular tool via `{\"type\": \"function\", \"function\": {\"name\": \"my_function\"}}` forces the model to call that tool.\n\n`none` is the default when no tools are present. `auto` is the default if tools are present.\n"
+    },
+    {
+      "name": "ChatCompletionToolChoiceOptionToolChoiceMode",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "none"
+        },
+        {
+          "value": "auto"
+        },
+        {
+          "value": "required"
+        }
+      ],
+      "description": "`none` means the model will not call any tool and instead generates a message. `auto` means the model can pick between generating a message or calling one or more tools. `required` means the model must call one or more tools.\n"
+    },
+    {
+      "name": "ChatCompletionAllowedToolsChoice",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "allowed_tools"
+          },
+          "required": true,
+          "description": "Allowed tool configuration type. Always `allowed_tools`."
+        },
+        {
+          "name": "allowed_tools",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionAllowedTools"
+          },
+          "required": true
+        }
+      ],
+      "description": "Constrains the tools available to the model to a pre-defined set.\n"
+    },
+    {
+      "name": "ChatCompletionAllowedTools",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "mode",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionAllowedToolsMode"
+          },
+          "required": true,
+          "description": "Constrains the tools available to the model to a pre-defined set.\n\n`auto` allows the model to pick from among the allowed tools and generate a\nmessage.\n\n`required` requires the model to call one or more of the allowed tools.\n"
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "map",
+              "values": {
+                "kind": "any"
+              }
+            }
+          },
+          "required": true,
+          "description": "A list of tool definitions that the model should be allowed to call.\n\nFor the Chat Completions API, the list of tool definitions might look like:\n```json\n[\n  { \"type\": \"function\", \"function\": { \"name\": \"get_weather\" } },\n  { \"type\": \"function\", \"function\": { \"name\": \"get_time\" } }\n]\n```\n"
+        }
+      ],
+      "description": "Constrains the tools available to the model to a pre-defined set.\n"
+    },
+    {
+      "name": "ChatCompletionAllowedToolsMode",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "required"
+        }
+      ],
+      "description": "Constrains the tools available to the model to a pre-defined set.\n\n`auto` allows the model to pick from among the allowed tools and generate a\nmessage.\n\n`required` requires the model to call one or more of the allowed tools.\n"
+    },
+    {
+      "name": "ChatCompletionNamedToolChoice",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "description": "For function calling, the type is always `function`."
+        },
+        {
+          "name": "function",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionNamedToolChoiceFunction"
+          },
+          "required": true
+        }
+      ],
+      "description": "Specifies a tool the model should use. Use to force the model to call a specific function."
+    },
+    {
+      "name": "ChatCompletionNamedToolChoiceFunction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to call."
+        }
+      ]
+    },
+    {
+      "name": "ChatCompletionNamedToolChoiceCustom",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "custom"
+          },
+          "required": true,
+          "description": "For custom tool calling, the type is always `custom`."
+        },
+        {
+          "name": "custom",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionNamedToolChoiceCustomCustom"
+          },
+          "required": true
+        }
+      ],
+      "description": "Specifies a tool the model should use. Use to force the model to call a specific custom tool."
+    },
+    {
+      "name": "ChatCompletionNamedToolChoiceCustomCustom",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the custom tool to call."
+        }
+      ]
+    },
+    {
+      "name": "ParallelToolCalls",
+      "kind": "alias",
+      "of": {
+        "kind": "scalar",
+        "scalar": "boolean"
+      }
+    },
+    {
+      "name": "CreateChatCompletionRequestFunctionCall",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CreateChatCompletionRequestFunctionCallString"
+        },
+        {
+          "kind": "ref",
+          "name": "ChatCompletionFunctionCallOption"
+        }
+      ],
+      "description": "Deprecated in favor of `tool_choice`.\n\nControls which (if any) function is called by the model.\n\n`none` means the model will not call a function and instead generates a\nmessage.\n\n`auto` means the model can pick between generating a message or calling a\nfunction.\n\nSpecifying a particular function via `{\"name\": \"my_function\"}` forces the\nmodel to call that function.\n\n`none` is the default when no functions are present. `auto` is the default\nif functions are present.\n"
+    },
+    {
+      "name": "CreateChatCompletionRequestFunctionCallString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "none"
+        },
+        {
+          "value": "auto"
+        }
+      ],
+      "description": "`none` means the model will not call a function and instead generates a message. `auto` means the model can pick between generating a message or calling a function.\n"
+    },
+    {
+      "name": "ChatCompletionFunctionCallOption",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to call."
+        }
+      ],
+      "description": "Specifying a particular function via `{\"name\": \"my_function\"}` forces the model to call that function.\n"
+    },
+    {
+      "name": "ChatCompletionFunctions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A description of what the function does, used by the model to choose when and how to call the function."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64."
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionParameters"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "CreateChatCompletionResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A unique identifier for the chat completion."
+        },
+        {
+          "name": "choices",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateChatCompletionResponseChoicesItem"
+            }
+          },
+          "required": true,
+          "description": "A list of chat completion choices. Can be more than one if `n` is greater than 1."
+        },
+        {
+          "name": "created",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the chat completion was created."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model used for the chat completion."
+        },
+        {
+          "name": "service_tier",
+          "type": {
+            "kind": "ref",
+            "name": "ServiceTier"
+          },
+          "required": false
+        },
+        {
+          "name": "system_fingerprint",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "deprecated": true,
+          "description": "This fingerprint represents the backend configuration that the model runs with.\n\nCan be used in conjunction with the `seed` request parameter to understand when backend changes have been made that might impact determinism.\n"
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chat.completion"
+          },
+          "required": true,
+          "description": "The object type, which is always `chat.completion`."
+        },
+        {
+          "name": "usage",
+          "type": {
+            "kind": "ref",
+            "name": "CompletionUsage"
+          },
+          "required": false
+        }
+      ],
+      "description": "Represents a chat completion response returned by model, based on the provided input."
+    },
+    {
+      "name": "CreateChatCompletionResponseChoicesItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "finish_reason",
+          "type": {
+            "kind": "ref",
+            "name": "CreateChatCompletionResponseChoicesItemFinishReason"
+          },
+          "required": true,
+          "description": "The reason the model stopped generating tokens. This will be `stop` if the model hit a natural stop point or a provided stop sequence,\n`length` if the maximum number of tokens specified in the request was reached,\n`content_filter` if content was omitted due to a flag from our content filters,\n`tool_calls` if the model called a tool, or `function_call` (deprecated) if the model called a function.\n"
+        },
+        {
+          "name": "index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The index of the choice in the list of choices."
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionResponseMessage"
+          },
+          "required": true
+        },
+        {
+          "name": "logprobs",
+          "type": {
+            "kind": "ref",
+            "name": "CreateChatCompletionResponseChoicesItemLogprobs",
+            "nullable": true
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "CreateChatCompletionResponseChoicesItemFinishReason",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "stop"
+        },
+        {
+          "value": "length"
+        },
+        {
+          "value": "tool_calls"
+        },
+        {
+          "value": "content_filter"
+        },
+        {
+          "value": "function_call"
+        }
+      ],
+      "description": "The reason the model stopped generating tokens. This will be `stop` if the model hit a natural stop point or a provided stop sequence,\n`length` if the maximum number of tokens specified in the request was reached,\n`content_filter` if content was omitted due to a flag from our content filters,\n`tool_calls` if the model called a tool, or `function_call` (deprecated) if the model called a function.\n"
+    },
+    {
+      "name": "ChatCompletionResponseMessage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "content",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "refusal",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "tool_calls",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionMessageToolCalls"
+          },
+          "required": false
+        },
+        {
+          "name": "annotations",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ChatCompletionResponseMessageAnnotationsItem"
+            }
+          },
+          "required": false,
+          "description": "Annotations for the message, when applicable, as when using the\n[web search tool](/docs/guides/tools-web-search?api-mode=chat).\n"
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "assistant"
+          },
+          "required": true,
+          "description": "The role of the author of this message."
+        },
+        {
+          "name": "function_call",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionRequestAssistantMessageFunctionCall"
+          },
+          "required": false,
+          "deprecated": true,
+          "description": "Deprecated and replaced by `tool_calls`. The name and arguments of a function that should be called, as generated by the model."
+        },
+        {
+          "name": "audio",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionResponseMessageAudio",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A chat completion message generated by the model."
+    },
+    {
+      "name": "ChatCompletionResponseMessageAnnotationsItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "url_citation"
+          },
+          "required": true,
+          "description": "The type of the URL citation. Always `url_citation`."
+        },
+        {
+          "name": "url_citation",
+          "type": {
+            "kind": "ref",
+            "name": "ChatCompletionResponseMessageAnnotationsItemUrlCitation"
+          },
+          "required": true,
+          "description": "A URL citation when using web search."
+        }
+      ],
+      "description": "A URL citation when using web search.\n"
+    },
+    {
+      "name": "ChatCompletionResponseMessageAnnotationsItemUrlCitation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "end_index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The index of the last character of the URL citation in the message."
+        },
+        {
+          "name": "start_index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The index of the first character of the URL citation in the message."
+        },
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The URL of the web resource."
+        },
+        {
+          "name": "title",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The title of the web resource."
+        }
+      ],
+      "description": "A URL citation when using web search."
+    },
+    {
+      "name": "ChatCompletionResponseMessageAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique identifier for this audio response."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when this audio response will\nno longer be accessible on the server for use in multi-turn\nconversations.\n"
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Base64 encoded audio bytes generated by the model, in the format\nspecified in the request.\n"
+        },
+        {
+          "name": "transcript",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Transcript of the audio generated by the model."
+        }
+      ],
+      "description": "If the audio output modality is requested, this object contains data\nabout the audio response from the model. [Learn more](/docs/guides/audio).\n"
+    },
+    {
+      "name": "CreateChatCompletionResponseChoicesItemLogprobs",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "content",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ChatCompletionTokenLogprob"
+            },
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "refusal",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ChatCompletionTokenLogprob"
+            },
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Log probability information for the choice."
+    },
+    {
+      "name": "ChatCompletionTokenLogprob",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "token",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The token."
+        },
+        {
+          "name": "logprob",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The log probability of this token, if it is within the top 20 most likely tokens. Otherwise, the value `-9999.0` is used to signify that the token is very unlikely."
+        },
+        {
+          "name": "bytes",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "integer"
+            },
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "top_logprobs",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ChatCompletionTokenLogprobTopLogprobsItem"
+            }
+          },
+          "required": true,
+          "description": "List of the most likely tokens and their log probability, at this token position. The number of entries may be fewer than the requested `top_logprobs`."
+        }
+      ]
+    },
+    {
+      "name": "ChatCompletionTokenLogprobTopLogprobsItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "token",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The token."
+        },
+        {
+          "name": "logprob",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The log probability of this token, if it is within the top 20 most likely tokens. Otherwise, the value `-9999.0` is used to signify that the token is very unlikely."
+        },
+        {
+          "name": "bytes",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "integer"
+            },
+            "nullable": true
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "CompletionUsage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "completion_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "default": 0,
+          "description": "Number of tokens in the generated completion."
+        },
+        {
+          "name": "prompt_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "default": 0,
+          "description": "Number of tokens in the prompt."
+        },
+        {
+          "name": "total_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "default": 0,
+          "description": "Total number of tokens used in the request (prompt + completion)."
+        },
+        {
+          "name": "completion_tokens_details",
+          "type": {
+            "kind": "ref",
+            "name": "CompletionUsageCompletionTokensDetails"
+          },
+          "required": false,
+          "description": "Breakdown of tokens used in a completion."
+        },
+        {
+          "name": "prompt_tokens_details",
+          "type": {
+            "kind": "ref",
+            "name": "CompletionUsagePromptTokensDetails"
+          },
+          "required": false,
+          "description": "Breakdown of tokens used in the prompt."
+        }
+      ],
+      "description": "Usage statistics for the completion request."
+    },
+    {
+      "name": "CompletionUsageCompletionTokensDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "accepted_prediction_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 0,
+          "description": "When using Predicted Outputs, the number of tokens in the\nprediction that appeared in the completion.\n"
+        },
+        {
+          "name": "audio_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 0,
+          "description": "Audio input tokens generated by the model."
+        },
+        {
+          "name": "reasoning_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 0,
+          "description": "Tokens generated by the model for reasoning."
+        },
+        {
+          "name": "rejected_prediction_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 0,
+          "description": "When using Predicted Outputs, the number of tokens in the\nprediction that did not appear in the completion. However, like\nreasoning tokens, these tokens are still counted in the total\ncompletion tokens for purposes of billing, output, and context window\nlimits.\n"
+        }
+      ],
+      "description": "Breakdown of tokens used in a completion."
+    },
+    {
+      "name": "CompletionUsagePromptTokensDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "audio_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 0,
+          "description": "Audio input tokens present in the prompt."
+        },
+        {
+          "name": "cached_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 0,
+          "description": "Cached tokens present in the prompt."
+        }
+      ],
+      "description": "Breakdown of tokens used in the prompt."
+    }
+  ],
+  "resources": [
+    {
+      "name": "chat",
+      "resources": [
+        {
+          "name": "completions",
+          "methods": [
+            {
+              "action": "create",
+              "httpMethod": "post",
+              "path": "/chat/completions",
+              "operationId": "createChatCompletion",
+              "description": "**Starting a new project?** We recommend trying [Responses](/docs/api-reference/responses)\nto take advantage of the latest OpenAI platform features. Compare\n[Chat Completions with Responses](/docs/guides/responses-vs-chat-completions?api-mode=responses).\n\n---\n\nCreates a model response for the given chat conversation. Learn more in the\n[text generation](/docs/guides/text-generation), [vision](/docs/guides/vision),\nand [audio](/docs/guides/audio) guides.\n\nParameter support can differ depending on the model used to generate the\nresponse, particularly for newer reasoning models. Parameters that are only\nsupported for reasoning models are noted below. For the current state of\nunsupported parameters in reasoning models,\n[refer to the reasoning guide](/docs/guides/reasoning).\n\nReturns a chat completion object, or a streamed sequence of chat completion\nchunk objects if the request is streamed.\n",
+              "requestBody": {
+                "contentType": "application/json",
+                "type": {
+                  "kind": "ref",
+                  "name": "CreateChatCompletionRequest"
+                },
+                "required": true,
+                "encoding": "json"
+              },
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "CreateChatCompletionResponse"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "CreateChatCompletionResponse"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

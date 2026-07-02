@@ -1,0 +1,832 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "MessageObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "thread.message"
+          },
+          "required": true,
+          "description": "The object type, which is always `thread.message`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the message was created."
+        },
+        {
+          "name": "thread_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The [thread](/docs/api-reference/threads) ID that this message belongs to."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "MessageObjectStatus"
+          },
+          "required": true,
+          "description": "The status of the message, which can be either `in_progress`, `incomplete`, or `completed`."
+        },
+        {
+          "name": "incomplete_details",
+          "type": {
+            "kind": "ref",
+            "name": "MessageObjectIncompleteDetails",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "completed_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "incomplete_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "MessageObjectRole"
+          },
+          "required": true,
+          "description": "The entity that produced the message. One of `user` or `assistant`."
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "MessageObjectContentItem"
+            }
+          },
+          "required": true,
+          "description": "The content of the message in array of text and/or images."
+        },
+        {
+          "name": "assistant_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "run_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "attachments",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "MessageObjectAttachmentsItem"
+            },
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": true
+        }
+      ],
+      "description": "Represents a message within a [thread](/docs/api-reference/threads)."
+    },
+    {
+      "name": "MessageObjectStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "incomplete"
+        },
+        {
+          "value": "completed"
+        }
+      ],
+      "description": "The status of the message, which can be either `in_progress`, `incomplete`, or `completed`."
+    },
+    {
+      "name": "MessageObjectIncompleteDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "reason",
+          "type": {
+            "kind": "ref",
+            "name": "MessageObjectIncompleteDetailsReason"
+          },
+          "required": true,
+          "description": "The reason the message is incomplete."
+        }
+      ],
+      "description": "On an incomplete message, details about why the message is incomplete."
+    },
+    {
+      "name": "MessageObjectIncompleteDetailsReason",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "content_filter"
+        },
+        {
+          "value": "max_tokens"
+        },
+        {
+          "value": "run_cancelled"
+        },
+        {
+          "value": "run_expired"
+        },
+        {
+          "value": "run_failed"
+        }
+      ],
+      "description": "The reason the message is incomplete."
+    },
+    {
+      "name": "MessageObjectRole",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "user"
+        },
+        {
+          "value": "assistant"
+        }
+      ],
+      "description": "The entity that produced the message. One of `user` or `assistant`."
+    },
+    {
+      "name": "MessageObjectContentItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "MessageContentImageFileObject"
+        },
+        {
+          "kind": "ref",
+          "name": "MessageContentImageUrlObject"
+        },
+        {
+          "kind": "ref",
+          "name": "MessageContentTextObject"
+        },
+        {
+          "kind": "ref",
+          "name": "MessageContentRefusalObject"
+        }
+      ]
+    },
+    {
+      "name": "MessageContentImageFileObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "image_file"
+          },
+          "required": true,
+          "description": "Always `image_file`."
+        },
+        {
+          "name": "image_file",
+          "type": {
+            "kind": "ref",
+            "name": "MessageContentImageFileObjectImageFile"
+          },
+          "required": true
+        }
+      ],
+      "description": "References an image [File](/docs/api-reference/files) in the content of a message."
+    },
+    {
+      "name": "MessageContentImageFileObjectImageFile",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The [File](/docs/api-reference/files) ID of the image in the message content. Set `purpose=\"vision\"` when uploading the File if you need to later display the file content."
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "ref",
+            "name": "MessageContentImageFileObjectImageFileDetail"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Specifies the detail level of the image if specified by the user. `low` uses fewer tokens, you can opt in to high resolution using `high`."
+        }
+      ]
+    },
+    {
+      "name": "MessageContentImageFileObjectImageFileDetail",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "low"
+        },
+        {
+          "value": "high"
+        }
+      ],
+      "description": "Specifies the detail level of the image if specified by the user. `low` uses fewer tokens, you can opt in to high resolution using `high`."
+    },
+    {
+      "name": "MessageContentImageUrlObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "image_url"
+          },
+          "required": true,
+          "description": "The type of the content part."
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "ref",
+            "name": "MessageContentImageUrlObjectImageUrl"
+          },
+          "required": true
+        }
+      ],
+      "description": "References an image URL in the content of a message."
+    },
+    {
+      "name": "MessageContentImageUrlObjectImageUrl",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The external URL of the image, must be a supported image types: jpeg, jpg, png, gif, webp."
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "ref",
+            "name": "MessageContentImageFileObjectImageFileDetail"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Specifies the detail level of the image. `low` uses fewer tokens, you can opt in to high resolution using `high`. Default value is `auto`"
+        }
+      ]
+    },
+    {
+      "name": "MessageContentTextObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "description": "Always `text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "ref",
+            "name": "MessageContentTextObjectText"
+          },
+          "required": true
+        }
+      ],
+      "description": "The text content that is part of a message."
+    },
+    {
+      "name": "MessageContentTextObjectText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "value",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The data that makes up the text."
+        },
+        {
+          "name": "annotations",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "MessageContentTextObjectTextAnnotationsItem"
+            }
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "MessageContentTextObjectTextAnnotationsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "MessageContentTextAnnotationsFileCitationObject"
+        },
+        {
+          "kind": "ref",
+          "name": "MessageContentTextAnnotationsFilePathObject"
+        }
+      ]
+    },
+    {
+      "name": "MessageContentTextAnnotationsFileCitationObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_citation"
+          },
+          "required": true,
+          "description": "Always `file_citation`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text in the message content that needs to be replaced."
+        },
+        {
+          "name": "file_citation",
+          "type": {
+            "kind": "ref",
+            "name": "MessageContentTextAnnotationsFileCitationObjectFileCitation"
+          },
+          "required": true
+        },
+        {
+          "name": "start_index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true
+        },
+        {
+          "name": "end_index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true
+        }
+      ],
+      "description": "A citation within the message that points to a specific quote from a specific File associated with the assistant or the message. Generated when the assistant uses the \"file_search\" tool to search files."
+    },
+    {
+      "name": "MessageContentTextAnnotationsFileCitationObjectFileCitation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the specific File the citation is from."
+        }
+      ]
+    },
+    {
+      "name": "MessageContentTextAnnotationsFilePathObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_path"
+          },
+          "required": true,
+          "description": "Always `file_path`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text in the message content that needs to be replaced."
+        },
+        {
+          "name": "file_path",
+          "type": {
+            "kind": "ref",
+            "name": "MessageContentTextAnnotationsFilePathObjectFilePath"
+          },
+          "required": true
+        },
+        {
+          "name": "start_index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true
+        },
+        {
+          "name": "end_index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true
+        }
+      ],
+      "description": "A URL for the file that's generated when the assistant used the `code_interpreter` tool to generate a file."
+    },
+    {
+      "name": "MessageContentTextAnnotationsFilePathObjectFilePath",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the file that was generated."
+        }
+      ]
+    },
+    {
+      "name": "MessageContentRefusalObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "refusal"
+          },
+          "required": true,
+          "description": "Always `refusal`."
+        },
+        {
+          "name": "refusal",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        }
+      ],
+      "description": "The refusal content generated by the assistant."
+    },
+    {
+      "name": "MessageObjectAttachmentsItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the file to attach to the message."
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "MessageObjectAttachmentsItemToolsItem"
+            }
+          },
+          "required": false,
+          "description": "The tools to add this file to."
+        }
+      ]
+    },
+    {
+      "name": "MessageObjectAttachmentsItemToolsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "AssistantToolsCode"
+        },
+        {
+          "kind": "ref",
+          "name": "AssistantToolsFileSearchTypeOnly"
+        }
+      ]
+    },
+    {
+      "name": "AssistantToolsCode",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "code_interpreter"
+          },
+          "required": true,
+          "description": "The type of tool being defined: `code_interpreter`"
+        }
+      ]
+    },
+    {
+      "name": "AssistantToolsFileSearchTypeOnly",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_search"
+          },
+          "required": true,
+          "description": "The type of tool being defined: `file_search`"
+        }
+      ]
+    },
+    {
+      "name": "Metadata",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        "nullable": true
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "beta",
+      "resources": [
+        {
+          "name": "threads",
+          "resources": [
+            {
+              "name": "messages",
+              "methods": [
+                {
+                  "action": "retrieve",
+                  "httpMethod": "get",
+                  "path": "/threads/{thread_id}/messages/{message_id}",
+                  "operationId": "getMessage",
+                  "description": "Retrieve a message.",
+                  "pathParams": [
+                    {
+                      "name": "thread_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the [thread](/docs/api-reference/threads) to which this message belongs."
+                    },
+                    {
+                      "name": "message_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the message to retrieve."
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "OK",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "MessageObject"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "MessageObject"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

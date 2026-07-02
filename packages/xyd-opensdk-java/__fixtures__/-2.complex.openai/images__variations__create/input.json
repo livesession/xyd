@@ -1,0 +1,550 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateImageVariationRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "image",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "binary"
+          },
+          "required": true,
+          "description": "The image to use as the basis for the variation(s). Must be a valid PNG file, less than 4MB, and square."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageVariationRequestModel",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "dall-e-2",
+          "description": "The model to use for image generation. Only `dall-e-2` is supported at this time."
+        },
+        {
+          "name": "n",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": 1,
+          "description": "The number of images to generate. Must be between 1 and 10."
+        },
+        {
+          "name": "response_format",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageVariationRequestResponseFormat",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "url",
+          "description": "The format in which the generated images are returned. Must be one of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been generated."
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageVariationRequestSize",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "1024x1024",
+          "description": "The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`."
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices#end-user-ids).\n"
+        }
+      ]
+    },
+    {
+      "name": "CreateImageVariationRequestModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "string",
+          "const": "dall-e-2"
+        }
+      ],
+      "description": "The model to use for image generation. Only `dall-e-2` is supported at this time."
+    },
+    {
+      "name": "CreateImageVariationRequestResponseFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "url"
+        },
+        {
+          "value": "b64_json"
+        }
+      ],
+      "description": "The format in which the generated images are returned. Must be one of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been generated."
+    },
+    {
+      "name": "CreateImageVariationRequestSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "256x256"
+        },
+        {
+          "value": "512x512"
+        },
+        {
+          "value": "1024x1024"
+        }
+      ],
+      "description": "The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`."
+    },
+    {
+      "name": "ImagesResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "created",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the image was created."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Image"
+            }
+          },
+          "required": false,
+          "description": "The list of generated images."
+        },
+        {
+          "name": "background",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseBackground"
+          },
+          "required": false,
+          "description": "The background parameter used for the image generation. Either `transparent` or `opaque`."
+        },
+        {
+          "name": "output_format",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseOutputFormat"
+          },
+          "required": false,
+          "description": "The output format of the image generation. Either `png`, `webp`, or `jpeg`."
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseSize"
+          },
+          "required": false,
+          "description": "The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`."
+        },
+        {
+          "name": "quality",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseQuality"
+          },
+          "required": false,
+          "description": "The quality of the image generated. Either `low`, `medium`, or `high`."
+        },
+        {
+          "name": "usage",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenUsage"
+          },
+          "required": false
+        }
+      ],
+      "description": "The response from the image generation endpoint."
+    },
+    {
+      "name": "Image",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "b64_json",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The base64-encoded JSON of the generated image. Returned by default for the GPT image models, and only present if `response_format` is set to `b64_json` for `dall-e-2` and `dall-e-3`."
+        },
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": false,
+          "description": "When using `dall-e-2` or `dall-e-3`, the URL of the generated image if `response_format` is set to `url` (default value). Unsupported for the GPT image models."
+        },
+        {
+          "name": "revised_prompt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "For `dall-e-3` only, the revised prompt that was used to generate the image."
+        }
+      ],
+      "description": "Represents the content or the URL of an image generated by the OpenAI API."
+    },
+    {
+      "name": "ImagesResponseBackground",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "transparent"
+        },
+        {
+          "value": "opaque"
+        }
+      ],
+      "description": "The background parameter used for the image generation. Either `transparent` or `opaque`."
+    },
+    {
+      "name": "ImagesResponseOutputFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "png"
+        },
+        {
+          "value": "webp"
+        },
+        {
+          "value": "jpeg"
+        }
+      ],
+      "description": "The output format of the image generation. Either `png`, `webp`, or `jpeg`."
+    },
+    {
+      "name": "ImagesResponseSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1024x1024"
+        },
+        {
+          "value": "1024x1536"
+        },
+        {
+          "value": "1536x1024"
+        }
+      ],
+      "description": "The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`."
+    },
+    {
+      "name": "ImagesResponseQuality",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        }
+      ],
+      "description": "The quality of the image generated. Either `low`, `medium`, or `high`."
+    },
+    {
+      "name": "ImageGenUsage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "input_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of tokens (images and text) in the input prompt."
+        },
+        {
+          "name": "total_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total number of tokens (images and text) used for the image generation."
+        },
+        {
+          "name": "output_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of output tokens generated by the model."
+        },
+        {
+          "name": "output_tokens_details",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenOutputTokensDetails"
+          },
+          "required": false
+        },
+        {
+          "name": "input_tokens_details",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenInputUsageDetails"
+          },
+          "required": true
+        }
+      ],
+      "description": "For `gpt-image-1` only, the token usage information for the image generation."
+    },
+    {
+      "name": "ImageGenOutputTokensDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "image_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of image output tokens generated by the model."
+        },
+        {
+          "name": "text_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of text output tokens generated by the model."
+        }
+      ],
+      "description": "The output token details for the image generation."
+    },
+    {
+      "name": "ImageGenInputUsageDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "text_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of text tokens in the input prompt."
+        },
+        {
+          "name": "image_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of image tokens in the input prompt."
+        }
+      ],
+      "description": "The input tokens detailed information for the image generation."
+    }
+  ],
+  "resources": [
+    {
+      "name": "images",
+      "resources": [
+        {
+          "name": "variations",
+          "methods": [
+            {
+              "action": "create",
+              "httpMethod": "post",
+              "path": "/images/variations",
+              "operationId": "createImageVariation",
+              "description": "Creates a variation of a given image. This endpoint only supports `dall-e-2`.",
+              "requestBody": {
+                "contentType": "multipart/form-data",
+                "type": {
+                  "kind": "ref",
+                  "name": "CreateImageVariationRequest"
+                },
+                "required": true,
+                "encoding": "multipart"
+              },
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "ImagesResponse"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "ImagesResponse"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

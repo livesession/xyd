@@ -1,0 +1,430 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateTranslationRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "binary"
+          },
+          "required": true,
+          "description": "The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.\n"
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "CreateTranslationRequestModel"
+          },
+          "required": true,
+          "description": "ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2 model) is currently available.\n"
+        },
+        {
+          "name": "prompt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "An optional text to guide the model's style or continue a previous audio segment. The [prompt](/docs/guides/speech-to-text#prompting) should be in English.\n"
+        },
+        {
+          "name": "response_format",
+          "type": {
+            "kind": "ref",
+            "name": "CreateTranslationRequestResponseFormat"
+          },
+          "required": false,
+          "default": "json",
+          "description": "The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or `vtt`.\n"
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "default": 0,
+          "description": "The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit.\n"
+        }
+      ]
+    },
+    {
+      "name": "CreateTranslationRequestModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "string",
+          "const": "whisper-1"
+        }
+      ],
+      "description": "ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2 model) is currently available.\n"
+    },
+    {
+      "name": "CreateTranslationRequestResponseFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "json"
+        },
+        {
+          "value": "text"
+        },
+        {
+          "value": "srt"
+        },
+        {
+          "value": "verbose_json"
+        },
+        {
+          "value": "vtt"
+        }
+      ],
+      "description": "The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or `vtt`.\n"
+    },
+    {
+      "name": "AudioTranslationsCreateResponse",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CreateTranslationResponseJson"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateTranslationResponseVerboseJson"
+        }
+      ]
+    },
+    {
+      "name": "CreateTranslationResponseJson",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "CreateTranslationResponseVerboseJson",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "language",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The language of the output translation (always `english`)."
+        },
+        {
+          "name": "duration",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "double"
+          },
+          "required": true,
+          "description": "The duration of the input audio."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The translated text."
+        },
+        {
+          "name": "segments",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "TranscriptionSegment"
+            }
+          },
+          "required": false,
+          "description": "Segments of the translated text and their corresponding details."
+        }
+      ]
+    },
+    {
+      "name": "TranscriptionSegment",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Unique identifier of the segment."
+        },
+        {
+          "name": "seek",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Seek offset of the segment."
+        },
+        {
+          "name": "start",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "double"
+          },
+          "required": true,
+          "description": "Start time of the segment in seconds."
+        },
+        {
+          "name": "end",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "double"
+          },
+          "required": true,
+          "description": "End time of the segment in seconds."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Text content of the segment."
+        },
+        {
+          "name": "tokens",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "integer"
+            }
+          },
+          "required": true,
+          "description": "Array of token IDs for the text content."
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "float"
+          },
+          "required": true,
+          "description": "Temperature parameter used for generating the segment."
+        },
+        {
+          "name": "avg_logprob",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "float"
+          },
+          "required": true,
+          "description": "Average logprob of the segment. If the value is lower than -1, consider the logprobs failed."
+        },
+        {
+          "name": "compression_ratio",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "float"
+          },
+          "required": true,
+          "description": "Compression ratio of the segment. If the value is greater than 2.4, consider the compression failed."
+        },
+        {
+          "name": "no_speech_prob",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "float"
+          },
+          "required": true,
+          "description": "Probability of no speech in the segment. If the value is higher than 1.0 and the `avg_logprob` is below -1, consider this segment silent."
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "audio",
+      "resources": [
+        {
+          "name": "translations",
+          "methods": [
+            {
+              "action": "create",
+              "httpMethod": "post",
+              "path": "/audio/translations",
+              "operationId": "createTranslation",
+              "description": "Translates audio into English.",
+              "requestBody": {
+                "contentType": "multipart/form-data",
+                "type": {
+                  "kind": "ref",
+                  "name": "CreateTranslationRequest"
+                },
+                "required": true,
+                "encoding": "multipart"
+              },
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "AudioTranslationsCreateResponse"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "AudioTranslationsCreateResponse"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

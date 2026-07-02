@@ -176,6 +176,25 @@ export function sdkBehavior(spec: OpensdkSpecJson): ResolvedSdkBehavior {
 }
 
 /**
+ * Layer several behavior partials into one (later layers win) — e.g. a global
+ * `behavior` then a per-language override. Same semantics as `mergeSdkBehavior`
+ * (arrays replace, objects merge, `undefined` skipped) but stays PARTIAL: the
+ * result is a `DeepPartial<SdkBehavior>` suitable to pass to `mergeSdkBehavior`
+ * / the converter's `sdkBehavior` option (not the canonical defaults). Config
+ * layers (sdk.json, future publish profiles) compose through this.
+ */
+export function mergeBehaviorOverrides(
+  ...layers: (DeepPartial<SdkBehavior> | undefined)[]
+): DeepPartial<SdkBehavior> {
+  let out: Record<string, unknown> = {};
+  for (const layer of layers) {
+    if (!layer) continue;
+    out = deepMerge(out, layer as Record<string, unknown>);
+  }
+  return out as DeepPartial<SdkBehavior>;
+}
+
+/**
  * Self-contained deep merge (opensdk-core is layer 0 — no imports).
  * Arrays and primitives from `source` replace those in `target`;
  * objects merge recursively; `undefined` source values are skipped.

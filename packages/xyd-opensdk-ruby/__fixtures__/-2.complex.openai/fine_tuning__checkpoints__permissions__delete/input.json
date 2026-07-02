@@ -1,0 +1,208 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "DeleteFineTuningCheckpointPermissionResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the fine-tuned model checkpoint permission that was deleted."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "checkpoint.permission"
+          },
+          "required": true,
+          "description": "The object type, which is always \"checkpoint.permission\"."
+        },
+        {
+          "name": "deleted",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether the fine-tuned model checkpoint permission was successfully deleted."
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "fine-tuning",
+      "resources": [
+        {
+          "name": "checkpoints",
+          "resources": [
+            {
+              "name": "permissions",
+              "methods": [
+                {
+                  "action": "delete",
+                  "httpMethod": "delete",
+                  "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}",
+                  "operationId": "deleteFineTuningCheckpointPermission",
+                  "description": "**NOTE:** This endpoint requires an [admin API key](../admin-api-keys).\n\nOrganization owners can use this endpoint to delete a permission for a fine-tuned model checkpoint.\n",
+                  "pathParams": [
+                    {
+                      "name": "fine_tuned_model_checkpoint",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the fine-tuned model checkpoint to delete a permission for.\n",
+                      "example": "ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd"
+                    },
+                    {
+                      "name": "permission_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the fine-tuned model checkpoint permission to delete.\n",
+                      "example": "cp_zc4Q7MP6XxulcVzj4MZdwsAB"
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "OK",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "DeleteFineTuningCheckpointPermissionResponse"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "DeleteFineTuningCheckpointPermissionResponse"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

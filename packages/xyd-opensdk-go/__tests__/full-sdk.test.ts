@@ -16,7 +16,7 @@ import { opensdkGo, writeProject } from '../index';
 // per method). Regenerate with O2S_BUILD_DOCS=1; go-build with O2S_GO_SMOKE=1.
 
 const PER_METHOD = path.join(__dirname, '../__fixtures__/-2.complex.openai');
-const OUT = path.join(__dirname, '../__fixtures__/-2.full.openai/output');
+const OUT = path.join(__dirname, '../__fixtures__/-2.complex.openai.full/output');
 
 const BUILD = process.env.O2S_BUILD_DOCS === '1';
 const GO_SMOKE = process.env.O2S_GO_SMOKE === '1';
@@ -25,7 +25,7 @@ const generate = () => opensdkGo(fullIR(PER_METHOD, 'openai'));
 
 // ---- Generator (opt-in) --------------------------------------------------
 describe.runIf(BUILD)('generate the entire Go SDK golden', () => {
-  it('build __fixtures__/-2.full.openai/output (whole merged SDK)', () => {
+  it('build __fixtures__/-2.complex.openai.full/output (whole merged SDK)', () => {
     const files = generate();
     writeTree(OUT, files);
     expect(Object.keys(files).length).toBeGreaterThan(20); // client + resources + types + runtime

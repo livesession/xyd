@@ -1,0 +1,560 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "EvalRunOutputItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "eval.run.output_item"
+          },
+          "required": true,
+          "default": "eval.run.output_item",
+          "description": "The type of the object. Always \"eval.run.output_item\"."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique identifier for the evaluation run output item."
+        },
+        {
+          "name": "run_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier of the evaluation run associated with this output item."
+        },
+        {
+          "name": "eval_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier of the evaluation group."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the evaluation run was created."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The status of the evaluation run."
+        },
+        {
+          "name": "datasource_item_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The identifier for the data source item."
+        },
+        {
+          "name": "datasource_item",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": true,
+          "description": "Details of the input data source item."
+        },
+        {
+          "name": "results",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalRunOutputItemResult"
+            }
+          },
+          "required": true,
+          "description": "A list of grader results for this output item."
+        },
+        {
+          "name": "sample",
+          "type": {
+            "kind": "ref",
+            "name": "EvalRunOutputItemSample"
+          },
+          "required": true,
+          "description": "A sample containing the input and output of the evaluation run."
+        }
+      ],
+      "description": "A schema representing an evaluation run output item.\n"
+    },
+    {
+      "name": "EvalRunOutputItemResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The grader type (for example, \"string-check-grader\")."
+        },
+        {
+          "name": "score",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The numeric score produced by the grader."
+        },
+        {
+          "name": "passed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether the grader considered the output a pass."
+        },
+        {
+          "name": "sample",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            },
+            "nullable": true
+          },
+          "required": false,
+          "description": "Optional sample or intermediate data produced by the grader."
+        }
+      ],
+      "description": "A single grader result for an evaluation run output item.\n"
+    },
+    {
+      "name": "EvalRunOutputItemSample",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "input",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalRunOutputItemSampleInputItem"
+            }
+          },
+          "required": true,
+          "description": "An array of input messages."
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalRunOutputItemSampleOutputItem"
+            }
+          },
+          "required": true,
+          "description": "An array of output messages."
+        },
+        {
+          "name": "finish_reason",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The reason why the sample generation was finished."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model used for generating the sample."
+        },
+        {
+          "name": "usage",
+          "type": {
+            "kind": "ref",
+            "name": "EvalRunOutputItemSampleUsage"
+          },
+          "required": true,
+          "description": "Token usage details for the sample."
+        },
+        {
+          "name": "error",
+          "type": {
+            "kind": "ref",
+            "name": "EvalApiError"
+          },
+          "required": true
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The sampling temperature used."
+        },
+        {
+          "name": "max_completion_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The maximum number of tokens allowed for completion."
+        },
+        {
+          "name": "top_p",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The top_p value used for sampling."
+        },
+        {
+          "name": "seed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The seed used for generating the sample."
+        }
+      ],
+      "description": "A sample containing the input and output of the evaluation run."
+    },
+    {
+      "name": "EvalRunOutputItemSampleInputItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The role of the message sender (e.g., system, user, developer)."
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The content of the message."
+        }
+      ],
+      "description": "An input message."
+    },
+    {
+      "name": "EvalRunOutputItemSampleOutputItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The role of the message (e.g. \"system\", \"assistant\", \"user\")."
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The content of the message."
+        }
+      ]
+    },
+    {
+      "name": "EvalRunOutputItemSampleUsage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "total_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total number of tokens used."
+        },
+        {
+          "name": "completion_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of completion tokens generated."
+        },
+        {
+          "name": "prompt_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of prompt tokens used."
+        },
+        {
+          "name": "cached_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of tokens retrieved from cache."
+        }
+      ],
+      "description": "Token usage details for the sample."
+    },
+    {
+      "name": "EvalApiError",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "code",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The error code."
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The error message."
+        }
+      ],
+      "description": "An object representing an error response from the Eval API.\n"
+    }
+  ],
+  "resources": [
+    {
+      "name": "evals",
+      "resources": [
+        {
+          "name": "runs",
+          "resources": [
+            {
+              "name": "output-items",
+              "methods": [
+                {
+                  "action": "retrieve",
+                  "httpMethod": "get",
+                  "path": "/evals/{eval_id}/runs/{run_id}/output_items/{output_item_id}",
+                  "operationId": "getEvalRunOutputItem",
+                  "description": "Get an evaluation run output item by ID.\n",
+                  "pathParams": [
+                    {
+                      "name": "eval_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the evaluation to retrieve runs for."
+                    },
+                    {
+                      "name": "run_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the run to retrieve."
+                    },
+                    {
+                      "name": "output_item_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the output item to retrieve."
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "The evaluation run output item",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "EvalRunOutputItem"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "EvalRunOutputItem"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

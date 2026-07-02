@@ -1,0 +1,199 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "Model",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "created",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) when the model was created."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "model"
+          },
+          "required": true,
+          "description": "The object type, which is always \"model\"."
+        },
+        {
+          "name": "owned_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The organization that owns the model."
+        }
+      ],
+      "description": "Describes an OpenAI model offering that can be used with the API."
+    }
+  ],
+  "resources": [
+    {
+      "name": "models",
+      "methods": [
+        {
+          "action": "retrieve",
+          "httpMethod": "get",
+          "path": "/models/{model}",
+          "operationId": "retrieveModel",
+          "description": "Retrieves a model instance, providing basic information about the model such as the owner and permissioning.",
+          "pathParams": [
+            {
+              "name": "model",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true,
+              "description": "The ID of the model to use for this request",
+              "example": "gpt-4o-mini"
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "OK",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Model"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Model"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

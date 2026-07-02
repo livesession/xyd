@@ -1,21 +1,57 @@
-import { existsSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
 
-/** `opensdk init` — scaffold an opensdk.config.mjs plugin bundle in the project. */
-export async function initCommand(opts: { project?: string }): Promise<void> {
+export interface InitOptions {
+  project?: string;
+  /** 'json' (default) scaffolds sdk.json; 'mjs' scaffolds the opensdk.config.mjs plugin bundle. */
+  format?: 'json' | 'mjs';
+  /** Write sdk.json under a subdir (e.g. `.sdk`) instead of the project root. */
+  dir?: string;
+  /** Seed the scaffolded language section (default `typescript`). */
+  lang?: string;
+}
+
+/** `opensdk init` — scaffold a config: sdk.json by default, or the opensdk.config.mjs plugin bundle. */
+export async function initCommand(opts: InitOptions): Promise<void> {
   const projectDir = resolve(opts.project ?? '.');
-  const configPath = resolve(projectDir, 'opensdk.config.mjs');
-  if (existsSync(configPath)) {
-    throw new Error('Project already initialized — opensdk.config.mjs exists');
+
+  if (opts.format === 'mjs') {
+    const configPath = resolve(projectDir, 'opensdk.config.mjs');
+    if (existsSync(configPath)) throw new Error('Project already initialized — opensdk.config.mjs exists');
+    writeFileSync(configPath, mjsTemplate());
+    console.log(`Created ${configPath}`);
+    return;
   }
-  writeFileSync(configPath, configTemplate());
+
+  const configPath = resolve(projectDir, opts.dir ?? '.', 'sdk.json');
+  if (existsSync(configPath)) throw new Error('Project already initialized — sdk.json exists');
+  mkdirSync(dirname(configPath), { recursive: true });
+  writeFileSync(configPath, sdkJsonTemplate(opts.lang ?? 'typescript'));
   console.log(`Created ${configPath}`);
 }
 
-function configTemplate(): string {
-  return `// opensdk plugin bundle. The go/python emitters are built in; register your
-// own emitter here — it must implement the @xyd-js/opensdk-framework Emitter
-// contract (pure capability methods: IR in -> GeneratedFile[] out).
+function sdkJsonTemplate(lang: string): string {
+  const section: Record<string, unknown> = { packageName: 'acme', output: `./sdk/${lang}` };
+  const doc = {
+    $schema: 'https://unpkg.com/@xyd-js/opensdk-cli/sdk.schema.json',
+    version: 1,
+    sdkName: 'acme',
+    // Global runtime behavior, deep-merged over @xyd-js/opensdk-core
+    // defaultSdkBehavior() (arrays replace entirely). A per-language `behavior`
+    // block overrides this for that language.
+    behavior: { retry: { maxRetries: 3 }, timeout: { defaultTimeoutMs: 30000 } },
+    // Per-language sections: emitter options + `output` + optional `behavior`.
+    // Keys accept aliases (typescript->node, csharp->dotnet, py, rb, ...).
+    [lang]: section,
+  };
+  return `${JSON.stringify(doc, null, 2)}\n`;
+}
+
+function mjsTemplate(): string {
+  return `// opensdk plugin bundle. The built-in emitters (go/python/node/ruby/java/dotnet)
+// are registered automatically; register your OWN emitter here — it must
+// implement the @xyd-js/opensdk-framework Emitter contract. (For declarative
+// config without custom emitters, prefer sdk.json — run \`opensdk init\`.)
 //
 // import { myEmitter } from './src/my-emitter.mjs';
 
@@ -31,9 +67,8 @@ export default {
     // <lang>.tests: false (same effect as \`generate --no-tests\`):
     // go: { tests: false },
   },
-  // Declarative runtime behavior of the generated SDKs, deep-merged over the
-  // canonical defaults (@xyd-js/opensdk-core defaultSdkBehavior()); arrays
-  // replace entirely. Stamped on the IR as spec.sdk for every emitter.
+  // Declarative runtime behavior, deep-merged over the canonical defaults
+  // (@xyd-js/opensdk-core defaultSdkBehavior()); arrays replace entirely.
   //
   // sdk: {
   //   retry: { maxRetries: 3 },
@@ -41,8 +76,6 @@ export default {
   // },
   //
   // Spec-external resource grouping (Stainless-style beta/admin namespacing).
-  // A JSON file passed via --grouping ({mountRules, operationHints}) overrides these.
-  //
   // mountRules: { assistants: 'beta/assistants' },
   // operationHints: { 'POST /assistants': { mountOn: 'beta/assistants' } },
 };

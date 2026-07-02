@@ -76,6 +76,22 @@ jobs:
       with:
         python-version: '3.11'
 
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
     - name: Get pnpm store directory
       shell: bash
       run: |
@@ -101,6 +117,10 @@ jobs:
         --filter "@xyd-js/openapi2opensdk..."
         --filter "@xyd-js/opensdk-go..."
         --filter "@xyd-js/opensdk-python..."
+        --filter "@xyd-js/opensdk-node..."
+        --filter "@xyd-js/opensdk-ruby..."
+        --filter "@xyd-js/opensdk-java..."
+        --filter "@xyd-js/opensdk-dotnet..."
         --filter "@xyd-js/opensdk-cli..."
         build
 
@@ -113,7 +133,22 @@ jobs:
     - name: Test @xyd-js/opensdk-ci (harness primitives)
       run: pnpm --filter @xyd-js/opensdk-ci ci:test
 
-    - name: Test @xyd-js/openapi2opensdk (converter + openai-go conformance)
+    # Decrypt the vendored oracle (spec, parsed reference SDK surfaces, floors)
+    # so the conformance tests actually run instead of skipping. Needs the
+    # XYD_CONTENT_SECRET repo secret; without it the step is a no-op and the
+    # conformance blocks skip gracefully (skipIf(!hasOracle)).
+    - name: Decrypt openapi2opensdk oracle
+      continue-on-error: true
+      env:
+        XYD_CONTENT_SECRET: ${{ secrets.XYD_CONTENT_SECRET }}
+      run: |
+        if [ -n "$XYD_CONTENT_SECRET" ]; then
+          bash packages/xyd-openapi2opensdk/oracle/decrypt.sh
+        else
+          echo "XYD_CONTENT_SECRET not set — skipping oracle decryption (conformance tests will skip)."
+        fi
+
+    - name: Test @xyd-js/openapi2opensdk (converter + go/python/node/ruby/java/dotnet conformance)
       run: pnpm --filter @xyd-js/openapi2opensdk ci:test
 
     - name: Test @xyd-js/opensdk-go (golden trees + Go build/vet smoke + e2e real SDK + generated-test run)
@@ -139,6 +174,30 @@ jobs:
         # spec-shaped mock (openai-python/Prism style): the harness stands up a
         # venv + pytest and points TEST_API_BASE_URL at the mock, so the emitted
         # tests EXECUTE and PASS (not just py_compile).
+        E2E_SDK_TESTS: '1'
+
+    - name: Test @xyd-js/opensdk-node (golden trees + tsc smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-node ci:test
+      env:
+        O2S_NODE_SMOKE: '1'
+        E2E_SDK_TESTS: '1'
+
+    - name: Test @xyd-js/opensdk-ruby (golden trees + ruby -c smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-ruby ci:test
+      env:
+        O2S_RUBY_SMOKE: '1'
+        E2E_SDK_TESTS: '1'
+
+    - name: Test @xyd-js/opensdk-java (golden trees + javac smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-java ci:test
+      env:
+        O2S_JAVA_SMOKE: '1'
+        E2E_SDK_TESTS: '1'
+
+    - name: Test @xyd-js/opensdk-dotnet (golden trees + dotnet build smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-dotnet ci:test
+      env:
+        O2S_DOTNET_SMOKE: '1'
         E2E_SDK_TESTS: '1'
 
     - name: Test @xyd-js/opensdk-cli (parse/generate/init + plugin config)

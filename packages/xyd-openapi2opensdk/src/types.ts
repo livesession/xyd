@@ -1,4 +1,8 @@
-import type { DeepPartial, SdkBehavior } from '@xyd-js/opensdk-core';
+import type { DeepPartial, OperationHint, SdkBehavior } from '@xyd-js/opensdk-core';
+
+// OperationHint now lives in opensdk-core (a config primitive); re-export it so
+// `@xyd-js/openapi2opensdk` consumers keep importing it from here.
+export type { OperationHint } from '@xyd-js/opensdk-core';
 
 /** Overrides for the action verb an operation maps to (per HTTP shape). */
 export interface VerbMap {
@@ -25,18 +29,6 @@ export const DEFAULT_CUSTOM_ACTION_VERBS = [
   'resume',
 ];
 
-/**
- * Per-operation overrides, keyed by `"METHOD /path"` (uppercase method), e.g.
- * `"POST /assistants": { mountOn: "beta/assistants" }` (oagen's OperationHint).
- * This is the seam for SDK-config-driven grouping that isn't in the spec paths
- * (openai-go's beta/admin namespacing).
- */
-export interface OperationHint {
-  /** Re-mount the operation under this resource path (slash/space-separated segments). */
-  mountOn?: string;
-  /** Override the derived action verb. */
-  action?: string;
-}
 
 export interface OpenApi2OpenSdkOptions {
   /** SDK / package name (defaults to the slugified spec title). */

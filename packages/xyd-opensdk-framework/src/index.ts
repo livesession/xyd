@@ -11,7 +11,7 @@ export type {
   ProjectFileMap,
   WriteMode,
 } from './types';
-export { registerEmitter, getEmitter, applyConfig } from './registry';
+export { registerEmitter, getEmitter, applyConfig, resolveLanguage, languageAliases } from './registry';
 export { generate, generateFileMap } from './orchestrator';
 export { writeProject, deepMergeJson, MANIFEST_FILENAME } from './write';
 export type { ProjectManifest, WriteProjectOptions, WriteProjectResult } from './write';

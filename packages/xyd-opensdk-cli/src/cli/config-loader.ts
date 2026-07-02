@@ -2,8 +2,7 @@ import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import type { OperationHint } from '@xyd-js/openapi2opensdk';
-import type { DeepPartial, SdkBehavior } from '@xyd-js/opensdk-core';
+import type { DeepPartial, OperationHint, SdkBehavior } from '@xyd-js/opensdk-core';
 import type { Emitter } from '@xyd-js/opensdk-framework';
 
 /** The `opensdk.config.*` shape a consumer project exports (oagen-style plugin bundle). */
@@ -44,37 +43,40 @@ export interface OpensdkCliConfig {
   sdk?: DeepPartial<SdkBehavior>;
 }
 
-const CONFIG_NAMES = ['opensdk.config.ts', 'opensdk.config.js', 'opensdk.config.mjs'];
+/** The `opensdk.config.*` filenames tried (in order) when no explicit path is given. */
+export const CONFIG_NAMES = ['opensdk.config.ts', 'opensdk.config.js', 'opensdk.config.mjs'];
+
+/** Dynamic-import one resolved config file into an `OpensdkCliConfig` (with a helpful error). */
+export async function loadConfigFile(resolved: string): Promise<OpensdkCliConfig> {
+  try {
+    const mod = await import(pathToFileURL(resolved).href);
+    return (mod.default ?? mod) as OpensdkCliConfig;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    const hint = resolved.endsWith('.ts')
+      ? 'TypeScript config files require tsx or ts-node. Use .mjs instead, or run via `npx tsx`.'
+      : 'Check that the config file is valid ESM.';
+    throw new Error(`Failed to load ${resolved}: ${message}\n${hint}`);
+  }
+}
 
 /**
  * Load an opensdk config file. With an explicit `configPath`, only that file is
  * attempted; otherwise each name in CONFIG_NAMES is tried in `cwd`.
+ * (Back-compat entry; the config-source registry wraps this — see config/.)
  */
 export async function loadConfig(configPath?: string, cwd: string = process.cwd()): Promise<OpensdkCliConfig | null> {
-  const attempt = async (resolved: string): Promise<OpensdkCliConfig> => {
-    try {
-      const mod = await import(pathToFileURL(resolved).href);
-      return (mod.default ?? mod) as OpensdkCliConfig;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      const hint = resolved.endsWith('.ts')
-        ? 'TypeScript config files require tsx or ts-node. Use .mjs instead, or run via `npx tsx`.'
-        : 'Check that the config file is valid ESM.';
-      throw new Error(`Failed to load ${resolved}: ${message}\n${hint}`);
-    }
-  };
-
   if (configPath) {
     const resolved = path.resolve(cwd, configPath);
     if (!existsSync(resolved)) {
       throw new Error(`Config file not found: ${resolved}. Check the path passed to --config.`);
     }
-    return attempt(resolved);
+    return loadConfigFile(resolved);
   }
 
   for (const name of CONFIG_NAMES) {
     const resolved = path.resolve(cwd, name);
-    if (existsSync(resolved)) return attempt(resolved);
+    if (existsSync(resolved)) return loadConfigFile(resolved);
   }
   return null;
 }

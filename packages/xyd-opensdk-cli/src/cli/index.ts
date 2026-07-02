@@ -1,12 +1,18 @@
 import { Command, Option } from 'commander';
 
-import { registerEmitter } from '@xyd-js/opensdk-framework';
+import { mergeBehaviorOverrides } from '@xyd-js/opensdk-core';
+import { registerEmitter, resolveLanguage } from '@xyd-js/opensdk-framework';
+import { dotnetEmitter } from '@xyd-js/opensdk-dotnet';
 import { goEmitter } from '@xyd-js/opensdk-go';
+import { javaEmitter } from '@xyd-js/opensdk-java';
+import { nodeEmitter } from '@xyd-js/opensdk-node';
 import { pythonEmitter } from '@xyd-js/opensdk-python';
+import { rubyEmitter } from '@xyd-js/opensdk-ruby';
 
-import { type OpensdkCliConfig, loadConfig } from './config-loader';
+import { resolveConfig } from './config/source';
+import type { ResolvedConfig } from './config/types';
 import { type DiffFailOn, diffCommand } from './diff';
-import { generateCommand } from './generate';
+import { generateCommand, generateTargets } from './generate';
 import { initCommand } from './init';
 import { parseCommand } from './parse';
 import { applyConfig } from './plugin-loader';
@@ -21,6 +27,10 @@ function handleError(err: unknown): never {
 export function registerBuiltinEmitters(): void {
   registerEmitter(goEmitter);
   registerEmitter(pythonEmitter);
+  registerEmitter(nodeEmitter);
+  registerEmitter(rubyEmitter);
+  registerEmitter(javaEmitter);
+  registerEmitter(dotnetEmitter);
 }
 
 export async function main(argv: string[] = process.argv): Promise<void> {
@@ -31,9 +41,9 @@ export async function main(argv: string[] = process.argv): Promise<void> {
   const configArgIdx = argv.indexOf('--config');
   const explicitConfigPath = configArgIdx !== -1 ? argv[configArgIdx + 1] : undefined;
 
-  let config: OpensdkCliConfig | null = null;
+  let config: ResolvedConfig | null = null;
   try {
-    config = await loadConfig(explicitConfigPath);
+    config = await resolveConfig(process.cwd(), explicitConfigPath);
     if (config) applyConfig(config);
   } catch (err) {
     handleError(err);
@@ -69,30 +79,44 @@ export async function main(argv: string[] = process.argv): Promise<void> {
 
   program
     .command('generate')
-    .description('Generate an SDK from an OpenAPI spec (or a pre-parsed IR json)')
+    .description('Generate an SDK from an OpenAPI spec (or a pre-parsed IR json). With no --lang, every language declared in sdk.json is generated.')
     .requiredOption('--spec <path>', 'Path to the OpenAPI spec (yaml/json) or OpenSDK IR (.json)')
-    .requiredOption('--lang <language>', 'Registered emitter language (built-in: go, python)')
-    .option('--output <dir>', 'Output directory', './sdk')
+    .option('--lang <language>', 'Emitter language/alias (go|python|typescript|ruby|java|csharp|...); omit to build every language in sdk.json')
+    .option('--output <dir>', 'Output directory (single --lang), or the base dir for per-language subfolders (multi-target)')
     .option('--sdk-name <name>', 'SDK name for the converter')
     .option('--grouping <path>', 'JSON grouping file ({mountRules, operationHints}); overrides the config values')
     .option('--dry-run', 'Print the files that would be generated without writing')
     .option('--no-tests', "Don't emit the generated SDK's self-test suite (sets emitterOptions.<lang>.tests=false)")
     .action(async (opts) => {
       try {
-        await generateCommand({
-          spec: opts.spec,
-          lang: opts.lang,
-          output: opts.output,
+        const shared = {
           sdkName: opts.sdkName ?? config?.sdkName,
           mountRules: config?.mountRules,
           operationHints: config?.operationHints,
           grouping: opts.grouping,
-          sdk: config?.sdk,
           dryRun: opts.dryRun,
           // Commander maps `--no-tests` to opts.tests === false (default true).
           noTests: opts.tests === false,
-          emitterOptions: config?.emitterOptions?.[opts.lang],
-        });
+        };
+        if (opts.lang) {
+          // Single target: merge the language's behavior over the global one.
+          const lang = resolveLanguage(opts.lang);
+          const target = config?.targets?.[lang];
+          await generateCommand({
+            ...shared,
+            spec: opts.spec,
+            lang: opts.lang,
+            output: opts.output ?? target?.output ?? './sdk',
+            sdk: mergeBehaviorOverrides(config?.sdk, target?.behavior),
+            emitterOptions: config?.emitterOptions?.[lang],
+          });
+        } else {
+          // Multi target: build every language declared in the config.
+          if (!config) {
+            throw new Error('No config found — pass --lang, or add a sdk.json with language sections.');
+          }
+          await generateTargets({ ...shared, spec: opts.spec, output: opts.output ?? './sdk', sdk: config.sdk, config });
+        }
       } catch (err) {
         handleError(err);
       }
@@ -134,11 +158,14 @@ export async function main(argv: string[] = process.argv): Promise<void> {
 
   program
     .command('init')
-    .description('Scaffold an opensdk.config.mjs plugin bundle')
+    .description('Scaffold a config file (sdk.json by default, or an opensdk.config.mjs plugin bundle)')
     .option('--project <dir>', 'Project directory (default: cwd)')
+    .addOption(new Option('--format <format>', 'Config format').choices(['json', 'mjs']).default('json'))
+    .option('--dir <subdir>', 'Write sdk.json under a subdir (e.g. .sdk)')
+    .option('--lang <language>', 'Seed this language section in sdk.json (default: typescript)')
     .action(async (opts) => {
       try {
-        await initCommand({ project: opts.project });
+        await initCommand({ project: opts.project, format: opts.format, dir: opts.dir, lang: opts.lang });
       } catch (err) {
         handleError(err);
       }

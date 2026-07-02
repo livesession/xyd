@@ -1,0 +1,471 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://unpkg.com/@xyd-js/opensdk-cli/sdk.schema.json",
+  "title": "OpenSDK sdk.json",
+  "description": "Declarative configuration for generating SDKs with the OpenSDK CLI.",
+  "type": "object",
+  "required": [
+    "version"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "description": "Config schema version.",
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "sdkName": {
+      "type": "string",
+      "description": "Default SDK name passed to the converter."
+    },
+    "behavior": {
+      "$ref": "#/$defs/SdkBehavior",
+      "description": "Global runtime behavior (deep-merged over the canonical defaults)."
+    },
+    "grouping": {
+      "type": "object",
+      "description": "Spec-external resource grouping (Stainless-style beta/admin namespacing).",
+      "properties": {
+        "mountRules": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "operationHints": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "patternProperties": {
+    "^(go|golang)$": {
+      "$ref": "#/$defs/GoSection"
+    },
+    "^(python|py)$": {
+      "$ref": "#/$defs/PythonSection"
+    },
+    "^(typescript|ts|javascript|js|node)$": {
+      "$ref": "#/$defs/NodeSection"
+    },
+    "^(ruby|rb)$": {
+      "$ref": "#/$defs/RubySection"
+    },
+    "^(java)$": {
+      "$ref": "#/$defs/JavaSection"
+    },
+    "^(csharp|cs|c#|dotnet|\\.net)$": {
+      "$ref": "#/$defs/DotnetSection"
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "SdkBehavior": {
+      "type": "object",
+      "description": "Declarative runtime behavior of the generated SDK. One source of truth for what every language's runtime does; emitters interpolate these values instead of hardcoding them.",
+      "properties": {
+        "retry": {
+          "$ref": "#/$defs/RetryPolicy",
+          "description": "Automatic retry policy"
+        },
+        "timeout": {
+          "$ref": "#/$defs/TimeoutPolicy",
+          "description": "Request timeout policy"
+        },
+        "errors": {
+          "$ref": "#/$defs/ErrorPolicy",
+          "description": "Status-code to error-kind mapping"
+        },
+        "userAgent": {
+          "$ref": "#/$defs/UserAgentPolicy",
+          "description": "User-Agent assembly policy"
+        },
+        "telemetry": {
+          "$ref": "#/$defs/TelemetryPolicy",
+          "description": "Request-ID / client-telemetry headers"
+        },
+        "logging": {
+          "$ref": "#/$defs/LoggingPolicy",
+          "description": "Lifecycle log-event vocabulary"
+        },
+        "idempotency": {
+          "$ref": "#/$defs/IdempotencyPolicy",
+          "description": "Idempotency-key injection policy"
+        },
+        "pagination": {
+          "$ref": "#/$defs/PaginationPolicy",
+          "description": "Auto-pagination behavior"
+        },
+        "requestGuard": {
+          "$ref": "#/$defs/RequestGuardPolicy",
+          "description": "Misplaced request-option detection"
+        }
+      }
+    },
+    "RetryPolicy": {
+      "type": "object",
+      "description": "Automatic retry behavior. Delay per attempt: min(initialDelayMs * multiplier^attempt, maxDelayMs), +/- jitter fraction; a Retry-After response header wins when honorRetryAfterHeader is true.",
+      "properties": {
+        "maxRetries": {
+          "type": "integer",
+          "description": "Maximum retry attempts after the first request"
+        },
+        "retryableStatusCodes": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "HTTP status codes that trigger a retry"
+        },
+        "retryConnectionErrors": {
+          "type": "boolean",
+          "description": "Whether transport/connection errors are retried"
+        },
+        "honorRetryAfterHeader": {
+          "type": "boolean",
+          "description": "Whether a Retry-After response header overrides the computed backoff"
+        },
+        "backoff": {
+          "$ref": "#/$defs/BackoffStrategy",
+          "description": "Exponential backoff parameters"
+        }
+      }
+    },
+    "BackoffStrategy": {
+      "type": "object",
+      "properties": {
+        "initialDelayMs": {
+          "type": "integer",
+          "description": "Delay before the first retry"
+        },
+        "maxDelayMs": {
+          "type": "integer",
+          "description": "Upper bound on the computed delay"
+        },
+        "multiplier": {
+          "type": "number",
+          "description": "Exponential growth factor per attempt"
+        },
+        "jitter": {
+          "type": "number",
+          "description": "Random jitter fraction (0..1) applied to each delay"
+        }
+      }
+    },
+    "TimeoutPolicy": {
+      "type": "object",
+      "properties": {
+        "defaultTimeoutMs": {
+          "type": "integer",
+          "description": "Default per-request timeout; 0 means no deadline"
+        },
+        "timeoutEnvVar": {
+          "type": "string",
+          "description": "Environment variable that overrides the default timeout (milliseconds)"
+        }
+      }
+    },
+    "ErrorPolicy": {
+      "type": "object",
+      "description": "Maps HTTP statuses to named error kinds; every language raises/returns its idiomatic form of the same kind.",
+      "properties": {
+        "statusCodeMap": {
+          "tsType": "Record<string, string>",
+          "description": "Exact status -> error kind (e.g. \"404\": \"NotFound\")"
+        },
+        "clientErrorKind": {
+          "type": "string",
+          "description": "Kind for unmapped 4xx statuses"
+        },
+        "serverErrorKind": {
+          "type": "string",
+          "description": "Kind for 5xx statuses"
+        },
+        "errorDocUrlTemplate": {
+          "type": "string",
+          "description": "URL template for error docs (e.g. https://api.example.com/errors/{kind})"
+        }
+      }
+    },
+    "UserAgentPolicy": {
+      "type": "object",
+      "properties": {
+        "sdkIdentifierTemplate": {
+          "type": "string",
+          "description": "UA template; emitters substitute {package}, {language}, {version}"
+        },
+        "includeRuntimeVersion": {
+          "type": "boolean",
+          "description": "Append the language runtime version (go1.22, python/3.12)"
+        },
+        "aiAgentEnvVars": {
+          "tsType": "Record<string, string>",
+          "description": "Env var -> agent slug; when set at runtime the slug is appended to the UA for agent-traffic attribution"
+        }
+      }
+    },
+    "TelemetryPolicy": {
+      "type": "object",
+      "properties": {
+        "requestIdHeader": {
+          "type": "string",
+          "description": "Response header carrying the request id, surfaced on errors"
+        },
+        "headerName": {
+          "type": "string",
+          "description": "Request header carrying client telemetry (previous request id + latency)"
+        },
+        "enabledByDefault": {
+          "type": "boolean",
+          "description": "Whether the client-telemetry loop is on by default"
+        }
+      }
+    },
+    "LoggingPolicy": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Closed lifecycle-event vocabulary every runtime must emit (request.start, request.success, request.retry, request.rate_limited, request.error, request.connection_error)"
+        }
+      }
+    },
+    "IdempotencyPolicy": {
+      "type": "object",
+      "properties": {
+        "headerName": {
+          "type": "string",
+          "description": "The idempotency header wire name"
+        },
+        "autoGenerateForPost": {
+          "type": "boolean",
+          "description": "Auto-generate a key for retried POSTs on methods flagged injectIdempotencyKey"
+        }
+      }
+    },
+    "PaginationPolicy": {
+      "type": "object",
+      "properties": {
+        "autoPageDelayMs": {
+          "type": "integer",
+          "description": "Politeness delay between auto-fetched pages"
+        }
+      }
+    },
+    "RequestGuardPolicy": {
+      "type": "object",
+      "properties": {
+        "optionKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Request-option keys that must never appear inside request params (fail fast if seen)"
+        }
+      }
+    },
+    "GoSection": {
+      "type": "object",
+      "description": "Options for the go SDK target.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for this language's generated SDK."
+        },
+        "behavior": {
+          "$ref": "#/$defs/SdkBehavior",
+          "description": "Per-language behavior, deep-merged over the global `behavior`."
+        },
+        "baseURL": {
+          "type": "string",
+          "description": "Default API base URL baked into the runtime (default: the first `servers` entry)."
+        },
+        "tests": {
+          "type": "boolean",
+          "description": "Emit the SDK's own test suite (default: true)."
+        },
+        "modulePath": {
+          "type": "string",
+          "description": "Go module path (default: github.com/example/<packageName>)."
+        },
+        "packageName": {
+          "type": "string",
+          "description": "Go package name for the SDK root (default: from info.title)."
+        },
+        "goVersion": {
+          "type": "string",
+          "description": "`go` directive in go.mod (default: \"1.22\")."
+        }
+      },
+      "additionalProperties": false
+    },
+    "PythonSection": {
+      "type": "object",
+      "description": "Options for the python SDK target.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for this language's generated SDK."
+        },
+        "behavior": {
+          "$ref": "#/$defs/SdkBehavior",
+          "description": "Per-language behavior, deep-merged over the global `behavior`."
+        },
+        "baseURL": {
+          "type": "string",
+          "description": "Default API base URL baked into the runtime (default: the first `servers` entry)."
+        },
+        "tests": {
+          "type": "boolean",
+          "description": "Emit the SDK's own test suite (default: true)."
+        },
+        "packageName": {
+          "type": "string",
+          "description": "The Python package name (default: snake_case of info.title)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "NodeSection": {
+      "type": "object",
+      "description": "Options for the node SDK target.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for this language's generated SDK."
+        },
+        "behavior": {
+          "$ref": "#/$defs/SdkBehavior",
+          "description": "Per-language behavior, deep-merged over the global `behavior`."
+        },
+        "baseURL": {
+          "type": "string",
+          "description": "Default API base URL baked into the runtime (default: the first `servers` entry)."
+        },
+        "tests": {
+          "type": "boolean",
+          "description": "Emit the SDK's own test suite (default: true)."
+        },
+        "packageName": {
+          "type": "string",
+          "description": "npm package name (default: kebab-case of info.title)."
+        },
+        "envVar": {
+          "type": "string",
+          "description": "Env var the client reads the credential from (default: the scheme envVar / <PKG>_API_KEY)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "RubySection": {
+      "type": "object",
+      "description": "Options for the ruby SDK target.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for this language's generated SDK."
+        },
+        "behavior": {
+          "$ref": "#/$defs/SdkBehavior",
+          "description": "Per-language behavior, deep-merged over the global `behavior`."
+        },
+        "baseURL": {
+          "type": "string",
+          "description": "Default API base URL baked into the runtime (default: the first `servers` entry)."
+        },
+        "tests": {
+          "type": "boolean",
+          "description": "Emit the SDK's own test suite (default: true)."
+        },
+        "packageName": {
+          "type": "string",
+          "description": "The Ruby gem / package name (default: snake_case of info.title)."
+        },
+        "moduleName": {
+          "type": "string",
+          "description": "The top-level Ruby module/namespace (default: PascalCase of info.title)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "JavaSection": {
+      "type": "object",
+      "description": "Options for the java SDK target.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for this language's generated SDK."
+        },
+        "behavior": {
+          "$ref": "#/$defs/SdkBehavior",
+          "description": "Per-language behavior, deep-merged over the global `behavior`."
+        },
+        "baseURL": {
+          "type": "string",
+          "description": "Default API base URL baked into the runtime (default: the first `servers` entry)."
+        },
+        "tests": {
+          "type": "boolean",
+          "description": "Emit the SDK's own test suite (default: true)."
+        },
+        "packageName": {
+          "type": "string",
+          "description": "The leaf Java package segment (default: from info.title)."
+        },
+        "basePackage": {
+          "type": "string",
+          "description": "The Java package prefix the SDK nests under (default: \"com.example\")."
+        }
+      },
+      "additionalProperties": false
+    },
+    "DotnetSection": {
+      "type": "object",
+      "description": "Options for the dotnet SDK target.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for this language's generated SDK."
+        },
+        "behavior": {
+          "$ref": "#/$defs/SdkBehavior",
+          "description": "Per-language behavior, deep-merged over the global `behavior`."
+        },
+        "baseURL": {
+          "type": "string",
+          "description": "Default API base URL baked into the runtime (default: the first `servers` entry)."
+        },
+        "tests": {
+          "type": "boolean",
+          "description": "Emit the SDK's own test suite (default: true)."
+        },
+        "sdkName": {
+          "type": "string",
+          "description": "The SDK name — drives the .csproj filename and the <Sdk>Client class (default: PascalCase of info.title)."
+        },
+        "namespace": {
+          "type": "string",
+          "description": "Root namespace for every emitted type (default: Example.<Sdk>)."
+        },
+        "targetFramework": {
+          "type": "string",
+          "description": "The .csproj target framework moniker (default: \"net8.0\")."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

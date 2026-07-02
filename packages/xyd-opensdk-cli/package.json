@@ -11,6 +11,7 @@
     "clean": "rimraf dist",
     "prebuild": "pnpm clean",
     "build": "tsup",
+    "gen:schema": "node scripts/gen-schema.mjs",
     "test": "vitest",
     "ci:test": "vitest run",
     "format": "bunx biome check --write src"
@@ -21,6 +22,10 @@
     "@xyd-js/opensdk-framework": "workspace:*",
     "@xyd-js/opensdk-go": "workspace:*",
     "@xyd-js/opensdk-python": "workspace:*",
+    "@xyd-js/opensdk-node": "workspace:*",
+    "@xyd-js/opensdk-ruby": "workspace:*",
+    "@xyd-js/opensdk-java": "workspace:*",
+    "@xyd-js/opensdk-dotnet": "workspace:*",
     "commander": "^13.1.0"
   },
   "devDependencies": {

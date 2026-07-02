@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Encrypt oracle plaintext files using XYD_CONTENT_SECRET from gcloud.
-# Produces *.enc siblings; only the .enc files are committed.
+# Encrypt the ENTIRE oracle directory into ONE opaque archive (oracle.enc).
+# Only oracle.enc + the two scripts are committed, so neither the file NAMES
+# nor their contents are exposed in the repo. The plaintext is gitignored and
+# restored by oracle/decrypt.sh. Key from XYD_CONTENT_SECRET (env, else the
+# gcloud secret of that name).
 DIR="$(cd "$(dirname "$0")" && pwd)"
 
 SECRET="${XYD_CONTENT_SECRET:-$(gcloud secrets versions access latest --secret=XYD_CONTENT_SECRET 2>/dev/null)}"
@@ -10,15 +13,17 @@ if [ -z "$SECRET" ]; then
   exit 1
 fi
 
-n=0
-for src in "$DIR"/*; do
-  [ -f "$src" ] || continue
-  base="$(basename "$src")"
-  # skip scripts, README, already-encrypted, and generated reports
-  case "$base" in
-    encrypt.sh|decrypt.sh|*.enc) continue ;;
-  esac
-  openssl enc -aes-256-cbc -pbkdf2 -salt -in "$src" -out "$src.enc" -pass "pass:$SECRET"
-  n=$((n + 1))
-done
-echo "encrypted $n oracle files"
+cd "$DIR"
+LIST="$(mktemp)"
+trap 'rm -f "$LIST"' EXIT
+# every oracle file except the scripts and the archive itself
+find . -maxdepth 1 -type f \
+  ! -name 'encrypt.sh' ! -name 'decrypt.sh' ! -name 'oracle.enc' ! -name '*.enc' \
+  | sed 's|^\./||' | sort > "$LIST"
+if [ ! -s "$LIST" ]; then
+  echo "error: no oracle files to encrypt" >&2
+  exit 1
+fi
+
+tar -cf - -T "$LIST" | openssl enc -aes-256-cbc -pbkdf2 -salt -out oracle.enc -pass "pass:$SECRET"
+echo "encrypted $(wc -l < "$LIST" | tr -d ' ') oracle files -> oracle.enc"

@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import * as path from 'node:path';
 
-import type { OpenApi2OpenSdkOptions, OperationHint } from '@xyd-js/openapi2opensdk';
-import type { DeepPartial, SdkBehavior } from '@xyd-js/opensdk-core';
+import type { OpenApi2OpenSdkOptions } from '@xyd-js/openapi2opensdk';
+import type { DeepPartial, OperationHint, SdkBehavior } from '@xyd-js/opensdk-core';
 
 /**
  * A grouping file's shape (oracle/openai-grouping.json): spec-external mount

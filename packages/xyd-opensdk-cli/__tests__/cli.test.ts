@@ -131,12 +131,26 @@ describe('config loading (plugin bundle)', () => {
 });
 
 describe('init command', () => {
-  it('scaffolds opensdk.config.mjs once', async () => {
+  it('scaffolds sdk.json by default, once', async () => {
     const dir = tmp();
     try {
       await initCommand({ project: dir });
-      expect(fs.readFileSync(path.join(dir, 'opensdk.config.mjs'), 'utf8')).toContain('emitters');
+      const doc = JSON.parse(fs.readFileSync(path.join(dir, 'sdk.json'), 'utf8'));
+      expect(doc.version).toBe(1);
+      expect(doc.$schema).toContain('sdk.schema.json');
+      expect(doc.typescript).toBeDefined();
       await expect(initCommand({ project: dir })).rejects.toThrow(/already initialized/);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('scaffolds opensdk.config.mjs with --format mjs', async () => {
+    const dir = tmp();
+    try {
+      await initCommand({ project: dir, format: 'mjs' });
+      expect(fs.readFileSync(path.join(dir, 'opensdk.config.mjs'), 'utf8')).toContain('emitters');
+      await expect(initCommand({ project: dir, format: 'mjs' })).rejects.toThrow(/already initialized/);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

@@ -1,0 +1,1645 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "FineTuningJob",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The object identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the fine-tuning job was created."
+        },
+        {
+          "name": "error",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobError",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "fine_tuned_model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "finished_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "hyperparameters",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparameters"
+          },
+          "required": true,
+          "description": "The hyperparameters used for the fine-tuning job. This value will only be returned when running `supervised` jobs."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The base model that is being fine-tuned."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "fine_tuning.job"
+          },
+          "required": true,
+          "description": "The object type, which is always \"fine_tuning.job\"."
+        },
+        {
+          "name": "organization_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The organization that owns the fine-tuning job."
+        },
+        {
+          "name": "result_files",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with the [Files API](/docs/api-reference/files/retrieve-contents)."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobStatus"
+          },
+          "required": true,
+          "description": "The current status of the fine-tuning job, which can be either `validating_files`, `queued`, `running`, `succeeded`, `failed`, or `cancelled`."
+        },
+        {
+          "name": "trained_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "training_file",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The file ID used for training. You can retrieve the training data with the [Files API](/docs/api-reference/files/retrieve-contents)."
+        },
+        {
+          "name": "validation_file",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "integrations",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "FineTuningIntegration"
+            },
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "seed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The seed used for the fine-tuning job."
+        },
+        {
+          "name": "estimated_finish",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "method",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuneMethod"
+          },
+          "required": false
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": false
+        }
+      ],
+      "description": "The `fine_tuning.job` object represents a fine-tuning job that has been created through the API.\n"
+    },
+    {
+      "name": "FineTuningJobError",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "code",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A machine-readable error code."
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A human-readable error message."
+        },
+        {
+          "name": "param",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "For fine-tuning jobs that have `failed`, this will contain more information on the cause of the failure."
+    },
+    {
+      "name": "FineTuningJobHyperparameters",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "batch_size",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersBatchSize",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "learning_rate_multiplier",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersLearningRateMultiplier"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Scaling factor for the learning rate. A smaller learning rate may be useful to avoid\noverfitting.\n"
+        },
+        {
+          "name": "n_epochs",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersBatchSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The number of epochs to train the model for. An epoch refers to one full cycle\nthrough the training dataset.\n"
+        }
+      ],
+      "description": "The hyperparameters used for the fine-tuning job. This value will only be returned when running `supervised` jobs."
+    },
+    {
+      "name": "FineTuningJobHyperparametersBatchSize",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string",
+          "const": "auto"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "integer"
+        }
+      ],
+      "description": "Number of examples in each batch. A larger batch size means that model parameters\nare updated less frequently, but with lower variance.\n"
+    },
+    {
+      "name": "FineTuningJobHyperparametersLearningRateMultiplier",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string",
+          "const": "auto"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        }
+      ],
+      "description": "Scaling factor for the learning rate. A smaller learning rate may be useful to avoid\noverfitting.\n"
+    },
+    {
+      "name": "FineTuningJobStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "validating_files"
+        },
+        {
+          "value": "queued"
+        },
+        {
+          "value": "running"
+        },
+        {
+          "value": "succeeded"
+        },
+        {
+          "value": "failed"
+        },
+        {
+          "value": "cancelled"
+        }
+      ],
+      "description": "The current status of the fine-tuning job, which can be either `validating_files`, `queued`, `running`, `succeeded`, `failed`, or `cancelled`."
+    },
+    {
+      "name": "FineTuningIntegration",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "wandb"
+          },
+          "required": true,
+          "description": "The type of the integration being enabled for the fine-tuning job"
+        },
+        {
+          "name": "wandb",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningIntegrationWandb"
+          },
+          "required": true,
+          "description": "The settings for your integration with Weights and Biases. This payload specifies the project that\nmetrics will be sent to. Optionally, you can set an explicit display name for your run, add tags\nto your run, and set a default entity (team, username, etc) to be associated with your run.\n"
+        }
+      ]
+    },
+    {
+      "name": "FineTuningIntegrationWandb",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "project",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the project that the new run will be created under.\n"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "entity",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "tags",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "A list of tags to be attached to the newly created run. These tags are passed through directly to WandB. Some\ndefault tags are generated by OpenAI: \"openai/finetune\", \"openai/{base-model}\", \"openai/{ftjob-abcdef}\".\n"
+        }
+      ],
+      "description": "The settings for your integration with Weights and Biases. This payload specifies the project that\nmetrics will be sent to. Optionally, you can set an explicit display name for your run, add tags\nto your run, and set a default entity (team, username, etc) to be associated with your run.\n"
+    },
+    {
+      "name": "FineTuneMethod",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuneMethodType"
+          },
+          "required": true,
+          "description": "The type of method. Is either `supervised`, `dpo`, or `reinforcement`."
+        },
+        {
+          "name": "supervised",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuneSupervisedMethod"
+          },
+          "required": false
+        },
+        {
+          "name": "dpo",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuneDpoMethod"
+          },
+          "required": false
+        },
+        {
+          "name": "reinforcement",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuneReinforcementMethod"
+          },
+          "required": false
+        }
+      ],
+      "description": "The method used for fine-tuning."
+    },
+    {
+      "name": "FineTuneMethodType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "supervised"
+        },
+        {
+          "value": "dpo"
+        },
+        {
+          "value": "reinforcement"
+        }
+      ],
+      "description": "The type of method. Is either `supervised`, `dpo`, or `reinforcement`."
+    },
+    {
+      "name": "FineTuneSupervisedMethod",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "hyperparameters",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuneSupervisedHyperparameters"
+          },
+          "required": false
+        }
+      ],
+      "description": "Configuration for the supervised fine-tuning method."
+    },
+    {
+      "name": "FineTuneSupervisedHyperparameters",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "batch_size",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersBatchSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Number of examples in each batch. A larger batch size means that model parameters are updated less frequently, but with lower variance.\n"
+        },
+        {
+          "name": "learning_rate_multiplier",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersLearningRateMultiplier"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Scaling factor for the learning rate. A smaller learning rate may be useful to avoid overfitting.\n"
+        },
+        {
+          "name": "n_epochs",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersBatchSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.\n"
+        }
+      ],
+      "description": "The hyperparameters used for the fine-tuning job."
+    },
+    {
+      "name": "FineTuneDpoMethod",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "hyperparameters",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuneDpoHyperparameters"
+          },
+          "required": false
+        }
+      ],
+      "description": "Configuration for the DPO fine-tuning method."
+    },
+    {
+      "name": "FineTuneDpoHyperparameters",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "beta",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersLearningRateMultiplier"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The beta value for the DPO method. A higher beta value will increase the weight of the penalty between the policy and reference model.\n"
+        },
+        {
+          "name": "batch_size",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersBatchSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Number of examples in each batch. A larger batch size means that model parameters are updated less frequently, but with lower variance.\n"
+        },
+        {
+          "name": "learning_rate_multiplier",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersLearningRateMultiplier"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Scaling factor for the learning rate. A smaller learning rate may be useful to avoid overfitting.\n"
+        },
+        {
+          "name": "n_epochs",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersBatchSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.\n"
+        }
+      ],
+      "description": "The hyperparameters used for the DPO fine-tuning job."
+    },
+    {
+      "name": "FineTuneReinforcementMethod",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "grader",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuneReinforcementMethodGrader"
+          },
+          "required": true,
+          "description": "The grader used for the fine-tuning job."
+        },
+        {
+          "name": "hyperparameters",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuneReinforcementHyperparameters"
+          },
+          "required": false
+        }
+      ],
+      "description": "Configuration for the reinforcement fine-tuning method."
+    },
+    {
+      "name": "FineTuneReinforcementMethodGrader",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "GraderStringCheck"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderTextSimilarity"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderPython"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderScoreModel"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderMulti"
+        }
+      ],
+      "description": "The grader used for the fine-tuning job."
+    },
+    {
+      "name": "GraderStringCheck",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "string_check"
+          },
+          "required": true,
+          "description": "The object type, which is always `string_check`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The input text. This may include template strings."
+        },
+        {
+          "name": "reference",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The reference text. This may include template strings."
+        },
+        {
+          "name": "operation",
+          "type": {
+            "kind": "ref",
+            "name": "GraderStringCheckOperation"
+          },
+          "required": true,
+          "description": "The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`."
+        }
+      ],
+      "description": "A StringCheckGrader object that performs a string comparison between input and reference using a specified operation.\n"
+    },
+    {
+      "name": "GraderStringCheckOperation",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "eq"
+        },
+        {
+          "value": "ne"
+        },
+        {
+          "value": "like"
+        },
+        {
+          "value": "ilike"
+        }
+      ],
+      "description": "The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`."
+    },
+    {
+      "name": "GraderTextSimilarity",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text_similarity"
+          },
+          "required": true,
+          "default": "text_similarity",
+          "description": "The type of grader."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text being graded."
+        },
+        {
+          "name": "reference",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text being graded against."
+        },
+        {
+          "name": "evaluation_metric",
+          "type": {
+            "kind": "ref",
+            "name": "GraderTextSimilarityEvaluationMetric"
+          },
+          "required": true,
+          "description": "The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, \n`gleu`, `meteor`, `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, \nor `rouge_l`.\n"
+        }
+      ],
+      "description": "A TextSimilarityGrader object which grades text based on similarity metrics.\n"
+    },
+    {
+      "name": "GraderTextSimilarityEvaluationMetric",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "cosine"
+        },
+        {
+          "value": "fuzzy_match"
+        },
+        {
+          "value": "bleu"
+        },
+        {
+          "value": "gleu"
+        },
+        {
+          "value": "meteor"
+        },
+        {
+          "value": "rouge_1"
+        },
+        {
+          "value": "rouge_2"
+        },
+        {
+          "value": "rouge_3"
+        },
+        {
+          "value": "rouge_4"
+        },
+        {
+          "value": "rouge_5"
+        },
+        {
+          "value": "rouge_l"
+        }
+      ],
+      "description": "The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, \n`gleu`, `meteor`, `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, \nor `rouge_l`.\n"
+    },
+    {
+      "name": "GraderPython",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "python"
+          },
+          "required": true,
+          "description": "The object type, which is always `python`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The source code of the python script."
+        },
+        {
+          "name": "image_tag",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The image tag to use for the python script."
+        }
+      ],
+      "description": "A PythonGrader object that runs a python script on the input.\n"
+    },
+    {
+      "name": "GraderScoreModel",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "score_model"
+          },
+          "required": true,
+          "description": "The object type, which is always `score_model`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model to use for the evaluation."
+        },
+        {
+          "name": "sampling_params",
+          "type": {
+            "kind": "ref",
+            "name": "GraderScoreModelSamplingParams"
+          },
+          "required": false,
+          "description": "The sampling parameters for the model."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalItem"
+            }
+          },
+          "required": true,
+          "description": "The input messages evaluated by the grader. Supports text, output text, input image, and input audio content blocks, and may include template strings.\n"
+        },
+        {
+          "name": "range",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "number"
+            }
+          },
+          "required": false,
+          "description": "The range of the score. Defaults to `[0, 1]`."
+        }
+      ],
+      "description": "A ScoreModelGrader object that uses a model to assign a score to the input.\n"
+    },
+    {
+      "name": "GraderScoreModelSamplingParams",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "seed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "top_p",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "max_completions_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "reasoning_effort",
+          "type": {
+            "kind": "ref",
+            "name": "ReasoningEffort"
+          },
+          "required": false
+        }
+      ],
+      "description": "The sampling parameters for the model."
+    },
+    {
+      "name": "ReasoningEffort",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "none"
+        },
+        {
+          "value": "minimal"
+        },
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "xhigh"
+        }
+      ],
+      "description": "Constrains effort on reasoning for\n[reasoning models](https://platform.openai.com/docs/guides/reasoning).\nCurrently supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing\nreasoning effort can result in faster responses and fewer tokens used\non reasoning in a response.\n\n- `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for all reasoning values in gpt-5.1.\n- All models before `gpt-5.1` default to `medium` reasoning effort, and do not support `none`.\n- The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.\n- `xhigh` is supported for all models after `gpt-5.1-codex-max`.\n"
+    },
+    {
+      "name": "EvalItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "EvalItemRole"
+          },
+          "required": true,
+          "description": "The role of the message input. One of `user`, `assistant`, `system`, or\n`developer`.\n"
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "EvalItemContent"
+          },
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "message"
+          },
+          "required": false,
+          "description": "The type of the message input. Always `message`.\n"
+        }
+      ],
+      "description": "A message input to the model with a role indicating instruction following\nhierarchy. Instructions given with the `developer` or `system` role take\nprecedence over instructions given with the `user` role. Messages with the\n`assistant` role are presumed to have been generated by the model in previous\ninteractions.\n"
+    },
+    {
+      "name": "EvalItemRole",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "user"
+        },
+        {
+          "value": "assistant"
+        },
+        {
+          "value": "system"
+        },
+        {
+          "value": "developer"
+        }
+      ],
+      "description": "The role of the message input. One of `user`, `assistant`, `system`, or\n`developer`.\n"
+    },
+    {
+      "name": "EvalItemContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalItemContentItem"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemContentArray"
+        }
+      ],
+      "description": "Inputs to the model - can contain template strings. Supports text, output text, input images, and input audio, either as a single item or an array of items.\n"
+    },
+    {
+      "name": "EvalItemContentItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalItemContentText"
+        },
+        {
+          "kind": "ref",
+          "name": "InputTextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemContentOutputText"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemInputImage"
+        },
+        {
+          "kind": "ref",
+          "name": "InputAudio"
+        }
+      ],
+      "description": "A single content item: input text, output text, input image, or input audio.\n"
+    },
+    {
+      "name": "EvalItemContentText",
+      "kind": "alias",
+      "of": {
+        "kind": "scalar",
+        "scalar": "string"
+      }
+    },
+    {
+      "name": "InputTextContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_text"
+          },
+          "required": true,
+          "default": "input_text",
+          "description": "The type of the input item. Always `input_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text input to the model."
+        }
+      ],
+      "description": "A text input to the model."
+    },
+    {
+      "name": "EvalItemContentOutputText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "output_text"
+          },
+          "required": true,
+          "description": "The type of the output text. Always `output_text`.\n"
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text output from the model.\n"
+        }
+      ],
+      "description": "A text output from the model.\n"
+    },
+    {
+      "name": "EvalItemInputImage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_image"
+          },
+          "required": true,
+          "description": "The type of the image input. Always `input_image`.\n"
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The URL of the image input.\n"
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`. Defaults to `auto`.\n"
+        }
+      ],
+      "description": "An image input block used within EvalItem content arrays."
+    },
+    {
+      "name": "InputAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_audio"
+          },
+          "required": true,
+          "description": "The type of the input item. Always `input_audio`.\n"
+        },
+        {
+          "name": "input_audio",
+          "type": {
+            "kind": "ref",
+            "name": "InputAudioInputAudio"
+          },
+          "required": true
+        }
+      ],
+      "description": "An audio input to the model.\n"
+    },
+    {
+      "name": "InputAudioInputAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Base64-encoded audio data.\n"
+        },
+        {
+          "name": "format",
+          "type": {
+            "kind": "ref",
+            "name": "InputAudioInputAudioFormat"
+          },
+          "required": true,
+          "description": "The format of the audio data. Currently supported formats are `mp3` and\n`wav`.\n"
+        }
+      ]
+    },
+    {
+      "name": "InputAudioInputAudioFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "mp3"
+        },
+        {
+          "value": "wav"
+        }
+      ],
+      "description": "The format of the audio data. Currently supported formats are `mp3` and\n`wav`.\n"
+    },
+    {
+      "name": "EvalItemContentArray",
+      "kind": "alias",
+      "of": {
+        "kind": "array",
+        "items": {
+          "kind": "ref",
+          "name": "EvalItemContentItem"
+        }
+      }
+    },
+    {
+      "name": "GraderMulti",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "multi"
+          },
+          "required": true,
+          "default": "multi",
+          "description": "The object type, which is always `multi`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "graders",
+          "type": {
+            "kind": "ref",
+            "name": "GraderMultiGraders"
+          },
+          "required": true
+        },
+        {
+          "name": "calculate_output",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A formula to calculate the output based on grader results."
+        }
+      ],
+      "description": "A MultiGrader object combines the output of multiple graders to produce a single score."
+    },
+    {
+      "name": "GraderMultiGraders",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "GraderStringCheck"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderTextSimilarity"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderPython"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderScoreModel"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderLabelModel"
+        }
+      ]
+    },
+    {
+      "name": "GraderLabelModel",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "label_model"
+          },
+          "required": true,
+          "description": "The object type, which is always `label_model`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model to use for the evaluation. Must support structured outputs."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalItem"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "labels",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The labels to assign to each item in the evaluation."
+        },
+        {
+          "name": "passing_labels",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The labels that indicate a passing result. Must be a subset of labels."
+        }
+      ],
+      "description": "A LabelModelGrader object which uses a model to assign labels to each item\nin the evaluation.\n"
+    },
+    {
+      "name": "FineTuneReinforcementHyperparameters",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "batch_size",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersBatchSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Number of examples in each batch. A larger batch size means that model parameters are updated less frequently, but with lower variance.\n"
+        },
+        {
+          "name": "learning_rate_multiplier",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersLearningRateMultiplier"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Scaling factor for the learning rate. A smaller learning rate may be useful to avoid overfitting.\n"
+        },
+        {
+          "name": "n_epochs",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersBatchSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The number of epochs to train the model for. An epoch refers to one full cycle through the training dataset.\n"
+        },
+        {
+          "name": "reasoning_effort",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuneReinforcementHyperparametersReasoningEffort"
+          },
+          "required": false,
+          "default": "default",
+          "description": "Level of reasoning effort.\n"
+        },
+        {
+          "name": "compute_multiplier",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersLearningRateMultiplier"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Multiplier on amount of compute used for exploring search space during training.\n"
+        },
+        {
+          "name": "eval_interval",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersBatchSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The number of training steps between evaluation runs.\n"
+        },
+        {
+          "name": "eval_samples",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobHyperparametersBatchSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Number of evaluation samples to generate per training step.\n"
+        }
+      ],
+      "description": "The hyperparameters used for the reinforcement fine-tuning job."
+    },
+    {
+      "name": "FineTuneReinforcementHyperparametersReasoningEffort",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "default"
+        },
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        }
+      ],
+      "description": "Level of reasoning effort.\n"
+    },
+    {
+      "name": "Metadata",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        "nullable": true
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "fine-tuning",
+      "resources": [
+        {
+          "name": "jobs",
+          "methods": [
+            {
+              "action": "cancel",
+              "httpMethod": "post",
+              "path": "/fine_tuning/jobs/{fine_tuning_job_id}/cancel",
+              "operationId": "cancelFineTuningJob",
+              "description": "Immediately cancel a fine-tune job.\n",
+              "pathParams": [
+                {
+                  "name": "fine_tuning_job_id",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "string"
+                  },
+                  "required": true,
+                  "description": "The ID of the fine-tuning job to cancel.\n",
+                  "example": "ft-AF1WoRqd3aJAHsqc9NY7iL8F"
+                }
+              ],
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "FineTuningJob"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "FineTuningJob"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

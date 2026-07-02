@@ -1,0 +1,1218 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "OrderEnum",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "asc"
+        },
+        {
+          "value": "desc"
+        }
+      ]
+    },
+    {
+      "name": "ThreadItemListResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true,
+          "default": "list",
+          "description": "The type of object returned, must be `list`."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ThreadItem"
+            }
+          },
+          "required": true,
+          "description": "A list of items"
+        },
+        {
+          "name": "first_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "last_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether there are more items available."
+        }
+      ],
+      "description": "A paginated list of thread items rendered for the ChatKit API."
+    },
+    {
+      "name": "ThreadItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "UserMessageItem"
+        },
+        {
+          "kind": "ref",
+          "name": "AssistantMessageItem"
+        },
+        {
+          "kind": "ref",
+          "name": "WidgetMessageItem"
+        },
+        {
+          "kind": "ref",
+          "name": "ClientToolCallItem"
+        },
+        {
+          "kind": "ref",
+          "name": "TaskItem"
+        },
+        {
+          "kind": "ref",
+          "name": "TaskGroupItem"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "chatkit.user_message": "UserMessageItem",
+          "chatkit.assistant_message": "AssistantMessageItem",
+          "chatkit.widget": "WidgetMessageItem",
+          "chatkit.client_tool_call": "ClientToolCallItem",
+          "chatkit.task": "TaskItem",
+          "chatkit.task_group": "TaskGroupItem"
+        }
+      }
+    },
+    {
+      "name": "UserMessageItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the thread item."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.thread_item"
+          },
+          "required": true,
+          "default": "chatkit.thread_item",
+          "description": "Type discriminator that is always `chatkit.thread_item`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the item was created."
+        },
+        {
+          "name": "thread_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the parent thread."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.user_message"
+          },
+          "required": true,
+          "default": "chatkit.user_message"
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "UserMessageItemContentItem"
+            }
+          },
+          "required": true,
+          "description": "Ordered content elements supplied by the user."
+        },
+        {
+          "name": "attachments",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Attachment"
+            }
+          },
+          "required": true,
+          "description": "Attachments associated with the user message. Defaults to an empty list."
+        },
+        {
+          "name": "inference_options",
+          "type": {
+            "kind": "ref",
+            "name": "InferenceOptions",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "User-authored messages within a thread."
+    },
+    {
+      "name": "UserMessageItemContentItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "UserMessageInputText"
+        },
+        {
+          "kind": "ref",
+          "name": "UserMessageQuotedText"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "input_text": "UserMessageInputText",
+          "quoted_text": "UserMessageQuotedText"
+        }
+      },
+      "description": "Content blocks that comprise a user message."
+    },
+    {
+      "name": "UserMessageInputText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_text"
+          },
+          "required": true,
+          "default": "input_text",
+          "description": "Type discriminator that is always `input_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Plain-text content supplied by the user."
+        }
+      ],
+      "description": "Text block that a user contributed to the thread."
+    },
+    {
+      "name": "UserMessageQuotedText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "quoted_text"
+          },
+          "required": true,
+          "default": "quoted_text",
+          "description": "Type discriminator that is always `quoted_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Quoted text content."
+        }
+      ],
+      "description": "Quoted snippet that the user referenced in their message."
+    },
+    {
+      "name": "Attachment",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "AttachmentType"
+          },
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier for the attachment."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Original display name for the attachment."
+        },
+        {
+          "name": "mime_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "MIME type of the attachment."
+        },
+        {
+          "name": "preview_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Attachment metadata included on thread items."
+    },
+    {
+      "name": "AttachmentType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "image"
+        },
+        {
+          "value": "file"
+        }
+      ]
+    },
+    {
+      "name": "InferenceOptions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "tool_choice",
+          "type": {
+            "kind": "ref",
+            "name": "ToolChoice",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Model and tool overrides applied when generating the assistant response."
+    },
+    {
+      "name": "ToolChoice",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the requested tool."
+        }
+      ],
+      "description": "Tool selection that the assistant should honor when executing the item."
+    },
+    {
+      "name": "AssistantMessageItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the thread item."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.thread_item"
+          },
+          "required": true,
+          "default": "chatkit.thread_item",
+          "description": "Type discriminator that is always `chatkit.thread_item`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the item was created."
+        },
+        {
+          "name": "thread_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the parent thread."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.assistant_message"
+          },
+          "required": true,
+          "default": "chatkit.assistant_message",
+          "description": "Type discriminator that is always `chatkit.assistant_message`."
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ResponseOutputText"
+            }
+          },
+          "required": true,
+          "description": "Ordered assistant response segments."
+        }
+      ],
+      "description": "Assistant-authored message within a thread."
+    },
+    {
+      "name": "ResponseOutputText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "output_text"
+          },
+          "required": true,
+          "default": "output_text",
+          "description": "Type discriminator that is always `output_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Assistant generated text."
+        },
+        {
+          "name": "annotations",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ResponseOutputTextAnnotationsItem"
+            }
+          },
+          "required": true,
+          "description": "Ordered list of annotations attached to the response text."
+        }
+      ],
+      "description": "Assistant response text accompanied by optional annotations."
+    },
+    {
+      "name": "ResponseOutputTextAnnotationsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "FileAnnotation"
+        },
+        {
+          "kind": "ref",
+          "name": "UrlAnnotation"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "file": "FileAnnotation",
+          "url": "UrlAnnotation"
+        }
+      },
+      "description": "Annotation object describing a cited source."
+    },
+    {
+      "name": "FileAnnotation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file"
+          },
+          "required": true,
+          "default": "file",
+          "description": "Type discriminator that is always `file` for this annotation."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "ref",
+            "name": "FileAnnotationSource"
+          },
+          "required": true
+        }
+      ],
+      "description": "Annotation that references an uploaded file."
+    },
+    {
+      "name": "FileAnnotationSource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file"
+          },
+          "required": true,
+          "default": "file",
+          "description": "Type discriminator that is always `file`."
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Filename referenced by the annotation."
+        }
+      ],
+      "description": "Attachment source referenced by an annotation."
+    },
+    {
+      "name": "UrlAnnotation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "url"
+          },
+          "required": true,
+          "default": "url",
+          "description": "Type discriminator that is always `url` for this annotation."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "ref",
+            "name": "UrlAnnotationSource"
+          },
+          "required": true
+        }
+      ],
+      "description": "Annotation that references a URL."
+    },
+    {
+      "name": "UrlAnnotationSource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "url"
+          },
+          "required": true,
+          "default": "url",
+          "description": "Type discriminator that is always `url`."
+        },
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "URL referenced by the annotation."
+        }
+      ],
+      "description": "URL backing an annotation entry."
+    },
+    {
+      "name": "WidgetMessageItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the thread item."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.thread_item"
+          },
+          "required": true,
+          "default": "chatkit.thread_item",
+          "description": "Type discriminator that is always `chatkit.thread_item`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the item was created."
+        },
+        {
+          "name": "thread_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the parent thread."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.widget"
+          },
+          "required": true,
+          "default": "chatkit.widget",
+          "description": "Type discriminator that is always `chatkit.widget`."
+        },
+        {
+          "name": "widget",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Serialized widget payload rendered in the UI."
+        }
+      ],
+      "description": "Thread item that renders a widget payload."
+    },
+    {
+      "name": "ClientToolCallItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the thread item."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.thread_item"
+          },
+          "required": true,
+          "default": "chatkit.thread_item",
+          "description": "Type discriminator that is always `chatkit.thread_item`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the item was created."
+        },
+        {
+          "name": "thread_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the parent thread."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.client_tool_call"
+          },
+          "required": true,
+          "default": "chatkit.client_tool_call",
+          "description": "Type discriminator that is always `chatkit.client_tool_call`."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ClientToolCallStatus"
+          },
+          "required": true
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier for the client tool call."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Tool name that was invoked."
+        },
+        {
+          "name": "arguments",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "JSON-encoded arguments that were sent to the tool."
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Record of a client side tool invocation initiated by the assistant."
+    },
+    {
+      "name": "ClientToolCallStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        }
+      ]
+    },
+    {
+      "name": "TaskItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the thread item."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.thread_item"
+          },
+          "required": true,
+          "default": "chatkit.thread_item",
+          "description": "Type discriminator that is always `chatkit.thread_item`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the item was created."
+        },
+        {
+          "name": "thread_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the parent thread."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.task"
+          },
+          "required": true,
+          "default": "chatkit.task",
+          "description": "Type discriminator that is always `chatkit.task`."
+        },
+        {
+          "name": "task_type",
+          "type": {
+            "kind": "ref",
+            "name": "TaskType"
+          },
+          "required": true
+        },
+        {
+          "name": "heading",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "summary",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Task emitted by the workflow to show progress and status updates."
+    },
+    {
+      "name": "TaskType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "custom"
+        },
+        {
+          "value": "thought"
+        }
+      ]
+    },
+    {
+      "name": "TaskGroupItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the thread item."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.thread_item"
+          },
+          "required": true,
+          "default": "chatkit.thread_item",
+          "description": "Type discriminator that is always `chatkit.thread_item`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the item was created."
+        },
+        {
+          "name": "thread_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the parent thread."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.task_group"
+          },
+          "required": true,
+          "default": "chatkit.task_group",
+          "description": "Type discriminator that is always `chatkit.task_group`."
+        },
+        {
+          "name": "tasks",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "TaskGroupTask"
+            }
+          },
+          "required": true,
+          "description": "Tasks included in the group."
+        }
+      ],
+      "description": "Collection of workflow tasks grouped together in the thread."
+    },
+    {
+      "name": "TaskGroupTask",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "TaskType"
+          },
+          "required": true
+        },
+        {
+          "name": "heading",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "summary",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Task entry that appears within a TaskGroup."
+    }
+  ],
+  "resources": [
+    {
+      "name": "beta",
+      "resources": [
+        {
+          "name": "chat-kit",
+          "resources": [
+            {
+              "name": "threads",
+              "resources": [
+                {
+                  "name": "items",
+                  "methods": [
+                    {
+                      "action": "list",
+                      "httpMethod": "get",
+                      "path": "/chatkit/threads/{thread_id}/items",
+                      "operationId": "ListThreadItemsMethod",
+                      "description": "List items that belong to a ChatKit thread.",
+                      "pathParams": [
+                        {
+                          "name": "thread_id",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": true,
+                          "description": "Identifier of the ChatKit thread whose items are requested.",
+                          "example": "cthr_123"
+                        }
+                      ],
+                      "queryParams": [
+                        {
+                          "name": "limit",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "integer"
+                          },
+                          "required": false,
+                          "description": "Maximum number of thread items to return. Defaults to 20."
+                        },
+                        {
+                          "name": "order",
+                          "type": {
+                            "kind": "ref",
+                            "name": "OrderEnum"
+                          },
+                          "required": false,
+                          "description": "Sort order for results by creation time. Defaults to `desc`."
+                        },
+                        {
+                          "name": "after",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": false,
+                          "description": "List items created after this thread item ID. Defaults to null for the first page."
+                        },
+                        {
+                          "name": "before",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": false,
+                          "description": "List items created before this thread item ID. Defaults to null for the newest results."
+                        }
+                      ],
+                      "responses": [
+                        {
+                          "status": "200",
+                          "description": "Success",
+                          "contentType": "application/json",
+                          "type": {
+                            "kind": "ref",
+                            "name": "ThreadItemListResource"
+                          }
+                        }
+                      ],
+                      "primaryResponse": {
+                        "kind": "ref",
+                        "name": "ThreadItemListResource"
+                      },
+                      "pagination": {
+                        "style": "cursor",
+                        "itemsField": "data",
+                        "nextField": "has_more",
+                        "itemType": {
+                          "kind": "ref",
+                          "name": "ThreadItem"
+                        },
+                        "cursorParam": "after",
+                        "limitParam": "limit"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

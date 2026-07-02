@@ -1,0 +1,395 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateEmbeddingRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "input",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEmbeddingRequestInput"
+          },
+          "required": true,
+          "description": "Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a single request, pass an array of strings or array of token arrays. The input must not exceed the max input tokens for the model (8192 tokens for all embedding models), cannot be an empty string, and any array must be 2048 dimensions or less. [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken) for counting tokens. In addition to the per-input token limit, all embedding  models enforce a maximum of 300,000 tokens summed across all inputs in a  single request.\n"
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEmbeddingRequestModel"
+          },
+          "required": true,
+          "description": "ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.\n"
+        },
+        {
+          "name": "encoding_format",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEmbeddingRequestEncodingFormat"
+          },
+          "required": false,
+          "default": "float",
+          "description": "The format to return the embeddings in. Can be either `float` or [`base64`](https://pypi.org/project/pybase64/)."
+        },
+        {
+          "name": "dimensions",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The number of dimensions the resulting output embeddings should have. Only supported in `text-embedding-3` and later models.\n"
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices#end-user-ids).\n"
+        }
+      ]
+    },
+    {
+      "name": "CreateEmbeddingRequestInput",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "scalar",
+            "scalar": "string"
+          }
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "scalar",
+            "scalar": "integer"
+          }
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "integer"
+            }
+          }
+        }
+      ],
+      "description": "Input text to embed, encoded as a string or array of tokens. To embed multiple inputs in a single request, pass an array of strings or array of token arrays. The input must not exceed the max input tokens for the model (8192 tokens for all embedding models), cannot be an empty string, and any array must be 2048 dimensions or less. [Example Python code](https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken) for counting tokens. In addition to the per-input token limit, all embedding  models enforce a maximum of 300,000 tokens summed across all inputs in a  single request.\n"
+    },
+    {
+      "name": "CreateEmbeddingRequestModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateEmbeddingRequestModelString"
+        }
+      ],
+      "description": "ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.\n"
+    },
+    {
+      "name": "CreateEmbeddingRequestModelString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "text-embedding-ada-002"
+        },
+        {
+          "value": "text-embedding-3-small"
+        },
+        {
+          "value": "text-embedding-3-large"
+        }
+      ]
+    },
+    {
+      "name": "CreateEmbeddingRequestEncodingFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "float"
+        },
+        {
+          "value": "base64"
+        }
+      ],
+      "description": "The format to return the embeddings in. Can be either `float` or [`base64`](https://pypi.org/project/pybase64/)."
+    },
+    {
+      "name": "CreateEmbeddingResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Embedding"
+            }
+          },
+          "required": true,
+          "description": "The list of embeddings generated by the model."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the model used to generate the embedding."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true,
+          "description": "The object type, which is always \"list\"."
+        },
+        {
+          "name": "usage",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEmbeddingResponseUsage"
+          },
+          "required": true,
+          "description": "The usage information for the request."
+        }
+      ]
+    },
+    {
+      "name": "Embedding",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The index of the embedding in the list of embeddings."
+        },
+        {
+          "name": "embedding",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "number",
+              "format": "float"
+            }
+          },
+          "required": true,
+          "description": "The embedding vector, which is a list of floats. The length of vector depends on the model as listed in the [embedding guide](/docs/guides/embeddings).\n"
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "embedding"
+          },
+          "required": true,
+          "description": "The object type, which is always \"embedding\"."
+        }
+      ],
+      "description": "Represents an embedding vector returned by embedding endpoint.\n"
+    },
+    {
+      "name": "CreateEmbeddingResponseUsage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "prompt_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of tokens used by the prompt."
+        },
+        {
+          "name": "total_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total number of tokens used by the request."
+        }
+      ],
+      "description": "The usage information for the request."
+    }
+  ],
+  "resources": [
+    {
+      "name": "embeddings",
+      "methods": [
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/embeddings",
+          "operationId": "createEmbedding",
+          "description": "Creates an embedding vector representing the input text.",
+          "requestBody": {
+            "contentType": "application/json",
+            "type": {
+              "kind": "ref",
+              "name": "CreateEmbeddingRequest"
+            },
+            "required": true,
+            "encoding": "json"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "OK",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "CreateEmbeddingResponse"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "CreateEmbeddingResponse"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}
