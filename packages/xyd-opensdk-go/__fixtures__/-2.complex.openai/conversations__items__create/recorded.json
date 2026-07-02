@@ -1,0 +1,13 @@
+{
+  "call": "Conversations.Items.New",
+  "request": {
+    "method": "post",
+    "path": "/conversations/{conversation_id}/items",
+    "query": [],
+    "bodyFields": [
+      "items"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

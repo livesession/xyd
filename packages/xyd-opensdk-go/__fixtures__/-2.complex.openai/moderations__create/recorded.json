@@ -1,0 +1,13 @@
+{
+  "call": "Moderations.New",
+  "request": {
+    "method": "post",
+    "path": "/moderations",
+    "query": [],
+    "bodyFields": [
+      "input"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

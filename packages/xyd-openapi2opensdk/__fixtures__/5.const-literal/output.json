@@ -1,0 +1,200 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "Const Literals",
+    "version": "1.0.0"
+  },
+  "types": [
+    {
+      "name": "Credential",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "credential"
+          },
+          "required": true
+        },
+        {
+          "name": "kind",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "stored"
+          },
+          "required": false
+        },
+        {
+          "name": "attempts",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "const": 3
+          },
+          "required": false
+        },
+        {
+          "name": "secret",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "writeOnly": true
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "readOnly": true
+        },
+        {
+          "name": "version",
+          "type": {
+            "kind": "ref",
+            "name": "ApiVersion"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "ApiVersion",
+      "kind": "alias",
+      "of": {
+        "kind": "scalar",
+        "scalar": "string",
+        "const": "2024-01-01"
+      },
+      "description": "The fixed API version string."
+    }
+  ],
+  "resources": [
+    {
+      "name": "credentials",
+      "methods": [
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/credentials",
+          "operationId": "createCredential",
+          "requestBody": {
+            "contentType": "application/json",
+            "type": {
+              "kind": "ref",
+              "name": "Credential"
+            },
+            "required": true,
+            "encoding": "json"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "The created credential.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Credential"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Credential"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

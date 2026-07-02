@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Projects.Archive",
+  "request": {
+    "method": "post",
+    "path": "/organization/projects/{project_id}/archive",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

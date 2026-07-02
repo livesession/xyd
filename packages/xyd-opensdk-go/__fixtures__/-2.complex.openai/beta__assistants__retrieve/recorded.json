@@ -1,0 +1,10 @@
+{
+  "call": "Beta.Assistants.Get",
+  "request": {
+    "method": "get",
+    "path": "/assistants/{assistant_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

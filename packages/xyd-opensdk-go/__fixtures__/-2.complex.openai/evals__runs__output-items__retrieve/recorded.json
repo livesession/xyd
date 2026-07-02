@@ -1,0 +1,10 @@
+{
+  "call": "Evals.Runs.OutputItems.Get",
+  "request": {
+    "method": "get",
+    "path": "/evals/{eval_id}/runs/{run_id}/output_items/{output_item_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

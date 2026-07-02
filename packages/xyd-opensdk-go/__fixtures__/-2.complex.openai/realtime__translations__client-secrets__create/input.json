@@ -1,0 +1,498 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "RealtimeTranslationClientSecretCreateRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "expires_after",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationClientSecretCreateRequestExpiresAfter"
+          },
+          "required": false,
+          "description": "Configuration for the client secret expiration. Expiration refers to the time after which\na client secret will no longer be valid for creating sessions. The session itself may\ncontinue after that time once started. A secret can be used to create multiple sessions\nuntil it expires.\n"
+        },
+        {
+          "name": "session",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionCreateRequest"
+          },
+          "required": true
+        }
+      ],
+      "description": "Create a translation session and client secret for the Realtime API.\n"
+    },
+    {
+      "name": "RealtimeTranslationClientSecretCreateRequestExpiresAfter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "anchor",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "created_at"
+          },
+          "required": false,
+          "default": "created_at",
+          "description": "The anchor point for the client secret expiration, meaning that `seconds` will be added to the `created_at` time of the client secret to produce an expiration timestamp. Only `created_at` is currently supported.\n"
+        },
+        {
+          "name": "seconds",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "int64"
+          },
+          "required": false,
+          "default": 600,
+          "description": "The number of seconds from the anchor point to the expiration. Select a value between `10` and `7200` (2 hours). This default to 600 seconds (10 minutes) if not specified.\n"
+        }
+      ],
+      "description": "Configuration for the client secret expiration. Expiration refers to the time after which\na client secret will no longer be valid for creating sessions. The session itself may\ncontinue after that time once started. A secret can be used to create multiple sessions\nuntil it expires.\n"
+    },
+    {
+      "name": "RealtimeTranslationSessionCreateRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The Realtime translation model used for this session.\n"
+        },
+        {
+          "name": "audio",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionCreateRequestAudio"
+          },
+          "required": false,
+          "description": "Configuration for translation input and output audio.\n"
+        }
+      ],
+      "description": "Realtime translation session configuration. Translation sessions stream source\naudio in and translated audio plus transcript deltas out continuously.\n"
+    },
+    {
+      "name": "RealtimeTranslationSessionCreateRequestAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "input",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionCreateRequestAudioInput"
+          },
+          "required": false
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionCreateRequestAudioOutput"
+          },
+          "required": false
+        }
+      ],
+      "description": "Configuration for translation input and output audio.\n"
+    },
+    {
+      "name": "RealtimeTranslationSessionCreateRequestAudioInput",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "transcription",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionCreateRequestAudioInputTranscription",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "noise_reduction",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionCreateRequestAudioInputNoiseReduction",
+            "nullable": true
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "RealtimeTranslationSessionCreateRequestAudioInputTranscription",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The transcription model to use for source transcript deltas."
+        }
+      ],
+      "description": "Optional source-language transcription. When configured, the server emits\n`session.input_transcript.delta` events. Translation itself still runs from\nthe input audio stream.\n"
+    },
+    {
+      "name": "RealtimeTranslationSessionCreateRequestAudioInputNoiseReduction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "NoiseReductionType"
+          },
+          "required": true
+        }
+      ],
+      "description": "Optional input noise reduction. Set to `null` to disable it.\n"
+    },
+    {
+      "name": "NoiseReductionType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "near_field"
+        },
+        {
+          "value": "far_field"
+        }
+      ],
+      "description": "Type of noise reduction. `near_field` is for close-talking microphones such as headphones, `far_field` is for far-field microphones such as laptop or conference room microphones.\n"
+    },
+    {
+      "name": "RealtimeTranslationSessionCreateRequestAudioOutput",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "language",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Target language for translated output audio and transcript deltas.\n"
+        }
+      ]
+    },
+    {
+      "name": "RealtimeTranslationClientSecretCreateResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "value",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The generated client secret value."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Expiration timestamp for the client secret, in seconds since epoch."
+        },
+        {
+          "name": "session",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSession"
+          },
+          "required": true
+        }
+      ],
+      "description": "Response from creating a translation session and client secret for the Realtime API.\n"
+    },
+    {
+      "name": "RealtimeTranslationSession",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique identifier for the session that looks like `sess_1234567890abcdef`.\n"
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "translation"
+          },
+          "required": true,
+          "description": "The session type. Always `translation` for Realtime translation sessions.\n"
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Expiration timestamp for the session, in seconds since epoch."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The Realtime translation model used for this session. This field is set at\nsession creation and cannot be changed with `session.update`.\n"
+        },
+        {
+          "name": "audio",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionAudio"
+          },
+          "required": true,
+          "description": "Configuration for translation input and output audio.\n"
+        }
+      ],
+      "description": "A Realtime translation session. Translation sessions continuously translate input\naudio into the configured output language.\n"
+    },
+    {
+      "name": "RealtimeTranslationSessionAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "input",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionAudioInput"
+          },
+          "required": false
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionCreateRequestAudioOutput"
+          },
+          "required": false
+        }
+      ],
+      "description": "Configuration for translation input and output audio.\n"
+    },
+    {
+      "name": "RealtimeTranslationSessionAudioInput",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "transcription",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionAudioInputTranscription",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "noise_reduction",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranslationSessionCreateRequestAudioInputNoiseReduction",
+            "nullable": true
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "RealtimeTranslationSessionAudioInputTranscription",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The transcription model used for source transcript deltas."
+        }
+      ],
+      "description": "Optional source-language transcription. When configured, the server emits\n`session.input_transcript.delta` events. Translation itself still runs from\nthe input audio stream.\n"
+    }
+  ],
+  "resources": [
+    {
+      "name": "realtime",
+      "resources": [
+        {
+          "name": "translations",
+          "resources": [
+            {
+              "name": "client-secrets",
+              "methods": [
+                {
+                  "action": "create",
+                  "httpMethod": "post",
+                  "path": "/realtime/translations/client_secrets",
+                  "operationId": "create-realtime-translation-client-secret",
+                  "description": "Create a Realtime translation client secret with an associated translation session configuration.\n\nClient secrets are short-lived tokens that can be passed to a client app,\nsuch as a web frontend or mobile client, which grants access to the Realtime\nTranslation API without leaking your main API key. You can configure a custom\nTTL for each client secret.\n\nReturns the created client secret and the effective translation session object.\nThe client secret is a string that looks like `ek_1234`.\n",
+                  "requestBody": {
+                    "contentType": "application/json",
+                    "type": {
+                      "kind": "ref",
+                      "name": "RealtimeTranslationClientSecretCreateRequest"
+                    },
+                    "required": true,
+                    "encoding": "json",
+                    "description": "Create a client secret with the given translation session configuration."
+                  },
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "Translation client secret created successfully.",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "RealtimeTranslationClientSecretCreateResponse"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "RealtimeTranslationClientSecretCreateResponse"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

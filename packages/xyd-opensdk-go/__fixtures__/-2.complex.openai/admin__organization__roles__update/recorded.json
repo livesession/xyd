@@ -1,0 +1,11 @@
+{
+  "call": "Admin.Organization.Roles.Update",
+  "request": {
+    "method": "post",
+    "path": "/organization/roles/{role_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

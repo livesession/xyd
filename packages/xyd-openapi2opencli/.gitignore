@@ -1,2 +1,8 @@
+# Oracle plaintext — decrypted from .enc files via oracle/decrypt.sh
+oracle/*
+!oracle/encrypt.sh
+!oracle/decrypt.sh
+!oracle/*.enc
+# Generated reports (never committed)
 oracle/coverage.report.json
 oracle/docs-coverage.report.json

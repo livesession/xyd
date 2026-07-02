@@ -1,0 +1,13 @@
+{
+  "call": "Uploads.Parts.New",
+  "request": {
+    "method": "post",
+    "path": "/uploads/{upload_id}/parts",
+    "query": [],
+    "bodyFields": [
+      "data"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

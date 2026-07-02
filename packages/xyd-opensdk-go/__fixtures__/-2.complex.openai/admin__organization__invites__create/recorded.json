@@ -1,0 +1,14 @@
+{
+  "call": "Admin.Organization.Invites.New",
+  "request": {
+    "method": "post",
+    "path": "/organization/invites",
+    "query": [],
+    "bodyFields": [
+      "email",
+      "role"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

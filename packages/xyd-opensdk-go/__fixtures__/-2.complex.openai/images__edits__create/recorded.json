@@ -1,0 +1,14 @@
+{
+  "call": "Images.Edits.New",
+  "request": {
+    "method": "post",
+    "path": "/images/edits",
+    "query": [],
+    "bodyFields": [
+      "images",
+      "prompt"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

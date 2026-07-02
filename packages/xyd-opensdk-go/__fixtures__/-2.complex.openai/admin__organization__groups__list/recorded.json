@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Groups.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/groups",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

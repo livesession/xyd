@@ -1,0 +1,13 @@
+{
+  "call": "Beta.Threads.Runs.SubmitToolOutputs.New",
+  "request": {
+    "method": "post",
+    "path": "/threads/{thread_id}/runs/{run_id}/submit_tool_outputs",
+    "query": [],
+    "bodyFields": [
+      "tool_outputs"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

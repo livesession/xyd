@@ -1,0 +1,438 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "ContainersListOrder",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "asc"
+        },
+        {
+          "value": "desc"
+        }
+      ]
+    },
+    {
+      "name": "ContainerListResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true,
+          "description": "The type of object returned, must be 'list'."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ContainerResource"
+            }
+          },
+          "required": true,
+          "description": "A list of containers."
+        },
+        {
+          "name": "first_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the first container in the list."
+        },
+        {
+          "name": "last_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the last container in the list."
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether there are more containers available."
+        }
+      ]
+    },
+    {
+      "name": "ContainerResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique identifier for the container."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The type of this object."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Name of the container."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the container was created."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Status of the container (e.g., active, deleted)."
+        },
+        {
+          "name": "last_active_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "Unix timestamp (in seconds) when the container was last active."
+        },
+        {
+          "name": "expires_after",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceExpiresAfter"
+          },
+          "required": false,
+          "description": "The container will expire after this time period.\nThe anchor is the reference point for the expiration.\nThe minutes is the number of minutes after the anchor before the container expires.\n"
+        },
+        {
+          "name": "memory_limit",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceMemoryLimit"
+          },
+          "required": false,
+          "description": "The memory limit configured for the container."
+        },
+        {
+          "name": "network_policy",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceNetworkPolicy"
+          },
+          "required": false,
+          "description": "Network access policy for the container."
+        }
+      ]
+    },
+    {
+      "name": "ContainerResourceExpiresAfter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "anchor",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "last_active_at"
+          },
+          "required": false,
+          "description": "The reference point for the expiration."
+        },
+        {
+          "name": "minutes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The number of minutes after the anchor before the container expires."
+        }
+      ],
+      "description": "The container will expire after this time period.\nThe anchor is the reference point for the expiration.\nThe minutes is the number of minutes after the anchor before the container expires.\n"
+    },
+    {
+      "name": "ContainerResourceMemoryLimit",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1g"
+        },
+        {
+          "value": "4g"
+        },
+        {
+          "value": "16g"
+        },
+        {
+          "value": "64g"
+        }
+      ],
+      "description": "The memory limit configured for the container."
+    },
+    {
+      "name": "ContainerResourceNetworkPolicy",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceNetworkPolicyType"
+          },
+          "required": true,
+          "description": "The network policy mode."
+        },
+        {
+          "name": "allowed_domains",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "Allowed outbound domains when `type` is `allowlist`."
+        }
+      ],
+      "description": "Network access policy for the container."
+    },
+    {
+      "name": "ContainerResourceNetworkPolicyType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "allowlist"
+        },
+        {
+          "value": "disabled"
+        }
+      ],
+      "description": "The network policy mode."
+    }
+  ],
+  "resources": [
+    {
+      "name": "containers",
+      "methods": [
+        {
+          "action": "list",
+          "httpMethod": "get",
+          "path": "/containers",
+          "operationId": "ListContainers",
+          "description": "Lists containers.",
+          "queryParams": [
+            {
+              "name": "limit",
+              "type": {
+                "kind": "scalar",
+                "scalar": "integer"
+              },
+              "required": false,
+              "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n",
+              "default": 20
+            },
+            {
+              "name": "order",
+              "type": {
+                "kind": "ref",
+                "name": "ContainersListOrder"
+              },
+              "required": false,
+              "description": "Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.\n",
+              "default": "desc"
+            },
+            {
+              "name": "after",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": false,
+              "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+            },
+            {
+              "name": "name",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": false,
+              "description": "Filter results by container name."
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "Success",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "ContainerListResource"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "ContainerListResource"
+          },
+          "pagination": {
+            "style": "cursor",
+            "itemsField": "data",
+            "nextField": "has_more",
+            "itemType": {
+              "kind": "ref",
+              "name": "ContainerResource"
+            },
+            "cursorParam": "after",
+            "limitParam": "limit"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

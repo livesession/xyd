@@ -1,0 +1,13 @@
+{
+  "call": "Admin.Organization.Groups.New",
+  "request": {
+    "method": "post",
+    "path": "/organization/groups",
+    "query": [],
+    "bodyFields": [
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

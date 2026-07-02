@@ -1,0 +1,13 @@
+{
+  "call": "Projects.Groups.Roles.New",
+  "request": {
+    "method": "post",
+    "path": "/projects/{project_id}/groups/{group_id}/roles",
+    "query": [],
+    "bodyFields": [
+      "role_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

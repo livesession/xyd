@@ -1,0 +1,637 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "VectorStoreSearchRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "query",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreSearchRequestQuery"
+          },
+          "required": true,
+          "description": "A query string for a search"
+        },
+        {
+          "name": "rewrite_query",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "default": false,
+          "description": "Whether to rewrite the natural language query for vector search."
+        },
+        {
+          "name": "max_num_results",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 10,
+          "description": "The maximum number of results to return. This number should be between 1 and 50 inclusive."
+        },
+        {
+          "name": "filters",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreSearchRequestFilters"
+          },
+          "required": false,
+          "description": "A filter to apply based on file attributes."
+        },
+        {
+          "name": "ranking_options",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreSearchRequestRankingOptions"
+          },
+          "required": false,
+          "description": "Ranking options for search."
+        }
+      ]
+    },
+    {
+      "name": "VectorStoreSearchRequestQuery",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "scalar",
+            "scalar": "string"
+          }
+        }
+      ],
+      "description": "A query string for a search"
+    },
+    {
+      "name": "VectorStoreSearchRequestFilters",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ComparisonFilter"
+        },
+        {
+          "kind": "ref",
+          "name": "CompoundFilter"
+        }
+      ],
+      "description": "A filter to apply based on file attributes."
+    },
+    {
+      "name": "ComparisonFilter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "ComparisonFilterType"
+          },
+          "required": true,
+          "default": "eq",
+          "description": "Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`.\n- `eq`: equals\n- `ne`: not equal\n- `gt`: greater than\n- `gte`: greater than or equal\n- `lt`: less than\n- `lte`: less than or equal\n- `in`: in\n- `nin`: not in\n"
+        },
+        {
+          "name": "key",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The key to compare against the value."
+        },
+        {
+          "name": "value",
+          "type": {
+            "kind": "ref",
+            "name": "ComparisonFilterValue"
+          },
+          "required": true,
+          "description": "The value to compare against the attribute key; supports string, number, or boolean types."
+        }
+      ],
+      "description": "A filter used to compare a specified attribute key to a given value using a defined comparison operation.\n"
+    },
+    {
+      "name": "ComparisonFilterType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "eq"
+        },
+        {
+          "value": "ne"
+        },
+        {
+          "value": "gt"
+        },
+        {
+          "value": "gte"
+        },
+        {
+          "value": "lt"
+        },
+        {
+          "value": "lte"
+        },
+        {
+          "value": "in"
+        },
+        {
+          "value": "nin"
+        }
+      ],
+      "description": "Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`.\n- `eq`: equals\n- `ne`: not equal\n- `gt`: greater than\n- `gte`: greater than or equal\n- `lt`: less than\n- `lte`: less than or equal\n- `in`: in\n- `nin`: not in\n"
+    },
+    {
+      "name": "ComparisonFilterValue",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "boolean"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "ref",
+            "name": "ComparisonFilterValueArrayItem"
+          }
+        }
+      ],
+      "description": "The value to compare against the attribute key; supports string, number, or boolean types."
+    },
+    {
+      "name": "ComparisonFilterValueArrayItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        }
+      ]
+    },
+    {
+      "name": "CompoundFilter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "CompoundFilterType"
+          },
+          "required": true,
+          "description": "Type of operation: `and` or `or`."
+        },
+        {
+          "name": "filters",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CompoundFilterFiltersItem"
+            }
+          },
+          "required": true,
+          "description": "Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`."
+        }
+      ],
+      "description": "Combine multiple filters using `and` or `or`."
+    },
+    {
+      "name": "CompoundFilterType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "and"
+        },
+        {
+          "value": "or"
+        }
+      ],
+      "description": "Type of operation: `and` or `or`."
+    },
+    {
+      "name": "CompoundFilterFiltersItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ComparisonFilter"
+        },
+        {
+          "kind": "any"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type"
+      }
+    },
+    {
+      "name": "VectorStoreSearchRequestRankingOptions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "ranker",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreSearchRequestRankingOptionsRanker"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Enable re-ranking; set to `none` to disable, which can help reduce latency."
+        },
+        {
+          "name": "score_threshold",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "default": 0
+        }
+      ],
+      "description": "Ranking options for search."
+    },
+    {
+      "name": "VectorStoreSearchRequestRankingOptionsRanker",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "none"
+        },
+        {
+          "value": "auto"
+        },
+        {
+          "value": "default-2024-11-15"
+        }
+      ],
+      "description": "Enable re-ranking; set to `none` to disable, which can help reduce latency."
+    },
+    {
+      "name": "VectorStoreSearchResultsPage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "vector_store.search_results.page"
+          },
+          "required": true,
+          "description": "The object type, which is always `vector_store.search_results.page`"
+        },
+        {
+          "name": "search_query",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "VectorStoreSearchResultItem"
+            }
+          },
+          "required": true,
+          "description": "The list of search result items."
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Indicates if there are more results to fetch."
+        },
+        {
+          "name": "next_page",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "VectorStoreSearchResultItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the vector store file."
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the vector store file."
+        },
+        {
+          "name": "score",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The similarity score for the result."
+        },
+        {
+          "name": "attributes",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreFileAttributes"
+          },
+          "required": true
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "VectorStoreSearchResultContentObject"
+            }
+          },
+          "required": true,
+          "description": "Content chunks from the file."
+        }
+      ]
+    },
+    {
+      "name": "VectorStoreFileAttributes",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "ref",
+          "name": "VectorStoreFileAttributesValue"
+        },
+        "nullable": true
+      }
+    },
+    {
+      "name": "VectorStoreFileAttributesValue",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "VectorStoreSearchResultContentObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "description": "The type of content."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text content returned from search."
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "vector-stores",
+      "methods": [
+        {
+          "action": "search",
+          "httpMethod": "post",
+          "path": "/vector_stores/{vector_store_id}/search",
+          "operationId": "searchVectorStore",
+          "description": "Search a vector store for relevant chunks based on a query and file attributes filter.",
+          "pathParams": [
+            {
+              "name": "vector_store_id",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true,
+              "description": "The ID of the vector store to search.",
+              "example": "vs_abc123"
+            }
+          ],
+          "requestBody": {
+            "contentType": "application/json",
+            "type": {
+              "kind": "ref",
+              "name": "VectorStoreSearchRequest"
+            },
+            "required": true,
+            "encoding": "json"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "OK",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "VectorStoreSearchResultsPage"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "VectorStoreSearchResultsPage"
+          },
+          "pagination": {
+            "style": "cursor",
+            "itemsField": "data",
+            "nextField": "has_more",
+            "itemType": {
+              "kind": "ref",
+              "name": "VectorStoreSearchResultItem"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

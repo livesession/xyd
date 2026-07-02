@@ -1,0 +1,37 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "Offset Paging", "version": "1.0.0" },
+  "components": {
+    "schemas": {
+      "Widget": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } }
+      },
+      "WidgetList": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Widget" } },
+          "total": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/widgets": {
+      "get": {
+        "operationId": "listWidgets",
+        "summary": "List widgets",
+        "parameters": [
+          { "name": "offset", "in": "query", "schema": { "type": "integer" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "An offset-paged list of widgets.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WidgetList" } } }
+          }
+        }
+      }
+    }
+  }
+}

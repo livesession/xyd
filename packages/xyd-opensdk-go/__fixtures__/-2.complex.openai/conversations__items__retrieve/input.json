@@ -1,0 +1,6597 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "IncludeEnum",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "file_search_call.results"
+        },
+        {
+          "value": "web_search_call.results"
+        },
+        {
+          "value": "web_search_call.action.sources"
+        },
+        {
+          "value": "message.input_image.image_url"
+        },
+        {
+          "value": "computer_call_output.output.image_url"
+        },
+        {
+          "value": "code_interpreter_call.outputs"
+        },
+        {
+          "value": "reasoning.encrypted_content"
+        },
+        {
+          "value": "message.output_text.logprobs"
+        }
+      ],
+      "description": "Specify additional output data to include in the model response. Currently supported values are:\n- `web_search_call.results`: Include the search results of the web search tool call.\n- `web_search_call.action.sources`: Include the sources of the web search tool call.\n- `code_interpreter_call.outputs`: Includes the outputs of python code execution in code interpreter tool call items.\n- `computer_call_output.output.image_url`: Include image urls from the computer call output.\n- `file_search_call.results`: Include the search results of the file search tool call.\n- `message.input_image.image_url`: Include image urls from the input message.\n- `message.output_text.logprobs`: Include logprobs with assistant messages.\n- `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in reasoning item outputs. This enables reasoning items to be used in multi-turn conversations when using the Responses API statelessly (like when the `store` parameter is set to `false`, or when an organization is enrolled in the zero data retention program)."
+    },
+    {
+      "name": "ConversationItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "Message"
+        },
+        {
+          "kind": "ref",
+          "name": "FunctionToolCallResource"
+        },
+        {
+          "kind": "ref",
+          "name": "FunctionToolCallOutputResource"
+        },
+        {
+          "kind": "ref",
+          "name": "FileSearchToolCall"
+        },
+        {
+          "kind": "ref",
+          "name": "WebSearchToolCall"
+        },
+        {
+          "kind": "ref",
+          "name": "ImageGenToolCall"
+        },
+        {
+          "kind": "ref",
+          "name": "ComputerToolCall"
+        },
+        {
+          "kind": "ref",
+          "name": "ComputerToolCallOutputResource"
+        },
+        {
+          "kind": "ref",
+          "name": "ToolSearchCall"
+        },
+        {
+          "kind": "ref",
+          "name": "ToolSearchOutput"
+        },
+        {
+          "kind": "ref",
+          "name": "ReasoningItem"
+        },
+        {
+          "kind": "ref",
+          "name": "CompactionBody"
+        },
+        {
+          "kind": "ref",
+          "name": "CodeInterpreterToolCall"
+        },
+        {
+          "kind": "ref",
+          "name": "LocalShellToolCall"
+        },
+        {
+          "kind": "ref",
+          "name": "LocalShellToolCallOutput"
+        },
+        {
+          "kind": "ref",
+          "name": "FunctionShellCall"
+        },
+        {
+          "kind": "ref",
+          "name": "FunctionShellCallOutput"
+        },
+        {
+          "kind": "ref",
+          "name": "ApplyPatchToolCall"
+        },
+        {
+          "kind": "ref",
+          "name": "ApplyPatchToolCallOutput"
+        },
+        {
+          "kind": "ref",
+          "name": "McpListTools"
+        },
+        {
+          "kind": "ref",
+          "name": "McpApprovalRequest"
+        },
+        {
+          "kind": "ref",
+          "name": "McpApprovalResponseResource"
+        },
+        {
+          "kind": "ref",
+          "name": "McpToolCall"
+        },
+        {
+          "kind": "ref",
+          "name": "CustomToolCall"
+        },
+        {
+          "kind": "ref",
+          "name": "CustomToolCallOutput"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "message": "Message",
+          "function_call": "FunctionToolCallResource",
+          "function_call_output": "FunctionToolCallOutputResource",
+          "file_search_call": "FileSearchToolCall",
+          "web_search_call": "WebSearchToolCall",
+          "image_generation_call": "ImageGenToolCall",
+          "computer_call": "ComputerToolCall",
+          "computer_call_output": "ComputerToolCallOutputResource",
+          "tool_search_call": "ToolSearchCall",
+          "tool_search_output": "ToolSearchOutput",
+          "reasoning": "ReasoningItem",
+          "compaction": "CompactionBody",
+          "code_interpreter_call": "CodeInterpreterToolCall",
+          "local_shell_call": "LocalShellToolCall",
+          "local_shell_call_output": "LocalShellToolCallOutput",
+          "shell_call": "FunctionShellCall",
+          "shell_call_output": "FunctionShellCallOutput",
+          "apply_patch_call": "ApplyPatchToolCall",
+          "apply_patch_call_output": "ApplyPatchToolCallOutput",
+          "mcp_list_tools": "McpListTools",
+          "mcp_approval_request": "McpApprovalRequest",
+          "mcp_approval_response": "McpApprovalResponseResource",
+          "mcp_call": "McpToolCall",
+          "custom_tool_call": "CustomToolCall",
+          "custom_tool_call_output": "CustomToolCallOutput"
+        }
+      },
+      "description": "A single item within a conversation. The set of possible types are the same as the `output` type of a [Response object](/docs/api-reference/responses/object#responses/object-output)."
+    },
+    {
+      "name": "Message",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "message"
+          },
+          "required": true,
+          "default": "message",
+          "description": "The type of the message. Always set to `message`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the message."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "MessageStatus"
+          },
+          "required": true
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "MessageRole"
+          },
+          "required": true
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "MessageContentItem"
+            }
+          },
+          "required": true,
+          "description": "The content of the message"
+        },
+        {
+          "name": "phase",
+          "type": {
+            "kind": "ref",
+            "name": "MessagePhase2",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A message to or from the model."
+    },
+    {
+      "name": "MessageStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        }
+      ]
+    },
+    {
+      "name": "MessageRole",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "unknown"
+        },
+        {
+          "value": "user"
+        },
+        {
+          "value": "assistant"
+        },
+        {
+          "value": "system"
+        },
+        {
+          "value": "critic"
+        },
+        {
+          "value": "discriminator"
+        },
+        {
+          "value": "developer"
+        },
+        {
+          "value": "tool"
+        }
+      ]
+    },
+    {
+      "name": "MessageContentItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "InputTextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "OutputTextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "TextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "SummaryTextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "ReasoningTextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "RefusalContent"
+        },
+        {
+          "kind": "ref",
+          "name": "InputImageContent"
+        },
+        {
+          "kind": "ref",
+          "name": "ComputerScreenshotContent"
+        },
+        {
+          "kind": "ref",
+          "name": "InputFileContent"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "input_text": "InputTextContent",
+          "output_text": "OutputTextContent",
+          "text": "TextContent",
+          "summary_text": "SummaryTextContent",
+          "reasoning_text": "ReasoningTextContent",
+          "refusal": "RefusalContent",
+          "input_image": "InputImageContent",
+          "computer_screenshot": "ComputerScreenshotContent",
+          "input_file": "InputFileContent"
+        }
+      },
+      "description": "A content part that makes up an input or output item."
+    },
+    {
+      "name": "InputTextContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_text"
+          },
+          "required": true,
+          "default": "input_text",
+          "description": "The type of the input item. Always `input_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text input to the model."
+        }
+      ],
+      "description": "A text input to the model."
+    },
+    {
+      "name": "OutputTextContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "output_text"
+          },
+          "required": true,
+          "default": "output_text",
+          "description": "The type of the output text. Always `output_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text output from the model."
+        },
+        {
+          "name": "annotations",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Annotation"
+            }
+          },
+          "required": true,
+          "description": "The annotations of the text output."
+        },
+        {
+          "name": "logprobs",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "LogProb"
+            }
+          },
+          "required": true
+        }
+      ],
+      "description": "A text output from the model."
+    },
+    {
+      "name": "Annotation",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "FileCitationBody"
+        },
+        {
+          "kind": "ref",
+          "name": "UrlCitationBody"
+        },
+        {
+          "kind": "ref",
+          "name": "ContainerFileCitationBody"
+        },
+        {
+          "kind": "ref",
+          "name": "FilePath"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "file_citation": "FileCitationBody",
+          "url_citation": "UrlCitationBody",
+          "container_file_citation": "ContainerFileCitationBody",
+          "file_path": "FilePath"
+        }
+      },
+      "description": "An annotation that applies to a span of output text."
+    },
+    {
+      "name": "FileCitationBody",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_citation"
+          },
+          "required": true,
+          "default": "file_citation",
+          "description": "The type of the file citation. Always `file_citation`."
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the file."
+        },
+        {
+          "name": "index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The index of the file in the list of files."
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The filename of the file cited."
+        }
+      ],
+      "description": "A citation to a file."
+    },
+    {
+      "name": "UrlCitationBody",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "url_citation"
+          },
+          "required": true,
+          "default": "url_citation",
+          "description": "The type of the URL citation. Always `url_citation`."
+        },
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The URL of the web resource."
+        },
+        {
+          "name": "start_index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The index of the first character of the URL citation in the message."
+        },
+        {
+          "name": "end_index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The index of the last character of the URL citation in the message."
+        },
+        {
+          "name": "title",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The title of the web resource."
+        }
+      ],
+      "description": "A citation for a web resource used to generate a model response."
+    },
+    {
+      "name": "ContainerFileCitationBody",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "container_file_citation"
+          },
+          "required": true,
+          "default": "container_file_citation",
+          "description": "The type of the container file citation. Always `container_file_citation`."
+        },
+        {
+          "name": "container_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the container file."
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the file."
+        },
+        {
+          "name": "start_index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The index of the first character of the container file citation in the message."
+        },
+        {
+          "name": "end_index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The index of the last character of the container file citation in the message."
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The filename of the container file cited."
+        }
+      ],
+      "description": "A citation for a container file used to generate a model response."
+    },
+    {
+      "name": "FilePath",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_path"
+          },
+          "required": true,
+          "description": "The type of the file path. Always `file_path`.\n"
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the file.\n"
+        },
+        {
+          "name": "index",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The index of the file in the list of files.\n"
+        }
+      ],
+      "description": "A path to a file.\n"
+    },
+    {
+      "name": "LogProb",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "token",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "logprob",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true
+        },
+        {
+          "name": "bytes",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "integer"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "top_logprobs",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "TopLogProb"
+            }
+          },
+          "required": true
+        }
+      ],
+      "description": "The log probability of a token."
+    },
+    {
+      "name": "TopLogProb",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "token",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "logprob",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true
+        },
+        {
+          "name": "bytes",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "integer"
+            }
+          },
+          "required": true
+        }
+      ],
+      "description": "The top log probability of a token."
+    },
+    {
+      "name": "TextContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "default": "text"
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        }
+      ],
+      "description": "A text content."
+    },
+    {
+      "name": "SummaryTextContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "summary_text"
+          },
+          "required": true,
+          "default": "summary_text",
+          "description": "The type of the object. Always `summary_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A summary of the reasoning output from the model so far."
+        }
+      ],
+      "description": "A summary text from the model."
+    },
+    {
+      "name": "ReasoningTextContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "reasoning_text"
+          },
+          "required": true,
+          "default": "reasoning_text",
+          "description": "The type of the reasoning text. Always `reasoning_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The reasoning text from the model."
+        }
+      ],
+      "description": "Reasoning text from the model."
+    },
+    {
+      "name": "RefusalContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "refusal"
+          },
+          "required": true,
+          "default": "refusal",
+          "description": "The type of the refusal. Always `refusal`."
+        },
+        {
+          "name": "refusal",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The refusal explanation from the model."
+        }
+      ],
+      "description": "A refusal from the model."
+    },
+    {
+      "name": "InputImageContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_image"
+          },
+          "required": true,
+          "default": "input_image",
+          "description": "The type of the input item. Always `input_image`."
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "ref",
+            "name": "ImageDetail"
+          },
+          "required": true
+        }
+      ],
+      "description": "An image input to the model. Learn about [image inputs](/docs/guides/vision)."
+    },
+    {
+      "name": "ImageDetail",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "auto"
+        },
+        {
+          "value": "original"
+        }
+      ]
+    },
+    {
+      "name": "ComputerScreenshotContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "computer_screenshot"
+          },
+          "required": true,
+          "default": "computer_screenshot",
+          "description": "Specifies the event type. For a computer screenshot, this property is always set to `computer_screenshot`."
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "ref",
+            "name": "ImageDetail"
+          },
+          "required": true
+        }
+      ],
+      "description": "A screenshot of a computer."
+    },
+    {
+      "name": "InputFileContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_file"
+          },
+          "required": true,
+          "default": "input_file",
+          "description": "The type of the input item. Always `input_file`."
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the file to be sent to the model."
+        },
+        {
+          "name": "file_data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The content of the file to be sent to the model.\n"
+        },
+        {
+          "name": "file_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": false,
+          "description": "The URL of the file to be sent to the model."
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "ref",
+            "name": "FileInputDetail"
+          },
+          "required": false
+        }
+      ],
+      "description": "A file input to the model."
+    },
+    {
+      "name": "FileInputDetail",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "high"
+        }
+      ]
+    },
+    {
+      "name": "MessagePhase2",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "commentary"
+        },
+        {
+          "value": "final_answer"
+        }
+      ]
+    },
+    {
+      "name": "FunctionToolCallResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the function tool call.\n"
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function_call"
+          },
+          "required": true,
+          "description": "The type of the function tool call. Always `function_call`.\n"
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the function tool call generated by the model.\n"
+        },
+        {
+          "name": "namespace",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The namespace of the function to run.\n"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to run.\n"
+        },
+        {
+          "name": "arguments",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A JSON string of the arguments to pass to the function.\n"
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionCallStatus"
+          },
+          "required": true
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of the actor that created the item.\n"
+        }
+      ]
+    },
+    {
+      "name": "FunctionCallStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        }
+      ]
+    },
+    {
+      "name": "FunctionToolCallOutputResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the function call tool output.\n"
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function_call_output"
+          },
+          "required": true,
+          "description": "The type of the function tool call output. Always `function_call_output`.\n"
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the function tool call generated by the model.\n"
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionToolCallOutputResourceOutput"
+          },
+          "required": true,
+          "description": "The output from the function call generated by your code.\nCan be a string or an list of output content.\n"
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionCallOutputStatusEnum"
+          },
+          "required": true
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of the actor that created the item.\n"
+        }
+      ]
+    },
+    {
+      "name": "FunctionToolCallOutputResourceOutput",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "ref",
+            "name": "FunctionAndCustomToolCallOutput"
+          }
+        }
+      ],
+      "description": "The output from the function call generated by your code.\nCan be a string or an list of output content.\n"
+    },
+    {
+      "name": "FunctionAndCustomToolCallOutput",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "InputTextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "InputImageContent"
+        },
+        {
+          "kind": "ref",
+          "name": "InputFileContent"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "input_text": "InputTextContent",
+          "input_image": "InputImageContent",
+          "input_file": "InputFileContent"
+        }
+      }
+    },
+    {
+      "name": "FunctionCallOutputStatusEnum",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        }
+      ]
+    },
+    {
+      "name": "FileSearchToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the file search tool call.\n"
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_search_call"
+          },
+          "required": true,
+          "description": "The type of the file search tool call. Always `file_search_call`.\n"
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "FileSearchToolCallStatus"
+          },
+          "required": true,
+          "description": "The status of the file search tool call. One of `in_progress`,\n`searching`, `incomplete` or `failed`,\n"
+        },
+        {
+          "name": "queries",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The queries used to search for files.\n"
+        },
+        {
+          "name": "results",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "FileSearchToolCallResultsItem"
+            },
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The results of a file search tool call. See the\n[file search guide](/docs/guides/tools-file-search) for more information.\n"
+    },
+    {
+      "name": "FileSearchToolCallStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "searching"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        },
+        {
+          "value": "failed"
+        }
+      ],
+      "description": "The status of the file search tool call. One of `in_progress`,\n`searching`, `incomplete` or `failed`,\n"
+    },
+    {
+      "name": "FileSearchToolCallResultsItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The unique ID of the file.\n"
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The text that was retrieved from the file.\n"
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the file.\n"
+        },
+        {
+          "name": "attributes",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreFileAttributes"
+          },
+          "required": false
+        },
+        {
+          "name": "score",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "float"
+          },
+          "required": false,
+          "description": "The relevance score of the file - a value between 0 and 1.\n"
+        }
+      ]
+    },
+    {
+      "name": "VectorStoreFileAttributes",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "ref",
+          "name": "VectorStoreFileAttributesValue"
+        },
+        "nullable": true
+      }
+    },
+    {
+      "name": "VectorStoreFileAttributesValue",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "WebSearchToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the web search tool call.\n"
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "web_search_call"
+          },
+          "required": true,
+          "description": "The type of the web search tool call. Always `web_search_call`.\n"
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchToolCallStatus"
+          },
+          "required": true,
+          "description": "The status of the web search tool call.\n"
+        },
+        {
+          "name": "action",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchToolCallAction"
+          },
+          "required": true,
+          "description": "An object describing the specific action taken in this web search call.\nIncludes details on how the model used the web (search, open_page, find_in_page).\n"
+        }
+      ],
+      "description": "The results of a web search tool call. See the\n[web search guide](/docs/guides/tools-web-search) for more information.\n"
+    },
+    {
+      "name": "WebSearchToolCallStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "searching"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "failed"
+        }
+      ],
+      "description": "The status of the web search tool call.\n"
+    },
+    {
+      "name": "WebSearchToolCallAction",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "WebSearchActionSearch"
+        },
+        {
+          "kind": "ref",
+          "name": "WebSearchActionOpenPage"
+        },
+        {
+          "kind": "ref",
+          "name": "WebSearchActionFind"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "search": "WebSearchActionSearch",
+          "open_page": "WebSearchActionOpenPage",
+          "find_in_page": "WebSearchActionFind"
+        }
+      },
+      "description": "An object describing the specific action taken in this web search call.\nIncludes details on how the model used the web (search, open_page, find_in_page).\n"
+    },
+    {
+      "name": "WebSearchActionSearch",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "search"
+          },
+          "required": true,
+          "description": "The action type.\n"
+        },
+        {
+          "name": "query",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "[DEPRECATED] The search query.\n"
+        },
+        {
+          "name": "queries",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "The search queries.\n"
+        },
+        {
+          "name": "sources",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "WebSearchActionSearchSourcesItem"
+            }
+          },
+          "required": false,
+          "description": "The sources used in the search.\n"
+        }
+      ],
+      "description": "Action type \"search\" - Performs a web search query.\n"
+    },
+    {
+      "name": "WebSearchActionSearchSourcesItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "url"
+          },
+          "required": true,
+          "description": "The type of source. Always `url`.\n"
+        },
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The URL of the source.\n"
+        }
+      ],
+      "description": "A source used in the search.\n"
+    },
+    {
+      "name": "WebSearchActionOpenPage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "open_page"
+          },
+          "required": true,
+          "description": "The action type.\n"
+        },
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The URL opened by the model.\n"
+        }
+      ],
+      "description": "Action type \"open_page\" - Opens a specific URL from search results.\n"
+    },
+    {
+      "name": "WebSearchActionFind",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "find_in_page"
+          },
+          "required": true,
+          "description": "The action type.\n"
+        },
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The URL of the page searched for the pattern.\n"
+        },
+        {
+          "name": "pattern",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The pattern or text to search for within the page.\n"
+        }
+      ],
+      "description": "Action type \"find_in_page\": Searches for a pattern within a loaded page.\n"
+    },
+    {
+      "name": "ImageGenToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "image_generation_call"
+          },
+          "required": true,
+          "description": "The type of the image generation call. Always `image_generation_call`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the image generation call.\n"
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolCallStatus"
+          },
+          "required": true,
+          "description": "The status of the image generation call.\n"
+        },
+        {
+          "name": "result",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "An image generation request made by the model.\n"
+    },
+    {
+      "name": "ImageGenToolCallStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "generating"
+        },
+        {
+          "value": "failed"
+        }
+      ],
+      "description": "The status of the image generation call.\n"
+    },
+    {
+      "name": "ComputerToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "computer_call"
+          },
+          "required": true,
+          "default": "computer_call",
+          "description": "The type of the computer call. Always `computer_call`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the computer call."
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "An identifier used when responding to the tool call with output.\n"
+        },
+        {
+          "name": "action",
+          "type": {
+            "kind": "ref",
+            "name": "ComputerAction"
+          },
+          "required": false
+        },
+        {
+          "name": "actions",
+          "type": {
+            "kind": "ref",
+            "name": "ComputerActionList"
+          },
+          "required": false
+        },
+        {
+          "name": "pending_safety_checks",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ComputerCallSafetyCheckParam"
+            }
+          },
+          "required": true,
+          "description": "The pending safety checks for the computer call.\n"
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ComputerToolCallStatus"
+          },
+          "required": true,
+          "description": "The status of the item. One of `in_progress`, `completed`, or\n`incomplete`. Populated when items are returned via API.\n"
+        }
+      ],
+      "description": "A tool call to a computer use tool. See the\n[computer use guide](/docs/guides/tools-computer-use) for more information.\n"
+    },
+    {
+      "name": "ComputerAction",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ClickParam"
+        },
+        {
+          "kind": "ref",
+          "name": "DoubleClickAction"
+        },
+        {
+          "kind": "ref",
+          "name": "DragParam"
+        },
+        {
+          "kind": "ref",
+          "name": "KeyPressAction"
+        },
+        {
+          "kind": "ref",
+          "name": "MoveParam"
+        },
+        {
+          "kind": "ref",
+          "name": "ScreenshotParam"
+        },
+        {
+          "kind": "ref",
+          "name": "ScrollParam"
+        },
+        {
+          "kind": "ref",
+          "name": "TypeParam"
+        },
+        {
+          "kind": "ref",
+          "name": "WaitParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "click": "ClickParam",
+          "double_click": "DoubleClickAction",
+          "drag": "DragParam",
+          "keypress": "KeyPressAction",
+          "move": "MoveParam",
+          "screenshot": "ScreenshotParam",
+          "scroll": "ScrollParam",
+          "type": "TypeParam",
+          "wait": "WaitParam"
+        }
+      }
+    },
+    {
+      "name": "ClickParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "click"
+          },
+          "required": true,
+          "default": "click",
+          "description": "Specifies the event type. For a click action, this property is always `click`."
+        },
+        {
+          "name": "button",
+          "type": {
+            "kind": "ref",
+            "name": "ClickButtonType"
+          },
+          "required": true
+        },
+        {
+          "name": "x",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The x-coordinate where the click occurred."
+        },
+        {
+          "name": "y",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The y-coordinate where the click occurred."
+        },
+        {
+          "name": "keys",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A click action."
+    },
+    {
+      "name": "ClickButtonType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "left"
+        },
+        {
+          "value": "right"
+        },
+        {
+          "value": "wheel"
+        },
+        {
+          "value": "back"
+        },
+        {
+          "value": "forward"
+        }
+      ]
+    },
+    {
+      "name": "DoubleClickAction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "double_click"
+          },
+          "required": true,
+          "default": "double_click",
+          "description": "Specifies the event type. For a double click action, this property is always set to `double_click`."
+        },
+        {
+          "name": "x",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The x-coordinate where the double click occurred."
+        },
+        {
+          "name": "y",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The y-coordinate where the double click occurred."
+        },
+        {
+          "name": "keys",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "A double click action."
+    },
+    {
+      "name": "DragParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "drag"
+          },
+          "required": true,
+          "default": "drag",
+          "description": "Specifies the event type. For a drag action, this property is always set to `drag`."
+        },
+        {
+          "name": "path",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CoordParam"
+            }
+          },
+          "required": true,
+          "description": "An array of coordinates representing the path of the drag action. Coordinates will appear as an array of objects, eg\n```\n[\n  { x: 100, y: 200 },\n  { x: 200, y: 300 }\n]\n```"
+        },
+        {
+          "name": "keys",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A drag action."
+    },
+    {
+      "name": "CoordParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "x",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The x-coordinate."
+        },
+        {
+          "name": "y",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The y-coordinate."
+        }
+      ],
+      "description": "An x/y coordinate pair, e.g. `{ x: 100, y: 200 }`."
+    },
+    {
+      "name": "KeyPressAction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "keypress"
+          },
+          "required": true,
+          "default": "keypress",
+          "description": "Specifies the event type. For a keypress action, this property is always set to `keypress`."
+        },
+        {
+          "name": "keys",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The combination of keys the model is requesting to be pressed. This is an array of strings, each representing a key."
+        }
+      ],
+      "description": "A collection of keypresses the model would like to perform."
+    },
+    {
+      "name": "MoveParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "move"
+          },
+          "required": true,
+          "default": "move",
+          "description": "Specifies the event type. For a move action, this property is always set to `move`."
+        },
+        {
+          "name": "x",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The x-coordinate to move to."
+        },
+        {
+          "name": "y",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The y-coordinate to move to."
+        },
+        {
+          "name": "keys",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A mouse move action."
+    },
+    {
+      "name": "ScreenshotParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "screenshot"
+          },
+          "required": true,
+          "default": "screenshot",
+          "description": "Specifies the event type. For a screenshot action, this property is always set to `screenshot`."
+        }
+      ],
+      "description": "A screenshot action."
+    },
+    {
+      "name": "ScrollParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "scroll"
+          },
+          "required": true,
+          "default": "scroll",
+          "description": "Specifies the event type. For a scroll action, this property is always set to `scroll`."
+        },
+        {
+          "name": "x",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The x-coordinate where the scroll occurred."
+        },
+        {
+          "name": "y",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The y-coordinate where the scroll occurred."
+        },
+        {
+          "name": "scroll_x",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The horizontal scroll distance."
+        },
+        {
+          "name": "scroll_y",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The vertical scroll distance."
+        },
+        {
+          "name": "keys",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A scroll action."
+    },
+    {
+      "name": "TypeParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "type"
+          },
+          "required": true,
+          "default": "type",
+          "description": "Specifies the event type. For a type action, this property is always set to `type`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text to type."
+        }
+      ],
+      "description": "An action to type in text."
+    },
+    {
+      "name": "WaitParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "wait"
+          },
+          "required": true,
+          "default": "wait",
+          "description": "Specifies the event type. For a wait action, this property is always set to `wait`."
+        }
+      ],
+      "description": "A wait action."
+    },
+    {
+      "name": "ComputerActionList",
+      "kind": "alias",
+      "of": {
+        "kind": "array",
+        "items": {
+          "kind": "ref",
+          "name": "ComputerAction"
+        }
+      }
+    },
+    {
+      "name": "ComputerCallSafetyCheckParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the pending safety check."
+        },
+        {
+          "name": "code",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A pending safety check for the computer call."
+    },
+    {
+      "name": "ComputerToolCallStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        }
+      ],
+      "description": "The status of the item. One of `in_progress`, `completed`, or\n`incomplete`. Populated when items are returned via API.\n"
+    },
+    {
+      "name": "ComputerToolCallOutputResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "computer_call_output"
+          },
+          "required": true,
+          "default": "computer_call_output",
+          "description": "The type of the computer tool call output. Always `computer_call_output`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the computer call tool output.\n"
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the computer tool call that produced the output.\n"
+        },
+        {
+          "name": "acknowledged_safety_checks",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ComputerCallSafetyCheckParam"
+            }
+          },
+          "required": false,
+          "description": "The safety checks reported by the API that have been acknowledged by the\ndeveloper.\n"
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "ref",
+            "name": "ComputerScreenshotImage"
+          },
+          "required": true
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ComputerCallOutputStatus"
+          },
+          "required": true
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of the actor that created the item.\n"
+        }
+      ]
+    },
+    {
+      "name": "ComputerScreenshotImage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "computer_screenshot"
+          },
+          "required": true,
+          "default": "computer_screenshot",
+          "description": "Specifies the event type. For a computer screenshot, this property is \nalways set to `computer_screenshot`.\n"
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": false,
+          "description": "The URL of the screenshot image."
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of an uploaded file that contains the screenshot."
+        }
+      ],
+      "description": "A computer screenshot image used with the computer use tool.\n"
+    },
+    {
+      "name": "ComputerCallOutputStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        },
+        {
+          "value": "failed"
+        }
+      ]
+    },
+    {
+      "name": "ToolSearchCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "tool_search_call"
+          },
+          "required": true,
+          "default": "tool_search_call",
+          "description": "The type of the item. Always `tool_search_call`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the tool search call item."
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "execution",
+          "type": {
+            "kind": "ref",
+            "name": "ToolSearchExecutionType"
+          },
+          "required": true
+        },
+        {
+          "name": "arguments",
+          "type": {
+            "kind": "any"
+          },
+          "required": true,
+          "description": "Arguments used for the tool search call."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionCallStatus"
+          },
+          "required": true
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of the actor that created the item."
+        }
+      ]
+    },
+    {
+      "name": "ToolSearchExecutionType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "server"
+        },
+        {
+          "value": "client"
+        }
+      ]
+    },
+    {
+      "name": "ToolSearchOutput",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "tool_search_output"
+          },
+          "required": true,
+          "default": "tool_search_output",
+          "description": "The type of the item. Always `tool_search_output`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the tool search output item."
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "execution",
+          "type": {
+            "kind": "ref",
+            "name": "ToolSearchExecutionType"
+          },
+          "required": true
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Tool"
+            }
+          },
+          "required": true,
+          "description": "The loaded tool definitions returned by tool search."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionCallOutputStatusEnum"
+          },
+          "required": true
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of the actor that created the item."
+        }
+      ]
+    },
+    {
+      "name": "Tool",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "FunctionTool"
+        },
+        {
+          "kind": "ref",
+          "name": "FileSearchTool"
+        },
+        {
+          "kind": "ref",
+          "name": "ComputerTool"
+        },
+        {
+          "kind": "ref",
+          "name": "ComputerUsePreviewTool"
+        },
+        {
+          "kind": "ref",
+          "name": "WebSearchTool"
+        },
+        {
+          "kind": "ref",
+          "name": "McpTool"
+        },
+        {
+          "kind": "ref",
+          "name": "CodeInterpreterTool"
+        },
+        {
+          "kind": "ref",
+          "name": "ImageGenTool"
+        },
+        {
+          "kind": "ref",
+          "name": "LocalShellToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "FunctionShellToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "CustomToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "NamespaceToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "ToolSearchToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "WebSearchPreviewTool"
+        },
+        {
+          "kind": "ref",
+          "name": "ApplyPatchToolParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "function": "FunctionTool",
+          "file_search": "FileSearchTool",
+          "computer": "ComputerTool",
+          "computer_use_preview": "ComputerUsePreviewTool",
+          "mcp": "McpTool",
+          "code_interpreter": "CodeInterpreterTool",
+          "image_generation": "ImageGenTool",
+          "local_shell": "LocalShellToolParam",
+          "shell": "FunctionShellToolParam",
+          "custom": "CustomToolParam",
+          "namespace": "NamespaceToolParam",
+          "tool_search": "ToolSearchToolParam",
+          "apply_patch": "ApplyPatchToolParam"
+        }
+      },
+      "description": "A tool that can be used to generate a response.\n"
+    },
+    {
+      "name": "FunctionTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "default": "function",
+          "description": "The type of the function tool. Always `function`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to call."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            },
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "defer_loading",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether this function is deferred and loaded via tool search."
+        }
+      ],
+      "description": "Defines a function in your own code the model can choose to call. Learn more about [function calling](https://platform.openai.com/docs/guides/function-calling)."
+    },
+    {
+      "name": "FileSearchTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_search"
+          },
+          "required": true,
+          "default": "file_search",
+          "description": "The type of the file search tool. Always `file_search`."
+        },
+        {
+          "name": "vector_store_ids",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The IDs of the vector stores to search."
+        },
+        {
+          "name": "max_num_results",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum number of results to return. This number should be between 1 and 50 inclusive."
+        },
+        {
+          "name": "ranking_options",
+          "type": {
+            "kind": "ref",
+            "name": "RankingOptions"
+          },
+          "required": false
+        },
+        {
+          "name": "filters",
+          "type": {
+            "kind": "ref",
+            "name": "Filters",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A tool that searches for relevant content from uploaded files. Learn more about the [file search tool](https://platform.openai.com/docs/guides/tools-file-search)."
+    },
+    {
+      "name": "RankingOptions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "ranker",
+          "type": {
+            "kind": "ref",
+            "name": "RankerVersionType"
+          },
+          "required": false
+        },
+        {
+          "name": "score_threshold",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "description": "The score threshold for the file search, a number between 0 and 1. Numbers closer to 1 will attempt to return only the most relevant results, but may return fewer results."
+        },
+        {
+          "name": "hybrid_search",
+          "type": {
+            "kind": "ref",
+            "name": "HybridSearchOptions"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "RankerVersionType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "default-2024-11-15"
+        }
+      ]
+    },
+    {
+      "name": "HybridSearchOptions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "embedding_weight",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The weight of the embedding in the reciprocal ranking fusion."
+        },
+        {
+          "name": "text_weight",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The weight of the text in the reciprocal ranking fusion."
+        }
+      ]
+    },
+    {
+      "name": "Filters",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ComparisonFilter"
+        },
+        {
+          "kind": "ref",
+          "name": "CompoundFilter"
+        }
+      ]
+    },
+    {
+      "name": "ComparisonFilter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "ComparisonFilterType"
+          },
+          "required": true,
+          "default": "eq",
+          "description": "Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`.\n- `eq`: equals\n- `ne`: not equal\n- `gt`: greater than\n- `gte`: greater than or equal\n- `lt`: less than\n- `lte`: less than or equal\n- `in`: in\n- `nin`: not in\n"
+        },
+        {
+          "name": "key",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The key to compare against the value."
+        },
+        {
+          "name": "value",
+          "type": {
+            "kind": "ref",
+            "name": "ComparisonFilterValue"
+          },
+          "required": true,
+          "description": "The value to compare against the attribute key; supports string, number, or boolean types."
+        }
+      ],
+      "description": "A filter used to compare a specified attribute key to a given value using a defined comparison operation.\n"
+    },
+    {
+      "name": "ComparisonFilterType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "eq"
+        },
+        {
+          "value": "ne"
+        },
+        {
+          "value": "gt"
+        },
+        {
+          "value": "gte"
+        },
+        {
+          "value": "lt"
+        },
+        {
+          "value": "lte"
+        },
+        {
+          "value": "in"
+        },
+        {
+          "value": "nin"
+        }
+      ],
+      "description": "Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`.\n- `eq`: equals\n- `ne`: not equal\n- `gt`: greater than\n- `gte`: greater than or equal\n- `lt`: less than\n- `lte`: less than or equal\n- `in`: in\n- `nin`: not in\n"
+    },
+    {
+      "name": "ComparisonFilterValue",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "boolean"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "ref",
+            "name": "ComparisonFilterValueArrayItem"
+          }
+        }
+      ],
+      "description": "The value to compare against the attribute key; supports string, number, or boolean types."
+    },
+    {
+      "name": "ComparisonFilterValueArrayItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        }
+      ]
+    },
+    {
+      "name": "CompoundFilter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "CompoundFilterType"
+          },
+          "required": true,
+          "description": "Type of operation: `and` or `or`."
+        },
+        {
+          "name": "filters",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CompoundFilterFiltersItem"
+            }
+          },
+          "required": true,
+          "description": "Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`."
+        }
+      ],
+      "description": "Combine multiple filters using `and` or `or`."
+    },
+    {
+      "name": "CompoundFilterType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "and"
+        },
+        {
+          "value": "or"
+        }
+      ],
+      "description": "Type of operation: `and` or `or`."
+    },
+    {
+      "name": "CompoundFilterFiltersItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ComparisonFilter"
+        },
+        {
+          "kind": "any"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type"
+      }
+    },
+    {
+      "name": "ComputerTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "computer"
+          },
+          "required": true,
+          "default": "computer",
+          "description": "The type of the computer tool. Always `computer`."
+        }
+      ],
+      "description": "A tool that controls a virtual computer. Learn more about the [computer tool](https://platform.openai.com/docs/guides/tools-computer-use)."
+    },
+    {
+      "name": "ComputerUsePreviewTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "computer_use_preview"
+          },
+          "required": true,
+          "default": "computer_use_preview",
+          "description": "The type of the computer use tool. Always `computer_use_preview`."
+        },
+        {
+          "name": "environment",
+          "type": {
+            "kind": "ref",
+            "name": "ComputerEnvironment"
+          },
+          "required": true
+        },
+        {
+          "name": "display_width",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The width of the computer display."
+        },
+        {
+          "name": "display_height",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The height of the computer display."
+        }
+      ],
+      "description": "A tool that controls a virtual computer. Learn more about the [computer tool](https://platform.openai.com/docs/guides/tools-computer-use)."
+    },
+    {
+      "name": "ComputerEnvironment",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "windows"
+        },
+        {
+          "value": "mac"
+        },
+        {
+          "value": "linux"
+        },
+        {
+          "value": "ubuntu"
+        },
+        {
+          "value": "browser"
+        }
+      ]
+    },
+    {
+      "name": "WebSearchTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchToolType"
+          },
+          "required": true,
+          "default": "web_search",
+          "description": "The type of the web search tool. One of `web_search` or `web_search_2025_08_26`."
+        },
+        {
+          "name": "filters",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchToolFilters",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "user_location",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchApproximateLocation"
+          },
+          "required": false
+        },
+        {
+          "name": "search_context_size",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchToolSearchContextSize"
+          },
+          "required": false,
+          "default": "medium",
+          "description": "High level guidance for the amount of context window space to use for the search. One of `low`, `medium`, or `high`. `medium` is the default."
+        }
+      ],
+      "description": "Search the Internet for sources related to the prompt. Learn more about the\n[web search tool](/docs/guides/tools-web-search).\n"
+    },
+    {
+      "name": "WebSearchToolType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "web_search"
+        },
+        {
+          "value": "web_search_2025_08_26"
+        }
+      ],
+      "description": "The type of the web search tool. One of `web_search` or `web_search_2025_08_26`."
+    },
+    {
+      "name": "WebSearchToolFilters",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "allowed_domains",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Filters for the search.\n"
+    },
+    {
+      "name": "WebSearchApproximateLocation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "approximate"
+          },
+          "required": false,
+          "default": "approximate",
+          "description": "The type of location approximation. Always `approximate`."
+        },
+        {
+          "name": "country",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "region",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "city",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "timezone",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The approximate location of the user.\n"
+    },
+    {
+      "name": "WebSearchToolSearchContextSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        }
+      ],
+      "description": "High level guidance for the amount of context window space to use for the search. One of `low`, `medium`, or `high`. `medium` is the default."
+    },
+    {
+      "name": "McpTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "mcp"
+          },
+          "required": true,
+          "description": "The type of the MCP tool. Always `mcp`."
+        },
+        {
+          "name": "server_label",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A label for this MCP server, used to identify it in tool calls.\n"
+        },
+        {
+          "name": "server_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": false,
+          "description": "The URL for the MCP server. One of `server_url` or `connector_id` must be\nprovided.\n"
+        },
+        {
+          "name": "connector_id",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolConnectorId"
+          },
+          "required": false,
+          "description": "Identifier for service connectors, like those available in ChatGPT. One of\n`server_url` or `connector_id` must be provided. Learn more about service\nconnectors [here](/docs/guides/tools-remote-mcp#connectors).\n\nCurrently supported `connector_id` values are:\n\n- Dropbox: `connector_dropbox`\n- Gmail: `connector_gmail`\n- Google Calendar: `connector_googlecalendar`\n- Google Drive: `connector_googledrive`\n- Microsoft Teams: `connector_microsoftteams`\n- Outlook Calendar: `connector_outlookcalendar`\n- Outlook Email: `connector_outlookemail`\n- SharePoint: `connector_sharepoint`\n"
+        },
+        {
+          "name": "authorization",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "An OAuth access token that can be used with a remote MCP server, either\nwith a custom MCP server URL or a service connector. Your application\nmust handle the OAuth authorization flow and provide the token here.\n"
+        },
+        {
+          "name": "server_description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Optional description of the MCP server, used to provide more context.\n"
+        },
+        {
+          "name": "headers",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "allowed_tools",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolAllowedTools",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "require_approval",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolRequireApproval",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "defer_loading",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether this MCP tool is deferred and discovered via tool search.\n"
+        }
+      ],
+      "description": "Give the model access to additional tools via remote Model Context Protocol\n(MCP) servers. [Learn more about MCP](/docs/guides/tools-remote-mcp).\n"
+    },
+    {
+      "name": "McpToolConnectorId",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "connector_dropbox"
+        },
+        {
+          "value": "connector_gmail"
+        },
+        {
+          "value": "connector_googlecalendar"
+        },
+        {
+          "value": "connector_googledrive"
+        },
+        {
+          "value": "connector_microsoftteams"
+        },
+        {
+          "value": "connector_outlookcalendar"
+        },
+        {
+          "value": "connector_outlookemail"
+        },
+        {
+          "value": "connector_sharepoint"
+        }
+      ],
+      "description": "Identifier for service connectors, like those available in ChatGPT. One of\n`server_url` or `connector_id` must be provided. Learn more about service\nconnectors [here](/docs/guides/tools-remote-mcp#connectors).\n\nCurrently supported `connector_id` values are:\n\n- Dropbox: `connector_dropbox`\n- Gmail: `connector_gmail`\n- Google Calendar: `connector_googlecalendar`\n- Google Drive: `connector_googledrive`\n- Microsoft Teams: `connector_microsoftteams`\n- Outlook Calendar: `connector_outlookcalendar`\n- Outlook Email: `connector_outlookemail`\n- SharePoint: `connector_sharepoint`\n"
+    },
+    {
+      "name": "McpToolAllowedTools",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "array",
+          "items": {
+            "kind": "scalar",
+            "scalar": "string"
+          }
+        },
+        {
+          "kind": "ref",
+          "name": "McpToolFilter"
+        }
+      ],
+      "description": "List of allowed tool names or a filter object.\n"
+    },
+    {
+      "name": "McpToolFilter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "tool_names",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "List of allowed tool names."
+        },
+        {
+          "name": "read_only",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Indicates whether or not a tool modifies data or is read-only. If an\nMCP server is [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),\nit will match this filter.\n"
+        }
+      ],
+      "description": "A filter object to specify which tools are allowed.\n"
+    },
+    {
+      "name": "McpToolRequireApproval",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "McpToolRequireApprovalMcpToolApprovalFilter"
+        },
+        {
+          "kind": "ref",
+          "name": "McpToolRequireApprovalMcpToolApprovalSetting"
+        }
+      ],
+      "description": "Specify which of the MCP server's tools require approval."
+    },
+    {
+      "name": "McpToolRequireApprovalMcpToolApprovalFilter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "always",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolFilter"
+          },
+          "required": false
+        },
+        {
+          "name": "never",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolFilter"
+          },
+          "required": false
+        }
+      ],
+      "description": "Specify which of the MCP server's tools require approval. Can be\n`always`, `never`, or a filter object associated with tools\nthat require approval.\n"
+    },
+    {
+      "name": "McpToolRequireApprovalMcpToolApprovalSetting",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "always"
+        },
+        {
+          "value": "never"
+        }
+      ],
+      "description": "Specify a single approval policy for all tools. One of `always` or\n`never`. When set to `always`, all tools will require approval. When\nset to `never`, all tools will not require approval.\n"
+    },
+    {
+      "name": "CodeInterpreterTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "code_interpreter"
+          },
+          "required": true,
+          "description": "The type of the code interpreter tool. Always `code_interpreter`.\n"
+        },
+        {
+          "name": "container",
+          "type": {
+            "kind": "ref",
+            "name": "CodeInterpreterToolContainer"
+          },
+          "required": true,
+          "description": "The code interpreter container. Can be a container ID or an object that\nspecifies uploaded file IDs to make available to your code, along with an\noptional `memory_limit` setting.\n"
+        }
+      ],
+      "description": "A tool that runs Python code to help generate a response to a prompt.\n"
+    },
+    {
+      "name": "CodeInterpreterToolContainer",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "AutoCodeInterpreterToolParam"
+        }
+      ],
+      "description": "The code interpreter container. Can be a container ID or an object that\nspecifies uploaded file IDs to make available to your code, along with an\noptional `memory_limit` setting.\n"
+    },
+    {
+      "name": "AutoCodeInterpreterToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "auto"
+          },
+          "required": true,
+          "default": "auto",
+          "description": "Always `auto`."
+        },
+        {
+          "name": "file_ids",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "An optional list of uploaded files to make available to your code."
+        },
+        {
+          "name": "memory_limit",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerMemoryLimit",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "network_policy",
+          "type": {
+            "kind": "ref",
+            "name": "AutoCodeInterpreterToolParamNetworkPolicy"
+          },
+          "required": false,
+          "description": "Network access policy for the container."
+        }
+      ],
+      "description": "Configuration for a code interpreter container. Optionally specify the IDs of the files to run the code on."
+    },
+    {
+      "name": "ContainerMemoryLimit",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1g"
+        },
+        {
+          "value": "4g"
+        },
+        {
+          "value": "16g"
+        },
+        {
+          "value": "64g"
+        }
+      ]
+    },
+    {
+      "name": "AutoCodeInterpreterToolParamNetworkPolicy",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ContainerNetworkPolicyDisabledParam"
+        },
+        {
+          "kind": "ref",
+          "name": "ContainerNetworkPolicyAllowlistParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "disabled": "ContainerNetworkPolicyDisabledParam",
+          "allowlist": "ContainerNetworkPolicyAllowlistParam"
+        }
+      },
+      "description": "Network access policy for the container."
+    },
+    {
+      "name": "ContainerNetworkPolicyDisabledParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "disabled"
+          },
+          "required": true,
+          "default": "disabled",
+          "description": "Disable outbound network access. Always `disabled`."
+        }
+      ]
+    },
+    {
+      "name": "ContainerNetworkPolicyAllowlistParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "allowlist"
+          },
+          "required": true,
+          "default": "allowlist",
+          "description": "Allow outbound network access only to specified domains. Always `allowlist`."
+        },
+        {
+          "name": "allowed_domains",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "A list of allowed domains when type is `allowlist`."
+        },
+        {
+          "name": "domain_secrets",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ContainerNetworkPolicyDomainSecretParam"
+            }
+          },
+          "required": false,
+          "description": "Optional domain-scoped secrets for allowlisted domains."
+        }
+      ]
+    },
+    {
+      "name": "ContainerNetworkPolicyDomainSecretParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "domain",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The domain associated with the secret."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the secret to inject for the domain."
+        },
+        {
+          "name": "value",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The secret value to inject for the domain."
+        }
+      ]
+    },
+    {
+      "name": "ImageGenTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "image_generation"
+          },
+          "required": true,
+          "description": "The type of the image generation tool. Always `image_generation`.\n"
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolModel"
+          },
+          "required": false
+        },
+        {
+          "name": "quality",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolQuality"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The quality of the generated image. One of `low`, `medium`, `high`,\nor `auto`. Default: `auto`.\n"
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`, arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`."
+        },
+        {
+          "name": "output_format",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolOutputFormat"
+          },
+          "required": false,
+          "default": "png",
+          "description": "The output format of the generated image. One of `png`, `webp`, or\n`jpeg`. Default: `png`.\n"
+        },
+        {
+          "name": "output_compression",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 100,
+          "description": "Compression level for the output image. Default: 100.\n"
+        },
+        {
+          "name": "moderation",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolModeration"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Moderation level for the generated image. Default: `auto`.\n"
+        },
+        {
+          "name": "background",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolBackground"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Background type for the generated image. One of `transparent`,\n`opaque`, or `auto`. Default: `auto`.\n"
+        },
+        {
+          "name": "input_fidelity",
+          "type": {
+            "kind": "ref",
+            "name": "InputFidelity",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "input_image_mask",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolInputImageMask"
+          },
+          "required": false,
+          "description": "Optional mask for inpainting. Contains `image_url`\n(string, optional) and `file_id` (string, optional).\n"
+        },
+        {
+          "name": "partial_images",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 0,
+          "description": "Number of partial images to generate in streaming mode, from 0 (default value) to 3.\n"
+        },
+        {
+          "name": "action",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenActionEnum"
+          },
+          "required": false
+        }
+      ],
+      "description": "A tool that generates images using the GPT image models.\n"
+    },
+    {
+      "name": "ImageGenToolModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "ImageGenToolModelString"
+        }
+      ]
+    },
+    {
+      "name": "ImageGenToolModelString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "gpt-image-1"
+        },
+        {
+          "value": "gpt-image-1-mini"
+        },
+        {
+          "value": "gpt-image-1.5"
+        }
+      ],
+      "description": "The image generation model to use. Default: `gpt-image-1`.\n"
+    },
+    {
+      "name": "ImageGenToolQuality",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "auto"
+        }
+      ],
+      "description": "The quality of the generated image. One of `low`, `medium`, `high`,\nor `auto`. Default: `auto`.\n"
+    },
+    {
+      "name": "ImageGenToolSize",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "ImageGenToolSizeString"
+        }
+      ],
+      "description": "The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`, arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`."
+    },
+    {
+      "name": "ImageGenToolSizeString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1024x1024"
+        },
+        {
+          "value": "1024x1536"
+        },
+        {
+          "value": "1536x1024"
+        },
+        {
+          "value": "auto"
+        }
+      ]
+    },
+    {
+      "name": "ImageGenToolOutputFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "png"
+        },
+        {
+          "value": "webp"
+        },
+        {
+          "value": "jpeg"
+        }
+      ],
+      "description": "The output format of the generated image. One of `png`, `webp`, or\n`jpeg`. Default: `png`.\n"
+    },
+    {
+      "name": "ImageGenToolModeration",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "low"
+        }
+      ],
+      "description": "Moderation level for the generated image. Default: `auto`.\n"
+    },
+    {
+      "name": "ImageGenToolBackground",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "transparent"
+        },
+        {
+          "value": "opaque"
+        },
+        {
+          "value": "auto"
+        }
+      ],
+      "description": "Background type for the generated image. One of `transparent`,\n`opaque`, or `auto`. Default: `auto`.\n"
+    },
+    {
+      "name": "InputFidelity",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "high"
+        },
+        {
+          "value": "low"
+        }
+      ],
+      "description": "Control how much effort the model will exert to match the style and features, especially facial features, of input images. This parameter is only supported for `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`."
+    },
+    {
+      "name": "ImageGenToolInputImageMask",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Base64-encoded mask image.\n"
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "File ID for the mask image.\n"
+        }
+      ],
+      "description": "Optional mask for inpainting. Contains `image_url`\n(string, optional) and `file_id` (string, optional).\n"
+    },
+    {
+      "name": "ImageGenActionEnum",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "generate"
+        },
+        {
+          "value": "edit"
+        },
+        {
+          "value": "auto"
+        }
+      ]
+    },
+    {
+      "name": "LocalShellToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "local_shell"
+          },
+          "required": true,
+          "default": "local_shell",
+          "description": "The type of the local shell tool. Always `local_shell`."
+        }
+      ],
+      "description": "A tool that allows the model to execute shell commands in a local environment."
+    },
+    {
+      "name": "FunctionShellToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "shell"
+          },
+          "required": true,
+          "default": "shell",
+          "description": "The type of the shell tool. Always `shell`."
+        },
+        {
+          "name": "environment",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionShellToolParamEnvironment",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A tool that allows the model to execute shell commands."
+    },
+    {
+      "name": "FunctionShellToolParamEnvironment",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ContainerAutoParam"
+        },
+        {
+          "kind": "ref",
+          "name": "LocalEnvironmentParam"
+        },
+        {
+          "kind": "ref",
+          "name": "ContainerReferenceParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "container_auto": "ContainerAutoParam",
+          "local": "LocalEnvironmentParam",
+          "container_reference": "ContainerReferenceParam"
+        }
+      }
+    },
+    {
+      "name": "ContainerAutoParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "container_auto"
+          },
+          "required": true,
+          "default": "container_auto",
+          "description": "Automatically creates a container for this request"
+        },
+        {
+          "name": "file_ids",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "An optional list of uploaded files to make available to your code."
+        },
+        {
+          "name": "memory_limit",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerMemoryLimit",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "network_policy",
+          "type": {
+            "kind": "ref",
+            "name": "AutoCodeInterpreterToolParamNetworkPolicy"
+          },
+          "required": false,
+          "description": "Network access policy for the container."
+        },
+        {
+          "name": "skills",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ContainerAutoParamSkillsItem"
+            }
+          },
+          "required": false,
+          "description": "An optional list of skills referenced by id or inline data."
+        }
+      ]
+    },
+    {
+      "name": "ContainerAutoParamSkillsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "SkillReferenceParam"
+        },
+        {
+          "kind": "ref",
+          "name": "InlineSkillParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "skill_reference": "SkillReferenceParam",
+          "inline": "InlineSkillParam"
+        }
+      }
+    },
+    {
+      "name": "SkillReferenceParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "skill_reference"
+          },
+          "required": true,
+          "default": "skill_reference",
+          "description": "References a skill created with the /v1/skills endpoint."
+        },
+        {
+          "name": "skill_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the referenced skill."
+        },
+        {
+          "name": "version",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Optional skill version. Use a positive integer or 'latest'. Omit for default."
+        }
+      ]
+    },
+    {
+      "name": "InlineSkillParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "inline"
+          },
+          "required": true,
+          "default": "inline",
+          "description": "Defines an inline skill for this request."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the skill."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The description of the skill."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "ref",
+            "name": "InlineSkillSourceParam"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "InlineSkillSourceParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "base64"
+          },
+          "required": true,
+          "default": "base64",
+          "description": "The type of the inline skill source. Must be `base64`."
+        },
+        {
+          "name": "media_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "application/zip"
+          },
+          "required": true,
+          "default": "application/zip",
+          "description": "The media type of the inline skill payload. Must be `application/zip`."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Base64-encoded skill zip bundle."
+        }
+      ],
+      "description": "Inline skill payload"
+    },
+    {
+      "name": "LocalEnvironmentParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "local"
+          },
+          "required": true,
+          "default": "local",
+          "description": "Use a local computer environment."
+        },
+        {
+          "name": "skills",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "LocalSkillParam"
+            }
+          },
+          "required": false,
+          "description": "An optional list of skills."
+        }
+      ]
+    },
+    {
+      "name": "LocalSkillParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the skill."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The description of the skill."
+        },
+        {
+          "name": "path",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The path to the directory containing the skill."
+        }
+      ]
+    },
+    {
+      "name": "ContainerReferenceParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "container_reference"
+          },
+          "required": true,
+          "default": "container_reference",
+          "description": "References a container created with the /v1/containers endpoint"
+        },
+        {
+          "name": "container_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the referenced container."
+        }
+      ]
+    },
+    {
+      "name": "CustomToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "custom"
+          },
+          "required": true,
+          "default": "custom",
+          "description": "The type of the custom tool. Always `custom`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the custom tool, used to identify it in tool calls."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Optional description of the custom tool, used to provide more context."
+        },
+        {
+          "name": "format",
+          "type": {
+            "kind": "ref",
+            "name": "CustomToolParamFormat"
+          },
+          "required": false,
+          "description": "The input format for the custom tool. Default is unconstrained text."
+        },
+        {
+          "name": "defer_loading",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether this tool should be deferred and discovered via tool search."
+        }
+      ],
+      "description": "A custom tool that processes input using a specified format. Learn more about   [custom tools](/docs/guides/function-calling#custom-tools)"
+    },
+    {
+      "name": "CustomToolParamFormat",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CustomTextFormatParam"
+        },
+        {
+          "kind": "ref",
+          "name": "CustomGrammarFormatParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "text": "CustomTextFormatParam",
+          "grammar": "CustomGrammarFormatParam"
+        }
+      },
+      "description": "The input format for the custom tool. Default is unconstrained text."
+    },
+    {
+      "name": "CustomTextFormatParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "default": "text",
+          "description": "Unconstrained text format. Always `text`."
+        }
+      ],
+      "description": "Unconstrained free-form text."
+    },
+    {
+      "name": "CustomGrammarFormatParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "grammar"
+          },
+          "required": true,
+          "default": "grammar",
+          "description": "Grammar format. Always `grammar`."
+        },
+        {
+          "name": "syntax",
+          "type": {
+            "kind": "ref",
+            "name": "GrammarSyntax1"
+          },
+          "required": true
+        },
+        {
+          "name": "definition",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The grammar definition."
+        }
+      ],
+      "description": "A grammar defined by the user."
+    },
+    {
+      "name": "GrammarSyntax1",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "lark"
+        },
+        {
+          "value": "regex"
+        }
+      ]
+    },
+    {
+      "name": "NamespaceToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "namespace"
+          },
+          "required": true,
+          "default": "namespace",
+          "description": "The type of the tool. Always `namespace`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The namespace name used in tool calls (for example, `crm`)."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A description of the namespace shown to the model."
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "NamespaceToolParamToolsItem"
+            }
+          },
+          "required": true,
+          "description": "The function/custom tools available inside this namespace."
+        }
+      ],
+      "description": "Groups function/custom tools under a shared namespace."
+    },
+    {
+      "name": "NamespaceToolParamToolsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "FunctionToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "CustomToolParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "function": "FunctionToolParam",
+          "custom": "CustomToolParam"
+        }
+      },
+      "description": "A function or custom tool that belongs to a namespace."
+    },
+    {
+      "name": "FunctionToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "kind": "ref",
+            "name": "EmptyModelParam",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "default": "function"
+        },
+        {
+          "name": "defer_loading",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether this function should be deferred and discovered via tool search."
+        }
+      ]
+    },
+    {
+      "name": "EmptyModelParam",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "name": "ToolSearchToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "tool_search"
+          },
+          "required": true,
+          "default": "tool_search",
+          "description": "The type of the tool. Always `tool_search`."
+        },
+        {
+          "name": "execution",
+          "type": {
+            "kind": "ref",
+            "name": "ToolSearchExecutionType"
+          },
+          "required": false
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "kind": "ref",
+            "name": "EmptyModelParam",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Hosted or BYOT tool search configuration for deferred tools."
+    },
+    {
+      "name": "WebSearchPreviewTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchPreviewToolType"
+          },
+          "required": true,
+          "default": "web_search_preview",
+          "description": "The type of the web search tool. One of `web_search_preview` or `web_search_preview_2025_03_11`."
+        },
+        {
+          "name": "user_location",
+          "type": {
+            "kind": "ref",
+            "name": "ApproximateLocation",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "search_context_size",
+          "type": {
+            "kind": "ref",
+            "name": "SearchContextSize"
+          },
+          "required": false
+        },
+        {
+          "name": "search_content_types",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "SearchContentType"
+            }
+          },
+          "required": false
+        }
+      ],
+      "description": "This tool searches the web for relevant results to use in a response. Learn more about the [web search tool](https://platform.openai.com/docs/guides/tools-web-search)."
+    },
+    {
+      "name": "WebSearchPreviewToolType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "web_search_preview"
+        },
+        {
+          "value": "web_search_preview_2025_03_11"
+        }
+      ],
+      "description": "The type of the web search tool. One of `web_search_preview` or `web_search_preview_2025_03_11`."
+    },
+    {
+      "name": "ApproximateLocation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "approximate"
+          },
+          "required": true,
+          "default": "approximate",
+          "description": "The type of location approximation. Always `approximate`."
+        },
+        {
+          "name": "country",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "region",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "city",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "timezone",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "SearchContextSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        }
+      ]
+    },
+    {
+      "name": "SearchContentType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "text"
+        },
+        {
+          "value": "image"
+        }
+      ]
+    },
+    {
+      "name": "ApplyPatchToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "apply_patch"
+          },
+          "required": true,
+          "default": "apply_patch",
+          "description": "The type of the tool. Always `apply_patch`."
+        }
+      ],
+      "description": "Allows the assistant to create, delete, or update files using unified diffs."
+    },
+    {
+      "name": "ReasoningItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "reasoning"
+          },
+          "required": true,
+          "description": "The type of the object. Always `reasoning`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique identifier of the reasoning content.\n"
+        },
+        {
+          "name": "encrypted_content",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "summary",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "SummaryTextContent"
+            }
+          },
+          "required": true,
+          "description": "Reasoning summary content.\n"
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ReasoningTextContent"
+            }
+          },
+          "required": false,
+          "description": "Reasoning text content.\n"
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ComputerToolCallStatus"
+          },
+          "required": false,
+          "description": "The status of the item. One of `in_progress`, `completed`, or\n`incomplete`. Populated when items are returned via API.\n"
+        }
+      ],
+      "description": "A description of the chain of thought used by a reasoning model while generating\na response. Be sure to include these items in your `input` to the Responses API\nfor subsequent turns of a conversation if you are manually\n[managing context](/docs/guides/conversation-state).\n"
+    },
+    {
+      "name": "CompactionBody",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "compaction"
+          },
+          "required": true,
+          "default": "compaction",
+          "description": "The type of the item. Always `compaction`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the compaction item."
+        },
+        {
+          "name": "encrypted_content",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The encrypted content that was produced by compaction."
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of the actor that created the item."
+        }
+      ],
+      "description": "A compaction item generated by the [`v1/responses/compact` API](/docs/api-reference/responses/compact)."
+    },
+    {
+      "name": "CodeInterpreterToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "code_interpreter_call"
+          },
+          "required": true,
+          "default": "code_interpreter_call",
+          "description": "The type of the code interpreter tool call. Always `code_interpreter_call`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the code interpreter tool call.\n"
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "CodeInterpreterToolCallStatus"
+          },
+          "required": true,
+          "description": "The status of the code interpreter tool call. Valid values are `in_progress`, `completed`, `incomplete`, `interpreting`, and `failed`.\n"
+        },
+        {
+          "name": "container_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the container used to run the code.\n"
+        },
+        {
+          "name": "code",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "outputs",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CodeInterpreterToolCallOutputsItem"
+            },
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "A tool call to run code.\n"
+    },
+    {
+      "name": "CodeInterpreterToolCallStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        },
+        {
+          "value": "interpreting"
+        },
+        {
+          "value": "failed"
+        }
+      ],
+      "description": "The status of the code interpreter tool call. Valid values are `in_progress`, `completed`, `incomplete`, `interpreting`, and `failed`.\n"
+    },
+    {
+      "name": "CodeInterpreterToolCallOutputsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CodeInterpreterOutputLogs"
+        },
+        {
+          "kind": "ref",
+          "name": "CodeInterpreterOutputImage"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "logs": "CodeInterpreterOutputLogs",
+          "image": "CodeInterpreterOutputImage"
+        }
+      }
+    },
+    {
+      "name": "CodeInterpreterOutputLogs",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "logs"
+          },
+          "required": true,
+          "default": "logs",
+          "description": "The type of the output. Always `logs`."
+        },
+        {
+          "name": "logs",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The logs output from the code interpreter."
+        }
+      ],
+      "description": "The logs output from the code interpreter."
+    },
+    {
+      "name": "CodeInterpreterOutputImage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "image"
+          },
+          "required": true,
+          "default": "image",
+          "description": "The type of the output. Always `image`."
+        },
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The URL of the image output from the code interpreter."
+        }
+      ],
+      "description": "The image output from the code interpreter."
+    },
+    {
+      "name": "LocalShellToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "local_shell_call"
+          },
+          "required": true,
+          "description": "The type of the local shell call. Always `local_shell_call`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the local shell call.\n"
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the local shell tool call generated by the model.\n"
+        },
+        {
+          "name": "action",
+          "type": {
+            "kind": "ref",
+            "name": "LocalShellExecAction"
+          },
+          "required": true
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ComputerToolCallStatus"
+          },
+          "required": true,
+          "description": "The status of the local shell call.\n"
+        }
+      ],
+      "description": "A tool call to run a command on the local shell.\n"
+    },
+    {
+      "name": "LocalShellExecAction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "exec"
+          },
+          "required": true,
+          "default": "exec",
+          "description": "The type of the local shell action. Always `exec`."
+        },
+        {
+          "name": "command",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The command to run."
+        },
+        {
+          "name": "timeout_ms",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "working_directory",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "env",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "Environment variables to set for the command."
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Execute a shell command on the server."
+    },
+    {
+      "name": "LocalShellToolCallOutput",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "local_shell_call_output"
+          },
+          "required": true,
+          "description": "The type of the local shell tool call output. Always `local_shell_call_output`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the local shell tool call generated by the model.\n"
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A JSON string of the output of the local shell tool call.\n"
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ComputerToolCallStatus",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The output of a local shell tool call.\n"
+    },
+    {
+      "name": "FunctionShellCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "shell_call"
+          },
+          "required": true,
+          "default": "shell_call",
+          "description": "The type of the item. Always `shell_call`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the shell tool call. Populated when this item is returned via API."
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the shell tool call generated by the model."
+        },
+        {
+          "name": "action",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionShellAction"
+          },
+          "required": true
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionShellCallStatus"
+          },
+          "required": true
+        },
+        {
+          "name": "environment",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionShellCallEnvironment",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the entity that created this tool call."
+        }
+      ],
+      "description": "A tool call that executes one or more shell commands in a managed environment."
+    },
+    {
+      "name": "FunctionShellAction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "commands",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "timeout_ms",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "max_output_length",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Execute a shell command."
+    },
+    {
+      "name": "FunctionShellCallStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        }
+      ]
+    },
+    {
+      "name": "FunctionShellCallEnvironment",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "LocalEnvironmentResource"
+        },
+        {
+          "kind": "ref",
+          "name": "ContainerReferenceResource"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "local": "LocalEnvironmentResource",
+          "container_reference": "ContainerReferenceResource"
+        }
+      }
+    },
+    {
+      "name": "LocalEnvironmentResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "local"
+          },
+          "required": true,
+          "default": "local",
+          "description": "The environment type. Always `local`."
+        }
+      ],
+      "description": "Represents the use of a local environment to perform shell actions."
+    },
+    {
+      "name": "ContainerReferenceResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "container_reference"
+          },
+          "required": true,
+          "default": "container_reference",
+          "description": "The environment type. Always `container_reference`."
+        },
+        {
+          "name": "container_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        }
+      ],
+      "description": "Represents a container created with /v1/containers."
+    },
+    {
+      "name": "FunctionShellCallOutput",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "shell_call_output"
+          },
+          "required": true,
+          "default": "shell_call_output",
+          "description": "The type of the shell call output. Always `shell_call_output`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the shell call output. Populated when this item is returned via API."
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the shell tool call generated by the model."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionShellCallOutputStatusEnum"
+          },
+          "required": true
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "FunctionShellCallOutputContent"
+            }
+          },
+          "required": true,
+          "description": "An array of shell call output contents"
+        },
+        {
+          "name": "max_output_length",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of the actor that created the item."
+        }
+      ],
+      "description": "The output of a shell tool call that was emitted."
+    },
+    {
+      "name": "FunctionShellCallOutputStatusEnum",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        }
+      ]
+    },
+    {
+      "name": "FunctionShellCallOutputContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "stdout",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The standard output that was captured."
+        },
+        {
+          "name": "stderr",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The standard error output that was captured."
+        },
+        {
+          "name": "outcome",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionShellCallOutputContentOutcome"
+          },
+          "required": true,
+          "description": "Represents either an exit outcome (with an exit code) or a timeout outcome for a shell call output chunk."
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of the actor that created the item."
+        }
+      ],
+      "description": "The content of a shell tool call output that was emitted."
+    },
+    {
+      "name": "FunctionShellCallOutputContentOutcome",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "FunctionShellCallOutputTimeoutOutcome"
+        },
+        {
+          "kind": "ref",
+          "name": "FunctionShellCallOutputExitOutcome"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "timeout": "FunctionShellCallOutputTimeoutOutcome",
+          "exit": "FunctionShellCallOutputExitOutcome"
+        }
+      },
+      "description": "Represents either an exit outcome (with an exit code) or a timeout outcome for a shell call output chunk."
+    },
+    {
+      "name": "FunctionShellCallOutputTimeoutOutcome",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "timeout"
+          },
+          "required": true,
+          "default": "timeout",
+          "description": "The outcome type. Always `timeout`."
+        }
+      ],
+      "description": "Indicates that the shell call exceeded its configured time limit."
+    },
+    {
+      "name": "FunctionShellCallOutputExitOutcome",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "exit"
+          },
+          "required": true,
+          "default": "exit",
+          "description": "The outcome type. Always `exit`."
+        },
+        {
+          "name": "exit_code",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Exit code from the shell process."
+        }
+      ],
+      "description": "Indicates that the shell commands finished and returned an exit code."
+    },
+    {
+      "name": "ApplyPatchToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "apply_patch_call"
+          },
+          "required": true,
+          "default": "apply_patch_call",
+          "description": "The type of the item. Always `apply_patch_call`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the apply patch tool call. Populated when this item is returned via API."
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the apply patch tool call generated by the model."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ApplyPatchCallStatus"
+          },
+          "required": true
+        },
+        {
+          "name": "operation",
+          "type": {
+            "kind": "ref",
+            "name": "ApplyPatchToolCallOperation"
+          },
+          "required": true,
+          "description": "One of the create_file, delete_file, or update_file operations applied via apply_patch."
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the entity that created this tool call."
+        }
+      ],
+      "description": "A tool call that applies file diffs by creating, deleting, or updating files."
+    },
+    {
+      "name": "ApplyPatchCallStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        }
+      ]
+    },
+    {
+      "name": "ApplyPatchToolCallOperation",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ApplyPatchCreateFileOperation"
+        },
+        {
+          "kind": "ref",
+          "name": "ApplyPatchDeleteFileOperation"
+        },
+        {
+          "kind": "ref",
+          "name": "ApplyPatchUpdateFileOperation"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "create_file": "ApplyPatchCreateFileOperation",
+          "delete_file": "ApplyPatchDeleteFileOperation",
+          "update_file": "ApplyPatchUpdateFileOperation"
+        }
+      },
+      "description": "One of the create_file, delete_file, or update_file operations applied via apply_patch."
+    },
+    {
+      "name": "ApplyPatchCreateFileOperation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "create_file"
+          },
+          "required": true,
+          "default": "create_file",
+          "description": "Create a new file with the provided diff."
+        },
+        {
+          "name": "path",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Path of the file to create."
+        },
+        {
+          "name": "diff",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Diff to apply."
+        }
+      ],
+      "description": "Instruction describing how to create a file via the apply_patch tool."
+    },
+    {
+      "name": "ApplyPatchDeleteFileOperation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "delete_file"
+          },
+          "required": true,
+          "default": "delete_file",
+          "description": "Delete the specified file."
+        },
+        {
+          "name": "path",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Path of the file to delete."
+        }
+      ],
+      "description": "Instruction describing how to delete a file via the apply_patch tool."
+    },
+    {
+      "name": "ApplyPatchUpdateFileOperation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "update_file"
+          },
+          "required": true,
+          "default": "update_file",
+          "description": "Update an existing file with the provided diff."
+        },
+        {
+          "name": "path",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Path of the file to update."
+        },
+        {
+          "name": "diff",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Diff to apply."
+        }
+      ],
+      "description": "Instruction describing how to update a file via the apply_patch tool."
+    },
+    {
+      "name": "ApplyPatchToolCallOutput",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "apply_patch_call_output"
+          },
+          "required": true,
+          "default": "apply_patch_call_output",
+          "description": "The type of the item. Always `apply_patch_call_output`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the apply patch tool call output. Populated when this item is returned via API."
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the apply patch tool call generated by the model."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ApplyPatchCallOutputStatus"
+          },
+          "required": true
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the entity that created this tool call output."
+        }
+      ],
+      "description": "The output emitted by an apply patch tool call."
+    },
+    {
+      "name": "ApplyPatchCallOutputStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "completed"
+        },
+        {
+          "value": "failed"
+        }
+      ]
+    },
+    {
+      "name": "McpListTools",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "mcp_list_tools"
+          },
+          "required": true,
+          "description": "The type of the item. Always `mcp_list_tools`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the list.\n"
+        },
+        {
+          "name": "server_label",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The label of the MCP server.\n"
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "McpListToolsTool"
+            }
+          },
+          "required": true,
+          "description": "The tools available on the server.\n"
+        },
+        {
+          "name": "error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A list of tools available on an MCP server.\n"
+    },
+    {
+      "name": "McpListToolsTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the tool.\n"
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "input_schema",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": true,
+          "description": "The JSON schema describing the tool's input.\n"
+        },
+        {
+          "name": "annotations",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            },
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A tool available on an MCP server.\n"
+    },
+    {
+      "name": "McpApprovalRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "mcp_approval_request"
+          },
+          "required": true,
+          "description": "The type of the item. Always `mcp_approval_request`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the approval request.\n"
+        },
+        {
+          "name": "server_label",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The label of the MCP server making the request.\n"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the tool to run.\n"
+        },
+        {
+          "name": "arguments",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A JSON string of arguments for the tool.\n"
+        }
+      ],
+      "description": "A request for human approval of a tool invocation.\n"
+    },
+    {
+      "name": "McpApprovalResponseResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "mcp_approval_response"
+          },
+          "required": true,
+          "description": "The type of the item. Always `mcp_approval_response`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the approval response\n"
+        },
+        {
+          "name": "approval_request_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the approval request being answered.\n"
+        },
+        {
+          "name": "approve",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether the request was approved.\n"
+        },
+        {
+          "name": "reason",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A response to an MCP approval request.\n"
+    },
+    {
+      "name": "McpToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "mcp_call"
+          },
+          "required": true,
+          "description": "The type of the item. Always `mcp_call`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique ID of the tool call.\n"
+        },
+        {
+          "name": "server_label",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The label of the MCP server running the tool.\n"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the tool that was run.\n"
+        },
+        {
+          "name": "arguments",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A JSON string of the arguments passed to the tool.\n"
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolCallStatus"
+          },
+          "required": false
+        },
+        {
+          "name": "approval_request_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "An invocation of a tool on an MCP server.\n"
+    },
+    {
+      "name": "McpToolCallStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        },
+        {
+          "value": "calling"
+        },
+        {
+          "value": "failed"
+        }
+      ]
+    },
+    {
+      "name": "CustomToolCall",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "custom_tool_call"
+          },
+          "required": true,
+          "description": "The type of the custom tool call. Always `custom_tool_call`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The unique ID of the custom tool call in the OpenAI platform.\n"
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "An identifier used to map this custom tool call to a tool call output.\n"
+        },
+        {
+          "name": "namespace",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The namespace of the custom tool being called.\n"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the custom tool being called.\n"
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The input for the custom tool call generated by the model.\n"
+        }
+      ],
+      "description": "A call to a custom tool created by the model.\n"
+    },
+    {
+      "name": "CustomToolCallOutput",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "custom_tool_call_output"
+          },
+          "required": true,
+          "description": "The type of the custom tool call output. Always `custom_tool_call_output`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The unique ID of the custom tool call output in the OpenAI platform.\n"
+        },
+        {
+          "name": "call_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The call ID, used to map this custom tool call output to a custom tool call.\n"
+        },
+        {
+          "name": "output",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionToolCallOutputResourceOutput"
+          },
+          "required": true,
+          "description": "The output from the custom tool call generated by your code.\nCan be a string or an list of output content.\n"
+        }
+      ],
+      "description": "The output of a custom tool call from your code, being sent back to the model.\n"
+    }
+  ],
+  "resources": [
+    {
+      "name": "conversations",
+      "resources": [
+        {
+          "name": "items",
+          "methods": [
+            {
+              "action": "retrieve",
+              "httpMethod": "get",
+              "path": "/conversations/{conversation_id}/items/{item_id}",
+              "operationId": "getConversationItem",
+              "description": "Get a single item from a conversation with the given IDs.",
+              "pathParams": [
+                {
+                  "name": "conversation_id",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "string"
+                  },
+                  "required": true,
+                  "description": "The ID of the conversation that contains the item.",
+                  "example": "conv_123"
+                },
+                {
+                  "name": "item_id",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "string"
+                  },
+                  "required": true,
+                  "description": "The ID of the item to retrieve.",
+                  "example": "msg_abc"
+                }
+              ],
+              "queryParams": [
+                {
+                  "name": "include",
+                  "type": {
+                    "kind": "array",
+                    "items": {
+                      "kind": "ref",
+                      "name": "IncludeEnum"
+                    }
+                  },
+                  "required": false,
+                  "description": "Additional fields to include in the response. See the `include`\nparameter for [listing Conversation items above](/docs/api-reference/conversations/list-items#conversations_list_items-include) for more information.\n"
+                }
+              ],
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "ConversationItem"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "ConversationItem"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

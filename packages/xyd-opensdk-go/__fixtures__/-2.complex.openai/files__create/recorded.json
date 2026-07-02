@@ -1,0 +1,14 @@
+{
+  "call": "Files.New",
+  "request": {
+    "method": "post",
+    "path": "/files",
+    "query": [],
+    "bodyFields": [
+      "file",
+      "purpose"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

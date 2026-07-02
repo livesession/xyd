@@ -1,0 +1,14 @@
+{
+  "call": "Videos.Characters.New",
+  "request": {
+    "method": "post",
+    "path": "/videos/characters",
+    "query": [],
+    "bodyFields": [
+      "name",
+      "video"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

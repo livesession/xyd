@@ -1,0 +1,13 @@
+{
+  "call": "Skills.New",
+  "request": {
+    "method": "post",
+    "path": "/skills",
+    "query": [],
+    "bodyFields": [
+      "files"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

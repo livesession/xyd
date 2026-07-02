@@ -1,0 +1,257 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "Discriminators",
+    "version": "1.0.0"
+  },
+  "types": [
+    {
+      "name": "Pet",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "Cat"
+        },
+        {
+          "kind": "ref",
+          "name": "Dog"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "pet_type",
+        "mapping": {
+          "cat": "Cat",
+          "dog": "Dog"
+        }
+      }
+    },
+    {
+      "name": "Cat",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "pet_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "meows",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Dog",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "pet_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "barks",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Vehicle",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "Car"
+        },
+        {
+          "kind": "ref",
+          "name": "Bike"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "car": "Car",
+          "bike": "Bike"
+        }
+      }
+    },
+    {
+      "name": "Car",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "car"
+          },
+          "required": false
+        },
+        {
+          "name": "wheels",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Bike",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "bike"
+          },
+          "required": false
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "pets",
+      "methods": [
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/pets",
+          "operationId": "createPet",
+          "requestBody": {
+            "contentType": "application/json",
+            "type": {
+              "kind": "ref",
+              "name": "Pet"
+            },
+            "required": true,
+            "encoding": "json"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "The vehicle the pet drives away in.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Vehicle"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Vehicle"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

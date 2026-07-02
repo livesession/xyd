@@ -1,0 +1,7 @@
+[project]
+name = "petstore"
+version = "1.2.0"
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+include = ["petstore"]

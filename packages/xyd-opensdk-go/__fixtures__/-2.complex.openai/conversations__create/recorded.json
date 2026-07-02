@@ -1,0 +1,11 @@
+{
+  "call": "Conversations.New",
+  "request": {
+    "method": "post",
+    "path": "/conversations",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

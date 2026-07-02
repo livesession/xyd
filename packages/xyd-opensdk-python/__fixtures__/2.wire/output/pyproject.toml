@@ -1,0 +1,7 @@
+[project]
+name = "wire-service"
+version = "0.3.0"
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+include = ["wire_service"]

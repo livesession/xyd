@@ -1,0 +1,10 @@
+{
+  "call": "Projects.Groups.Roles.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/projects/{project_id}/groups/{group_id}/roles/{role_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "ListFineTuningJobEventsResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "FineTuningJobEvent"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "FineTuningJobEvent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "fine_tuning.job.event"
+          },
+          "required": true,
+          "description": "The object type, which is always \"fine_tuning.job.event\"."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The object identifier."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the fine-tuning job was created."
+        },
+        {
+          "name": "level",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobEventLevel"
+          },
+          "required": true,
+          "description": "The log level of the event."
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The message of the event."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "FineTuningJobEventType"
+          },
+          "required": false,
+          "description": "The type of event."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": false,
+          "description": "The data associated with the event."
+        }
+      ],
+      "description": "Fine-tuning job event object"
+    },
+    {
+      "name": "FineTuningJobEventLevel",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "info"
+        },
+        {
+          "value": "warn"
+        },
+        {
+          "value": "error"
+        }
+      ],
+      "description": "The log level of the event."
+    },
+    {
+      "name": "FineTuningJobEventType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "message"
+        },
+        {
+          "value": "metrics"
+        }
+      ],
+      "description": "The type of event."
+    }
+  ],
+  "resources": [
+    {
+      "name": "fine-tuning",
+      "resources": [
+        {
+          "name": "jobs",
+          "methods": [
+            {
+              "action": "list-events",
+              "httpMethod": "get",
+              "path": "/fine_tuning/jobs/{fine_tuning_job_id}/events",
+              "operationId": "listFineTuningEvents",
+              "description": "Get status updates for a fine-tuning job.\n",
+              "pathParams": [
+                {
+                  "name": "fine_tuning_job_id",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "string"
+                  },
+                  "required": true,
+                  "description": "The ID of the fine-tuning job to get events for.\n",
+                  "example": "ft-AF1WoRqd3aJAHsqc9NY7iL8F"
+                }
+              ],
+              "queryParams": [
+                {
+                  "name": "after",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "string"
+                  },
+                  "required": false,
+                  "description": "Identifier for the last event from the previous pagination request."
+                },
+                {
+                  "name": "limit",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "integer"
+                  },
+                  "required": false,
+                  "description": "Number of events to retrieve.",
+                  "default": 20
+                }
+              ],
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "ListFineTuningJobEventsResponse"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "ListFineTuningJobEventsResponse"
+              },
+              "pagination": {
+                "style": "cursor",
+                "itemsField": "data",
+                "nextField": "has_more",
+                "itemType": {
+                  "kind": "ref",
+                  "name": "FineTuningJobEvent"
+                },
+                "cursorParam": "after",
+                "limitParam": "limit"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

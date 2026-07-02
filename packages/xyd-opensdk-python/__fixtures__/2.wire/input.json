@@ -1,0 +1,351 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "Wire Service",
+    "version": "0.3.0",
+    "description": "A handcrafted IR exercising wire-level behavior: multipart and form bodies, header params, exploded/csv array query params with wire names, cursor pagination, and idempotency-key injection."
+  },
+  "servers": [
+    "https://api.wire.test/v1"
+  ],
+  "security": [
+    {
+      "type": "apiKey",
+      "kind": "apiKey-header",
+      "in": "header",
+      "name": "X-Api-Key",
+      "envVar": "WIRE_API_KEY"
+    }
+  ],
+  "types": [
+    {
+      "name": "Item",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "readOnly": true
+        },
+        {
+          "name": "label",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "kind",
+          "type": {
+            "kind": "ref",
+            "name": "ItemKind"
+          },
+          "required": false
+        },
+        {
+          "name": "metaData",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": false
+        }
+      ],
+      "description": "An item; metaData exercises wire-name metadata (camelCase on the wire)."
+    },
+    {
+      "name": "ItemKind",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "standard"
+        },
+        {
+          "value": "premium"
+        }
+      ]
+    },
+    {
+      "name": "CreateUploadRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "binary"
+          },
+          "required": true
+        },
+        {
+          "name": "label",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "UploadResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "CreateTokenRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "grant_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "scope",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Token",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "access_token",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "expires_in",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "items",
+      "methods": [
+        {
+          "action": "list",
+          "httpMethod": "get",
+          "path": "/items",
+          "operationId": "listItems",
+          "description": "List items",
+          "queryParams": [
+            {
+              "name": "ids",
+              "wireName": "ids[]",
+              "type": {
+                "kind": "array",
+                "items": {
+                  "kind": "scalar",
+                  "scalar": "string"
+                }
+              },
+              "required": false,
+              "explode": true,
+              "style": "form"
+            },
+            {
+              "name": "tags",
+              "type": {
+                "kind": "array",
+                "items": {
+                  "kind": "scalar",
+                  "scalar": "string"
+                }
+              },
+              "required": false,
+              "explode": false,
+              "style": "form"
+            },
+            {
+              "name": "after",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": false
+            },
+            {
+              "name": "limit",
+              "type": {
+                "kind": "scalar",
+                "scalar": "integer"
+              },
+              "required": false
+            }
+          ],
+          "headerParams": [
+            {
+              "name": "workspace",
+              "wireName": "X-Workspace",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": false
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Item"
+              }
+            }
+          ],
+          "pagination": {
+            "style": "cursor",
+            "itemsField": "data",
+            "nextField": "has_more",
+            "itemType": {
+              "kind": "ref",
+              "name": "Item"
+            },
+            "cursorParam": "after",
+            "limitParam": "limit"
+          }
+        }
+      ]
+    },
+    {
+      "name": "uploads",
+      "methods": [
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/uploads",
+          "operationId": "createUpload",
+          "description": "Upload a file (multipart)",
+          "requestBody": {
+            "contentType": "multipart/form-data",
+            "type": {
+              "kind": "ref",
+              "name": "CreateUploadRequest"
+            },
+            "required": true,
+            "encoding": "multipart"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "UploadResult"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "UploadResult"
+          }
+        },
+        {
+          "action": "download",
+          "httpMethod": "get",
+          "path": "/uploads/{upload_id}/content",
+          "operationId": "downloadUpload",
+          "description": "Download the raw uploaded bytes",
+          "pathParams": [
+            {
+              "name": "upload_id",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "contentType": "application/octet-stream"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tokens",
+      "methods": [
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/token",
+          "operationId": "createToken",
+          "description": "Exchange credentials for a token (form-urlencoded)",
+          "injectIdempotencyKey": true,
+          "requestBody": {
+            "contentType": "application/x-www-form-urlencoded",
+            "type": {
+              "kind": "ref",
+              "name": "CreateTokenRequest"
+            },
+            "required": true,
+            "encoding": "form"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Token"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Token"
+          }
+        }
+      ]
+    }
+  ]
+}

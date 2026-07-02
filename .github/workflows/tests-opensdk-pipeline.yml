@@ -1,0 +1,124 @@
+name: tests:opensdk-pipeline
+
+# Verifies the OpenAPI → OpenSDK → Go pipeline end to end:
+#   @xyd-js/opensdk-core (IR) · @xyd-js/openapi2opensdk (converter + openai-go oracle)
+#   · @xyd-js/opensdk-go (Go generator) · @xyd-js/opensdk-python (stub)
+#
+# The root vitest config (tests:unit) already runs each package's offline unit
+# tests (including the conformance surface diff, which reads the committed
+# oracle/surface.json). This job adds a Go toolchain so the gated layer can run
+# where the generated Go SDK actually builds:
+#   - O2S_GO_SMOKE=1 — a sample of generated Go SDK projects `go build`/`go vet`
+# (SDK_ORACLE_REFRESH regenerates the oracle over the network and is NOT set.)
+
+on:
+  push:
+    branches: [ master, canary ]
+    paths:
+      - 'packages/xyd-opensdk-core/**'
+      - 'packages/xyd-opensdk-framework/**'
+      - 'packages/xyd-opensdk-ci/**'
+      - 'packages/xyd-openapi2opensdk/**'
+      - 'packages/xyd-opensdk-go/**'
+      - 'packages/xyd-opensdk-python/**'
+      - 'packages/xyd-opensdk-cli/**'
+      - '.github/workflows/tests-opensdk-pipeline.yml'
+  pull_request:
+    branches: [ master, canary ]
+    paths:
+      - 'packages/xyd-opensdk-core/**'
+      - 'packages/xyd-opensdk-framework/**'
+      - 'packages/xyd-opensdk-ci/**'
+      - 'packages/xyd-openapi2opensdk/**'
+      - 'packages/xyd-opensdk-go/**'
+      - 'packages/xyd-opensdk-python/**'
+      - 'packages/xyd-opensdk-cli/**'
+      - '.github/workflows/tests-opensdk-pipeline.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.12.0]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9.10.0
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: 'latest'
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+        # The generated SDKs vendor only stdlib — no module downloads needed.
+        cache: false
+
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - name: Setup pnpm cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      run: pnpm i
+
+    - name: Build pipeline packages (and their workspace deps)
+      run: >-
+        pnpm
+        --filter "@xyd-js/opensdk-core..."
+        --filter "@xyd-js/opensdk-framework..."
+        --filter "@xyd-js/opensdk-ci..."
+        --filter "@xyd-js/openapi2opensdk..."
+        --filter "@xyd-js/opensdk-go..."
+        --filter "@xyd-js/opensdk-python..."
+        --filter "@xyd-js/opensdk-cli..."
+        build
+
+    - name: Test @xyd-js/opensdk-core (IR loader/helpers)
+      run: pnpm --filter @xyd-js/opensdk-core ci:test
+
+    - name: Test @xyd-js/opensdk-framework (emitter contract, registry, dependency layers)
+      run: pnpm --filter @xyd-js/opensdk-framework ci:test
+
+    - name: Test @xyd-js/opensdk-ci (harness primitives)
+      run: pnpm --filter @xyd-js/opensdk-ci ci:test
+
+    - name: Test @xyd-js/openapi2opensdk (converter + openai-go conformance)
+      run: pnpm --filter @xyd-js/openapi2opensdk ci:test
+
+    - name: Test @xyd-js/opensdk-go (golden trees + Go build/vet smoke + e2e real SDK)
+      run: pnpm --filter @xyd-js/opensdk-go ci:test
+      env:
+        O2S_GO_SMOKE: '1'
+        E2E_SDK: '1'
+
+    - name: Test @xyd-js/opensdk-python (golden trees + py_compile smoke)
+      run: pnpm --filter @xyd-js/opensdk-python ci:test
+      env:
+        O2S_PY_SMOKE: '1'
+
+    - name: Test @xyd-js/opensdk-cli (parse/generate/init + plugin config)
+      run: pnpm --filter @xyd-js/opensdk-cli ci:test

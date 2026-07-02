@@ -1,0 +1,269 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "Idempotency",
+    "version": "1.0.0"
+  },
+  "types": [
+    {
+      "name": "ChargesListResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Charge"
+            }
+          },
+          "required": false
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Charge",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "amount",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ChargeStatus"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "ChargeStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "pending"
+        },
+        {
+          "value": "succeeded"
+        },
+        {
+          "value": "failed"
+        }
+      ]
+    },
+    {
+      "name": "ChargesCreateRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "amount",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true
+        },
+        {
+          "name": "currency",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "charges",
+      "methods": [
+        {
+          "action": "list",
+          "httpMethod": "get",
+          "path": "/charges",
+          "operationId": "listCharges",
+          "description": "List charges",
+          "injectIdempotencyKey": true,
+          "responses": [
+            {
+              "status": "200",
+              "description": "A page of charges.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "ChargesListResponse"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "ChargesListResponse"
+          },
+          "pagination": {
+            "style": "cursor",
+            "itemsField": "data",
+            "nextField": "has_more",
+            "itemType": {
+              "kind": "ref",
+              "name": "Charge"
+            }
+          }
+        },
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/charges",
+          "operationId": "createCharge",
+          "description": "Create a charge",
+          "injectIdempotencyKey": true,
+          "headerParams": [
+            {
+              "name": "XRequestSource",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": false,
+              "wireName": "X-Request-Source"
+            }
+          ],
+          "requestBody": {
+            "contentType": "application/json",
+            "type": {
+              "kind": "ref",
+              "name": "ChargesCreateRequest"
+            },
+            "required": true,
+            "encoding": "json"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "The created charge.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Charge"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Charge"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "call": "Admin.Organization.Certificates.Update",
+  "request": {
+    "method": "post",
+    "path": "/organization/certificates/{certificate_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}
