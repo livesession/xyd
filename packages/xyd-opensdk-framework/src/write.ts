@@ -1,15 +1,16 @@
 import type { GeneratedFileEntry, ProjectFileMap, WriteMode } from './types';
 
 /**
- * The regen manifest writeProject leaves next to every generated SDK. It
- * records what THIS generator owns (rel path -> sha256 of the pristine
+ * The regen lock writeProject leaves under `.sdk/sdk.lock` in every generated
+ * SDK. It records what THIS generator owns (rel path -> sha256 of the pristine
  * generated content) so the next run can prune stale files safely: a file the
  * emitter no longer produces is deleted only while its on-disk bytes still
- * hash to the manifest entry — locally-modified orphans are kept and surfaced
+ * hash to the lock entry — locally-modified orphans are kept and surfaced
  * as warnings. Deliberately timestamp-free so a no-change regen is git-diff
- * clean.
+ * clean. (The Speakeasy `.speakeasy/gen.lock` analog — the owned-file registry
+ * slice, without the tool-version / doc-checksum reproducibility pins.)
  */
-export const MANIFEST_FILENAME = '.opensdk.manifest.json';
+export const SDK_LOCK_FILENAME = '.sdk/sdk.lock';
 
 const MANIFEST_SCHEMA_VERSION = 1;
 
@@ -56,7 +57,7 @@ export interface WriteProjectResult {
  *     matches the manifest (pristine generated output); locally-modified
  *     orphans are kept and returned in `keptModified`. First adoption (no
  *     previous manifest) never prunes — it just writes the baseline;
- *  4. manifest — '.opensdk.manifest.json' records this run's ownership set.
+ *  4. lock — '.sdk/sdk.lock' records this run's ownership set.
  *
  * Backward-compatible: the historical `Record<path, contents>` input still
  * works and existing callers may ignore the returned summary.
@@ -82,7 +83,7 @@ export async function writeProject(
   const result: WriteProjectResult = { written: [], skipped: [], unchanged: [], pruned: [], keptModified: [] };
   /** rel path -> sha256 of the PRISTINE generated content (the prune guard's "safe to delete" fingerprint). */
   const manifestFiles: Record<string, string> = {};
-  const previous = readManifest(await readIfExists(path.join(outDir, MANIFEST_FILENAME)));
+  const previous = readManifest(await readIfExists(path.join(outDir, SDK_LOCK_FILENAME)));
 
   // Sorted for deterministic write order (and a deterministic result/manifest).
   const entries = Object.entries(files)
@@ -90,8 +91,8 @@ export async function writeProject(
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
 
   for (const [rel, entry] of entries) {
-    if (rel === MANIFEST_FILENAME) {
-      throw new Error(`writeProject: the file map may not emit ${MANIFEST_FILENAME} (writeProject owns it)`);
+    if (rel === SDK_LOCK_FILENAME) {
+      throw new Error(`writeProject: the file map may not emit ${SDK_LOCK_FILENAME} (writeProject owns it)`);
     }
     const full = path.join(outDir, rel);
     const mode: WriteMode = entry.writeMode ?? 'overwrite';
@@ -143,7 +144,7 @@ export async function writeProject(
   // Guarded stale-prune — only with a previous manifest (first adoption never deletes).
   if (previous) {
     const stale = Object.keys(previous.files)
-      .filter((rel) => !(rel in files) && rel !== MANIFEST_FILENAME)
+      .filter((rel) => !(rel in files) && rel !== SDK_LOCK_FILENAME)
       .sort();
     for (const rel of stale) {
       const full = path.join(outDir, rel);
@@ -163,16 +164,16 @@ export async function writeProject(
     }
   }
 
-  // Manifest last, sorted + timestamp-free (identical-content no-op applies to it too).
+  // Lock last, sorted + timestamp-free (identical-content no-op applies to it too).
   const manifest: ProjectManifest = {
     schemaVersion: MANIFEST_SCHEMA_VERSION,
     generator: options.generator ?? 'opensdk',
     files: Object.fromEntries(Object.entries(manifestFiles).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))),
   };
   const manifestContent = `${JSON.stringify(manifest, null, 2)}\n`;
-  const manifestFull = path.join(outDir, MANIFEST_FILENAME);
+  const manifestFull = path.join(outDir, SDK_LOCK_FILENAME);
   if ((await readIfExists(manifestFull)) !== manifestContent) {
-    await fs.mkdir(outDir, { recursive: true });
+    await fs.mkdir(path.dirname(manifestFull), { recursive: true });
     await fs.writeFile(manifestFull, manifestContent, 'utf8');
   }
 

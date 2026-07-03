@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "sources": {
+    "svc": { "inputs": [{ "location": "./specs/svc.json" }], "output": "./.chain/svc.openapi.json" }
+  },
+  "targets": {
+    "svc-go": { "target": "go", "source": "svc", "output": "./sdk/go", "sdkName": "svc" },
+    "svc-ts": { "target": "typescript", "source": "svc", "output": "./sdk/ts", "sdkName": "svc", "options": { "packageName": "svc" } },
+    "svc-py": { "target": "python", "source": "svc", "output": "./sdk/py", "sdkName": "svc" }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "sources": {
+    "api": {
+      "inputs": [{ "location": "./specs/api.json" }],
+      "overlays": [{ "location": "./overlays/hide-internal.json" }],
+      "output": "./.chain/api.openapi.json"
+    }
+  },
+  "targets": {
+    "api-sdk": { "target": "go", "source": "api", "output": "./sdk/api", "sdkName": "api" }
+  }
+}

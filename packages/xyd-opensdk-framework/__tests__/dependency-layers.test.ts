@@ -27,6 +27,7 @@ const ALLOWED: Record<string, string[]> = {
   'xyd-opensdk-java': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
   'xyd-opensdk-dotnet': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
   'xyd-opensdk-ci': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
+  'xyd-opensdk-chain': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
   'xyd-opensdk-cli': [
     '@xyd-js/opensdk-core',
     '@xyd-js/opensdk-framework',
@@ -37,6 +38,7 @@ const ALLOWED: Record<string, string[]> = {
     '@xyd-js/opensdk-ruby',
     '@xyd-js/opensdk-java',
     '@xyd-js/opensdk-dotnet',
+    '@xyd-js/opensdk-chain',
   ],
 };
 
@@ -51,6 +53,7 @@ const PIPELINE_PACKAGES = [
   '@xyd-js/opensdk-ruby',
   '@xyd-js/opensdk-java',
   '@xyd-js/opensdk-dotnet',
+  '@xyd-js/opensdk-chain',
   '@xyd-js/opensdk-ci',
   '@xyd-js/opensdk-cli',
 ];

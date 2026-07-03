@@ -30,3 +30,4 @@ export {
   goPublishAdapter,
 } from './publish';
 export type { PublishAdapter, PublishCtx, PublishRoundTripConfig } from './publish';
+export { compileSmoke } from './compile-smoke';

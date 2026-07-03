@@ -110,3 +110,72 @@ export interface SdkJson {
   /** Per-language sections, keyed by a language name or alias. */
   [language: string]: LanguageSection | unknown;
 }
+
+// ── chain.json — the multi-source/multi-target pipeline (a Speakeasy workflow.yaml
+// analog) driven by `opensdk run`. Unlike sdk.json (one API → N language sections),
+// a chain declares many named SOURCES (specs, optionally merged + overlaid) and many
+// named TARGETS, each binding a source + a language + output + publish. ─────────────
+
+/** One spec/overlay input: a file path or URL. */
+export interface ChainInput {
+  location: string;
+}
+
+/**
+ * A named source: one or more OpenAPI `inputs` (merged when >1) with optional
+ * OpenAPI `overlays` applied in order, producing a processed spec at `output`
+ * (or a temp file). Operates on the RAW doc so `$ref`s survive into the converter.
+ */
+export interface ChainSource {
+  /** Spec inputs; a single input passes through, multiple are merged. */
+  inputs: ChainInput[];
+  /** OpenAPI Overlay 1.0.0 documents, applied in order after merge. */
+  overlays?: ChainInput[];
+  /** Where to write the processed spec (json/yaml by extension); a temp file if omitted. */
+  output?: string;
+}
+
+/**
+ * A named target: generate (and optionally publish) one SDK from a source. Reuses
+ * the sdk.json per-language knobs (behavior/grouping/options/publish) so a target
+ * is effectively a single `opensdk generate --lang <target> --spec <source>` +
+ * `opensdk publish`.
+ */
+export interface ChainTarget {
+  /** Emitter language or alias (typescript, go, csharp, ...). */
+  target: string;
+  /** Name of the `sources` entry this target generates from. */
+  source: string;
+  /** SDK output directory (default `./sdk/<target-name>`). */
+  output?: string;
+  /** SDK name passed to the converter. */
+  sdkName?: string;
+  /** Behavior override, deep-merged over the chain's global `behavior`. */
+  behavior?: DeepPartial<SdkBehavior>;
+  /** Spec-external grouping (mountRules/operationHints). */
+  grouping?: SdkGrouping;
+  /** Emitter options for this language (packageName, modulePath, namespace, ...). */
+  options?: Record<string, unknown>;
+  /** Publish target, merged over the chain's global `publish`. */
+  publish?: PublishTarget;
+  /** Emit the SDK's own test suite (default true). */
+  tests?: boolean;
+}
+
+/**
+ * The declarative `chain.json`: named `sources` → named `targets`, driven by
+ * `opensdk run`. `behavior`/`publish` are global defaults merged into each target.
+ */
+export interface ChainJson {
+  $schema?: string;
+  /** Config schema version. */
+  version: number | string;
+  /** Global behavior default (deep-merged under each target's `behavior`). */
+  behavior?: DeepPartial<SdkBehavior>;
+  /** Global publish default (merged under each target's `publish`). */
+  publish?: PublishTarget;
+  /** Named sources, each producing one processed spec. */
+  sources: Record<string, ChainSource>;
+  /** Named targets, each = source + language + output + publish. */
+  targets: Record<string, ChainTarget>;
+}

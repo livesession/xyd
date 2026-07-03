@@ -9,11 +9,22 @@ export interface InitOptions {
   dir?: string;
   /** Seed the scaffolded language section (default `typescript`). */
   lang?: string;
+  /** Scaffold a `chain.json` pipeline (sources → targets) instead of sdk.json. */
+  chain?: boolean;
 }
 
-/** `opensdk init` — scaffold a config: sdk.json by default, or the opensdk.config.mjs plugin bundle. */
+/** `opensdk init` — scaffold a config: sdk.json (default), a chain.json pipeline (--chain), or an opensdk.config.mjs plugin bundle. */
 export async function initCommand(opts: InitOptions): Promise<void> {
   const projectDir = resolve(opts.project ?? '.');
+
+  if (opts.chain) {
+    const chainPath = resolve(projectDir, opts.dir ?? '.', 'chain.json');
+    if (existsSync(chainPath)) throw new Error('Project already initialized — chain.json exists');
+    mkdirSync(dirname(chainPath), { recursive: true });
+    writeFileSync(chainPath, chainJsonTemplate(opts.lang ?? 'typescript'));
+    console.log(`Created ${chainPath}`);
+    return;
+  }
 
   if (opts.format === 'mjs') {
     const configPath = resolve(projectDir, 'opensdk.config.mjs');
@@ -30,6 +41,35 @@ export async function initCommand(opts: InitOptions): Promise<void> {
   console.log(`Created ${configPath}`);
 }
 
+function chainJsonTemplate(lang: string): string {
+  const doc = {
+    $schema: 'https://unpkg.com/@xyd-js/opensdk-schemas/chain.schema.json',
+    version: 1,
+    // Package identity threaded onto every SDK; per-target `publish` adds the registry + tokenEnv.
+    publish: { author: 'Acme', license: 'MIT', repository: 'https://github.com/acme/acme' },
+    // Named sources: each produces ONE processed spec. Multiple `inputs` are merged;
+    // `overlays` (OpenAPI Overlay 1.0.0) patch the result.
+    sources: {
+      main: {
+        inputs: [{ location: './openapi.yaml' }],
+        // inputs: [{ location: './openapi.yaml' }, { location: './extra.yaml' }],  // merged
+        // overlays: [{ location: './overlay.yaml' }],
+        output: './.chain/main.openapi.json',
+      },
+    },
+    // Named targets: each generates (and, with `--publish`, publishes) one SDK from a source.
+    targets: {
+      [`${lang}-sdk`]: {
+        target: lang,
+        source: 'main',
+        output: `./sdk/${lang}`,
+        publish: { registry: 'https://registry.npmjs.org', tokenEnv: 'NPM_TOKEN' },
+      },
+    },
+  };
+  return `${JSON.stringify(doc, null, 2)}\n`;
+}
+
 function sdkJsonTemplate(lang: string): string {
   const section: Record<string, unknown> = {
     packageName: 'acme',
@@ -39,7 +79,7 @@ function sdkJsonTemplate(lang: string): string {
     publish: { registry: 'https://registry.npmjs.org', tokenEnv: 'NPM_TOKEN' },
   };
   const doc = {
-    $schema: 'https://unpkg.com/@xyd-js/opensdk-cli/sdk.schema.json',
+    $schema: 'https://unpkg.com/@xyd-js/opensdk-schemas/sdk.schema.json',
     version: 1,
     sdkName: 'acme',
     // Global runtime behavior, deep-merged over @xyd-js/opensdk-core

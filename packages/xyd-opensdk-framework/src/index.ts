@@ -13,7 +13,7 @@ export type {
 } from './types';
 export { registerEmitter, getEmitter, applyConfig, resolveLanguage, languageAliases } from './registry';
 export { generate, generateFileMap } from './orchestrator';
-export { writeProject, deepMergeJson, MANIFEST_FILENAME } from './write';
+export { writeProject, deepMergeJson, SDK_LOCK_FILENAME } from './write';
 export type { ProjectManifest, WriteProjectOptions, WriteProjectResult } from './write';
 export { planOperation } from './operation-plan';
 export type {

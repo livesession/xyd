@@ -8,6 +8,10 @@ export { diffCommand } from './cli/diff';
 export type { DiffCommandOptions, DiffFailOn } from './cli/diff';
 export { publishCommand, publishTarget } from './cli/publish';
 export type { PublishCommandOptions } from './cli/publish';
+export { runChain } from './cli/run';
+export type { RunOptions } from './cli/run';
+// The chain engine lives in @xyd-js/opensdk-chain; re-export for convenience.
+export { resolveChain, detectChain, mergeOpenApiDocs, applyOverlay, processSource, readRawDoc } from '@xyd-js/opensdk-chain';
 // The per-language publish option bag lives in the framework (shared by the CLI + e2e).
 export type { EmitterPublishOptions } from '@xyd-js/opensdk-framework';
 export { initCommand } from './cli/init';

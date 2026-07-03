@@ -160,3 +160,74 @@ writeFileSync(outPath, `${JSON.stringify(schema, null, 2)}\n`);
 console.log(
   `Wrote ${outPath} (${BEHAVIOR_DEFS.length} behavior defs + ${Object.keys(LANG_OPTIONS).length} language sections)`,
 );
+
+// ── chain.schema.json — the `opensdk run` pipeline config (sources → targets),
+// reusing the same SdkBehavior + PublishTarget $defs. ─────────────────────────
+const groupingDef = {
+  type: 'object',
+  description: 'Spec-external resource grouping (mountRules/operationHints).',
+  properties: {
+    mountRules: { type: 'object', additionalProperties: { type: 'string' } },
+    operationHints: { type: 'object', additionalProperties: true },
+  },
+  additionalProperties: false,
+};
+const inputDef = {
+  type: 'object',
+  required: ['location'],
+  properties: { location: str('A spec/overlay file path or URL.') },
+  additionalProperties: false,
+};
+const chainSchema = {
+  $schema: 'https://json-schema.org/draft/2020-12/schema',
+  $id: 'https://unpkg.com/@xyd-js/opensdk-cli/chain.schema.json',
+  title: 'OpenSDK chain.json',
+  description: 'A multi-source/multi-target SDK pipeline run by `opensdk run`.',
+  type: 'object',
+  required: ['version', 'sources', 'targets'],
+  properties: {
+    $schema: { type: 'string' },
+    version: { description: 'Config schema version.', anyOf: [{ type: 'number' }, { type: 'string' }] },
+    behavior: { $ref: '#/$defs/SdkBehavior', description: 'Global runtime behavior default (deep-merged under each target).' },
+    publish: { $ref: '#/$defs/PublishTarget', description: 'Global publish default (merged under each target `publish`).' },
+    sources: {
+      type: 'object',
+      description: 'Named sources; each produces one processed spec (inputs merged, overlays applied).',
+      additionalProperties: {
+        type: 'object',
+        required: ['inputs'],
+        properties: {
+          inputs: { type: 'array', items: inputDef, minItems: 1, description: 'Spec inputs; multiple are merged.' },
+          overlays: { type: 'array', items: inputDef, description: 'OpenAPI Overlay 1.0.0 docs, applied in order.' },
+          output: str('Where to write the processed spec (json/yaml by extension); a temp file if omitted.'),
+        },
+        additionalProperties: false,
+      },
+    },
+    targets: {
+      type: 'object',
+      description: 'Named targets; each generates (and optionally publishes) one SDK from a source.',
+      additionalProperties: {
+        type: 'object',
+        required: ['target', 'source'],
+        properties: {
+          target: str('Emitter language or alias (typescript, go, csharp, ...).'),
+          source: str('Name of the `sources` entry this target generates from.'),
+          output: str('SDK output directory (default ./sdk/<target-name>).'),
+          sdkName: str('SDK name passed to the converter.'),
+          behavior: { $ref: '#/$defs/SdkBehavior', description: "Behavior override over the chain's global behavior." },
+          grouping: groupingDef,
+          options: { type: 'object', description: 'Emitter options for this language (packageName, modulePath, ...).', additionalProperties: true },
+          publish: { $ref: '#/$defs/PublishTarget', description: "Publish target merged over the chain's global publish." },
+          tests: { type: 'boolean', description: "Emit the SDK's own test suite (default true)." },
+        },
+        additionalProperties: false,
+      },
+    },
+  },
+  additionalProperties: false,
+  $defs,
+};
+const chainOut = resolve(here, '../chain.schema.json');
+writeFileSync(chainOut, `${JSON.stringify(chainSchema, null, 2)}\n`);
+console.log(`Wrote ${chainOut} (chain pipeline schema)`);

@@ -1,0 +1,11 @@
+{
+  "name": "@xyd-js/opensdk-schemas",
+  "version": "0.1.0-build.0",
+  "description": "OpenSDK JSON Schemas (editor validation): sdk.schema.json + chain.schema.json, generated from @xyd-js/opensdk-core's opensdk-spec.json. The home for opensdk config schemas.",
+  "type": "module",
+  "files": ["sdk.schema.json", "chain.schema.json"],
+  "scripts": {
+    "gen:schema": "node scripts/gen-schema.mjs",
+    "format": "bunx biome check --write scripts"
+  }
+}

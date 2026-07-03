@@ -14,3 +14,4 @@ export type { IrChange, IrDiff, IrSeverity } from './diff';
 
 export { mergePublishTargets } from './config';
 export type { OperationHint, SdkGrouping, PublishTarget, LanguageSection, SdkJson } from './config';
+export type { ChainInput, ChainSource, ChainTarget, ChainJson } from './config';

@@ -27,6 +27,7 @@ on:
       - 'packages/xyd-opensdk-ruby/**'
       - 'packages/xyd-opensdk-java/**'
       - 'packages/xyd-opensdk-dotnet/**'
+      - 'packages/xyd-opensdk-chain/**'
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
   pull_request:
@@ -42,6 +43,7 @@ on:
       - 'packages/xyd-opensdk-ruby/**'
       - 'packages/xyd-opensdk-java/**'
       - 'packages/xyd-opensdk-dotnet/**'
+      - 'packages/xyd-opensdk-chain/**'
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
 
@@ -129,6 +131,7 @@ jobs:
         --filter "@xyd-js/opensdk-ruby..."
         --filter "@xyd-js/opensdk-java..."
         --filter "@xyd-js/opensdk-dotnet..."
+        --filter "@xyd-js/opensdk-chain..."
         --filter "@xyd-js/opensdk-cli..."
         build
 
@@ -210,6 +213,20 @@ jobs:
 
     - name: Test @xyd-js/opensdk-cli (parse/generate/init + plugin config)
       run: pnpm --filter @xyd-js/opensdk-cli ci:test
+
+    # Chain unit + fixture goldens (offline): sources merge/overlay engine,
+    # resolveChain, and the chain.json → committed-output golden fixtures.
+    - name: Test @xyd-js/opensdk-chain (sources engine + resolveChain + fixture goldens)
+      run: pnpm --filter @xyd-js/opensdk-chain ci:test
+
+    # ── Chain e2e ────────────────────────────────────────────────────────────
+    # Prove `opensdk run` + chain.json: one chain (a merge source + an overlay +
+    # a target per language) generates every SDK and each COMPILES. All 6
+    # toolchains are set up above; no registries needed (generate + compile only).
+    - name: Chain e2e (opensdk run: merge + overlay → all-language SDKs, each compiles)
+      run: pnpm --filter @xyd-js/opensdk-chain exec vitest run __tests__/e2e/chain.test.ts
+      env:
+        E2E_SDK_CHAIN: '1'
 
     # ── Publish e2e ──────────────────────────────────────────────────────────
     # Prove each generated SDK can be published → installed back → loaded. The 3

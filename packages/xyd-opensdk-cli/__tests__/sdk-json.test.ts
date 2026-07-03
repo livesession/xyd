@@ -108,7 +108,7 @@ describe('resolveConfig — sdk.json', () => {
 });
 
 describe('sdk.schema.json (editor validation)', () => {
-  const schema = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'sdk.schema.json'), 'utf8'));
+  const schema = JSON.parse(fs.readFileSync(path.join(__dirname, '../../xyd-opensdk-schemas/sdk.schema.json'), 'utf8'));
 
   it('has a strict per-language section for each emitter with its option keys', () => {
     const expected: Record<string, string[]> = {

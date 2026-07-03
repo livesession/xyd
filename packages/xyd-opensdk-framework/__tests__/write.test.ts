@@ -4,7 +4,7 @@ import path from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { MANIFEST_FILENAME, deepMergeJson, writeProject } from '../src';
+import { SDK_LOCK_FILENAME, deepMergeJson, writeProject } from '../src';
 
 const tmpDirs: string[] = [];
 function tmpDir(): string {
@@ -19,7 +19,7 @@ afterEach(() => {
 
 const read = (dir: string, rel: string) => fs.readFileSync(path.join(dir, rel), 'utf8');
 const exists = (dir: string, rel: string) => fs.existsSync(path.join(dir, rel));
-const manifest = (dir: string) => JSON.parse(read(dir, MANIFEST_FILENAME));
+const manifest = (dir: string) => JSON.parse(read(dir, SDK_LOCK_FILENAME));
 
 describe('writeProject: basics + manifest', () => {
   it('writes the file map, returns a summary, and emits a deterministic manifest', async () => {
@@ -42,7 +42,7 @@ describe('writeProject: basics + manifest', () => {
     expect(Object.keys(m.files)).toEqual(['pkg/client.go', 'types.go']); // sorted
     expect(m.files['types.go']).toMatch(/^[0-9a-f]{64}$/);
     // Determinism: no timestamps anywhere.
-    expect(read(out, MANIFEST_FILENAME)).not.toMatch(/\d{4}-\d{2}-\d{2}T/);
+    expect(read(out, SDK_LOCK_FILENAME)).not.toMatch(/\d{4}-\d{2}-\d{2}T/);
   });
 
   it('records the generator name from options', async () => {
@@ -52,7 +52,7 @@ describe('writeProject: basics + manifest', () => {
   });
 
   it('rejects a file map that emits the manifest path itself', async () => {
-    await expect(writeProject({ [MANIFEST_FILENAME]: '{}' }, tmpDir())).rejects.toThrow(/owns it/);
+    await expect(writeProject({ [SDK_LOCK_FILENAME]: '{}' }, tmpDir())).rejects.toThrow(/owns it/);
   });
 });
 
@@ -62,14 +62,14 @@ describe('writeProject: identical-content no-op', () => {
     const files = { 'a.go': 'alpha', 'b.go': 'beta' };
     await writeProject(files, out);
     const before = fs.statSync(path.join(out, 'a.go')).mtimeMs;
-    const manifestBefore = read(out, MANIFEST_FILENAME);
+    const manifestBefore = read(out, SDK_LOCK_FILENAME);
 
     const result = await writeProject(files, out);
     expect(result.written).toEqual([]);
     expect(result.unchanged).toEqual(['a.go', 'b.go']);
     expect(fs.statSync(path.join(out, 'a.go')).mtimeMs).toBe(before);
     // The manifest itself is byte-identical too — no-change regens are git-diff clean.
-    expect(read(out, MANIFEST_FILENAME)).toBe(manifestBefore);
+    expect(read(out, SDK_LOCK_FILENAME)).toBe(manifestBefore);
   });
 });
 
@@ -182,7 +182,7 @@ describe('writeProject: guarded stale-prune', () => {
   it('ignores a malformed previous manifest (no prune)', async () => {
     const out = tmpDir();
     await writeProject({ 'a.go': 'a', 'stale.go': 'stale' }, out);
-    fs.writeFileSync(path.join(out, MANIFEST_FILENAME), 'garbage');
+    fs.writeFileSync(path.join(out, SDK_LOCK_FILENAME), 'garbage');
 
     const result = await writeProject({ 'a.go': 'a' }, out);
     expect(result.pruned).toEqual([]);

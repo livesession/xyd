@@ -57,7 +57,7 @@ export interface PublishCommandOptions {
 }
 
 /** Resolve token from a publish target's `tokenEnv` (env only; never stored). */
-function resolveToken(publish: PublishTarget | undefined): string | undefined {
+export function resolveToken(publish: PublishTarget | undefined): string | undefined {
   if (!publish?.tokenEnv) return undefined;
   const token = process.env[publish.tokenEnv];
   if (!token) console.warn(`Warning: publish.tokenEnv "${publish.tokenEnv}" is not set in the environment.`);

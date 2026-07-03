@@ -1,0 +1,5 @@
+{
+  "overlay": "1.0.0",
+  "info": { "title": "hide internal endpoints", "version": "1.0.0" },
+  "actions": [{ "target": "$.paths['/internal/debug']", "remove": true }]
+}

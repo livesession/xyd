@@ -1,0 +1,47 @@
+{
+  "svc-go": [
+    ".sdk/sdk.lock",
+    "client.go",
+    "go.mod",
+    "internal/requestconfig/config.go",
+    "internal/requestconfig/errors.go",
+    "internal/requestconfig/requestconfig.go",
+    "internal/testutil/testutil.go",
+    "option/option.go",
+    "packages/apijson/apijson.go",
+    "packages/param/param.go",
+    "types.go",
+    "widgets.go",
+    "widgets_test.go"
+  ],
+  "svc-ts": [
+    ".sdk/sdk.lock",
+    "README.md",
+    "package.json",
+    "src/client.ts",
+    "src/core/error.ts",
+    "src/core/request.ts",
+    "src/core/resource.ts",
+    "src/index.ts",
+    "src/models.ts",
+    "src/resources/index.ts",
+    "src/resources/widgets.ts",
+    "tests/_shims.d.ts",
+    "tests/setup.ts",
+    "tests/widgets.test.ts",
+    "tsconfig.json",
+    "tsconfig.test.json"
+  ],
+  "svc-py": [
+    ".sdk/sdk.lock",
+    "pyproject.toml",
+    "svc/__init__.py",
+    "svc/_client.py",
+    "svc/_transport.py",
+    "svc/models.py",
+    "svc/resources.py",
+    "tests/conftest.py",
+    "tests/test_widgets.py",
+    "tests/utils.py"
+  ]
+}

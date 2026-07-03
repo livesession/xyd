@@ -16,7 +16,9 @@ import { generateCommand, generateTargets } from './generate';
 import { initCommand } from './init';
 import { parseCommand } from './parse';
 import { applyConfig } from './plugin-loader';
+import { detectChain } from '@xyd-js/opensdk-chain';
 import { publishCommand } from './publish';
+import { runChain } from './run';
 
 function handleError(err: unknown): never {
   const message = err instanceof Error ? err.message : String(err);
@@ -180,15 +182,39 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     });
 
   program
+    .command('run')
+    .description('Run a chain.json pipeline: process sources (merge + overlays) then generate every target SDK (add --publish to publish each).')
+    .option('--chain <path>', 'Path to the chain file (default: chain.json or .chain/chain.json in cwd)')
+    .option('--target <name>', 'Only run this target (else every target in the chain)')
+    .option('--source <name>', 'Only run targets bound to this source')
+    .option('--publish', 'Also publish each generated target to its registry')
+    .option('--dry-run', 'Process + print without writing SDKs or pushing')
+    .action(async (opts) => {
+      try {
+        const chain = opts.chain ?? detectChain(process.cwd()) ?? 'chain.json';
+        await runChain({
+          chain,
+          target: opts.target,
+          source: opts.source,
+          publish: opts.publish,
+          dryRun: opts.dryRun,
+        });
+      } catch (err) {
+        handleError(err);
+      }
+    });
+
+  program
     .command('init')
     .description('Scaffold a config file (sdk.json by default, or an opensdk.config.mjs plugin bundle)')
     .option('--project <dir>', 'Project directory (default: cwd)')
     .addOption(new Option('--format <format>', 'Config format').choices(['json', 'mjs']).default('json'))
-    .option('--dir <subdir>', 'Write sdk.json under a subdir (e.g. .sdk)')
-    .option('--lang <language>', 'Seed this language section in sdk.json (default: typescript)')
+    .option('--dir <subdir>', 'Write the config under a subdir (e.g. .sdk / .chain)')
+    .option('--lang <language>', 'Seed this language (default: typescript)')
+    .option('--chain', 'Scaffold a chain.json pipeline (sources → targets) instead of sdk.json')
     .action(async (opts) => {
       try {
-        await initCommand({ project: opts.project, format: opts.format, dir: opts.dir, lang: opts.lang });
+        await initCommand({ project: opts.project, format: opts.format, dir: opts.dir, lang: opts.lang, chain: opts.chain });
       } catch (err) {
         handleError(err);
       }
