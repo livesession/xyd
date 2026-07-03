@@ -73,7 +73,13 @@ storybook-static/
 __tests__/output
 # Local Netlify folder
 .netlify
-.research/
+# Private research docs: ignore the plaintext, commit ONLY the single encrypted
+# archive + its scripts (mirrors the oracle/*.enc pattern). Restore via
+# .research/decrypt.sh (needs XYD_CONTENT_SECRET).
+.research/*
+!.research/research.enc
+!.research/encrypt.sh
+!.research/decrypt.sh
 playwright-report
 test-results
 
