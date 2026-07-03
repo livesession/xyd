@@ -1,6 +1,3 @@
 [submodule "examples"]
 	path = examples
 	url = https://github.com/xyd-js/examples
-[submodule ".research"]
-	path = .research
-	url = https://github.com/xyd-js/.research
