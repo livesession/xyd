@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -12,8 +13,12 @@ import { openapi2opensdkFromSource } from '../index';
 // generated chat.completions.create params lacked temperature/top_p/user.
 
 const SPEC = path.join(__dirname, '../oracle/openai-openapi.yaml');
+// The vendored spec lives in the gitignored/encrypted oracle dir. Skip these
+// guards when the plaintext is absent (CI without XYD_CONTENT_SECRET, fresh
+// clones) instead of ENOENT-ing; they run in the decrypted opensdk pipeline.
+const hasOracle = fs.existsSync(SPEC);
 
-describe('openai field-level guards', () => {
+describe.skipIf(!hasOracle)('openai field-level guards', () => {
   let byName: Map<string, NamedType>;
 
   beforeAll(async () => {

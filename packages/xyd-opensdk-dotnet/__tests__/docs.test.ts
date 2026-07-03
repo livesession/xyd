@@ -16,9 +16,10 @@ import { openapi2opensdk } from '@xyd-js/openapi2opensdk';
 const O2S_FIX = path.join(__dirname, '../__fixtures__/-2.complex.openai');
 // The canonical OpenAI spec vendored in the converter's oracle is our source of truth.
 const SPEC = path.join(__dirname, '../../xyd-openapi2opensdk/oracle/openai-openapi.yaml');
-const GROUPING = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../../xyd-openapi2opensdk/oracle/openai-grouping.json'), 'utf8'),
-);
+const GROUPING_PATH = path.join(__dirname, '../../xyd-openapi2opensdk/oracle/openai-grouping.json');
+// oracle/* is gitignored/encrypted; guard the read so the OFFLINE regen-guard below
+// still loads + runs when the plaintext is absent (CI without XYD_CONTENT_SECRET).
+const GROUPING = fs.existsSync(GROUPING_PATH) ? JSON.parse(fs.readFileSync(GROUPING_PATH, 'utf8')) : {};
 
 const BUILD = process.env.O2S_BUILD_DOCS === '1';
 
