@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 //   Layer 0: opensdk-core        <- imports NO opensdk package
 //   Layer 1: opensdk-framework   <- core only
 //   Layer 1: openapi2opensdk     <- core only (the converter never sees emitters)
-//   Layer 2: opensdk-go/python   <- core + framework only (emitter PLUGINS)
+//   Layer 2: opensdk-{go,python,node,ruby,java,dotnet}  <- core + framework only (emitter PLUGINS)
 //   Layer 2: opensdk-ci          <- core + framework only (test harness)
 //   Layer 3: opensdk-cli         <- everything except ci (top-level entrypoint)
 //
@@ -22,6 +22,10 @@ const ALLOWED: Record<string, string[]> = {
   'xyd-openapi2opensdk': ['@xyd-js/opensdk-core'],
   'xyd-opensdk-go': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
   'xyd-opensdk-python': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
+  'xyd-opensdk-node': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
+  'xyd-opensdk-ruby': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
+  'xyd-opensdk-java': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
+  'xyd-opensdk-dotnet': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
   'xyd-opensdk-ci': ['@xyd-js/opensdk-core', '@xyd-js/opensdk-framework'],
   'xyd-opensdk-cli': [
     '@xyd-js/opensdk-core',
@@ -29,6 +33,10 @@ const ALLOWED: Record<string, string[]> = {
     '@xyd-js/openapi2opensdk',
     '@xyd-js/opensdk-go',
     '@xyd-js/opensdk-python',
+    '@xyd-js/opensdk-node',
+    '@xyd-js/opensdk-ruby',
+    '@xyd-js/opensdk-java',
+    '@xyd-js/opensdk-dotnet',
   ],
 };
 
@@ -39,6 +47,10 @@ const PIPELINE_PACKAGES = [
   '@xyd-js/openapi2opensdk',
   '@xyd-js/opensdk-go',
   '@xyd-js/opensdk-python',
+  '@xyd-js/opensdk-node',
+  '@xyd-js/opensdk-ruby',
+  '@xyd-js/opensdk-java',
+  '@xyd-js/opensdk-dotnet',
   '@xyd-js/opensdk-ci',
   '@xyd-js/opensdk-cli',
 ];

@@ -25,3 +25,5 @@ export type {
 } from './operation-plan';
 export { planExample, exampleFields, planMethodExample } from './example-plan';
 export type { ExampleValue, ExampleField, MethodExample, PlanExampleOptions } from './example-plan';
+export { runCommand, commandOutput, firstFile } from './exec';
+export type { EmitterPublishOptions } from './exec';

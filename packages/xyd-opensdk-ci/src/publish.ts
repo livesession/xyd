@@ -5,7 +5,7 @@ import * as path from 'node:path';
 
 import type { OpensdkSpecJson } from '@xyd-js/opensdk-core';
 import { writeProject } from '@xyd-js/opensdk-framework';
-import type { ProjectFileMap } from '@xyd-js/opensdk-framework';
+import type { EmitterPublishOptions, ProjectFileMap } from '@xyd-js/opensdk-framework';
 
 import { fullIR } from './e2e';
 import { hasCommand } from './golden';
@@ -66,8 +66,6 @@ export interface PublishAdapter {
   toolchainProbe: string;
   /** Read the package coordinate(s) from the generated manifest. */
   coord(projectDir: string): Record<string, string>;
-  /** Package + push to the registry. */
-  publish(ctx: PublishCtx): void;
   /** Install the SDK from the registry into the consumer and load/reference it (throws on failure). */
   consume(ctx: PublishCtx): void;
 }
@@ -97,7 +95,9 @@ export interface PublishRoundTripConfig {
   sdkName: string;
   /** The emitter's generate fn (injected: opensdk<Lang>). */
   generate: (spec: OpensdkSpecJson) => ProjectFileMap;
-  /** The language's publish/consume mechanics. */
+  /** The emitter's publish fn (injected: publish<Lang>) — the SAME one the CLI's `opensdk publish` drives. */
+  publish: (dir: string, opts: EmitterPublishOptions) => void;
+  /** The language's consume mechanics + registry/toolchain config. */
   adapter: PublishAdapter;
 }
 
@@ -141,7 +141,10 @@ export async function publishRoundTrip(cfg: PublishRoundTripConfig): Promise<voi
       mockBaseUrl: `http://127.0.0.1:${mock.port}`,
       coord: adapter.coord(projectDir),
     };
-    adapter.publish(ctx);
+    // The emitter's own publisher (same code path as `opensdk publish`), driven
+    // against the local registry: anonymous, under an `e2e` dist-tag (npm), with
+    // the unique version (Go reads it for the git tag).
+    cfg.publish(projectDir, { registry, tag: 'e2e', version });
     adapter.consume(ctx);
   } finally {
     mock.stop();
@@ -164,15 +167,6 @@ export function nodePublishAdapter(): PublishAdapter {
     coord(dir) {
       const pkg = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
       return { pkg: pkg.name };
-    },
-    publish(ctx) {
-      // Install the typescript devDep so the package's `prepare` script builds
-      // dist/ on publish (the tarball's exports point at ./dist). verdaccio in
-      // these e2es allows anonymous publish; no token needed. Publish under an
-      // `e2e` dist-tag so these throwaway versions never become `latest` (the
-      // consumer installs by exact version, so the tag is irrelevant to it).
-      run('npm', ['install', '--registry', ctx.registry], ctx.projectDir);
-      run('npm', ['publish', '--registry', ctx.registry, '--tag', 'e2e'], ctx.projectDir);
     },
     consume(ctx) {
       run('npm', ['init', '-y'], ctx.consumerDir);
@@ -204,14 +198,6 @@ export function pythonPublishAdapter(): PublishAdapter {
       const name = toml.match(/^name\s*=\s*"([^"]+)"/m)?.[1] ?? 'sdk';
       return { pkg: name };
     },
-    publish(ctx) {
-      run('python3', ['-m', 'build'], ctx.projectDir);
-      run('twine', ['upload', '--repository-url', ctx.registry, 'dist/*'], ctx.projectDir, {
-        ...process.env,
-        TWINE_USERNAME: process.env.TWINE_USERNAME ?? '__token__',
-        TWINE_PASSWORD: process.env.TWINE_PASSWORD ?? 'e2e',
-      });
-    },
     consume(ctx) {
       const index = `${ctx.registry.replace(/\/$/, '')}/simple/`;
       const target = path.join(ctx.consumerDir, 'site');
@@ -233,13 +219,6 @@ export function rubyPublishAdapter(): PublishAdapter {
       const name = gemspec.match(/spec\.name\s*=\s*"([^"]+)"/)?.[1] ?? 'sdk';
       return { pkg: name };
     },
-    publish(ctx) {
-      run('gem', ['build', path.basename(firstFile(ctx.projectDir, /\.gemspec$/))], ctx.projectDir);
-      run('gem', ['push', '--host', ctx.registry, path.basename(firstFile(ctx.projectDir, /\.gem$/))], ctx.projectDir, {
-        ...process.env,
-        ...(process.env.GEM_HOST_API_KEY ? {} : { GEM_HOST_API_KEY: 'e2e' }),
-      });
-    },
     consume(ctx) {
       const home = path.join(ctx.consumerDir, 'gems');
       run('gem', ['install', ctx.coord.pkg, '-v', ctx.version, '--clear-sources', '-s', ctx.registry, '--install-dir', home], ctx.consumerDir);
@@ -259,12 +238,6 @@ export function dotnetPublishAdapter(): PublishAdapter {
       const csproj = fs.readFileSync(firstFile(dir, /\.csproj$/), 'utf8');
       const id = csproj.match(/<PackageId>([^<]+)<\/PackageId>/)?.[1] ?? 'Sdk';
       return { pkg: id };
-    },
-    publish(ctx) {
-      run('dotnet', ['pack', '-c', 'Release'], ctx.projectDir);
-      const nupkg = firstFile(path.join(ctx.projectDir, 'bin', 'Release'), /\.nupkg$/);
-      fs.mkdirSync(ctx.registry, { recursive: true });
-      run('dotnet', ['nuget', 'push', nupkg, '-s', ctx.registry], ctx.projectDir);
     },
     consume(ctx) {
       // A console consumer that RESTORES the package from the folder feed — restore
@@ -300,10 +273,6 @@ export function javaPublishAdapter(): PublishAdapter {
       // Emitter convention: artifactId is `<pkg>-java`; the client is <groupId>.<pkg>.Client.
       const pkg = artifactId.replace(/-java$/, '');
       return { groupId, artifactId, pkg, importClass: `${groupId}.${pkg}.Client` };
-    },
-    publish(ctx) {
-      const repoUrl = `file://${path.resolve(ctx.registry)}`;
-      run('mvn', ['-q', '-DskipTests', 'deploy', `-DaltDeploymentRepository=opensdk::default::${repoUrl}`], ctx.projectDir);
     },
     consume(ctx) {
       const repoUrl = `file://${path.resolve(ctx.registry)}`;
@@ -354,13 +323,6 @@ export function goPublishAdapter(): PublishAdapter {
     coord(dir) {
       const mod = fs.readFileSync(path.join(dir, 'go.mod'), 'utf8').match(/^module\s+(\S+)/m)?.[1] ?? 'example.com/sdk';
       return { module: mod };
-    },
-    publish(ctx) {
-      // The real Go "publish": tag the module. (Consumed below via a replace.)
-      run('git', ['init', '-q'], ctx.projectDir);
-      run('git', ['-c', 'user.email=e2e@opensdk', '-c', 'user.name=opensdk-e2e', 'add', '.'], ctx.projectDir);
-      run('git', ['-c', 'user.email=e2e@opensdk', '-c', 'user.name=opensdk-e2e', 'commit', '-q', '-m', 'e2e'], ctx.projectDir);
-      run('git', ['tag', `v${ctx.version.replace(/^v/, '')}`], ctx.projectDir);
     },
     consume(ctx) {
       const goMod = `module example.com/consumer

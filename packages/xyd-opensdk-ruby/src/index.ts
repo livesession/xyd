@@ -2,6 +2,7 @@
 // shaped Ruby SDK. Mirrors @xyd-js/opensdk-go and @xyd-js/opensdk-python — same
 // Emitter contract, same shared framework helpers, a language-native output.
 export { rubyEmitter, opensdkRuby } from './emitter';
+export { publishRuby } from './publish';
 export { errorClassNames } from './runtime';
 // Re-exported so the tests can write a generated project to disk exactly like
 // the Go/Python emitter packages do (`import { opensdkRuby, writeProject }`).

@@ -7,7 +7,9 @@ export { generateCommand, generateTargets, loadIR } from './cli/generate';
 export { diffCommand } from './cli/diff';
 export type { DiffCommandOptions, DiffFailOn } from './cli/diff';
 export { publishCommand, publishTarget } from './cli/publish';
-export type { PublishCommandOptions, PublishTargetRun } from './cli/publish';
+export type { PublishCommandOptions } from './cli/publish';
+// The per-language publish option bag lives in the framework (shared by the CLI + e2e).
+export type { EmitterPublishOptions } from '@xyd-js/opensdk-framework';
 export { initCommand } from './cli/init';
 export { loadConfig, loadConfigFile, CONFIG_NAMES } from './cli/config-loader';
 export type { OpensdkCliConfig } from './cli/config-loader';
