@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { openapi2opensdkFromSource } from '../index';
 import { type SdkAllowlist, diffSurfaces, opensdkToSurface } from '../src/surface';
-import { parseOpenaiPython } from '../oracle/parseOpenaiPython';
+// ../oracle/parseOpenaiPython is gitignored/encrypted - imported LAZILY in the refresh block below so this suite SKIPS (not fails to load) when the oracle plaintext is absent (CI without XYD_CONTENT_SECRET, fresh clones, fork PRs).
 
 const ORACLE_DIR = path.join(__dirname, '../oracle');
 const SURFACE = path.join(ORACLE_DIR, 'python-surface.json');
@@ -49,6 +49,7 @@ async function fetchOpenaiPython(): Promise<{ sha: string; files: Record<string,
 describe.skipIf(!REFRESH)('python oracle refresh (network)', () => {
   it('fetch + parse openai-python → oracle/python-surface.json', async () => {
     const { sha, files } = await fetchOpenaiPython();
+    const { parseOpenaiPython } = await import('../oracle/parseOpenaiPython');
     const surface = parseOpenaiPython(files);
 
     fs.mkdirSync(ORACLE_DIR, { recursive: true });

@@ -89,6 +89,21 @@ jobs:
     - name: Test @xyd-js/opencli (core model + schema round-trip)
       run: pnpm --filter @xyd-js/opencli ci:test
 
+    # Decrypt the vendored oracle (openai-cli surface, docs methods, spec) so the
+    # conformance + docs-oracle suites actually RUN. Needs the XYD_CONTENT_SECRET
+    # repo secret; without it this is a no-op and those suites SKIP gracefully
+    # (the tests lazy-load ../oracle/* behind existence guards).
+    - name: Decrypt openapi2opencli oracle
+      continue-on-error: true
+      env:
+        XYD_CONTENT_SECRET: ${{ secrets.XYD_CONTENT_SECRET }}
+      run: |
+        if [ -n "$XYD_CONTENT_SECRET" ]; then
+          bash packages/xyd-openapi2opencli/oracle/decrypt.sh
+        else
+          echo "XYD_CONTENT_SECRET not set — skipping oracle decryption (conformance tests will skip)."
+        fi
+
     - name: Test @xyd-js/openapi2opencli (Stage A + conformance)
       run: pnpm --filter @xyd-js/openapi2opencli ci:test
 

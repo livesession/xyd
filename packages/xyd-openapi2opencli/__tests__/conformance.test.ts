@@ -7,7 +7,10 @@ import { deferencedOpenAPI } from '@xyd-js/openapi';
 
 import { openapi2opencli } from '../index';
 import { type Allowlist, diffSurfaces, opencliToSurface } from '../src/surface';
-import { parseOpenaiCli } from '../oracle/parseOpenaiCli';
+// NOTE: ../oracle/* is gitignored/encrypted (present only after oracle/decrypt.sh
+// or locally). It's imported LAZILY inside the guarded blocks below so this suite
+// SKIPS — rather than failing to load — when the plaintext is absent (CI without
+// the XYD_CONTENT_SECRET, fresh clones, fork PRs).
 
 const ORACLE_DIR = path.join(__dirname, '../oracle');
 const SURFACE = path.join(ORACLE_DIR, 'surface.json');
@@ -39,6 +42,7 @@ describe.skipIf(!REFRESH)('oracle refresh (network)', () => {
       files[entry.name] = await fetch(entry.download_url).then((r) => r.text());
     }
 
+    const { parseOpenaiCli } = await import('../oracle/parseOpenaiCli');
     const surface = parseOpenaiCli(files);
     fs.mkdirSync(ORACLE_DIR, { recursive: true });
     fs.writeFileSync(SURFACE, `${JSON.stringify(surface, null, 2)}\n`);
