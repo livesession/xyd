@@ -8,6 +8,7 @@
   <artifactId>openai-java</artifactId>
   <version>2.3.0</version>
   <packaging>jar</packaging>
+  <name>openai</name>
 
   <properties>
     <maven.compiler.release>11</maven.compiler.release>

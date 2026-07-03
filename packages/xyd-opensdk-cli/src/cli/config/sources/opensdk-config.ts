@@ -40,6 +40,7 @@ export const opensdkConfigSource: ConfigSource = {
       mountRules: config.mountRules,
       operationHints: config.operationHints,
       sdk: config.sdk,
+      publish: config.publish,
     };
   },
 };

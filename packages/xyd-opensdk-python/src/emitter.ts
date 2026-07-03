@@ -26,7 +26,7 @@ export const pythonEmitter: Emitter = {
   generateProject(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {
     const { pkg } = resolve(spec, ctx);
     // User-owned scaffold: never clobber an existing pyproject.toml on regen.
-    return [{ path: 'pyproject.toml', content: pyproject(pkg, spec.info.version), writeMode: 'skipIfExists' }];
+    return [{ path: 'pyproject.toml', content: pyproject(pkg, spec), writeMode: 'skipIfExists' }];
   },
 
   generateClient(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {

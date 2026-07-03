@@ -59,6 +59,14 @@ export interface SdkInfo {
    * The API version
    */
   version: string;
+  /**
+   * The package/project homepage URL (publish metadata; no OpenAPI equivalent)
+   */
+  homepage?: string;
+  /**
+   * The source repository URL (publish metadata; no OpenAPI equivalent)
+   */
+  repository?: string;
   [k: string]: unknown;
 }
 /**

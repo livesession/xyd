@@ -9,6 +9,10 @@
     <RootNamespace>Example.WireKitchen</RootNamespace>
     <AssemblyName>WireKitchen</AssemblyName>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <PackageId>WireKitchen</PackageId>
+    <Version>0.3.0</Version>
+    <Description>Handcrafted IR exercising request encodings, header params and query serialization.</Description>
   </PropertyGroup>
 
 </Project>

@@ -17,3 +17,16 @@ export type { RecordedRequest, RecordedFixture, PerMethodFixture } from './e2e';
 export { MockServer } from './mock';
 export { parityProbe, missingMarkers } from './parity';
 export type { ParityMarker, ParityProbe } from './parity';
+export {
+  publishRoundTrip,
+  publishE2EEnabled,
+  adapterReady,
+  waitFor,
+  nodePublishAdapter,
+  pythonPublishAdapter,
+  rubyPublishAdapter,
+  dotnetPublishAdapter,
+  javaPublishAdapter,
+  goPublishAdapter,
+} from './publish';
+export type { PublishAdapter, PublishCtx, PublishRoundTripConfig } from './publish';

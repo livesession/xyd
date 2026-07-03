@@ -63,7 +63,33 @@ export function resolveJavaOptions(spec: OpensdkSpecJson, ctx: EmitterContext): 
  * The generated source tree is equally compilable by a bare
  * `javac $(find . -name '*.java')`.
  */
-export function pomXml(ctx: JavaCtx, version: string): string {
+/** Minimal XML text escape for interpolated identity values. */
+function xmlEscape(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+export function pomXml(ctx: JavaCtx, spec: OpensdkSpecJson): string {
+  const info = spec.info;
+  // Publish identity (name/url/licenses/developers/scm) from spec.info — the
+  // OpenAPI `info` or an sdk.json `publish` override; enough metadata for
+  // `mvn deploy` (Central signing is a separate release concern).
+  const meta: string[] = [`  <name>${xmlEscape(info.title)}</name>`];
+  if (info.homepage) meta.push(`  <url>${xmlEscape(info.homepage)}</url>`);
+  if (info.license?.identifier) {
+    meta.push(
+      '  <licenses>',
+      `    <license><name>${xmlEscape(info.license.identifier)}</name></license>`,
+      '  </licenses>',
+    );
+  }
+  if (info.contact?.name) {
+    meta.push(
+      '  <developers>',
+      `    <developer><name>${xmlEscape(info.contact.name)}</name></developer>`,
+      '  </developers>',
+    );
+  }
+  if (info.repository) meta.push('  <scm>', `    <url>${xmlEscape(info.repository)}</url>`, '  </scm>');
   return `<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -72,8 +98,9 @@ export function pomXml(ctx: JavaCtx, version: string): string {
 
   <groupId>${ctx.basePackage}</groupId>
   <artifactId>${ctx.pkg}-java</artifactId>
-  <version>${version || '0.0.0'}</version>
+  <version>${info.version || '0.0.0'}</version>
   <packaging>jar</packaging>
+${meta.join('\n')}
 
   <properties>
     <maven.compiler.release>11</maven.compiler.release>

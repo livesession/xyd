@@ -10,6 +10,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const corePath = resolve(here, '../../xyd-opensdk-core/opensdk-spec.json');
 const outPath = resolve(here, '../sdk.schema.json');
 
+const str = (description) => ({ type: 'string', description });
+
 const core = JSON.parse(readFileSync(corePath, 'utf8'));
 const BEHAVIOR_DEFS = [
   'SdkBehavior',
@@ -31,11 +33,29 @@ for (const name of BEHAVIOR_DEFS) {
   $defs[name] = core.$defs[name];
 }
 
+// PublishTarget (opensdk-core/src/config.ts) — package identity threaded onto
+// spec.info + registry mechanics consumed by `opensdk publish`. Kept in sync
+// with the PublishTarget interface.
+$defs.PublishTarget = {
+  type: 'object',
+  description: 'How this SDK is published: package identity (merged onto spec.info) + registry mechanics.',
+  properties: {
+    author: str('Package author (spec.info.contact.name).'),
+    license: str('SPDX license id (spec.info.license.identifier), e.g. "MIT".'),
+    repository: str('Source repository URL (spec.info.repository).'),
+    homepage: str('Project homepage URL (spec.info.homepage).'),
+    version: str('Package version override (else spec.info.version).'),
+    registry: str('Registry URL to publish to (npm registry, PyPI repository-url, NuGet source, ...).'),
+    tokenEnv: str('Env var name holding the auth token (read at publish time; never stored).'),
+    packageName: str("Registry package name override (else the emitter's derived name)."),
+  },
+  additionalProperties: false,
+};
+
 // Per-language emitter options — mirror each emitter's Opensdk<Lang>Options
 // (packages/xyd-opensdk-<lang>/src/types.ts). Keep in sync when an option is
 // added there. Every section also gets the shared `output`/`behavior`/`baseURL`/
 // `tests` fields below.
-const str = (description) => ({ type: 'string', description });
 const LANG_OPTIONS = {
   // packages/xyd-opensdk-go/src/types.ts
   go: {
@@ -92,6 +112,7 @@ const sharedSectionProps = {
   behavior: { $ref: '#/$defs/SdkBehavior', description: 'Per-language behavior, deep-merged over the global `behavior`.' },
   baseURL: str('Default API base URL baked into the runtime (default: the first `servers` entry).'),
   tests: { type: 'boolean', description: "Emit the SDK's own test suite (default: true)." },
+  publish: { $ref: '#/$defs/PublishTarget', description: 'Per-language publish target, merged over the global `publish`.' },
 };
 
 const patternProperties = {};
@@ -128,6 +149,7 @@ const schema = {
       },
       additionalProperties: false,
     },
+    publish: { $ref: '#/$defs/PublishTarget', description: 'Global publish target (defaults; a language section `publish` overrides it).' },
   },
   patternProperties,
   additionalProperties: true,

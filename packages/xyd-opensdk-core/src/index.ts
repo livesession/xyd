@@ -12,4 +12,5 @@ export type { DeepPartial, ResolvedSdkBehavior } from './behavior';
 export { diffIR } from './diff';
 export type { IrChange, IrDiff, IrSeverity } from './diff';
 
-export type { OperationHint, SdkGrouping, LanguageSection, SdkJson } from './config';
+export { mergePublishTargets } from './config';
+export type { OperationHint, SdkGrouping, PublishTarget, LanguageSection, SdkJson } from './config';

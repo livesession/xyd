@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import type { DeepPartial, OperationHint, SdkBehavior } from '@xyd-js/opensdk-core';
+import type { DeepPartial, OperationHint, PublishTarget, SdkBehavior } from '@xyd-js/opensdk-core';
 import type { Emitter } from '@xyd-js/opensdk-framework';
 
 /** The `opensdk.config.*` shape a consumer project exports (oagen-style plugin bundle). */
@@ -41,6 +41,14 @@ export interface OpensdkCliConfig {
    * merged result on the IR as `spec.sdk`, so every emitter sees it.
    */
   sdk?: DeepPartial<SdkBehavior>;
+  /**
+   * Publish targets: package identity (author/license/repository/homepage/
+   * version) threaded onto the IR before emit, plus per-registry mechanics
+   * (registry/tokenEnv/packageName) consumed by `opensdk publish`. This is the
+   * global default; a per-language `emitterOptions.<lang>` bundle can't carry it
+   * (use a sdk.json language section's `publish` for per-language overrides).
+   */
+  publish?: PublishTarget;
 }
 
 /** The `opensdk.config.*` filenames tried (in order) when no explicit path is given. */

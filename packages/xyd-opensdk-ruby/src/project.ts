@@ -11,22 +11,33 @@ import { rbString } from './rbwriter';
  * stays a valid line-1 magic comment.
  */
 export function renderGemspec(spec: OpensdkSpecJson, pkg: string): string {
-  const summary = `Ruby client for the ${spec.info.title} API`;
-  const description = spec.info.description?.trim() || summary;
-  return `# frozen_string_literal: true
-
-Gem::Specification.new do |spec|
-  spec.name = ${rbString(pkg)}
-  spec.version = ${rbString(spec.info.version || '0.0.0')}
-  spec.summary = ${rbString(summary)}
-  spec.description = ${rbString(description)}
-  spec.authors = ["opensdk"]
-  spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
-  spec.files = Dir["lib/**/*.rb", "*.gemspec"]
-  spec.require_paths = ["lib"]
-end
-`;
+  const info = spec.info;
+  const summary = `Ruby client for the ${info.title} API`;
+  const description = info.description?.trim() || summary;
+  // Publish identity from spec.info (OpenAPI `info` or an sdk.json `publish`
+  // override), falling back to the historical opensdk/MIT defaults.
+  const author = info.contact?.name || 'opensdk';
+  const license = info.license?.identifier || 'MIT';
+  const lines = [
+    '# frozen_string_literal: true',
+    '',
+    'Gem::Specification.new do |spec|',
+    `  spec.name = ${rbString(pkg)}`,
+    `  spec.version = ${rbString(info.version || '0.0.0')}`,
+    `  spec.summary = ${rbString(summary)}`,
+    `  spec.description = ${rbString(description)}`,
+    `  spec.authors = [${rbString(author)}]`,
+    `  spec.license = ${rbString(license)}`,
+  ];
+  if (info.homepage) lines.push(`  spec.homepage = ${rbString(info.homepage)}`);
+  if (info.repository) lines.push(`  spec.metadata = { "source_code_uri" => ${rbString(info.repository)} }`);
+  lines.push(
+    '  spec.required_ruby_version = ">= 2.6.0"',
+    '  spec.files = Dir["lib/**/*.rb", "*.gemspec"]',
+    '  spec.require_paths = ["lib"]',
+    'end',
+  );
+  return `${lines.join('\n')}\n`;
 }
 
 /**

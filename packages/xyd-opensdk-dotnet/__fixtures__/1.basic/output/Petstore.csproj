@@ -9,6 +9,10 @@
     <RootNamespace>Example.Petstore</RootNamespace>
     <AssemblyName>Petstore</AssemblyName>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <PackageId>Petstore</PackageId>
+    <Version>1.2.0</Version>
+    <Description>A tiny pet store API.</Description>
   </PropertyGroup>
 
 </Project>

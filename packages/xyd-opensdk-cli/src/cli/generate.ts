@@ -3,12 +3,30 @@ import * as path from 'node:path';
 
 import { openapi2opensdkFromSource } from '@xyd-js/openapi2opensdk';
 import type { OpenApi2OpenSdkOptions } from '@xyd-js/openapi2opensdk';
-import { mergeBehaviorOverrides } from '@xyd-js/opensdk-core';
-import type { OpensdkSpecJson, SdkBehavior } from '@xyd-js/opensdk-core';
+import { mergeBehaviorOverrides, mergePublishTargets } from '@xyd-js/opensdk-core';
+import type { OpensdkSpecJson, PublishTarget, SdkBehavior, SdkInfo } from '@xyd-js/opensdk-core';
 import { generateFileMap, getEmitter, writeProject } from '@xyd-js/opensdk-framework';
 
 import type { ResolvedConfig } from './config/types';
 import { type ConverterInputs, converterOptions } from './grouping';
+
+/**
+ * Override the IR's package identity (`spec.info`) from a merged publish target.
+ * The converter already fills `version`/`contact`/`license` from the OpenAPI
+ * `info`; a `publish` block's identity fields win over those so one `sdk.json`
+ * controls what every manifest renders. Returns a NEW SdkInfo (never mutates the
+ * converter's `info`, so per-language calls in `generateTargets` don't leak).
+ */
+function applyPublishIdentity(info: SdkInfo, publish?: PublishTarget): SdkInfo {
+  if (!publish) return info;
+  const next: SdkInfo = { ...info };
+  if (publish.version) next.version = publish.version;
+  if (publish.homepage) next.homepage = publish.homepage;
+  if (publish.repository) next.repository = publish.repository;
+  if (publish.author) next.contact = { ...next.contact, name: publish.author };
+  if (publish.license) next.license = { ...next.license, identifier: publish.license };
+  return next;
+}
 
 /** Emit an IR through one language's emitter to disk (or print on dry-run). */
 async function emitToDisk(
@@ -41,9 +59,12 @@ export async function generateCommand(
     noTests?: boolean;
     /** Language-specific option bag for the active emitter (from config). */
     emitterOptions?: Record<string, unknown>;
+    /** Publish identity (global + per-language, pre-merged by the caller) threaded onto spec.info. */
+    publish?: PublishTarget;
   },
 ): Promise<void> {
   const ir = await loadIR(opts.spec, converterOptions(opts));
+  ir.info = applyPublishIdentity(ir.info, opts.publish);
   const emitterOptions = opts.noTests
     ? { ...(opts.emitterOptions ?? {}), tests: false }
     : (opts.emitterOptions ?? {});
@@ -76,9 +97,13 @@ export async function generateTargets(
     );
   }
   const ir = await loadIR(opts.spec, converterOptions({ ...opts, sdk: config.sdk }));
+  // Snapshot the converter's info so each language re-derives identity from a
+  // clean base (a per-language publish never leaks into the next language).
+  const baseInfo = ir.info;
   for (const lang of langs) {
     const target = config.targets?.[lang];
     ir.sdk = mergeBehaviorOverrides(config.sdk, target?.behavior) as SdkBehavior;
+    ir.info = applyPublishIdentity(baseInfo, mergePublishTargets(config.publish, target?.publish));
     const output = target?.output ?? path.join(opts.output, lang);
     const base = config.emitterOptions?.[lang] ?? {};
     const emitterOptions = opts.noTests ? { ...base, tests: false } : base;

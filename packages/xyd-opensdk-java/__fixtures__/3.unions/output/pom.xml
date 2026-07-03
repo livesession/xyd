@@ -8,6 +8,7 @@
   <artifactId>uniondepot-java</artifactId>
   <version>0.4.0</version>
   <packaging>jar</packaging>
+  <name>Union Depot</name>
 
   <properties>
     <maven.compiler.release>11</maven.compiler.release>

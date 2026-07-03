@@ -1,6 +1,11 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "wire-service"
 version = "0.3.0"
+description = "A handcrafted IR exercising wire-level behavior: multipart and form bodies, header params, exploded/csv array query params with wire names, cursor pagination, and idempotency-key injection."
 requires-python = ">=3.9"
 
 [tool.setuptools.packages.find]

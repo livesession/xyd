@@ -38,15 +38,33 @@ export function resolvePythonOptions(spec: OpensdkSpecJson, options: OpensdkPyth
   };
 }
 
-export function pyproject(pkg: string, version: string): string {
-  return `[project]
-name = ${JSON.stringify(pkg.replace(/_/g, '-'))}
-version = ${JSON.stringify(version || '0.0.0')}
-requires-python = ">=3.9"
-
-[tool.setuptools.packages.find]
-include = [${JSON.stringify(pkg)}]
-`;
+/**
+ * The generated `pyproject.toml`: a PEP 621 project table with a `[build-system]`
+ * so `python -m build` produces an installable/publishable wheel + sdist. Publish
+ * identity (description/authors/license/urls) comes from `spec.info` — the OpenAPI
+ * `info` or an sdk.json `publish` override. Dependency-free (stdlib transport).
+ */
+export function pyproject(pkg: string, spec: OpensdkSpecJson): string {
+  const info = spec.info;
+  const lines = [
+    '[build-system]',
+    'requires = ["setuptools>=61"]',
+    'build-backend = "setuptools.build_meta"',
+    '',
+    '[project]',
+    `name = ${JSON.stringify(pkg.replace(/_/g, '-'))}`,
+    `version = ${JSON.stringify(info.version || '0.0.0')}`,
+  ];
+  if (info.description) lines.push(`description = ${JSON.stringify(info.description)}`);
+  lines.push('requires-python = ">=3.9"');
+  if (info.contact?.name) lines.push(`authors = [{ name = ${JSON.stringify(info.contact.name)} }]`);
+  if (info.license?.identifier) lines.push(`license = { text = ${JSON.stringify(info.license.identifier)} }`);
+  const urls: string[] = [];
+  if (info.homepage) urls.push(`Homepage = ${JSON.stringify(info.homepage)}`);
+  if (info.repository) urls.push(`Repository = ${JSON.stringify(info.repository)}`);
+  if (urls.length) lines.push('', '[project.urls]', ...urls);
+  lines.push('', '[tool.setuptools.packages.find]', `include = [${JSON.stringify(pkg)}]`);
+  return `${lines.join('\n')}\n`;
 }
 
 // ---- models.py -----------------------------------------------------------

@@ -32,8 +32,30 @@ function resolveOptions(spec: OpensdkSpecJson, ctx: EmitterContext): ResolvedDot
   };
 }
 
-/** The `.csproj` — net8.0, nullable enabled, NO external PackageReferences. */
-function csprojFile(sdk: string, namespaceName: string, targetFramework: string): string {
+/** Minimal XML text escape for interpolated identity values. */
+function xmlEscape(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/**
+ * The `.csproj` — net8.0, nullable enabled, NO external PackageReferences, plus
+ * NuGet packaging metadata (`IsPackable`/`PackageId`/`Version`/`Authors`/…) from
+ * `spec.info` so `dotnet pack` produces a publishable `.nupkg`. Identity comes
+ * from the OpenAPI `info` or an sdk.json `publish` override.
+ */
+function csprojFile(sdk: string, namespaceName: string, targetFramework: string, spec: OpensdkSpecJson): string {
+  const info = spec.info;
+  const pkg: string[] = [
+    '    <IsPackable>true</IsPackable>',
+    `    <PackageId>${xmlEscape(sdk)}</PackageId>`,
+    `    <Version>${xmlEscape(info.version || '0.0.0')}</Version>`,
+  ];
+  if (info.contact?.name) pkg.push(`    <Authors>${xmlEscape(info.contact.name)}</Authors>`);
+  if (info.description) pkg.push(`    <Description>${xmlEscape(info.description)}</Description>`);
+  if (info.license?.identifier)
+    pkg.push(`    <PackageLicenseExpression>${xmlEscape(info.license.identifier)}</PackageLicenseExpression>`);
+  if (info.repository) pkg.push(`    <RepositoryUrl>${xmlEscape(info.repository)}</RepositoryUrl>`);
+  if (info.homepage) pkg.push(`    <PackageProjectUrl>${xmlEscape(info.homepage)}</PackageProjectUrl>`);
   return `${CSPROJ_HEADER}
 <Project Sdk="Microsoft.NET.Sdk">
 
@@ -45,6 +67,7 @@ function csprojFile(sdk: string, namespaceName: string, targetFramework: string)
     <RootNamespace>${namespaceName}</RootNamespace>
     <AssemblyName>${sdk}</AssemblyName>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+${pkg.join('\n')}
   </PropertyGroup>
 
 </Project>
@@ -65,7 +88,7 @@ export const dotnetEmitter: Emitter = {
 
   generateProject(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {
     const { sdk, namespace, targetFramework } = resolveOptions(spec, ctx);
-    return [{ path: `${sdk}.csproj`, content: csprojFile(sdk, namespace, targetFramework) }];
+    return [{ path: `${sdk}.csproj`, content: csprojFile(sdk, namespace, targetFramework, spec) }];
   },
 
   generateClient(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {

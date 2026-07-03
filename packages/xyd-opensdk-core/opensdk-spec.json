@@ -53,7 +53,9 @@
         "description": { "type": "string", "description": "A description of the API" },
         "contact": { "$ref": "#/$defs/Contact", "description": "The contact information" },
         "license": { "$ref": "#/$defs/License", "description": "The API license" },
-        "version": { "type": "string", "description": "The API version" }
+        "version": { "type": "string", "description": "The API version" },
+        "homepage": { "type": "string", "description": "The package/project homepage URL (publish metadata; no OpenAPI equivalent)" },
+        "repository": { "type": "string", "description": "The source repository URL (publish metadata; no OpenAPI equivalent)" }
       },
       "required": ["title", "version"]
     },

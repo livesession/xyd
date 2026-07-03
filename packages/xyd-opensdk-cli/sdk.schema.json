@@ -46,6 +46,10 @@
         }
       },
       "additionalProperties": false
+    },
+    "publish": {
+      "$ref": "#/$defs/PublishTarget",
+      "description": "Global publish target (defaults; a language section `publish` overrides it)."
     }
   },
   "patternProperties": {
@@ -277,6 +281,45 @@
         }
       }
     },
+    "PublishTarget": {
+      "type": "object",
+      "description": "How this SDK is published: package identity (merged onto spec.info) + registry mechanics.",
+      "properties": {
+        "author": {
+          "type": "string",
+          "description": "Package author (spec.info.contact.name)."
+        },
+        "license": {
+          "type": "string",
+          "description": "SPDX license id (spec.info.license.identifier), e.g. \"MIT\"."
+        },
+        "repository": {
+          "type": "string",
+          "description": "Source repository URL (spec.info.repository)."
+        },
+        "homepage": {
+          "type": "string",
+          "description": "Project homepage URL (spec.info.homepage)."
+        },
+        "version": {
+          "type": "string",
+          "description": "Package version override (else spec.info.version)."
+        },
+        "registry": {
+          "type": "string",
+          "description": "Registry URL to publish to (npm registry, PyPI repository-url, NuGet source, ...)."
+        },
+        "tokenEnv": {
+          "type": "string",
+          "description": "Env var name holding the auth token (read at publish time; never stored)."
+        },
+        "packageName": {
+          "type": "string",
+          "description": "Registry package name override (else the emitter's derived name)."
+        }
+      },
+      "additionalProperties": false
+    },
     "GoSection": {
       "type": "object",
       "description": "Options for the go SDK target.",
@@ -296,6 +339,10 @@
         "tests": {
           "type": "boolean",
           "description": "Emit the SDK's own test suite (default: true)."
+        },
+        "publish": {
+          "$ref": "#/$defs/PublishTarget",
+          "description": "Per-language publish target, merged over the global `publish`."
         },
         "modulePath": {
           "type": "string",
@@ -332,6 +379,10 @@
           "type": "boolean",
           "description": "Emit the SDK's own test suite (default: true)."
         },
+        "publish": {
+          "$ref": "#/$defs/PublishTarget",
+          "description": "Per-language publish target, merged over the global `publish`."
+        },
         "packageName": {
           "type": "string",
           "description": "The Python package name (default: snake_case of info.title)."
@@ -358,6 +409,10 @@
         "tests": {
           "type": "boolean",
           "description": "Emit the SDK's own test suite (default: true)."
+        },
+        "publish": {
+          "$ref": "#/$defs/PublishTarget",
+          "description": "Per-language publish target, merged over the global `publish`."
         },
         "packageName": {
           "type": "string",
@@ -390,6 +445,10 @@
           "type": "boolean",
           "description": "Emit the SDK's own test suite (default: true)."
         },
+        "publish": {
+          "$ref": "#/$defs/PublishTarget",
+          "description": "Per-language publish target, merged over the global `publish`."
+        },
         "packageName": {
           "type": "string",
           "description": "The Ruby gem / package name (default: snake_case of info.title)."
@@ -421,6 +480,10 @@
           "type": "boolean",
           "description": "Emit the SDK's own test suite (default: true)."
         },
+        "publish": {
+          "$ref": "#/$defs/PublishTarget",
+          "description": "Per-language publish target, merged over the global `publish`."
+        },
         "packageName": {
           "type": "string",
           "description": "The leaf Java package segment (default: from info.title)."
@@ -451,6 +514,10 @@
         "tests": {
           "type": "boolean",
           "description": "Emit the SDK's own test suite (default: true)."
+        },
+        "publish": {
+          "$ref": "#/$defs/PublishTarget",
+          "description": "Per-language publish target, merged over the global `publish`."
         },
         "sdkName": {
           "type": "string",

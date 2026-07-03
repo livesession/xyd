@@ -1,6 +1,6 @@
 import { Command, Option } from 'commander';
 
-import { mergeBehaviorOverrides } from '@xyd-js/opensdk-core';
+import { mergeBehaviorOverrides, mergePublishTargets } from '@xyd-js/opensdk-core';
 import { registerEmitter, resolveLanguage } from '@xyd-js/opensdk-framework';
 import { dotnetEmitter } from '@xyd-js/opensdk-dotnet';
 import { goEmitter } from '@xyd-js/opensdk-go';
@@ -16,6 +16,7 @@ import { generateCommand, generateTargets } from './generate';
 import { initCommand } from './init';
 import { parseCommand } from './parse';
 import { applyConfig } from './plugin-loader';
+import { publishCommand } from './publish';
 
 function handleError(err: unknown): never {
   const message = err instanceof Error ? err.message : String(err);
@@ -108,6 +109,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
             lang: opts.lang,
             output: opts.output ?? target?.output ?? './sdk',
             sdk: mergeBehaviorOverrides(config?.sdk, target?.behavior),
+            publish: mergePublishTargets(config?.publish, target?.publish),
             emitterOptions: config?.emitterOptions?.[lang],
           });
         } else {
@@ -150,6 +152,27 @@ export async function main(argv: string[] = process.argv): Promise<void> {
           operationHints: config?.operationHints,
           grouping: opts.grouping,
           sdk: config?.sdk,
+        });
+      } catch (err) {
+        handleError(err);
+      }
+    });
+
+  program
+    .command('publish')
+    .description('Publish already-generated SDK(s) to their language registries (npm/PyPI/RubyGems/NuGet/Maven; Go = git tag). Run `generate` first.')
+    .option('--lang <language>', 'Emitter language/alias; omit to publish every language declared in sdk.json')
+    .option('--output <dir>', 'Generated SDK dir (single --lang), or the base dir of per-language subfolders (multi)')
+    .option('--registry <url>', 'Registry URL override (wins over the config publish.registry)')
+    .option('--dry-run', 'Package only (npm pack / build / gem build / dotnet pack) without pushing')
+    .action(async (opts) => {
+      try {
+        await publishCommand({
+          lang: opts.lang,
+          output: opts.output ?? (opts.lang ? './sdk' : './sdk'),
+          registry: opts.registry,
+          dryRun: opts.dryRun,
+          config,
         });
       } catch (err) {
         handleError(err);

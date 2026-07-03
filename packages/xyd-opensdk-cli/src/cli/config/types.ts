@@ -1,12 +1,14 @@
-import type { DeepPartial, OperationHint, SdkBehavior } from '@xyd-js/opensdk-core';
+import type { DeepPartial, OperationHint, PublishTarget, SdkBehavior } from '@xyd-js/opensdk-core';
 import type { Emitter } from '@xyd-js/opensdk-framework';
 
-/** Per-language target: an emitter's output dir + optional per-language behavior override. */
+/** Per-language target: an emitter's output dir + optional per-language behavior/publish override. */
 export interface ResolvedTarget {
   /** Output directory for this language (per `sdk.json` language section). */
   output?: string;
   /** Behavior override deep-merged OVER the global behavior for this language only. */
   behavior?: DeepPartial<SdkBehavior>;
+  /** Publish target override merged OVER the global publish for this language only. */
+  publish?: PublishTarget;
 }
 
 /**
@@ -27,7 +29,9 @@ export interface ResolvedConfig {
   operationHints?: Record<string, OperationHint>;
   /** Global runtime behavior (deep-merged over defaultSdkBehavior()). */
   sdk?: DeepPartial<SdkBehavior>;
-  /** Per-language targets (output + per-language behavior), keyed by canonical language id. */
+  /** Global publish target (defaults; a target's `publish` overrides it). */
+  publish?: PublishTarget;
+  /** Per-language targets (output + per-language behavior/publish), keyed by canonical language id. */
   targets?: Record<string, ResolvedTarget>;
   /** Provenance of the loaded config (for precedence messages + tests). */
   source?: { kind: string; filePath: string };

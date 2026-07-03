@@ -60,6 +60,26 @@ describe('resolveConfig — sdk.json', () => {
     }
   });
 
+  it('normalizes global + per-language publish targets', async () => {
+    const dir = tmp();
+    try {
+      write(dir, 'sdk.json', {
+        version: 1,
+        publish: { author: 'Acme', license: 'MIT', repository: 'https://github.com/acme/acme' },
+        typescript: { packageName: 'acme', publish: { registry: 'https://npm.acme.dev', tokenEnv: 'NPM_TOKEN' } },
+        python: { packageName: 'acme', publish: { license: 'Apache-2.0' } },
+      });
+      const config = await resolveConfig(dir);
+      expect(config?.publish).toEqual({ author: 'Acme', license: 'MIT', repository: 'https://github.com/acme/acme' });
+      expect(config?.targets?.node?.publish).toEqual({ registry: 'https://npm.acme.dev', tokenEnv: 'NPM_TOKEN' });
+      expect(config?.targets?.python?.publish).toEqual({ license: 'Apache-2.0' });
+      // publish is a reserved key, not an emitter option
+      expect(config?.emitterOptions?.node).toEqual({ packageName: 'acme' });
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it('finds .sdk/sdk.json', async () => {
     const dir = tmp();
     try {
@@ -106,6 +126,19 @@ describe('sdk.schema.json (editor validation)', () => {
       for (const k of [...keys, 'output', 'behavior', 'baseURL', 'tests']) {
         expect(section.properties[k], `${def}.${k}`).toBeDefined();
       }
+    }
+  });
+
+  it('exposes a PublishTarget def wired onto every section + the top level', () => {
+    expect(schema.$defs.PublishTarget).toBeDefined();
+    expect(schema.$defs.PublishTarget.additionalProperties).toBe(false);
+    for (const key of ['author', 'license', 'repository', 'homepage', 'version', 'registry', 'tokenEnv', 'packageName']) {
+      expect(schema.$defs.PublishTarget.properties[key], `PublishTarget.${key}`).toBeDefined();
+    }
+    // global publish + a publish field on each language section
+    expect(schema.properties.publish?.$ref).toBe('#/$defs/PublishTarget');
+    for (const def of ['NodeSection', 'PythonSection', 'JavaSection', 'DotnetSection', 'RubySection', 'GoSection']) {
+      expect(schema.$defs[def].properties.publish?.$ref, `${def}.publish`).toBe('#/$defs/PublishTarget');
     }
   });
 
@@ -159,6 +192,34 @@ describe('generate via sdk.json', () => {
       expect(tsReq).toContain('MAX_RETRIES = 7');
       const goCfg = fs.readFileSync(path.join(dir, 'out/go/internal/requestconfig/config.go'), 'utf8');
       expect(goCfg).toMatch(/MaxRetries\s*=\s*3/);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('threads publish identity onto every manifest; per-language publish overrides the global', async () => {
+    const dir = tmp();
+    try {
+      write(dir, 'sdk.json', {
+        version: 1,
+        sdkName: 'petstore',
+        publish: { author: 'Acme', license: 'MIT', repository: 'https://github.com/acme/petstore' },
+        typescript: { output: path.join(dir, 'out/ts') },
+        python: { packageName: 'petstore', output: path.join(dir, 'out/py'), publish: { license: 'Apache-2.0' } },
+      });
+      const config = await resolveConfig(dir);
+      await generateTargets({ spec: SPEC, output: path.join(dir, 'out'), sdkName: 'petstore', sdk: config!.sdk, config: config! });
+
+      // node package.json carries the global identity (author/license/repository)
+      const pkg = JSON.parse(fs.readFileSync(path.join(dir, 'out/ts/package.json'), 'utf8'));
+      expect(pkg.author).toBe('Acme');
+      expect(pkg.license).toBe('MIT');
+      expect(pkg.repository).toEqual({ type: 'git', url: 'https://github.com/acme/petstore' });
+      // python pyproject overrides license to Apache-2.0 (per-language publish wins), keeps the global author
+      const pyproject = fs.readFileSync(path.join(dir, 'out/py/pyproject.toml'), 'utf8');
+      expect(pyproject).toContain('license = { text = "Apache-2.0" }');
+      expect(pyproject).toContain('authors = [{ name = "Acme" }]');
+      expect(pyproject).toContain('[build-system]');
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }

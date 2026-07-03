@@ -8,6 +8,7 @@
   <artifactId>wirekitchen-java</artifactId>
   <version>0.3.0</version>
   <packaging>jar</packaging>
+  <name>Wire Kitchen</name>
 
   <properties>
     <maven.compiler.release>11</maven.compiler.release>

@@ -9,6 +9,10 @@
     <RootNamespace>Example.UnionDepot</RootNamespace>
     <AssemblyName>UnionDepot</AssemblyName>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <PackageId>UnionDepot</PackageId>
+    <Version>0.4.0</Version>
+    <Description>Handcrafted IR exercising discriminated-union decode, const auto-fill and auto-pagers.</Description>
   </PropertyGroup>
 
 </Project>

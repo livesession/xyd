@@ -303,7 +303,7 @@ function toFormData(payload: Record<string, unknown>): FormData {
     for (const item of Array.isArray(value) ? value : [value]) {
       if (item === undefined || item === null) continue;
       if (item instanceof Blob) form.append(key, item);
-      else if (item instanceof Uint8Array) form.append(key, new Blob([item]), key);
+      else if (item instanceof Uint8Array) form.append(key, new Blob([item as BlobPart]), key);
       else form.append(key, textValue(item));
     }
   }

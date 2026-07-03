@@ -11,7 +11,7 @@ import type { ResolvedConfig, ResolvedTarget } from '../types';
 // schema is language-agnostic); this adapter just loads + normalizes them.
 
 /** Top-level keys that are NOT language sections. */
-const RESERVED_KEYS = new Set(['$schema', 'version', 'behavior', 'sdkName', 'grouping']);
+const RESERVED_KEYS = new Set(['$schema', 'version', 'behavior', 'sdkName', 'grouping', 'publish']);
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -50,10 +50,14 @@ export const sdkJsonSource: ConfigSource = {
     for (const [key, value] of Object.entries(doc)) {
       if (RESERVED_KEYS.has(key) || !isPlainObject(value)) continue;
       const lang = resolveLanguage(key);
-      const { output, behavior, ...opts } = value as LanguageSection;
+      const { output, behavior, publish, ...opts } = value as LanguageSection;
       emitterOptions[lang] = opts;
-      if (output !== undefined || behavior !== undefined) {
-        targets[lang] = { ...(output !== undefined ? { output } : {}), ...(behavior ? { behavior } : {}) };
+      if (output !== undefined || behavior !== undefined || publish !== undefined) {
+        targets[lang] = {
+          ...(output !== undefined ? { output } : {}),
+          ...(behavior ? { behavior } : {}),
+          ...(publish ? { publish } : {}),
+        };
       }
     }
 
@@ -62,6 +66,7 @@ export const sdkJsonSource: ConfigSource = {
       sdkName: doc.sdkName,
       mountRules: doc.grouping?.mountRules,
       operationHints: doc.grouping?.operationHints,
+      publish: doc.publish,
     };
     if (Object.keys(emitterOptions).length) config.emitterOptions = emitterOptions;
     if (Object.keys(targets).length) config.targets = targets;

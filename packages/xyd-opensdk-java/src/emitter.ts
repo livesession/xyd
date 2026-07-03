@@ -34,7 +34,7 @@ export const javaEmitter: Emitter = {
   generateProject(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {
     const jctx = resolveJavaOptions(spec, ctx);
     // User-owned scaffold: never clobber an existing pom.xml on regen.
-    return [{ path: 'pom.xml', content: pomXml(jctx, spec.info.version), writeMode: 'skipIfExists' }];
+    return [{ path: 'pom.xml', content: pomXml(jctx, spec), writeMode: 'skipIfExists' }];
   },
 
   generateClient(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {

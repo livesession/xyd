@@ -23,6 +23,10 @@ on:
       - 'packages/xyd-openapi2opensdk/**'
       - 'packages/xyd-opensdk-go/**'
       - 'packages/xyd-opensdk-python/**'
+      - 'packages/xyd-opensdk-node/**'
+      - 'packages/xyd-opensdk-ruby/**'
+      - 'packages/xyd-opensdk-java/**'
+      - 'packages/xyd-opensdk-dotnet/**'
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
   pull_request:
@@ -34,6 +38,10 @@ on:
       - 'packages/xyd-openapi2opensdk/**'
       - 'packages/xyd-opensdk-go/**'
       - 'packages/xyd-opensdk-python/**'
+      - 'packages/xyd-opensdk-node/**'
+      - 'packages/xyd-opensdk-ruby/**'
+      - 'packages/xyd-opensdk-java/**'
+      - 'packages/xyd-opensdk-dotnet/**'
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
 
@@ -202,3 +210,39 @@ jobs:
 
     - name: Test @xyd-js/opensdk-cli (parse/generate/init + plugin config)
       run: pnpm --filter @xyd-js/opensdk-cli ci:test
+
+    # ── Publish e2e ──────────────────────────────────────────────────────────
+    # Prove each generated SDK can be published → installed back → loaded. The 3
+    # HTTP registries (npm/PyPI/RubyGems) run natively on the runner; dotnet/Maven
+    # /Go use throwaway file feeds. Locally the same flow runs in Docker via
+    # packages/xyd-opensdk-ci/e2e/publish/run-publish-e2e.sh.
+    - name: Start local registries (verdaccio / pypiserver / gemstash)
+      run: |
+        npm i -g verdaccio
+        verdaccio --config packages/xyd-opensdk-ci/e2e/publish/verdaccio-config.yaml &> /tmp/verdaccio.log &
+        python3 -m pip install pypiserver twine build
+        mkdir -p /tmp/pypi-packages
+        pypi-server run -P . -a . -p 8081 /tmp/pypi-packages &> /tmp/pypiserver.log &
+        gem install gemstash --no-document
+        gemstash start &> /tmp/gemstash.log || true
+        for url in http://localhost:4873/-/ping http://localhost:8081/ http://localhost:9292/; do
+          for i in $(seq 1 30); do curl -sf "$url" >/dev/null 2>&1 && break; sleep 2; done
+        done
+        {
+          echo "PUBLISH_NPM_REGISTRY=http://localhost:4873"
+          echo "PUBLISH_PYPI_URL=http://localhost:8081"
+          echo "PUBLISH_GEM_HOST=http://localhost:9292/private"
+          echo "PUBLISH_NUGET_FEED=$RUNNER_TEMP/nuget-feed"
+          echo "PUBLISH_MAVEN_REPO=$RUNNER_TEMP/maven-repo"
+          echo "PUBLISH_GOPROXY_DIR=$RUNNER_TEMP/goproxy"
+        } >> "$GITHUB_ENV"
+        mkdir -p "$RUNNER_TEMP/nuget-feed" "$RUNNER_TEMP/maven-repo" "$RUNNER_TEMP/goproxy"
+
+    - name: Publish e2e (generate → publish → install → load, all languages)
+      env:
+        E2E_SDK_PUBLISH: '1'
+      run: |
+        for pkg in node python ruby dotnet java go; do
+          echo "== publish e2e: $pkg =="
+          pnpm --filter "@xyd-js/opensdk-$pkg" exec vitest run __tests__/e2e/publish.test.ts
+        done

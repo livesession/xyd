@@ -9,6 +9,9 @@
     <RootNamespace>Example.Openai</RootNamespace>
     <AssemblyName>Openai</AssemblyName>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <PackageId>Openai</PackageId>
+    <Version>2.3.0</Version>
   </PropertyGroup>
 
 </Project>

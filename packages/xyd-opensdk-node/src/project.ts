@@ -20,11 +20,19 @@ export function resolveNodeOptions(spec: OpensdkSpecJson, options: OpensdkNodeOp
 
 /** The generated `package.json`: dependency-free, TS-source SDK (built with `tsc`). */
 export function packageJson(pkg: string, spec: OpensdkSpecJson): string {
+  const info = spec.info;
   const manifest: Record<string, unknown> = {
     name: pkg,
-    version: spec.info.version || '0.0.0',
+    version: info.version || '0.0.0',
   };
-  if (spec.info.description) manifest.description = spec.info.description;
+  // Publish identity (author/license/repository/homepage) from spec.info — filled
+  // by the OpenAPI `info` or overridden via an sdk.json `publish` block. The
+  // registry itself is NOT baked here; `opensdk publish` passes `--registry`.
+  if (info.description) manifest.description = info.description;
+  if (info.contact?.name) manifest.author = info.contact.name;
+  if (info.license?.identifier) manifest.license = info.license.identifier;
+  if (info.homepage) manifest.homepage = info.homepage;
+  if (info.repository) manifest.repository = { type: 'git', url: info.repository };
   Object.assign(manifest, {
     type: 'module',
     main: './dist/index.js',
@@ -36,9 +44,14 @@ export function packageJson(pkg: string, spec: OpensdkSpecJson): string {
       },
     },
     files: ['dist', 'src'],
-    scripts: { build: 'tsc' },
+    // `prepare` builds dist/ on `npm install` AND before `npm publish`/pack, so
+    // the published tarball is usable (exports -> ./dist/index.js) without the
+    // publisher running a manual build. typescript is the only devDep — runtime
+    // stays dependency-free.
+    scripts: { build: 'tsc', prepare: 'tsc' },
     engines: { node: '>=18' },
     dependencies: {},
+    devDependencies: { typescript: '^5.6.2' },
   });
   return `${JSON.stringify(manifest, null, 2)}\n`;
 }

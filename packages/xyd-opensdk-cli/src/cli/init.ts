@@ -31,7 +31,13 @@ export async function initCommand(opts: InitOptions): Promise<void> {
 }
 
 function sdkJsonTemplate(lang: string): string {
-  const section: Record<string, unknown> = { packageName: 'acme', output: `./sdk/${lang}` };
+  const section: Record<string, unknown> = {
+    packageName: 'acme',
+    output: `./sdk/${lang}`,
+    // Per-language publish target (merged over the global `publish`). Mechanics
+    // only — identity comes from the global `publish`/OpenAPI info.
+    publish: { registry: 'https://registry.npmjs.org', tokenEnv: 'NPM_TOKEN' },
+  };
   const doc = {
     $schema: 'https://unpkg.com/@xyd-js/opensdk-cli/sdk.schema.json',
     version: 1,
@@ -40,7 +46,11 @@ function sdkJsonTemplate(lang: string): string {
     // defaultSdkBehavior() (arrays replace entirely). A per-language `behavior`
     // block overrides this for that language.
     behavior: { retry: { maxRetries: 3 }, timeout: { defaultTimeoutMs: 30000 } },
-    // Per-language sections: emitter options + `output` + optional `behavior`.
+    // Package identity threaded onto every manifest (author/license/repository/
+    // homepage). A language section's `publish` overrides these + carries the
+    // registry + `tokenEnv` (auth token read from the environment at publish).
+    publish: { author: 'Acme', license: 'MIT', repository: 'https://github.com/acme/acme' },
+    // Per-language sections: emitter options + `output` + optional `behavior`/`publish`.
     // Keys accept aliases (typescript->node, csharp->dotnet, py, rb, ...).
     [lang]: section,
   };

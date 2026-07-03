@@ -6,6 +6,8 @@ export { parseCommand } from './cli/parse';
 export { generateCommand, generateTargets, loadIR } from './cli/generate';
 export { diffCommand } from './cli/diff';
 export type { DiffCommandOptions, DiffFailOn } from './cli/diff';
+export { publishCommand, publishTarget } from './cli/publish';
+export type { PublishCommandOptions, PublishTargetRun } from './cli/publish';
 export { initCommand } from './cli/init';
 export { loadConfig, loadConfigFile, CONFIG_NAMES } from './cli/config-loader';
 export type { OpensdkCliConfig } from './cli/config-loader';
