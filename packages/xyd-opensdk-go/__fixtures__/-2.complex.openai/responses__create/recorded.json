@@ -1,0 +1,11 @@
+{
+  "call": "Responses.New",
+  "request": {
+    "method": "post",
+    "path": "/responses",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

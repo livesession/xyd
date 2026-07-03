@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Projects.Users.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/projects/{project_id}/users",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

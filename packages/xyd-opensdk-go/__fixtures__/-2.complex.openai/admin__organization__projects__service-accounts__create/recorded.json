@@ -1,0 +1,13 @@
+{
+  "call": "Admin.Organization.Projects.ServiceAccounts.New",
+  "request": {
+    "method": "post",
+    "path": "/organization/projects/{project_id}/service_accounts",
+    "query": [],
+    "bodyFields": [
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

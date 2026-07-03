@@ -1,0 +1,14 @@
+{
+  "call": "Audio.Transcriptions.New",
+  "request": {
+    "method": "post",
+    "path": "/audio/transcriptions",
+    "query": [],
+    "bodyFields": [
+      "file",
+      "model"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

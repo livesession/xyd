@@ -1,0 +1,14 @@
+{
+  "call": "Audio.Translations.New",
+  "request": {
+    "method": "post",
+    "path": "/audio/translations",
+    "query": [],
+    "bodyFields": [
+      "file",
+      "model"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

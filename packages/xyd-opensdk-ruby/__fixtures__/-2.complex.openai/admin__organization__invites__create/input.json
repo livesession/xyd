@@ -1,0 +1,386 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "InviteRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "email",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Send an email to this address"
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "InviteRequestRole"
+          },
+          "required": true,
+          "description": "`owner` or `reader`"
+        },
+        {
+          "name": "projects",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "InviteRequestProjectsItem"
+            }
+          },
+          "required": false,
+          "description": "An array of projects to which membership is granted at the same time the org invite is accepted. If omitted, the user will be invited to the default project for compatibility with legacy behavior."
+        }
+      ]
+    },
+    {
+      "name": "InviteRequestRole",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "reader"
+        },
+        {
+          "value": "owner"
+        }
+      ],
+      "description": "`owner` or `reader`"
+    },
+    {
+      "name": "InviteRequestProjectsItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Project's public ID"
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "InviteRequestProjectsItemRole"
+          },
+          "required": true,
+          "description": "Project membership role"
+        }
+      ]
+    },
+    {
+      "name": "InviteRequestProjectsItemRole",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "member"
+        },
+        {
+          "value": "owner"
+        }
+      ],
+      "description": "Project membership role"
+    },
+    {
+      "name": "Invite",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.invite"
+          },
+          "required": true,
+          "description": "The object type, which is always `organization.invite`"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "email",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The email address of the individual to whom the invite was sent"
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "InviteRole"
+          },
+          "required": true,
+          "description": "`owner` or `reader`"
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "InviteStatus"
+          },
+          "required": true,
+          "description": "`accepted`,`expired`, or `pending`"
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the invite was sent."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the invite expires."
+        },
+        {
+          "name": "accepted_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the invite was accepted."
+        },
+        {
+          "name": "projects",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "InviteRequestProjectsItem"
+            }
+          },
+          "required": true,
+          "description": "The projects that were granted membership upon acceptance of the invite."
+        }
+      ],
+      "description": "Represents an individual `invite` to the organization."
+    },
+    {
+      "name": "InviteRole",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "owner"
+        },
+        {
+          "value": "reader"
+        }
+      ],
+      "description": "`owner` or `reader`"
+    },
+    {
+      "name": "InviteStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "accepted"
+        },
+        {
+          "value": "expired"
+        },
+        {
+          "value": "pending"
+        }
+      ],
+      "description": "`accepted`,`expired`, or `pending`"
+    }
+  ],
+  "resources": [
+    {
+      "name": "admin",
+      "resources": [
+        {
+          "name": "organization",
+          "resources": [
+            {
+              "name": "invites",
+              "methods": [
+                {
+                  "action": "create",
+                  "httpMethod": "post",
+                  "path": "/organization/invites",
+                  "operationId": "inviteUser",
+                  "description": "Create an invite for a user to the organization. The invite must be accepted by the user before they have access to the organization.",
+                  "requestBody": {
+                    "contentType": "application/json",
+                    "type": {
+                      "kind": "ref",
+                      "name": "InviteRequest"
+                    },
+                    "required": true,
+                    "encoding": "json",
+                    "description": "The invite request payload."
+                  },
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "User invited successfully.",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "Invite"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "Invite"
+                  },
+                  "security": [
+                    {
+                      "type": "http",
+                      "kind": "bearer",
+                      "schemeName": "AdminApiKeyAuth",
+                      "scheme": "bearer"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

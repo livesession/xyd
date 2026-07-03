@@ -1,0 +1,15 @@
+{
+  "call": "Audio.Voices.New",
+  "request": {
+    "method": "post",
+    "path": "/audio/voices",
+    "query": [],
+    "bodyFields": [
+      "audio_sample",
+      "consent",
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

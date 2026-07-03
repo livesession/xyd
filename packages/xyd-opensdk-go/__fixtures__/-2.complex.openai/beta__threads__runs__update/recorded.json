@@ -1,0 +1,11 @@
+{
+  "call": "Beta.Threads.Runs.Update",
+  "request": {
+    "method": "post",
+    "path": "/threads/{thread_id}/runs/{run_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

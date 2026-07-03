@@ -1,0 +1,11 @@
+{
+  "call": "Evals.Update",
+  "request": {
+    "method": "post",
+    "path": "/evals/{eval_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

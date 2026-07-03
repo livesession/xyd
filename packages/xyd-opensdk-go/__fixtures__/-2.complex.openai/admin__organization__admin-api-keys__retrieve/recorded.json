@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.AdminAPIKeys.Get",
+  "request": {
+    "method": "get",
+    "path": "/organization/admin_api_keys/{key_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

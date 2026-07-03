@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Projects.APIKeys.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/organization/projects/{project_id}/api_keys/{api_key_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

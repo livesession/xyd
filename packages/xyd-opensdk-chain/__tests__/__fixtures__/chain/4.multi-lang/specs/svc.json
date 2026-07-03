@@ -1,0 +1,20 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "Svc", "version": "1.0.0" },
+  "paths": {
+    "/widgets": {
+      "get": {
+        "operationId": "listWidgets",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Widget" } } }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": { "Widget": { "type": "object", "properties": { "id": { "type": "string" } } } }
+  }
+}

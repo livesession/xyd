@@ -1,0 +1,48 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "AllOf Envelope", "version": "1.0.0" },
+  "components": {
+    "parameters": {
+      "Cursor": { "name": "after", "in": "query", "schema": { "type": "string" } }
+    },
+    "schemas": {
+      "Event": {
+        "type": "object",
+        "properties": { "id": { "type": "string" } }
+      },
+      "PageMeta": {
+        "type": "object",
+        "properties": { "has_more": { "type": "boolean" } }
+      },
+      "EventPage": {
+        "allOf": [
+          { "$ref": "#/components/schemas/PageMeta" },
+          {
+            "type": "object",
+            "properties": {
+              "data": { "type": "array", "items": { "$ref": "#/components/schemas/Event" } }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/events": {
+      "parameters": [
+        { "$ref": "#/components/parameters/Cursor" },
+        { "name": "limit", "in": "query", "schema": { "type": "integer" } }
+      ],
+      "get": {
+        "operationId": "listEvents",
+        "summary": "List events",
+        "responses": {
+          "200": {
+            "description": "A cursor-paged list wrapped in an allOf-composed envelope.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EventPage" } } }
+          }
+        }
+      }
+    }
+  }
+}

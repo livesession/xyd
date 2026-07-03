@@ -1,0 +1,482 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "ChatSessionResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier for the ChatKit session."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.session"
+          },
+          "required": true,
+          "default": "chatkit.session",
+          "description": "Type discriminator that is always `chatkit.session`."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the session expires."
+        },
+        {
+          "name": "client_secret",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Ephemeral client secret that authenticates session requests."
+        },
+        {
+          "name": "workflow",
+          "type": {
+            "kind": "ref",
+            "name": "ChatkitWorkflow"
+          },
+          "required": true
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "User identifier associated with the session."
+        },
+        {
+          "name": "rate_limits",
+          "type": {
+            "kind": "ref",
+            "name": "ChatSessionRateLimits"
+          },
+          "required": true
+        },
+        {
+          "name": "max_requests_per_1_minute",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Convenience copy of the per-minute request limit."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ChatSessionStatus"
+          },
+          "required": true
+        },
+        {
+          "name": "chatkit_configuration",
+          "type": {
+            "kind": "ref",
+            "name": "ChatSessionChatkitConfiguration"
+          },
+          "required": true
+        }
+      ],
+      "description": "Represents a ChatKit session and its resolved configuration."
+    },
+    {
+      "name": "ChatkitWorkflow",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the workflow backing the session."
+        },
+        {
+          "name": "version",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "state_variables",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "ref",
+              "name": "ChatkitWorkflowStateVariablesValue"
+            },
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "tracing",
+          "type": {
+            "kind": "ref",
+            "name": "ChatkitWorkflowTracing"
+          },
+          "required": true
+        }
+      ],
+      "description": "Workflow metadata and state returned for the session."
+    },
+    {
+      "name": "ChatkitWorkflowStateVariablesValue",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "integer"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "boolean"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        }
+      ]
+    },
+    {
+      "name": "ChatkitWorkflowTracing",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "enabled",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Indicates whether tracing is enabled."
+        }
+      ],
+      "description": "Controls diagnostic tracing during the session."
+    },
+    {
+      "name": "ChatSessionRateLimits",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "max_requests_per_1_minute",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Maximum allowed requests per one-minute window."
+        }
+      ],
+      "description": "Active per-minute request limit for the session."
+    },
+    {
+      "name": "ChatSessionStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "active"
+        },
+        {
+          "value": "expired"
+        },
+        {
+          "value": "cancelled"
+        }
+      ]
+    },
+    {
+      "name": "ChatSessionChatkitConfiguration",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "automatic_thread_titling",
+          "type": {
+            "kind": "ref",
+            "name": "ChatSessionAutomaticThreadTitling"
+          },
+          "required": true
+        },
+        {
+          "name": "file_upload",
+          "type": {
+            "kind": "ref",
+            "name": "ChatSessionFileUpload"
+          },
+          "required": true
+        },
+        {
+          "name": "history",
+          "type": {
+            "kind": "ref",
+            "name": "ChatSessionHistory"
+          },
+          "required": true
+        }
+      ],
+      "description": "ChatKit configuration for the session."
+    },
+    {
+      "name": "ChatSessionAutomaticThreadTitling",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "enabled",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether automatic thread titling is enabled."
+        }
+      ],
+      "description": "Automatic thread title preferences for the session."
+    },
+    {
+      "name": "ChatSessionFileUpload",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "enabled",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Indicates if uploads are enabled for the session."
+        },
+        {
+          "name": "max_file_size",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "max_files",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Upload permissions and limits applied to the session."
+    },
+    {
+      "name": "ChatSessionHistory",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "enabled",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Indicates if chat history is persisted for the session."
+        },
+        {
+          "name": "recent_threads",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "History retention preferences returned for the session."
+    }
+  ],
+  "resources": [
+    {
+      "name": "beta",
+      "resources": [
+        {
+          "name": "chat-kit",
+          "resources": [
+            {
+              "name": "sessions",
+              "methods": [
+                {
+                  "action": "cancel",
+                  "httpMethod": "post",
+                  "path": "/chatkit/sessions/{session_id}/cancel",
+                  "operationId": "CancelChatSessionMethod",
+                  "description": "Cancel an active ChatKit session and return its most recent metadata.\n\nCancelling prevents new requests from using the issued client secret.",
+                  "pathParams": [
+                    {
+                      "name": "session_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "Unique identifier for the ChatKit session to cancel.",
+                      "example": "cksess_123"
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "Success",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "ChatSessionResource"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "ChatSessionResource"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

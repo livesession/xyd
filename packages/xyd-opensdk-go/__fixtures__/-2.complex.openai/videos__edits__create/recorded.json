@@ -1,0 +1,14 @@
+{
+  "call": "Videos.Edits.New",
+  "request": {
+    "method": "post",
+    "path": "/videos/edits",
+    "query": [],
+    "bodyFields": [
+      "prompt",
+      "video"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

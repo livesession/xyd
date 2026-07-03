@@ -1,0 +1,13 @@
+{
+  "call": "Videos.New",
+  "request": {
+    "method": "post",
+    "path": "/videos",
+    "query": [],
+    "bodyFields": [
+      "prompt"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

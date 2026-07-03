@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "sources": {
+    "pets": { "inputs": [{ "location": "./specs/pets.json" }], "output": "./.chain/pets.openapi.json" },
+    "catalog": { "inputs": [{ "location": "./specs/catalog.json" }], "output": "./.chain/catalog.openapi.json" }
+  },
+  "targets": {
+    "pets-sdk": { "target": "go", "source": "pets", "output": "./sdk/pets", "sdkName": "pets" },
+    "catalog-sdk": { "target": "go", "source": "catalog", "output": "./sdk/catalog", "sdkName": "catalog" }
+  }
+}

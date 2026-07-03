@@ -1,0 +1,41 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Const Literals", "version": "1.0.0" },
+  "components": {
+    "schemas": {
+      "ApiVersion": {
+        "description": "The fixed API version string.",
+        "const": "2024-01-01"
+      },
+      "Credential": {
+        "type": "object",
+        "required": ["object", "secret"],
+        "properties": {
+          "object": { "type": "string", "const": "credential" },
+          "kind": { "enum": ["stored"] },
+          "attempts": { "type": "integer", "const": 3 },
+          "secret": { "type": "string", "writeOnly": true },
+          "id": { "type": "string", "readOnly": true },
+          "version": { "$ref": "#/components/schemas/ApiVersion" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/credentials": {
+      "post": {
+        "operationId": "createCredential",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Credential" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "The created credential.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Credential" } } }
+          }
+        }
+      }
+    }
+  }
+}

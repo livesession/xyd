@@ -1,0 +1,1225 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "RunGraderRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "grader",
+          "type": {
+            "kind": "ref",
+            "name": "RunGraderRequestGrader"
+          },
+          "required": true,
+          "description": "The grader used for the fine-tuning job."
+        },
+        {
+          "name": "item",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": false,
+          "description": "The dataset item provided to the grader. This will be used to populate \nthe `item` namespace. See [the guide](/docs/guides/graders) for more details. \n"
+        },
+        {
+          "name": "model_sample",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model sample to be evaluated. This value will be used to populate \nthe `sample` namespace. See [the guide](/docs/guides/graders) for more details.\nThe `output_json` variable will be populated if the model sample is a \nvalid JSON string.\n \n"
+        }
+      ]
+    },
+    {
+      "name": "RunGraderRequestGrader",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "GraderStringCheck"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderTextSimilarity"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderPython"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderScoreModel"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderMulti"
+        }
+      ],
+      "description": "The grader used for the fine-tuning job."
+    },
+    {
+      "name": "GraderStringCheck",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "string_check"
+          },
+          "required": true,
+          "description": "The object type, which is always `string_check`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The input text. This may include template strings."
+        },
+        {
+          "name": "reference",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The reference text. This may include template strings."
+        },
+        {
+          "name": "operation",
+          "type": {
+            "kind": "ref",
+            "name": "GraderStringCheckOperation"
+          },
+          "required": true,
+          "description": "The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`."
+        }
+      ],
+      "description": "A StringCheckGrader object that performs a string comparison between input and reference using a specified operation.\n"
+    },
+    {
+      "name": "GraderStringCheckOperation",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "eq"
+        },
+        {
+          "value": "ne"
+        },
+        {
+          "value": "like"
+        },
+        {
+          "value": "ilike"
+        }
+      ],
+      "description": "The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`."
+    },
+    {
+      "name": "GraderTextSimilarity",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text_similarity"
+          },
+          "required": true,
+          "default": "text_similarity",
+          "description": "The type of grader."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text being graded."
+        },
+        {
+          "name": "reference",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text being graded against."
+        },
+        {
+          "name": "evaluation_metric",
+          "type": {
+            "kind": "ref",
+            "name": "GraderTextSimilarityEvaluationMetric"
+          },
+          "required": true,
+          "description": "The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, \n`gleu`, `meteor`, `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, \nor `rouge_l`.\n"
+        }
+      ],
+      "description": "A TextSimilarityGrader object which grades text based on similarity metrics.\n"
+    },
+    {
+      "name": "GraderTextSimilarityEvaluationMetric",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "cosine"
+        },
+        {
+          "value": "fuzzy_match"
+        },
+        {
+          "value": "bleu"
+        },
+        {
+          "value": "gleu"
+        },
+        {
+          "value": "meteor"
+        },
+        {
+          "value": "rouge_1"
+        },
+        {
+          "value": "rouge_2"
+        },
+        {
+          "value": "rouge_3"
+        },
+        {
+          "value": "rouge_4"
+        },
+        {
+          "value": "rouge_5"
+        },
+        {
+          "value": "rouge_l"
+        }
+      ],
+      "description": "The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, \n`gleu`, `meteor`, `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, \nor `rouge_l`.\n"
+    },
+    {
+      "name": "GraderPython",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "python"
+          },
+          "required": true,
+          "description": "The object type, which is always `python`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The source code of the python script."
+        },
+        {
+          "name": "image_tag",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The image tag to use for the python script."
+        }
+      ],
+      "description": "A PythonGrader object that runs a python script on the input.\n"
+    },
+    {
+      "name": "GraderScoreModel",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "score_model"
+          },
+          "required": true,
+          "description": "The object type, which is always `score_model`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model to use for the evaluation."
+        },
+        {
+          "name": "sampling_params",
+          "type": {
+            "kind": "ref",
+            "name": "GraderScoreModelSamplingParams"
+          },
+          "required": false,
+          "description": "The sampling parameters for the model."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalItem"
+            }
+          },
+          "required": true,
+          "description": "The input messages evaluated by the grader. Supports text, output text, input image, and input audio content blocks, and may include template strings.\n"
+        },
+        {
+          "name": "range",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "number"
+            }
+          },
+          "required": false,
+          "description": "The range of the score. Defaults to `[0, 1]`."
+        }
+      ],
+      "description": "A ScoreModelGrader object that uses a model to assign a score to the input.\n"
+    },
+    {
+      "name": "GraderScoreModelSamplingParams",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "seed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "top_p",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "max_completions_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "reasoning_effort",
+          "type": {
+            "kind": "ref",
+            "name": "ReasoningEffort"
+          },
+          "required": false
+        }
+      ],
+      "description": "The sampling parameters for the model."
+    },
+    {
+      "name": "ReasoningEffort",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "none"
+        },
+        {
+          "value": "minimal"
+        },
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "xhigh"
+        }
+      ],
+      "description": "Constrains effort on reasoning for\n[reasoning models](https://platform.openai.com/docs/guides/reasoning).\nCurrently supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing\nreasoning effort can result in faster responses and fewer tokens used\non reasoning in a response.\n\n- `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for all reasoning values in gpt-5.1.\n- All models before `gpt-5.1` default to `medium` reasoning effort, and do not support `none`.\n- The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.\n- `xhigh` is supported for all models after `gpt-5.1-codex-max`.\n"
+    },
+    {
+      "name": "EvalItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "EvalItemRole"
+          },
+          "required": true,
+          "description": "The role of the message input. One of `user`, `assistant`, `system`, or\n`developer`.\n"
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "EvalItemContent"
+          },
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "message"
+          },
+          "required": false,
+          "description": "The type of the message input. Always `message`.\n"
+        }
+      ],
+      "description": "A message input to the model with a role indicating instruction following\nhierarchy. Instructions given with the `developer` or `system` role take\nprecedence over instructions given with the `user` role. Messages with the\n`assistant` role are presumed to have been generated by the model in previous\ninteractions.\n"
+    },
+    {
+      "name": "EvalItemRole",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "user"
+        },
+        {
+          "value": "assistant"
+        },
+        {
+          "value": "system"
+        },
+        {
+          "value": "developer"
+        }
+      ],
+      "description": "The role of the message input. One of `user`, `assistant`, `system`, or\n`developer`.\n"
+    },
+    {
+      "name": "EvalItemContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalItemContentItem"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemContentArray"
+        }
+      ],
+      "description": "Inputs to the model - can contain template strings. Supports text, output text, input images, and input audio, either as a single item or an array of items.\n"
+    },
+    {
+      "name": "EvalItemContentItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalItemContentText"
+        },
+        {
+          "kind": "ref",
+          "name": "InputTextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemContentOutputText"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemInputImage"
+        },
+        {
+          "kind": "ref",
+          "name": "InputAudio"
+        }
+      ],
+      "description": "A single content item: input text, output text, input image, or input audio.\n"
+    },
+    {
+      "name": "EvalItemContentText",
+      "kind": "alias",
+      "of": {
+        "kind": "scalar",
+        "scalar": "string"
+      }
+    },
+    {
+      "name": "InputTextContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_text"
+          },
+          "required": true,
+          "default": "input_text",
+          "description": "The type of the input item. Always `input_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text input to the model."
+        }
+      ],
+      "description": "A text input to the model."
+    },
+    {
+      "name": "EvalItemContentOutputText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "output_text"
+          },
+          "required": true,
+          "description": "The type of the output text. Always `output_text`.\n"
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text output from the model.\n"
+        }
+      ],
+      "description": "A text output from the model.\n"
+    },
+    {
+      "name": "EvalItemInputImage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_image"
+          },
+          "required": true,
+          "description": "The type of the image input. Always `input_image`.\n"
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The URL of the image input.\n"
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`. Defaults to `auto`.\n"
+        }
+      ],
+      "description": "An image input block used within EvalItem content arrays."
+    },
+    {
+      "name": "InputAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_audio"
+          },
+          "required": true,
+          "description": "The type of the input item. Always `input_audio`.\n"
+        },
+        {
+          "name": "input_audio",
+          "type": {
+            "kind": "ref",
+            "name": "InputAudioInputAudio"
+          },
+          "required": true
+        }
+      ],
+      "description": "An audio input to the model.\n"
+    },
+    {
+      "name": "InputAudioInputAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Base64-encoded audio data.\n"
+        },
+        {
+          "name": "format",
+          "type": {
+            "kind": "ref",
+            "name": "InputAudioInputAudioFormat"
+          },
+          "required": true,
+          "description": "The format of the audio data. Currently supported formats are `mp3` and\n`wav`.\n"
+        }
+      ]
+    },
+    {
+      "name": "InputAudioInputAudioFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "mp3"
+        },
+        {
+          "value": "wav"
+        }
+      ],
+      "description": "The format of the audio data. Currently supported formats are `mp3` and\n`wav`.\n"
+    },
+    {
+      "name": "EvalItemContentArray",
+      "kind": "alias",
+      "of": {
+        "kind": "array",
+        "items": {
+          "kind": "ref",
+          "name": "EvalItemContentItem"
+        }
+      }
+    },
+    {
+      "name": "GraderMulti",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "multi"
+          },
+          "required": true,
+          "default": "multi",
+          "description": "The object type, which is always `multi`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "graders",
+          "type": {
+            "kind": "ref",
+            "name": "GraderMultiGraders"
+          },
+          "required": true
+        },
+        {
+          "name": "calculate_output",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A formula to calculate the output based on grader results."
+        }
+      ],
+      "description": "A MultiGrader object combines the output of multiple graders to produce a single score."
+    },
+    {
+      "name": "GraderMultiGraders",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "GraderStringCheck"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderTextSimilarity"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderPython"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderScoreModel"
+        },
+        {
+          "kind": "ref",
+          "name": "GraderLabelModel"
+        }
+      ]
+    },
+    {
+      "name": "GraderLabelModel",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "label_model"
+          },
+          "required": true,
+          "description": "The object type, which is always `label_model`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model to use for the evaluation. Must support structured outputs."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalItem"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "labels",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The labels to assign to each item in the evaluation."
+        },
+        {
+          "name": "passing_labels",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The labels that indicate a passing result. Must be a subset of labels."
+        }
+      ],
+      "description": "A LabelModelGrader object which uses a model to assign labels to each item\nin the evaluation.\n"
+    },
+    {
+      "name": "RunGraderResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "reward",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "RunGraderResponseMetadata"
+          },
+          "required": true
+        },
+        {
+          "name": "sub_rewards",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "model_grader_token_usage_per_model",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "RunGraderResponseMetadata",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "errors",
+          "type": {
+            "kind": "ref",
+            "name": "RunGraderResponseMetadataErrors"
+          },
+          "required": true
+        },
+        {
+          "name": "execution_time",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true
+        },
+        {
+          "name": "scores",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "token_usage",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "sampled_model_name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "RunGraderResponseMetadataErrors",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "formula_parse_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "sample_parse_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "truncated_observation_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "unresponsive_reward_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "invalid_variable_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "other_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "python_grader_server_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "python_grader_server_error_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "python_grader_runtime_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "python_grader_runtime_error_details",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "model_grader_server_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "model_grader_refusal_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "model_grader_parse_error",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "model_grader_server_error_details",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "fine-tuning",
+      "resources": [
+        {
+          "name": "alpha",
+          "resources": [
+            {
+              "name": "graders",
+              "resources": [
+                {
+                  "name": "run",
+                  "methods": [
+                    {
+                      "action": "create",
+                      "httpMethod": "post",
+                      "path": "/fine_tuning/alpha/graders/run",
+                      "operationId": "runGrader",
+                      "description": "Run a grader.\n",
+                      "requestBody": {
+                        "contentType": "application/json",
+                        "type": {
+                          "kind": "ref",
+                          "name": "RunGraderRequest"
+                        },
+                        "required": true,
+                        "encoding": "json"
+                      },
+                      "responses": [
+                        {
+                          "status": "200",
+                          "description": "OK",
+                          "contentType": "application/json",
+                          "type": {
+                            "kind": "ref",
+                            "name": "RunGraderResponse"
+                          }
+                        }
+                      ],
+                      "primaryResponse": {
+                        "kind": "ref",
+                        "name": "RunGraderResponse"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

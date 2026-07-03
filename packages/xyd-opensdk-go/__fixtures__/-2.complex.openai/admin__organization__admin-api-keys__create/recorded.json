@@ -1,0 +1,13 @@
+{
+  "call": "Admin.Organization.AdminAPIKeys.New",
+  "request": {
+    "method": "post",
+    "path": "/organization/admin_api_keys",
+    "query": [],
+    "bodyFields": [
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

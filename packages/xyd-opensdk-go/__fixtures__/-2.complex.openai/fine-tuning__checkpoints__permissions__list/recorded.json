@@ -1,0 +1,10 @@
+{
+  "call": "FineTuning.Checkpoints.Permissions.List",
+  "request": {
+    "method": "get",
+    "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

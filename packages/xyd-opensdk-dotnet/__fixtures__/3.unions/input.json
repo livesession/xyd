@@ -1,0 +1,415 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "Union Depot",
+    "version": "0.4.0",
+    "description": "Handcrafted IR exercising discriminated-union decode, const auto-fill and auto-pagers."
+  },
+  "servers": [
+    "https://api.uniondepot.test/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "envVar": "UNIONDEPOT_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "Circle",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "circle"
+          },
+          "required": true
+        },
+        {
+          "name": "radius",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Square",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "square"
+          },
+          "required": true
+        },
+        {
+          "name": "side",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Shape",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "Circle"
+        },
+        {
+          "kind": "ref",
+          "name": "Square"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "circle": "Circle",
+          "square": "Square"
+        }
+      },
+      "description": "A geometric shape, discriminated by its type property."
+    },
+    {
+      "name": "Payload",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "map",
+          "values": {
+            "kind": "any"
+          }
+        }
+      ],
+      "description": "A mapping-less union — stays an open interface with no decode helper."
+    },
+    {
+      "name": "Event",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "kind",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "EventList",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Event"
+            }
+          },
+          "required": false
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false
+        },
+        {
+          "name": "next_cursor",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "PublishEventRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "event"
+          },
+          "required": true,
+          "description": "Always \"event\" — auto-filled by the SDK when left zero."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "priority",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Log",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "LogList",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Log"
+            }
+          },
+          "required": false
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "shapes",
+      "methods": [
+        {
+          "action": "retrieve",
+          "httpMethod": "get",
+          "path": "/shapes/{shape_id}",
+          "operationId": "getShape",
+          "description": "Retrieve a shape (discriminated-union response)",
+          "pathParams": [
+            {
+              "name": "shape_id",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "The shape.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Shape"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Shape"
+          }
+        }
+      ]
+    },
+    {
+      "name": "events",
+      "methods": [
+        {
+          "action": "list",
+          "httpMethod": "get",
+          "path": "/events",
+          "operationId": "listEvents",
+          "description": "List events (cursor-paginated)",
+          "queryParams": [
+            {
+              "name": "after",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": false
+            },
+            {
+              "name": "limit",
+              "type": {
+                "kind": "scalar",
+                "scalar": "integer"
+              },
+              "required": false
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "A page of events.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "EventList"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "EventList"
+          },
+          "pagination": {
+            "style": "cursor",
+            "itemsField": "data",
+            "nextField": "has_more",
+            "itemType": {
+              "kind": "ref",
+              "name": "Event"
+            },
+            "cursorParam": "after",
+            "limitParam": "limit"
+          }
+        },
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/events",
+          "operationId": "publishEvent",
+          "description": "Publish an event (const-filled body field)",
+          "requestBody": {
+            "contentType": "application/json",
+            "type": {
+              "kind": "ref",
+              "name": "PublishEventRequest"
+            },
+            "required": true,
+            "encoding": "json"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "The published event.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Event"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Event"
+          }
+        }
+      ]
+    },
+    {
+      "name": "logs",
+      "methods": [
+        {
+          "action": "list",
+          "httpMethod": "get",
+          "path": "/logs",
+          "operationId": "listLogs",
+          "description": "List logs (offset-paginated)",
+          "queryParams": [
+            {
+              "name": "offset",
+              "type": {
+                "kind": "scalar",
+                "scalar": "integer"
+              },
+              "required": false
+            },
+            {
+              "name": "limit",
+              "type": {
+                "kind": "scalar",
+                "scalar": "integer"
+              },
+              "required": false
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "A page of logs.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "LogList"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "LogList"
+          },
+          "pagination": {
+            "style": "offset",
+            "itemsField": "data",
+            "itemType": {
+              "kind": "ref",
+              "name": "Log"
+            },
+            "offsetParam": "offset",
+            "limitParam": "limit"
+          }
+        }
+      ]
+    }
+  ]
+}

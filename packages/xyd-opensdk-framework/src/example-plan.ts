@@ -1,0 +1,214 @@
+// Shared example-value planner for the generated SDK test suites (generateTests).
+// It turns a TypeRef into a language-NEUTRAL example tree; each emitter renders
+// that tree in its own syntax (Go composite literals, Python kwargs). This keeps
+// "what a realistic example value is" in one place — the same way planOperation
+// centralizes request semantics — so the Go and Python test suites exercise the
+// SAME shapes and can never drift.
+import type { Method, NamedType, Param, TypeRef } from '@xyd-js/opensdk-core';
+
+/** A language-neutral example value; emitters render it to their own syntax. */
+export type ExampleValue =
+  | { kind: 'string'; value: string }
+  | { kind: 'integer'; value: number }
+  | { kind: 'number'; value: number }
+  | { kind: 'boolean'; value: boolean }
+  | { kind: 'null' }
+  | { kind: 'binary' }
+  | { kind: 'enum'; typeName: string; value: unknown }
+  | { kind: 'const'; value: unknown }
+  | { kind: 'array'; item: ExampleValue }
+  | { kind: 'map'; value: ExampleValue }
+  | { kind: 'object'; typeName?: string; fields: ExampleField[] }
+  | { kind: 'union'; typeName: string; variant: ExampleValue }
+  | { kind: 'any' };
+
+/** One example field of an object/params example. */
+export interface ExampleField {
+  name: string;
+  value: ExampleValue;
+  required: boolean;
+}
+
+export interface PlanExampleOptions {
+  /** Include optional struct fields (the "with all params" / "WithOptionalParams" example). */
+  withOptional?: boolean;
+  /** Example text for a bare string scalar at THIS level (not propagated into nested types). */
+  stringHint?: string;
+}
+
+/** The example call for one method — everything a test needs to invoke it. */
+export interface MethodExample {
+  /** Positional path arguments, in path order (each with its source param). */
+  pathArgs: { param: Param; value: ExampleValue }[];
+  /** Params-struct / keyword fields: query ∪ header ∪ request-body fields. */
+  fields: ExampleField[];
+  /** True when any non-required field exists — drives the "with all params" variant. */
+  hasOptional: boolean;
+}
+
+const MAX_DEPTH = 6;
+
+/**
+ * Resolve a TypeRef to an example value, expanding named types via the symbol
+ * table. Cycle-guarded (a type currently being expanded yields a terminal empty
+ * object) and depth-capped so deeply/recursively nested schemas stay finite.
+ */
+export function planExample(
+  ref: TypeRef | undefined,
+  types: Map<string, NamedType>,
+  opts: PlanExampleOptions = {},
+  seen: Set<string> = new Set(),
+  depth = 0,
+): ExampleValue {
+  if (!ref || depth > MAX_DEPTH) return { kind: 'any' };
+
+  if (ref.const !== undefined) return { kind: 'const', value: ref.const };
+
+  switch (ref.kind) {
+    case 'scalar':
+      return scalarExample(ref, opts.stringHint);
+    case 'array':
+      return { kind: 'array', item: planExample(ref.items as TypeRef, types, dropHint(opts), seen, depth + 1) };
+    case 'map':
+      return { kind: 'map', value: planExample(ref.values as TypeRef, types, dropHint(opts), seen, depth + 1) };
+    case 'any':
+      return { kind: 'any' };
+    case 'ref':
+      return refExample(ref, types, opts, seen, depth);
+    default:
+      return { kind: 'any' };
+  }
+}
+
+function scalarExample(ref: TypeRef, stringHint?: string): ExampleValue {
+  const fmt = (ref.format || '').toLowerCase();
+  if (fmt === 'binary') return { kind: 'binary' };
+  switch (ref.scalar) {
+    case 'integer':
+      return { kind: 'integer', value: 0 };
+    case 'number':
+      return { kind: 'number', value: 0 };
+    case 'boolean':
+      return { kind: 'boolean', value: true };
+    default:
+      return { kind: 'string', value: stringHint ?? 'x' };
+  }
+}
+
+function refExample(
+  ref: TypeRef,
+  types: Map<string, NamedType>,
+  opts: PlanExampleOptions,
+  seen: Set<string>,
+  depth: number,
+): ExampleValue {
+  const name = ref.name;
+  const named = name ? types.get(name) : undefined;
+  if (!named || !name) return { kind: 'any' };
+
+  // cycle guard: a self/mutually-referential struct yields a terminal example
+  if (seen.has(name)) return { kind: 'object', typeName: name, fields: [] };
+
+  switch (named.kind) {
+    case 'enum': {
+      const first = named.values?.[0];
+      return { kind: 'enum', typeName: name, value: first ? first.value : '' };
+    }
+    case 'alias':
+      return planExample(named.of as TypeRef, types, dropHint(opts), seen, depth + 1);
+    case 'union': {
+      const variant = (named.variants || [])[0] as TypeRef | undefined;
+      const nested = new Set(seen).add(name);
+      return { kind: 'union', typeName: name, variant: planExample(variant, types, dropHint(opts), nested, depth + 1) };
+    }
+    default: {
+      // struct: fill required fields; optional too when withOptional
+      const nested = new Set(seen).add(name);
+      const fields = exampleFields(named.fields || [], types, opts, nested, depth + 1);
+      return { kind: 'object', typeName: name, fields };
+    }
+  }
+}
+
+/** Example fields for a struct's field list; required-first, optionals only when withOptional. */
+export function exampleFields(
+  fields: { name: string; type: TypeRef; required?: boolean }[],
+  types: Map<string, NamedType>,
+  opts: PlanExampleOptions,
+  seen: Set<string> = new Set(),
+  depth = 0,
+): ExampleField[] {
+  const out: ExampleField[] = [];
+  const wanted = fields.filter((f) => f.required || opts.withOptional);
+  // required first, then optional — deterministic, readable literals
+  wanted.sort((a, b) => Number(!!b.required) - Number(!!a.required));
+  for (const f of wanted) {
+    out.push({
+      name: f.name,
+      required: !!f.required,
+      value: planExample(f.type, types, { withOptional: opts.withOptional }, seen, depth),
+    });
+  }
+  return out;
+}
+
+/** Drop the per-level stringHint before recursing into nested types. */
+function dropHint(opts: PlanExampleOptions): PlanExampleOptions {
+  return opts.stringHint === undefined ? opts : { withOptional: opts.withOptional };
+}
+
+/**
+ * The example call for a method: positional path args + the params-struct /
+ * keyword fields (query ∪ header ∪ request-body fields). Path/query/header
+ * string examples use the param name (readable, non-empty like openai-go's
+ * `After: "after"`); nested body strings default to "x".
+ */
+export function planMethodExample(
+  method: Method,
+  types: Map<string, NamedType>,
+  opts: { withOptional?: boolean } = {},
+): MethodExample {
+  const withOptional = !!opts.withOptional;
+
+  const pathArgs = (method.pathParams || []).map((param) => ({
+    param,
+    value: planExample(param.type as TypeRef, types, { stringHint: param.name }),
+  }));
+
+  const fields: ExampleField[] = [];
+  const addParam = (p: Param) => {
+    if (!p.required && !withOptional) return;
+    fields.push({
+      name: p.name,
+      required: !!p.required,
+      value: planExample(p.type as TypeRef, types, { withOptional, stringHint: p.name }),
+    });
+  };
+  for (const p of method.queryParams || []) addParam(p);
+  for (const p of method.headerParams || []) addParam(p);
+
+  // request body: flatten its struct fields into the params struct / kwargs
+  const bodyRef = method.requestBody?.type as TypeRef | undefined;
+  if (bodyRef?.kind === 'ref' && bodyRef.name) {
+    const named = types.get(bodyRef.name);
+    if (named?.kind === 'struct') {
+      for (const f of exampleFields(named.fields || [], types, { withOptional })) fields.push(f);
+    }
+  }
+
+  // required-first for stable, readable output
+  fields.sort((a, b) => Number(b.required) - Number(a.required));
+
+  const hasOptional =
+    (method.queryParams || []).some((p) => !p.required) ||
+    (method.headerParams || []).some((p) => !p.required) ||
+    bodyHasOptional(bodyRef, types);
+
+  return { pathArgs, fields, hasOptional };
+}
+
+function bodyHasOptional(bodyRef: TypeRef | undefined, types: Map<string, NamedType>): boolean {
+  if (bodyRef?.kind !== 'ref' || !bodyRef.name) return false;
+  const named = types.get(bodyRef.name);
+  return !!named?.fields?.some((f) => !f.required);
+}

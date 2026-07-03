@@ -1,0 +1,13 @@
+{
+  "call": "Admin.Organization.Projects.New",
+  "request": {
+    "method": "post",
+    "path": "/organization/projects",
+    "query": [],
+    "bodyFields": [
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

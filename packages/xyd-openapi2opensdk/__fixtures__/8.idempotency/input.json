@@ -1,0 +1,91 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Idempotency", "version": "1.0.0" },
+  "paths": {
+    "/charges": {
+      "post": {
+        "operationId": "createCharge",
+        "summary": "Create a charge",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "A unique key to guarantee the request is only applied once.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Request-Source",
+            "in": "header",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["amount"],
+                "properties": {
+                  "amount": { "type": "integer" },
+                  "currency": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The created charge.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Charge" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listCharges",
+        "summary": "List charges",
+        "parameters": [
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "description": "Lowercased wire name still matches the policy header.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of charges.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": { "type": "array", "items": { "$ref": "#/components/schemas/Charge" } },
+                    "has_more": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Charge": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string" },
+          "amount": { "type": "integer" },
+          "status": { "type": "string", "enum": ["pending", "succeeded", "failed"] }
+        }
+      }
+    }
+  }
+}

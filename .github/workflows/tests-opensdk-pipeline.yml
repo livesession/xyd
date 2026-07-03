@@ -1,0 +1,265 @@
+name: tests:opensdk-pipeline
+
+# Verifies the OpenAPI → OpenSDK → Go pipeline end to end:
+#   @xyd-js/opensdk-core (IR) · @xyd-js/openapi2opensdk (converter + openai-go oracle)
+#   · @xyd-js/opensdk-go (Go generator) · @xyd-js/opensdk-python (stub)
+#
+# The root vitest config (tests:unit) already runs each package's offline unit
+# tests (including the conformance surface diff, which reads the committed
+# oracle/surface.json). This job adds Go + Python toolchains so the gated layers
+# can run where the generated SDKs actually build and execute:
+#   - O2S_GO_SMOKE=1  — a sample of generated Go SDK projects `go build`/`go vet`
+#   - E2E_SDK / E2E_SDK_TESTS=1 — RUN each generated SDK's OWN test suite against
+#     a spec-shaped mock (Go `go test`, Python `pytest`).
+# (SDK_ORACLE_REFRESH regenerates the oracle over the network and is NOT set.)
+
+on:
+  push:
+    branches: [ master, canary ]
+    paths:
+      - 'packages/xyd-opensdk-core/**'
+      - 'packages/xyd-opensdk-framework/**'
+      - 'packages/xyd-opensdk-ci/**'
+      - 'packages/xyd-openapi2opensdk/**'
+      - 'packages/xyd-opensdk-go/**'
+      - 'packages/xyd-opensdk-python/**'
+      - 'packages/xyd-opensdk-node/**'
+      - 'packages/xyd-opensdk-ruby/**'
+      - 'packages/xyd-opensdk-java/**'
+      - 'packages/xyd-opensdk-dotnet/**'
+      - 'packages/xyd-opensdk-chain/**'
+      - 'packages/xyd-opensdk-cli/**'
+      - '.github/workflows/tests-opensdk-pipeline.yml'
+  pull_request:
+    branches: [ master, canary ]
+    paths:
+      - 'packages/xyd-opensdk-core/**'
+      - 'packages/xyd-opensdk-framework/**'
+      - 'packages/xyd-opensdk-ci/**'
+      - 'packages/xyd-openapi2opensdk/**'
+      - 'packages/xyd-opensdk-go/**'
+      - 'packages/xyd-opensdk-python/**'
+      - 'packages/xyd-opensdk-node/**'
+      - 'packages/xyd-opensdk-ruby/**'
+      - 'packages/xyd-opensdk-java/**'
+      - 'packages/xyd-opensdk-dotnet/**'
+      - 'packages/xyd-opensdk-chain/**'
+      - 'packages/xyd-opensdk-cli/**'
+      - '.github/workflows/tests-opensdk-pipeline.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.12.0]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9.10.0
+
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: 'latest'
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+        # The generated SDKs vendor only stdlib — no module downloads needed.
+        cache: false
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+    - name: Setup pnpm cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+
+    - name: Install dependencies
+      run: pnpm i
+
+    - name: Build pipeline packages (and their workspace deps)
+      run: >-
+        pnpm
+        --filter "@xyd-js/opensdk-core..."
+        --filter "@xyd-js/opensdk-framework..."
+        --filter "@xyd-js/opensdk-ci..."
+        --filter "@xyd-js/openapi2opensdk..."
+        --filter "@xyd-js/opensdk-go..."
+        --filter "@xyd-js/opensdk-python..."
+        --filter "@xyd-js/opensdk-node..."
+        --filter "@xyd-js/opensdk-ruby..."
+        --filter "@xyd-js/opensdk-java..."
+        --filter "@xyd-js/opensdk-dotnet..."
+        --filter "@xyd-js/opensdk-chain..."
+        --filter "@xyd-js/opensdk-cli..."
+        build
+
+    - name: Test @xyd-js/opensdk-core (IR loader/helpers)
+      run: pnpm --filter @xyd-js/opensdk-core ci:test
+
+    - name: Test @xyd-js/opensdk-framework (emitter contract, registry, dependency layers)
+      run: pnpm --filter @xyd-js/opensdk-framework ci:test
+
+    - name: Test @xyd-js/opensdk-ci (harness primitives)
+      run: pnpm --filter @xyd-js/opensdk-ci ci:test
+
+    # Decrypt the vendored oracle (spec, parsed reference SDK surfaces, floors)
+    # so the conformance tests actually run instead of skipping. Needs the
+    # XYD_CONTENT_SECRET repo secret; without it the step is a no-op and the
+    # conformance blocks skip gracefully (skipIf(!hasOracle)).
+    - name: Decrypt openapi2opensdk oracle
+      continue-on-error: true
+      env:
+        XYD_CONTENT_SECRET: ${{ secrets.XYD_CONTENT_SECRET }}
+      run: |
+        if [ -n "$XYD_CONTENT_SECRET" ]; then
+          bash packages/xyd-openapi2opensdk/oracle/decrypt.sh
+        else
+          echo "XYD_CONTENT_SECRET not set — skipping oracle decryption (conformance tests will skip)."
+        fi
+
+    - name: Test @xyd-js/openapi2opensdk (converter + go/python/node/ruby/java/dotnet conformance)
+      run: pnpm --filter @xyd-js/openapi2opensdk ci:test
+
+    - name: Test @xyd-js/opensdk-go (golden trees + Go build/vet smoke + e2e real SDK + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-go ci:test
+      env:
+        O2S_GO_SMOKE: '1'
+        E2E_SDK: '1'
+        # RUN the generated SDK's own <resource>_test.go against a spec-shaped mock
+        # (openai-go/Prism style). Linux only — the binary-response httptest listener
+        # wedges macOS's cgo test exec, so this stays gated and off by default locally.
+        E2E_SDK_TESTS: '1'
+
+    # pytest is also pip-installed into a per-run venv by the python e2e harness,
+    # but install it here too so it's available regardless of the harness design.
+    - name: Ensure pytest is available
+      run: python3 -m pip install pytest
+
+    - name: Test @xyd-js/opensdk-python (golden trees + py_compile smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-python ci:test
+      env:
+        O2S_PY_SMOKE: '1'
+        # RUN the generated Python SDK's own tests/test_<resource>.py against a
+        # spec-shaped mock (openai-python/Prism style): the harness stands up a
+        # venv + pytest and points TEST_API_BASE_URL at the mock, so the emitted
+        # tests EXECUTE and PASS (not just py_compile).
+        E2E_SDK_TESTS: '1'
+
+    - name: Test @xyd-js/opensdk-node (golden trees + tsc smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-node ci:test
+      env:
+        O2S_NODE_SMOKE: '1'
+        E2E_SDK_TESTS: '1'
+
+    - name: Test @xyd-js/opensdk-ruby (golden trees + ruby -c smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-ruby ci:test
+      env:
+        O2S_RUBY_SMOKE: '1'
+        E2E_SDK_TESTS: '1'
+
+    - name: Test @xyd-js/opensdk-java (golden trees + javac smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-java ci:test
+      env:
+        O2S_JAVA_SMOKE: '1'
+        E2E_SDK_TESTS: '1'
+
+    - name: Test @xyd-js/opensdk-dotnet (golden trees + dotnet build smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-dotnet ci:test
+      env:
+        O2S_DOTNET_SMOKE: '1'
+        E2E_SDK_TESTS: '1'
+
+    - name: Test @xyd-js/opensdk-cli (parse/generate/init + plugin config)
+      run: pnpm --filter @xyd-js/opensdk-cli ci:test
+
+    # Chain unit + fixture goldens (offline): sources merge/overlay engine,
+    # resolveChain, and the chain.json → committed-output golden fixtures.
+    - name: Test @xyd-js/opensdk-chain (sources engine + resolveChain + fixture goldens)
+      run: pnpm --filter @xyd-js/opensdk-chain ci:test
+
+    # ── Chain e2e ────────────────────────────────────────────────────────────
+    # Prove `opensdk run` + chain.json: one chain (a merge source + an overlay +
+    # a target per language) generates every SDK and each COMPILES. All 6
+    # toolchains are set up above; no registries needed (generate + compile only).
+    - name: Chain e2e (opensdk run: merge + overlay → all-language SDKs, each compiles)
+      run: pnpm --filter @xyd-js/opensdk-chain exec vitest run __tests__/e2e/chain.test.ts
+      env:
+        E2E_SDK_CHAIN: '1'
+
+    # ── Publish e2e ──────────────────────────────────────────────────────────
+    # Prove each generated SDK can be published → installed back → loaded. The 3
+    # HTTP registries (npm/PyPI/RubyGems) run natively on the runner; dotnet/Maven
+    # /Go use throwaway file feeds. Locally the same flow runs in Docker via
+    # packages/xyd-opensdk-ci/e2e/publish/run-publish-e2e.sh.
+    - name: Start local registries (verdaccio / pypiserver / gemstash)
+      run: |
+        npm i -g verdaccio
+        verdaccio --config packages/xyd-opensdk-ci/e2e/publish/verdaccio-config.yaml &> /tmp/verdaccio.log &
+        python3 -m pip install pypiserver twine build
+        mkdir -p /tmp/pypi-packages
+        pypi-server run -P . -a . -p 8081 /tmp/pypi-packages &> /tmp/pypiserver.log &
+        gem install gemstash --no-document
+        gemstash start &> /tmp/gemstash.log || true
+        for url in http://localhost:4873/-/ping http://localhost:8081/ http://localhost:9292/; do
+          for i in $(seq 1 30); do curl -sf "$url" >/dev/null 2>&1 && break; sleep 2; done
+        done
+        {
+          echo "PUBLISH_NPM_REGISTRY=http://localhost:4873"
+          echo "PUBLISH_PYPI_URL=http://localhost:8081"
+          echo "PUBLISH_GEM_HOST=http://localhost:9292/private"
+          echo "PUBLISH_NUGET_FEED=$RUNNER_TEMP/nuget-feed"
+          echo "PUBLISH_MAVEN_REPO=$RUNNER_TEMP/maven-repo"
+          echo "PUBLISH_GOPROXY_DIR=$RUNNER_TEMP/goproxy"
+        } >> "$GITHUB_ENV"
+        mkdir -p "$RUNNER_TEMP/nuget-feed" "$RUNNER_TEMP/maven-repo" "$RUNNER_TEMP/goproxy"
+
+    - name: Publish e2e (generate → publish → install → load, all languages)
+      env:
+        E2E_SDK_PUBLISH: '1'
+      run: |
+        for pkg in node python ruby dotnet java go; do
+          echo "== publish e2e: $pkg =="
+          pnpm --filter "@xyd-js/opensdk-$pkg" exec vitest run __tests__/e2e/publish.test.ts
+        done

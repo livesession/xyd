@@ -1,0 +1,379 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateFileRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "binary"
+          },
+          "required": true,
+          "description": "The File object (not file name) to be uploaded.\n"
+        },
+        {
+          "name": "purpose",
+          "type": {
+            "kind": "ref",
+            "name": "CreateFileRequestPurpose"
+          },
+          "required": true,
+          "description": "The intended purpose of the uploaded file. One of:\n- `assistants`: Used in the Assistants API\n- `batch`: Used in the Batch API\n- `fine-tune`: Used for fine-tuning\n- `vision`: Images used for vision fine-tuning\n- `user_data`: Flexible file type for any purpose\n- `evals`: Used for eval data sets\n"
+        },
+        {
+          "name": "expires_after",
+          "type": {
+            "kind": "ref",
+            "name": "FileExpirationAfter"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "CreateFileRequestPurpose",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "assistants"
+        },
+        {
+          "value": "batch"
+        },
+        {
+          "value": "fine-tune"
+        },
+        {
+          "value": "vision"
+        },
+        {
+          "value": "user_data"
+        },
+        {
+          "value": "evals"
+        }
+      ],
+      "description": "The intended purpose of the uploaded file. One of:\n- `assistants`: Used in the Assistants API\n- `batch`: Used in the Batch API\n- `fine-tune`: Used for fine-tuning\n- `vision`: Images used for vision fine-tuning\n- `user_data`: Flexible file type for any purpose\n- `evals`: Used for eval data sets\n"
+    },
+    {
+      "name": "FileExpirationAfter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "anchor",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "created_at"
+          },
+          "required": true,
+          "description": "Anchor timestamp after which the expiration policy applies. Supported anchors: `created_at`."
+        },
+        {
+          "name": "seconds",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "int64"
+          },
+          "required": true,
+          "description": "The number of seconds after the anchor time that the file will expire. Must be between 3600 (1 hour) and 2592000 (30 days)."
+        }
+      ],
+      "description": "The expiration policy for a file. By default, files with `purpose=batch` expire after 30 days and all other files are persisted until they are manually deleted."
+    },
+    {
+      "name": "OpenAiFile",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The file identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "bytes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The size of the file, in bytes."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the file was created."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the file will expire."
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the file."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file"
+          },
+          "required": true,
+          "description": "The object type, which is always `file`."
+        },
+        {
+          "name": "purpose",
+          "type": {
+            "kind": "ref",
+            "name": "OpenAiFilePurpose"
+          },
+          "required": true,
+          "description": "The intended purpose of the file. Supported values are `assistants`, `assistants_output`, `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "OpenAiFileStatus"
+          },
+          "required": true,
+          "deprecated": true,
+          "description": "Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or `error`."
+        },
+        {
+          "name": "status_details",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "deprecated": true,
+          "description": "Deprecated. For details on why a fine-tuning training file failed validation, see the `error` field on `fine_tuning.job`."
+        }
+      ],
+      "description": "The `File` object represents a document that has been uploaded to OpenAI."
+    },
+    {
+      "name": "OpenAiFilePurpose",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "assistants"
+        },
+        {
+          "value": "assistants_output"
+        },
+        {
+          "value": "batch"
+        },
+        {
+          "value": "batch_output"
+        },
+        {
+          "value": "fine-tune"
+        },
+        {
+          "value": "fine-tune-results"
+        },
+        {
+          "value": "vision"
+        },
+        {
+          "value": "user_data"
+        }
+      ],
+      "description": "The intended purpose of the file. Supported values are `assistants`, `assistants_output`, `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`."
+    },
+    {
+      "name": "OpenAiFileStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "uploaded"
+        },
+        {
+          "value": "processed"
+        },
+        {
+          "value": "error"
+        }
+      ],
+      "description": "Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or `error`."
+    }
+  ],
+  "resources": [
+    {
+      "name": "files",
+      "methods": [
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/files",
+          "operationId": "createFile",
+          "description": "Upload a file that can be used across various endpoints. Individual files\ncan be up to 512 MB, and each project can store up to 2.5 TB of files in\ntotal. There is no organization-wide storage limit. Uploads to this\nendpoint are rate-limited to 1,000 requests per minute per authenticated\nuser.\n\n- The Assistants API supports files up to 2 million tokens and of specific\n  file types. See the [Assistants Tools guide](/docs/assistants/tools) for\n  details.\n- The Fine-tuning API only supports `.jsonl` files. The input also has\n  certain required formats for fine-tuning\n  [chat](/docs/api-reference/fine-tuning/chat-input) or\n  [completions](/docs/api-reference/fine-tuning/completions-input) models.\n- The Batch API only supports `.jsonl` files up to 200 MB in size. The input\n  also has a specific required\n  [format](/docs/api-reference/batch/request-input).\n- For Retrieval or `file_search` ingestion, upload files here first. If\n  you need to attach multiple uploaded files to the same vector store, use\n  [`/vector_stores/{vector_store_id}/file_batches`](/docs/api-reference/vector-stores-file-batches/createBatch)\n  instead of attaching them one by one. Vector store attachment has separate\n  limits from file upload, including 2,000 attached files per minute per\n  organization.\n\nPlease [contact us](https://help.openai.com/) if you need to increase these\nstorage limits.\n",
+          "requestBody": {
+            "contentType": "multipart/form-data",
+            "type": {
+              "kind": "ref",
+              "name": "CreateFileRequest"
+            },
+            "required": true,
+            "encoding": "multipart"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "OK",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "OpenAiFile"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "OpenAiFile"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

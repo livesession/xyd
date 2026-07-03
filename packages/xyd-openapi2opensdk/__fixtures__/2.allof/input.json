@@ -1,0 +1,72 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Allof", "version": "1.0.0" },
+  "servers": [{ "url": "https://api.allof.io/v1" }],
+  "components": {
+    "schemas": {
+      "Status": {
+        "type": "string",
+        "enum": ["active", "archived"]
+      },
+      "BaseProperties": {
+        "type": "object",
+        "properties": {
+          "metadata": { "type": "object", "additionalProperties": { "type": "string" } },
+          "temperature": { "type": "number" }
+        }
+      },
+      "ModelProperties": {
+        "allOf": [
+          { "$ref": "#/components/schemas/BaseProperties" },
+          {
+            "type": "object",
+            "properties": { "user": { "type": "string" } }
+          }
+        ]
+      },
+      "CreateThingRequest": {
+        "allOf": [
+          { "$ref": "#/components/schemas/ModelProperties" },
+          {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "status": {
+                "description": "Wrapped nullable ref.",
+                "allOf": [{ "$ref": "#/components/schemas/Status" }],
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "Thing": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/things": {
+      "post": {
+        "operationId": "createThing",
+        "summary": "Create a thing",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateThingRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "The created thing.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Thing" } } }
+          }
+        }
+      }
+    }
+  }
+}

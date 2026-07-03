@@ -1,0 +1,14 @@
+{
+  "call": "Embeddings.New",
+  "request": {
+    "method": "post",
+    "path": "/embeddings",
+    "query": [],
+    "bodyFields": [
+      "input",
+      "model"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

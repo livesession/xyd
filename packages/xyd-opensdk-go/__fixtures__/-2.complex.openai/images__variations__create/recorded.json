@@ -1,0 +1,13 @@
+{
+  "call": "Images.Variations.New",
+  "request": {
+    "method": "post",
+    "path": "/images/variations",
+    "query": [],
+    "bodyFields": [
+      "image"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "call": "Uploads.Cancel",
+  "request": {
+    "method": "post",
+    "path": "/uploads/{upload_id}/cancel",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,4 +1,0 @@
-{
-  "l0": 0.18,
-  "note": "L0 command-surface coverage vs openai-cli must not regress below this. Raise it as openapi2opencli improves (e.g. beta/admin Stainless namespacing via x-cli overrides). Regenerate the oracle with ORACLE_REFRESH=1."
-}

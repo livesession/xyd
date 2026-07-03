@@ -6,15 +6,15 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { deferencedOpenAPI } from '@xyd-js/openapi';
 
 import { openapi2opencli } from '../index';
-import {
-  buildOpIndex,
-  commandFlags,
-  type DocsMethodResolved,
-  extractCliCommand,
-  joinDocsMethod,
-  parseOverviewMethods,
-  type SpecOp,
-} from '../oracle/docsOracle';
+// ../oracle/docsOracle is gitignored/encrypted (present only after oracle/decrypt.sh
+// or locally). Types are erased `import type`; the runtime helpers are loaded LAZILY
+// (see `docsOracle` below) so this suite SKIPS — rather than failing to load — when
+// the plaintext is absent (CI without XYD_CONTENT_SECRET, fresh clones, fork PRs).
+import type { DocsMethodResolved, SpecOp } from '../oracle/docsOracle';
+
+// Populated by the first guarded block that runs (the refresh `it` or the offline
+// `beforeAll`); both are skipped when the oracle plaintext is absent.
+let docsOracle: typeof import('../oracle/docsOracle');
 
 const ORACLE_DIR = path.join(__dirname, '../oracle');
 const FIXTURES = path.join(__dirname, '../__fixtures__/-2.complex.openai');
@@ -45,16 +45,17 @@ async function pool<T, R>(items: T[], concurrency: number, fn: (item: T, i: numb
 // ---- Docs refresh (network; opt-in) --------------------------------------
 describe.skipIf(!REFRESH)('docs oracle refresh (network)', () => {
   it('fetch overview + 270+ CLI pages → fixtures + docs-methods.json', async () => {
+    docsOracle = await import('../oracle/docsOracle');
     const overviewHtml = await fetch(OVERVIEW).then((r) => r.text());
-    const methods = parseOverviewMethods(overviewHtml);
+    const methods = docsOracle.parseOverviewMethods(overviewHtml);
     expect(methods.length).toBeGreaterThan(250);
 
     const resolved = await pool(methods, 8, async (m): Promise<DocsMethodResolved | null> => {
       try {
         const html = await fetch(m.cliUrl).then((r) => r.text());
-        const cli = extractCliCommand(html);
+        const cli = docsOracle.extractCliCommand(html);
         if (!cli) return null;
-        return { ...m, docCommand: cli.command, docFlags: commandFlags(cli.flags) };
+        return { ...m, docCommand: cli.command, docFlags: docsOracle.commandFlags(cli.flags) };
       } catch {
         return null;
       }
@@ -99,6 +100,7 @@ const rawOps = new Map<string, any>();
 let specIndex = new Map<string, SpecOp>();
 
 async function build() {
+  docsOracle = await import('../oracle/docsOracle');
   const doc = await deferencedOpenAPI(SPEC);
   if (!doc) throw new Error(`vendored openai-openapi not found at ${SPEC}`);
 
@@ -117,7 +119,7 @@ async function build() {
   };
   walk(opcli.commands || [], []);
 
-  specIndex = buildOpIndex(doc);
+  specIndex = docsOracle.buildOpIndex(doc);
   for (const [p, item] of Object.entries(doc.paths || {})) {
     for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
       const op = (item as any)?.[method];
@@ -126,7 +128,7 @@ async function build() {
   }
 }
 
-const opOf = (m: DocsMethodResolved): SpecOp | null => joinDocsMethod(m.commandPath, m.httpMethod, specIndex);
+const opOf = (m: DocsMethodResolved): SpecOp | null => docsOracle.joinDocsMethod(m.commandPath, m.httpMethod, specIndex);
 const ourOf = (m: DocsMethodResolved): OurCmd | undefined => {
   const op = opOf(m);
   return op ? oursByOp.get(`${op.method} ${op.path}`) : undefined;

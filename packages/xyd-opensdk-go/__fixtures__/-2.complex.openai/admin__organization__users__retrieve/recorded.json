@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Users.Get",
+  "request": {
+    "method": "get",
+    "path": "/organization/users/{user_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

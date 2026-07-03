@@ -1,0 +1,314 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateVectorStoreFileBatchRequest",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "any"
+        },
+        {
+          "kind": "any"
+        }
+      ]
+    },
+    {
+      "name": "VectorStoreFileBatchObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "vector_store.files_batch"
+          },
+          "required": true,
+          "description": "The object type, which is always `vector_store.file_batch`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the vector store files batch was created."
+        },
+        {
+          "name": "vector_store_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the [vector store](/docs/api-reference/vector-stores/object) that the [File](/docs/api-reference/files) is attached to."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreFileBatchObjectStatus"
+          },
+          "required": true,
+          "description": "The status of the vector store files batch, which can be either `in_progress`, `completed`, `cancelled` or `failed`."
+        },
+        {
+          "name": "file_counts",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreFileBatchObjectFileCounts"
+          },
+          "required": true
+        }
+      ],
+      "description": "A batch of files attached to a vector store."
+    },
+    {
+      "name": "VectorStoreFileBatchObjectStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "cancelled"
+        },
+        {
+          "value": "failed"
+        }
+      ],
+      "description": "The status of the vector store files batch, which can be either `in_progress`, `completed`, `cancelled` or `failed`."
+    },
+    {
+      "name": "VectorStoreFileBatchObjectFileCounts",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "in_progress",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of files that are currently being processed."
+        },
+        {
+          "name": "completed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of files that have been processed."
+        },
+        {
+          "name": "failed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of files that have failed to process."
+        },
+        {
+          "name": "cancelled",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of files that where cancelled."
+        },
+        {
+          "name": "total",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total number of files."
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "vector-stores",
+      "resources": [
+        {
+          "name": "file-batches",
+          "methods": [
+            {
+              "action": "create",
+              "httpMethod": "post",
+              "path": "/vector_stores/{vector_store_id}/file_batches",
+              "operationId": "createVectorStoreFileBatch",
+              "description": "The maximum number of files in a single batch request is 2000.\nVector store file attach requests are rate limited per vector store (300 requests per minute across both this endpoint and `/vector_stores/{vector_store_id}/files`).\nFor ingesting multiple files into the same vector store, this batch endpoint is recommended.\n",
+              "pathParams": [
+                {
+                  "name": "vector_store_id",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "string"
+                  },
+                  "required": true,
+                  "description": "The ID of the vector store for which to create a File Batch.\n",
+                  "example": "vs_abc123"
+                }
+              ],
+              "requestBody": {
+                "contentType": "application/json",
+                "type": {
+                  "kind": "ref",
+                  "name": "CreateVectorStoreFileBatchRequest"
+                },
+                "required": true,
+                "encoding": "json"
+              },
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "VectorStoreFileBatchObject"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "VectorStoreFileBatchObject"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

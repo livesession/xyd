@@ -1,0 +1,38 @@
+{
+  "name": "@xyd-js/opensdk-cli",
+  "version": "0.1.0-build.0",
+  "description": "OpenSDK CLI: parse an OpenAPI spec into the OpenSDK IR and generate SDKs through registered emitter plugins (opensdk parse | generate | init)",
+  "main": "./dist/index.js",
+  "type": "module",
+  "bin": {
+    "opensdk": "./dist/cli.js"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "prebuild": "pnpm clean",
+    "build": "tsup",
+    "test": "vitest",
+    "ci:test": "vitest run",
+    "format": "bunx biome check --write src"
+  },
+  "dependencies": {
+    "@xyd-js/openapi2opensdk": "workspace:*",
+    "@xyd-js/opensdk-core": "workspace:*",
+    "@xyd-js/opensdk-framework": "workspace:*",
+    "@xyd-js/opensdk-go": "workspace:*",
+    "@xyd-js/opensdk-python": "workspace:*",
+    "@xyd-js/opensdk-node": "workspace:*",
+    "@xyd-js/opensdk-ruby": "workspace:*",
+    "@xyd-js/opensdk-java": "workspace:*",
+    "@xyd-js/opensdk-dotnet": "workspace:*",
+    "@xyd-js/opensdk-chain": "workspace:*",
+    "commander": "^13.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  }
+}

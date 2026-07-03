@@ -1,0 +1,501 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateUploadRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the file to upload.\n"
+        },
+        {
+          "name": "purpose",
+          "type": {
+            "kind": "ref",
+            "name": "CreateUploadRequestPurpose"
+          },
+          "required": true,
+          "description": "The intended purpose of the uploaded file.\n\nSee the [documentation on File\npurposes](/docs/api-reference/files/create#files-create-purpose).\n"
+        },
+        {
+          "name": "bytes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of bytes in the file you are uploading.\n"
+        },
+        {
+          "name": "mime_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The MIME type of the file.\n\n\nThis must fall within the supported MIME types for your file purpose. See\nthe supported MIME types for assistants and vision.\n"
+        },
+        {
+          "name": "expires_after",
+          "type": {
+            "kind": "ref",
+            "name": "FileExpirationAfter"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "CreateUploadRequestPurpose",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "assistants"
+        },
+        {
+          "value": "batch"
+        },
+        {
+          "value": "fine-tune"
+        },
+        {
+          "value": "vision"
+        }
+      ],
+      "description": "The intended purpose of the uploaded file.\n\nSee the [documentation on File\npurposes](/docs/api-reference/files/create#files-create-purpose).\n"
+    },
+    {
+      "name": "FileExpirationAfter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "anchor",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "created_at"
+          },
+          "required": true,
+          "description": "Anchor timestamp after which the expiration policy applies. Supported anchors: `created_at`."
+        },
+        {
+          "name": "seconds",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "int64"
+          },
+          "required": true,
+          "description": "The number of seconds after the anchor time that the file will expire. Must be between 3600 (1 hour) and 2592000 (30 days)."
+        }
+      ],
+      "description": "The expiration policy for a file. By default, files with `purpose=batch` expire after 30 days and all other files are persisted until they are manually deleted."
+    },
+    {
+      "name": "Upload",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The Upload unique identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the Upload was created."
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the file to be uploaded."
+        },
+        {
+          "name": "bytes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The intended number of bytes to be uploaded."
+        },
+        {
+          "name": "purpose",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The intended purpose of the file. [Please refer here](/docs/api-reference/files/object#files/object-purpose) for acceptable values."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "UploadStatus"
+          },
+          "required": true,
+          "description": "The status of the Upload."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the Upload will expire."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "upload"
+          },
+          "required": false,
+          "description": "The object type, which is always \"upload\"."
+        },
+        {
+          "name": "file",
+          "type": {
+            "kind": "ref",
+            "name": "OpenAiFile",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The Upload object can accept byte chunks in the form of Parts.\n"
+    },
+    {
+      "name": "UploadStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "pending"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "cancelled"
+        },
+        {
+          "value": "expired"
+        }
+      ],
+      "description": "The status of the Upload."
+    },
+    {
+      "name": "OpenAiFile",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The file identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "bytes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The size of the file, in bytes."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the file was created."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the file will expire."
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the file."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file"
+          },
+          "required": true,
+          "description": "The object type, which is always `file`."
+        },
+        {
+          "name": "purpose",
+          "type": {
+            "kind": "ref",
+            "name": "OpenAiFilePurpose"
+          },
+          "required": true,
+          "description": "The intended purpose of the file. Supported values are `assistants`, `assistants_output`, `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "OpenAiFileStatus"
+          },
+          "required": true,
+          "deprecated": true,
+          "description": "Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or `error`."
+        },
+        {
+          "name": "status_details",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "deprecated": true,
+          "description": "Deprecated. For details on why a fine-tuning training file failed validation, see the `error` field on `fine_tuning.job`."
+        }
+      ],
+      "description": "The `File` object represents a document that has been uploaded to OpenAI."
+    },
+    {
+      "name": "OpenAiFilePurpose",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "assistants"
+        },
+        {
+          "value": "assistants_output"
+        },
+        {
+          "value": "batch"
+        },
+        {
+          "value": "batch_output"
+        },
+        {
+          "value": "fine-tune"
+        },
+        {
+          "value": "fine-tune-results"
+        },
+        {
+          "value": "vision"
+        },
+        {
+          "value": "user_data"
+        }
+      ],
+      "description": "The intended purpose of the file. Supported values are `assistants`, `assistants_output`, `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`."
+    },
+    {
+      "name": "OpenAiFileStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "uploaded"
+        },
+        {
+          "value": "processed"
+        },
+        {
+          "value": "error"
+        }
+      ],
+      "description": "Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or `error`."
+    }
+  ],
+  "resources": [
+    {
+      "name": "uploads",
+      "methods": [
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/uploads",
+          "operationId": "createUpload",
+          "description": "Creates an intermediate [Upload](/docs/api-reference/uploads/object) object\nthat you can add [Parts](/docs/api-reference/uploads/part-object) to.\nCurrently, an Upload can accept at most 8 GB in total and expires after an\nhour after you create it.\n\nOnce you complete the Upload, we will create a\n[File](/docs/api-reference/files/object) object that contains all the parts\nyou uploaded. This File is usable in the rest of our platform as a regular\nFile object.\n\nFor certain `purpose` values, the correct `mime_type` must be specified. \nPlease refer to documentation for the \n[supported MIME types for your use case](/docs/assistants/tools/file-search#supported-files).\n\nFor guidance on the proper filename extensions for each purpose, please\nfollow the documentation on [creating a\nFile](/docs/api-reference/files/create).\n\nReturns the Upload object with status `pending`.\n",
+          "requestBody": {
+            "contentType": "application/json",
+            "type": {
+              "kind": "ref",
+              "name": "CreateUploadRequest"
+            },
+            "required": true,
+            "encoding": "json"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "OK",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Upload"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Upload"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

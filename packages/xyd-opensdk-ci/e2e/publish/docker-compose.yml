@@ -1,0 +1,41 @@
+# Isolated local registries for the publish e2e. Only the 3 registries that need
+# an HTTP daemon run here (npm/PyPI/RubyGems) — dotnet/Maven/Go use hermetic file
+# feeds created by run-publish-e2e.sh, so nothing else runs on the host.
+#
+#   bash run-publish-e2e.sh            # up → run publish suite → down -v
+#
+# CI starts the equivalent natively (see .github/workflows/tests-opensdk-pipeline.yml).
+services:
+  verdaccio:
+    image: verdaccio/verdaccio:6
+    ports: ['4873:4873']
+    volumes:
+      - ./verdaccio-config.yaml:/verdaccio/conf/config.yaml:ro
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '-', 'http://localhost:4873/-/ping']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  pypiserver:
+    image: pypiserver/pypiserver:latest
+    # -P . -a . => no auth for read OR write (throwaway registry)
+    command: run -P . -a . --overwrite -p 8080 /data/packages
+    ports: ['8081:8080']
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '-', 'http://localhost:8080/']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  gemstash:
+    image: ruby:3.3
+    working_dir: /gemstash
+    # gemstash is bundler's gem server; /private accepts `gem push`.
+    command: sh -c "gem install gemstash --no-document && gemstash start --no-daemonize"
+    ports: ['9292:9292']
+    healthcheck:
+      test: ['CMD-SHELL', "ruby -e \"require 'net/http'; Net::HTTP.get(URI('http://localhost:9292/'))\""]
+      interval: 5s
+      timeout: 5s
+      retries: 30

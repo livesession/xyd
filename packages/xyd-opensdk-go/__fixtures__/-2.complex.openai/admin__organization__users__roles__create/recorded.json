@@ -1,0 +1,13 @@
+{
+  "call": "Admin.Organization.Users.Roles.New",
+  "request": {
+    "method": "post",
+    "path": "/organization/users/{user_id}/roles",
+    "query": [],
+    "bodyFields": [
+      "role_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

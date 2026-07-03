@@ -1,0 +1,14 @@
+{
+  "call": "FineTuning.Alpha.Graders.Run.New",
+  "request": {
+    "method": "post",
+    "path": "/fine_tuning/alpha/graders/run",
+    "query": [],
+    "bodyFields": [
+      "grader",
+      "model_sample"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

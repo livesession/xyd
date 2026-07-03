@@ -1,0 +1,15 @@
+# Verdaccio config for the publish e2e: ANONYMOUS publish of ANY package (these
+# are throwaway registries — no real credentials). Unknown packages proxy npmjs
+# so a consumer's transitive deps still resolve.
+storage: /verdaccio/storage
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+packages:
+  '**':
+    access: $all
+    publish: $all
+    unpublish: $all
+    proxy: npmjs
+log: { type: stdout, format: pretty, level: warn }
+listen: 0.0.0.0:4873

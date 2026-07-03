@@ -1,0 +1,329 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "ContainerResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique identifier for the container."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The type of this object."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Name of the container."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the container was created."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Status of the container (e.g., active, deleted)."
+        },
+        {
+          "name": "last_active_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "Unix timestamp (in seconds) when the container was last active."
+        },
+        {
+          "name": "expires_after",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceExpiresAfter"
+          },
+          "required": false,
+          "description": "The container will expire after this time period.\nThe anchor is the reference point for the expiration.\nThe minutes is the number of minutes after the anchor before the container expires.\n"
+        },
+        {
+          "name": "memory_limit",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceMemoryLimit"
+          },
+          "required": false,
+          "description": "The memory limit configured for the container."
+        },
+        {
+          "name": "network_policy",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceNetworkPolicy"
+          },
+          "required": false,
+          "description": "Network access policy for the container."
+        }
+      ]
+    },
+    {
+      "name": "ContainerResourceExpiresAfter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "anchor",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "last_active_at"
+          },
+          "required": false,
+          "description": "The reference point for the expiration."
+        },
+        {
+          "name": "minutes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The number of minutes after the anchor before the container expires."
+        }
+      ],
+      "description": "The container will expire after this time period.\nThe anchor is the reference point for the expiration.\nThe minutes is the number of minutes after the anchor before the container expires.\n"
+    },
+    {
+      "name": "ContainerResourceMemoryLimit",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1g"
+        },
+        {
+          "value": "4g"
+        },
+        {
+          "value": "16g"
+        },
+        {
+          "value": "64g"
+        }
+      ],
+      "description": "The memory limit configured for the container."
+    },
+    {
+      "name": "ContainerResourceNetworkPolicy",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceNetworkPolicyType"
+          },
+          "required": true,
+          "description": "The network policy mode."
+        },
+        {
+          "name": "allowed_domains",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "Allowed outbound domains when `type` is `allowlist`."
+        }
+      ],
+      "description": "Network access policy for the container."
+    },
+    {
+      "name": "ContainerResourceNetworkPolicyType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "allowlist"
+        },
+        {
+          "value": "disabled"
+        }
+      ],
+      "description": "The network policy mode."
+    }
+  ],
+  "resources": [
+    {
+      "name": "containers",
+      "methods": [
+        {
+          "action": "retrieve",
+          "httpMethod": "get",
+          "path": "/containers/{container_id}",
+          "operationId": "RetrieveContainer",
+          "description": "Retrieves a container.",
+          "pathParams": [
+            {
+              "name": "container_id",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "Success",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "ContainerResource"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "ContainerResource"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

@@ -1,0 +1,328 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "ThreadResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the thread."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "chatkit.thread"
+          },
+          "required": true,
+          "default": "chatkit.thread",
+          "description": "Type discriminator that is always `chatkit.thread`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the thread was created."
+        },
+        {
+          "name": "title",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "ThreadResourceStatus"
+          },
+          "required": true,
+          "description": "Current status for the thread. Defaults to `active` for newly created threads."
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Free-form string that identifies your end user who owns the thread."
+        }
+      ],
+      "description": "Represents a ChatKit thread and its current status."
+    },
+    {
+      "name": "ThreadResourceStatus",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ActiveStatus"
+        },
+        {
+          "kind": "ref",
+          "name": "LockedStatus"
+        },
+        {
+          "kind": "ref",
+          "name": "ClosedStatus"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "active": "ActiveStatus",
+          "locked": "LockedStatus",
+          "closed": "ClosedStatus"
+        }
+      },
+      "description": "Current status for the thread. Defaults to `active` for newly created threads."
+    },
+    {
+      "name": "ActiveStatus",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "active"
+          },
+          "required": true,
+          "default": "active",
+          "description": "Status discriminator that is always `active`."
+        }
+      ],
+      "description": "Indicates that a thread is active."
+    },
+    {
+      "name": "LockedStatus",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "locked"
+          },
+          "required": true,
+          "default": "locked",
+          "description": "Status discriminator that is always `locked`."
+        },
+        {
+          "name": "reason",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Indicates that a thread is locked and cannot accept new input."
+    },
+    {
+      "name": "ClosedStatus",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "closed"
+          },
+          "required": true,
+          "default": "closed",
+          "description": "Status discriminator that is always `closed`."
+        },
+        {
+          "name": "reason",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Indicates that a thread has been closed."
+    }
+  ],
+  "resources": [
+    {
+      "name": "beta",
+      "resources": [
+        {
+          "name": "chat-kit",
+          "resources": [
+            {
+              "name": "threads",
+              "methods": [
+                {
+                  "action": "retrieve",
+                  "httpMethod": "get",
+                  "path": "/chatkit/threads/{thread_id}",
+                  "operationId": "GetThreadMethod",
+                  "description": "Retrieve a ChatKit thread by its identifier.",
+                  "pathParams": [
+                    {
+                      "name": "thread_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "Identifier of the ChatKit thread to retrieve.",
+                      "example": "cthr_123"
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "Success",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "ThreadResource"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "ThreadResource"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

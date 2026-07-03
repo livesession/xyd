@@ -1,0 +1,10 @@
+{
+  "call": "Beta.ChatKit.Threads.List",
+  "request": {
+    "method": "get",
+    "path": "/chatkit/threads",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

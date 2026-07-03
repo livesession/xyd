@@ -1,0 +1,405 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "opensdk-spec.json",
+  "type": "object",
+  "description": "The OpenSDK description: a language-agnostic intermediate representation (IR) of an API SDK — a nominal type system (named structs/enums/unions) plus a resource tree of typed methods carrying their HTTP request binding. Emitted by @xyd-js/openapi2opensdk and consumed by the opensdk-* code generators (Go first).",
+  "properties": {
+    "opensdk": {
+      "type": "string",
+      "description": "The OpenSDK version number"
+    },
+    "info": {
+      "$ref": "#/$defs/SdkInfo",
+      "description": "Information about the SDK / API"
+    },
+    "servers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Available API base URLs (from the OpenAPI servers list)"
+    },
+    "security": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/SdkSecurity" },
+      "description": "Default security requirements for the SDK"
+    },
+    "types": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/NamedType" },
+      "description": "The symbol table: all named types (structs, enums, unions, aliases) referenced by resources/methods, resolved from OpenAPI component schemas and hoisted inline types"
+    },
+    "resources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Resource" },
+      "description": "The client resource tree (nested services, each with typed methods)"
+    },
+    "sdk": {
+      "$ref": "#/$defs/SdkBehavior",
+      "description": "Declarative runtime behavior of the generated SDK (retry, timeout, errors, user-agent, ...). The converter always stamps defaults so emitters can rely on it; hand-written IR may omit it and use opensdk-core's sdkBehavior() accessor for defaults."
+    },
+    "metadata": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Metadata" },
+      "description": "Custom metadata"
+    }
+  },
+  "required": ["opensdk", "info"],
+  "$defs": {
+    "SdkInfo": {
+      "type": "object",
+      "description": "Information about the SDK / API.",
+      "properties": {
+        "title": { "type": "string", "description": "The API title" },
+        "summary": { "type": "string", "description": "A short summary of the API" },
+        "description": { "type": "string", "description": "A description of the API" },
+        "contact": { "$ref": "#/$defs/Contact", "description": "The contact information" },
+        "license": { "$ref": "#/$defs/License", "description": "The API license" },
+        "version": { "type": "string", "description": "The API version" },
+        "homepage": { "type": "string", "description": "The package/project homepage URL (publish metadata; no OpenAPI equivalent)" },
+        "repository": { "type": "string", "description": "The source repository URL (publish metadata; no OpenAPI equivalent)" }
+      },
+      "required": ["title", "version"]
+    },
+    "NamedType": {
+      "type": "object",
+      "description": "A named type in the symbol table. `kind` discriminates which fields apply.",
+      "properties": {
+        "name": { "type": "string", "description": "The type name (source component key or a deterministic synthetic name for a hoisted inline type)" },
+        "kind": { "type": "string", "description": "The type kind a generator branches on: struct | enum | union | alias" },
+        "description": { "type": "string", "description": "The type description" },
+        "deprecated": { "type": "boolean", "description": "Whether the type is deprecated" },
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Field" },
+          "description": "kind=struct: the struct fields"
+        },
+        "base": { "type": "string", "description": "kind=enum: the base scalar (string | integer)" },
+        "values": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/EnumValue" },
+          "description": "kind=enum: the enumerated values"
+        },
+        "semantics": { "type": "string", "description": "kind=union: oneOf (exactly one) | anyOf (one or more)" },
+        "variants": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/TypeRef" },
+          "description": "kind=union: the union member types"
+        },
+        "discriminator": {
+          "$ref": "#/$defs/Discriminator",
+          "description": "kind=union: the OpenAPI discriminator, when present"
+        },
+        "of": {
+          "$ref": "#/$defs/TypeRef",
+          "description": "kind=alias: the aliased (newtype) target for a top-level scalar/array component"
+        },
+        "metadata": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Metadata" },
+          "description": "Custom metadata"
+        }
+      },
+      "required": ["name", "kind"]
+    },
+    "Field": {
+      "type": "object",
+      "description": "A struct field.",
+      "properties": {
+        "name": { "type": "string", "description": "The field's wire name (a generator derives the language-specific field name)" },
+        "type": { "$ref": "#/$defs/TypeRef", "description": "The field type" },
+        "required": { "type": "boolean", "description": "Whether the field is required" },
+        "nullable": { "type": "boolean", "description": "Whether the field may be null" },
+        "readOnly": { "type": "boolean", "description": "Whether the field is response-only" },
+        "writeOnly": { "type": "boolean", "description": "Whether the field is request-only" },
+        "deprecated": { "type": "boolean", "description": "Whether the field is deprecated" },
+        "default": { "tsType": "unknown", "description": "The field's default value, if any" },
+        "description": { "type": "string", "description": "The field description" }
+      },
+      "required": ["name", "type"]
+    },
+    "TypeRef": {
+      "type": "object",
+      "description": "A structural reference to a type. `kind` discriminates which fields apply.",
+      "properties": {
+        "kind": { "type": "string", "description": "scalar | ref | array | map | any" },
+        "scalar": { "type": "string", "description": "kind=scalar: string | integer | number | boolean" },
+        "format": { "type": "string", "description": "kind=scalar: the OpenAPI format hint (e.g. date-time, binary, int64)" },
+        "name": { "type": "string", "description": "kind=ref: the referenced NamedType name (symbol-table lookup)" },
+        "items": { "$ref": "#/$defs/TypeRef", "description": "kind=array: the element type" },
+        "values": { "$ref": "#/$defs/TypeRef", "description": "kind=map: the additionalProperties value type" },
+        "const": { "tsType": "unknown", "description": "kind=scalar: a fixed literal value (JSON Schema const / single-value enum); emitters may auto-fill it" },
+        "nullable": { "type": "boolean", "description": "Whether the referenced value may be null" }
+      },
+      "required": ["kind"]
+    },
+    "EnumValue": {
+      "type": "object",
+      "description": "One value of a named enum.",
+      "properties": {
+        "value": { "tsType": "unknown", "description": "The wire value (string or integer)" },
+        "name": { "type": "string", "description": "An explicit constant name, if the wire value isn't a clean identifier" },
+        "description": { "type": "string", "description": "The value description" }
+      },
+      "required": ["value"]
+    },
+    "Discriminator": {
+      "type": "object",
+      "description": "An OpenAPI discriminator for a union.",
+      "properties": {
+        "propertyName": { "type": "string", "description": "The property whose value selects the variant" },
+        "mapping": { "tsType": "Record<string, string>", "description": "Map of discriminator value -> variant type name" }
+      },
+      "required": ["propertyName"]
+    },
+    "Resource": {
+      "type": "object",
+      "description": "A resource / service node in the client tree.",
+      "properties": {
+        "name": { "type": "string", "description": "The resource name (a generator derives the service/field name)" },
+        "description": { "type": "string", "description": "The resource description" },
+        "resources": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Resource" },
+          "description": "Nested sub-resources"
+        },
+        "methods": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Method" },
+          "description": "The resource's methods"
+        }
+      },
+      "required": ["name"]
+    },
+    "Method": {
+      "type": "object",
+      "description": "A typed SDK method plus the HTTP request binding needed to call the API.",
+      "properties": {
+        "action": { "type": "string", "description": "The method verb: list | create | retrieve | update | delete | <custom>" },
+        "operationId": { "type": "string", "description": "The source OpenAPI operationId, when present" },
+        "httpMethod": { "type": "string", "description": "HTTP method (lowercase)" },
+        "path": { "type": "string", "description": "HTTP path template (e.g. /chat/completions/{completion_id})" },
+        "description": { "type": "string", "description": "The method description" },
+        "deprecated": { "type": "boolean", "description": "Whether the method is deprecated" },
+        "injectIdempotencyKey": { "type": "boolean", "description": "The spec declared an idempotency-key header on this operation; the converter strips it from params and the runtime injects a generated key per sdk.idempotency" },
+        "pathParams": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Param" },
+          "description": "Path parameters, in path order (positional method arguments)"
+        },
+        "queryParams": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Param" },
+          "description": "Query parameters (fields of the params struct)"
+        },
+        "headerParams": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Param" },
+          "description": "Header parameters (excluding well-known auth headers)"
+        },
+        "requestBody": { "$ref": "#/$defs/RequestBody", "description": "The request body, when present" },
+        "responses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Response" },
+          "description": "The declared responses"
+        },
+        "primaryResponse": { "$ref": "#/$defs/TypeRef", "description": "The success response type the method returns" },
+        "pagination": { "$ref": "#/$defs/Pagination", "description": "Pagination shape, when the method is a pageable list" },
+        "security": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SdkSecurity" },
+          "description": "Per-operation security requirements (overrides root)"
+        }
+      },
+      "required": ["action", "httpMethod", "path"]
+    },
+    "Param": {
+      "type": "object",
+      "description": "A path/query/header parameter with its wire name (request binding) and type.",
+      "properties": {
+        "name": { "type": "string", "description": "The identifier-safe parameter name (generators derive SDK identifiers from it)" },
+        "wireName": { "type": "string", "description": "The raw HTTP wire name when it differs from `name` (e.g. `ids[]`); emitters must send this on the wire" },
+        "type": { "$ref": "#/$defs/TypeRef", "description": "The parameter type" },
+        "required": { "type": "boolean", "description": "Whether the parameter is required" },
+        "description": { "type": "string", "description": "The parameter description" },
+        "default": { "tsType": "unknown", "description": "The parameter's default value, if any" },
+        "example": { "tsType": "unknown", "description": "An example value, if any" },
+        "deprecated": { "type": "boolean", "description": "Whether the parameter is deprecated" },
+        "explode": { "type": "boolean", "description": "OpenAPI explode flag for array/object serialization" },
+        "style": { "type": "string", "description": "OpenAPI serialization style" }
+      },
+      "required": ["name", "type"]
+    },
+    "RequestBody": {
+      "type": "object",
+      "description": "A method's request body.",
+      "properties": {
+        "contentType": { "type": "string", "description": "Body content type (e.g. application/json, multipart/form-data)" },
+        "type": { "$ref": "#/$defs/TypeRef", "description": "The body type" },
+        "required": { "type": "boolean", "description": "Whether the body is required" },
+        "encoding": { "type": "string", "description": "How the body is encoded: json | multipart | form" },
+        "description": { "type": "string", "description": "The body description" }
+      },
+      "required": ["type"]
+    },
+    "Response": {
+      "type": "object",
+      "description": "A declared HTTP response.",
+      "properties": {
+        "status": { "type": "string", "description": "HTTP status code (e.g. \"200\") or \"default\"" },
+        "contentType": { "type": "string", "description": "Response content type (e.g. application/json)" },
+        "type": { "$ref": "#/$defs/TypeRef", "description": "The response body type" },
+        "description": { "type": "string", "description": "The response description" }
+      }
+    },
+    "SdkBehavior": {
+      "type": "object",
+      "description": "Declarative runtime behavior of the generated SDK. One source of truth for what every language's runtime does; emitters interpolate these values instead of hardcoding them.",
+      "properties": {
+        "retry": { "$ref": "#/$defs/RetryPolicy", "description": "Automatic retry policy" },
+        "timeout": { "$ref": "#/$defs/TimeoutPolicy", "description": "Request timeout policy" },
+        "errors": { "$ref": "#/$defs/ErrorPolicy", "description": "Status-code to error-kind mapping" },
+        "userAgent": { "$ref": "#/$defs/UserAgentPolicy", "description": "User-Agent assembly policy" },
+        "telemetry": { "$ref": "#/$defs/TelemetryPolicy", "description": "Request-ID / client-telemetry headers" },
+        "logging": { "$ref": "#/$defs/LoggingPolicy", "description": "Lifecycle log-event vocabulary" },
+        "idempotency": { "$ref": "#/$defs/IdempotencyPolicy", "description": "Idempotency-key injection policy" },
+        "pagination": { "$ref": "#/$defs/PaginationPolicy", "description": "Auto-pagination behavior" },
+        "requestGuard": { "$ref": "#/$defs/RequestGuardPolicy", "description": "Misplaced request-option detection" }
+      }
+    },
+    "RetryPolicy": {
+      "type": "object",
+      "description": "Automatic retry behavior. Delay per attempt: min(initialDelayMs * multiplier^attempt, maxDelayMs), +/- jitter fraction; a Retry-After response header wins when honorRetryAfterHeader is true.",
+      "properties": {
+        "maxRetries": { "type": "integer", "description": "Maximum retry attempts after the first request" },
+        "retryableStatusCodes": { "type": "array", "items": { "type": "integer" }, "description": "HTTP status codes that trigger a retry" },
+        "retryConnectionErrors": { "type": "boolean", "description": "Whether transport/connection errors are retried" },
+        "honorRetryAfterHeader": { "type": "boolean", "description": "Whether a Retry-After response header overrides the computed backoff" },
+        "backoff": { "$ref": "#/$defs/BackoffStrategy", "description": "Exponential backoff parameters" }
+      }
+    },
+    "BackoffStrategy": {
+      "type": "object",
+      "properties": {
+        "initialDelayMs": { "type": "integer", "description": "Delay before the first retry" },
+        "maxDelayMs": { "type": "integer", "description": "Upper bound on the computed delay" },
+        "multiplier": { "type": "number", "description": "Exponential growth factor per attempt" },
+        "jitter": { "type": "number", "description": "Random jitter fraction (0..1) applied to each delay" }
+      }
+    },
+    "TimeoutPolicy": {
+      "type": "object",
+      "properties": {
+        "defaultTimeoutMs": { "type": "integer", "description": "Default per-request timeout; 0 means no deadline" },
+        "timeoutEnvVar": { "type": "string", "description": "Environment variable that overrides the default timeout (milliseconds)" }
+      }
+    },
+    "ErrorPolicy": {
+      "type": "object",
+      "description": "Maps HTTP statuses to named error kinds; every language raises/returns its idiomatic form of the same kind.",
+      "properties": {
+        "statusCodeMap": { "tsType": "Record<string, string>", "description": "Exact status -> error kind (e.g. \"404\": \"NotFound\")" },
+        "clientErrorKind": { "type": "string", "description": "Kind for unmapped 4xx statuses" },
+        "serverErrorKind": { "type": "string", "description": "Kind for 5xx statuses" },
+        "errorDocUrlTemplate": { "type": "string", "description": "URL template for error docs (e.g. https://api.example.com/errors/{kind})" }
+      }
+    },
+    "UserAgentPolicy": {
+      "type": "object",
+      "properties": {
+        "sdkIdentifierTemplate": { "type": "string", "description": "UA template; emitters substitute {package}, {language}, {version}" },
+        "includeRuntimeVersion": { "type": "boolean", "description": "Append the language runtime version (go1.22, python/3.12)" },
+        "aiAgentEnvVars": { "tsType": "Record<string, string>", "description": "Env var -> agent slug; when set at runtime the slug is appended to the UA for agent-traffic attribution" }
+      }
+    },
+    "TelemetryPolicy": {
+      "type": "object",
+      "properties": {
+        "requestIdHeader": { "type": "string", "description": "Response header carrying the request id, surfaced on errors" },
+        "headerName": { "type": "string", "description": "Request header carrying client telemetry (previous request id + latency)" },
+        "enabledByDefault": { "type": "boolean", "description": "Whether the client-telemetry loop is on by default" }
+      }
+    },
+    "LoggingPolicy": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Closed lifecycle-event vocabulary every runtime must emit (request.start, request.success, request.retry, request.rate_limited, request.error, request.connection_error)"
+        }
+      }
+    },
+    "IdempotencyPolicy": {
+      "type": "object",
+      "properties": {
+        "headerName": { "type": "string", "description": "The idempotency header wire name" },
+        "autoGenerateForPost": { "type": "boolean", "description": "Auto-generate a key for retried POSTs on methods flagged injectIdempotencyKey" }
+      }
+    },
+    "PaginationPolicy": {
+      "type": "object",
+      "properties": {
+        "autoPageDelayMs": { "type": "integer", "description": "Politeness delay between auto-fetched pages" }
+      }
+    },
+    "RequestGuardPolicy": {
+      "type": "object",
+      "properties": {
+        "optionKeys": { "type": "array", "items": { "type": "string" }, "description": "Request-option keys that must never appear inside request params (fail fast if seen)" }
+      }
+    },
+    "Pagination": {
+      "type": "object",
+      "description": "Pagination shape for a pageable list method.",
+      "properties": {
+        "style": { "type": "string", "description": "The pagination style (e.g. cursor, page, offset)" },
+        "itemsField": { "type": "string", "description": "The response field holding the page items (e.g. data)" },
+        "itemType": { "$ref": "#/$defs/TypeRef", "description": "The paged element type (the itemsField array's element), resolved through the symbol table so emitters can produce Page[T]/auto-pagers" },
+        "cursorParam": { "type": "string", "description": "The request parameter carrying the cursor (e.g. after)" },
+        "offsetParam": { "type": "string", "description": "style=offset: the request parameter carrying the item offset (e.g. offset, skip)" },
+        "limitParam": { "type": "string", "description": "The request parameter carrying the page size (e.g. limit, page_size, per_page)" },
+        "nextField": { "type": "string", "description": "The response field indicating more pages (e.g. has_more, next)" }
+      },
+      "required": ["style", "itemsField"]
+    },
+    "SdkSecurity": {
+      "type": "object",
+      "description": "A single security scheme mapped from the OpenAPI securitySchemes.",
+      "properties": {
+        "schemeName": { "type": "string", "description": "The source securityScheme key (e.g. AdminApiKeyAuth) — distinguishes per-operation overrides whose scheme shape equals the default" },
+        "kind": { "type": "string", "description": "Normalized scheme a generator branches on: bearer | apiKey-header | apiKey-query | apiKey-cookie | basic | other" },
+        "type": { "type": "string", "description": "The OpenAPI security scheme type (e.g. http, apiKey, oauth2)" },
+        "scheme": { "type": "string", "description": "The HTTP auth scheme (e.g. bearer, basic) when type is http" },
+        "in": { "type": "string", "description": "Location for an apiKey scheme (header, query or cookie)" },
+        "name": { "type": "string", "description": "Header/query/cookie name for an apiKey scheme" },
+        "bearerFormat": { "type": "string", "description": "The bearer token format hint (e.g. JWT)" },
+        "envVar": { "type": "string", "description": "Environment variable a generated SDK reads the credential from (e.g. OPENAI_API_KEY)" }
+      },
+      "required": ["type"]
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "value": { "tsType": "unknown" }
+      },
+      "required": ["name"]
+    },
+    "Contact": {
+      "type": "object",
+      "description": "Contact information",
+      "properties": {
+        "name": { "type": "string", "description": "The identifying name of the contact person/organization" },
+        "url": { "type": "string", "format": "uri", "description": "The URI for the contact information" },
+        "email": { "type": "string", "description": "The email address of the contact person/organization" }
+      }
+    },
+    "License": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "The license name" },
+        "identifier": { "type": "string", "description": "The SPDX license identifier" },
+        "url": { "type": "string", "description": "The URI for the license" }
+      }
+    }
+  }
+}

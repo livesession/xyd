@@ -1,0 +1,398 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "AdminOrganizationUsersRolesListOrder",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "asc"
+        },
+        {
+          "value": "desc"
+        }
+      ]
+    },
+    {
+      "name": "RoleListResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true,
+          "description": "Always `list`."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "AssignedRoleDetails"
+            }
+          },
+          "required": true,
+          "description": "Role assignments returned in the current page."
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether additional assignments are available when paginating."
+        },
+        {
+          "name": "next",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true,
+          "description": "Cursor to fetch the next page of results, or `null` when there are no more assignments."
+        }
+      ],
+      "description": "Paginated list of roles assigned to a principal."
+    },
+    {
+      "name": "AssignedRoleDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier for the role."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Name of the role."
+        },
+        {
+          "name": "permissions",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "Permissions associated with the role."
+        },
+        {
+          "name": "resource_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Resource type the role applies to."
+        },
+        {
+          "name": "predefined_role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether the role is predefined by OpenAI."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true,
+          "description": "Description of the role."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true,
+          "description": "When the role was created."
+        },
+        {
+          "name": "updated_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "required": true,
+          "description": "When the role was last updated."
+        },
+        {
+          "name": "created_by",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true,
+          "description": "Identifier of the actor who created the role."
+        },
+        {
+          "name": "created_by_user_obj",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            },
+            "nullable": true
+          },
+          "required": true,
+          "description": "User details for the actor that created the role, when available."
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            },
+            "nullable": true
+          },
+          "required": true,
+          "description": "Arbitrary metadata stored on the role."
+        }
+      ],
+      "description": "Detailed information about a role assignment entry returned when listing assignments."
+    }
+  ],
+  "resources": [
+    {
+      "name": "admin",
+      "resources": [
+        {
+          "name": "organization",
+          "resources": [
+            {
+              "name": "users",
+              "resources": [
+                {
+                  "name": "roles",
+                  "methods": [
+                    {
+                      "action": "list",
+                      "httpMethod": "get",
+                      "path": "/organization/users/{user_id}/roles",
+                      "operationId": "list-user-role-assignments",
+                      "description": "Lists the organization roles assigned to a user within the organization.",
+                      "pathParams": [
+                        {
+                          "name": "user_id",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": true,
+                          "description": "The ID of the user to inspect."
+                        }
+                      ],
+                      "queryParams": [
+                        {
+                          "name": "limit",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "integer"
+                          },
+                          "required": false,
+                          "description": "A limit on the number of organization role assignments to return."
+                        },
+                        {
+                          "name": "after",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": false,
+                          "description": "Cursor for pagination. Provide the value from the previous response's `next` field to continue listing organization roles."
+                        },
+                        {
+                          "name": "order",
+                          "type": {
+                            "kind": "ref",
+                            "name": "AdminOrganizationUsersRolesListOrder"
+                          },
+                          "required": false,
+                          "description": "Sort order for the returned organization roles."
+                        }
+                      ],
+                      "responses": [
+                        {
+                          "status": "200",
+                          "description": "User organization role assignments listed successfully.",
+                          "contentType": "application/json",
+                          "type": {
+                            "kind": "ref",
+                            "name": "RoleListResource"
+                          }
+                        }
+                      ],
+                      "primaryResponse": {
+                        "kind": "ref",
+                        "name": "RoleListResource"
+                      },
+                      "pagination": {
+                        "style": "cursor",
+                        "itemsField": "data",
+                        "nextField": "has_more",
+                        "itemType": {
+                          "kind": "ref",
+                          "name": "AssignedRoleDetails"
+                        },
+                        "cursorParam": "after",
+                        "limitParam": "limit"
+                      },
+                      "security": [
+                        {
+                          "type": "http",
+                          "kind": "bearer",
+                          "schemeName": "AdminApiKeyAuth",
+                          "scheme": "bearer"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}
