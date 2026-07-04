@@ -1,0 +1,8 @@
+/**
+ * Storybook's stylesheet — the same Tailwind pipeline the app uses, so stories
+ * render with the design-system utilities. `@source "../"` scans the component
+ * sources (in src/) for class names since they live outside this file's dir.
+ */
+@import "tailwindcss";
+@import "./theme.css";
+@source "../";

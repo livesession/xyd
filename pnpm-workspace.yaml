@@ -3,6 +3,14 @@ packages:
   - 'packages/*'
   - packages/xyd-ask-ai/examples/*
   - '!packages/xyd-js'
+  # standalone bun package (own @apitoolchain scope), managed outside the @xyd-js pnpm workspace
+  - '!packages/apitoolchain-design-system'
+  # apitoolchain support packages: consumed by the standalone bun apps via file:
+  # deps (xyd-bridge is esbuild-bundled to dist; schemas is tsp source; dev is
+  # the testcontainers dev-vite plugin)
+  - '!packages/apitoolchain-xyd-bridge'
+  - '!packages/apitoolchain-schemas'
+  - '!packages/apitoolchain-dev'
   # - 'cli'
   # - '!packages/xyd-mcp-server' # temporary? cuz it's bun
   - '.xyd/host'

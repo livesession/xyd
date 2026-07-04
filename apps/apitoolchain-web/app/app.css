@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "@apitoolchain/design-system/theme.css";
+
+/* The design system ships raw TS source under node_modules (file: link), so
+   Tailwind's auto content-detection skips it — scan it explicitly for classes. */
+@source "../../../packages/apitoolchain-design-system/src";

@@ -1,0 +1,147 @@
+/**
+ * apitoolchain design tokens as a Tailwind v4 theme. Single source of truth
+ * (ported from the old tokens.ts). Imported by the app (app.css) and Storybook,
+ * both of which prepend `@import "tailwindcss"`. Utilities are generated from
+ * these vars: e.g. `text-ink`, `bg-surface-muted`, `border-line`,
+ * `rounded-box`, `shadow-card`, `text-section`.
+ */
+
+@theme {
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+
+  /* text */
+  --color-ink: #0d0d0d;
+  --color-body: #282828;
+  --color-muted: #5d5d5d;
+  --color-subtle: #8f8f8f;
+  --color-nav: #414141;
+
+  /* surfaces */
+  --color-surface: #ffffff;
+  --color-surface-muted: #f9f9f9;
+  --color-surface-raised: #f3f3f3;
+  --color-surface-pill: #ededed;
+  --color-surface-warning: #fffbed;
+
+  /* lines / borders */
+  --color-line: rgba(13, 13, 13, 0.1);
+  --color-line-soft: rgba(13, 13, 13, 0.07);
+  --color-line-card: rgba(13, 13, 13, 0.08);
+  --color-line-hover: rgba(13, 13, 13, 0.13);
+  --color-hover: rgba(13, 13, 13, 0.05);
+  --color-hover-strong: rgba(13, 13, 13, 0.045);
+  --color-track: #c9c9d0;
+
+  /* interactive overlay (hover/active `::before` tint) */
+  --color-alpha-base: #0d0d0d;
+  --color-alpha-02: color-mix(in oklab, var(--color-alpha-base) 2%, transparent);
+
+  /* accents */
+  --color-pink: #e0428e;
+  --color-green: #00a240;
+  --color-blue: #0285ff;
+  --color-orange: #e25507;
+  --color-amber: #e0ac00;
+  --color-amber-btn: #ba8e00;
+  --color-amber-btn-hover: #916f00;
+
+  /* semantic tones (badges / statuses) */
+  --color-info: #0369c7;
+  --color-info-bg: rgba(2, 133, 255, 0.12);
+  --color-success: #0a7d38;
+  --color-success-bg: rgba(0, 162, 64, 0.12);
+  --color-warn: #916f00;
+  --color-warn-bg: rgba(224, 172, 0, 0.16);
+  --color-danger: #c23b1f;
+  --color-danger-bg: rgba(226, 85, 7, 0.12);
+  --color-accent: #b32d70;
+  --color-accent-bg: rgba(224, 66, 142, 0.12);
+
+  /* radii */
+  --radius-card: 6px;
+  --radius-control: 8px;
+  --radius-tile: 10px;
+  --radius-panel: 12px;
+  --radius-box: 16px;
+  --radius-pill: 999px;
+
+  /* shadows */
+  --shadow-card: 0 2px 4px -1px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 4px 14px -3px rgba(13, 13, 13, 0.16);
+  --shadow-nav:
+    0 1px 2px rgba(13, 13, 13, 0.06), 0 0 0 1px rgba(13, 13, 13, 0.05);
+  --shadow-pill: 0 1px 2px rgba(13, 13, 13, 0.1);
+
+  /* type scale */
+  --text-page: 28px;
+  --text-page--line-height: 34px;
+  --text-section: 18px;
+  --text-section--line-height: 24px;
+  --text-stat: 32px;
+  --text-stat--line-height: 38px;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+    background: var(--color-surface);
+    color: var(--color-body);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(13, 13, 13, 0.16);
+    border-radius: 8px;
+    border: 2px solid #fff;
+  }
+}
+
+/* Modal entrance: panel slides up (Y only — no scale) + fades in; scrim fades in. */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

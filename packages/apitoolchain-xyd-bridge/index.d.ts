@@ -1,0 +1,70 @@
+/**
+ * Hand-authored, self-contained types for the bundled xyd surface. The real
+ * `@xyd-js/*` declaration graph can't be bundled into the island (no
+ * `@xyd-js/*` in the island's node_modules), so these pragmatic signatures type
+ * exactly what the apitoolchain services call. The services thread these values
+ * into each other (parse -> IR -> generate), so loose-but-keyed types suffice.
+ */
+
+/** An OpenAPI 3.x document (raw or dereferenced). Kept loose on purpose. */
+export type OpenApiDocument = Record<string, unknown>;
+
+/** A uniform Reference (from @xyd-js/uniform); opaque here. */
+export type Reference = Record<string, unknown>;
+
+/** The OpenSDK intermediate representation produced by `openapi2opensdk`. */
+export interface OpensdkSpecJson {
+  info: { title: string; version: string; [k: string]: unknown };
+  types?: unknown[];
+  resources?: unknown[];
+  [k: string]: unknown;
+}
+
+/** A registered language emitter (opaque plugin object). */
+export type Emitter = { language: string; [k: string]: unknown };
+
+/** A generated file entry (writeMode-aware form). */
+export interface GeneratedFileEntry {
+  content: string;
+  writeMode?: string;
+}
+
+// ── spec parse / validate ──
+export function deferencedOpenAPI(openApiPath: string): Promise<OpenApiDocument>;
+export function oapSchemaToReferences(
+  doc: OpenApiDocument,
+  options?: Record<string, unknown>,
+): Reference[];
+export function gqlSchemaToReferences(
+  sdl: string,
+  options?: Record<string, unknown>,
+): Reference[];
+export function mcpUrlToReferences(
+  source: string,
+  options?: { token?: string; headers?: Record<string, string>; fetcher?: unknown },
+): Promise<Reference[]>;
+
+// ── OpenAPI -> OpenSDK IR ──
+export function openapi2opensdk(
+  doc: OpenApiDocument,
+  options?: Record<string, unknown>,
+): OpensdkSpecJson;
+export function openapi2opensdkFromSource(
+  source: string,
+  options?: Record<string, unknown>,
+): Promise<OpensdkSpecJson>;
+
+// ── IR -> per-language file map ──
+export function registerBuiltinEmitters(): void;
+export function getEmitter(language: string): Emitter;
+export function resolveLanguage(alias: string): string;
+export function generate(
+  spec: OpensdkSpecJson,
+  emitter: Emitter,
+  emitterOptions?: Record<string, unknown>,
+): Record<string, string>;
+export function generateFileMap(
+  spec: OpensdkSpecJson,
+  emitter: Emitter,
+  emitterOptions?: Record<string, unknown>,
+): Record<string, GeneratedFileEntry>;

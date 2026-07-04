@@ -1,0 +1,127 @@
+import { QueryArrayConfig, QueryArrayResult } from "pg";
+
+interface Client {
+    query: (config: QueryArrayConfig) => Promise<QueryArrayResult>;
+}
+
+export const getContextQuery = `-- name: GetContext :one
+SELECT
+  o.id AS org_id, o.name AS org_name, o.plan AS org_plan,
+  p.id AS project_id, p.name AS project_name
+FROM settings s
+JOIN orgs o ON o.id = s.org_id
+JOIN projects p ON p.id = s.project_id
+WHERE s.id = 1`;
+
+export interface GetContextRow {
+    orgId: string;
+    orgName: string;
+    orgPlan: string;
+    projectId: string;
+    projectName: string;
+}
+
+export async function getContext(client: Client): Promise<GetContextRow | null> {
+    const result = await client.query({
+        text: getContextQuery,
+        values: [],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        orgId: row[0],
+        orgName: row[1],
+        orgPlan: row[2],
+        projectId: row[3],
+        projectName: row[4]
+    };
+}
+
+export const upsertOrgQuery = `-- name: UpsertOrg :exec
+INSERT INTO orgs (id, name, plan) VALUES ($1, $2, $3)
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, plan = EXCLUDED.plan`;
+
+export interface UpsertOrgArgs {
+    id: string;
+    name: string;
+    plan: string;
+}
+
+export async function upsertOrg(client: Client, args: UpsertOrgArgs): Promise<void> {
+    await client.query({
+        text: upsertOrgQuery,
+        values: [args.id, args.name, args.plan],
+        rowMode: "array"
+    });
+}
+
+export const upsertProjectQuery = `-- name: UpsertProject :exec
+INSERT INTO projects (id, org_id, name) VALUES ($1, $2, $3)
+ON CONFLICT (id) DO UPDATE SET org_id = EXCLUDED.org_id, name = EXCLUDED.name`;
+
+export interface UpsertProjectArgs {
+    id: string;
+    orgId: string;
+    name: string;
+}
+
+export async function upsertProject(client: Client, args: UpsertProjectArgs): Promise<void> {
+    await client.query({
+        text: upsertProjectQuery,
+        values: [args.id, args.orgId, args.name],
+        rowMode: "array"
+    });
+}
+
+export const upsertSettingsQuery = `-- name: UpsertSettings :exec
+INSERT INTO settings (id, org_id, project_id) VALUES (1, $1, $2)
+ON CONFLICT (id) DO UPDATE SET org_id = EXCLUDED.org_id, project_id = EXCLUDED.project_id`;
+
+export interface UpsertSettingsArgs {
+    orgId: string;
+    projectId: string;
+}
+
+export async function upsertSettings(client: Client, args: UpsertSettingsArgs): Promise<void> {
+    await client.query({
+        text: upsertSettingsQuery,
+        values: [args.orgId, args.projectId],
+        rowMode: "array"
+    });
+}
+
+export const updateOrgNameQuery = `-- name: UpdateOrgName :exec
+UPDATE orgs SET name = $2 WHERE id = $1`;
+
+export interface UpdateOrgNameArgs {
+    id: string;
+    name: string;
+}
+
+export async function updateOrgName(client: Client, args: UpdateOrgNameArgs): Promise<void> {
+    await client.query({
+        text: updateOrgNameQuery,
+        values: [args.id, args.name],
+        rowMode: "array"
+    });
+}
+
+export const updateProjectNameQuery = `-- name: UpdateProjectName :exec
+UPDATE projects SET name = $2 WHERE id = $1`;
+
+export interface UpdateProjectNameArgs {
+    id: string;
+    name: string;
+}
+
+export async function updateProjectName(client: Client, args: UpdateProjectNameArgs): Promise<void> {
+    await client.query({
+        text: updateProjectNameQuery,
+        values: [args.id, args.name],
+        rowMode: "array"
+    });
+}
+

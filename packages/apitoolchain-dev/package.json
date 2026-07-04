@@ -1,0 +1,30 @@
+{
+  "name": "@apitoolchain/dev",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "apitoolchain dev tooling. `@apitoolchain/dev/vite` is a dev-only Vite plugin that boots the whole backend (Postgres + MinIO + services) via testcontainers.",
+  "exports": {
+    "./vite": {
+      "types": "./src/vite.ts",
+      "default": "./src/vite.ts"
+    }
+  },
+  "files": ["src"],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "format": "bunx biome check --write ."
+  },
+  "dependencies": {
+    "@testcontainers/postgresql": "^12.0.4",
+    "testcontainers": "^12.0.4"
+  },
+  "peerDependencies": {
+    "vite": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.6.2",
+    "vite": "^8.1.3"
+  }
+}

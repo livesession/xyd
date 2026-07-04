@@ -1,0 +1,40 @@
+# Shared dev infra for the apitoolchain backend services (registry-api + api):
+# Postgres + MinIO (S3-compatible), mirroring the apiatlas MinIO precedent.
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: apitoolchain
+      POSTGRES_PASSWORD: apitoolchain
+      POSTGRES_DB: apitoolchain
+    # 5433 on the host to avoid clashing with a local (brew) Postgres on 5432.
+    ports: ["5433:5432"]
+    volumes: ["apitoolchain-pg:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apitoolchain"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports: ["9000:9000", "9001:9001"]
+    environment:
+      MINIO_ROOT_USER: apitoolchain
+      MINIO_ROOT_PASSWORD: apitoolchain-secret
+    volumes: ["apitoolchain-minio:/data"]
+
+  createbuckets:
+    image: minio/mc
+    depends_on: [minio]
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 apitoolchain apitoolchain-secret; do echo 'waiting for minio'; sleep 1; done;
+      mc mb -p local/apitoolchain-specs;
+      mc mb -p local/apitoolchain-artifacts;
+      exit 0"
+
+volumes:
+  apitoolchain-pg:
+  apitoolchain-minio:
